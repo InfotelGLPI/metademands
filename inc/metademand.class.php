@@ -2126,6 +2126,21 @@ JAVASCRIPT
                         $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                     }
 
+                    //Add all form contributors as ticket requester is using step by step
+                    $configstep = new PluginMetademandsConfigstep();
+                    if ($configstep->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])) {
+                        if ($configstep->fields['add_user_as_requester']) {
+                            $parent_fields['_users_id_requester'] = [];
+                            $stepformActor = new PluginMetademandsStepform_Actor();
+                            $stepformActors = $stepformActor->find(
+                                ['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']]
+                            );
+                            foreach ($stepformActors as $actor) {
+                                $parent_fields['_users_id_requester'][] = $actor['users_id'];
+                            }
+                        }
+                    }
+
 //                    $default_use_notif = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
 //                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
 //                        'alternative_email' => ''];
@@ -4585,17 +4600,16 @@ JAVASCRIPT
         $ticketParent = new Ticket();
         if ($ticketParent->getFromDB($parent_tickets_id)) {
 
-            if (!isset($parent_fields['_users_id_requester'])
-                && isset($meta->fields['initial_requester_childs_tickets'])
+            if (isset($meta->fields['initial_requester_childs_tickets'])
                 && $meta->fields['initial_requester_childs_tickets'] == 1) {
                 $users = $ticketParent->getUsers(CommonITILActor::REQUESTER);
                 if (count($users) > 0) {
-                    foreach ($ticketParent->getUsers(CommonITILActor::REQUESTER) as $user) {
+                    $parent_fields['_users_id_requester'] = [];
+                    foreach ($users as $user) {
                         $parent_fields['_users_id_requester'][] = $user['users_id'];
                     }
                 }
             }
-
             foreach ($tickettasks_data as $son_ticket_data) {
                 if ($son_ticket_data['level'] == $tasklevel) {
                     if (isset($_SESSION['metademands_hide'])
@@ -4765,8 +4779,13 @@ JAVASCRIPT
                     }
 
                     $son_ticket_data['content'] = $content;
-                    if (isset($parent_fields['_groups_id_assign'])) {
-                        $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
+
+                    if (isset($meta->fields['initial_requester_childs_tickets'])
+                        && $meta->fields['initial_requester_childs_tickets'] == 0) {
+                        if (isset($parent_fields['_groups_id_assign'])) {
+                            //affect by default precedent group
+                            $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
+                        }
                     }
                     $son_ticket_data = self::mergeFields($son_ticket_data, $inputFieldMain);
 
@@ -4787,6 +4806,18 @@ JAVASCRIPT
                     ])) {
                         $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
                     } else if ($son_tickets_id = $ticket->add($son_ticket_data)) {
+
+                        $ticket_metademand = new PluginMetademandsTicket_Metademand();
+                        if (!$ticket_metademand->getFromDBByCrit(['tickets_id' => $son_tickets_id,
+                            'parent_tickets_id' => $parent_tickets_id,
+                            'plugin_metademands_metademands_id' => $meta->getID(),
+                        ])) {
+                            $ticket_metademand->add(['tickets_id' => $son_tickets_id,
+                                'parent_tickets_id' => $parent_tickets_id,
+                                'plugin_metademands_metademands_id' => $meta->getID(),
+                                'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+                        }
+
                         if (Plugin::isPluginActive('fields')) {
                             foreach ($inputField as $containers_id => $vals) {
                                 $container = new PluginFieldsContainer;
@@ -5244,7 +5275,7 @@ JAVASCRIPT
                                 }
                             }
                             //childs sons
-                            self::createSonsTickets(0, $tickets_data['id'], $ticket->fields, $tickets_found[0]['tickets_id'], $tasks_data, $data['parent_level'] + 1);
+                            self::createSonsTickets($ticket_metademand->fields['plugin_metademands_metademands_id'], $tickets_data['id'], $ticket->fields, $tickets_found[0]['tickets_id'], $tasks_data, $data['parent_level'] + 1);
                         }
                     }
                 }

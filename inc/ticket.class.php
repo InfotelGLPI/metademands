@@ -102,7 +102,7 @@ class PluginMetademandsTicket extends CommonDBTM
         $metademand        = new PluginMetademandsMetademand();
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
 
-        $ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $ticket->getID()]);
+        $ticket_metademand->getFromDBByCrit(['tickets_id' => $ticket->getID()]);
 
         if ($ticket->fields['status'] == Ticket::SOLVED
           || $ticket->fields['status'] == Ticket::CLOSED) {
