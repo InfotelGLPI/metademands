@@ -56,7 +56,7 @@ class PluginMetademandsForm extends CommonDBTM {
       } else {
          $condition['is_model'] = 0;
       }
-      $forms = $self->find($condition, ['date DESC']);
+      $forms = $self->find($condition, ['date DESC'], 20);
 
       if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
          $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) ?? '';
@@ -319,7 +319,9 @@ class PluginMetademandsForm extends CommonDBTM {
                      </script>";
 
       $return .= "</span>";
-
+       $return .= "<div class='center' style='color:lightgrey'>";
+       $return .= __('Limited to your last 20 forms', 'metademands');
+       $return .= "</div>";
       return $return;
 
    }

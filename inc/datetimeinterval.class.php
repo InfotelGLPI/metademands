@@ -51,20 +51,44 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
         return __('Date & Hour interval', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    static function showWizardField($data, $namefield, $value, $end)
     {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
 
-        $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-        $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
+        $opt = ['value'    => $value,
             'display'  => false,
             'required' => (bool)$data['is_mandatory'],
             'size'     => 40
-        ]);
-        $field .= "</span>";
+        ];
+
+        $use_future_date = $data['use_future_date'];
+        if (isset($use_future_date) && !empty($use_future_date)) {
+            $opt['mindate'] = date("Y-m-d");
+        }
+
+        if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
+            $addDays = $data['additional_number_day'];
+            $startDate = time();
+            $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
+            $mindate = date('Y-m-d', strtotime("+$addDays day", $startDate));
+            $use_future_date = $data['use_future_date'];
+            if (isset($use_future_date) && !empty($use_future_date)) {
+                $opt['mindate'] = $mindate;
+            }
+        }
+
+        if ($end == true) {
+            $field = "<span style='width: 50%!important;display: -webkit-box;'>";
+            $field .= Html::showDateTimeField($namefield, $opt);
+            $field .= "</span>";
+        } else {
+            $field = "<span style='width: 50%!important;display: -webkit-box;'>";
+            $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", $opt);
+            $field .= "</span>";
+        }
 
         echo $field;
     }

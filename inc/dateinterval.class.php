@@ -51,23 +51,50 @@ class PluginMetademandsDateinterval extends CommonDBTM
         return __('Date interval', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    static function showWizardField($data, $namefield, $value, $end)
     {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
 
-        $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-        $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
+        $opt = ['value'    => $value,
             'display'  => false,
             'required' => (bool)$data['is_mandatory'],
             'size'     => 40
-        ]);
-        $field .= "</span>";
+        ];
+
+        $use_future_date = $data['use_future_date'];
+        $date = date("Y-m-d");
+
+        if (isset($use_future_date) && !empty($use_future_date)) {
+            $opt['min'] = $date;
+        }
+
+        if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
+            $addDays = $data['additional_number_day'];
+            $value = date('Y-m-d', strtotime($date . " + $addDays days"));
+            $use_future_date = $data['use_future_date'];
+            if (isset($use_future_date) && !empty($use_future_date)) {
+                $opt['min'] = $value;
+            }
+        }
+
+        if ($end == true) {
+            $field = "<span style='width: 50%!important;display: -webkit-box;'>";
+            $field .= Html::showDateField($namefield, $opt);
+            $field .= "</span>";
+        } else {
+            $field = "<span style='width: 50%!important;display: -webkit-box;'>";
+            $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", $opt);
+            $field .= "</span>";
+        }
+
+
 
         echo $field;
     }
+
 
     static function showFieldCustomValues($params)
     {

@@ -58,12 +58,29 @@ class PluginMetademandsDate extends CommonDBTM
             $comment = $data['comment'];
         }
 
-        $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-        $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
+        $opt = ['value'    => $value,
             'display'  => false,
             'required' => (bool)$data['is_mandatory'],
             'size'     => 40
-        ]);
+        ];
+
+        $use_future_date = $data['use_future_date'];
+        if (isset($use_future_date) && !empty($use_future_date)) {
+            $opt['min'] = $_SESSION["glpi_currenttime"];
+        }
+
+        if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
+            $date = date("Y-m-d");
+            $addDays = $data['additional_number_day'];
+            $value = date('Y-m-d', strtotime($date . " + $addDays days"));
+            $use_future_date = $data['use_future_date'];
+            if (isset($use_future_date) && !empty($use_future_date)) {
+                $opt['min'] = $value;
+            }
+        }
+
+        $field = "<span style='width: 50%!important;display: -webkit-box;'>";
+        $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", $opt);
         $field .= "</span>";
 
         echo $field;

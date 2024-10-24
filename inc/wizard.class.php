@@ -1750,30 +1750,18 @@ class PluginMetademandsWizard extends CommonDBTM
                                 $value2 = $data['value-2'];
                             }
                             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                                echo "<span style='width: 50%!important;display: -webkit-box;'>";
+                                $namefield = "field[" . $data['id'] . "-2]";
+                                $end = true;
                                 switch ($data['type']) {
                                     case 'date_interval':
-                                        Html::showDateField(
-                                            "field[" . $data['id'] . "-2]",
-                                            [
-                                                'value' => $value2,
-                                                'required' => ($data['is_mandatory'] ? "required" : "")
-                                            ]
-                                        );
-                                        $count++; // If date interval : pass to next line
+                                        PluginMetademandsDateinterval::showWizardField($data, $namefield, $value2, $end);
+                                        $count++;
                                         break;
                                     case 'datetime_interval':
-                                        Html::showDateTimeField(
-                                            "field[" . $data['id'] . "-2]",
-                                            [
-                                                'value' => $value2,
-                                                'required' => ($data['is_mandatory'] ? "required" : "")
-                                            ]
-                                        );
-                                        $count++; // If date interval : pass to next line
+                                        PluginMetademandsDateTimeinterval::showWizardField($data, $namefield, $value2, $end);
+                                        $count++;
                                         break;
                                 }
-                                echo "</span>";
                             }
                         }
                         echo "</div>";
@@ -3760,7 +3748,8 @@ class PluginMetademandsWizard extends CommonDBTM
             // Check date interval is right
             if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval')
                 && isset($all_fields[$fields['id'] . '-2'])) {
-                if (strtotime($fields['value']) > strtotime($all_fields[$fields['id'] . '-2'])) {
+                $value2 = $all_fields[$fields['id'] . '-2'];
+                if (strtotime($fields['value']) > strtotime($value2)) {
                     $msg[] = sprintf(
                         __('Date %1$s cannot be greater than date %2$s', 'metademands'),
                         $value['name'],

@@ -1949,22 +1949,7 @@ class PluginMetademandsField extends CommonDBChild
                 $label = $data['name'];
             }
         }
-        if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
-            if ($data["type"] == 'date' ||
-                $data["type"] == 'date_interval'
-            ) {
-                $date = date("Y-m-d");
-                $addDays = $data['additional_number_day'];
-                $data['value'] = date('Y-m-d', strtotime($date . " + $addDays days"));
-            }
-            if ($data["type"] == 'datetime' ||
-                $data["type"] == 'datetime_interval'
-            ) {
-                $addDays = $data['additional_number_day'];
-                $startDate = time();
-                $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
-            }
-        }
+
         $hidden = $data['hidden'] ?? 0;
         if ($hidden == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
@@ -2166,10 +2151,10 @@ class PluginMetademandsField extends CommonDBChild
                 PluginMetademandsDatetime::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'date_interval':
-                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, $on_order);
+                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, false);
                 break;
             case 'datetime_interval':
-                PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, $on_order);
+                PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, false);
                 break;
             case 'upload':
                 PluginMetademandsUpload::showWizardField($data, $namefield, $value, $on_order, $idline);
