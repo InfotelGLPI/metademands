@@ -740,10 +740,13 @@ class PluginMetademandsDropdown extends CommonDBTM
         switch ($field['item']) {
             default:
                 $dbu = new DbUtils();
-                return Dropdown::getDropdownName(
-                    $dbu->getTableForItemType($field['item']),
-                    $field['value']
-                );
+                if (!empty($field['item'])) {
+                    return Dropdown::getDropdownName(
+                        $dbu->getTableForItemType($field['item']),
+                        $field['value']
+                    );
+                }
+
         }
     }
 

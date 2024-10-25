@@ -38,10 +38,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands_validatemeta';
 
-    const VALIDATE_WITHOUT_TASK   = 3; // meta validate without task
-    const TASK_CREATION           = 2; // task_created
-    const TICKET_CREATION         = 1; // tickets_created
-    const TO_VALIDATE             = 0; // waiting
+    const VALIDATE_WITHOUT_TASK = 3; // meta validate without task
+    const TASK_CREATION = 2; // task_created
+    const TICKET_CREATION = 1; // tickets_created
+    const TO_VALIDATE = 0; // waiting
     const TO_VALIDATE_WITHOUTTASK = -1; // waiting without ticket
 
     /**
@@ -98,11 +98,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
         } else {
             // Create item
-            $item    = $options['item'];
+            $item = $options['item'];
             $canedit = $metademand->can($item->fields['id'], UPDATE);
             $this->getEmpty();
             $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
-            $this->fields['color']                             = '#000';
+            $this->fields['color'] = '#000';
         }
 
 
@@ -140,7 +140,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
     public function validateMeta($params)
     {
         $ticket_id = $params["tickets_id"];
-        $inputVal  = [];
+        $inputVal = [];
 
         $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
         $meta_tasks = json_decode($this->fields["tickets_to_create"], true);
@@ -149,11 +149,13 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                 $task = new PluginMetademandsTicketTask();
                 if (isset($val['tickettasks_id'])
                     && $task->getFromDB($val['tickettasks_id'])) {
-                    $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
+                    $meta_tasks[$key]['tickettasks_name'] = urldecode($val['tickettasks_name']);
                     if ($val['tasks_completename'] != null) {
                         $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
                     }
-                    $meta_tasks[$key]['content']            = urldecode($val['content']);
+                    if (!empty($val['content'])) {
+                        $meta_tasks[$key]['content'] = urldecode($val['content']);
+                    }
                 } else {
                     unset($meta_tasks[$key]);
                 }
@@ -162,7 +164,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
 
         $ticket = new Ticket();
         $ticket->getFromDB($ticket_id);
-      //      $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
+        //      $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
         $users = $ticket->getUsers(CommonITILActor::REQUESTER);
         foreach ($users as $user) {
             $ticket->fields["_users_id_requester"] = $user['users_id'];
@@ -170,9 +172,9 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         $meta = new PluginMetademandsMetademand();
         $meta->getFromDB($this->getField("plugin_metademands_metademands_id"));
 
-        $values_form  = [];
+        $values_form = [];
         $ticket_field = new PluginMetademandsTicket_Field();
-        $fields       = $ticket_field->find(['tickets_id' => $ticket_id]);
+        $fields = $ticket_field->find(['tickets_id' => $ticket_id]);
         foreach ($fields as $f) {
             $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
             if ($values_form[$f['plugin_metademands_fields_id']] === null) {
@@ -180,45 +182,42 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             }
             $f['plugin_metademands_fields_id'];
         }
-        $inputField   = [];
+        $inputField = [];
         $inputFieldMain = [];
         if (Plugin::isPluginActive('fields')) {
-            $pluginfield  = new PluginMetademandsPluginfields();
+            $pluginfield = new PluginMetademandsPluginfields();
             $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $meta->getID()]);
 
             foreach ($pluginfields as $plfield) {
-                $fields_field     = new PluginFieldsField();
+                $fields_field = new PluginFieldsField();
                 $fields_container = new PluginFieldsContainer();
                 if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                     if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
                         if ($fields_container->fields['type'] == 'tab') {
                             if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
                                 if ($fields_field->fields['type'] == 'dropdown') {
-                                    if(!isset($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])
+                                    if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])
                                         || empty($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])) {
                                         $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
                                     }
-
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
                                     if (is_int($val)) {
-                                        $val = $val -1;
+                                        $val = $val - 1;
                                     } else {
-                                        if(!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
+                                        if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
                                             || empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
                                             $val = 0;
                                         } else {
                                             $val = $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']];
                                         }
-
                                     }
                                     $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $val;
                                 } else {
-                                    if(!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']]) ||
-                                    empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
+                                    if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']]) ||
+                                        empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
                                         $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
                                     }
-
                                 }
                             }
                         }
@@ -230,7 +229,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
                                     if (is_int($val)) {
-                                        $val = $val -1;
+                                        $val = $val - 1;
                                     }
                                     $inputFieldMain[$fields_field->fields['name']] = $val;
                                 } else {
@@ -261,19 +260,21 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             if (is_array($meta_tasks)) {
                 foreach ($meta_tasks as $meta_task) {
                     if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)) {
-                        $ticket_task             = new TicketTask();
-                        $input                   = [];
-                        $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
-                        $input['tickets_id']     = $ticket_id;
+                        $ticket_task = new TicketTask();
+                        $input = [];
+                        $input['content'] = Toolbox::addslashes_deep(
+                                $meta_task['tickettasks_name']
+                            ) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                        $input['tickets_id'] = $ticket_id;
                         $input['groups_id_tech'] = $meta_task["groups_id_assign"];
                         $input['users_id_tech'] = $meta_task["users_id_assign"];
                         $ticket_task->add($input);
                     }
                 }
             }
-            $input                              = [];
-            $input['id']                        = $ticket_id;
-            $input['_itil_assign']["_type"]     = "group";
+            $input = [];
+            $input['id'] = $ticket_id;
+            $input['_itil_assign']["_type"] = "group";
             $input['_itil_assign']["groups_id"] = $params["group_to_assign"];
 
             $ticket->update($input);
@@ -291,9 +292,9 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
 
             $inputVal['validate'] = self::TASK_CREATION;
         } else {
-            $input                              = [];
-            $input['id']                        = $ticket_id;
-            $input['_itil_assign']["_type"]     = "group";
+            $input = [];
+            $input['id'] = $ticket_id;
+            $input['_itil_assign']["_type"] = "group";
             $input['_itil_assign']["groups_id"] = $params["group_to_assign"];
 
             $ticket->update($input);
@@ -312,17 +313,26 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             $inputVal['validate'] = self::VALIDATE_WITHOUT_TASK;
         }
 
-        $inputVal['id']       = $this->getID();
+        $inputVal['id'] = $this->getID();
         $inputVal['users_id'] = Session::getLoginUserID();
-        $inputVal['date']     = $_SESSION["glpi_currenttime"];
+        $inputVal['date'] = $_SESSION["glpi_currenttime"];
         $this->update($inputVal);
 
         if ($inputVal['validate'] == self::TASK_CREATION) {
-            echo "<div class='alert alert-success alert-important d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
+            echo "<div class='alert alert-success alert-important d-flex'>" . __(
+                    'Tasks are created',
+                    'metademands'
+                ) . "</div>";
         } elseif ($inputVal['validate'] == self::TICKET_CREATION) {
-            echo "<div class='alert alert-success alert-important d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
+            echo "<div class='alert alert-success alert-important d-flex'>" . __(
+                    'Sub-tickets are created',
+                    'metademands'
+                ) . "</div>";
         } elseif ($inputVal['validate'] == self::VALIDATE_WITHOUT_TASK) {
-            echo "<div class='alert alert-success alert-important d-flex'>" . __('The metademand is validated and affected', 'metademands') . "</div>";
+            echo "<div class='alert alert-success alert-important d-flex'>" . __(
+                    'The metademand is validated and affected',
+                    'metademands'
+                ) . "</div>";
         }
     }
 
@@ -336,24 +346,28 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             && ($item->fields['status'] != Ticket::SOLVED
                 && $item->fields['status'] != Ticket::CLOSED)
             && $item->fields['is_deleted'] != 1
-        && Session::haveRight('plugin_metademands_validatemeta', READ)
+            && Session::haveRight('plugin_metademands_validatemeta', READ)
             && Session::getCurrentInterface() == 'central') {
             $style = "btn-green";
+            $title = "";
             if ($metaValidation->fields["validate"] == self::TO_VALIDATE
-            || $metaValidation->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
+                || $metaValidation->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
                 $style = "btn-orange";
+                $title = __('Metademand validation', 'metademands');
             }
             echo "<li class='btn primary answer-action mb-2 $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                 . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</li>";
+                . "<i class='fas fa-thumbs-up' style='margin-left: 10px;'></i>".$title."</li>";
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',
                 PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $item->fields['id'],
-                ['title'   => __('Metademand validation', 'metademands'),
-                 'display' => false,
-                 'width'         => 200,
-                 'height'        => 400,
-                 'reloadonclose' => true]
+                [
+                    'title' => __('Metademand validation', 'metademands'),
+                    'display' => false,
+                    'width' => 200,
+                    'height' => 400,
+                    'reloadonclose' => true
+                ]
             );
         }
     }
@@ -400,33 +414,39 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                 'create_subticket',
                 'to_update_group',
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/displayGroupField.php",
-                ["create_subticket" => '__VALUE__',
-                 'tickets_id'       => $ticket_id]
+                [
+                    "create_subticket" => '__VALUE__',
+                    'tickets_id' => $ticket_id
+                ]
             );
             Ajax::updateItemOnEvent(
                 'create_subticket2',
                 'to_update_group',
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/displayGroupField.php",
-                ["create_subticket" => '__VALUE__',
-                 'tickets_id'       => $ticket_id]
+                [
+                    "create_subticket" => '__VALUE__',
+                    'tickets_id' => $ticket_id
+                ]
             );
         } elseif ($this->fields["users_id"] == 0
-                   && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
+            && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
             echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
             echo Html::hidden("create_subticket", ["value" => 2]);
             $group = 0;
             foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
                 $group = $d['groups_id'];
             }
-            Group::dropdown(['condition' => ['is_assign' => 1],
-                             'name'      => 'group_to_assign',
-                             'value'     => $group]);
+            Group::dropdown([
+                'condition' => ['is_assign' => 1],
+                'name' => 'group_to_assign',
+                'value' => $group
+            ]);
             echo "</td>";
         } elseif ($this->fields["users_id"] != 0
-                   && $this->fields["validate"] == self::TASK_CREATION) {
+            && $this->fields["validate"] == self::TASK_CREATION) {
             echo "<div class='alert alert-success d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
         } elseif ($this->fields["users_id"] != 0
-                   && $this->fields["validate"] == self::VALIDATE_WITHOUT_TASK) {
+            && $this->fields["validate"] == self::VALIDATE_WITHOUT_TASK) {
         } else {
             echo "<div class='alert alert-success d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
         }
@@ -434,7 +454,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         if ($this->fields["users_id"] != 0) {
             echo "<tr class='tab_bg_1 center'>";
             echo "<td colspan='4'>";
-            echo sprintf(__('Validated by %s on %s', 'metademands'), User::getFriendlyNameById($this->fields["users_id"]), Html::convDateTime($this->fields["date"]));
+            echo sprintf(
+                __('Validated by %s on %s', 'metademands'),
+                User::getFriendlyNameById($this->fields["users_id"]),
+                Html::convDateTime($this->fields["date"])
+            );
             echo "</td>";
             echo "</tr>";
         }
@@ -443,7 +467,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         ) {
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='2' class='center'>";
-            echo Html::submit(__("Validate metademands", 'metademands'), ['name' => 'btnAddAll', 'class' => 'btn btn-primary']);
+            echo Html::submit(
+                __("Validate metademands", 'metademands'),
+                ['name' => 'btnAddAll', 'class' => 'btn btn-primary']
+            );
             echo "</td>";
             echo "</tr>";
         }
@@ -469,9 +496,9 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
 
         switch ($field) {
             case 'validate':
-                $options['name']  = $name;
+                $options['name'] = $name;
                 $options['value'] = $values[$field];
-            //            $options['withmajor'] = 1;
+                //            $options['withmajor'] = 1;
                 return self::dropdownStatus($options);
                 break;
         }
@@ -498,9 +525,9 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         switch ($field) {
             case 'validate':
                 $style = "style='background-color: " . self::getStatusColor($values[$field]) . ";'";
-                $out   = "<div class='center' $style>";
-                $out   .= self::getStatusName($values[$field]);
-                $out   .= "</div>";
+                $out = "<div class='center' $style>";
+                $out .= self::getStatusName($values[$field]);
+                $out .= "</div>";
                 return $out;
         }
         return parent::getSpecificValueToDisplay($field, $values, $options);
@@ -513,10 +540,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
      */
     public static function dropdownStatus(array $options = [])
     {
-        $p['name']                = 'validate';
-        $p['value']               = 0;
-        $p['showtype']            = 'normal';
-        $p['display']             = true;
+        $p['name'] = 'validate';
+        $p['value'] = 0;
+        $p['showtype'] = 'normal';
+        $p['display'] = true;
         $p['display_emptychoice'] = false;
         if (is_array($options) && count($options)) {
             foreach ($options as $key => $val) {
@@ -525,12 +552,12 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         }
 
         $values = [];
-      //      $values[0]               = static::getStatusName(0);
+        //      $values[0]               = static::getStatusName(0);
         $values[self::TO_VALIDATE_WITHOUTTASK] = static::getStatusName(self::TO_VALIDATE_WITHOUTTASK);
-        $values[self::TO_VALIDATE]             = static::getStatusName(self::TO_VALIDATE);
-        $values[self::TICKET_CREATION]         = static::getStatusName(self::TICKET_CREATION);
-        $values[self::TASK_CREATION]           = static::getStatusName(self::TASK_CREATION);
-        $values[self::VALIDATE_WITHOUT_TASK]   = static::getStatusName(self::VALIDATE_WITHOUT_TASK);
+        $values[self::TO_VALIDATE] = static::getStatusName(self::TO_VALIDATE);
+        $values[self::TICKET_CREATION] = static::getStatusName(self::TICKET_CREATION);
+        $values[self::TASK_CREATION] = static::getStatusName(self::TASK_CREATION);
+        $values[self::VALIDATE_WITHOUT_TASK] = static::getStatusName(self::VALIDATE_WITHOUT_TASK);
 
         return Dropdown::showFromArray($p['name'], $values, $p);
     }

@@ -1050,7 +1050,7 @@ class PluginMetademandsField extends CommonDBChild
             if ($item->fields['is_order'] == 1) {
                 echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
             }
-            echo "<th class='center b'>" . __('Use this field as a ticket field', 'metademands') . "</th>";
+            echo "<th class='center b'>" . __('Use this field as object field', 'metademands') . "</th>";
             echo "<th class='center b'>" . __('Block', 'metademands') . "</th>";
             echo "<th class='center b'>" . __('Order', 'metademands') . "</th>";
             echo "</tr>";
@@ -1210,7 +1210,7 @@ class PluginMetademandsField extends CommonDBChild
 
                 $searchOption = Search::getOptions('Ticket');
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
-                    if ($fieldparameter->fields['used_by_ticket'] && $value['item'] !== 'User' && $value['type'] !== 'text') {
+                    if ($fieldparameter->fields['used_by_ticket'] && $value['type'] !== 'text') {
                         echo $searchOption[$fieldparameter->fields['used_by_ticket']]['name'];
                     }
                 }
