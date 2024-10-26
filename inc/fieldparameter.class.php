@@ -49,6 +49,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'text',
         'tel',
         'email',
+        'url',
         'textarea',
         'dropdown_meta',
         'dropdown_object',
@@ -308,6 +309,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 case 'email':
                     echo PluginMetademandsEmail::showFieldParameters($params);
                     break;
+                case 'url':
+                    echo PluginMetademandsUrl::showFieldParameters($params);
+                    break;
                 case 'textarea':
                     echo PluginMetademandsTextarea::showFieldParameters($params);
                     break;
@@ -436,6 +440,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             && $params['type'] != 'text'
             && $params['type'] != 'tel'
             && $params['type'] != 'email'
+            && $params['type'] != 'url'
             && $params['type'] != 'textarea'
             && $params['type'] != 'checkbox'
             && $params['type'] != 'yesno'

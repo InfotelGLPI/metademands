@@ -55,6 +55,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         'text',
         'tel',
         'email',
+        'url',
         'textarea',
         'basket'
     ];
@@ -563,6 +564,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
                 PluginMetademandsEmail::getParamsValueToCheck($this, $item, $params);
                 break;
+            case 'url':
+                PluginMetademandsUrl::getParamsValueToCheck($this, $item, $params);
+                break;
             case 'textarea':
                 PluginMetademandsTextarea::getParamsValueToCheck($this, $item, $params);
                 break;
@@ -742,6 +746,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
                 PluginMetademandsEmail::showValueToCheck($item, $params);
                 break;
+            case 'url':
+                PluginMetademandsUrl::showValueToCheck($item, $params);
+                break;
             case 'textarea':
                 PluginMetademandsTextarea::showValueToCheck($item, $params);
                 break;
@@ -837,6 +844,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'email':
                 PluginMetademandsEmail::showParamsValueToCheck($params);
+                break;
+            case 'url':
+                PluginMetademandsUrl::showParamsValueToCheck($params);
                 break;
             case 'textarea':
                 PluginMetademandsTextarea::showParamsValueToCheck($params);
@@ -1258,6 +1268,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
                 PluginMetademandsEmail::taskScript($data);
                 break;
+            case 'url':
+                PluginMetademandsUrl::taskScript($data);
+                break;
             case 'textarea':
                 PluginMetademandsTextarea::taskScript($data);
                 break;
@@ -1385,6 +1398,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
                 PluginMetademandsEmail::fieldsHiddenScript($data);
                 break;
+            case 'url':
+                PluginMetademandsUrl::fieldsHiddenScript($data);
+                break;
             case 'textarea':
                 PluginMetademandsTextarea::fieldsHiddenScript($data);
                 break;
@@ -1470,6 +1486,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'email':
                 PluginMetademandsEmail::blocksHiddenScript($data);
+                break;
+            case 'url':
+                PluginMetademandsUrl::blocksHiddenScript($data);
                 break;
             case 'textarea':
                 PluginMetademandsTextarea::blocksHiddenScript($data);
@@ -1700,6 +1719,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 case 'range':
                                                 case 'tel':
                                                 case 'email':
+                                                case 'url':
                                                     jQuery(this).val('');
                                                     if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
                                                         tinymce.get(this.id).setContent('');
@@ -1784,6 +1804,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             case 'range':
                                             case 'tel':
                                             case 'email':
+                                            case 'url':
                                                 jQuery(this).val('');
                                                 if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
                                                     tinymce.get(this.id).setContent('');
@@ -1843,6 +1864,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             case 'range':
                                             case 'tel':
                                             case 'email':
+                                            case 'url':
                                                 jQuery(this).val('');
                                                 break;
                                             case 'select-one':

@@ -2113,24 +2113,25 @@ JAVASCRIPT
                     }
 
                     // Requester user field
-                    //TODO Add options ?
+
+                    $parent_fields['_users_id_requester'] = [];
+                    $parent_fields['_users_id_observer'] = [];
+
                     if (isset($values['fields']['_users_id_requester'])) {
-                        $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
+                        $parent_fields['_users_id_requester'][] = $values['fields']['_users_id_requester'];
                         if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
-                            $parent_fields['_users_id_observer'] = Session::getLoginUserID();
+                            $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
                         }
-                    }
-                    // Add requester if empty
-                    $parent_fields['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : "";
-                    if (empty($parent_fields['_users_id_requester'])) {
-                        $parent_fields['_users_id_requester'] = Session::getLoginUserID();
+                    } else {
+                        // Add requester if empty
+                        $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
                     }
 
                     //Add all form contributors as ticket requester is using step by step
                     $configstep = new PluginMetademandsConfigstep();
                     if ($configstep->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])) {
                         if ($configstep->fields['add_user_as_requester']) {
-                            $parent_fields['_users_id_requester'] = [];
+
                             $stepformActor = new PluginMetademandsStepform_Actor();
                             if (isset($values['plugin_metademands_stepforms_id'])) {
                                 $stepformActors = $stepformActor->find(
@@ -2174,21 +2175,48 @@ JAVASCRIPT
                             foreach ($values_form as $k => $v) {
                                 if (isset($v[$id])) {
                                     $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'] ?? "";
+
                                     if ($v[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
+
                                         $name = "_users_id_requester";
-                                        $parent_fields[$name][] = $v[$id];
+                                        if (is_array($v[$id])) {
+                                            foreach ($v[$id] as $usr) {
+                                                $parent_fields[$name][] = $usr;
+                                            }
+                                        } else {
+                                            $parent_fields[$name][] = $v[$id];
+                                        }
+
                                     }
                                     if ($fields_values['used_by_ticket'] == 71) {
                                         $name = "_groups_id_requester";
-                                        $parent_fields[$name][] = $v[$id];
+                                        if (is_array($v[$id])) {
+                                            foreach ($v[$id] as $usr) {
+                                                $parent_fields[$name][] = $usr;
+                                            }
+                                        } else {
+                                            $parent_fields[$name][] = $v[$id];
+                                        }
                                     }
                                     if ($fields_values['used_by_ticket'] == 66) {
                                         $name = "_users_id_observer";
-                                        $parent_fields[$name][] = $v[$id];
+                                        if (is_array($v[$id])) {
+                                            foreach ($v[$id] as $usr) {
+                                                $parent_fields[$name][] = $usr;
+                                            }
+                                        } else {
+                                            $parent_fields[$name][] = $v[$id];
+                                        }
                                     }
                                     if ($fields_values['used_by_ticket'] == 65) {
                                         $name = "_groups_id_observer";
-                                        $parent_fields[$name][] = $v[$id];
+                                        if (is_array($v[$id])) {
+                                            foreach ($v[$id] as $usr) {
+                                                $parent_fields[$name][] = $usr;
+                                            }
+                                        } else {
+                                            $parent_fields[$name][] = $v[$id];
+                                        }
                                     }
                                     if ($fields_values['used_by_ticket'] != 4
                                     && $fields_values['used_by_ticket'] != 71
@@ -4175,6 +4203,13 @@ JAVASCRIPT
                         PluginMetademandsEmail::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
+                case 'url':
+                    if ($return_value == true) {
+                        return PluginMetademandsUrl::getFieldValue($field);
+                    } else {
+                        PluginMetademandsUrl::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
                 case 'checkbox':
                     if ($return_value == true) {
                         return PluginMetademandsCheckbox::getFieldValue($field, $lang);
@@ -4399,28 +4434,52 @@ JAVASCRIPT
                                         $users_id = $users_id_requester;
                                         switch ($title) {
                                             case "requester.login":
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $v = $user->fields['name'];
-                                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                                foreach ($users_id as $usr) {
+                                                    $user = new User();
+                                                    $user->getFromDB($usr);
+                                                    $v = $user->fields['name'];
+                                                    $value['value'] = str_replace(
+                                                        "#" . $title . "#",
+                                                        $v,
+                                                        $value['value']
+                                                    );
+                                                }
                                                 break;
                                             case "requester.name":
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $v = $user->fields['realname'];
-                                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                                foreach ($users_id as $usr) {
+                                                    $user = new User();
+                                                    $user->getFromDB($usr);
+                                                    $v = $user->fields['realname'];
+                                                    $value['value'] = str_replace(
+                                                        "#" . $title . "#",
+                                                        $v,
+                                                        $value['value']
+                                                    );
+                                                }
                                                 break;
                                             case "requester.firstname":
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $v = $user->fields['firstname'];
-                                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                                foreach ($users_id as $usr) {
+                                                    $user = new User();
+                                                    $user->getFromDB($usr);
+                                                    $v = $user->fields['firstname'];
+                                                    $value['value'] = str_replace(
+                                                        "#" . $title . "#",
+                                                        $v,
+                                                        $value['value']
+                                                    );
+                                                }
                                                 break;
                                             case "requester.email":
-                                                $user = new UserEmail();
-                                                $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                                                $v = $user->fields['email'];
-                                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                                foreach ($users_id as $usr) {
+                                                    $user = new UserEmail();
+                                                    $user->getFromDBByCrit(['users_id' => $usr, 'is_default' => 1]);
+                                                    $v = $user->fields['email'];
+                                                    $value['value'] = str_replace(
+                                                        "#" . $title . "#",
+                                                        $v,
+                                                        $value['value']
+                                                    );
+                                                }
                                                 break;
                                             case "entity":
                                                 $v = Dropdown::getDropdownName("glpi_entities", $entities_id);
@@ -4463,28 +4522,36 @@ JAVASCRIPT
                                             $users_id = $users_id_requester;
                                             switch ($title) {
                                                 case "requester.login":
-                                                    $user = new User();
-                                                    $user->getFromDB($users_id);
-                                                    $v = $user->fields['name'];
-                                                    $str = str_replace("#" . $title . "#", $v, $str);
+                                                    foreach ($users_id as $usr) {
+                                                        $user = new User();
+                                                        $user->getFromDB($usr);
+                                                        $v = $user->fields['name'];
+                                                        $str = str_replace("#" . $title . "#", $v, $str);
+                                                    }
                                                     break;
                                                 case "requester.name":
-                                                    $user = new User();
-                                                    $user->getFromDB($users_id);
-                                                    $v = $user->fields['realname'];
-                                                    $str = str_replace("#" . $title . "#", $v, $str);
+                                                    foreach ($users_id as $usr) {
+                                                        $user = new User();
+                                                        $user->getFromDB($usr);
+                                                        $v = $user->fields['realname'];
+                                                        $str = str_replace("#" . $title . "#", $v, $str);
+                                                    }
                                                     break;
                                                 case "requester.firstname":
-                                                    $user = new User();
-                                                    $user->getFromDB($users_id);
-                                                    $v = $user->fields['firstname'];
-                                                    $str = str_replace("#" . $title . "#", $v, $str);
+                                                    foreach ($users_id as $usr) {
+                                                        $user = new User();
+                                                        $user->getFromDB($usr);
+                                                        $v = $user->fields['firstname'];
+                                                        $str = str_replace("#" . $title . "#", $v, $str);
+                                                    }
                                                     break;
                                                 case "requester.email":
-                                                    $user = new UserEmail();
-                                                    $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                                                    $v = $user->fields['email'];
-                                                    $str = str_replace("#" . $title . "#", $v, $str);
+                                                    foreach ($users_id as $usr) {
+                                                        $user = new UserEmail();
+                                                        $user->getFromDBByCrit(['users_id' => $usr, 'is_default' => 1]);
+                                                        $v = $user->fields['email'];
+                                                        $str = str_replace("#" . $title . "#", $v, $str);
+                                                    }
                                                     break;
                                                 case "entity":
                                                     $v = Dropdown::getDropdownName("glpi_entities", $entities_id);
@@ -4535,28 +4602,36 @@ JAVASCRIPT
                                 $users_id = $users_id_requester;
                                 switch ($title) {
                                     case "requester.login":
-                                        $user = new User();
-                                        $user->getFromDB($users_id);
-                                        $v = $user->fields['name'];
-                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        foreach ($users_id as $usr) {
+                                            $user = new User();
+                                            $user->getFromDB($usr);
+                                            $v = $user->fields['name'];
+                                            $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        }
                                         break;
                                     case "requester.name":
-                                        $user = new User();
-                                        $user->getFromDB($users_id);
-                                        $v = $user->fields['realname'];
-                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        foreach ($users_id as $usr) {
+                                            $user = new User();
+                                            $user->getFromDB($usr);
+                                            $v = $user->fields['realname'];
+                                            $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        }
                                         break;
                                     case "requester.firstname":
-                                        $user = new User();
-                                        $user->getFromDB($users_id);
-                                        $v = $user->fields['firstname'];
-                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        foreach ($users_id as $usr) {
+                                            $user = new User();
+                                            $user->getFromDB($usr);
+                                            $v = $user->fields['firstname'];
+                                            $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        }
                                         break;
                                     case "requester.email":
-                                        $user = new UserEmail();
-                                        $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                                        $v = $user->fields['email'];
-                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        foreach ($users_id as $usr) {
+                                            $user = new UserEmail();
+                                            $user->getFromDBByCrit(['users_id' => $usr, 'is_default' => 1]);
+                                            $v = $user->fields['email'];
+                                            $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        }
                                         break;
                                     case "entity":
                                         $v = Dropdown::getDropdownName("glpi_entities", $entities_id);
@@ -4731,19 +4806,43 @@ JAVASCRIPT
 
                                                 if ($values[$id] > 0 && $params['used_by_ticket'] == 4) {
                                                     $name = "_users_id_requester";
-                                                    $son_ticket_data[$name][] = $values[$id];
+                                                    if (is_array($values[$id])) {
+                                                        foreach ($values[$id] as $usr) {
+                                                            $son_ticket_data[$name][] = $usr;
+                                                        }
+                                                    } else {
+                                                        $son_ticket_data[$name][] = $values[$id];
+                                                    }
                                                 }
                                                 if ($params['used_by_ticket'] == 71) {
                                                     $name = "_groups_id_requester";
-                                                    $son_ticket_data[$name][] = $values[$id];
+                                                    if (is_array($values[$id])) {
+                                                        foreach ($values[$id] as $usr) {
+                                                            $son_ticket_data[$name][] = $usr;
+                                                        }
+                                                    } else {
+                                                        $son_ticket_data[$name][] = $values[$id];
+                                                    }
                                                 }
                                                 if ($params['used_by_ticket'] == 66) {
                                                     $name = "_users_id_observer";
-                                                    $son_ticket_data[$name][] = $values[$id];
+                                                    if (is_array($values[$id])) {
+                                                        foreach ($values[$id] as $usr) {
+                                                            $son_ticket_data[$name][] = $usr;
+                                                        }
+                                                    } else {
+                                                        $son_ticket_data[$name][] = $values[$id];
+                                                    }
                                                 }
                                                 if ($params['used_by_ticket'] == 65) {
                                                     $name = "_groups_id_observer";
-                                                    $son_ticket_data[$name][] = $values[$id];
+                                                    if (is_array($values[$id])) {
+                                                        foreach ($values[$id] as $usr) {
+                                                            $son_ticket_data[$name][] = $usr;
+                                                        }
+                                                    } else {
+                                                        $son_ticket_data[$name][] = $values[$id];
+                                                    }
                                                 }
                                                 if ($params['used_by_ticket'] != 4
                                                     && $params['used_by_ticket'] != 71
@@ -7420,38 +7519,46 @@ JAVASCRIPT
         switch ($field) {
             case "login":
             case "requester.login":
-                $user = new User();
-                $user->getFromDB($users_id);
-                $value = $user->fields['name'];
-                if ($value != null) {
-                    return str_replace("#" . $title . "#", $value, $line);
+                foreach ($users_id as $usr) {
+                    $user = new User();
+                    $user->getFromDB($usr);
+                    $value = $user->fields['name'];
+                    if ($value != null) {
+                        return str_replace("#" . $title . "#", $value, $line);
+                    }
                 }
                 break;
             case "name":
             case "requester.name":
-                $user = new User();
-                $user->getFromDB($users_id);
-                $value = $user->fields['realname'] ?? "";
-                if ($value != null) {
-                    return str_replace("#" . $title . "#", $value, $line);
+                foreach ($users_id as $usr) {
+                    $user = new User();
+                    $user->getFromDB($usr);
+                    $value = $user->fields['realname'] ?? "";
+                    if ($value != null) {
+                        return str_replace("#" . $title . "#", $value, $line);
+                    }
                 }
                 break;
             case "firstname":
             case "requester.firstname":
-                $user = new User();
-                $user->getFromDB($users_id);
-                $value = $user->fields['firstname'] ?? "";
-                if ($value != null) {
-                    return str_replace("#" . $title . "#", $value, $line);
+                foreach ($users_id as $usr) {
+                    $user = new User();
+                    $user->getFromDB($usr);
+                    $value = $user->fields['firstname'] ?? "";
+                    if ($value != null) {
+                        return str_replace("#" . $title . "#", $value, $line);
+                    }
                 }
                 break;
             case "email":
             case "requester.email":
-                $user = new UserEmail();
-                $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                $value = $user->fields['email'];
-                if ($value != null) {
-                    return str_replace("#" . $title . "#", $value, $line);
+                foreach ($users_id as $usr) {
+                    $user = new UserEmail();
+                    $user->getFromDBByCrit(['users_id' => $usr, 'is_default' => 1]);
+                    $value = $user->fields['email'];
+                    if ($value != null) {
+                        return str_replace("#" . $title . "#", $value, $line);
+                    }
                 }
                 break;
             case "entity":

@@ -58,6 +58,7 @@ class PluginMetademandsField extends CommonDBChild
         'text',
         'tel',
         'email',
+        'url',
         'textarea',
         'yesno',
         'checkbox',
@@ -98,6 +99,7 @@ class PluginMetademandsField extends CommonDBChild
         'text',
         'tel',
         'email',
+        'url',
         'textarea',
         'signature',
     ];
@@ -1330,6 +1332,8 @@ class PluginMetademandsField extends CommonDBChild
                 return PluginMetademandsTel::getTypeName();
             case 'email':
                 return PluginMetademandsEmail::getTypeName();
+            case 'url':
+                return PluginMetademandsUrl::getTypeName();
             case 'textarea':
                 return PluginMetademandsTextarea::getTypeName();
             case 'dropdown_meta':
@@ -1786,7 +1790,7 @@ class PluginMetademandsField extends CommonDBChild
                 }
                 $dbu = new DbUtils();
                 if (!is_numeric($value)) {
-                    if ($item = $dbu->getItemForItemtype($value)) {
+                    if ($value != null && $item = $dbu->getItemForItemtype($value)) {
                         if (is_callable([$item, 'getTypeName'])) {
                             return $item::getTypeName();
                         }
@@ -1960,12 +1964,11 @@ class PluginMetademandsField extends CommonDBChild
             && $data['type'] != "informations") {
             if (isset($data['hide_title']) && $data['hide_title'] == 0) {
                 if ($hidden == 0) {
-                    echo "<span $required class='col-form-label metademand-label'>";
+                    echo "<div $required class='col-form-label metademand-label'>";
                     echo Toolbox::stripslashes_deep($label) . " $upload";
                     if ($preview) {
                         echo $config_link;
                     }
-                    echo "</span>";
 
                     if (empty($comment = self::displayField($data['id'], 'comment'))) {
                         $comment = $data['comment'];
@@ -1973,6 +1976,7 @@ class PluginMetademandsField extends CommonDBChild
                     if ($data['type'] != "text"
                         && $data['type'] != "tel"
                         && $data['type'] != "email"
+                        && $data['type'] != "url"
                         && !empty($comment)) {
                         $display = true;
                         if ($data['use_richtext'] == 0) {
@@ -1989,9 +1993,8 @@ class PluginMetademandsField extends CommonDBChild
                         && $data['type'] != 'parent_field') {
                         echo "*";
                     }
-                    echo "</span>";
 
-                    echo "&nbsp;";
+
 
                     //use plugin fields types
                     if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -2005,10 +2008,8 @@ class PluginMetademandsField extends CommonDBChild
                         }
                     }
 
-                    // Input
-                    if ($data['type'] != 'link') {
-                        echo "<br>";
-                    }
+                    echo "</div>";
+
                 }
             } else {
                 echo "<div style='margin-top: 10px;'>";
@@ -2098,6 +2099,9 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case 'email':
                 PluginMetademandsEmail::showWizardField($data, $namefield, $value, $on_order);
+                break;
+            case 'url':
+                PluginMetademandsUrl::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'textarea':
                 PluginMetademandsTextarea::showWizardField($data, $namefield, $value, $on_order);

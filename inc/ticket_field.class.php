@@ -225,6 +225,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'email':
                     PluginMetademandsEmail::isCheckValueOK($value, $check_value);
                     break;
+                case 'url':
+                    PluginMetademandsUrl::isCheckValueOK($value, $check_value);
+                    break;
                 case 'textarea':
                     PluginMetademandsTextarea::isCheckValueOK($value, $check_value);
                     break;
@@ -349,6 +352,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'text':
                 case 'tel':
                 case 'email':
+                case 'url':
                 case 'textarea':
                     if (($check_value == 2 && $field_value != "")) {
                         return false;

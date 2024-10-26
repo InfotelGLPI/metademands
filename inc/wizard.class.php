@@ -2753,7 +2753,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         fieldname = y[i].name;
                         fieldtype = y[i].type;
 
-                        if((fieldtype == 'email' || fieldtype == 'tel') 
+                        if((fieldtype == 'email' || fieldtype == 'tel'  || fieldtype == 'url') 
                         && document.getElementById(fieldid) != null
                         && !document.getElementById(fieldid).checkValidity()){
                             document.getElementById(fieldid).reportValidity();
@@ -3586,6 +3586,13 @@ class PluginMetademandsWizard extends CommonDBTM
                     break;
                 case 'email':
                     $result = PluginMetademandsEmail::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'url':
+                    $result = PluginMetademandsUrl::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];

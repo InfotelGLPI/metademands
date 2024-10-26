@@ -166,7 +166,7 @@ class PluginMetademandsForm extends CommonDBTM
 
                 $content = __("Name")." : ".Toolbox::stripslashes_deep($form['name']);
                 $content .= "<br>".__("Date")." : ".Html::convDateTime($form['date']);
-                if (getItemForItemtype($itemtype)) {
+                if ($itemtype != null && getItemForItemtype($itemtype)) {
                     $item = new $itemtype();
                     if ($item->getFromDB($form['items_id'])) {
                         $content .= "<br>".__("URL")." : ".$item->getLink();

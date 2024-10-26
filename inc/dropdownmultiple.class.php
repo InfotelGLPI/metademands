@@ -1402,6 +1402,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                             case 'range':
                                             case 'tel':
                                             case 'email':
+                                            case 'url':
                                                 jQuery(this).val('');
                                                 if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
                                                     tinymce.get(this.id).setContent('');
@@ -1557,6 +1558,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                             case 'range':
                                             case 'tel':
                                             case 'email':
+                                            case 'url':
                                                 jQuery(this).val('');
                                                 if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
                                                     tinymce.get(this.id).setContent('');

@@ -807,6 +807,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                                                 case 'range':
                                                                 case 'tel':
                                                                 case 'email':
+                                                                case 'url':
                                                                     jQuery(this).val('');
                                                                     break;
                                                                 case 'select-one':
@@ -870,6 +871,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                      case 'range':
                                     case 'tel':
                                     case 'email':
+                                    case 'url':
                                         jQuery(this).val('');
                                         break;
                                     case 'select-one':
@@ -1007,6 +1009,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                         case 'range':
                                        case 'tel':
                                        case 'email':
+                                       case 'url':
                                            jQuery(this).val('');
                                            break;
                                        case 'select-one':
@@ -1069,6 +1072,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                             case 'range':
                                            case 'tel':
                                            case 'email':
+                                           case 'url':
                                                jQuery(this).val('');
                                                break;
                                            case 'select-one':
@@ -1210,6 +1214,9 @@ class PluginMetademandsBasket extends CommonDBTM
                         break;
                     case 'email':
                         echo PluginMetademandsEmail::getFieldValue($values);
+                        break;
+                    case 'url':
+                        echo PluginMetademandsUrl::getFieldValue($values);
                         break;
                     case 'checkbox':
 //                        $values['custom_values'] = $fieldmeta->fields['custom'];

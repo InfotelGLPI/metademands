@@ -306,6 +306,8 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
                     break;
                 case 'email':
                     break;
+                case 'url':
+                    break;
                 case 'textarea':
                     break;
                 case 'dropdown_meta':

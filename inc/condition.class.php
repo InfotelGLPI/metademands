@@ -73,6 +73,7 @@ class PluginMetademandsCondition extends CommonDBChild
         'text',
         'tel',
         'email',
+        'url',
         'checkbox',
         'textarea',
         'date',
@@ -136,7 +137,7 @@ class PluginMetademandsCondition extends CommonDBChild
         $enumConditions = [];
         $dropdown_types = ['dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple'];
         $special_types = ['yesno', 'radio', 'checkbox'];
-        $text_types = ['text', 'tel', 'email', 'textarea', ''];
+        $text_types = ['text', 'tel', 'email', 'url', 'textarea', ''];
         $number_types = ['date', 'datetime', 'number', 'range'];
 
         if (in_array($type, $dropdown_types)) {
@@ -637,6 +638,7 @@ class PluginMetademandsCondition extends CommonDBChild
             case 'textarea':
             case 'tel':
             case 'email':
+            case 'url':
             case 'number':
             case 'range':
                 if (empty($condition->fields['check_value'])) {

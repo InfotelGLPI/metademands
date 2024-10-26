@@ -384,15 +384,24 @@ class PluginMetademandsProfile extends Profile
             }
         }
 
-        // Migration old rights in new ones
-        foreach ($DB->request("SELECT `id` FROM `glpi_profiles`") as $prof) {
+        $query = [
+            'SELECT'   => 'id',
+            'FROM'   => 'glpi_profilerights'
+        ];
+        $iterator = $DB->request($query);
+
+        foreach ($iterator as $prof) {
             self::migrateOneProfile($prof['id']);
         }
 
-        foreach ($DB->request("SELECT *
-                             FROM `glpi_profilerights` 
-                             WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
-                             AND `name` LIKE '%plugin_metademands%'") as $prof) {
+        $query = [
+            'FROM'   => 'glpi_profilerights',
+            'WHERE'  => ['profiles_id' => $_SESSION['glpiactiveprofile']['id'],
+                ['name' => ['LIKE', '%plugin_metademands%']],]
+        ];
+        $iterator = $DB->request($query);
+
+        foreach ($iterator as $prof) {
             if (isset($_SESSION['glpiactiveprofile'])) {
                 $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
             }

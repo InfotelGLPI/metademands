@@ -619,6 +619,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'text':
                         case 'tel':
                         case 'email':
+                        case 'url':
                         case 'number':
                         case 'range':
                             $value = $fields[$elt['id']];
