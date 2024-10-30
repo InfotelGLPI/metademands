@@ -2117,16 +2117,6 @@ JAVASCRIPT
                     $parent_fields['_users_id_requester'] = [];
                     $parent_fields['_users_id_observer'] = [];
 
-                    if (isset($values['fields']['_users_id_requester'])) {
-                        $parent_fields['_users_id_requester'][] = $values['fields']['_users_id_requester'];
-                        if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
-                            $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
-                        }
-                    } else {
-                        // Add requester if empty
-                        $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
-                    }
-
                     //Add all form contributors as ticket requester is using step by step
                     $configstep = new PluginMetademandsConfigstep();
                     if ($configstep->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])) {
@@ -2257,6 +2247,18 @@ JAVASCRIPT
                         }
                     }
 
+                    if (count($parent_fields['_users_id_requester']) == 0) {
+                        if (isset($values['fields']['_users_id_requester'])) {
+                            $parent_fields['_users_id_requester'][] = $values['fields']['_users_id_requester'];
+                            if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
+                                $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
+                            }
+                        } else {
+                            // Add requester if empty
+                            $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
+                        }
+                    }
+
                     // If requester is different of connected user : Force his requester group on ticket
                     //TODO Add options ?
                     //               if (isset($parent_fields['_users_id_requester'])
@@ -2352,20 +2354,18 @@ JAVASCRIPT
                                 $fields_container = new PluginFieldsContainer();
                                 if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                                     if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
-                                        if ($fields_container->fields['type'] == 'dom') {
-                                            if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                                if ($fields_field->fields['type'] == 'dropdown') {
-                                                    if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
-                                                        $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                                        $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                                    }
-                                                } elseif ($fields_field->fields['type'] == 'yesno') {
-                                                    $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
-                                                    $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
-                                                } else {
-                                                    $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                                    $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                        if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
+                                            if ($fields_field->fields['type'] == 'dropdown') {
+                                                if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
+                                                    $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                    $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 }
+                                            } elseif ($fields_field->fields['type'] == 'yesno') {
+                                                $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                                $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                            } else {
+                                                $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                             }
                                         }
                                     }
@@ -2424,7 +2424,7 @@ JAVASCRIPT
                                 Session::addMessageAfterRedirect($message, false, ERROR);
                                 return false;
                             }
-                            $input['_actors'] = [];
+//                            $input['_actors'] = [];
 
                             $parent_tickets_id = $object->add($input);
                         }
@@ -2444,26 +2444,26 @@ JAVASCRIPT
                         }
                         $inputField = [];
                         if ($parent_tickets_id) {
+
                             if (Plugin::isPluginActive('fields')) {
                                 $inputField = [];
                                 $pluginfield = new PluginMetademandsPluginfields();
                                 $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
+
                                 foreach ($pluginfields as $plfield) {
                                     $fields_field = new PluginFieldsField();
                                     $fields_container = new PluginFieldsContainer();
                                     if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                                         if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
-                                            if ($fields_container->fields['type'] == 'tab') {
-                                                if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                                    if ($fields_field->fields['type'] == 'dropdown') {
-                                                        if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
-                                                            $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                                        }
-                                                    } elseif ($fields_field->fields['type'] == 'yesno') {
-                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
-                                                    } else {
-                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                            if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
+                                                if ($fields_field->fields['type'] == 'dropdown') {
+                                                    if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
+                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                     }
+                                                } elseif ($fields_field->fields['type'] == 'yesno') {
+                                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                                } else {
+                                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 }
                                             }
                                         }
@@ -2471,7 +2471,7 @@ JAVASCRIPT
                                 }
 
                                 foreach ($inputField as $containers_id => $vals) {
-                                    $container = new PluginFieldsContainer;
+                                    $container = new PluginFieldsContainer();
                                     $vals['plugin_fields_containers_id'] = $containers_id;
                                     $vals['itemtype'] = $object_class;
                                     $vals['items_id'] = $parent_tickets_id;
@@ -4134,7 +4134,6 @@ JAVASCRIPT
                 case 'title':
                     PluginMetademandsTitle::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order);
                     break;
-                case 'informations':
                 case 'dropdown':
                     if ($field['value'] != 0) {
                         if ($return_value == true) {

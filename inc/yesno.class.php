@@ -76,7 +76,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
         $field = "";
         $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $options, ['value' => $value,
-                'display_emptychoice' => false,
+                'display_emptychoice' => true,
                 'class' => '',
 //                    'noselect2' => true,
                 'width' => '70px',

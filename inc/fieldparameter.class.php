@@ -666,7 +666,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 }
 
                 Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
-
+                echo Html::hidden('plugin_metademands_metademands_id', ['value' => $params["plugin_metademands_metademands_id"]]);
                 echo "</td>";
             }
         }
@@ -757,6 +757,39 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         }
 
         return $input;
+    }
+
+    public function post_addItem()
+    {
+        $pluginField = new PluginMetademandsPluginfields();
+        $input = [];
+        if (isset($this->input['plugin_fields_fields_id'])) {
+            $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+            $input['plugin_metademands_fields_id'] = $this->fields['plugin_metademands_fields_id'];
+            $input['plugin_metademands_metademands_id'] = $this->input['plugin_metademands_metademands_id'];
+            $pluginField->add($input);
+        }
+    }
+
+    public function post_updateItem($history = 1)
+    {
+
+        $pluginField = new PluginMetademandsPluginfields();
+        if (isset($this->input['plugin_fields_fields_id'])) {
+            if ($pluginField->getFromDBByCrit(['plugin_metademands_fields_id' => $this->input['plugin_metademands_fields_id']])) {
+                $input = [];
+                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+                $input['plugin_metademands_fields_id'] = $this->fields['plugin_metademands_fields_id'];
+                $input['id'] = $pluginField->fields['id'];
+                $pluginField->update($input);
+            } else {
+                $input = [];
+                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+                $input['plugin_metademands_fields_id'] = $this->fields['plugin_metademands_fields_id'];
+                $input['plugin_metademands_metademands_id'] = $this->input['plugin_metademands_metademands_id'];
+                $pluginField->add($input);
+            }
+        }
     }
 
     /**

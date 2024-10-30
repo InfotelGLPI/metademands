@@ -162,7 +162,7 @@ class PluginMetademandsForm extends CommonDBTM
                 $meta->getFromDB($form['plugin_metademands_metademands_id']);
                 $itemtype = $form['itemtype'];
 
-                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . "</td>";
+                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . " / ".Html::convDateTime($form['date'])."</td>";
 
                 $content = __("Name")." : ".Toolbox::stripslashes_deep($form['name']);
                 $content .= "<br>".__("Date")." : ".Html::convDateTime($form['date']);
