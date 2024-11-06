@@ -337,7 +337,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $relatedTextFields = new PluginMetademandsField();
                 $relatedTextFields = $relatedTextFields->find([
                     'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'type' => 'text',
+                    'type' => ['text', 'email', 'tel'],
                 ]);
                 $field_parameter = new PluginMetademandsFieldParameter();
 

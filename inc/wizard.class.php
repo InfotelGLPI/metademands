@@ -1719,7 +1719,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $required = "";
                             $required_icon = "";
                             if ($data['is_mandatory']) {
-                                $required = "style='color:red'";
+                                $required = "class='metademands_wizard_red'";
                                 $required_icon = " * ";
                             }
 
@@ -1740,9 +1740,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                     echo Glpi\RichText\RichText::getSafeHtml($label2);
                                     echo "</div>";
                                 } else {
-                                    echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
+                                    echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
                                             $label2
-                                        ) . "<span $required>" . $required_icon . "</span></label>";
+                                        ) . "<span $required>" . $required_icon . "</span></div>";
                                 }
                             }
                             $value2 = '';

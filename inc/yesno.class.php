@@ -103,7 +103,7 @@ class PluginMetademandsYesno extends CommonDBTM
         }
         $data[1] = __('No');
         $data[2] = __('Yes');
-
+        $p['display_emptychoice'] = true;
         Dropdown::showFromArray("custom", $data, $p);
         echo "</td>";
         echo "</tr>";

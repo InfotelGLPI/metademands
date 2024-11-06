@@ -1212,7 +1212,11 @@ class PluginMetademandsField extends CommonDBChild
 
                 $searchOption = Search::getOptions('Ticket');
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
-                    if ($fieldparameter->fields['used_by_ticket'] && $value['type'] !== 'text') {
+                    if ($fieldparameter->fields['used_by_ticket']
+                        && $value['type'] !== 'text'
+                        && $value['type'] !== 'email'
+                        && $value['type'] !== 'tel'
+                        && $value['type'] !== 'url') {
                         echo $searchOption[$fieldparameter->fields['used_by_ticket']]['name'];
                     }
                 }
