@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-30 12:12+0000\n"
+"POT-Creation-Date: 2024-11-06 09:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -785,7 +785,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:353 inc/field.class.php:733 inc/field.class.php:1056
-#: inc/field.class.php:2649 inc/step.class.php:299 inc/step.class.php:381
+#: inc/field.class.php:2653 inc/step.class.php:299 inc/step.class.php:381
 msgid "Block"
 msgstr ""
 
@@ -797,7 +797,7 @@ msgstr ""
 msgid "Please add a type category field"
 msgstr ""
 
-#: inc/field.class.php:509 inc/field.class.php:2579 inc/field.class.php:2667
+#: inc/field.class.php:509 inc/field.class.php:2583 inc/field.class.php:2671
 msgid "Additional label"
 msgstr ""
 
@@ -806,7 +806,7 @@ msgid "Remember to activate basket mode on your metademand !"
 msgstr ""
 
 #: inc/field.class.php:764 inc/field.class.php:772 inc/field.class.php:1048
-#: inc/field.class.php:2581
+#: inc/field.class.php:2585
 msgid "Object"
 msgstr ""
 
@@ -847,7 +847,7 @@ msgstr ""
 msgid "Use this field as object field"
 msgstr ""
 
-#: inc/field.class.php:1057 inc/field.class.php:2658
+#: inc/field.class.php:1057 inc/field.class.php:2662
 msgid "Order"
 msgstr ""
 
@@ -855,19 +855,19 @@ msgstr ""
 msgid "Multiples"
 msgstr ""
 
-#: inc/field.class.php:1376
+#: inc/field.class.php:1380
 msgid "Father's field"
 msgstr ""
 
-#: inc/field.class.php:1761
+#: inc/field.class.php:1765
 msgid "My values"
 msgstr ""
 
-#: inc/field.class.php:1763
+#: inc/field.class.php:1767
 msgid "Category of the metademand"
 msgstr ""
 
-#: inc/field.class.php:1939
+#: inc/field.class.php:1943
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
