@@ -2134,9 +2134,17 @@ JAVASCRIPT
                         }
                     }
 
-//                    $default_use_notif = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
-//                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
-//                        'alternative_email' => ''];
+                    if (count($parent_fields['_users_id_requester']) == 0) {
+                        if (isset($values['fields']['_users_id_requester'])) {
+                            $parent_fields['_users_id_requester'][] = $values['fields']['_users_id_requester'];
+                            if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
+                                $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
+                            }
+                        } else {
+                            // Add requester if empty
+                            $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
+                        }
+                    }
 
 
                     // Get predefined ticket fields
@@ -4431,6 +4439,7 @@ JAVASCRIPT
                                         }
 
                                         $users_id = $users_id_requester;
+
                                         switch ($title) {
                                             case "requester.login":
                                                 foreach ($users_id as $usr) {
@@ -4519,6 +4528,7 @@ JAVASCRIPT
                                             }
                                         } else {
                                             $users_id = $users_id_requester;
+
                                             switch ($title) {
                                                 case "requester.login":
                                                     foreach ($users_id as $usr) {
@@ -4599,6 +4609,7 @@ JAVASCRIPT
                                 }
                             } else {
                                 $users_id = $users_id_requester;
+
                                 switch ($title) {
                                     case "requester.login":
                                         foreach ($users_id as $usr) {
@@ -7515,6 +7526,7 @@ JAVASCRIPT
         if ($bypass === true && is_numeric($title)) {
             return str_replace("#" . $title . "#", "", $line);
         }
+
         switch ($field) {
             case "login":
             case "requester.login":
