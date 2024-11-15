@@ -64,6 +64,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'datetime_interval',
         'upload',
         'link',
+        'free_input',
     ];
     public static $allowed_parameters_items = ['User', 'Group'];
 
