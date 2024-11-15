@@ -267,7 +267,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 if (Plugin::isPluginActive($plug)) {
                     $new_fields = self::addPluginFieldItems($plug);
                     if (is_array($new_fields) && count($new_fields) > 0) {
-                        $allowed_options_types = array_merge($allowed_options_types, $new_fields);
+                        $allowed_parameters_types = array_merge($allowed_parameters_types, $new_fields);
                     }
                 }
             }
