@@ -1172,11 +1172,11 @@ class PluginMetademandsField extends CommonDBChild
                         echo __('Multiples', 'metademands');
                     } else {
                         foreach ($opts as $opt) {
-                            $data['item'] = $value['item'];
-                            $data['type'] = $value['type'];
-
-                            $data['check_value'] = $opt['check_value'];
-                            $data['parent_field_id'] = $opt['parent_field_id'];
+                            $datao['item'] = $value['item'];
+                            $datao['type'] = $value['type'];
+                            $datao['id'] = $value['id'];
+                            $datao['check_value'] = $opt['check_value'];
+                            $datao['parent_field_id'] = $opt['parent_field_id'];
 
                             $metademand_custom = new PluginMetademandsFieldCustomvalue();
                             $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
@@ -1185,20 +1185,20 @@ class PluginMetademandsField extends CommonDBChild
                             if (isset($value['type'])
                                 && in_array($value['type'], $allowed_customvalues_types)
                                 || in_array($value['item'], $allowed_customvalues_items)) {
-                                $data['custom_values'] = [];
+                                $datao['custom_values'] = [];
                                 if ($customs = $metademand_custom->find(
                                     ["plugin_metademands_fields_id" => $value['id']],
                                     "rank"
                                 )) {
                                     if (count($customs) > 0) {
-                                        $data['custom_values'] = $customs;
+                                        $datao['custom_values'] = $customs;
                                     }
                                 }
                             } else {
-                                $data['custom_values'] = $value['custom_values'] ?? [];
+                                $datao['custom_values'] = $value['custom_values'] ?? [];
                             }
 
-                            echo PluginMetademandsFieldOption::getValueToCheck($data);
+                            echo PluginMetademandsFieldOption::getValueToCheck($datao);
                         }
                     }
                 } else {

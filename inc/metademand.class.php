@@ -4821,7 +4821,14 @@ JAVASCRIPT
                                                             $son_ticket_data[$name][] = $usr;
                                                         }
                                                     } else {
-                                                        $son_ticket_data[$name][] = $values[$id];
+                                                        if (!is_array($son_ticket_data[$name])) {
+                                                            $value = $son_ticket_data[$name];
+                                                            $son_ticket_data[$name] = [$value];
+                                                        }
+                                                        if (!empty($values[$id])) {
+                                                            $son_ticket_data[$name][] = $values[$id];
+                                                        }
+
                                                     }
                                                 }
                                                 if ($params['used_by_ticket'] == 71) {
@@ -4831,7 +4838,13 @@ JAVASCRIPT
                                                             $son_ticket_data[$name][] = $usr;
                                                         }
                                                     } else {
-                                                        $son_ticket_data[$name][] = $values[$id];
+                                                        if (!is_array($son_ticket_data[$name])) {
+                                                            $value = $son_ticket_data[$name];
+                                                            $son_ticket_data[$name] = [$value];
+                                                        }
+                                                        if (!empty($values[$id])) {
+                                                            $son_ticket_data[$name][] = $values[$id];
+                                                        }
                                                     }
                                                 }
                                                 if ($params['used_by_ticket'] == 66) {
@@ -4841,7 +4854,13 @@ JAVASCRIPT
                                                             $son_ticket_data[$name][] = $usr;
                                                         }
                                                     } else {
-                                                        $son_ticket_data[$name][] = $values[$id];
+                                                        if (!is_array($son_ticket_data[$name])) {
+                                                            $value = $son_ticket_data[$name];
+                                                            $son_ticket_data[$name] = [$value];
+                                                        }
+                                                        if (!empty($values[$id])) {
+                                                            $son_ticket_data[$name][] = $values[$id];
+                                                        }
                                                     }
                                                 }
                                                 if ($params['used_by_ticket'] == 65) {
@@ -4851,7 +4870,13 @@ JAVASCRIPT
                                                             $son_ticket_data[$name][] = $usr;
                                                         }
                                                     } else {
-                                                        $son_ticket_data[$name][] = $values[$id];
+                                                        if (!is_array($son_ticket_data[$name])) {
+                                                            $value = $son_ticket_data[$name];
+                                                            $son_ticket_data[$name] = [$value];
+                                                        }
+                                                        if (!empty($values[$id])) {
+                                                            $son_ticket_data[$name][] = $values[$id];
+                                                        }
                                                     }
                                                 }
                                                 if ($params['used_by_ticket'] != 4
@@ -5462,7 +5487,7 @@ JAVASCRIPT
             echo "<br>";
             echo "<br>";
             echo "<a class='btn primary mb-2 answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='fas fa-thumbs-up' style='margin-left: 10px;'>".__('Metademand validation', 'metademands')."</i></a>";
+                . "<i class='fas fa-thumbs-up' style='margin-left: 10px;'></i>".__('Metademand validation', 'metademands')."</a>";
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',

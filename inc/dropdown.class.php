@@ -369,7 +369,9 @@ class PluginMetademandsDropdown extends CommonDBTM
                             echo $elements[$params['check_value']];
                         } else {
                             $elements = [];
-                            if (is_array(json_decode($params['custom_values'], true))) {
+                            if (!is_array($params['custom_values'])
+                                && $params['custom_values'] != null
+                                && is_array(json_decode($params['custom_values'], true))) {
                                 $elements += json_decode($params['custom_values'], true);
                             }
                             foreach ($elements as $key => $val) {
