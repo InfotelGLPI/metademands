@@ -2058,6 +2058,7 @@ JAVASCRIPT
                     }
 
                     foreach ($values['fields'] as $id => $datav) {
+
                         $metademands_fields = new PluginMetademandsField();
                         if (strpos($id, '-2')) {
                             $id = str_replace("-2", "", $id);
@@ -2072,16 +2073,20 @@ JAVASCRIPT
                                     break;
                             }
 
-                            if (isset($metademands_fields->fields['users_id_validate'])
-                                && !empty($metademands_fields->fields['users_id_validate'])) {
-                                if (isset($metademands_fields->fields['check_value']) && is_array($datav)) {
-                                    $checkeValue = json_decode($metademands_fields->fields['check_value'], 1);
-                                    $usersValidate = json_decode($metademands_fields->fields['users_id_validate'], 1);
-                                    foreach ($checkeValue as $key => $checkVal) {
-                                        if (in_array($checkVal, $datav)) {
-                                            $add_validation = '0';
-                                            $validatortype = 'user';
-                                            $users_id_validate[] = $usersValidate[$key];
+                            $fieldopt = new PluginMetademandsFieldOption();
+                            if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
+                                foreach ($opts as $opt) {
+                                    if (isset($opt['users_id_validate'])
+                                        && !empty($opt['users_id_validate'])) {
+                                        if (isset($opt['check_value']) && is_array($datav)) {
+
+                                            $checkValue = $opt['check_value'];
+                                            $usersValidate = $opt['users_id_validate'];
+                                            if (in_array($checkValue, $datav)) {
+                                                $add_validation = '0';
+                                                $validatortype = 'user';
+                                                $users_id_validate[] = $usersValidate;
+                                            }
                                         }
                                     }
                                 }
