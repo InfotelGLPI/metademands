@@ -56,7 +56,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         'dropdown_meta',
     ];
 
-    public static $allowed_customvalues_items = ['other'];
+    public static $allowed_customvalues_items = ['other', 'Appliance'];
 
 
     static function getTypeName($nb = 0)

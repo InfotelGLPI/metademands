@@ -889,15 +889,14 @@ class PluginMetademandsField extends CommonDBChild
             $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
             $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
-            if (isset($this->fields['type'])
-                && (in_array(
-                        $this->fields['type'],
-                        $allowed_customvalues_types
-                    ) && ($this->fields['item'] != "ITILCategory_Metademands"
-                        && $this->fields['item'] != "urgency"
-                        && $this->fields['item'] != "mydevices"
-                        && $this->fields['item'] != "impact"))
-                || in_array($this->fields['item'], $allowed_customvalues_items)) {
+
+            if (isset($field->fields['type'])
+                && (in_array($field->fields['type'], $allowed_customvalues_types)
+                    || in_array($field->fields['item'], $allowed_customvalues_items))
+                && $field->fields['item'] != "urgency"
+                && $field->fields['item'] != "mydevices"
+                && $field->fields['item'] != "Appliance"
+                && $field->fields['item'] != "impact") {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
                     echo "<div class='alert alert-important alert-warning d-flex'>";
@@ -999,7 +998,7 @@ class PluginMetademandsField extends CommonDBChild
                         && $value['item'] != "urgency"
                         && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
-                || in_array($value['item'], $allowed_customvalues_items)) {
+                || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance')) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
                     $kocustom++;
@@ -1079,7 +1078,7 @@ class PluginMetademandsField extends CommonDBChild
                                     && $value['item'] != "urgency"
                                     && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
-                            || in_array($value['item'], $allowed_customvalues_items))
+                            || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance'))
                         && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                 }
@@ -1861,6 +1860,7 @@ class PluginMetademandsField extends CommonDBChild
                 || in_array($field->fields['item'], $allowed_customvalues_items))
             && $field->fields['item'] != "urgency"
             && $field->fields['item'] != "mydevices"
+            && $field->fields['item'] != "Appliance"
             && $field->fields['item'] != "impact") {
             $custom_values = [];
             if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {

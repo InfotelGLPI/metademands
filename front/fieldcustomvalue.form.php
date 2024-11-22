@@ -81,8 +81,10 @@ if (isset($_POST["add"])) {
     if ($_POST['type'] == "link"
         || $_POST['type'] == "number"
         || $_POST['type'] == "range"
-        || $_POST['type'] == "basket") {
+        || $_POST['type'] == "basket"
+        || ($_POST['type'] == "dropdown_multiple" && $_POST['item'] == "Appliance")) {
         $input["custom"]  = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
+        $input["default"]  = PluginMetademandsFieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"]  = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"]  =$fieldparam->getID();
@@ -91,6 +93,7 @@ if (isset($_POST["add"])) {
         }
     } else if ($_POST['type'] == "yesno") {
         $input["custom"]  = $_POST['custom'];
+        $input["default"]  = $_POST['default'];
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"]  =$fieldparam->getID();
