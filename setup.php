@@ -54,7 +54,7 @@ function plugin_init_metademands()
 
     $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
     $_SESSION["glpi_plugin_metademands_loaded"] = 0;
-    $plugin = new Plugin();
+
     if (Session::getLoginUserID()) {
 
         $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuse.js';

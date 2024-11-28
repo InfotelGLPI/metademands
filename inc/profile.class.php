@@ -317,51 +317,31 @@ class PluginMetademandsProfile extends Profile
         }
     }
 
-    /**
-     * @param $profiles_id the profile ID
-     *
-     * @return bool
-     * @return bool
-     * @throws \GlpitestSQLError
-     * @throws \GlpitestSQLError
-     * @since 0.85
-     * Migration rights from old system to the new one for one profile
-     */
-    public static function migrateOneProfile()
+    public static function migrateOneProfile($profiles_id)
     {
         global $DB;
         //Cannot launch migration if there's nothing to migrate...
         if (!$DB->tableExists('glpi_plugin_metademands_profiles')) {
             return true;
         }
-        $dbu   = new DbUtils();
-        $datas = $dbu->getAllDataFromTable('glpi_plugin_metademands_profiles');
 
-        foreach ($datas as $profile_data) {
-            $matching = ['metademands' => 'plugin_metademands'];
-            // Search existing rights
-            $used           = [];
-            $existingRights = $dbu->getAllDataFromTable(
-                'glpi_profilerights',
-                ["`profiles_id`" => $profile_data['profiles_id']]
-            );
-            foreach ($existingRights as $right) {
-                $used[$right['profiles_id']][$right['name']] = $right['rights'];
-            }
-
-            // Add or update rights
+        $it = $DB->request([
+            'FROM' => 'glpi_plugin_metademands_profiles',
+            'WHERE' => ['profiles_id' => $profiles_id]
+        ]);
+        foreach ($it as $profile_data) {
+            $matching       = ['metademands' => 'plugin_metademands'];
+            $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
             foreach ($matching as $old => $new) {
-                if (isset($used[$profile_data['profiles_id']][$new])) {
-                    $query = "UPDATE `glpi_profilerights` 
-                         SET `rights`='" . self::translateARight($profile_data[$old]) . "' 
-                         WHERE `name`='$new' AND `profiles_id`='" . $profile_data['profiles_id'] . "'";
-                    $DB->query($query);
-                } else {
-                    $query = "INSERT INTO `glpi_profilerights` (`profiles_id`, `name`, `rights`) VALUES ('" . $profile_data['profiles_id'] . "', '$new', '" . self::translateARight($profile_data[$old]) . "');";
-                    $DB->query($query);
+                if (!isset($current_rights[$old])) {
+                    $DB->update('glpi_profilerights', ['rights' => self::translateARight($profile_data[$old])], [
+                        'name'        => $new,
+                        'profiles_id' => $profiles_id
+                    ]);
                 }
             }
         }
+        return;
     }
 
 
@@ -384,29 +364,26 @@ class PluginMetademandsProfile extends Profile
             }
         }
 
-        $query = [
-            'SELECT'   => 'id',
-            'FROM'   => 'glpi_profilerights'
-        ];
-        $iterator = $DB->request($query);
-
-        foreach ($iterator as $prof) {
+        $it = $DB->request([
+            'SELECT' => ['id'],
+            'FROM' => 'glpi_profiles'
+        ]);
+        foreach ($it as $prof) {
             self::migrateOneProfile($prof['id']);
         }
 
-        $query = [
-            'FROM'   => 'glpi_profilerights',
-            'WHERE'  => ['profiles_id' => $_SESSION['glpiactiveprofile']['id'],
-                ['name' => ['LIKE', '%plugin_metademands%']],]
-        ];
-        $iterator = $DB->request($query);
-
-        foreach ($iterator as $prof) {
+        $it = $DB->request([
+            'FROM' => 'glpi_profilerights',
+            'WHERE' => [
+                'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
+                'name' => ['LIKE', '%plugin_metademands%']
+            ]
+        ]);
+        foreach ($it as $prof) {
             if (isset($_SESSION['glpiactiveprofile'])) {
                 $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
             }
         }
-        $_SESSION["plugin_metademands_on_login_loaded"] = 0;
     }
 
     /**
