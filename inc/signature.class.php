@@ -56,9 +56,9 @@ class PluginMetademandsSignature extends CommonDBTM
 
         $name = $namefield . "[" . $data['id'] . "]";
 
-        $required = false;
+        $required = 0;
         if ($data['is_mandatory'] == 1) {
-            $required = true;
+            $required = 1;
         }
 
         $metademands_id = $data['plugin_metademands_metademands_id'];

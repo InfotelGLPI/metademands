@@ -399,8 +399,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     'condition' => $cond,
                     'display' => false
                 ];
-                $container_class = new $data['item']();
-                $field .= $container_class::dropdown($opt);
+                $dbu = new DbUtils();
+                if ($dbu->getItemForItemtype($data["item"])) {
+                    $container_class = new $data['item']();
+                    $field .= $container_class::dropdown($opt);
+                }
+
                 break;
         }
 
@@ -715,7 +719,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
     {
         global $PLUGIN_HOOKS;
 
-        if ($params['check_value'] == -1) {
+        if ($params['check_value'] == -1 || $params['check_value'] == 0) {
             echo __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {

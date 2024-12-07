@@ -57,6 +57,18 @@ if (isset($_POST['item']) && isset($_POST['type'])
     $_POST['item'] = $_POST['type'];
 }
 
+if (isset($_POST['type'])
+    && ($_POST['type'] == "text"
+        || $_POST['type'] == "title"
+        || $_POST['type'] == "title-block"
+        || $_POST['type'] == "tel"
+        || $_POST['type'] == "email"
+        || $_POST['type'] == "url"
+        || $_POST['type'] == "textarea"
+        || $_POST['type'] == "signature")) {
+    $_POST['item'] = null;
+}
+
 if (isset($_POST["add"])) {
     $_POST["name"] = Toolbox::addslashes_deep($_POST["name"]);
     $_POST["comment"] = Toolbox::addslashes_deep($_POST["comment"]);
@@ -70,7 +82,6 @@ if (isset($_POST["add"])) {
     $field->check(-1, UPDATE, $_POST);
 
     if ($_POST['id'] = $field->add($_POST)) {
-
         if (isset($_POST['existing_field_id'])
             && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST['existing_field_id']])) {
             $inputp = $fieldparameter->fields;
@@ -83,7 +94,6 @@ if (isset($_POST["add"])) {
 
         if (isset($_POST['existing_field_id'])
             && $customs = $fieldcustomvalues->find(['plugin_metademands_fields_id' => $_POST['existing_field_id']])) {
-
             if (count($customs) > 0) {
                 foreach ($customs as $key => $val) {
                     $inputc['name'] = $val['name'];
@@ -103,8 +113,6 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["update"])) {
-
-
     if ($_POST["type"] == 'checkbox'
         || $_POST["type"] == 'radio') {
         $_POST["item"] = 0;
@@ -116,7 +124,7 @@ if (isset($_POST["add"])) {
 
     //convert radio | checkbox to dropdown_meta - other
     if (isset($_POST["type"]) && isset($_POST['item'])
-    && $_POST["type"] == $_POST["item"] && ($_POST["item"] == "dropdown_meta" || $_POST["item"] == "dropdown_multiple")) {
+        && $_POST["type"] == $_POST["item"] && ($_POST["item"] == "dropdown_meta" || $_POST["item"] == "dropdown_multiple")) {
         $_POST['item'] = "other";
     }
 

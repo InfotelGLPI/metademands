@@ -810,7 +810,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
     static function showParamsValueToCheck($params)
     {
-        if ($params['check_value'] == -1) {
+        if ($params['check_value'] == -1 || $params['check_value'] == 0) {
             echo __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
@@ -991,8 +991,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
         foreach ($check_values as $idc => $check_value) {
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {

@@ -163,9 +163,11 @@ class PluginMetademandsTools extends CommonDBTM
         echo "<br><div class='left'>";
         echo "<table class='tab_cadre_fixe'>";
 
-        $query = "SELECT id, plugin_metademands_fields_id
+        $query = "SELECT `glpi_plugin_metademands_fieldoptions`.`id`, `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`
                     FROM
                         `glpi_plugin_metademands_fieldoptions`
+                    LEFT JOIN `glpi_plugin_metademands_fields` 
+                        ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`)
                     WHERE
                         ((`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
                         `fields_link` = 0 AND
@@ -175,7 +177,9 @@ class PluginMetademandsTools extends CommonDBTM
                         `childs_blocks` = '[]' AND
                         `checkbox_value` = 0 AND
                         `checkbox_id` = 0 AND
-                        `parent_field_id` = 0) OR `check_value` = 0";
+                        `parent_field_id` = 0) OR `check_value` = 0 
+                                                      AND `glpi_plugin_metademands_fields`.`item` != 'other'
+                    AND `glpi_plugin_metademands_fields`.`item` != 'User'";
 
         $result = $DB->query($query);
 
