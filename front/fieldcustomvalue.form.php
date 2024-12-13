@@ -82,7 +82,7 @@ if (isset($_POST["add"])) {
         || $_POST['type'] == "number"
         || $_POST['type'] == "range"
         || $_POST['type'] == "basket"
-        || ($_POST['type'] == "dropdown_multiple" && $_POST['item'] == "Appliance")) {
+        || ($_POST['type'] == "dropdown_multiple" && ($_POST['item'] == "Appliance" || $_POST['item'] == "Group"))) {
         $input["custom"]  = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
         $input["default"]  = PluginMetademandsFieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"]  = $_POST['plugin_metademands_fields_id'];

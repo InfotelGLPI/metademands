@@ -78,6 +78,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if (!empty($data['custom_values'])) {
                     $custom_values = $data['custom_values'];
 
+
+
                     $default_value = "";
                     $choices = [];
                     if (count($custom_values) > 0) {
@@ -961,7 +963,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
 
         //Initialize default value - force change after onchange fonction
-        if (isset($data['custom_values']) && is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+        if (isset($data['custom_values'])
+            && is_array($data['custom_values'])
+            && count($data['custom_values']) > 0
+         && !isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $custom_values = $data['custom_values'];
             foreach ($custom_values as $k => $custom_value) {
                 if ($custom_value['is_default'] == 1) {

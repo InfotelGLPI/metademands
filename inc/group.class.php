@@ -322,9 +322,9 @@ class PluginMetademandsGroup extends CommonDBChild
             if ($canedit) {
                 Html::showMassiveActionCheckBox(__CLASS__, $field['id']);
             }
-            echo "</td>";
-            //DATA LINE
-            echo "<td>" . Dropdown::getDropdownName('glpi_groups', $field['groups_id']) . "</td>";
+            $group = new Group();
+            $group->getFromDB($field['groups_id']);
+            echo "<td>" . $group->getLink() . "</td>";
             echo "</tr>";
         }
         echo "</table>";

@@ -1066,7 +1066,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo self::showChildsBlocksDropdown($metademands_id, $params['hidden_block'], $params['childs_blocks']);
                 echo "</td></tr>";
             }
-            if ($field_class->getField("type") == "checkbox") {
+            if ($field_class->getField("type") == "checkbox"
+            || $field_class->getField("type") == "radio"
+                || $field_class->getField("type") == "dropdown_meta"
+            || ($field_class->getField("type") == "dropdown_multiple"
+                    &&  $field_class->getField("item") == "Group")) {
                 echo "<tr><td>";
                 echo __('Link a validation', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
@@ -1089,8 +1093,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     'right' => $right
                 ]);
                 echo "</td></tr>";
+            } else {
+                echo Html::hidden('users_id_validate', ['value' => 0]);
             }
-            if ($field_class->getField("type") == "dropdown_multiple") {
+            if ($field_class->getField("type") == "dropdown_multiple"
+            &&  $field_class->getField("item") == "Appliance") {
                 echo "<tr><td>";
                 echo __('Bind to the value of this checkbox', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(

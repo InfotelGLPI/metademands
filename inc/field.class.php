@@ -896,6 +896,7 @@ class PluginMetademandsField extends CommonDBChild
                 && $field->fields['item'] != "urgency"
                 && $field->fields['item'] != "mydevices"
                 && $field->fields['item'] != "Appliance"
+                && $field->fields['item'] != "Group"
                 && $field->fields['item'] != "impact") {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
@@ -998,7 +999,7 @@ class PluginMetademandsField extends CommonDBChild
                         && $value['item'] != "urgency"
                         && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
-                || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance')) {
+                || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
                     $kocustom++;
@@ -1078,7 +1079,7 @@ class PluginMetademandsField extends CommonDBChild
                                     && $value['item'] != "urgency"
                                     && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
-                            || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance'))
+                            || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
                         && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                 }
@@ -1861,6 +1862,7 @@ class PluginMetademandsField extends CommonDBChild
             && $field->fields['item'] != "urgency"
             && $field->fields['item'] != "mydevices"
             && $field->fields['item'] != "Appliance"
+            && $field->fields['item'] != "Group"
             && $field->fields['item'] != "impact") {
             $custom_values = [];
             if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
