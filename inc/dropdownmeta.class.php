@@ -188,7 +188,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             }
                         }
                     }
-                    if (!$pass) {
+                    if ($pass) {
                         $field .= ITILCategory::dropdown($opt);
                     }
 
