@@ -2003,10 +2003,77 @@ JAVASCRIPT
     public static function addObjects($metademands_id, $values, $options = [])
     {
         global $PLUGIN_HOOKS;
-
         $tasklevel = 1;
 
         $metademands_data = self::constructMetademands($metademands_id);
+        // filter out hidden fields/blocs
+        if (count($metademands_data)) {
+            $hiddenBlocs = [];
+            $hiddenFields = [];
+            $blocs = [];
+            // order things to be able to implement the logic which will determine wether the options of a field are taken into account or not
+            foreach ($metademands_data as $form_step => $data) {
+                foreach ($data as $form_metademands_id => $line) {
+                    if (count($line['form'])) {
+                        // order fields
+                        foreach($line['form'] as $field) {
+                            $blocs[$field['rank']][$field['order']] = $field;
+                        }
+                    }
+                }
+            }
+            // use options to determine which blocs and fields are hidden
+            foreach($blocs as $bloc => $fields) {
+                if (!in_array($bloc, $hiddenBlocs)) {
+                    foreach($fields as $field) {
+                        if (!in_array($field, $hiddenFields)) {
+                            if (isset($field['options']) && count($field['options'])) {
+                                foreach($field['options'] as $value => $option) {
+                                    // get value for the field
+                                    $formValue = $values['fields'][$field['id']] ?? null;
+                                    if ($formValue === null) {
+                                        // itilcategory case
+                                        if ($field['type'] == 'dropdown_meta' && $field['item'] == 'ITILCategory_Metademands') {
+                                            $formValue = $values['field_plugin_servicecatalog_itilcategories_id'];
+                                        }
+                                    }
+                                    // if condition of the option isn't met, add is related field and bloc to the hidden lists
+                                    if (!self::compareValueToOption(
+                                        $value,
+                                        $field,
+                                        $option,
+                                        $formValue
+                                    )) {
+                                        if ($option['hidden_link']) {
+                                            if (!in_array($option['hidden_link'], $hiddenFields)) {
+                                                $hiddenFields[] = $option['hidden_link'];
+                                            }
+                                        }
+                                        if ($option['hidden_block']) {
+                                            if (!in_array($option['hidden_block'], $hiddenBlocs)) {
+                                                $hiddenBlocs[] = $option['hidden_block'];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // unset value of all hidden fields
+            foreach ($metademands_data as $form_step => $data) {
+                foreach ($data as $form_metademands_id => $line) {
+                    if (count($line['form'])) {
+                        foreach($line['form'] as $field) {
+                            if (in_array($field['id'], $hiddenFields) || in_array($field['rank'], $hiddenBlocs)) {
+                                unset($values['fields'][$field['id']]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         $metademand_initial = new self();
         $metademand_initial->getFromDB($metademands_id);
@@ -9341,5 +9408,50 @@ HTML;
                 }
             }
         }
+    }
+
+    /**
+     * Check if formValue == optionValue while taking into account the differences between field types
+     * @param $optionValue int option -> check_value
+     * @param $field array array representing a field created by PluginMetademandsMetademand::constructMetademands
+     * @param $option array array representing an option of $field created by PluginMetademandsMetademand::constructMetademands
+     * @param $formValue mixed value for $field sent to the form (null if no value passed)
+     * @return boolean
+     */
+    private static function compareValueToOption($optionValue, $field, $option, $formValue) {
+        switch($field['type']) {
+            case 'tel':
+            case 'email':
+            case 'url':
+            case 'textarea':
+            case 'text':
+                // not empty is the only option
+                if ($optionValue == 1 && $formValue) {
+                    return !trim($formValue);
+                }
+                return false;
+            case 'dropdown_meta':
+            case 'radio':
+                // not empty ($formValue != 0)
+                if ($optionValue == -1) {
+                    return $formValue;
+                } else {
+                    return $optionValue == $formValue;
+                }
+            case 'checkbox':
+                // not empty ($formValue != null)
+                if ($optionValue == -1) {
+                    return $formValue;
+                } else {
+                    return ($formValue && in_array($optionValue, $formValue));
+                }
+            case 'dropdown':
+            case 'dropdown_object':
+            case 'yesno':
+                return $optionValue == $formValue;
+            case 'dropdown_multiple':
+                return ($formValue && in_array($optionValue, $formValue));
+        }
+        return false;
     }
 }
