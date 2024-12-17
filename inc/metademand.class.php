@@ -1880,7 +1880,7 @@ JAVASCRIPT
                         [
                             'condition' => [
                                 'glpi_plugin_metademands_tasks.type' => [
-                                    PluginMetademandsTask::TICKET_TYPE,
+                                    PluginMetademandsTask::TASK_TYPE,
                                     PluginMetademandsTask::MAIL_TYPE
                                 ]
                             ]
