@@ -103,6 +103,7 @@ if (isset($_POST["add"])) {
             || (isset($field->fields['item']) && ($field->fields['item'] == 'Group'
                     || $field->fields['item'] == 'User'
                     || $field->fields['item'] == 'urgency'
+                    || $field->fields['item'] == 'priority'
                     || $field->fields['item'] == 'impact'))
             || $field->fields['type'] == 'number'
             || $field->fields['type'] == 'range'

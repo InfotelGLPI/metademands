@@ -894,6 +894,7 @@ class PluginMetademandsField extends CommonDBChild
                 && (in_array($field->fields['type'], $allowed_customvalues_types)
                     || in_array($field->fields['item'], $allowed_customvalues_items))
                 && $field->fields['item'] != "urgency"
+                && $field->fields['item'] != "priority"
                 && $field->fields['item'] != "mydevices"
                 && $field->fields['item'] != "Appliance"
                 && $field->fields['item'] != "Group"
@@ -997,6 +998,7 @@ class PluginMetademandsField extends CommonDBChild
                         $allowed_customvalues_types
                     ) && ($value['item'] != "ITILCategory_Metademands"
                         && $value['item'] != "urgency"
+                        && $value['item'] != "priority"
                         && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
                 || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
@@ -1077,6 +1079,7 @@ class PluginMetademandsField extends CommonDBChild
                                     $allowed_customvalues_types
                                 ) && ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "urgency"
+                                    && $value['item'] != "priority"
                                     && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
                             || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
@@ -1860,6 +1863,7 @@ class PluginMetademandsField extends CommonDBChild
             && (in_array($field->fields['type'], $allowed_customvalues_types)
                 || in_array($field->fields['item'], $allowed_customvalues_items))
             && $field->fields['item'] != "urgency"
+            && $field->fields['item'] != "priority"
             && $field->fields['item'] != "mydevices"
             && $field->fields['item'] != "Appliance"
             && $field->fields['item'] != "Group"

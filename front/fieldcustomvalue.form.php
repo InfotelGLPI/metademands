@@ -101,6 +101,7 @@ if (isset($_POST["add"])) {
             $fieldparam->update($input);
         }
     } else if ($_POST['item'] == "urgency"
+        || $_POST['item'] == "priority"
     || $_POST['item'] == "impact") {
         $input["default"]  = PluginMetademandsFieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
