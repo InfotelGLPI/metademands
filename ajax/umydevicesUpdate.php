@@ -29,60 +29,72 @@
 
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
-   include('../../../inc/includes.php');
-   header("Content-Type: text/html; charset=UTF-8");
-   Html::header_nocache();
+    include('../../../inc/includes.php');
+    header("Content-Type: text/html; charset=UTF-8");
+    Html::header_nocache();
 }
 
 Session::checkLoginUser();
 
+Toolbox::logInfo($_POST);
 $fieldUser = new PluginMetademandsField();
 $fieldparameter = new PluginMetademandsFieldParameter();
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-   if (!isset($_POST['field'])) {
-
-       if ($fields = $fieldUser->find(['type' => "dropdown_meta",
-           'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-           'item'         => "mydevices"])) {
-           foreach ($fields as $field) {
-               if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id'],
-                   'link_to_user' => $_POST['id_fielduser']])) {
-                   $id             = $field['id'];
-                   $_POST["field"] = "field[$id]";
-               }
-           }
-       }
-
-   } else {
-      if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-         $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-      }
-   }
+    if (!isset($_POST['field'])) {
+        if ($fields = $fieldUser->find([
+            'type' => "dropdown_meta",
+            'plugin_metademands_metademands_id' => $_POST['metademands_id'],
+            'item' => "mydevices"
+        ])) {
+            foreach ($fields as $field) {
+                if ($fieldparameter->getFromDBByCrit([
+                    'plugin_metademands_fields_id' => $field['id'],
+                    'link_to_user' => $_POST['id_fielduser']
+                ])) {
+                    $id = $field['id'];
+                    $_POST["field"] = "field[$id]";
+                    $_POST['limit'] = $fieldparameter->fields['default'];
+                }
+            }
+        }
+    } else {
+        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
+            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
+        }
+    }
 }
 
 $users_id = 0;
 
 $user = new User();
 if (isset($_POST['value']) && $_POST["value"] > 0) {
-   if ($user->getFromDB($_POST["value"])) {
-      $users_id = $_POST['value'];
-   }
+    if ($user->getFromDB($_POST["value"])) {
+        $users_id = $_POST['value'];
+    }
+}
+
+$limit = [];
+
+if (isset($_POST['limit'])) {
+    $limit = json_decode($_POST['limit'], true);
 }
 
 $val = 0;
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-   $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 
 $rand = mt_rand();
-$p    = ['rand'  => $rand,
-         'name'  => $_POST["field"],
-         'value' => $val];
+$p = [
+    'rand' => $rand,
+    'name' => $_POST["field"],
+    'value' => $val
+];
 
-PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p);
+PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
 
 $_POST['name'] = "mydevices_user";
 $_POST['rand'] = "";

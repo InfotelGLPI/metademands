@@ -1001,7 +1001,10 @@ class PluginMetademandsField extends CommonDBChild
                         && $value['item'] != "priority"
                         && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
-                || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
+                || (in_array(
+                        $value['item'],
+                        $allowed_customvalues_items
+                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
                     $kocustom++;
@@ -1082,7 +1085,10 @@ class PluginMetademandsField extends CommonDBChild
                                     && $value['item'] != "priority"
                                     && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
-                            || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
+                            || (in_array(
+                                    $value['item'],
+                                    $allowed_customvalues_items
+                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
                         && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                 }
@@ -1994,8 +2000,10 @@ class PluginMetademandsField extends CommonDBChild
                         }
                         if ($display) {
                             echo "&nbsp;";
-                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['awesome-class' => 'fa-info-circle',
-                                'display' => false]);
+                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), [
+                                'awesome-class' => 'fa-info-circle',
+                                'display' => false
+                            ]);
                         }
                     }
                     echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
@@ -2003,7 +2011,6 @@ class PluginMetademandsField extends CommonDBChild
                         && $data['type'] != 'parent_field') {
                         echo "*";
                     }
-
 
 
                     //use plugin fields types
@@ -2019,7 +2026,6 @@ class PluginMetademandsField extends CommonDBChild
                     }
 
                     echo "</div>";
-
                 }
             } else {
                 echo "<div style='margin-top: 10px;'>";
@@ -3359,6 +3365,7 @@ class PluginMetademandsField extends CommonDBChild
         $itemtype = 0,
         $items_id = 0,
         $options = [],
+        $limit = [],
         $display = true
     ) {
         global $DB, $CFG_GLPI;
@@ -3375,10 +3382,10 @@ class PluginMetademandsField extends CommonDBChild
         foreach ($options as $key => $val) {
             $params[$key] = $val;
         }
-        //
-        //      if ($userID == 0) {
-        //         $userID = Session::getLoginUserID();
-        //      }
+
+        if ($userID == 0) {
+            $userID = Session::getLoginUserID();
+        }
 
         $rand = $params['rand'];
         $already_add = $params['used'];
@@ -3387,8 +3394,13 @@ class PluginMetademandsField extends CommonDBChild
             $my_devices = ['' => Dropdown::EMPTY_VALUE];
             $devices = [];
 
+            $itemtypes = $CFG_GLPI["linkuser_types"];
+            if (count($limit) > 0) {
+                $itemtypes = $limit;
+            }
+
             // My items
-            foreach ($CFG_GLPI["linkuser_types"] as $itemtype) {
+            foreach ($itemtypes as $itemtype) {
                 if (($item = getItemForItemtype($itemtype))
                     && Ticket::isPossibleToAssignType($itemtype)) {
                     $itemtable = getTableForItemType($itemtype);

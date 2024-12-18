@@ -286,6 +286,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
                     case 'impact':
                     case 'urgency':
                     case 'priority':
+                    case 'mydevices':
                     case 'other':
                         PluginMetademandsDropdownmeta::showFieldCustomValues($params);
                         break;
