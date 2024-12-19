@@ -66,16 +66,16 @@ class PluginMetademandsDatetime extends CommonDBTM
 
         $use_future_date = $data['use_future_date'];
         if (isset($use_future_date) && !empty($use_future_date)) {
-            $opt['min'] = $_SESSION["glpi_currenttime"];
+            $opt['mindate'] = $_SESSION["glpi_currenttime"];
         }
 
         if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
             $addDays = $data['additional_number_day'];
             $startDate = time();
-            $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
+            $value = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
             $use_future_date = $data['use_future_date'];
             if (isset($use_future_date) && !empty($use_future_date)) {
-                $opt['min'] = $value;
+                $opt['mindate'] = $value;
             }
         }
 
