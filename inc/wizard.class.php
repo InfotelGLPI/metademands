@@ -3376,7 +3376,7 @@ class PluginMetademandsWizard extends CommonDBTM
             && $value['type'] != 'radio'
             && $value['item'] != 'ITILCategory_Metademands'
             && $value['type'] != 'upload'
-            && $value['item'] != 'dropdown_multiple') {
+            && $value['type'] != 'dropdown_multiple') {
             if (!self::checkMandatoryFields(
                 $fieldname,
                 $value,

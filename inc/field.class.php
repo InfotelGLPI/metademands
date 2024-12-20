@@ -607,7 +607,7 @@ class PluginMetademandsField extends CommonDBChild
                         $paramsType
                     );
                 } else {
-                    if ($this->fields["item"] == "other" || $this->fields["item"] == "radio" || $this->fields["item"] == "checkbox") {
+                    if ($this->fields["item"] == "other" || $this->fields["type"] == "radio" || $this->fields["type"] == "checkbox") {
                         $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
                             'value' => $this->fields["type"],
                             'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
