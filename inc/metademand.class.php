@@ -2257,19 +2257,14 @@ JAVASCRIPT
                             }
                         }
                     }
-
                     if (count($parent_fields['_users_id_requester']) == 0) {
                         if (isset($values['fields']['_users_id_requester'])) {
                             $parent_fields['_users_id_requester'][] = $values['fields']['_users_id_requester'];
                             if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
                                 $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
                             }
-                        } else {
-                            // Add requester if empty
-                            $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
                         }
                     }
-
 
                     // Get predefined ticket fields
                     //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
@@ -2304,6 +2299,7 @@ JAVASCRIPT
 
                                     if ($v[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
                                         $name = "_users_id_requester";
+                                        unset($parent_fields[$name]);
                                         if (is_array($v[$id])) {
                                             foreach ($v[$id] as $usr) {
                                                 $parent_fields[$name][] = $usr;
@@ -2387,9 +2383,6 @@ JAVASCRIPT
                             if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
                                 $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
                             }
-                        } else {
-                            // Add requester if empty
-                            $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
                         }
                     }
 
