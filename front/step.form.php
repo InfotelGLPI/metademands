@@ -38,17 +38,22 @@ if (!isset($_GET["withtemplate"])) {
 
 $meta = new PluginMetademandsStep();
 
-if (isset($_POST["add"]) && $_POST["block_id"]) {
-    $meta->check(-1, CREATE, $_POST);
-    $blocks = $_POST["block_id"];
-    if (count($blocks) > 0) {
-        foreach ($blocks as $block) {
-            $input['block_id']                          = $block;
-            $input['groups_id']                         = $_POST["groups_id"];
-            $input['message']                           = $_POST["message"];
-            $input['plugin_metademands_metademands_id'] = $_POST["plugin_metademands_metademands_id"];
-            $newID                                      = $meta->add($input);
+if (isset($_POST["add"])) {
+
+    if (isset($_POST["block_id"])) {
+        $meta->check(-1, CREATE, $_POST);
+        $blocks = $_POST["block_id"];
+        if (count($blocks) > 0) {
+            foreach ($blocks as $block) {
+                $input['block_id'] = $block;
+                $input['groups_id'] = $_POST["groups_id"];
+                $input['message'] = $_POST["message"];
+                $input['plugin_metademands_metademands_id'] = $_POST["plugin_metademands_metademands_id"];
+                $newID = $meta->add($input);
+            }
         }
+    } else {
+        Session::addMessageAfterRedirect(__('Used blocks are mandatory', 'metademands'), true, ERROR);
     }
     Html::back();
 } elseif (isset($_POST["delete"])) {

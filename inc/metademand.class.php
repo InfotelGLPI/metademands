@@ -557,7 +557,39 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $override_input['link_to_user'] = 0;
                     $override_input['plugin_metademands_fields_id'] = 0;
                     $override_input['plugin_metademands_tasks_id'] = 0;
-                    $field->clone($override_input);
+                    $idfield = $field->clone($override_input);
+
+                    $fields_parameters = PluginMetademandsFieldParameter::getItemsAssociatedTo(
+                        "PluginMetademandsField",
+                        $field->fields["id"]
+                    );
+                    if (!empty($fields_parameters)) {
+                        $override_input['plugin_metademands_fields_id'] = $idfield;
+                        $fields_parameters[0]->clone($override_input);
+                    }
+
+                    $fields_options = PluginMetademandsFieldOption::getItemsAssociatedTo(
+                        "PluginMetademandsField",
+                        $field->fields["id"]
+                    );
+                    if (!empty($fields_options)) {
+                        foreach ($fields_options as $k => $fields_option) {
+                            $override_input['plugin_metademands_fields_id'] = $idfield;
+                            $fields_options[$k]->clone($override_input);
+                        }
+
+                    }
+//                    $fields_customvalues = PluginMetademandsFieldCustomvalue::getItemsAssociatedTo(
+//                        "PluginMetademandsField",
+//                        $field->fields["id"]
+//                    );
+//                    if (!empty($fields_customvalues)) {
+//                        foreach ($fields_customvalues as $k => $fields_customvalue) {
+//                            $override_input['plugin_metademands_fields_id'] = $idfield;
+//                            $override_input['name'] = $fields_customvalue->fields["name"];
+//                            $fields_customvalues[$k]->clone($override_input);
+//                        }
+//                    }
                 }
             }
 

@@ -137,7 +137,7 @@ if (isset($_POST["add"])) {
     }
 
     Html::back();
-} elseif (isset($_POST["delete"])) {
+} else if (isset($_POST["delete"])) {
     $input['id'] = $_POST['customvalues_id'];
 
     //TODO update ranks

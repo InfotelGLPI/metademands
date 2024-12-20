@@ -488,7 +488,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     echo "<td>";
                     echo "<span id='custom_values$key'>";
                     echo $v["name"];
-                    echo '</span>';
+                    echo "</span>";
                     echo "</td>";
 
                     echo "<td width='20%'>";
@@ -496,7 +496,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     $name = "default[" . $key . "]";
                     $value = (isset($default_values[$key]) ? $default_values[$key] : 0);
                     Dropdown::showYesNo($name, $value);
-                    echo '</span>';
+                    echo "</span>";
                     echo "</td>";
 
                     echo "<td width='20%'>";
@@ -507,7 +507,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         $checked = "checked";
                     }
                     echo "<input type='checkbox' name='custom[" . $key . "]'  value='$key' $checked />";
-                    echo '</span>';
+                    echo "</span>";
                     echo "</td>";
 
                     echo "</tr>";
@@ -547,21 +547,21 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             echo "<td class='rowhandler control center'>";
                             echo "<span id='custom_values$key'>";
                             echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 30]);
-                            echo '</span>';
+                            echo "</span>";
                             echo "</td>";
 
                             echo "<td class='rowhandler control center'>";
 //                echo "<span id='comment_values$key'>";
 //                echo __('Comment') . " ";
 //                echo Html::input('comment['.$key.']', ['value' => $value['comment'], 'size' => 30]);
-//                echo '</span>';
+//                echo "</span>";
                             echo "</td>";
 
                             echo "<td class='rowhandler control center'>";
                             echo "<span id='default_values$key'>";
                             echo _n('Default value', 'Default values', 1, 'metademands') . " ";
                             Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                            echo '</span>';
+                            echo "</span>";
                             echo "</td>";
 
                             echo "<td class='rowhandler control center'>";
