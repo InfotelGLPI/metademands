@@ -39,7 +39,6 @@ $fieldcustom = new PluginMetademandsFieldCustomvalue();
 $fieldparam = new PluginMetademandsFieldParameter();
 
 if (isset($_POST["add"])) {
-
     $params = [];
     if (isset($_POST["custom_values"])) {
         $custom_values = $_POST["custom_values"];
@@ -75,57 +74,56 @@ if (isset($_POST["add"])) {
         $fieldcustom->add($input);
     }
     Html::back();
-
 } elseif (isset($_POST["update"])) {
-
     if ($_POST['type'] == "link"
         || $_POST['type'] == "number"
         || $_POST['type'] == "range"
         || $_POST['type'] == "basket"
         || ($_POST['type'] == "dropdown_multiple" && ($_POST['item'] == "Appliance" || $_POST['item'] == "Group"))) {
-        $input["custom"]  = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
-        $input["default"]  = PluginMetademandsFieldParameter::_serialize($_POST['default']);
-        $input["plugin_metademands_fields_id"]  = $_POST['plugin_metademands_fields_id'];
+        $input["custom"] = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
+        $input["default"] = PluginMetademandsFieldParameter::_serialize($_POST['default']);
+        $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
-            $input["id"]  =$fieldparam->getID();
+            $input["id"] = $fieldparam->getID();
             $fieldparam->check(-1, UPDATE, $input);
             $fieldparam->update($input);
         }
-    } else if ($_POST['type'] == "yesno") {
-        $input["custom"]  = $_POST['custom'];
-        $input["default"]  = $_POST['default'];
+    } elseif ($_POST['type'] == "yesno") {
+        $input["custom"] = $_POST['custom'];
+        $input["default"] = $_POST['default'];
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
-            $input["id"]  =$fieldparam->getID();
+            $input["id"] = $fieldparam->getID();
             $fieldparam->check(-1, UPDATE, $input);
             $fieldparam->update($input);
         }
-    } else if ($_POST['item'] == "urgency"
-    || $_POST['item'] == "impact") {
-        $input["default"]  = PluginMetademandsFieldParameter::_serialize($_POST['default']);
+    } elseif ($_POST['item'] == "urgency"
+        || $_POST['item'] == "priority"
+        || $_POST['item'] == "impact"
+        || $_POST['item'] == "mydevices") {
+        $input["default"] = PluginMetademandsFieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
-            $input["id"]  =$fieldparam->getID();
+            $input["id"] = $fieldparam->getID();
             $fieldparam->check(-1, UPDATE, $input);
             $fieldparam->update($input);
         }
     } else {
-
         $names = $_POST['name'];
         $is_defaults = $_POST['is_default'];
-        $comments = $_POST['comment']??"";
+        $comments = $_POST['comment'] ?? "";
         $ids = $_POST['id'];
         $inputs = [];
         if (is_array($ids) && count($ids) > 0) {
             foreach ($ids as $k => $id) {
                 $inputs[$id]['id'] = $id;
-                if (isset($names[$id])){
+                if (isset($names[$id])) {
                     $inputs[$id]['name'] = $names[$id];
                 }
-                if (isset($is_defaults[$id])){
+                if (isset($is_defaults[$id])) {
                     $inputs[$id]['is_default'] = $is_defaults[$id];
                 }
-                if (isset($comments[$id])){
+                if (isset($comments[$id])) {
                     $inputs[$id]['comment'] = $comments[$id];
                 }
             }
@@ -136,34 +134,32 @@ if (isset($_POST["add"])) {
             $fieldcustom->check(-1, UPDATE, $_POST);
             $fieldcustom->update($input);
         }
-
     }
 
     Html::back();
-
-} elseif (isset($_POST["delete"])) {
-
+} else if (isset($_POST["delete"])) {
     $input['id'] = $_POST['customvalues_id'];
 
     //TODO update ranks
     $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
-    $condition_del['rank']   = ['>', $_POST['rank']];
-    $updateRank                 = $fieldcustom->find($condition_del, "rank");
+    $condition_del['rank'] = ['>', $_POST['rank']];
+    $updateRank = $fieldcustom->find($condition_del, "rank");
     if (count($updateRank) > 0) {
         foreach ($updateRank as $update) {
-                $fieldcustom->update(['id'      => $update['id'],
-                    'rank' => $update['rank'] - 1]);
+            $fieldcustom->update([
+                'id' => $update['id'],
+                'rank' => $update['rank'] - 1
+            ]);
         }
     }
     $fieldcustom->check(-1, DELETE, $input);
     $fieldcustom->delete($input, 1);
 
     Html::back();
-
 } else {
     $fieldcustom->checkGlobal(READ);
-   Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-   Html::requireJs('tinymce');
-   $fieldcustom->display(['id' => $_GET["id"]]);
-   Html::footer();
+    Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::requireJs('tinymce');
+    $fieldcustom->display(['id' => $_GET["id"]]);
+    Html::footer();
 }

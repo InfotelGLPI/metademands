@@ -1072,6 +1072,7 @@ class PluginMetademandsCondition extends CommonDBChild
                             ITILCategory::dropdown($params);
                             break;
                         case 'mydevices':
+                            $default_values = $params['default_values'];
                             $params = [
                                 'name' => $name,
                                 'value' => $condition->fields['check_value'] ?? 0
@@ -1081,7 +1082,8 @@ class PluginMetademandsCondition extends CommonDBChild
                                 $_SESSION['glpiactiveentities'],
                                 0,
                                 0,
-                                $params
+                                $params,
+                                $default_values
                             );
                             break;
                         case 'urgency':

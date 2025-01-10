@@ -205,6 +205,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     // My items
                     //TODO : used_by_ticket -> link with item's ticket
                     $field = "";
+                    $default_values = $data['default_values'];
 
                     $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                     //                     $users_id = 0;
@@ -222,6 +223,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id'] = $data['id'];
+                        $_POST['limit'] = json_encode($default_values);
                         $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
                         include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
                         echo "</div>";
@@ -238,6 +240,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             0,
                             0,
                             $p,
+                            $default_values,
                             false
                         );
                     }
@@ -384,6 +387,14 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         }
                     }
                 }
+                if (isset($data['default_values'])) {
+                    $defaults = $data['default_values'];
+                    if (is_array($defaults) && count($defaults) > 0) {
+                        foreach ($defaults as $k => $v) {
+                            $options['value'] = $v;
+                        }
+                    }
+                }
                 $options['name'] = $namefield . "[" . $data['id'] . "]";
                 $options['display'] = false;
                 $options['required'] = ($data['is_mandatory'] ? "required" : "");
@@ -415,13 +426,16 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     static function showFieldCustomValues($params)
     {
+        global $CFG_GLPI;
+
         echo "<tr class='tab_bg_1'>";
         echo "<td colspan='5'>";
         $maxrank = 0;
         $custom_values = $params['custom_values'];
         $default_values = $params['default_values'];
 
-        if (is_array($custom_values) && !empty($custom_values)) {
+        if (is_array($custom_values)
+            && !empty($custom_values)) {
             echo "<div id='drag'>";
             echo "<table class='tab_cadre_fixe'>";
 
@@ -443,21 +457,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "<td class='rowhandler control center'>";
                 echo "<span id='custom_values$key'>";
                 echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 30]);
-                echo '</span>';
+                echo "</span>";
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
 //                echo "<span id='comment_values$key'>";
 //                echo __('Comment') . " ";
 //                echo Html::input('comment['.$key.']', ['value' => $value['comment'], 'size' => 30]);
-//                echo '</span>';
+//                echo "</span>";
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
                 echo "<span id='default_values$key'>";
                 echo _n('Default value', 'Default values', 1, 'metademands') . " ";
                 Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                echo '</span>';
+                echo "</span>";
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
@@ -511,7 +525,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             PluginMetademandsFieldCustomvalue::importCustomValue($params);
         } else {
             $target = PluginMetademandsFieldCustomvalue::getFormURL();
-            if ($params['item'] != 'urgency' && $params['item'] != 'impact') {
+            if ($params['item'] != 'urgency'
+                && $params['item'] != 'impact'
+                && $params['item'] != 'priority'
+                && $params['item'] != 'mydevices') {
                 echo "<form method='post' action=\"$target\">";
                 echo "<tr class='tab_bg_1'>";
                 echo "<td align='right' id='show_custom_fields' colspan='5'>";
@@ -523,7 +540,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "</tr>";
                 Html::closeForm();
                 PluginMetademandsFieldCustomvalue::importCustomValue($params);
-            } else {
+
+            } else if ($params['item'] == 'urgency'
+                || $params['item'] == 'impact'
+                || $params['item'] == 'priority') {
+
                 $default_values = $params['default_values'];
                 if (is_array($default_values) && count($default_values) > 0) {
                     foreach ($default_values as $key => $default_value) {
@@ -534,10 +555,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "<tr class='tab_bg_1'>";
                 echo "<td>";
                 $options['name'] = "default[1]";
-                if ($params['item'] != 'urgency') {
-                    Ticket::dropdownImpact($options);
-                } else {
+                if ($params['item'] == 'urgency') {
                     Ticket::dropdownUrgency($options);
+                } else if ($params['item'] == 'impact') {
+                    Ticket::dropdownImpact($options);
+                } else if ($params['item'] == 'priority') {
+                    Ticket::dropdownPriority($options);
                 }
 
                 echo "</td>";
@@ -552,6 +575,47 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "</td>";
                 echo "</tr>";
                 Html::closeForm();
+            } elseif ($params['item'] == 'mydevices') {
+
+                $default_values = $params['default_values'];
+
+                echo "<form method='post' action=\"$target\">";
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>";
+
+                $list = [];
+
+                foreach ($CFG_GLPI['linkuser_types'] as $itemtype) {
+                    if (!($item = getItemForItemtype($itemtype))) {
+                        continue;
+                    }
+                    if ($item->canView()) {
+                        $list[$itemtype] = $item->getTypeName();
+                    }
+                }
+
+                Dropdown::showFromArray(
+                    "default",
+                    $list,
+                    [
+                        'values' => $default_values,
+                        'multiple' => true
+                    ]
+                );
+
+                echo "</td>";
+                echo "</tr>";
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>";
+                echo Html::submit("", [
+                    'name' => 'update',
+                    'class' => 'btn btn-primary',
+                    'icon' => 'fas fa-save'
+                ]);
+                echo "</td>";
+                echo "</tr>";
+                Html::closeForm();
+
             }
         }
         echo "</td>";

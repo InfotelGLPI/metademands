@@ -607,7 +607,7 @@ class PluginMetademandsField extends CommonDBChild
                         $paramsType
                     );
                 } else {
-                    if ($this->fields["item"] == "other" || $this->fields["item"] == "radio" || $this->fields["item"] == "checkbox") {
+                    if ($this->fields["item"] == "other" || $this->fields["type"] == "radio" || $this->fields["type"] == "checkbox") {
                         $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
                             'value' => $this->fields["type"],
                             'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
@@ -894,6 +894,7 @@ class PluginMetademandsField extends CommonDBChild
                 && (in_array($field->fields['type'], $allowed_customvalues_types)
                     || in_array($field->fields['item'], $allowed_customvalues_items))
                 && $field->fields['item'] != "urgency"
+                && $field->fields['item'] != "priority"
                 && $field->fields['item'] != "mydevices"
                 && $field->fields['item'] != "Appliance"
                 && $field->fields['item'] != "Group"
@@ -997,9 +998,13 @@ class PluginMetademandsField extends CommonDBChild
                         $allowed_customvalues_types
                     ) && ($value['item'] != "ITILCategory_Metademands"
                         && $value['item'] != "urgency"
+                        && $value['item'] != "priority"
                         && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
-                || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
+                || (in_array(
+                        $value['item'],
+                        $allowed_customvalues_items
+                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
                     $kocustom++;
@@ -1077,9 +1082,13 @@ class PluginMetademandsField extends CommonDBChild
                                     $allowed_customvalues_types
                                 ) && ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "urgency"
+                                    && $value['item'] != "priority"
                                     && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
-                            || (in_array($value['item'], $allowed_customvalues_items) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
+                            || (in_array(
+                                    $value['item'],
+                                    $allowed_customvalues_items
+                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
                         && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                 }
@@ -1860,6 +1869,7 @@ class PluginMetademandsField extends CommonDBChild
             && (in_array($field->fields['type'], $allowed_customvalues_types)
                 || in_array($field->fields['item'], $allowed_customvalues_items))
             && $field->fields['item'] != "urgency"
+            && $field->fields['item'] != "priority"
             && $field->fields['item'] != "mydevices"
             && $field->fields['item'] != "Appliance"
             && $field->fields['item'] != "Group"
@@ -1990,8 +2000,10 @@ class PluginMetademandsField extends CommonDBChild
                         }
                         if ($display) {
                             echo "&nbsp;";
-                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['awesome-class' => 'fa-info-circle',
-                                'display' => false]);
+                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), [
+                                'awesome-class' => 'fa-info-circle',
+                                'display' => false
+                            ]);
                         }
                     }
                     echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
@@ -1999,7 +2011,6 @@ class PluginMetademandsField extends CommonDBChild
                         && $data['type'] != 'parent_field') {
                         echo "*";
                     }
-
 
 
                     //use plugin fields types
@@ -2015,7 +2026,6 @@ class PluginMetademandsField extends CommonDBChild
                     }
 
                     echo "</div>";
-
                 }
             } else {
                 echo "<div style='margin-top: 10px;'>";
@@ -3355,6 +3365,7 @@ class PluginMetademandsField extends CommonDBChild
         $itemtype = 0,
         $items_id = 0,
         $options = [],
+        $limit = [],
         $display = true
     ) {
         global $DB, $CFG_GLPI;
@@ -3371,10 +3382,10 @@ class PluginMetademandsField extends CommonDBChild
         foreach ($options as $key => $val) {
             $params[$key] = $val;
         }
-        //
-        //      if ($userID == 0) {
-        //         $userID = Session::getLoginUserID();
-        //      }
+
+        if ($userID == 0) {
+            $userID = Session::getLoginUserID();
+        }
 
         $rand = $params['rand'];
         $already_add = $params['used'];
@@ -3383,8 +3394,13 @@ class PluginMetademandsField extends CommonDBChild
             $my_devices = ['' => Dropdown::EMPTY_VALUE];
             $devices = [];
 
+            $itemtypes = $CFG_GLPI["linkuser_types"];
+            if (count($limit) > 0) {
+                $itemtypes = $limit;
+            }
+
             // My items
-            foreach ($CFG_GLPI["linkuser_types"] as $itemtype) {
+            foreach ($itemtypes as $itemtype) {
                 if (($item = getItemForItemtype($itemtype))
                     && Ticket::isPossibleToAssignType($itemtype)) {
                     $itemtable = getTableForItemType($itemtype);

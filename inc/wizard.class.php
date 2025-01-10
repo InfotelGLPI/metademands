@@ -1530,6 +1530,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         && (in_array($data['type'], $allowed_customvalues_types)
                             || in_array($data['item'], $allowed_customvalues_items))
                         && $data['item'] != "urgency"
+                        && $data['item'] != "priority"
                         && $data['item'] != "impact") {
                         $field_custom = new PluginMetademandsFieldCustomvalue();
                         if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
@@ -3375,7 +3376,7 @@ class PluginMetademandsWizard extends CommonDBTM
             && $value['type'] != 'radio'
             && $value['item'] != 'ITILCategory_Metademands'
             && $value['type'] != 'upload'
-            && $value['item'] != 'dropdown_multiple') {
+            && $value['type'] != 'dropdown_multiple') {
             if (!self::checkMandatoryFields(
                 $fieldname,
                 $value,

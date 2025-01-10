@@ -557,7 +557,39 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $override_input['link_to_user'] = 0;
                     $override_input['plugin_metademands_fields_id'] = 0;
                     $override_input['plugin_metademands_tasks_id'] = 0;
-                    $field->clone($override_input);
+                    $idfield = $field->clone($override_input);
+
+                    $fields_parameters = PluginMetademandsFieldParameter::getItemsAssociatedTo(
+                        "PluginMetademandsField",
+                        $field->fields["id"]
+                    );
+                    if (!empty($fields_parameters)) {
+                        $override_input['plugin_metademands_fields_id'] = $idfield;
+                        $fields_parameters[0]->clone($override_input);
+                    }
+
+                    $fields_options = PluginMetademandsFieldOption::getItemsAssociatedTo(
+                        "PluginMetademandsField",
+                        $field->fields["id"]
+                    );
+                    if (!empty($fields_options)) {
+                        foreach ($fields_options as $k => $fields_option) {
+                            $override_input['plugin_metademands_fields_id'] = $idfield;
+                            $fields_options[$k]->clone($override_input);
+                        }
+
+                    }
+//                    $fields_customvalues = PluginMetademandsFieldCustomvalue::getItemsAssociatedTo(
+//                        "PluginMetademandsField",
+//                        $field->fields["id"]
+//                    );
+//                    if (!empty($fields_customvalues)) {
+//                        foreach ($fields_customvalues as $k => $fields_customvalue) {
+//                            $override_input['plugin_metademands_fields_id'] = $idfield;
+//                            $override_input['name'] = $fields_customvalue->fields["name"];
+//                            $fields_customvalues[$k]->clone($override_input);
+//                        }
+//                    }
                 }
             }
 
@@ -1880,7 +1912,7 @@ JAVASCRIPT
                         [
                             'condition' => [
                                 'glpi_plugin_metademands_tasks.type' => [
-                                    PluginMetademandsTask::TICKET_TYPE,
+                                    PluginMetademandsTask::TASK_TYPE,
                                     PluginMetademandsTask::MAIL_TYPE
                                 ]
                             ]
@@ -2292,19 +2324,14 @@ JAVASCRIPT
                             }
                         }
                     }
-
                     if (count($parent_fields['_users_id_requester']) == 0) {
                         if (isset($values['fields']['_users_id_requester'])) {
                             $parent_fields['_users_id_requester'][] = $values['fields']['_users_id_requester'];
                             if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
                                 $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
                             }
-                        } else {
-                            // Add requester if empty
-                            $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
                         }
                     }
-
 
                     // Get predefined ticket fields
                     //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
@@ -2339,6 +2366,7 @@ JAVASCRIPT
 
                                     if ($v[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
                                         $name = "_users_id_requester";
+                                        unset($parent_fields[$name]);
                                         if (is_array($v[$id])) {
                                             foreach ($v[$id] as $usr) {
                                                 $parent_fields[$name][] = $usr;
@@ -2422,9 +2450,6 @@ JAVASCRIPT
                             if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
                                 $parent_fields['_users_id_observer'][] = Session::getLoginUserID();
                             }
-                        } else {
-                            // Add requester if empty
-                            $parent_fields['_users_id_requester'][] = Session::getLoginUserID();
                         }
                     }
 

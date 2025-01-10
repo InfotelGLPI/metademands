@@ -203,6 +203,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
                     && (in_array($item->fields['type'], $allowed_customvalues_types)
                         || in_array($item->fields['item'], $allowed_customvalues_items))
                     && $item->fields['item'] != "urgency"
+                    && $item->fields['item'] != "priority"
                     && $item->fields['item'] != "impact") {
                     $field_custom = new PluginMetademandsFieldCustomvalue();
                     if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $item->getID()], "rank")) {
@@ -343,6 +344,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
            && (in_array($item->fields['type'], $allowed_customvalues_types)
                || in_array($item->fields['item'], $allowed_customvalues_items))
            && $item->fields['item'] != "urgency"
+           && $item->fields['item'] != "priority"
            && $item->fields['item'] != "impact") {
            $field_custom = new PluginMetademandsFieldCustomvalue();
            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $item->getID()], "rank")) {
