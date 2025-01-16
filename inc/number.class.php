@@ -184,19 +184,17 @@ class PluginMetademandsNumber extends CommonDBTM
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
     {
 
-        if ($field['value'] != 0) {
-            $result[$field['rank']]['display'] = true;
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title>";
-            }
-            $result[$field['rank']]['content'] .= $label;
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td>";
-            }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field);
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
+        $result[$field['rank']]['display'] = true;
+        if ($formatAsTable) {
+            $result[$field['rank']]['content'] .= "<td $style_title>";
+        }
+        $result[$field['rank']]['content'] .= $label;
+        if ($formatAsTable) {
+            $result[$field['rank']]['content'] .= "</td><td>";
+        }
+        $result[$field['rank']]['content'] .= self::getFieldValue($field);
+        if ($formatAsTable) {
+            $result[$field['rank']]['content'] .= "</td>";
         }
 
         return $result;

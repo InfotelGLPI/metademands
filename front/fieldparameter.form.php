@@ -102,9 +102,7 @@ if (isset($_POST["add"])) {
             || $field->fields['type'] == 'dropdown_multiple'
             || (isset($field->fields['item']) && ($field->fields['item'] == 'Group'
                     || $field->fields['item'] == 'User'
-                    || $field->fields['item'] == 'urgency'
-                    || $field->fields['item'] == 'priority'
-                    || $field->fields['item'] == 'impact'))
+                    || in_array($field->fields["item"], PluginMetademandsField::$field_specificobjects)))
             || $field->fields['type'] == 'number'
             || $field->fields['type'] == 'range'
             || $field->fields['type'] == 'basket')) {

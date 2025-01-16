@@ -97,10 +97,7 @@ if (isset($_POST["add"])) {
             $fieldparam->check(-1, UPDATE, $input);
             $fieldparam->update($input);
         }
-    } elseif ($_POST['item'] == "urgency"
-        || $_POST['item'] == "priority"
-        || $_POST['item'] == "impact"
-        || $_POST['item'] == "mydevices") {
+    } elseif (in_array($_POST["item"], PluginMetademandsField::$field_specificobjects)) {
         $input["default"] = PluginMetademandsFieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {

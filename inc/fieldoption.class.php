@@ -488,7 +488,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         if (isset($item->fields['type'])
             && (in_array($item->fields['type'], $allowed_customvalues_types)
-                || in_array($item->fields['item'], $allowed_customvalues_items))
+                || (in_array($item->fields['item'], $allowed_customvalues_items) && $item->fields['item'] != 'Appliance'))
             && $item->fields['item'] != "urgency"
             && $item->fields['item'] != "priority"
             && $item->fields['item'] != "impact") {

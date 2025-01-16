@@ -507,7 +507,9 @@ class PluginMetademandsRadio extends CommonDBTM
         //default hide of all hidden links
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            }
         }
 
 

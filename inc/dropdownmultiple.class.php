@@ -329,8 +329,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
             foreach ($value as $k => $val) {
                 if ($item == 'other') {
-                    $div .= "<option value=\"$val\">" . $list[$val]['name'] . "</option>";
-                } elseif ($item == User::getType()) {
+//                    $div .= "<option value=\"$val\">" . $list[$val]['name'] . "</option>";
+                    $div .= "<option value=\"$k\">" . $val . "</option>";
+                } else if ($item == User::getType()) {
                     $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
                 } else {
                     $div .= "<option selected value=\"$val\" >" . Dropdown::getDropdownName(
@@ -791,6 +792,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     if ($params["item"] != "other"
                         && $params["item"] != "Location"
                         && $params["type"] == "dropdown_multiple") {
+
+                        if ($params["item"] == "Appliance") {
+                            $params['custom_values'] = PluginMetademandsFieldParameter::_unserialize($params['custom_values']);
+                        }
+
                         if (is_array($params['custom_values'])) {
                             $elements += $params['custom_values'];
                         }

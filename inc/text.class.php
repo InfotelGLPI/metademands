@@ -512,15 +512,17 @@ class PluginMetademandsText extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
-        $field['value'] = Glpi\RichText\RichText::getTextFromHtml($field['value']);
+        if ($field['value'] != 0) {
+            $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
+            $field['value'] = Glpi\RichText\RichText::getTextFromHtml($field['value']);
+        }
         return $field['value'];
     }
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
     {
 
-        if ($field['value'] != 0) {
+        if ($field['value'] != "") {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";

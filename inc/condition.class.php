@@ -368,7 +368,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 );
                 $dropdown_fields = [];
                 foreach ($fields as $f) {
-                    $dropdown_fields[$f['id']] = $f['name'] . " (" . $f['id'] . ") ";
+                    $dropdown_fields[$f['id']] = Toolbox::stripslashes_deep($f['name']) . " (" . $f['id'] . ") ";
                 }
                 echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
                 echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
@@ -1222,6 +1222,4 @@ class PluginMetademandsCondition extends CommonDBChild
             }
         }
     }
-
 }
-
