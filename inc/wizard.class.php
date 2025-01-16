@@ -2419,25 +2419,37 @@ class PluginMetademandsWizard extends CommonDBTM
                                    datatype: 'JSON',
                                    data: formDatas,
                                    success: function (response) {
+
                                       eval('valid_condition=' + response );
-                                      if(valid_condition) {
-                                          if(show_button == 1) {
-                                            if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                                      if (valid_condition) {
+                                          if (show_button == 1) {
+                                            if (document.getElementById('nextBtn').innerHTML == submittitle) {
                                                document.getElementById('nextBtn').style.display = 'none';
                                             }
-                                          }  else {
-                                            if(document.getElementById('nextBtn').innerHTML == submittitle){
+                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
+                                                document.getElementById('nextBtn').style.display = 'none';
+                                            }
+                                          } else {
+                                            if (document.getElementById('nextBtn').innerHTML == submittitle){
+                                                document.getElementById('nextBtn').style.display = 'inline';
+                                            }
+                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
                                           }
-                                      }
-                                      else {
-                                         if(show_button == 1 ){
-                                            if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                                      } else {
+                                         if (show_button == 1) {
+                                            if (document.getElementById('nextBtn').innerHTML == submittitle) {
+                                                document.getElementById('nextBtn').style.display = 'inline';
+                                            }
+                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
                                          } else {
-                                            if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                                            if (document.getElementById('nextBtn').innerHTML == submittitle) {
+                                                document.getElementById('nextBtn').style.display = 'none';
+                                            }
+                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                                                 document.getElementById('nextBtn').style.display = 'none';
                                             }
                                          }
@@ -3501,9 +3513,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         $post[$fieldname][$id]
                     ) : $post[$fieldname][$id];
                 } else {
-                    $content[$id]['value'] = (is_array(
-                        $post[$fieldname][$id]
-                    )) ? PluginMetademandsFieldParameter::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
+                    if (is_array($post[$fieldname][$id])) {
+                        $content[$id]['value'] = PluginMetademandsFieldParameter::_serializeArray($post[$fieldname][$id]);
+                    } else {
+                        $content[$id]['value'] = PluginMetademandsFieldParameter::_serialize($post[$fieldname][$id]);
+                    }
                 }
             }
             $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
