@@ -37,6 +37,7 @@ if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
 Session::checkLoginUser();
 $fieldUser = new PluginMetademandsField();
 $readonly = 0;
+$default_use_id_requester_supervisor  = 0;
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
       if ($fields = $fieldUser->find(['type'         => "dropdown_object",
@@ -53,6 +54,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                   if ($fieldparameter->fields['readonly'] == 1) {
                       $readonly = 1;
                   }
+                  if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
+                      $default_use_id_requester_supervisor = 1;
+                  }
                   $_POST["field"] = "field[" . $f['id'] . "]";
               }
           }
@@ -65,8 +69,11 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 }
 
 $users_id_supervisor = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0
-    && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
+if (isset($_POST['value'])
+    && $_POST["value"] > 0
+    && isset($_POST['id_fielduser'])
+    && $_POST["id_fielduser"] > 0
+&& $default_use_id_requester_supervisor == 1) {
    $user = new User();
    if ($user->getFromDB($_POST["value"])) {
        $users_id_supervisor = $user->fields['users_id_supervisor'];
@@ -78,12 +85,19 @@ if (isset($_POST['fields_id'])
     $users_id_supervisor = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
-$opt = ['name'  => $_POST["field"],
-        'value' => $users_id_supervisor,
-    'width' => '200px'];
+$opt = [
+    'name' => $_POST["field"],
+    'value' => $users_id_supervisor,
+    'width' => '200px',
+    'used' => [
+        Session::getLoginUserID()
+    ],
+    'right'  => 'all'
+];
 
 if ($readonly == 1) {
     $opt['display_emptychoice'] = false;
+    $opt['readonly'] = true;
 }
 
 
@@ -91,7 +105,12 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
    $opt['specific_tags'] = ['required' => 'required'];
 }
 
-User::dropdown($opt);
+if ($readonly == 1) {
+    echo User::dropdown($opt);
+    echo Html::hidden($_POST["field"], ['value' => $users_id_supervisor]);
+} else {
+    User::dropdown($opt);
+}
 
 $_POST['name'] = "manager_user";
 $_POST['rand'] = "";
