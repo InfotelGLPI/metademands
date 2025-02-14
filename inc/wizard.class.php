@@ -1371,7 +1371,10 @@ class PluginMetademandsWizard extends CommonDBTM
                         let create = false;
                         if (use_as_step == 1) {
 //                            let nextTab = metademands.currentTab + 1;
-                            let nextTab = Object.values(metademands.listBlock)[0];
+                            const asArray = Array.from(x);
+                            const displayed = asArray.find(e => e.style.display != 'none');
+                            let nextTab = asArray.indexOf(displayed) + 1;
+
                             while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                                 nextTab = nextTab + 1;
                             }
@@ -1383,8 +1386,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                     create = true;
                                 }
                             }
-                    
-                            if (nextTab > x.length) {
+                            
+                            if (nextTab >= x.length) {
                                 document.getElementById('nextBtn').innerHTML = metademands.submittitle;
                             } else {
                                 if (create) {
