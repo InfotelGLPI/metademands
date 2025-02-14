@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.3.18');
+define('PLUGIN_METADEMANDS_VERSION', '3.3.19');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -48,7 +48,7 @@ function plugin_init_metademands()
     $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
     $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_DIR_NOFULL . "/scripts/metademands.js"];
     $PLUGIN_HOOKS['add_css']['metademands'] = ['css/metademands.css'];
-
+//    $PLUGIN_HOOKS['add_css']['metademands'] = ['css/range.scss'];
     // add minidashboard
     $PLUGIN_HOOKS['dashboard_cards']['metademands'] = 'plugin_metademands_hook_dashboard_cards';
 

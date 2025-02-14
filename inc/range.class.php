@@ -54,6 +54,8 @@ class PluginMetademandsRange extends CommonDBTM
     static function showWizardField($data, $namefield, $value, $on_order)
     {
 
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/range.css");
+
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
@@ -100,10 +102,43 @@ class PluginMetademandsRange extends CommonDBTM
         if ($minimal_mandatory > 0) {
             $mandatory = "minimal_mandatory='$minimal_mandatory'";
         }
+        $field = "<div class='range'>";
+        $field .= "<div class='range-slider'>";
 
-        $field = "<div class='range' style='--step:".$opt['step']."; --min:".$opt['min']."; --max:".$opt['max']."'>";
-        $field .= "<input type='range' $required $mandatory isnumber='isnumber' name='$name' value='".$opt['value']."' min='".$opt['min']."' max='".$opt['max']."' step='".$opt['step']."'>";
+        if (!isset($opt['value']) || empty($opt['value'])) {
+            $opt['value'] = 0;
+        }
+        $field .= "<input type='range' id='range' $required $mandatory isnumber='isnumber' name='$name' value='".$opt['value']."' min='".$opt['min']."' max='".$opt['max']."' step='".$opt['step']."'>";
+        $field .= "<div class='sliderticks'>";
+
+        $min  = $opt['min'];
+        $max = $opt['max'];
+        $step = $opt['step'];
+        for ($i = $min; $i <= $max; $i += $step) {
+            $field .= "<span>".$i."</span>";
+        }
         $field .= "</div>";
+        $field .= "</div>";
+
+        $field .= "<div class='rangevalue'>0</div>";
+
+        $field .= "</div>";
+
+        $js = 'const sliderEl = document.querySelector("#range")
+                                        const sliderValue = document.querySelector(".rangevalue")
+                                        
+                                        sliderEl.addEventListener("input", (event) => {
+                                          const tempSliderValue = event.target.value; 
+                                          
+                                          sliderValue.textContent = tempSliderValue;
+                                          
+                                          const progress = (tempSliderValue / sliderEl.max) * 100;
+                                         
+                                          sliderEl.style.background = `linear-gradient(to right, #f50 ${progress}%, #ccc ${progress}%)`;
+                                        })';
+        echo Html::scriptBlock('$(document).ready(function() {'.$js.'});');
+
+        echo Html::scriptBlock('');
         echo $field;
     }
 

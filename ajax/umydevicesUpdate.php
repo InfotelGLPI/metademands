@@ -36,7 +36,6 @@ if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
 
 Session::checkLoginUser();
 
-Toolbox::logInfo($_POST);
 $fieldUser = new PluginMetademandsField();
 $fieldparameter = new PluginMetademandsFieldParameter();
 

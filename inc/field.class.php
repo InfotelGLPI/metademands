@@ -3540,7 +3540,8 @@ class PluginMetademandsField extends CommonDBChild
                 }
             }
             // Get software linked to all owned items
-            if (in_array('Software', $_SESSION["glpiactiveprofile"]["helpdesk_item_type"])) {
+            if (in_array('Software', $itemtypes)
+                && in_array('Software', $_SESSION["glpiactiveprofile"]["helpdesk_item_type"])) {
                 $software_helpdesk_types = array_intersect(
                     $CFG_GLPI['software_types'],
                     $_SESSION["glpiactiveprofile"]["helpdesk_item_type"]

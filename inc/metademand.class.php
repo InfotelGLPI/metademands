@@ -2425,7 +2425,10 @@ JAVASCRIPT
                                         if ($fields_values['type'] == "dropdown_meta"
                                             && $fields_values["item"] == "mydevices") {
                                             $item = explode('_', $v[$id]);
-                                            $parent_fields["items_id"] = [$item[0] => [$item[1]]];
+                                            if (isset($item[0]) && isset($item[1])) {
+                                                $parent_fields["items_id"] = [$item[0] => [$item[1]]];
+                                            }
+
                                         }
                                         if ($fields_values['type'] == "dropdown_object"
                                             && Ticket::isPossibleToAssignType($fields_values["item"])) {
@@ -8542,7 +8545,7 @@ JAVASCRIPT
         //Add new params & update fields
         $fieldMetaparam = new PluginMetademandsFieldParameter();
 
-        if ($version < PLUGIN_METADEMANDS_VERSION) {
+        if ($version < "3.3.11") {
             foreach ($fieldoldparams as $new => $old) {
                 $plugin_metademands_fields_id = $old["id"] ?? 0;
                 $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
@@ -8586,7 +8589,7 @@ JAVASCRIPT
             }
         }
 
-        if ($version == PLUGIN_METADEMANDS_VERSION) {
+        if ($version >= "3.3.11") {
             foreach ($fieldparameters as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
                 $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
@@ -8633,7 +8636,7 @@ JAVASCRIPT
         //Add new custom values & update fields
         $fieldMetacustom = new PluginMetademandsFieldCustomvalue();
         $custom_values = [];
-        if ($version < PLUGIN_METADEMANDS_VERSION) {
+        if ($version < "3.3.11") {
             foreach ($fieldoldcustoms as $new => $old) {
                 $plugin_metademands_fields_id = $old["id"] ?? 0;
                 $custom_values = $old["custom_values"] ?? [];
@@ -8668,7 +8671,7 @@ JAVASCRIPT
             }
         }
 
-        if ($version == PLUGIN_METADEMANDS_VERSION) {
+        if ($version >= "3.3.11") {
             foreach ($fieldcustoms as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
                 $name = $old["name"] ?? "";
@@ -8728,7 +8731,7 @@ JAVASCRIPT
             if ($check_value != 0) {
                 $toUpdate["check_value"] = $check_value;
             }
-            if ($version == PLUGIN_METADEMANDS_VERSION) {
+            if ($version >= "3.3.11") {
                 if ($check_value != 0
                     && isset($mapTableCheckValue[$check_value])) {
                     $toUpdate['check_value'] = $mapTableCheckValue[$check_value];
