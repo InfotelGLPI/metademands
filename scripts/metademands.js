@@ -154,6 +154,10 @@
             $("[id='" + toobserve + "']").change(function () {
                object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
             });
+         }else if ($("[name='" + toobserve + "']").is('select')) {
+            $("[name='" + toobserve + "']").change(function () {
+               object.metademand_checkEmptyField(toupdate, toobserve, $("[name='" + toobserve + "']")[0].value, type);
+            });
          } else {
             $("[name='" + toobserve + "']").change(function () {
                object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
@@ -181,7 +185,7 @@
          }
 
          // console.log(obs.val());
-         // console.log(check_value);
+         //console.log(check_value);
          //check_value is not an array
          
          var op1 = (!Array.isArray(check_value) && (check_value != 0 && obs.val() == check_value || check_value == -1 && obs.val() != 0));
