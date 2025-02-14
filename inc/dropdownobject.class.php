@@ -59,7 +59,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-
+        $field    = "";
         switch ($data['item']) {
             case 'User':
                 $userrand = mt_rand();
@@ -78,8 +78,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
                         'moreparams'   => $paramstooltip];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "tooltip_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
@@ -87,7 +87,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
                 }
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsloc
@@ -102,8 +102,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
                         'moreparams' => $paramsloc];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "location_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
@@ -111,7 +111,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
                 }
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramstit
@@ -126,8 +126,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
                         'moreparams' => $paramstit];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "title_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
@@ -135,7 +135,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
                 }
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramscat
@@ -150,8 +150,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
                         'moreparams' => $paramscat];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "category_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
@@ -159,7 +159,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
                 }
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsgroup
@@ -174,8 +174,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
                         'moreparams' => $paramsgroup];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "group_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
@@ -183,7 +183,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
 
                 }
                 $paramsentity
@@ -199,8 +199,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/uentityUpdate.php",
                     'moreparams'   => $paramsentity];
 
-                $field .= "<script type='text/javascript'>";
-                $field .= "$(function() {";
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
                 Ajax::updateItemJsCode(
                     "entity_user" . $data['id'],
                     PLUGIN_METADEMANDS_WEBDIR . "/ajax/uentityUpdate.php",
@@ -208,7 +208,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     $namefield . "[" . $data['id'] . "]",
                     false
                 );
-                $field .= "});</script>";
+                echo "});</script>";
 
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsdev
@@ -223,8 +223,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
                         'moreparams' => $paramsdev];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "mydevices_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
@@ -232,7 +232,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
                 }
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsman
@@ -247,8 +247,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
                         'moreparams' => $paramsman];
 
-                    $field .= "<script type='text/javascript'>";
-                    $field .= "$(function() {";
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
                     Ajax::updateItemJsCode(
                         "manager_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
@@ -256,7 +256,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $namefield . "[" . $data['id'] . "]",
                         false
                     );
-                    $field .= "});</script>";
+                    echo "});</script>";
                 }
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
@@ -297,42 +297,43 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 if ($data['is_mandatory'] == 1) {
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
-                if ($data['readonly'] == 1) {
-                    $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
-                }
 
                 if ($data['link_to_user'] > 0) {
 
                     echo "<div id='manager_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                    $_POST['field']        = $namefield . "[" . $data['id'] . "]";
-                    $_POST['users_id_supervisor'] = $value;
                     $fieldUser             = new PluginMetademandsField();
                     $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
                         'type' => "dropdown_object",
                         'item' => User::getType()]);
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
-                    if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
-                            && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                    if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit([
+                            'plugin_metademands_fields_id' => $fieldUser->fields['id']
+                        ])) {
+                        $opt['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
+                            && $fieldparameter->fields['default_use_id_requester'] == 0) ?
+                            0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($opt['value'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $opt['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
-
-                    $_POST['id_fielduser'] = $data['link_to_user'];
-                    $_POST['fields_id']    = $data['id'];
-                    $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
-                    if ($data['is_mandatory'] == 1) {
-                        $_POST['is_mandatory'] = 1;
-                    }
-                    include(PLUGIN_METADEMANDS_DIR . "/ajax/umanagerUpdate.php");
+                }
+                echo User::dropdown($opt);
+                if ($opt['readonly']) {
+                    echo Html::hidden($opt['name'], ['value' => $opt['value']]);
+                }
+                if ($data['link_to_user'] > 0) {
                     echo "</div>";
-                } else {
-                    echo User::dropdown($opt);
+                    $optAjax = $opt;
+                    $optAjax['name'] = 'manager_user';
+                    $optAjax['rand'] = '';
+                    $optAjax['id_fielduser'] = $data['link_to_user'];
+                    $optAjax['field'] = $opt['name'];
+                    $optAjax['metademands_id'] = $data['plugin_metademands_metademands_id'];
+                    Ajax::commonDropdownUpdateItem($optAjax);
                 }
                 $relatedTextFields = new PluginMetademandsField();
                 $relatedTextFields = $relatedTextFields->find([
