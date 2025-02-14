@@ -472,7 +472,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         $type = $meta->fields['type'];
                         $helpdesk_category = new PluginServicecatalogCategory();
                         if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
-                            && ($helpdesk_category->fields['comment'] != null
+                            && ($helpdesk_category->fields['comment_incident'] != null
+                                || $helpdesk_category->fields['comment_request'] != null
                                 || $helpdesk_category->fields['service_detail'] != null
                                 || $helpdesk_category->fields['service_users'] != null
                                 || $helpdesk_category->fields['service_ttr'] != null
@@ -2426,14 +2427,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                             if (document.getElementById('nextBtn').innerHTML == submittitle) {
                                                document.getElementById('nextBtn').style.display = 'none';
                                             }
-                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
-                                                document.getElementById('nextBtn').style.display = 'none';
-                                            }
                                           } else {
                                             if (document.getElementById('nextBtn').innerHTML == submittitle){
-                                                document.getElementById('nextBtn').style.display = 'inline';
-                                            }
-                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
                                           }
@@ -2442,14 +2437,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                             if (document.getElementById('nextBtn').innerHTML == submittitle) {
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
-                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
-                                                document.getElementById('nextBtn').style.display = 'inline';
-                                            }
                                          } else {
                                             if (document.getElementById('nextBtn').innerHTML == submittitle) {
-                                                document.getElementById('nextBtn').style.display = 'none';
-                                            }
-                                            if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                                                 document.getElementById('nextBtn').style.display = 'none';
                                             }
                                          }
