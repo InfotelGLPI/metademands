@@ -2055,44 +2055,44 @@ JAVASCRIPT
                 }
             }
             // use options to determine which blocs and fields are hidden
-            foreach($blocs as $bloc => $fields) {
-                if (!in_array($bloc, $hiddenBlocs)) {
-                    foreach($fields as $field) {
-                        if (!in_array($field, $hiddenFields)) {
-                            if (isset($field['options']) && count($field['options'])) {
-                                foreach($field['options'] as $value => $option) {
-                                    // get value for the field
-                                    $formValue = $values['fields'][$field['id']] ?? null;
-                                    if ($formValue === null) {
-                                        // itilcategory case
-                                        if ($field['type'] == 'dropdown_meta' && $field['item'] == 'ITILCategory_Metademands') {
-                                            $formValue = $values['field_plugin_servicecatalog_itilcategories_id'];
-                                        }
-                                    }
-                                    // if condition of the option isn't met, add is related field and bloc to the hidden lists
-                                    if (!self::compareValueToOption(
-                                        $value,
-                                        $field,
-                                        $option,
-                                        $formValue
-                                    )) {
-                                        if ($option['hidden_link']) {
-                                            if (!in_array($option['hidden_link'], $hiddenFields)) {
-                                                $hiddenFields[] = $option['hidden_link'];
-                                            }
-                                        }
-                                        if ($option['hidden_block']) {
-                                            if (!in_array($option['hidden_block'], $hiddenBlocs)) {
-                                                $hiddenBlocs[] = $option['hidden_block'];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+//            foreach($blocs as $bloc => $fields) {
+//                if (!in_array($bloc, $hiddenBlocs)) {
+//                    foreach($fields as $field) {
+//                        if (!in_array($field, $hiddenFields)) {
+//                            if (isset($field['options']) && count($field['options'])) {
+//                                foreach($field['options'] as $value => $option) {
+//                                    // get value for the field
+//                                    $formValue = $values['fields'][$field['id']] ?? null;
+//                                    if ($formValue === null) {
+//                                        // itilcategory case
+//                                        if ($field['type'] == 'dropdown_meta' && $field['item'] == 'ITILCategory_Metademands') {
+//                                            $formValue = $values['field_plugin_servicecatalog_itilcategories_id'];
+//                                        }
+//                                    }
+//                                    // if condition of the option isn't met, add is related field and bloc to the hidden lists
+//                                    if (!self::compareValueToOption(
+//                                        $value,
+//                                        $field,
+//                                        $option,
+//                                        $formValue
+//                                    )) {
+//                                        if ($option['hidden_link']) {
+//                                            if (!in_array($option['hidden_link'], $hiddenFields)) {
+//                                                $hiddenFields[] = $option['hidden_link'];
+//                                            }
+//                                        }
+//                                        if ($option['hidden_block']) {
+//                                            if (!in_array($option['hidden_block'], $hiddenBlocs)) {
+//                                                $hiddenBlocs[] = $option['hidden_block'];
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
             // unset value of all hidden fields
             foreach ($metademands_data as $form_step => $data) {
                 foreach ($data as $form_metademands_id => $line) {
