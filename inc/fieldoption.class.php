@@ -1343,12 +1343,18 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function fieldsLinkScript($data)
     {
+        if (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) {
+            $value = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']];
+        }
         if (isset($data['options'])) {
             $check_values = $data['options'];
 
             if (is_array($check_values)) {
                 if (count($check_values) > 0) {
                     foreach ($check_values as $idc => $check_value) {
+                        if (isset($value) && $value != $idc) {
+                            continue;
+                        }
                         if (!empty($data['options'][$idc]['fields_link'])) {
                             $script = "";
                             $fields_link = $data['options'][$idc]['fields_link'];
