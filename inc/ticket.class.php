@@ -471,27 +471,25 @@ class PluginMetademandsTicket extends CommonDBTM
     public static function getAncestorTickets($tickets_id, $only_metademand = false, $ticket_task_data = [])
     {
         global $DB;
-
-        // Get direct son ticket
-        $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
-                       `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`
-                  FROM glpi_plugin_metademands_tickets_tasks
-                  WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = " . $tickets_id . "";
-        $result = $DB->query($query);
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
-                if (!$only_metademand) {
-                    $data['type']       = PluginMetademandsTask::TICKET_TYPE;
-                    $ticket_task_data[] = $data;
-                }
-                $ticket_task_data = self::getAncestorTickets($data['parent_tickets_id'], $only_metademand, $ticket_task_data);
-            }
-        }
+        $ticket_task_data = [];
+        // Search metademand parent ticket
+//        $query  = "SELECT `tickets_id`,`parent_tickets_id`
+//                  FROM glpi_plugin_metademands_tickets_tasks
+//                  WHERE `tickets_id` = " . $tickets_id . "";
+//        $result = $DB->query($query);
+//        if ($DB->numrows($result)) {
+//            while ($data = $DB->fetchAssoc($result)) {
+//                if (!$only_metademand) {
+//                    $data['type']       = PluginMetademandsTask::TICKET_TYPE;
+//                    $ticket_task_data[] = $data;
+//                }
+//            }
+//        }
 
         // Search metademand parent ticket
-        $query  = "SELECT `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
+        $query  = "SELECT `parent_tickets_id` as tickets_id
                FROM `glpi_plugin_metademands_tickets_metademands`
-               WHERE `glpi_plugin_metademands_tickets_metademands`.`tickets_id` = " . $tickets_id;
+               WHERE `tickets_id` = " . $tickets_id;
         $result = $DB->query($query);
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {

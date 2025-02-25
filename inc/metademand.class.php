@@ -159,7 +159,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                                 true
                             );
                         }
-                        $total = count($tickets_found);
+                        $total = (is_array($tickets_found)) ?count($tickets_found) : 0;
                         $name = self::getTypeName($total);
                     }
 
@@ -6862,8 +6862,9 @@ JAVASCRIPT
         }
 
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
-        $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
+        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
         $tickets_founded = [];
+
         // If ticket is Parent : Check if all sons ticket are closed
         if (count($ticket_metademand_data)) {
             $ticket_metademand_data = reset($ticket_metademand_data);
@@ -6886,7 +6887,8 @@ JAVASCRIPT
         $tickets_next = [];
 
         if ($tovalidate == 0) {
-            if (count($tickets_founded)) {
+            if (is_array($tickets_founded)
+                && count($tickets_founded)) {
                 echo "<div align='center'><table class='tab_cadre_fixe'>";
                 echo "<tr><th colspan='6'>" . __('Demand followup', 'metademands') . "</th></tr>";
                 echo "</table></div>";
