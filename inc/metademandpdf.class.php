@@ -664,7 +664,19 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $label = Toolbox::decodeFromUtf8($label);
                         }
                     }
-
+                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+                    if (in_array($elt['type'], $allowed_customvalues_types)
+                        || (isset($elt['item']) && in_array($elt['item'], $allowed_customvalues_items))
+                    ) {
+                        $field_custom = new PluginMetademandsFieldCustomvalue();
+                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $elt['id']],
+                            "rank")) {
+                            if (count($customs) > 0) {
+                                $elt['custom_values'] = $customs;
+                            }
+                        }
+                    }
                     switch ($elt['type']) {
                         case 'title':
                         case 'title-block':
@@ -830,11 +842,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     break;
                                 case 'other':
                                     if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
-                                        $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
-                                        foreach ($custom_values as $k => $val) {
-                                            if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
-                                                $custom_values[$k] = $ret;
-                                            }
+                                        $custom_values = [];
+                                        foreach ($elt['custom_values'] as $key => $val) {
+                                            $custom_values[$val['id']] = $val['name'];
                                         }
                                         $value = ($fields[$elt['id']] != 0) ? $custom_values[$fields[$elt['id']]] : ' ';
                                     }
@@ -871,15 +881,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $value = " ";
 
                             if (!empty($elt['custom_values']) && $elt['item'] != 'User') {
-                                $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
-                                foreach ($custom_values as $k => $val) {
-                                    if ($elt['item'] != "other") {
-                                        $custom_values[$k] = $elt["item"]::getFriendlyNameById($k);
-                                    } else {
-                                        if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
-                                            $custom_values[$k] = $ret;
-                                        }
-                                    }
+                                $custom_values = [];
+                                foreach ($elt['custom_values'] as $key => $val) {
+                                    $custom_values[$val['id']] = $val['name'];
                                 }
                                 $values = $fields[$elt['id']];
                                 $parseValue = [];
@@ -958,11 +962,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'checkbox':
                             $value = " ";
                             if (!empty($elt['custom_values'])) {
-                                $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
-                                foreach ($custom_values as $k => $val) {
-                                    if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
-                                        $custom_values[$k] = $ret;
-                                    }
+                                $custom_values = [];
+                                foreach ($elt['custom_values'] as $key => $val) {
+                                    $custom_values[$val['id']] = $val['name'];
                                 }
                                 $values = PluginMetademandsFieldParameter::_unserialize($fields[$elt['id']]);
                                 $custom_checkbox = [];
@@ -987,11 +989,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'radio' :
                             $value = " ";
                             if (!empty($elt['custom_values'])) {
-                                $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
-                                foreach ($custom_values as $k => $val) {
-                                    if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
-                                        $custom_values[$k] = $ret;
-                                    }
+                                $custom_values = [];
+                                foreach ($elt['custom_values'] as $key => $val) {
+                                    $custom_values[$val['id']] = $val['name'];
                                 }
                                 if (isset($fields[$elt['id']]) && $fields[$elt['id']] != NULL) {
                                     $values = PluginMetademandsFieldParameter::_unserialize($fields[$elt['id']]);
@@ -1002,7 +1002,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     }
                                 }
                                 $value = Toolbox::stripslashes_deep($value);
-                                if ($value != null && $fields[$elt['id']] != null) {
+                                if ($value != null && isset($fields[$elt['id']]) && $fields[$elt['id']] != null) {
                                     $value = Toolbox::decodeFromUtf8($value);
                                     // Draw line
                                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
