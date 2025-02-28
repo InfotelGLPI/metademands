@@ -131,7 +131,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $list, $value);
+                $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
 
                 $field .= self::loadMultiselectScript($namefield, $data['id']);
             } else {
@@ -175,6 +175,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                     $field .= self::loadMultiselectDiv(
                         $namefield,
+                        $data['plugin_metademands_metademands_id'],
                         $data['id'],
                         $data['item'],
                         $required,
@@ -273,7 +274,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $list, $value);
+                $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
 
                 $field .= self::loadMultiselectScript($namefield, $data['id']);
             } else {
@@ -294,7 +295,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         echo $field;
     }
 
-    static function loadMultiselectDiv($namefield, $id, $item, $required, $list, $value)
+    static function loadMultiselectDiv($namefield, $plugin_metademands_metademands_id, $id, $item, $required, $list, $value)
     {
 
         $name = $namefield . "[" . $id . "][]";
@@ -329,8 +330,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
             foreach ($value as $k => $val) {
                 if ($item == 'other') {
-//                    $div .= "<option value=\"$val\">" . $list[$val]['name'] . "</option>";
-                    $div .= "<option value=\"$k\">" . $val . "</option>";
+                    if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$id])) {
+                        $div .= "<option value=\"$val\">" . $list[$val]['name'] . "</option>";
+                    } else {
+                        $div .= "<option value=\"$k\">" . $val . "</option>";
+                    }
                 } else if ($item == User::getType()) {
                     $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
                 } else {
