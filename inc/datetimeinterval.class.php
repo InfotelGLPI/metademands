@@ -65,7 +65,7 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
         ];
 
         $use_future_date = $data['use_future_date'];
-        if (isset($use_future_date) && !empty($use_future_date)) {
+        if ($value == null && isset($use_future_date) && !empty($use_future_date)) {
             $opt['mindate'] = date("Y-m-d");
         }
 
@@ -75,7 +75,7 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
             $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
             $mindate = date('Y-m-d', strtotime("+$addDays day", $startDate));
             $use_future_date = $data['use_future_date'];
-            if (isset($use_future_date) && !empty($use_future_date)) {
+            if ($value == null && isset($use_future_date) && !empty($use_future_date)) {
                 $opt['mindate'] = $mindate;
             }
         }
