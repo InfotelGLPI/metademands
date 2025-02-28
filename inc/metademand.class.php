@@ -4762,24 +4762,69 @@ JAVASCRIPT
                 $self = new self();
                 $self->getFromDB($metademands_id);
                 if ($self->getField('hide_no_field') == 1) {
-                    if ($field['type'] == 'radio' && ($field['value'] === "" || (is_array($field['value']) && count(
-                                    $field['value']
-                                ) == 0))) {
+                    if ($field['type'] == 'radio'
+                        && ($field['value'] == ""
+                            || (is_array($field['value'])
+                                && count($field['value']) == 0))
+                    ) {
                         continue;
                     }
-                    if ($field['type'] == 'number' && $field['value'] == "0") {
+                    if ($field['type'] == 'number'
+                        && $field['value'] == "0") {
                         continue;
                     }
-                    if ($field['type'] == 'range' && $field['value'] == "0") {
+                    if ($field['type'] == 'range'
+                        && $field['value'] == "0") {
                         continue;
                     }
-                    if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
+                    if ($field['type'] == 'checkbox'
+                        && ($field['value'] == "" || $field['value'] == "0"
+                            || (is_array($field['value'])
+                                && count($field['value']) == 0))
+                    ) {
                         continue;
                     }
-                    if ($field['type'] == 'yesno' && $field['value'] != "2") {
+                    if ($field['type'] == 'yesno'
+                        && $field['value'] != "2") {
                         continue;
                     }
-                    if ($field['type'] == 'dropdown_meta' && $field['value'] == "0") {
+                    if ($field['type'] == 'dropdown_meta'
+                        && ($field['value'] == "" || $field['value'] == "0")) {
+                        continue;
+                    }
+                    if ($field['type'] == 'informations') {
+                        continue;
+                    }
+                    if ($field['type'] == 'number'
+                        && ($field['value'] == "" || $field['value'] == "0")) {
+                        continue;
+                    }
+                    if ($field['type'] == 'text'
+                        && $field['value'] == "") {
+                        continue;
+                    }
+                    if ($field['type'] == 'textarea'
+                        && $field['value'] == "") {
+                        continue;
+                    }
+                    if ($field['type'] == 'dropdown'
+                        && ($field['value'] == "" || $field['value'] == "0")) {
+                        continue;
+                    }
+                    if ($field['type'] == 'dropdown_object'
+                        && ($field['value'] == "" || $field['value'] == "0")) {
+                        continue;
+                    }
+                    if ($field['type'] == 'dropdown_multiple'
+                        && $field['value'] == "") {
+                        continue;
+                    }
+                    if ($field['type'] == 'date'
+                        && $field['value'] == "") {
+                        continue;
+                    }
+                    if ($field['type'] == 'datetime'
+                        && $field['value'] == "") {
                         continue;
                     }
                 }

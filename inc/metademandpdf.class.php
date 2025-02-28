@@ -556,22 +556,83 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                 $meta = new PluginMetademandsMetademand();
                 $meta->getFromDB($metademands_id);
                 if ($meta->getField('hide_no_field') == 1) {
-                    if ($elt['type'] == 'radio' && $fields[$elt['id']] === "") {
+                    if ($elt['type'] == 'radio'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == ""
+                            || (is_array($fields[$elt['id']])
+                                && count($fields[$elt['id']]) == 0))
+                    ) {
                         continue;
                     }
-                    if ($elt['type'] == 'number' && $fields[$elt['id']] == "0") {
+                    if ($elt['type'] == 'number'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "0") {
                         continue;
                     }
-                    if ($elt['type'] == 'range' && $fields[$elt['id']] == "0") {
+                    if ($elt['type'] == 'range'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "0") {
                         continue;
                     }
-                    if ($elt['type'] == 'checkbox' && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                    if ($elt['type'] == 'checkbox'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0"
+                            || (is_array($fields[$elt['id']])
+                                && count($fields[$elt['id']]) == 0))
+                    ) {
                         continue;
                     }
-                    if ($elt['type'] == 'yesno' && $fields[$elt['id']] != "2") {
+                    if ($elt['type'] == 'yesno'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] != "2") {
                         continue;
                     }
-                    if ($elt['type'] == 'dropdown_meta' && $fields[$elt['id']] == "0") {
+                    if ($elt['type'] == 'dropdown_meta'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        continue;
+                    }
+                    if ($elt['type'] == 'informations') {
+                        continue;
+                    }
+                    if ($elt['type'] == 'number'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        continue;
+                    }
+                    if ($elt['type'] == 'text'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'textarea'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'dropdown'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        continue;
+                    }
+                    if ($elt['type'] == 'dropdown_object'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        continue;
+                    }
+                    if ($elt['type'] == 'dropdown_multiple'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'date'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'datetime'
+                        && isset($fields[$elt['id']])
+                        && $fields[$elt['id']] == "") {
                         continue;
                     }
                 }
