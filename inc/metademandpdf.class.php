@@ -214,7 +214,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         list($width, $height) = $this->imageResize($width, $height, $target);
 
         if (!Plugin::isPluginActive('orderfollowup')) {
-            $this->CellTitleValue($largeurCoteTitre, 20, $this->id, 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
+            $this->CellTitleValue($largeurCoteTitre, 20, "", 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
             $this->Image(
                 $image,
                 $this->margin_left + 5,
