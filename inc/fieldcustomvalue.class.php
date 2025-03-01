@@ -50,6 +50,10 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         'basket',
     ];
 
+    public static $blacklisted_custom_types = [
+        'dropdown_object',
+    ];
+
     public static $allowed_customvalues_types = [
         'checkbox',
         'radio',
@@ -97,11 +101,12 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         $allowed_customvalues_types = self::$allowed_customvalues_types;
         $allowed_custom_types = self::$allowed_custom_types;
         $allowed_customvalues_items = self::$allowed_customvalues_items;
-
+        $blacklisted_custom_types = self::$blacklisted_custom_types;
         if (isset($item->fields['type'])
             && in_array($item->fields['type'], $allowed_customvalues_types)
             || in_array($item->fields['type'], $allowed_custom_types)
-            || in_array($item->fields['item'], $allowed_customvalues_items)) {
+            || in_array($item->fields['item'], $allowed_customvalues_items)
+        && !in_array($item->fields['type'], $blacklisted_custom_types)) {
             $nb = self::getNumberOfCustomValuesForItem($item);
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
         }
