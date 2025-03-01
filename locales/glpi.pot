@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-28 13:24+0000\n"
+"POT-Creation-Date: 2025-03-01 14:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1498 inc/metademand.class.php:7873
+#: hook.php:1501 inc/metademand.class.php:7873
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1516 inc/metademand.class.php:7996
+#: hook.php:1519 inc/metademand.class.php:7996
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1533 inc/metademand.class.php:8053
+#: hook.php:1536 inc/metademand.class.php:8053
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1550 inc/metademand.class.php:7925
+#: hook.php:1553 inc/metademand.class.php:7925
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -133,12 +133,12 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: ajax/viewfieldinfos.php:43 inc/fieldcustomvalue.class.php:208
+#: ajax/viewfieldinfos.php:43 inc/fieldcustomvalue.class.php:213
 #: inc/fieldparameter.class.php:210
 msgid "Field informations"
 msgstr ""
 
-#: ajax/viewfieldinfos.php:54 inc/fieldcustomvalue.class.php:219
+#: ajax/viewfieldinfos.php:54 inc/fieldcustomvalue.class.php:224
 #: inc/fieldparameter.class.php:221
 msgid "Example"
 msgstr ""
@@ -467,14 +467,14 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/checkbox.class.php:172 inc/dropdownmeta.class.php:448
-#: inc/dropdownmultiple.class.php:543 inc/fieldcustomvalue.class.php:506
+#: inc/dropdownmultiple.class.php:543 inc/fieldcustomvalue.class.php:511
 #: inc/radio.class.php:170
 msgid "Rank"
 msgstr ""
 
 #: inc/checkbox.class.php:193 inc/dropdownmeta.class.php:472
 #: inc/dropdownmultiple.class.php:480 inc/dropdownmultiple.class.php:567
-#: inc/fieldcustomvalue.class.php:526 inc/radio.class.php:191
+#: inc/fieldcustomvalue.class.php:531 inc/radio.class.php:191
 #: inc/yesno.class.php:98
 msgid "Default value"
 msgid_plural "Default values"
@@ -742,8 +742,8 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:476 inc/fieldcustomvalue.class.php:64
-#: inc/fieldcustomvalue.class.php:268 inc/fieldparameter.class.php:82
+#: inc/dropdownmultiple.class.php:476 inc/fieldcustomvalue.class.php:68
+#: inc/fieldcustomvalue.class.php:273 inc/fieldparameter.class.php:82
 msgid "Custom value"
 msgid_plural "Custom values"
 msgstr[0] ""
@@ -891,21 +891,21 @@ msgstr ""
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:462
+#: inc/fieldcustomvalue.class.php:467
 msgid "Reset and import custom values"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:473
+#: inc/fieldcustomvalue.class.php:478
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:474
+#: inc/fieldcustomvalue.class.php:479
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:599
+#: inc/fieldcustomvalue.class.php:604
 msgid "You can't add a custom value without name"
 msgstr ""
 
