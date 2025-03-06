@@ -202,7 +202,7 @@ class PluginMetademandsTicketField extends CommonDBChild
                 || $field['type'] == 'signature') {
                 continue;
             }
-            $res[$field['id']] = $field['name'];
+            $res[$field['id']] = Toolbox::stripslashes_deep($field['name']);
             if ($field['type'] == 'dropdown_object' && $field['item'] == User::getType()) {
                 $res[$field['id'] . ".login"] = $field['name'] . " : " . __('Login');
                 $res[$field['id'] . ".name"] = $field['name'] . " : " . __('Name');

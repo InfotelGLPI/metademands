@@ -321,7 +321,8 @@ elseif (isset($_POST['previous'])) {
     if (Session::getCurrentInterface() == 'central') {
         Html::header($name, '', "helpdesk", "pluginmetademandsmenu");
     } else {
-        if (Plugin::isPluginActive('servicecatalog')) {
+        if (Plugin::isPluginActive('servicecatalog')
+        && Session::haveRight("plugin_servicecatalog", READ)) {
             PluginServicecatalogMain::showDefaultHeaderHelpdesk($name);
         } else {
             Html::helpHeader($name);
@@ -420,7 +421,8 @@ elseif (isset($_POST['previous'])) {
     }
 
     if (Session::getCurrentInterface() != 'central'
-        && Plugin::isPluginActive('servicecatalog')) {
+        && Plugin::isPluginActive('servicecatalog')
+        && Session::haveRight("plugin_servicecatalog", READ)) {
         PluginServicecatalogMain::showNavBarFooter('metademands');
     }
 
@@ -594,7 +596,8 @@ else {
     if (Session::getCurrentInterface() == 'central') {
         Html::header($name, '', "helpdesk", "pluginmetademandsmenu", "wizard");
     } else {
-        if (Plugin::isPluginActive('servicecatalog')) {
+        if (Plugin::isPluginActive('servicecatalog')
+            && Session::haveRight("plugin_servicecatalog", READ)) {
 
             PluginServicecatalogMain::showDefaultHeaderHelpdesk($name);
         } else {
@@ -651,7 +654,8 @@ else {
     $wizard->showWizard($options);
 
     if (Session::getCurrentInterface() != 'central'
-        && Plugin::isPluginActive('servicecatalog')) {
+        && Plugin::isPluginActive('servicecatalog')
+        && Session::haveRight("plugin_servicecatalog", READ)) {
         PluginServicecatalogMain::showNavBarFooter('metademands');
     }
 

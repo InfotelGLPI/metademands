@@ -217,10 +217,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             'type' => "dropdown_object",
                             'item' => User::getType()
                         ]);
+                        $_POST['value'] = 0;
+                        if (!empty($fieldUser->fields)) {
+                            $params = PluginMetademandsField::getAllParamsFromField($fieldUser);
+                            $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                        }
 
-                        $params = PluginMetademandsField::getAllParamsFromField($fieldUser);
-
-                        $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id'] = $data['id'];
                         $_POST['limit'] = json_encode($default_values);

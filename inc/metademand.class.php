@@ -5619,7 +5619,10 @@ JAVASCRIPT
                                                 $result,
                                                 $parent_fields_id,
                                                 true);
-                                            $str = str_replace("#" . $title . "#", $v, $str);
+                                            if ($v != null) {
+                                                $str = str_replace("#" . $title . "#", $v, $str);
+                                            }
+
                                             if (!is_null($v) && !empty($v)) {
                                                 $find = true;
                                             }
@@ -6032,7 +6035,6 @@ JAVASCRIPT
                     // Add son ticket
                     //                $son_ticket_data['_disablenotif']      = true;
                     $son_ticket_data['name'] = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
-                    $son_ticket_data['name'] = trim($son_ticket_data['name']);
                     $son_ticket_data['name'] = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);
                     $son_ticket_data['type'] = $parent_fields['type'];
                     $son_ticket_data['entities_id'] = $parent_fields['entities_id'];

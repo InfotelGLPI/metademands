@@ -461,7 +461,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $cond = [];
                 $field = "";
 
-                if (!empty($data['custom_values']) && $data['item'] == 'Group') {
+                if (!empty($data['custom_values'])) {
                     $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
                     foreach ($options as $k => $val) {
                         if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
@@ -523,6 +523,25 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     if ($data['item'] == "PluginResourcesResource") {
                         $opt['showHabilitations'] = true;
                     }
+
+//                    $container_class = new $data['item']();
+//                    $crit = ["entities_id" => $_SESSION['glpiactiveentities']];
+//
+//                    if ($container_class->maybeDeleted()) {
+//                        $crit['is_deleted'] = 0;
+//                    }
+//                    if ($container_class->maybeTemplate()) {
+//                        $crit['is_template'] = 0;
+//                    }
+//                    $crit['is_helpdesk_visible'] = 0;
+//
+//                    $objets = $container_class->find($crit);
+//                    $used = [];
+//                    foreach ($objets as $obj) {
+//                        $used[] = $obj['id'];
+//                    }
+//                    $opt['used'] = $used;
+
                     $container_class = new $data['item']();
                     $field           = "";
                     $field           .= $container_class::dropdown($opt);
@@ -776,8 +795,12 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     //               } else {
                     $name = "check_value";
                     //               }
+
+
                     $params['item']::Dropdown(["name" => $name,
-                        "value" => $params['check_value'], 'used' => $already_used]);
+                                            "value" => $params['check_value'],
+                                            'used' => $already_used,
+                        'toadd' => ['-1' => __('Not null value', 'metademands')]]);
                 } else {
                     if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
                         $elements[-1] = __('Not null value', 'metademands');
@@ -828,7 +851,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         echo Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
                         if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
-                            $elements = [];
+                            $elements[-1] = __('Not null value', 'metademands');
                             if (is_array(json_decode($params['custom_values'], true))) {
                                 $elements += json_decode($params['custom_values'], true);
                             }
@@ -839,7 +862,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                             }
                             echo $elements[$params['check_value']];
                         } else {
-                            $elements = [];
+                            $elements[-1] = __('Not null value', 'metademands');
                             if (is_array(json_decode($params['custom_values'], true))) {
                                 $elements += json_decode($params['custom_values'], true);
                             }

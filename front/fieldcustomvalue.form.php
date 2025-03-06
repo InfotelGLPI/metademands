@@ -90,7 +90,7 @@ if (isset($_POST["add"])) {
         }
     } elseif ($_POST['type'] == "yesno") {
         $input["custom"] = $_POST['custom'];
-        $input["default"] = $_POST['default'];
+        $input["default"] = 0;
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"] = $fieldparam->getID();

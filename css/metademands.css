@@ -364,9 +364,9 @@ textarea.invalid,
     height: 15px;
     width: 15px;
     margin: 0 2px;
-    background-color: var(--tblr-gray-500);
+    background-color: #c3c9d2;
     border: none;
-    border-radius: 50%;
+    /*border-radius: 50%;*/
     display: inline-block;
     opacity: 0.5;
 }
