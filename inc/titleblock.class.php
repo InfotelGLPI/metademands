@@ -176,14 +176,14 @@ JAVASCRIPT
         //to true automatickly if another field on the block is loaded
         $result[$field['rank']]['display'] = false;
         if ($formatAsTable) {
-            $colspan = $is_order ? 10 : 2;
+            $colspan = $is_order ? 12 : 2;
             $result[$field['rank']]['content'] .= "<th colspan='$colspan'>";
         }
         $result[$field['rank']]['content'] .= $label;
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</th>";
         }
-
+        
         return $result;
     }
 

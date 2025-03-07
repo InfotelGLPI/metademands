@@ -178,9 +178,9 @@ class PluginMetademandsDateinterval extends CommonDBTM
         return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
-
+        $colspan = $is_order ? 3 : 1;
         if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
             $label2 = Toolbox::stripslashes_deep($field['label2']);
             if ($field['label2'] != NULL) {
@@ -190,20 +190,20 @@ class PluginMetademandsDateinterval extends CommonDBTM
 
         $result[$field['rank']]['display'] = true;
         if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "<td $style_title>";
+            $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
         }
         $result[$field['rank']]['content'] .= $label;
         if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</td><td>";
+            $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
         }
         $result[$field['rank']]['content'] .= Html::convDate($field['value']);
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td></tr>";
-            $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
+            $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title colspan='$colspan'>";
         }
         $result[$field['rank']]['content'] .= $label2;
         if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</td><td>";
+            $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
         }
         $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
         if ($formatAsTable) {

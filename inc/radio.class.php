@@ -233,7 +233,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='4' align='left' id='show_custom_fields'>";
-            PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, true, true);
+            PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, true, true, $params["plugin_metademands_fields_id"]);
             echo "</td>";
             echo "</tr>";
             PluginMetademandsFieldCustomvalue::importCustomValue($params);
@@ -246,7 +246,7 @@ class PluginMetademandsRadio extends CommonDBTM
             if (isset($params['plugin_metademands_fields_id'])) {
                 echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
             }
-            PluginMetademandsFieldCustomvalue::initCustomValue(-1, true, true);
+            PluginMetademandsFieldCustomvalue::initCustomValue(-1, true, true, $params["plugin_metademands_fields_id"]);
             echo "</td>";
             echo "</tr>";
             Html::closeForm();
@@ -853,19 +853,20 @@ class PluginMetademandsRadio extends CommonDBTM
         }
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
+        $colspan = $is_order ? 6 : 1;
         if (!empty($field['custom_values']) && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title>";
+                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td>";
+                $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field, $label, $lang);
             if ($formatAsTable) {
@@ -875,7 +876,7 @@ class PluginMetademandsRadio extends CommonDBTM
             if ($field['value']) {
                 $result[$field['rank']]['display'] = true;
                 if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "<td>";
+                    $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                 }
                 $result[$field['rank']]['content'] .= $label;
                 if ($formatAsTable) {

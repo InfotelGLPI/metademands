@@ -15,14 +15,15 @@ plugin_metademands_redipsInit = function () {
         var old_index = sourceRowIndex;
         var new_index = pos[1];
         var field = document.getElementById('fields_id').value;
-
+        var type = document.getElementById('type').value;
         jQuery.ajax({
             type: "POST",
             url: "../ajax/reorder.php",
             data: {
                old_order: old_index,
                new_order: new_index,
-               field_id: field
+               field_id: field,
+                type: type
             }
          })
             .fail(function () {

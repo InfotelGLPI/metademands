@@ -150,7 +150,8 @@ class PluginMetademandsDraft_Value extends CommonDBTM
                                 $field['value'] = json_encode($values[$fields_id]);
                                 $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                             }
-                        } elseif ($metafield->fields["type"] == "free_input") {
+                        } elseif ($metafield->fields["type"] == "freetable") {
+
                             if (is_array($values[$fields_id])) {
                                 $table = [];
                                 foreach ($values[$fields_id] as $k => $item) {
@@ -301,7 +302,7 @@ class PluginMetademandsDraft_Value extends CommonDBTM
                                 $field['value'] = json_encode($values[$fields_id]);
                                 $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                             }
-                        } elseif ($metafield->fields["type"] == "free_input") {
+                        } elseif ($metafield->fields["type"] == "freetable") {
                             if (is_array($values[$fields_id])) {
                                 $table = [];
                                 foreach ($values[$fields_id] as $k => $item) {
@@ -313,12 +314,13 @@ class PluginMetademandsDraft_Value extends CommonDBTM
                                 $field['value'] = json_encode($values[$fields_id], JSON_UNESCAPED_UNICODE);
                             }
 
-
                             $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
+                            Toolbox::logInfo($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id]);
                         } else {
                             $field['value'] = json_encode($values[$fields_id]);
                             $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                         }
+
                     }
                 }
                 $field['value2'] = '';
@@ -358,6 +360,7 @@ class PluginMetademandsDraft_Value extends CommonDBTM
         $draft_value = new self();
         $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);
 
+        unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['freetables']);
         foreach ($drafts_values as $values) {
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);
@@ -372,6 +375,12 @@ class PluginMetademandsDraft_Value extends CommonDBTM
                 $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(
                     json_decode($values['value2'], true)
                 ) ?? Toolbox::addslashes_deep($values['value2']);
+            }
+            $field = new PluginMetademandsField();
+            if ($field->getFromDB($values['plugin_metademands_fields_id'])) {
+                if ($field->fields['type'] == 'freetable') {
+                    $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['freetables'][$values['plugin_metademands_fields_id']] = json_decode($values['value'], true);
+                }
             }
         }
     }

@@ -75,12 +75,19 @@ if (isset($_POST['save_draft'])) {
                 }
             }
 
-            if (Plugin::isPluginActive('orderfollowup')) {
-                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-                    foreach ($freeinputs as $freeinput) {
-                        $_POST['freeinputs'][] = $freeinput;
-                    }
+//            if (Plugin::isPluginActive('orderfollowup')) {
+//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+//                    foreach ($freeinputs as $freeinput) {
+//                        $_POST['freeinputs'][] = $freeinput;
+//                    }
+//                }
+//            }
+
+            if (isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'])) {
+                $freetables = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'];
+                foreach ($freetables as $field_id => $freetable) {
+                    $_POST['freetables'][$field_id] = $freetable;
                 }
             }
 
@@ -128,8 +135,14 @@ if (isset($_POST['save_draft'])) {
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }
 
-                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
-                                $_POST['field'][$id] = $_POST['freeinputs'];
+                            if ($value['type'] == 'freetable'
+                                && isset($_POST['freetables'])
+                                && !empty($_POST['freetables'])) {
+                                if (isset($_POST['freetables'][$id])) {
+                                    $_POST['field'][$id] = $_POST['freetables'][$id];
+                                } else {
+                                    $_POST['field'][$id] = [];
+                                }
                             }
                         }
                     }

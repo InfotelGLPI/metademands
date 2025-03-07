@@ -1,11 +1,10 @@
 <?php
+
 /*
- * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2003-2019 by the Metademands Development Team.
 
- https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
 
  LICENSE
@@ -28,34 +27,26 @@
  */
 
 include('../../../inc/includes.php');
-header("Content-Type: text/html; charset=UTF-8");
+
+header("Content-Type: application/json; charset=UTF-8");
+
 Html::header_nocache();
 
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkLoginUser();
 
-if (!isset($_POST['field_id'])) {
-    $_POST['field_id'] = 0;
-}
-switch ($_POST['action']) {
-    case 'add':
-        $field = new PluginMetademandsField();
-        $type = "";
+$data_by_free = [];
 
-        if ($field->getFromDB($_POST['field_id'])) {
-            $type = $field->fields['type'];
-            if ($type != "freetable") {
-                PluginMetademandsFieldCustomvalue::addNewValue(
-                    $_POST['count'],
-                    $_POST['display_comment'],
-                    $_POST['display_default']
-                );
-            } else {
-                PluginMetademandsFreetablefield::addNewValue(
-                    $_POST['count'],
-                );
-            }
-        }
-        break;
+$fields_id = $_POST['fields_id'];
+$linebyfield = 'lines'.$fields_id;
+
+if (isset($_POST[$linebyfield])) {
+    foreach ($_POST[$linebyfield] as $key => $data) {
+        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'][$fields_id][$data['id']] = $data;
+    }
 }
 
-Html::ajaxFooter();
+if (isset($_POST['remove'])) {
+    if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'][$fields_id])) {
+        unset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'][$fields_id][$_POST['remove']]);
+    }
+}

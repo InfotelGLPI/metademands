@@ -164,20 +164,20 @@ class PluginMetademandsLink extends CommonDBTM
         return $field['value'];
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
-
+        $colspan = $is_order ? 6 : 1;
         if ($field['value'] != 0) {
             if (!str_starts_with($field['value'], 'http://') && !str_starts_with($field['value'], 'https://')) {
                 $field['value'] = "http://" . $field['value'];
             }
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title>";
+                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td>";
+                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . self::getFieldValue(
                     $field

@@ -60,6 +60,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'radio',
         'number',
         'range',
+        'freetable',
         'basket',
         'date',
         'time',
@@ -337,6 +338,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                     break;
                 case 'range':
                     break;
+                case 'freetable':
+                    break;
                 case 'basket':
                     break;
                 case 'date':
@@ -448,7 +451,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             && $params['type'] != 'number'
             && $params['type'] != 'range'
             && $params['type'] != 'basket'
-            && $params['type'] != 'link') {
+            && $params['type'] != 'link'
+            && $params['type'] != 'freetable') {
             echo "<td>";
             echo __('Use this field as object field', 'metademands');
             echo "</td>";
@@ -618,7 +622,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                     }
                 }
             }
-
             Dropdown::showFromArray(
                 'used_by_ticket',
                 $ticket_fields,
@@ -630,7 +633,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         if ($params['type'] != "title"
             && $params['type'] != "title-block"
             && $params['type'] != "informations"
-            && $params['type'] != 'link') {
+            && $params['type'] != 'link'
+            && $params['type'] != "freetable") {
             if (Plugin::isPluginActive('fields')) {
                 echo "<td>";
                 echo __('Link this to a plugin "fields" field', 'metademands');
@@ -968,7 +972,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         }
     }
 
-    private static function getPluginGrantedFields(int|string $plug, $params)
+    private static function getPluginGrantedFields($plug, $params)
     {
         global $PLUGIN_HOOKS;
 

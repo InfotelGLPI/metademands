@@ -597,6 +597,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'range':
                 break;
+            case 'freetable':
+                break;
             case 'date':
                 break;
             case 'time':
@@ -779,6 +781,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'range':
                 break;
+            case 'freetable':
+                break;
             case 'date':
                 break;
             case 'time':
@@ -877,6 +881,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'number':
                 break;
             case 'range':
+                break;
+            case 'freetable':
                 break;
             case 'date':
                 break;
@@ -1308,6 +1314,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'range':
                 break;
+            case 'freetable':
+                break;
             case 'date':
                 break;
             case 'time':
@@ -1444,6 +1452,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'range':
                 break;
+            case 'freetable':
+                break;
             case 'date':
                 break;
             case 'time':
@@ -1532,6 +1542,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'number':
                 break;
             case 'range':
+                break;
+            case 'freetable':
                 break;
             case 'date':
                 break;

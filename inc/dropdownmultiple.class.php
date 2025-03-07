@@ -613,7 +613,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                         echo "<tr class='tab_bg_1'>";
                         echo "<td colspan='4' align='left' id='show_custom_fields'>";
-                        PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true);
+                        PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"]);
                         echo "</td>";
                         echo "</tr>";
                         PluginMetademandsFieldCustomvalue::importCustomValue($params);
@@ -625,7 +625,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         if (isset($params['plugin_metademands_fields_id'])) {
                             echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
                         }
-                        PluginMetademandsFieldCustomvalue::initCustomValue(-1, false, true);
+                        PluginMetademandsFieldCustomvalue::initCustomValue(-1, false, true, $params["plugin_metademands_fields_id"]);
                         echo "</td>";
                         echo "</tr>";
                         Html::closeForm();
@@ -933,10 +933,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
-                    'Next',
-                    'metademands'
-                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -1088,10 +1085,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
-                    'Next',
-                    'metademands'
-                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -1861,8 +1855,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $label,
         $field,
         $return_value,
-        $lang
+        $lang,
+        $is_order = false
     ) {
+        $colspan = $is_order ? 6 : 1;
+
         if (!empty($field['custom_values'])
             && $field['item'] != 'User'
             && $field['item'] != 'Location'
@@ -1870,11 +1867,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             && $field['item'] != 'Appliance' && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title>";
+                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td>";
+                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
             if ($formatAsTable) {
@@ -1884,11 +1881,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title>";
+                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td>";
+                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
             if ($formatAsTable) {
@@ -1970,11 +1967,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title>";
+                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td>";
+                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $dataItems;
             if ($formatAsTable) {

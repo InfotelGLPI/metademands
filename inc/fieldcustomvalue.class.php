@@ -32,7 +32,7 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- * Class PluginMetademandsFieldParameter
+ * Class PluginMetademandsFieldCustomvalue
  */
 class PluginMetademandsFieldCustomvalue extends CommonDBTM
 {
@@ -139,7 +139,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $field_custom = new PluginMetademandsFieldCustomvalue();
+        $field_custom = new self();
         if ($field_custom->find(["plugin_metademands_fields_id" => $item->getID()])) {
             $field_custom->showCustomValuesForm($field_custom->getID(), ['parent' => $item]);
         } else {
@@ -423,7 +423,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
      * @param bool $display_comment
      * @param bool $display_default
      */
-    public static function initCustomValue($count, $display_comment = false, $display_default = false)
+    public static function initCustomValue($count, $display_comment = false, $display_default = false, $plugin_metademands_fields_id = 0)
     {
         Html::requireJs("metademands");
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
@@ -435,7 +435,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
 
         echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer;'
-            onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");'
+            onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
         echo "<td align='left' id='show_custom_fields'>";
@@ -498,6 +498,8 @@ JAVASCRIPT
     public static function addNewValue($rank, $display_comment, $display_default)
     {
 
+
+
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr class='tab_bg_1'>";
 
@@ -508,7 +510,6 @@ JAVASCRIPT
         echo Html::input($name, ['size' => 50]);
         echo "</span>";
         echo "</td>";
-
 
         echo "<td id='show_custom_fields'>";
         echo '<span id=\'comment_values' . $rank . '\'>';
@@ -528,6 +529,7 @@ JAVASCRIPT
             $value = 0;
             Dropdown::showYesNo($name, $value);
         }
+
         echo "</span>";
         echo "</td>";
 

@@ -731,13 +731,13 @@ class PluginMetademandsMetademand extends CommonDBTM
             'datatype' => 'bool',
         ];
 
-        //      $tab[] = [
-        //         'id'       => '4',
-        //         'table'    => $this->getTable(),
-        //         'field'    => 'icon',
-        //         'name'     => __('Icon'),
-        //         'datatype' => 'text',
-        //      ];
+        $tab[] = [
+           'id'       => '4',
+           'table'    => $this->getTable(),
+           'field'    => 'hide_no_field',
+           'name'     => __('Hide the "No" and empty values of fields in the tickets', 'metademands'),
+           'datatype' => 'bool',
+        ];
 
         $tab[] = [
             'id' => '5',
@@ -2937,11 +2937,13 @@ JAVASCRIPT
                                                                 $result,
                                                                 $parent_fields_id,
                                                                 true);
-                                                            $line['tasks'][$key]['tickettasks_name'] = str_replace(
-                                                                "#" . $title . "#",
-                                                                $value,
-                                                                $line['tasks'][$key]['tickettasks_name']
-                                                            );
+                                                            if ($value != null) {
+                                                                $line['tasks'][$key]['tickettasks_name'] = str_replace(
+                                                                    "#" . $title . "#",
+                                                                    $value,
+                                                                    $line['tasks'][$key]['tickettasks_name']
+                                                                );
+                                                            }
                                                         } else {
                                                             $explodeTitle2 = explode(".", $title);
 
@@ -3109,11 +3111,13 @@ JAVASCRIPT
                                                         $result,
                                                         $parent_fields_id,
                                                         true);
-                                                    $line['tasks'][$key]['tickettasks_name'] = str_replace(
-                                                        "#" . $title . "#",
-                                                        $value,
-                                                        $line['tasks'][$key]['tickettasks_name']
-                                                    );
+                                                    if ($value != null) {
+                                                        $line['tasks'][$key]['tickettasks_name'] = str_replace(
+                                                            "#" . $title . "#",
+                                                            $value,
+                                                            $line['tasks'][$key]['tickettasks_name']
+                                                        );
+                                                    }
                                                 } else {
                                                     $explodeTitle2 = explode(".", $title);
 
@@ -4712,9 +4716,14 @@ JAVASCRIPT
         $result['content'] = "";
         $parent_fields_id = 0;
         $colors = [];
-        $isOrder = false;
-        if (isset($options['is_order'])) {
-            $isOrder = $options['is_order'];
+
+        $have_freetable = false;
+        $fieldmeta = new PluginMetademandsField();
+        $allfields = $fieldmeta->find(["plugin_metademands_metademands_id" => $metademands_id]);
+        foreach ($allfields as $allfield) {
+            if ($allfield['type'] == 'freetable') {
+                $have_freetable = true;
+            }
         }
 
         foreach ($values_form as $k => $values) {
@@ -4748,6 +4757,7 @@ JAVASCRIPT
                 if (!isset($resultTemp[$field['rank']])) {
                     $resultTemp[$field['rank']]['content'] = "";
                     $resultTemp[$field['rank']]['display'] = false;
+                    //boucle sur $resultTemp - si un champ est a afficher, display du bloc devient true et donc le titre du block aussi
                 }
                 $field['value'] = '';
                 if (isset($values[$fields_id])) {
@@ -4755,7 +4765,8 @@ JAVASCRIPT
                 }
                 $field['value2'] = '';
                 if (($field['type'] == 'date_interval'
-                        || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
+                        || $field['type'] == 'datetime_interval')
+                    && isset($values[$fields_id . '-2'])) {
                     $field['value2'] = $values[$fields_id . '-2'];
                 }
 
@@ -4828,6 +4839,7 @@ JAVASCRIPT
                         continue;
                     }
                 }
+
                 if ($field['type'] == "dropdown_meta"
                     && $field['item'] == "PluginResourcesResource") {
                     $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
@@ -4865,7 +4877,7 @@ JAVASCRIPT
                                 $formatAsTable,
                                 $langTech,
                                 $color,
-                                $isOrder
+                                $have_freetable
                             );
                             unset($colors[$key]);
                             if (!isset($options['formatastable'])
@@ -4875,6 +4887,7 @@ JAVASCRIPT
                         }
                     }
                 } else {
+                    //all fields
                     self::getContentWithField(
                         $parent_fields,
                         $fields_id,
@@ -4885,7 +4898,7 @@ JAVASCRIPT
                         $formatAsTable,
                         $langTech,
                         '',
-                        $isOrder
+                        $have_freetable
                     );
 
                     if (!isset($options['formatastable'])
@@ -4930,7 +4943,6 @@ JAVASCRIPT
         $is_order = false
     ) {
         global $PLUGIN_HOOKS;
-
 
         $metafield = new PluginMetademandsField();
         if ($metafield->getFromDB($field["id"])) {
@@ -4993,6 +5005,7 @@ JAVASCRIPT
             || $field['type'] == 'radio'
             || $field['type'] == 'signature'
             || $field['type'] == 'basket'
+            || $field['type'] == 'freetable'
             || in_array($field['type'], $types)) {
             switch ($field['type']) {
                 case 'title-block':
@@ -5031,7 +5044,8 @@ JAVASCRIPT
                                 $label,
                                 $field,
                                 $return_value,
-                                $lang
+                                $lang,
+                                $is_order
                             );
                         }
                     }
@@ -5048,7 +5062,8 @@ JAVASCRIPT
                                 $label,
                                 $field,
                                 $return_value,
-                                $lang
+                                $lang,
+                                $is_order
                             );
                         }
                     }
@@ -5064,7 +5079,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5079,7 +5095,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5094,7 +5111,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
 
@@ -5110,7 +5128,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5125,7 +5144,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5140,7 +5160,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5155,7 +5176,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5170,7 +5192,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5185,7 +5208,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
 
@@ -5201,7 +5225,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5216,7 +5241,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5231,7 +5257,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5246,7 +5273,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5261,7 +5289,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5276,7 +5305,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5291,7 +5321,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5306,7 +5337,24 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
+                        );
+                    }
+                    break;
+                case 'freetable':
+                    if ($return_value == true) {
+                        return PluginMetademandsFreetable::getFieldValue($field);
+                    } else {
+                        PluginMetademandsFreetable::displayFieldItems(
+                            $result,
+                            $formatAsTable,
+                            $style_title,
+                            $label,
+                            $field,
+                            $return_value,
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5321,7 +5369,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5336,7 +5385,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5351,7 +5401,8 @@ JAVASCRIPT
                             $label,
                             $field,
                             $return_value,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
                     break;
@@ -5385,7 +5436,8 @@ JAVASCRIPT
                             $parent_fields_id,
                             false,
                             false,
-                            $lang
+                            $lang,
+                            $is_order
                         );
                     }
 
@@ -5906,7 +5958,7 @@ JAVASCRIPT
                         && $meta->fields['initial_requester_childs_tickets'] == 1) {
                         $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
                         $son_ticket_data['_users_id_observer'] = isset($parent_fields['_users_id_observer']) ? $parent_fields['_users_id_observer'] : 0;
-                        $son_ticket_data['_actors'] = isset($parent_fields['_actors']) ? $parent_fields['_actors'] : 0;
+//                        $son_ticket_data['_actors'] = isset($parent_fields['_actors']) ? $parent_fields['_actors'] : 0;
                     }
 
                     if (count($metademands_data)) {
@@ -6131,7 +6183,7 @@ JAVASCRIPT
 
                         if (Plugin::isPluginActive('fields')) {
                             foreach ($inputField as $containers_id => $vals) {
-                                $container = new PluginFieldsContainer;
+                                $container = new PluginFieldsContainer();
                                 $vals['plugin_fields_containers_id'] = $containers_id;
                                 $vals['itemtype'] = "Ticket";
                                 $vals['items_id'] = $son_tickets_id;
@@ -9401,7 +9453,7 @@ HTML;
         return $availableCategories;
     }
 
-    public static function getPluginUniqueDropdown(int|string $plug)
+    public static function getPluginUniqueDropdown($plug)
     {
         global $PLUGIN_HOOKS;
 
@@ -9422,7 +9474,7 @@ HTML;
         }
     }
 
-    public static function checkPluginUniqueItilcategory(int|string $plug, $dbu)
+    public static function checkPluginUniqueItilcategory($plug, $dbu)
     {
         global $PLUGIN_HOOKS;
 
@@ -9443,7 +9495,7 @@ HTML;
         }
     }
 
-    public static function addPluginObjectItems(int|string $plug)
+    public static function addPluginObjectItems($plug)
     {
         global $PLUGIN_HOOKS;
 
@@ -9464,7 +9516,7 @@ HTML;
         }
     }
 
-    private static function getPluginObjectType(int|string $plug)
+    private static function getPluginObjectType($plug)
     {
         global $PLUGIN_HOOKS;
 
