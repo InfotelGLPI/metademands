@@ -308,6 +308,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $options['name'] = $namefield . "[" . $data['id'] . "]";
                 $options['display'] = false;
                 $options['required'] = ((isset($data['is_mandatory']) && $data['is_mandatory'] == 1) ? "required" : "");
+                $options['display_emptychoice'] = true;
                 $field .= Ticket::dropdownUrgency($options);
                 break;
             case 'impact':
@@ -355,6 +356,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $options['name'] = $namefield . "[" . $data['id'] . "]";
                 $options['display'] = false;
                 $options['required'] = ($data['is_mandatory'] ? "required" : "");
+                $options['display_emptychoice'] = true;
                 $field .= Ticket::dropdownImpact($options);
                 break;
             case 'priority':
@@ -400,6 +402,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $options['name'] = $namefield . "[" . $data['id'] . "]";
                 $options['display'] = false;
                 $options['required'] = ($data['is_mandatory'] ? "required" : "");
+                $options['display_emptychoice'] = true;
                 $field .= Ticket::dropdownPriority($options);
                 break;
             default:
@@ -521,7 +524,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='5' align='left' id='show_custom_fields'>";
-            PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true);
+            PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"]);
             echo "</td>";
             echo "</tr>";
             PluginMetademandsFieldCustomvalue::importCustomValue($params);
@@ -534,7 +537,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
                 }
-                PluginMetademandsFieldCustomvalue::initCustomValue(-1, false, true);
+                PluginMetademandsFieldCustomvalue::initCustomValue(-1, false, true, $params["plugin_metademands_fields_id"]);
                 echo "</td>";
                 echo "</tr>";
                 Html::closeForm();
@@ -554,6 +557,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "<tr class='tab_bg_1'>";
                 echo "<td>";
                 $options['name'] = "default[1]";
+                $options['display_emptychoice'] = true;
                 if ($params['item'] == 'urgency') {
                     Ticket::dropdownUrgency($options);
                 } else if ($params['item'] == 'impact') {
@@ -1360,8 +1364,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $label,
         $field,
         $return_value,
-        $lang
+        $lang,
+        $is_order = false
     ) {
+        $colspan = $is_order ? 6 : 1;
         if (!empty($field['custom_values'])
             && $field['item'] == 'other' && $field['value'] > 0) {
             $custom_values[0] = Dropdown::EMPTY_VALUE;
@@ -1376,11 +1382,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             }
             if (isset($custom_values[$field['value']])) {
                 if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "<td $style_title>";
+                    $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                 }
                 $result[$field['rank']]['content'] .= $label;
                 if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "</td><td>";
+                    $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                 }
                 $result[$field['rank']]['content'] .= $custom_values[$field['value']];
                 if ($formatAsTable) {
@@ -1395,11 +1401,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     case 'mydevices':
                         $result[$field['rank']]['display'] = true;
                         if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
+                            $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                         }
                         $result[$field['rank']]['content'] .= $label;
                         if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
+                            $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                         }
 
                         $splitter = explode("_", $field['value']);
@@ -1419,12 +1425,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     case 'urgency':
                         $result[$field['rank']]['display'] = true;
                         if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
+                            $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                         }
                         $result[$field['rank']]['content'] .= $label;
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
-                            $result[$field['rank']]['content'] .= "<td>";
+                            $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                         }
                         $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                         if ($formatAsTable) {
@@ -1436,11 +1442,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         if ($hidden == 0) {
                             $result[$field['rank']]['display'] = true;
                             if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "<td $style_title>";
+                                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                             }
                             $result[$field['rank']]['content'] .= $label;
                             if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td><td>";
+                                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                             }
                             $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                             if ($formatAsTable) {
@@ -1455,7 +1461,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         return $result;
     }
 
-    private static function getPluginDropdownItilcategory(int|string $plug, $opt)
+    private static function getPluginDropdownItilcategory($plug, $opt)
     {
         global $PLUGIN_HOOKS;
 
@@ -1476,7 +1482,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
     }
 
-    static function getPluginDropdownItilcategoryName(int|string $plug, $opt)
+    static function getPluginDropdownItilcategoryName($plug, $opt)
     {
         global $PLUGIN_HOOKS;
 

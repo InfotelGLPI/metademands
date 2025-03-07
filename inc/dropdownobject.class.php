@@ -1277,14 +1277,15 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         }
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
 
+        $colspan = $is_order ? 6 : 1;
         if ($field['value'] != 0) {
             switch ($field['item']) {
                 case 'User':
                     if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "<td $style_title>";
+                        $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                     }
                     $result[$field['rank']]['content'] .= $label;
                     if ($formatAsTable) {
@@ -1320,7 +1321,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     }
                     if (empty($content)) {
                         if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td>";
+                            $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                         }
                         $result[$field['rank']]['content'] .= self::getFieldValue($field);
                         if ($formatAsTable) {
@@ -1328,7 +1329,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         }
                     } else {
                         if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td>";
+                            $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                         }
                         $result[$field['rank']]['content'] .= $content;
                         if ($formatAsTable) {
@@ -1340,11 +1341,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 default:
                     $result[$field['rank']]['display'] = true;
                     if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "<td $style_title>";
+                        $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                     }
                     $result[$field['rank']]['content'] .= $label;
                     if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "</td><td>";
+                        $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                     }
                     $result[$field['rank']]['content'] .= self::getFieldValue($field);
                     if ($formatAsTable) {

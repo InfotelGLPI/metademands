@@ -107,7 +107,7 @@
       /**
        * metademands_add_custom_values : add text input
        */
-      this.metademands_add_custom_values = function (field_id) {
+      this.metademands_add_custom_values = function (field_name, field_id) {
          var count = $('#count_custom_values').val();
          $('#count_custom_values').val(parseInt(count) + 1);
 
@@ -121,10 +121,11 @@
                'action': 'add',
                'display_comment': display_comment,
                'display_default': display_default,
+               'field_id': field_id,
                'count': $('#count_custom_values').val()
             },
             success: function (response) {
-               var item_bloc = $('#' + field_id);
+               var item_bloc = $('#' + field_name);
                item_bloc.append(response);
                $('#add_custom_values').show();
                var scripts, scriptsFinder = /<script[^>]*>([\s\S]+?)<\/script>/gi;

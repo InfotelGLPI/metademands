@@ -1684,9 +1684,9 @@ class PluginMetademandsBasket extends CommonDBTM
     }
 
     public
-    static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
-
+//        $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
 
         $meta_id = $field['plugin_metademands_metademands_id'];

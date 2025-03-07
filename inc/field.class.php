@@ -65,6 +65,7 @@ class PluginMetademandsField extends CommonDBChild
         'radio',
         'number',
         'range',
+        'freetable',
         'basket',
         'date',
         'time',
@@ -263,7 +264,11 @@ class PluginMetademandsField extends CommonDBChild
         $ong = [];
         $this->addDefaultFormTab($ong);
         $this->addStandardTab('PluginMetademandsFieldParameter', $ong, $options);
-        $this->addStandardTab('PluginMetademandsFieldCustomvalue', $ong, $options);
+        if ($this->fields['type'] == 'freetable') {
+            $this->addStandardTab('PluginMetademandsFreetablefield', $ong, $options);
+        } else {
+            $this->addStandardTab('PluginMetademandsFieldCustomvalue', $ong, $options);
+        }
         $this->addStandardTab('PluginMetademandsFieldOption', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
         if (Session::getCurrentInterface() == 'central') {
@@ -1365,6 +1370,8 @@ class PluginMetademandsField extends CommonDBChild
                 return PluginMetademandsNumber::getTypeName();
             case 'range':
                 return PluginMetademandsRange::getTypeName();
+            case 'freetable':
+                return PluginMetademandsFreetable::getTypeName();
             case 'date':
                 return PluginMetademandsDate::getTypeName();
             case 'time':
@@ -1459,7 +1466,7 @@ class PluginMetademandsField extends CommonDBChild
 
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'showFieldCase'])) {
-                    $item->showFieldCase(
+                    echo $item->showFieldCase(
                         $metademands_data,
                         $data,
                         $on_order = false,
@@ -1844,6 +1851,7 @@ class PluginMetademandsField extends CommonDBChild
         $metademand = new PluginMetademandsMetademand();
         $metademand_params = new PluginMetademandsFieldParameter();
         $field_custom = new PluginMetademandsFieldCustomvalue();
+        $freetablefield = new PluginMetademandsFreetablefield();
 
         $metademand_params->getFromDBByCrit(
             ["plugin_metademands_fields_id" => $field->getID()]
@@ -1871,6 +1879,17 @@ class PluginMetademandsField extends CommonDBChild
             && $field->fields['item'] != "Group") {
             $custom_values = [];
             if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
+                if (count($customs) > 0) {
+                    $custom_values = $customs;
+                }
+                $default_values = [];
+            }
+        }
+
+        if (isset($field->fields['type'])
+            && $field->fields['type'] == "freetable") {
+            $custom_values = [];
+            if ($customs = $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
                 if (count($customs) > 0) {
                     $custom_values = $customs;
                 }
@@ -2155,6 +2174,9 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case 'range':
                 PluginMetademandsRange::showWizardField($data, $namefield, $value, $on_order);
+                break;
+            case 'freetable':
+                PluginMetademandsFreetable::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'date':
                 PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_order);
@@ -2550,6 +2572,9 @@ class PluginMetademandsField extends CommonDBChild
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsFieldCustomvalue();
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
+
+        $temp = new PluginMetademandsFreetablefield();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsFieldOption();

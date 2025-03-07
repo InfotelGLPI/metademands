@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.18.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.20.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -695,14 +695,29 @@ function plugin_metademands_install() {
             PluginMetademandsProfile::addDefaultProfileInfos($prof['profiles_id'], $rights);
         }
     }
-    $DB->doQuery("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','1','0','0');");
-    $DB->doQuery("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','2','1','0');");
-    $DB->doQuery("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','3','2','0');");
-    $DB->doQuery("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','99','3','0');");
+
+    if (!$DB->tableExists("glpi_plugin_metademands_freetablefields", false)) {
+        //version 3.3.9
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.20.sql");
+    }
+
+    //Displayprefs
+    $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
+    foreach ($prefs as $num => $rank) {
+        if (
+            !countElementsInTable(
+                "glpi_displaypreferences",
+                ['itemtype' => 'PluginMetademandsDraft',
+                    'num' => $num,
+                    'users_id' => 0
+                ]
+            )
+        ) {
+            $DB->doQuery("INSERT INTO glpi_displaypreferences
+                                  (`itemtype`, `num`, `rank`, `users_id`)
+                           VALUES ('PluginMetademandsDraft','$num','$rank','0');");
+        }
+    }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
@@ -830,7 +845,8 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_basketobjecttypetranslations",
         "glpi_plugin_metademands_mailtasks",
         "glpi_plugin_metademands_fieldparameters",
-        "glpi_plugin_metademands_fieldcustomvalues"];
+        "glpi_plugin_metademands_fieldcustomvalues",
+        "glpi_plugin_metademands_freetablefields"];
     foreach ($tables as $table) {
         $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
     }

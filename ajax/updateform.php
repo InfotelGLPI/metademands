@@ -130,12 +130,20 @@ if (isset($_POST['save_model'])) {
 
         for ($i = 0; $i < $nblines; $i++) {
 
-            if (Plugin::isPluginActive('orderfollowup')) {
-                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-                    foreach ($freeinputs as $freeinput) {
-                        $_POST['freeinputs'][] = $freeinput;
-                    }
+//            if (Plugin::isPluginActive('orderfollowup')) {
+//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+//                    foreach ($freeinputs as $freeinput) {
+//                        $_POST['freeinputs'][] = $freeinput;
+//                    }
+//                }
+//            }
+
+            if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
+                $freetables = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'];
+
+                foreach ($freetables as $field_id => $freetable) {
+                    $_POST['freetables'][$_POST['metademands_id']][$field_id] = $freetable;
                 }
             }
 
@@ -183,11 +191,17 @@ if (isset($_POST['save_model'])) {
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }
 
-                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
+                            if ($value['type'] == 'freetable'
+                                && isset($_POST['freetables'])
+                                && !empty($_POST['freetables'])) {
+
                                 if(!isset($_POST['field']) || !is_array($_POST['field'])){
                                     $_POST['field'] = [];
                                 }
-                                $_POST['field'][$id] = $_POST['freeinputs'];
+                                if (isset($_POST['freetables'][$_POST['metademands_id']][$id])) {
+                                    $_POST['field'][$id] = $_POST['freetables'][$_POST['metademands_id']][$id];
+                                }
+
                             }
                         }
 

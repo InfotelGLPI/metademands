@@ -44,20 +44,22 @@ $step = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
 $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
-$nofreeinputs = false;
+$nofreetable = false;
 
-if (isset($_POST['is_freeinput'])
-    && $_POST['is_freeinput'] == 1
-    && isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-    if (count($_SESSION['plugin_orderfollowup']['freeinputs']) == 0) {
-        $nofreeinputs = true;
-        $step = $_POST['step'];
-        unset($_POST['create_metademands']);
-        Session::addMessageAfterRedirect(__("There is no line on the basket", "metademands"), false, ERROR);
+//if (isset($_POST['is_freetable'])
+//    && $_POST['is_freetable'] == 1
+//    && isset($_SESSION['plugin_orderfollowup']['freetables'])) {
+//    if (count($_SESSION['plugin_orderfollowup']['freetables']) == 0) {
+//        $nofreetable = true;
+//        $step = $_POST['step'];
+//        unset($_POST['create_metademands']);
+//        Session::addMessageAfterRedirect(__("There is no line on the basket", "metademands"), false, ERROR);
+//
+//        echo $nofreetable;
+//    }
+//}
 
-        echo $nofreeinputs;
-    }
-}
+
 
 $current_ticket_id = 0;
 $meta_validated = false;
@@ -87,7 +89,7 @@ if (isset($_GET['meta_validated'])) {
     $meta_validated = $_POST['meta_validated'];
 }
 
-if ($nofreeinputs === false) {
+if ($nofreetable == false) {
     if (isset($_POST['see_basket_summary'])) {
         unset($_POST['see_basket_summary']);
         $post = $_POST;
@@ -110,6 +112,7 @@ if ($nofreeinputs === false) {
         $metademands->getFromDB($_POST['form_metademands_id']);
 
         if ($metademands->fields['is_basket'] == 1) {
+            //TODO orderfollowup
             if (isset($_POST['is_freeinput']) && $_POST['is_freeinput'] == 1) {
                 echo PluginOrderfollowupFreeinput::displayBasketSummary($post);
             } else {
@@ -151,15 +154,21 @@ if ($nofreeinputs === false) {
                 $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
             }
 
-            if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
-                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-                    foreach ($freeinputs as $freeinput) {
-                        $_POST['field'][] = $freeinput;
-                    }
+//            if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
+//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+//                    foreach ($freeinputs as $freeinput) {
+//                        $_POST['field'][] = $freeinput;
+//                    }
+//                }
+//            }
+
+            if (isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'])) {
+                $freetables = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'];
+                foreach ($freetables as $freetable) {
+                    $_POST['field'][] = $freetable;
                 }
             }
-
             if (count($meta) == 1) {
                 $orderprojects->createFromMetademands($_POST);
                 Html::back();
@@ -297,6 +306,31 @@ if ($nofreeinputs === false) {
                                 $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                                 $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field'][$id];
                             }
+
+                            if ($value['type'] == 'freetable') {
+                                if (isset($_POST["is_freetable_mandatory"])) {
+
+                                    $mandatories = $_POST["is_freetable_mandatory"];
+                                    foreach ($mandatories as $fm => $mandatory) {
+                                        if ($mandatory == 1 && $fm == $id) {
+                                            if (!isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm])
+                                                || count(
+                                                    $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm]
+                                                ) == 0) {
+                                                $msg = sprintf(__("There is no line on the mandatory table %s", "metademands"), $value['name']);
+                                                Session::addMessageAfterRedirect(
+                                                    $msg,
+                                                    false,
+                                                    ERROR
+                                                );
+                                                $KO = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+
                             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                         }
 

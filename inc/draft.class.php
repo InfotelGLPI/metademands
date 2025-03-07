@@ -547,7 +547,7 @@ class PluginMetademandsDraft extends CommonDBTM
         echo "</div>";
     }
 
-    public static function createDraftInput($type, $free_input = 0)
+    public static function createDraftInput($type, $freetable = 0)
     {
         echo self::createDraftModalWindow("my_new_draft");
 
@@ -556,7 +556,7 @@ class PluginMetademandsDraft extends CommonDBTM
 
         //correct css with condition
         if ($type == 1) {
-            if($free_input == 'free_input'){
+            if($freetable == 'freetable'){
                 $style = "display:inline-block;margin: 10px;display:none";
             }else{
                 $style = "display:inline-block;margin: 10px;";
@@ -573,7 +573,7 @@ class PluginMetademandsDraft extends CommonDBTM
                         <script>
                             function load_draft_modal(){
                                 
-                                var tr_input = document.querySelectorAll('#freeinput_table #tr_input input');
+                                var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
                                 if (tr_input.length > 0) {
                                     var careful = false;    
                                 

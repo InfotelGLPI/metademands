@@ -40,17 +40,17 @@ $step = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
 $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
-$nofreeinputs = false;
+$nofreetable = false;
 
-if (isset($_POST['is_freeinput'])
-    && $_POST['is_freeinput'] == 1
-    && isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-    if (count($_SESSION['plugin_orderfollowup']['freeinputs']) == 0) {
-        $nofreeinputs = true;
-        $step = $_POST['step'];
-        unset($_POST['create_metademands']);
-    }
-}
+//if (isset($_POST['is_freetable'])
+//    && $_POST['is_freetable'] == 1
+//    && isset($_SESSION['plugin_orderfollowup']['freetables'])) {
+//    if (count($_SESSION['plugin_orderfollowup']['freetables']) == 0) {
+//        $nofreetable = true;
+//        $step = $_POST['step'];
+//        unset($_POST['create_metademands']);
+//    }
+//}
 
 //why i don't know
 if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
@@ -66,7 +66,6 @@ if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
         }
     }
 }
-
 
 if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
     $nblines = 0;
@@ -102,12 +101,19 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 }
             }
 
-            if (Plugin::isPluginActive('orderfollowup')) {
-                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-                    foreach ($freeinputs as $freeinput) {
-                        $_POST['freeinputs'][] = $freeinput;
-                    }
+//            if (Plugin::isPluginActive('orderfollowup')) {
+//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+//                    foreach ($freeinputs as $freeinput) {
+//                        $_POST['freeinputs'][] = $freeinput;
+//                    }
+//                }
+//            }
+
+            if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
+                $freetables = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'];
+                foreach ($freetables as $field_id => $freetable) {
+                    $_POST['freetables'][$field_id] = $freetable;
                 }
             }
 
@@ -152,8 +158,39 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                 $post[$id] = isset($_POST['quantity'][$id]) ? $_POST['quantity'][$id] : 0;
                             }
 
-                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
-                                $post[$id] = $_POST['freeinputs'];
+                            if ($value['type'] == 'freetable'
+                                && isset($_POST["is_freetable_mandatory"])) {
+
+                                $mandatories = $_POST["is_freetable_mandatory"];
+                                foreach ($mandatories as $fm => $mandatory) {
+                                    if ($mandatory == 1
+                                    && $fm == $id) {
+                                        if (!isset($_POST['freetables'][$fm])
+                                            || count(
+                                                $_POST['freetables'][$fm]
+                                            ) == 0) {
+                                            $name = $value['name'];
+                                            $msg = sprintf(__("There is no line on the mandatory table %s", "metademands"), $name);
+                                            Session::addMessageAfterRedirect(
+                                                $msg,
+                                                false,
+                                                ERROR
+                                            );
+                                            $KO = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if ($value['type'] == 'freetable'
+                                && isset($_POST['freetables'])
+                                && !empty($_POST['freetables'])) {
+
+                                if (isset($_POST['freetables'][$id])) {
+                                    $post[$id] = $_POST['freetables'][$id];
+                                } else {
+                                    $post[$id] = [];
+                                }
                             }
                         }
                     }

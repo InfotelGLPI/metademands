@@ -1418,12 +1418,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Color
                 if ($preview) {
                     $color = PluginMetademandsField::setColor($block);
-                    $style = 'padding-top:5px;
+                    $style = "padding-top:5px;
                       padding-bottom:10px;
-                      border-top :3px solid #' . $color . ';
-                      border-left :3px solid #' . $color . ';
-                      border-bottom :3px solid #' . $color . ';
-                      border-right :3px solid #' . $color;
+                      border-top :3px solid #" . $color . ";
+                      border-left :3px solid #" . $color . ";
+                      border-bottom :3px solid #" . $color . ";
+                      border-right :3px solid #" . $color. ";";
                     echo '<style type="text/css">
                        .preview-md-';
                     echo $block;
@@ -1443,7 +1443,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (isset($metademands->fields['background_color'])
                     && !empty($metademands->fields['background_color'])) {
                     $background_color = $metademands->fields['background_color'];
-                    $style .= ";background-color:" . $background_color . ";";
+                    $style .= "background-color:" . $background_color . ";";
                 }
 
                 echo "<div bloc-id='bloc" . $block . "' style='$style' class='card tab-sc-child-" . $block . "'>";
@@ -2216,7 +2216,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         
                         function updateThisDraft(draft_id, draft_name) {
                             //Security in case of unconfirmed line
-                            var tr_input = document.querySelectorAll('#freeinput_table #tr_input input');
+                            var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
                             if (tr_input.length > 0) {
                                 var careful = false;    
                             
@@ -2291,8 +2291,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                  });
                            };
                                 
-                        var check_free_input = document.querySelector('#freeinput_table');
-                        if(check_free_input){
+                        var check_free_table = document.querySelector('#freetable_table');
+                        if(check_free_table){
                             document.querySelector('.boutons_draft #button_save_mydraft').style='display:none';    
                         }
     
@@ -3309,9 +3309,10 @@ class PluginMetademandsWizard extends CommonDBTM
                 } else {
                     $type = $metademands->fields['type'];
                     if ($type > 0) {
-                        Html::redirect(
-                            PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1"
-                        );
+                        Html::back();
+//                        Html::redirect(
+//                            PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1"
+//                        );
                     } else {
                         Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                     }
@@ -3380,6 +3381,7 @@ class PluginMetademandsWizard extends CommonDBTM
             && $value['type'] != 'radio'
             && $value['item'] != 'ITILCategory_Metademands'
             && $value['type'] != 'upload'
+            && $value['type'] != 'freetable'
             && $value['type'] != 'dropdown_multiple') {
             if (!self::checkMandatoryFields(
                 $fieldname,
@@ -3498,7 +3500,7 @@ class PluginMetademandsWizard extends CommonDBTM
             && isset($post[$fieldname][$id])) {
             $content[$id]['plugin_metademands_fields_id'] = $id;
             if ($value['type'] != "upload") {
-                if ($value['type'] == "free_input") {
+                if ($value['type'] == "freetable") {
                     $content[$id]['value'] = (is_array(
                         $post[$fieldname][$id]
                     )) ? PluginMetademandsFieldParameter::_serializeArray(
@@ -3664,6 +3666,13 @@ class PluginMetademandsWizard extends CommonDBTM
                     break;
                 case 'range':
                     $result = PluginMetademandsRange::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'freetable':
+                    $result = PluginMetademandsFreetable::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];
@@ -3898,7 +3907,7 @@ class PluginMetademandsWizard extends CommonDBTM
         return $output;
     }
 
-    public static function createPluginNewKindOfCategory(int|string $plug)
+    public static function createPluginNewKindOfCategory($plug)
     {
         global $PLUGIN_HOOKS;
 

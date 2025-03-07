@@ -342,7 +342,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             $this->SetBackgroundColor($color);
             $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
-        } else if ($type == 'title' || $type == 'title-block' || $type == 'textarea' || $type == 'signature') {
+        } else if ($type == 'title' || $type == 'title-block' || $type == 'textarea' || $type == 'signature' || $type == 'freetable') {
             $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
         } else {
@@ -350,7 +350,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             $this->SetXY($x + $width, $y);
         }
 
-        if ($type != 'title' && $type != 'title-block' && $type != 'linebreak') {
+        if ($type != 'title' && $type != 'title-block' && $type != 'linebreak' && $type != 'freetable') {
             $this->SetBackgroundColor($color);
             $this->SetFontNormal($fontColor, $bold, $size);
             //Draw values
@@ -416,6 +416,49 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $this->SetBackgroundColor($color);
         $this->Cell(20,6,Html::formatNumber($total, false, 2)." ".EURO,1,0,'L',$fill);
 
+    }
+
+    function BasicTableFreeTable($header, $data, $color = "")
+    {
+        $this->SetBackgroundColor($this->bgcolor);
+
+        $nb = count($header);
+
+        if ($nb == 1) {
+            $w = 190;
+        }
+        if ($nb == 2) {
+            $w = 95;
+        }
+        if ($nb == 3) {
+            $w = 63.3;
+        }
+        if ($nb == 4) {
+            $w = 47.5;
+        }
+        if ($nb == 5) {
+            $w = 38;
+        }
+        if ($nb == 6) {
+            $w = 31.6;
+        }
+
+
+
+        for ($i = 0; $i < count($header); $i++) {
+            $this->Cell($w, 7, $header[$i], 1, 0, 'C', true);
+        }
+        $this->Ln();
+
+        // Color and font restoration
+        $this->SetBackgroundColor($color);
+        // Data
+        foreach ($data as $field => $line) {
+            foreach ($line as $row) {
+                $this->Cell($w, 6, $row, 'LR', 0, 'L', false);
+            }
+            $this->Ln();
+        }
     }
 
     function BasicTableFreeInputs($header, $data, $color = '')
@@ -637,7 +680,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                     }
                 }
 
-                if (isset($fields[$elt['id']])
+                if (
+                    (isset($fields[$elt['id']])
+                        && (!empty($fields[$elt['id']]) || $fields[$elt['id']] == "0"))
                     || $elt['type'] == 'title'
                     || $elt['type'] == 'title-block'
                     || $elt['type'] == 'upload'
@@ -681,7 +726,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'title':
                         case 'title-block':
                             // Draw line
-                        $this->MultiCellValue($this->title_width, $this->line_height, $elt['type'], $label, '', 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black');
+                            $this->MultiCellValue($this->title_width, $this->line_height, $elt['type'], $label, '', 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black');
                             break;
 
                         case 'linebreak':
@@ -1134,7 +1179,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $value = GLPI_PICTURE_DIR . '/' . $fields[$elt['id']];
                             $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             break;
-                        default:
 
                         case 'free_input':
                             if (Plugin::isPluginActive('orderfollowup')) {
@@ -1154,7 +1198,30 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                 }
                             }
                             break;
+                        case 'freetable' :
+                            $items = PluginMetademandsFreetable::displayFieldPDF($elt,$fields, $label);
+                            $data = [];
 
+                            if (count($items)) {
+                                foreach ($items as $field_id => $values) {
+                                    if ($field_id == $elt['id']) {
+                                        foreach ($values as $id => $table) {
+                                            foreach ($table as $title => $value) {
+                                                $header[$field_id][] = $title;
+                                                $data[$id][] = $value;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, "", 'LRBT', 'L', '', 0, '', 'black');
+                                $header = end($header);
+                                $header = array_unique($header);
+
+                                $this->BasicTableFreeTable($header,$data, $label);
+                            }
+                            break;
+                        default:
                             if (isset($PLUGIN_HOOKS['metademands'])) {
                                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                                     $value = self::displayPluginFieldPDF($plug, $elt, $fields, $label);

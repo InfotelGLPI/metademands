@@ -75,11 +75,16 @@ if (isset($_POST["add"])) {
     }
     Html::back();
 } elseif (isset($_POST["update"])) {
+
     if ($_POST['type'] == "link"
         || $_POST['type'] == "number"
         || $_POST['type'] == "range"
         || $_POST['type'] == "basket"
         || ($_POST['type'] == "dropdown_multiple" && ($_POST['item'] == "Appliance" || $_POST['item'] == "Group"))) {
+
+        if (!isset($_POST['default'])) {
+            $_POST['default'] = 0;
+        }
         $input["custom"] = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
         $input["default"] = PluginMetademandsFieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];

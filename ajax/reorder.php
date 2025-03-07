@@ -33,5 +33,11 @@ Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-$field = new PluginMetademandsFieldCustomvalue();
+
+if ($_POST['type'] == "freetable") {
+    $field = new PluginMetademandsFreetablefield();
+} else {
+    $field = new PluginMetademandsFieldCustomvalue();
+}
+
 $field->reorder($_POST);

@@ -256,6 +256,8 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                     break;
                 case 'range':
                     break;
+                case 'freetable':
+                    break;
                 case 'date':
                     break;
                 case 'time':
