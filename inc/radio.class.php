@@ -547,7 +547,15 @@ class PluginMetademandsRadio extends CommonDBTM
                     foreach ($session_value as $k => $fieldSession) {
                         if ($fieldSession == $idc && $hidden_link > 0) {
                             $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                        } else {
+                            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
                         }
+                    }
+                } else {
+                    if ($session_value == $idc && $hidden_link > 0) {
+                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                    } else {
+                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
                     }
                 }
             }
