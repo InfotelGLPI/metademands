@@ -38,6 +38,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsFreetable extends CommonDBTM
 {
 
+    static $rightname = 'plugin_metademands';
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -84,6 +85,8 @@ class PluginMetademandsFreetable extends CommonDBTM
         $size = 30;
         $field_custom = new PluginMetademandsFreetablefield();
         $is_mandatory = [];
+        $types = [];
+        $dropdown_values = [];
         if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
             if (count($customs) > 0) {
                 foreach ($customs as $custom) {
@@ -91,6 +94,20 @@ class PluginMetademandsFreetable extends CommonDBTM
                     $commentfields[$custom['internal_name']] = $custom['comment'];
                     if ($custom['is_mandatory'] == 1) {
                         $is_mandatory[] = $custom['internal_name'];
+                    }
+                    $types[$custom['internal_name']] = $custom['type'];
+
+                    $dropdown_values_array = [];
+                    $dropdown_values_array[0] = Dropdown::EMPTY_VALUE;
+                    if (!empty($custom['dropdown_values'])) {
+                        $explode = explode(",", $custom['dropdown_values']);
+                        foreach ($explode as $val) {
+                            $dropdown_values_array[] = Toolbox::cleanNewLines($val);
+                        }
+                    }
+
+                    if ($custom['type'] == PluginMetademandsFreetablefield::TYPE_SELECT) {
+                        $dropdown_values[$custom['internal_name']] = $dropdown_values_array;
                     }
                 }
                 $colspanfields = count($customs);
@@ -120,6 +137,10 @@ class PluginMetademandsFreetable extends CommonDBTM
         }
         $encoded_fields = json_encode($addfields);
         $mandatory_encoded_fields = json_encode($is_mandatory);
+        $empty_value = Dropdown::EMPTY_VALUE;
+        $types_encoded_fields = json_encode($types);
+        $dropdown_values_encoded_fields = [];
+        $dropdown_values_encoded_fields = json_encode($dropdown_values);
         $field .= "<th style='text-align: center;' colspan='2' onclick='addLine$rand()'><i class='fa-solid fa-plus btn btn-info'></i></th>";
         $field .= "</tr>";
 
@@ -141,7 +162,20 @@ class PluginMetademandsFreetable extends CommonDBTM
 
                 foreach ($addfields as $k => $addfield) {
                     if (isset($l[$k])) {
-                        $field .= "<td $style><input id=\"$k.'_'.$idline\" name=\"$k\" type = \"text\" value=\"$l[$k]\" size=\"$size\" disabled></td>";
+                        if ($types[$k] == 1) {
+                            $field .= "<td $style><input id=\"$k.'_'.$idline\" name=\"$k\" type = \"text\" value=\"$l[$k]\" size=\"$size\" disabled></td>";
+                        } else {
+                            $field .= "<td $style><select id=\"$k.'_'.$idline\" name=\"$k\">";
+
+                            foreach ($dropdown_values[$k] as $dropdown_value) {
+                                $selected = "";
+                                if ($dropdown_value == $l[$k]) {
+                                    $selected = "selected";
+                                }
+                                $field .= "<option $selected value=\"$dropdown_value\">" . $dropdown_value . "</option>";
+                            }
+                            $field .= "</select></td>";
+                        }
                     }
                 }
 
@@ -167,6 +201,8 @@ class PluginMetademandsFreetable extends CommonDBTM
                     
                     var fields = $encoded_fields;
                     var mandatory_fields = $mandatory_encoded_fields;
+                    var type_fields = $types_encoded_fields;
+                    var dropdown_values_fields = $dropdown_values_encoded_fields;
                     const tabfields = [];
 
                     if (!document.querySelector('#freetable_table$rand .add_item')) {
@@ -176,7 +212,23 @@ class PluginMetademandsFreetable extends CommonDBTM
                             tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + $rand + '_' + i + '\">';
                             
                            $.each(fields,function(index, valuej){
-                               tabfields.push('<td><input id = \"' + index +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" ></td>');
+                               if (type_fields[index] == 1) {
+                                   tabfields.push('<td><input id = \"' + index +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" ></td>');
+                               } else {
+                                   var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
+                                   var select_options = '';
+                                   $.each(dropdown_values_fields,function(indexv, values){
+                                       $.each(values,function(indexd, valued){
+                                            if (index == indexv) {
+                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
+                                            }
+                                      });
+                                   });
+                                   var select_close = '</select></td>';
+                                   var select = [select_open, select_options, select_close].join(' ');
+                                   tabfields.push(select);
+                               }
+                               
                            });
                            
                            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
@@ -196,7 +248,22 @@ class PluginMetademandsFreetable extends CommonDBTM
                             tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + $rand + '_' + i + '\">';
                             
                             $.each(fields,function(index, valuej){
-                               tabfields.push('<td><input id = \"' + index +'\" type = \"text\" name=\"' + index +'\" size=\"$size\"></td>');
+                               if (type_fields[index] == 1) {
+                                   tabfields.push('<td><input id = \"' + index +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" ></td>');
+                               } else {
+                                   var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
+                                   var select_options = '';
+                                   $.each(dropdown_values_fields,function(indexv, values){
+                                       $.each(values,function(indexd, valued){
+                                            if (index == indexv) {
+                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
+                                            }
+                                      });
+                                   });
+                                   var select_close = '</select></td>';
+                                   var select = [select_open, select_options, select_close].join(' ');
+                                   tabfields.push(select);
+                               }
                            });
                              var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
                            tabbutton = '<td style=\"text-align: center;\" colspan=\"2\">'
@@ -220,7 +287,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                 function confirmLine$rand (node) {
                     
                     var fields = $encoded_fields;
+                    var type_fields = $types_encoded_fields;
+                    var dropdown_values_fields = $dropdown_values_encoded_fields;
                     var mandatory_fields = $mandatory_encoded_fields;
+                    var empty_value = '$empty_value';
                     var elem_parent = $(node).parent().parent();
                     var tabfields = [];
                     let nb = getNextIndex();
@@ -229,7 +299,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                         'id':nb,
                     };
                     $.each(fields,function(index, valuej){
-                        l[index] = elem_parent.find('input[name='+ index +']').val();
+                        if (type_fields[index] == 1) {
+                            l[index] = elem_parent.find('input[name='+ index +']').val();
+                        } else {
+                            l[index] = elem_parent.find('select[name='+ index +']').val();
+                        }
                     });
 
                     let type = 'add';
@@ -261,11 +335,25 @@ class PluginMetademandsFreetable extends CommonDBTM
                     $.each(fields,function(index, valuej){
 
                         if (mandatory_fields.includes(index)) {
-                            if (elem_parent.find('input[name='+ index +']').val() === '') {
-                              elem_parent.find('input[name=' + index +']').css('border-color', 'red');
-                              ko = 1;
+                        
+                            if (type_fields[index] == 1) {
+                                if (elem_parent.find('input[name='+ index +']').val() === '') {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
+                                    ko = 1;
+                                } else {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
+                                }
                             } else {
-                                elem_parent.find('input[name=' + index +']').css('border-color', '');
+                                var select = document.getElementById(index);
+                                if(select.selectedIndex != undefined) {
+                                    var text = select.options[select.selectedIndex].text;
+                                    if (text == empty_value) {
+                                        select.style.borderColor = 'red';
+                                        ko = 1;
+                                    } else {
+                                        select.style.borderColor = '';
+                                    }
+                                }
                             }
                         }
                         
@@ -276,7 +364,24 @@ class PluginMetademandsFreetable extends CommonDBTM
                              tabtr = '<tr name=\"data\" $style id=\"line_' + $rand + '_' + i + '\" disabled>';
                             
                             $.each(fields,function(index, valuej){
-                               tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               
+                               if (type_fields[index] == 1) {
+                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               } else {
+                                   var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
+                                   var select_options = '';
+                                   $.each(dropdown_values_fields,function(indexv, values){
+                                       $.each(values,function(indexd, valued){
+                                            if (index == indexv) {
+                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
+                                            }
+                                      });
+                                   });
+                                   var select_close = '</select></td>';
+                                   var select = [select_open, select_options, select_close].join(' ');
+                                   tabfields.push(select);
+                               }
+                               
                             });
                             tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + i +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                                + '<i class =\"fas fa-pen\"></i></button></td>'
@@ -287,10 +392,16 @@ class PluginMetademandsFreetable extends CommonDBTM
                            
                             $('#freetable_table$rand tr:last').before(joined);
                             $('#name_' + i).val(name);
+                            
                             elem_parent.find('input[name=name$rand]').val('');
                             $.each(fields,function(index, valuej){
-                                $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                elem_parent.find('input[name='+ index + ']').val('');
+                                if (type_fields[index] == 1) {
+                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                    elem_parent.find('input[name='+ index + ']').val('');
+                                } else {
+                                    $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
+                                    elem_parent.find('select[name='+ index + ']').val('');
+                                }
                             });
 
                         } else if (type == 'add') {
@@ -298,7 +409,24 @@ class PluginMetademandsFreetable extends CommonDBTM
                             tabtr = '<tr name=\"data\" $style id=\"line_' + $rand + '_' + i + '\" disabled>';
                             
                             $.each(fields,function(index, valuej){
-                               tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               
+                               if (type_fields[index] == 1) {
+                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               } else {
+                                   var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
+                                   var select_options = '';
+                                   $.each(dropdown_values_fields,function(indexv, values){
+                                       $.each(values,function(indexd, valued){
+                                            if (index == indexv) {
+                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
+                                            }
+                                      });
+                                   });
+                                   var select_close = '</select></td>';
+                                   var select = [select_open, select_options, select_close].join(' ');
+                                   tabfields.push(select);
+                               }
+                               
                             });
                             tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + i +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                                + '<i class =\"fas fa-pen\"></i></button></td>'
@@ -312,8 +440,14 @@ class PluginMetademandsFreetable extends CommonDBTM
                                elem_parent.find('input[name=name$rand]').val('');
                                
                                $.each(fields,function(index, valuej){
-                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                    elem_parent.find('input[name='+ index + ']').val('');
+                                    if (type_fields[index] == 1) {
+                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                        elem_parent.find('input[name='+ index + ']').val('');
+                                    } else {
+                                        $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
+                                        elem_parent.find('select[name='+ index + ']').val('');
+                                    
+                                    }
                                 });
 
                         } else {
@@ -321,7 +455,23 @@ class PluginMetademandsFreetable extends CommonDBTM
                             tabtr = '<tr name=\"data\" $style id=\"line_' + $rand + '_' + ind + '\">';
                             
                             $.each(fields,function(index, valuej){
-                               tabfields.push('<td $style><input id = \"' + index +'_' + ind +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+
+                               if (type_fields[index] == 1) {
+                                   tabfields.push('<td $style><input id = \"' + index +'_' + ind +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               } else {
+                                   var select_open = '<td $style><select id = \"' + index +'_' + ind +'\" name=\"' + index +'\">';
+                                   var select_options = '';
+                                   $.each(dropdown_values_fields,function(indexv, values){
+                                       $.each(values,function(indexd, valued){
+                                            if (index == indexv) {
+                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
+                                            }
+                                      });
+                                   });
+                                   var select_close = '</select></td>';
+                                   var select = [select_open, select_options, select_close].join(' ');
+                                   tabfields.push(select);
+                               }
                             });
                             tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + ind +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                                + '<i class =\"fas fa-pen\"></i></button></td>'
@@ -334,9 +484,13 @@ class PluginMetademandsFreetable extends CommonDBTM
                            
                             $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #name_' + ind).val(name);
                             $.each(fields,function(index, valuej){
-                                $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
+                                if (type_fields[index] == 1) {
+                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
+                                } else {
+                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('select[name='+ index +']').val());
+                                }
                             });
-                           
+                          
                        }
                        node.parentNode.parentNode.remove();
                        if(type == 'add'){
@@ -511,13 +665,6 @@ class PluginMetademandsFreetable extends CommonDBTM
                         ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
                     );
                 }
-                if (isset($params['type'])) {
-                    echo Html::hidden(
-                        'type',
-                        ['value' => $params["type"], 'id' => 'type']
-                    );
-                }
-
                 echo "</td>";
 
                 echo "<td class='rowhandler control left'>";
@@ -528,18 +675,44 @@ class PluginMetademandsFreetable extends CommonDBTM
                 echo "</td>";
 
                 echo "<td class='rowhandler control left'>";
+                echo "<span id='type_values$key'>";
+                echo " " . __('Type', 'metademands') . "<br>";
+                Dropdown::showFromArray('type[' . $key . ']', PluginMetademandsFreetablefield::getTypeFields(), ['value' => $value['type'], 'size' => 20]);
+                echo "</span>";
+                echo "</td>";
+
+                echo "<td class='rowhandler control left'>";
                 echo "<span id='custom_values$key'>";
                 echo " " . __('Display name', 'metademands') . " ";
                 echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 20]);
                 echo "</span>";
                 echo "</td>";
 
-                echo "<td class='rowhandler control left'>";
-                echo "<span id='comment_values$key'>";
-                echo __('Comment') . " ";
-                echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 20]);
-                echo "</span>";
-                echo "</td>";
+                if ($value['type'] == PluginMetademandsFreetablefield::TYPE_TEXT) {
+                    echo "<td class='rowhandler control left'>";
+                    echo "<span id='comment_values$key'>";
+                    echo __('Comment') . " ";
+                    echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 20]);
+                    echo "</span>";
+                    echo "</td>";
+                } else {
+                    echo "<td class='rowhandler control left'>";
+                    echo "<span id='dropdown_values$key'>";
+                    echo " " . __('Dropdown values', 'metademands') . " ";
+                    $label =  __('One value by line, separated by comma', 'metademands');
+                    Html::showToolTip(
+                        Glpi\RichText\RichText::getSafeHtml($label),
+                        ['awesome-class' => 'fa-info-circle']
+                    );
+                    Html::textarea([
+                        'name' => 'dropdown_values[' . $key . ']',
+                        'value' => $value['dropdown_values'],
+                        'rows' => 3,
+                        'cols' => 5
+                    ]);
+                    echo "</span>";
+                    echo "</td>";
+                }
 
                 echo "<td class='rowhandler control left'>";
                 echo "<span id='is_mandatory_values$key'>";
@@ -704,12 +877,17 @@ class PluginMetademandsFreetable extends CommonDBTM
 //        }
         $content = "";
 //        $total = 0;
+        $addfields = [];
+        $dropdown_values = [];
         $colspan_title = $is_order ? 12 : 2;
         $field_custom = new PluginMetademandsFreetablefield();
         if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field['id']], "rank")) {
             if (count($customs) > 0) {
                 foreach ($customs as $custom) {
                     $addfields[$custom['internal_name']] = $custom['name'];
+                }
+                if ($custom['type'] == PluginMetademandsFreetablefield::TYPE_SELECT) {
+                    $dropdown_values[$custom['internal_name']] = explode(",", $custom['dropdown_values']);
                 }
             }
         }
@@ -765,7 +943,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $content .= "<td $style_td colspan='$colspan'>";
                         }
 
-                        $content .= $fi[$k];
+                        if (isset($dropdown_values[$fi[$k]])) {
+                            $content .= $dropdown_values[$fi[$k]];
+                        } else {
+                            $content .= $fi[$k];
+                        }
 
                         if ($formatAsTable) {
                             $content .= "</td>";

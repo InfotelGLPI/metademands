@@ -53,12 +53,28 @@ if (isset($_POST["add"])) {
             $params[$rank]['name'] = $custom_value;
         }
     }
+
+    if (isset($_POST["type_values"])) {
+        $type_values = $_POST["type_values"];
+        foreach ($type_values as $rank => $type_value) {
+            $params[$rank]['type'] = $type_value;
+        }
+    }
+
     if (isset($_POST["comment_values"])) {
         $comment_values = $_POST["comment_values"];
         foreach ($comment_values as $rank => $comment_value) {
             $params[$rank]['comment'] = $comment_value;
         }
     }
+
+    if (isset($_POST["dropdown_values"])) {
+        $dropdown_values = $_POST["dropdown_values"];
+        foreach ($dropdown_values as $rank => $dropdown_value) {
+            $params[$rank]['dropdown_values'] = $dropdown_value;
+        }
+    }
+
     if (isset($_POST["is_mandatory_values"])) {
         $is_mandatory_values = $_POST["is_mandatory_values"];
         foreach ($is_mandatory_values as $rank => $is_mandatory_value) {
@@ -72,12 +88,13 @@ if (isset($_POST["add"])) {
         $name = preg_replace('/[^\da-z]/i', '', $value['internal_name']);
         $input['internal_name'] = $name;
         $input['name'] = $value['name'];
-        $input['type'] = 'text';
+        $input['type'] = $value['type'];
         if (!isset($value['comment'])) {
             $value['comment'] = "";
         }
         $input['comment'] = $value['comment'];
         $input['is_mandatory'] = $value['is_mandatory'];
+        $input['dropdown_values'] = $value['dropdown_values'];
         $input['plugin_metademands_fields_id'] = $_POST['fields_id'];
         // Check update rights for fields
         $fieldcustom->check(-1, CREATE, $input);
@@ -89,7 +106,9 @@ if (isset($_POST["add"])) {
     $internal_names = $_POST['internal_name'];
     $names = $_POST['name'];
     $is_mandatorys = $_POST['is_mandatory'];
+    $dropdown_values = $_POST['dropdown_values'];
     $comments = $_POST['comment'] ?? "";
+    $types = $_POST['type'] ?? "";
     $ids = $_POST['id'];
     $inputs = [];
 
@@ -104,11 +123,17 @@ if (isset($_POST["add"])) {
             if (isset($names[$id])) {
                 $inputs[$id]['name'] = $names[$id];
             }
+            if (isset($types[$id])) {
+                $inputs[$id]['type'] = $types[$id];
+            }
             if (isset($comments[$id])) {
                 $inputs[$id]['comment'] = $comments[$id];
             }
             if (isset($is_mandatorys[$id])) {
                 $inputs[$id]['is_mandatory'] = $is_mandatorys[$id];
+            }
+            if (isset($dropdown_values[$id])) {
+                $inputs[$id]['dropdown_values'] = $dropdown_values[$id];
             }
         }
     }

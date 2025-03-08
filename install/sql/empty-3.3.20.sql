@@ -182,6 +182,7 @@ CREATE TABLE `glpi_plugin_metademands_freetablefields`
     `internal_name`                VARCHAR(255) NOT NULL           DEFAULT '0',
     `type`                         VARCHAR(255)                    DEFAULT NULL,
     `name`                         VARCHAR(255) NOT NULL           DEFAULT '0',
+    `dropdown_values`              text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `is_mandatory`                 int          NOT NULL           DEFAULT '0',
     `comment`                      text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `rank`                         int          NOT NULL           DEFAULT '0',

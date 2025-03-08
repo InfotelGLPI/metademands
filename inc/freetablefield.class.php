@@ -42,6 +42,8 @@ class PluginMetademandsFreetablefield extends CommonDBTM
 
     static $rightname = 'plugin_metademands';
 
+    const TYPE_TEXT                 = 1;
+    const TYPE_SELECT               = 2;
 
     static function getTypeName($nb = 0)
     {
@@ -113,6 +115,19 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         return true;
     }
 
+
+    /**
+     * @return array
+     */
+    public static function getTypeFields($with_empty_values = false)
+    {
+        if ($with_empty_values) {
+            $types[0] = Dropdown::EMPTY_VALUE;
+        }
+        $types[self::TYPE_TEXT] = __('Text', 'metademands');
+        $types[self::TYPE_SELECT] = __('Dropdown', 'metademands');
+        return $types;
+    }
 
     /**
      * @param       $ID
@@ -333,6 +348,40 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "</td>";
 
         echo "<td id='show_custom_fields'>";
+        echo '<span id=\'type_values' . $rank . '\'>';
+        echo "<br>" . __('Type', 'metademands') . "<br>";
+        $name = "type_values[$rank]";
+        $types = self::getTypeFields(true);
+        Dropdown::showFromArray($name, $types, ['on_change' => 'hideandshow(this.value)']);
+        echo "<script type='text/javascript'>";
+        echo "function hideandshow (type) {
+
+        if (type == 1) {
+            var span_dropdowns = document.getElementsByClassName('newdropdownvalue');
+            for (var i = 0; i < span_dropdowns.length; i++) {
+                span_dropdowns[i].style.display = 'none';
+            }
+            var span_text = document.getElementsByClassName('newcomment');
+            for (var j = 0; j < span_text.length; j++) {
+                span_text[j].style.display = 'initial';
+            }
+        } else {
+            var span_dropdowns = document.getElementsByClassName('newdropdownvalue');
+            for (var h = 0; h < span_dropdowns.length; h++) {
+                span_dropdowns[h].style.display = 'initial';
+            }
+            var span_text = document.getElementsByClassName('newcomment');
+            for (var m = 0; m < span_text.length; m++) {
+                span_text[m].style.display = 'none';
+            }        
+        
+        }";
+        echo "};";
+        echo "</script>";
+        echo "</span>";
+        echo "</td>";
+
+        echo "<td id='show_custom_fields'>";
         echo '<span id=\'custom_values' . $rank . '\'>';
         echo "<br>" . __('Display name', 'metademands') . " ";
         $name = "custom_values[$rank]";
@@ -341,7 +390,22 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "</td>";
 
         echo "<td id='show_custom_fields'>";
-        echo '<span id=\'comment_values' . $rank . '\'>';
+        echo '<span class=\'newdropdownvalue\' id=\'dropdown_values' . $rank . '\'  style=\'display:none\'>';
+        echo "<br>" . __('Dropdown values', 'metademands') . " ";
+        $label =  __('One value by line, separated by comma', 'metademands');
+        Html::showToolTip(
+            Glpi\RichText\RichText::getSafeHtml($label),
+            ['awesome-class' => 'fa-info-circle']
+        );
+        $name = "dropdown_values[$rank]";
+        Html::textarea(['name' => $name,
+            'rows' => 3,
+            'cols' => 5]);
+        echo "</span>";
+        echo "</td>";
+
+        echo "<td id='show_custom_fields'>";
+        echo '<span class=\'newcomment\' id=\'comment_values' . $rank . '\'  style=\'display:none\'>';
         echo "<br>" . __('Comment') . " ";
         $name = "comment_values[$rank]";
         echo Html::input($name, ['size' => 20]);
@@ -375,6 +439,15 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         ) {
             Session::addMessageAfterRedirect(
                 __("You can't add a field without name", "metademands"),
+                false,
+                ERROR
+            );
+            return false;
+        }
+        if (empty($input['type']) || $input['type'] == 0
+        ) {
+            Session::addMessageAfterRedirect(
+                __("You can't add a field without type", "metademands"),
                 false,
                 ERROR
             );
