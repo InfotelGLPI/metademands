@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-07 12:01+0000\n"
+"POT-Creation-Date: 2025-03-08 15:11+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -147,12 +147,12 @@ msgid "Not empty"
 msgstr "Non vide"
 
 #: ajax/viewfieldinfos.php:43 inc/fieldcustomvalue.class.php:213
-#: inc/fieldparameter.class.php:211 inc/freetablefield.class.php:172
+#: inc/fieldparameter.class.php:211 inc/freetablefield.class.php:187
 msgid "Field informations"
 msgstr "Informations du champ"
 
 #: ajax/viewfieldinfos.php:54 inc/fieldcustomvalue.class.php:224
-#: inc/fieldparameter.class.php:222 inc/freetablefield.class.php:183
+#: inc/fieldparameter.class.php:222 inc/freetablefield.class.php:198
 msgid "Example"
 msgstr "Exemple"
 
@@ -490,7 +490,7 @@ msgstr "Case à cocher"
 
 #: inc/checkbox.class.php:172 inc/dropdownmeta.class.php:453
 #: inc/dropdownmultiple.class.php:543 inc/fieldcustomvalue.class.php:513
-#: inc/freetable.class.php:507 inc/freetablefield.class.php:323
+#: inc/freetable.class.php:661 inc/freetablefield.class.php:338
 #: inc/radio.class.php:170
 msgid "Rank"
 msgstr "Rang"
@@ -755,7 +755,7 @@ msgstr ""
 "Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir"
 " continuer ?"
 
-#: inc/dropdownmeta.class.php:61
+#: inc/dropdownmeta.class.php:61 inc/freetablefield.class.php:128
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
@@ -1120,45 +1120,66 @@ msgstr[2] "Formulaires associés"
 msgid "See form"
 msgstr "Voir le formulaire"
 
-#: inc/freetable.class.php:51
+#: inc/freetable.class.php:52
 msgid "Free table"
 msgstr "Table libre"
 
-#: inc/freetable.class.php:158
+#: inc/freetable.class.php:192
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 "Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
 
-#: inc/freetable.class.php:525 inc/freetablefield.class.php:324
+#: inc/freetable.class.php:672 inc/freetablefield.class.php:339
 msgid "Internal name"
 msgstr "Nom interne"
 
-#: inc/freetable.class.php:532 inc/freetablefield.class.php:337
+#: inc/freetable.class.php:679 inc/freetablefield.class.php:352
+#: inc/information.class.php:161
+msgid "Type"
+msgstr "Type"
+
+#: inc/freetable.class.php:686 inc/freetablefield.class.php:386
 msgid "Display name"
 msgstr "Nom affiché"
 
-#: inc/freetable.class.php:546 inc/freetablefield.class.php:353
+#: inc/freetable.class.php:701 inc/freetablefield.class.php:394
+msgid "Dropdown values"
+msgstr "Valeurs de la liste déroulante"
+
+#: inc/freetable.class.php:702 inc/freetablefield.class.php:395
+msgid "One value by line, separated by comma"
+msgstr "Une valeur par ligne, séparée par une virgule"
+
+#: inc/freetable.class.php:719 inc/freetablefield.class.php:417
 msgid "Mandatory"
 msgstr "Obligatoire"
 
-#: inc/freetablefield.class.php:48 inc/freetablefield.class.php:209
+#: inc/freetablefield.class.php:50 inc/freetablefield.class.php:224
 msgid "Free table field"
 msgid_plural "Free table fields"
 msgstr[0] "Champ de la table libre"
 msgstr[1] "Champs de la table libre"
 msgstr[2] "Champs de la table libre"
 
-#: inc/freetablefield.class.php:210
+#: inc/freetablefield.class.php:127 inc/text.class.php:51
+msgid "Text"
+msgstr "Texte"
+
+#: inc/freetablefield.class.php:225
 msgid "(6 fields maximum)"
 msgstr "(6 champs maximum)"
 
-#: inc/freetablefield.class.php:325
+#: inc/freetablefield.class.php:340
 msgid "No spaces, no special characters"
 msgstr "Pas d'espaces, pas de caractères spéciaux"
 
-#: inc/freetablefield.class.php:377
+#: inc/freetablefield.class.php:441
 msgid "You can't add a field without name"
 msgstr "Vous ne pouvez pas ajouter un champ sans nom"
+
+#: inc/freetablefield.class.php:450
+msgid "You can't add a field without type"
+msgstr "Vous ne pouvez pas ajouter un champ sans type"
 
 #: inc/group.class.php:55
 msgid "Groups rights"
@@ -1199,10 +1220,6 @@ msgstr "Visibilité des groupes"
 #: inc/information.class.php:54
 msgid "Informations"
 msgstr "Informations"
-
-#: inc/information.class.php:161
-msgid "Type"
-msgstr "Type"
 
 #: inc/information.class.php:165
 msgid "Information"
@@ -1972,10 +1989,6 @@ msgstr "Information de l'utilisateur à récupérer"
 #: inc/tel.class.php:159 inc/text.class.php:157
 msgid "Regex to respect"
 msgstr "Regex à respecter"
-
-#: inc/text.class.php:51
-msgid "Text"
-msgstr "Texte"
 
 #: inc/textarea.class.php:54
 msgid "Textarea"
