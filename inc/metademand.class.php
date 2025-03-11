@@ -2282,7 +2282,7 @@ JAVASCRIPT
                     }
 
                     if (empty($n = self::displayField($form_metademands_id, 'name'))) {
-                        $n = Dropdown::getDropdownName(self::getTable(), $form_metademands_id);
+                        $n =  $metademand->getName();
                     }
 
                     $parent_fields['name'] = self::$PARENT_PREFIX .
@@ -2590,7 +2590,7 @@ JAVASCRIPT
                         }
 
                         if ($input['name'] == 0 || $input['name'] == "0" || empty($input['name'])) {
-                            $input['name'] = Dropdown::getDropdownName(self::getTable(), $form_metademands_id);
+                            $input['name'] = $metademand->getName();
                         }
 
 //                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
@@ -5568,8 +5568,8 @@ JAVASCRIPT
                                         if (isset($values['fields'][$explodeTitle2[0]])) {
                                             $field_object = new PluginMetademandsField();
                                             if ($field_object->getFromDB($explodeTitle2[0])) {
-                                                if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
-                                                    )) {
+                                                if ($field_object->fields['type'] == "dropdown_object"
+                                                    && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeTitle2[0]];
                                                     $value['value'] = self::getContentForUser(
                                                         $explodeTitle2[1],
