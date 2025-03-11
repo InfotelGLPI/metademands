@@ -561,7 +561,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
                 $script .= " } else {
                 
-                sessionStorage.setItem('hiddenbloc$name', key);";
+                sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
 
                 //specific - one value
                 $script .= PluginMetademandsFieldoption::setEmptyBlockFields($name);
