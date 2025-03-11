@@ -166,7 +166,8 @@ JAVASCRIPT
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
         //to true automatickly if another field on the block is loaded
-        $result[$field['rank']]['display'] = false;
+//        $result[$field['rank']]['display'] = false;
+
         if ($formatAsTable) {
             $colspan = $is_order ? 12 : 2;
             $result[$field['rank']]['content'] .= "<th colspan='$colspan'>";

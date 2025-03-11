@@ -1613,6 +1613,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $childs_blocks = [];
         foreach ($check_values as $idc => $check_value) {
             if ($check_value['hidden_block'] > 0) {
+
+                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])
+                    && $_SESSION['plugin_metademands'][$metaid]['fields'][$id] == 0
+                && $data['type'] == "checkbox") {
+                    continue;
+                }
                 $hidden_blocks[] = $check_value['hidden_block'];
             }
             $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
@@ -1658,8 +1664,39 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         }
                     }
                 }
+            } else if (is_array($session_value)) {
+
+                foreach ($session_value as $k => $fieldSession) {
+                    if (isset($check_values[$fieldSession])) {
+                        if (($key = array_search($check_values[$fieldSession]['hidden_block'], $hidden_blocks)) !== false) {
+                            unset($hidden_blocks[$key]);
+                        }
+                        $session_childs_blocks = [];
+                        if (isset($check_values[$fieldSession]['childs_blocks'])) {
+                            $session_childs_blocks[] = json_decode($check_values[$fieldSession]['childs_blocks'], true);
+                        }
+                        if (count($session_childs_blocks) > 0) {
+                            foreach ($session_childs_blocks as $k => $session_childs_block) {
+                                if (is_array($session_childs_block)) {
+                                    foreach ($session_childs_block as $session_childs) {
+                                        if (is_array($session_childs)) {
+                                            foreach ($session_childs as $session_child) {
+                                                foreach ($childs as $k => $child) {
+                                                    if (($key = array_search($session_child, $child)) !== false) {
+                                                        unset($childs[$k][$key]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+
 
         $json_hidden_blocks = json_encode($hidden_blocks);
         $json_childs_blocks = json_encode($childs);
@@ -1781,31 +1818,41 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function setMandatoryBlockFields($metaid, $blockid)
     {
+
         $script = '';
-        $fields = new PluginMetademandsField();
-        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $blockid]);
-        if (is_array($fields_data) && count($fields_data) > 0) {
-            foreach ($fields_data as $data) {
-                $fieldparameter = new PluginMetademandsFieldParameter();
-                if ($fieldparameter->getFromDBByCrit(
-                    ['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1]
-                )) {
-                    $id = $data['id'];
-                    $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
-                    $script .= "$(\"[check='field[$id]']\").attr('required', 'required');";
-                    if ($data['type'] == 'upload') {
-                        $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
+        if ($blockid > 0) {
+            $fields = new PluginMetademandsField();
+            $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $blockid]);
+            if (is_array($fields_data) && count($fields_data) > 0) {
+
+                foreach ($fields_data as $data) {
+                    $fieldparameter = new PluginMetademandsFieldParameter();
+                    if ($fieldparameter->getFromDBByCrit(
+                        ['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1]
+                    )) {
+
+                        $id = $data['id'];
+                        if ($id > 0) {
+                            $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
+                            $script .= "$(\"[check='field[$id]']\").attr('required', 'required');";
+                            if ($data['type'] == 'upload') {
+                                $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
+                            }
+                        }
                     }
                 }
+
+                $script .= "fixButtonIndicator();";
             }
-            $script .= "fixButtonIndicator();";
         }
+
         return $script;
     }
 
-    public static function resetMandatoryBlockFields($id)
+    public static function resetMandatoryBlockFields($name)
     {
-        return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
+        return "var blocid = sessionStorage.getItem('hiddenbloc$name');
+        $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'checkbox':
                                             case 'radio':
@@ -1818,9 +1865,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     ";
     }
 
-    public static function setEmptyBlockFields($id)
+    public static function setEmptyBlockFields($name)
     {
-        return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
+        return "var blocid = sessionStorage.getItem('hiddenbloc$name');
+        $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -1866,9 +1914,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $fieldoptions = new PluginMetademandsFieldOption();
         $fields_data = $fieldoptions->find(['plugin_metademands_fields_id' => $field_id, 'hidden_link' => $hidden_link]
         );
+
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
-                if ($data['fields_link'] == $hidden_link) {
+                if ($data['fields_link'] == $hidden_link && $hidden_link > 0) {
                     $script .= "$(\"[name='field[$hidden_link]']\").attr('required', 'required');";
                 }
             }

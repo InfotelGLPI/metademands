@@ -876,6 +876,7 @@ class PluginMetademandsFreetable extends CommonDBTM
 //            $materials = json_decode(json_encode($materials), true);
 //        }
         $content = "";
+        $result[$field['rank']]['display'] = true;
 //        $total = 0;
         $addfields = [];
         $dropdown_values = [];
@@ -958,8 +959,6 @@ class PluginMetademandsFreetable extends CommonDBTM
                     }
                 }
             }
-
-            $result[$field['rank']]['display'] = true;
             $result[$field['rank']]['content'] .= $content;
         }
 

@@ -1385,7 +1385,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $metaid = $data['plugin_metademands_metademands_id'];
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
-
+        $name = "field[" . $data["id"] . "]";
         //hidden_blocks by idc
         $hiddenblocks_by_checkvalue = [];
         foreach ($check_values as $idc => $check_value) {
@@ -1459,7 +1459,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
                 }
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+                            sessionStorage.setItem('hiddenbloc$name', $hidden_block);
+                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
 
 //                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
 //                    && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc) {
@@ -1614,7 +1615,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
 
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+                           sessionStorage.setItem('hiddenbloc$name', $hidden_block);
+                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
 
 //                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
 //                    && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc) {
@@ -1859,13 +1861,13 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $is_order = false
     ) {
         $colspan = $is_order ? 6 : 1;
-
+        $result[$field['rank']]['display'] = true;
         if (!empty($field['custom_values'])
             && $field['item'] != 'User'
             && $field['item'] != 'Location'
             && $field['item'] != 'Group'
             && $field['item'] != 'Appliance' && $field['value'] > 0) {
-            $result[$field['rank']]['display'] = true;
+
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
@@ -1879,7 +1881,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
         } elseif (($field['item'] == 'Location' || $field['item'] == 'Group' || $field['item'] == 'Appliance')
             && $field['value'] > 0) {
-            $result[$field['rank']]['display'] = true;
+
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
@@ -1965,7 +1967,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $dataItems .= "</table>";
             }
-            $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
