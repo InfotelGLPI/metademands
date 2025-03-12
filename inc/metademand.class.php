@@ -7271,6 +7271,7 @@ JAVASCRIPT
             $fieldoptions = new PluginMetademandsFieldOption();
             $fieldparameters = new PluginMetademandsFieldParameter();
             $fieldcustoms = new PluginMetademandsFieldCustomvalue();
+            $fieldfreetables = new PluginMetademandsFreetablefield();
             $fieldcondition = new PluginMetademandsCondition();
             $ticketfields = new PluginMetademandsTicketField();
             $tasks = new PluginMetademandsTask();
@@ -7502,6 +7503,23 @@ JAVASCRIPT
                     }
 
                     $old_field_id = $associated_fields[$newField["id"]];
+                    $oldFreeTables = $fieldfreetables->find(['plugin_metademands_fields_id' => $old_field_id]);
+                    foreach ($oldFreeTables as $oldFreeTable) {
+                        $inputf = [];
+                        $inputf['name'] = Toolbox::addslashes_deep($oldFreeTable['name']);
+                        $inputf['internal_name'] = Toolbox::addslashes_deep($oldFreeTable['internal_name']);
+                        $inputf['type'] = $oldFreeTable['type'];
+                        $inputf['is_mandatory'] = $oldFreeTable['is_mandatory'];
+                        $inputf['comment'] = Toolbox::addslashes_deep($oldFreeTable['comment']);
+                        $inputf['dropdown_values'] = Toolbox::addslashes_deep($oldFreeTable['dropdown_values']);
+                        $inputf['rank'] = $oldFreeTable['rank'];
+                        $inputf['plugin_metademands_fields_id'] = $newField['id'];
+
+                        $newfreetablefield = $fieldfreetables->add($inputf);
+                        $mapTableCheckValue[$oldFreeTable["id"]] = $newfreetablefield;
+                    }
+
+                    $old_field_id = $associated_fields[$newField["id"]];
                     $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldOptions as $oldOption) {
                         $inputo = [];
@@ -7552,15 +7570,15 @@ JAVASCRIPT
                     }
                 }
                 // Add ticket fields
-                $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                if (count($ticketfields_data)) {
-                    foreach ($ticketfields_data as $values) {
-                        unset($values['id']);
-                        $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                        $values['value'] = addslashes($values['value']);
-                        $ticketfields->add($values);
-                    }
-                }
+//                $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+//                if (count($ticketfields_data)) {
+//                    foreach ($ticketfields_data as $values) {
+//                        unset($values['id']);
+//                        $values['plugin_metademands_metademands_id'] = $new_metademands_id;
+//                        $values['value'] = addslashes($values['value']);
+//                        $ticketfields->add($values);
+//                    }
+//                }
 
                 // Redirect on finish
                 if (isset($options['redirect'])) {
@@ -8265,12 +8283,14 @@ JAVASCRIPT
         $metafieldoption = new PluginMetademandsFieldOption();
         $metafieldparameter = new PluginMetademandsFieldParameter();
         $metafieldcustom = new PluginMetademandsFieldCustomvalue();
+        $metafieldfreetablefield = new PluginMetademandsFreetablefield();
         $condition = new PluginMetademandsCondition();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
         $fields['metafieldparameters'] = [];
         $fields['metafieldoptions'] = [];
         $fields['metafieldcustoms'] = [];
+        $fields['metafieldfreetablefields'] = [];
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
 
@@ -8294,6 +8314,10 @@ JAVASCRIPT
             $metafieldcustoms = $metafieldcustom->find(['plugin_metademands_fields_id' => $metafield["id"]]);
             foreach ($metafieldcustoms as $idcustoms => $metafieldcusto) {
                 $fields['metafieldcustoms']['fieldcustoms' . $idcustoms] = $metafieldcusto;
+            }
+            $metafieldfreetablefields = $metafieldfreetablefield->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+            foreach ($metafieldfreetablefields as $idfreetables => $metafieldfreetable) {
+                $fields['metafieldfreetablefields']['freetablefields' . $idfreetables] = $metafieldfreetable;
             }
         }
 
@@ -8458,6 +8482,12 @@ JAVASCRIPT
         if (isset($datas['metafieldcustoms'])) {
             $fieldcustoms = $datas['metafieldcustoms'];
         }
+
+        $fieldfreetablefields = [];
+        if (isset($datas['metafieldfreetablefields'])) {
+            $fieldfreetablefields = $datas['metafieldfreetablefields'];
+        }
+
 
         $tasks = [];
         if (isset($datas['tasks'])) {
@@ -8804,6 +8834,52 @@ JAVASCRIPT
 
                 $newcustomfield = $fieldMetacustom->add($toUpdate);
                 $mapTableCheckValue[$old["id"]] = $newcustomfield;
+            }
+        }
+
+        //Add new freetable fields
+        $fieldMetafreetablefield = new PluginMetademandsFreetablefield();
+        if ($version >= "3.3.20") {
+            foreach ($fieldfreetablefields as $new => $old) {
+                $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+                $name = $old["name"] ?? "";
+                $internal_name = $old["internal_name"] ?? "";
+                $type = $old["type"] ?? "text";
+                $comment = $old["comment"] ?? "";
+                $dropdown_values = $old["dropdown_values"] ?? "";
+                $is_mandatory = $old["is_mandatory"] ?? 0;
+                $rank = $old["rank"] ?? 0;
+
+                $toUpdate = [];
+                if ($name != "") {
+                    $toUpdate["name"] = Toolbox::addslashes_deep($name);
+                }
+                if ($internal_name != "") {
+                    $toUpdate["internal_name"] = Toolbox::addslashes_deep($internal_name);
+                }
+                if ($type != "") {
+                    $toUpdate["type"] = $type;
+                }
+                if ($comment != "") {
+                    $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
+                }
+                if ($dropdown_values != "") {
+                    $toUpdate["dropdown_values"] = Toolbox::addslashes_deep($dropdown_values);
+                }
+                if ($is_mandatory) {
+                    $toUpdate["is_mandatory"] = $is_mandatory;
+                }
+                if ($rank != 0) {
+                    $toUpdate["rank"] = $rank;
+                }
+
+                if ($plugin_metademands_fields_id != 0
+                    && isset($mapTableField[$plugin_metademands_fields_id])) {
+                    $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+                }
+
+                $newfreetablefield = $fieldMetafreetablefield->add($toUpdate);
+                $mapTableCheckValue[$old["id"]] = $newfreetablefield;
             }
         }
 
