@@ -357,20 +357,20 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "function hideandshow (type) {
 
         if (type == 1) {
-            var span_dropdowns = document.getElementsByClassName('newdropdownvalue');
+            var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
             for (var i = 0; i < span_dropdowns.length; i++) {
                 span_dropdowns[i].style.display = 'none';
             }
-            var span_text = document.getElementsByClassName('newcomment');
+            var span_text = document.getElementsByClassName('newcomment$rank');
             for (var j = 0; j < span_text.length; j++) {
                 span_text[j].style.display = 'initial';
             }
         } else {
-            var span_dropdowns = document.getElementsByClassName('newdropdownvalue');
+            var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
             for (var h = 0; h < span_dropdowns.length; h++) {
                 span_dropdowns[h].style.display = 'initial';
             }
-            var span_text = document.getElementsByClassName('newcomment');
+            var span_text = document.getElementsByClassName('newcomment$rank');
             for (var m = 0; m < span_text.length; m++) {
                 span_text[m].style.display = 'none';
             }        
@@ -382,7 +382,7 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "</td>";
 
         echo "<td id='show_custom_fields'>";
-        echo '<span id=\'custom_values' . $rank . '\'>';
+        echo "<span id='custom_values$rank'>";
         echo "<br>" . __('Display name', 'metademands') . " ";
         $name = "custom_values[$rank]";
         echo Html::input($name, ['size' => 20]);
@@ -390,7 +390,7 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "</td>";
 
         echo "<td id='show_custom_fields'>";
-        echo '<span class=\'newdropdownvalue\' id=\'dropdown_values' . $rank . '\'  style=\'display:none\'>';
+        echo "<span class='newdropdownvalue$rank' id='dropdown_values$rank'  style='display:none'>";
         echo "<br>" . __('Dropdown values', 'metademands') . " ";
         $label =  __('One value by line, separated by comma', 'metademands');
         Html::showToolTip(
@@ -405,7 +405,7 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "</td>";
 
         echo "<td id='show_custom_fields'>";
-        echo '<span class=\'newcomment\' id=\'comment_values' . $rank . '\'  style=\'display:none\'>';
+        echo "<span class='newcomment$rank' id='comment_values$rank'  style='display:none'>";
         echo "<br>" . __('Comment') . " ";
         $name = "comment_values[$rank]";
         echo Html::input($name, ['size' => 20]);
@@ -413,7 +413,7 @@ class PluginMetademandsFreetablefield extends CommonDBTM
         echo "</td>";
 
         echo "<td id='show_custom_fields'>";
-        echo '<span id=\'is_mandatory_values' . $rank . '\'>';
+        echo "<span id='is_mandatory_values$rank'>";
         echo "<br>" . __('Mandatory', 'metademands') . "<br>";
         $name = "is_mandatory_values[$rank]";
         $value = 0;
