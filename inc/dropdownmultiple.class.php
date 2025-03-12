@@ -135,25 +135,29 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                 $field .= self::loadMultiselectScript($namefield, $data['id']);
             } else {
-                $default_user = $data['default_use_id_requester'] == 0 ? 0 : Session::getLoginUserID();
+                $opt = [
+                    'values' => $value,
+                    'width' => '250px',
+                    'multiple' => true,
+                    'display' => false,
+                    'required' => ($data['is_mandatory'] ? "required" : "")
+                ];
+                if (count($value) == 0) {
+                    $default_user = $data['default_use_id_requester'] == 0 ? 0 : Session::getLoginUserID();
 
-                if ($default_user == 0) {
-                    $user = new User();
-                    $user->getFromDB(Session::getLoginUserID());
-                    $default_user = ($data['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                    if ($default_user == 0) {
+                        $user = new User();
+                        $user->getFromDB(Session::getLoginUserID());
+                        $default_user = ($data['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                    }
+                    $opt['value'] = $default_user;
                 }
+
 
                 $field = Dropdown::showFromArray(
                     $namefield . "[" . $data['id'] . "]",
                     $list,
-                    [
-                        'values' => $value,
-                        'value' => $default_user,
-                        'width' => '250px',
-                        'multiple' => true,
-                        'display' => false,
-                        'required' => ($data['is_mandatory'] ? "required" : "")
-                    ]
+                    $opt
                 );
             }
         } elseif ($data['item'] == 'other') {
@@ -921,7 +925,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             //if reload form on loading
-            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id]) && $data["item"] != 'User') {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                 if (is_array($session_value)) {
                     foreach ($session_value as $k => $fieldSession) {
@@ -1073,7 +1077,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             //if reload form on loading
-            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id]) && $data["item"] != 'User') {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                 if (is_array($session_value)) {
                     foreach ($session_value as $k => $fieldSession) {
