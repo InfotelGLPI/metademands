@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 13:33+0000\n"
+"POT-Creation-Date: 2025-03-12 15:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -341,7 +341,7 @@ msgstr ""
 #: inc/condition.class.php:592 inc/condition.class.php:918
 #: inc/dropdown.class.php:280 inc/dropdownmeta.class.php:691
 #: inc/dropdownmultiple.class.php:719 inc/dropdownobject.class.php:739
-#: inc/field.class.php:1062 inc/fieldoption.class.php:255
+#: inc/field.class.php:1062 inc/fieldoption.class.php:343
 #: inc/radio.class.php:265 inc/yesno.class.php:130
 msgid "Value to check"
 msgstr ""
@@ -860,8 +860,8 @@ msgstr ""
 msgid "Form fields"
 msgstr ""
 
-#: inc/field.class.php:1061 inc/fieldoption.class.php:256
-#: inc/fieldoption.class.php:949
+#: inc/field.class.php:1061 inc/fieldoption.class.php:344
+#: inc/fieldoption.class.php:1037
 msgid "Link a task to the field"
 msgstr ""
 
@@ -934,91 +934,93 @@ msgid_plural "Options"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/fieldoption.class.php:193
+#: inc/fieldoption.class.php:130 inc/fieldoption.class.php:345
+#: inc/fieldoption.class.php:1050
+msgid "Link a field to the field"
+msgstr ""
+
+#: inc/fieldoption.class.php:139 inc/fieldoption.class.php:346
+#: inc/fieldoption.class.php:1077
+msgid "Link a hidden field"
+msgstr ""
+
+#: inc/fieldoption.class.php:281
 msgid "No options are allowed for this field type"
 msgstr ""
 
-#: inc/fieldoption.class.php:202
+#: inc/fieldoption.class.php:290
 msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: inc/fieldoption.class.php:229
+#: inc/fieldoption.class.php:317
 msgid "Add a new option"
 msgstr ""
 
-#: inc/fieldoption.class.php:248
+#: inc/fieldoption.class.php:336
 msgid "List of options"
 msgstr ""
 
-#: inc/fieldoption.class.php:257 inc/fieldoption.class.php:962
-msgid "Link a field to the field"
-msgstr ""
-
-#: inc/fieldoption.class.php:258 inc/fieldoption.class.php:989
-msgid "Link a hidden field"
-msgstr ""
-
-#: inc/fieldoption.class.php:259 inc/fieldoption.class.php:1013
+#: inc/fieldoption.class.php:347 inc/fieldoption.class.php:1101
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:260 inc/fieldoption.class.php:1067
+#: inc/fieldoption.class.php:348 inc/fieldoption.class.php:1155
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:261 inc/fieldoption.class.php:1083
+#: inc/fieldoption.class.php:349 inc/fieldoption.class.php:1171
 msgid "Link a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:262 inc/fieldoption.class.php:1110
+#: inc/fieldoption.class.php:350 inc/fieldoption.class.php:1198
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: inc/fieldoption.class.php:951
+#: inc/fieldoption.class.php:1039
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/fieldoption.class.php:964
+#: inc/fieldoption.class.php:1052
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/fieldoption.class.php:991
+#: inc/fieldoption.class.php:1079
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:1015
+#: inc/fieldoption.class.php:1103
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:1040
+#: inc/fieldoption.class.php:1128
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
 msgstr ""
 
-#: inc/fieldoption.class.php:1069
+#: inc/fieldoption.class.php:1157
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:1085
+#: inc/fieldoption.class.php:1173
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:1112
+#: inc/fieldoption.class.php:1200
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1229 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1317 inc/mailtask.class.php:150
 #: inc/step.class.php:270 inc/step.class.php:392 inc/step.class.php:416
 #: inc/task.class.php:766 inc/task.class.php:1163 inc/tickettask.class.php:168
 #, php-format
