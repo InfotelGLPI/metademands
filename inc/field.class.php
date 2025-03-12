@@ -2747,6 +2747,119 @@ class PluginMetademandsField extends CommonDBChild
         return $tab;
     }
 
+
+    /**
+     * @since version 0.85
+     *
+     * @see CommonDBTM::showMassiveActionsSubForm()
+     **/
+    public static function showMassiveActionsSubForm(MassiveAction $ma)
+    {
+        switch ($ma->getAction()) {
+            case 'change_color':
+                echo Html::showColorField('color', ['display' => false]);
+                echo "<br>" .
+                    Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+                return true;
+            case 'change_icon':
+                $icon_selector_id = 'icon_' . mt_rand();
+                $return = Html::select(
+                    'icon',
+                    [],
+                    [
+                        'id' => $icon_selector_id,
+                        'display' => false,
+                        'style' => 'width:175px;'
+                    ]
+                );
+
+                $return .= Html::script('js/Forms/FaIconSelector.js');
+                $return .= Html::scriptBlock(
+                    <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+                );
+                echo $return;
+                echo "&nbsp;" .
+                    Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+                return true;
+        }
+        return false;
+    }
+
+    public function getSpecificMassiveActions($checkitem = null)
+    {
+
+        $isadmin = static::canUpdate();
+        $actions = parent::getSpecificMassiveActions($checkitem);
+
+        if ($isadmin) {
+            $actions['PluginMetademandsField:change_icon'] = __("Modify icon", "metademands");
+            $actions['PluginMetademandsField:change_color'] = __("Modify color", "metademands");
+        }
+
+        return $actions;
+    }
+
+    /**
+     * @since version 0.85
+     *
+     * @see CommonDBTM::processMassiveActionsForOneItemtype()
+     **/
+    public static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
+    {
+        switch ($ma->getAction()) {
+            case "change_icon":
+                $input = $ma->getInput();
+
+                foreach ($ids as $id) {
+                    $field = new PluginMetademandsField();
+                    $param = new PluginMetademandsFieldParameter();
+                    $msg = MassiveAction::ACTION_OK;
+                    if ($param->getFromDBByCrit(["plugin_metademands_fields_id" => $id])) {
+                        $field->getFromDB($id);
+                        if ($field->fields['type'] == 'title-block'
+                            || $field->fields['type'] == 'title') {
+                            $param->update(['id' => $param->fields['id'], 'icon' => $input['icon']]);
+                        } else {
+                            $ma->addMessage(__('You cannot do this for this field', 'metademands'));
+                            $msg = MassiveAction::ACTION_KO;
+                        }
+
+                    }
+                    $item->getFromDB($id);
+                    $ma->itemDone($item->getType(), $id, $msg);
+                }
+                return;
+            case "change_color":
+                $input = $ma->getInput();
+                foreach ($ids as $id) {
+                    $field = new PluginMetademandsField();
+                    $param = new PluginMetademandsFieldParameter();
+                    if ($param->getFromDBByCrit(["plugin_metademands_fields_id" => $id])) {
+                        $field->getFromDB($id);
+                        if ($field->fields['type'] == 'title-block'
+                            || $field->fields['type'] == 'title') {
+                            $param->update(['id' => $param->fields['id'], 'color' => $input['color']]);
+                        } else {
+                            $ma->addMessage(__('You cannot do this for this field', 'metademands'));
+                            $msg = MassiveAction::ACTION_KO;
+                        }
+
+                    }
+                    $item->getFromDB($id);
+                    $ma->itemDone($item->getType(), $id, $msg);
+                }
+                return;
+        }
+        return;
+    }
+
     /**
      * @param $field
      * @param $name (default '')
