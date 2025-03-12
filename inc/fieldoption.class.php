@@ -106,10 +106,98 @@ class PluginMetademandsFieldOption extends CommonDBChild
     function getForbiddenStandardMassiveAction()
     {
         $forbidden = parent::getForbiddenStandardMassiveAction();
-        $forbidden[] = 'update';
+//        $forbidden[] = 'update';
         return $forbidden;
     }
 
+
+    /**
+     * @return array
+     */
+    public function rawSearchOptions()
+    {
+        $tab = [];
+
+        $tab[] = [
+            'id' => 'common',
+            'name' => self::getTypeName(1)
+        ];
+
+        $tab[] = [
+            'id' => '814',
+            'table' => $this->getTable(),
+            'field' => 'fields_link',
+            'name' => __('Link a field to the field', 'metademands'),
+            'datatype' => 'specific',
+            'massiveaction' => true
+        ];
+
+        $tab[] = [
+            'id' => '815',
+            'table' => $this->getTable(),
+            'field' => 'hidden_link',
+            'name' => __('Link a hidden field', 'metademands'),
+            'datatype' => 'specific',
+            'massiveaction' => true
+        ];
+
+        return $tab;
+    }
+
+
+    /**
+     * @param $field
+     * @param $name (default '')
+     * @param $values (default '')
+     * @param $options   array
+     *
+     * @return string
+     **@since version 0.84
+     *
+     */
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        $options['display'] = false;
+
+        switch ($field) {
+            case 'fields_link':
+            case 'hidden_link':
+
+            if (isset($_POST['initial_items'])) {
+
+                $items = reset($_POST['initial_items']);
+                $item = array_key_last($items);
+                $fieldoption = new self();
+                if ($fieldoption->getFromDB($item)) {
+                    $fields = new PluginMetademandsField();
+                    $fields_data = $fields->find(['plugin_metademands_fields_id' => $fieldoption->fields['plugin_metademands_fields_id']]);
+                    $metademands_id = 0;
+                    foreach ($fields_data as $id => $value) {
+                        $metademands_id = $value['plugin_metademands_metademands_id'];
+                    }
+                    if ($metademands_id > 0) {
+                        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                        $data = [Dropdown::EMPTY_VALUE];
+                        foreach ($fields_data as $id => $value) {
+                            if ($value['item'] != "ITILCategory_Metademands"
+                                && $value['item'] != "informations") {
+                                $data[$id] = $value['rank'] . " - " . urldecode(
+                                        html_entity_decode(Toolbox::stripslashes_deep($value['name']))
+                                    );
+                            }
+                        }
+                        return Dropdown::showFromArray($name, $data, $options);
+                    }
+                }
+            }
+            return "";
+        }
+
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
 
     /**
      * @param \CommonGLPI $item
