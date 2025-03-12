@@ -4806,6 +4806,9 @@ JAVASCRIPT
                     if ($field['type'] == 'informations') {
                         continue;
                     }
+                    if ($field['type'] == 'link') {
+                        continue;
+                    }
                     if ($field['type'] == 'number'
                         && ($field['value'] == "" || $field['value'] == "0")) {
                         continue;
