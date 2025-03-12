@@ -744,52 +744,51 @@ class PluginMetademandsBasket extends CommonDBTM
             $withquantity = true;
         }
 
-        if ($withquantity == false) {
-            $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-        } else {
-            $name = "quantity[" . $data["id"] . "]";
-
-            $onchange = "$('[name^=\"$name\"]').change(function() {";
-        }
-
-        //default hide of all hidden links
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
-            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-        }
-
-        $onchange .= "var tohide = {};";
-
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
-
+        if (count($check_values) > 0) {
             if ($withquantity == false) {
-
-                $onchange .= " if (this.checked){";
-                //                                        foreach ($hidden_link as $key => $fields) {
-                $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
-
+                $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
             } else {
-                $onchange .= "if ($(this).val() > 0 ) { ";
+                $name = "quantity[" . $data["id"] . "]";
+
+                $onchange = "$('[name^=\"$name\"]').change(function() {";
             }
-            $onchange .= "if ($hidden_link in tohide) {
+
+            //default hide of all hidden links
+            foreach ($check_values as $idc => $check_value) {
+                $hidden_link = $check_value['hidden_link'];
+                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            }
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+            }
+
+            $onchange .= "var tohide = {};";
+
+            foreach ($check_values as $idc => $check_value) {
+                $hidden_link = $check_value['hidden_link'];
+
+                if ($withquantity == false) {
+                    $onchange .= " if (this.checked){";
+                    //                                        foreach ($hidden_link as $key => $fields) {
+                    $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
+                } else {
+                    $onchange .= "if ($(this).val() > 0 ) { ";
+                }
+                $onchange .= "if ($hidden_link in tohide) {
                          } else {
                             tohide[$hidden_link] = true;
                          }
                          tohide[$hidden_link] = false;
                       ";
 
-            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
-                foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
-                    if ($fieldSession == $idc) {
-                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-                    }
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $hidden_link;
                 }
-            }
 
-            //checkbox
-            $onchange .= "$.each( tohide, function( key, value ) {
+                //checkbox
+                $onchange .= "$.each( tohide, function( key, value ) {
                                                         if(value == true){
                                                            $('[id-field =\"field'+key+'\"]').hide();
                                                            $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -835,25 +834,25 @@ class PluginMetademandsBasket extends CommonDBTM
                                                         }
                                                      });";
 
-            if ($withquantity == false) {
-                $onchange .= "} else {";
-                //                                        foreach ($hidden_link as $key => $fields) {
-                $onchange .= "if($(this).val() == $idc){
+                if ($withquantity == false) {
+                    $onchange .= "} else {";
+                    //                                        foreach ($hidden_link as $key => $fields) {
+                    $onchange .= "if($(this).val() == $idc){
                             if($hidden_link in tohide){
 
                             }else{
                                tohide[$hidden_link] = true;
                             }
                             $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
-                $onchange .= "if($(value).val() == $idc || $idc == -1 ){
+                    $onchange .= "if($(value).val() == $idc || $idc == -1 ){
                                    tohide[$hidden_link] = false;
                                 }";
-                $onchange .= "});";
+                    $onchange .= "});";
 
-                $onchange .= "}";
+                    $onchange .= "}";
 
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                             if(value == true){
                                $('[id-field =\"field'+key+'\"]').hide();
                                $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -898,47 +897,27 @@ class PluginMetademandsBasket extends CommonDBTM
                                $('[id-field =\"field'+key+'\"]').show();
                             }
                          });";
-                $onchange .= "}
+                    $onchange .= "}
                 }";
-            } else {
-                $onchange .= "} else {";
+                } else {
+                    $onchange .= "} else {";
 
-                $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
-                $onchange .= "}";
-
+                    $onchange .= "}";
+                }
             }
+
+            if ($display > 0) {
+                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+            }
+
+            $onchange .= "});";
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
         }
-        $onchange .= "});";
-
-
-//        foreach ($check_values as $idc => $check_value) {
-//
-//            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-//            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-//                && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
-//                foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
-//                    if ($fieldSession == $idc) {
-//                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-//                    }
-//                }
-//            }
-//            $hidden_link = $check_value['hidden_link'];
-//            //Initialize id default value
-//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//
-//                foreach ($default_values as $k => $v) {
-//                    if ($v == 1) {
-//                        if ($idc == $k) {
-//                            $onchange .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        echo Html::scriptBlock('$(document).ready(function() {' . $pre_onchange . " " . $onchange. " " . $post_onchange . '});');
-
     }
 
     public static function blocksHiddenScript($data)

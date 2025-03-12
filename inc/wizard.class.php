@@ -1664,18 +1664,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         $count = 0;
                     }
 
-
-                    // If values are saved in session we retrieve it
-                    if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
-                        foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
-                            if (strval($data['id']) === strval($id)) {
-                                $data['value'] = $value;
-                            } elseif ($data['id'] . '-2' === $id) {
-                                $data['value-2'] = $value;
-                            }
-                        }
-                    }
-
                     // Title field
                     if ($data['type'] != 'title-block') {
                         // start wrapper div classes
@@ -1781,17 +1769,17 @@ class PluginMetademandsWizard extends CommonDBTM
                                        border-right :3px solid #' . $color;
                         }
 
-                        echo "</div>";
+//                        echo "</div>";
 
-                        $background_color = "";
-                        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                            $background_color = $meta->fields['background_color'];
-                        }
-                        if ($preview) {
-                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";'>";
-                        } else {
-                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";$style_left_right'>";
-                        }
+//                        $background_color = "";
+//                        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+//                            $background_color = $meta->fields['background_color'];
+//                        }
+//                        if ($preview) {
+//                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";'>";
+//                        } else {
+//                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";$style_left_right'>";
+//                        }
 
                         $count = 0;
                     }
@@ -1803,6 +1791,19 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 // Fields linked
                 foreach ($line as $data) {
+
+                    // If values are saved in session we retrieve it
+                    if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
+
+                        foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
+                            if (strval($data['id']) === strval($id)) {
+                                $data['value'] = $value;
+                            } elseif ($data['id'] . '-2' === $id) {
+                                $data['value-2'] = $value;
+                            }
+                        }
+                    }
+
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
                         unset($fieldparameter->fields['plugin_metademands_fields_id']);
                         unset($fieldparameter->fields['id']);

@@ -324,7 +324,7 @@ class PluginMetademandsText extends CommonDBTM
 
     static function fieldsHiddenScript($data)
     {
-        $metaid = $data['plugin_metademands_metademands_id'];
+
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
 
@@ -337,25 +337,18 @@ class PluginMetademandsText extends CommonDBTM
             $onchange = "console.log('fieldsHiddenScript-text $id');";
         }
 
-        //default hide of all hidden links
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
-            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-        }
-
-        //if reload form on loading
-        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if ($fieldSession != "") {
-                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
-                    }
-                }
-            }
-        }
-
         if (count($check_values) > 0) {
+            //default hide of all hidden links
+            foreach ($check_values as $idc => $check_value) {
+                $hidden_link = $check_value['hidden_link'];
+                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            }
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            }
+
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             foreach ($check_values as $idc => $check_value) {
@@ -369,17 +362,10 @@ class PluginMetademandsText extends CommonDBTM
                                  $('[id-field =\"field" . $hidden_link . "\"]').show();
                               }
                             ";
-
-                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                        if (is_array($session_value)) {
-                            foreach ($session_value as $k => $fieldSession) {
-                                if ($fieldSession != "" && $hidden_link > 0) {
-                                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-                                }
-                            }
-                        }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_link;
                     }
+
                 } else {
                     $onchange .= "if ($(this).val().trim().length < 1) {
                                 $('[id-field =\"field" . $hidden_link . "\"]').show();
@@ -390,18 +376,16 @@ class PluginMetademandsText extends CommonDBTM
 
                     $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
-                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                        if (is_array($session_value)) {
-                            foreach ($session_value as $k => $fieldSession) {
-                                if ($fieldSession == "" && $hidden_link > 0) {
-                                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-                                }
-                            }
-                        }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_link;
                     }
                 }
             }
+
+            if ($display > 0) {
+                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+            }
+
             $onchange .= "});";
 
             echo Html::scriptBlock(
