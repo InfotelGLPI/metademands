@@ -349,7 +349,7 @@ class PluginMetademandsUrl extends CommonDBTM
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
+            $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
 

@@ -512,14 +512,15 @@ class PluginMetademandsRadio extends CommonDBTM
             }
 
             //Si la valeur est en session
+            //specific
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                $pre_onchange .= "$('[id=\"field[" . $id . "][" . $data['value'] . "]\"]').prop('checked', true).trigger('change');";
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $onchange .= "var tohide = {};";
-
+            $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
 

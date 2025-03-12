@@ -1664,6 +1664,18 @@ class PluginMetademandsWizard extends CommonDBTM
                         $count = 0;
                     }
 
+                    // If values are saved in session we retrieve it
+                    if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
+
+                        foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
+                            if (strval($data['id']) === strval($id)) {
+                                $data['value'] = $value;
+                            } elseif ($data['id'] . '-2' === $id) {
+                                $data['value-2'] = $value;
+                            }
+                        }
+                    }
+
                     // Title field
                     if ($data['type'] != 'title-block') {
                         // start wrapper div classes
@@ -1793,6 +1805,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 foreach ($line as $data) {
 
                     // If values are saved in session we retrieve it
+                    //needed to load twice
                     if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
 
                         foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {

@@ -1246,7 +1246,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
                 $onchange .= "var tohide = {};";
-
+                $display = 0;
                 foreach ($check_values as $idc => $check_value) {
                     $hidden_link = $check_value['hidden_link'];
                     $onchange .= "if ($hidden_link in tohide) {
@@ -1344,13 +1344,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                 //Si la valeur est en session
                 if (isset($data['value'])) {
+                    Toolbox::logInfo($data['value']);
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 }
 
                 $onchange .= "var tohide = {};";
 
                 $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
-
+                $display = 0;
                 foreach ($check_values as $idc => $check_value) {
                     $hidden_link = $check_value['hidden_link'];
 

@@ -552,14 +552,18 @@ class PluginMetademandsCheckbox extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            //specific
+            if (isset($data['value']) && is_array($data['value'])) {
+                $values = $data['value'];
+                foreach ($values as $value) {
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                }
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $onchange .= "var tohide = {};";
-
+            $display = [];
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
 
@@ -573,8 +577,13 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             tohide[$hidden_link] = false;
                         }";
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_link;
+                if (isset($data['value']) && is_array($data['value'])) {
+                    $values = $data['value'];
+                    foreach ($values as $value) {
+                        if ($idc == $value) {
+                            $display[] = $hidden_link;
+                        }
+                    }
                 }
 
                 $onchange .= "$.each( tohide, function( key, value ) {                      
@@ -614,9 +623,11 @@ class PluginMetademandsCheckbox extends CommonDBTM
                          });";
                 $onchange .= "}";
             }
-
-            if ($display > 0) {
-                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+            
+            if (count($display) > 0) {
+                foreach ($display as $see) {
+                    $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
+                }
             }
 
             $onchange .= "});";
