@@ -115,7 +115,6 @@ class PluginMetademandsYesno extends CommonDBTM
             'icon'  => 'fas fa-save']);
         echo "</td>";
         echo "</tr>";
-        Html::closeForm();
 
     }
 

@@ -34,7 +34,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsFieldCustomvalue
  */
-class PluginMetademandsFieldCustomvalue extends CommonDBTM
+class PluginMetademandsFieldCustomvalue extends CommonDBChild
 {
     public static $itemtype = 'PluginMetademandsField';
     public static $items_id = 'plugin_metademands_fields_id';
@@ -198,7 +198,8 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         }
 
         $this->showFormHeader($options);
-
+        $target = PluginMetademandsFieldCustomvalue::getFormURL();
+        echo "<form method='post' action=\"$target\">";
         echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
         echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
         echo Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
@@ -206,7 +207,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         $params = PluginMetademandsField::getAllParamsFromField($metademand_fields);
 
         self::showFieldCustomValues($params);
-
+        Html::closeForm();
         if ($ID > 0) {
             echo "<table class='tab_cadre' width='100%'>";
             echo "<tr class='tab_bg_1'>";

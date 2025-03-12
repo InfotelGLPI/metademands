@@ -45,6 +45,7 @@ class PluginMetademandsField extends CommonDBChild
     // Request type
     const MAX_FIELDS = 40;
 
+    use Glpi\Features\Clonable;
 
     public static $field_types = [
         '',
@@ -163,6 +164,18 @@ class PluginMetademandsField extends CommonDBChild
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+
+
+    public function getCloneRelations(): array
+    {
+        return [
+            PluginMetademandsFieldParameter::class,
+            PluginMetademandsFieldOption::class,
+            PluginMetademandsFieldCustomvalue::class,
+            PluginMetademandsFieldTranslation::class,
+            PluginMetademandsFreetablefield::class,
+        ];
+    }
 
     /**
      * Get request criteria to search for an item
@@ -2646,9 +2659,6 @@ class PluginMetademandsField extends CommonDBChild
         return true;
     }
 
-    /**
-     * @return array
-     */
     /**
      * @return array
      */

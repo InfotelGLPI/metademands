@@ -34,7 +34,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsFreetablefield
  */
-class PluginMetademandsFreetablefield extends CommonDBTM
+class PluginMetademandsFreetablefield extends CommonDBChild
 {
     public static $itemtype = 'PluginMetademandsField';
     public static $items_id = 'plugin_metademands_fields_id';

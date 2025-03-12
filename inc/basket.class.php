@@ -432,9 +432,6 @@ class PluginMetademandsBasket extends CommonDBTM
         $quantity = $params['custom_values'][0] ?? 0;
         $price = $params['custom_values'][1] ?? 0;
 
-        $target = PluginMetademandsFieldCustomvalue::getFormURL();
-        echo "<form method='post' action=\"$target\">";
-
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('With quantity', 'metademands');
@@ -464,7 +461,7 @@ class PluginMetademandsBasket extends CommonDBTM
             'icon'  => 'fas fa-save']);
         echo "</td>";
         echo "</tr>";
-        Html::closeForm();
+
     }
 
     static function getParamsValueToCheck($fieldoption, $item, $params)

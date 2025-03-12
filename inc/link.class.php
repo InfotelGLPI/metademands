@@ -95,8 +95,6 @@ class PluginMetademandsLink extends CommonDBTM
     static function showFieldCustomValues($params)
     {
 
-        $target = PluginMetademandsFieldCustomvalue::getFormURL();
-        echo "<form method='post' action=\"$target\">";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         $linkType = 0;
@@ -131,7 +129,7 @@ class PluginMetademandsLink extends CommonDBTM
             'icon'  => 'fas fa-save']);
         echo "</td>";
         echo "</tr>";
-        Html::closeForm();
+
     }
 
     static function isCheckValueOK($value, $check_value)
