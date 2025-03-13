@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-13 08:11+0000\n"
+"POT-Creation-Date: 2025-03-13 12:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -473,15 +473,15 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:453
-#: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:514
-#: inc/freetable.class.php:661 inc/freetablefield.class.php:338
+#: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:508
+#: inc/freetable.class.php:663 inc/freetablefield.class.php:333
 #: inc/radio.class.php:171
 msgid "Rank"
 msgstr ""
 
 #: inc/checkbox.class.php:194 inc/dropdownmeta.class.php:477
 #: inc/dropdownmultiple.class.php:484 inc/dropdownmultiple.class.php:571
-#: inc/fieldcustomvalue.class.php:533 inc/radio.class.php:192
+#: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:192
 #: inc/yesno.class.php:98
 msgid "Default value"
 msgid_plural "Default values"
@@ -910,21 +910,21 @@ msgstr ""
 msgid "You cannot do this for this field"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:468
+#: inc/fieldcustomvalue.class.php:462
 msgid "Reset and import custom values"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:479
+#: inc/fieldcustomvalue.class.php:473
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:480
+#: inc/fieldcustomvalue.class.php:474
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:607
+#: inc/fieldcustomvalue.class.php:611
 msgid "You can't add a custom value without name"
 msgstr ""
 
@@ -1087,32 +1087,32 @@ msgstr ""
 msgid "Free table"
 msgstr ""
 
-#: inc/freetable.class.php:192
+#: inc/freetable.class.php:195
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
-#: inc/freetable.class.php:672 inc/freetablefield.class.php:339
+#: inc/freetable.class.php:674 inc/freetablefield.class.php:334
 msgid "Internal name"
 msgstr ""
 
-#: inc/freetable.class.php:679 inc/freetablefield.class.php:352
+#: inc/freetable.class.php:681 inc/freetablefield.class.php:347
 #: inc/information.class.php:161
 msgid "Type"
 msgstr ""
 
-#: inc/freetable.class.php:686 inc/freetablefield.class.php:386
+#: inc/freetable.class.php:688 inc/freetablefield.class.php:381
 msgid "Display name"
 msgstr ""
 
-#: inc/freetable.class.php:701 inc/freetablefield.class.php:394
+#: inc/freetable.class.php:704 inc/freetablefield.class.php:389
 msgid "Dropdown values"
 msgstr ""
 
-#: inc/freetable.class.php:702 inc/freetablefield.class.php:395
+#: inc/freetable.class.php:705 inc/freetablefield.class.php:390
 msgid "One value by line, separated by comma"
 msgstr ""
 
-#: inc/freetable.class.php:719 inc/freetablefield.class.php:417
+#: inc/freetable.class.php:723 inc/freetablefield.class.php:412
 msgid "Mandatory"
 msgstr ""
 
@@ -1130,15 +1130,15 @@ msgstr ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: inc/freetablefield.class.php:340
+#: inc/freetablefield.class.php:335
 msgid "No spaces, no special characters"
 msgstr ""
 
-#: inc/freetablefield.class.php:441
+#: inc/freetablefield.class.php:445
 msgid "You can't add a field without name"
 msgstr ""
 
-#: inc/freetablefield.class.php:450
+#: inc/freetablefield.class.php:454
 msgid "You can't add a field without type"
 msgstr ""
 
