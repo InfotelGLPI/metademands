@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-13 12:27+0000\n"
+"POT-Creation-Date: 2025-03-13 17:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -342,7 +342,7 @@ msgstr ""
 #: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:691
 #: inc/dropdownmultiple.class.php:719 inc/dropdownobject.class.php:739
 #: inc/field.class.php:1075 inc/fieldoption.class.php:343
-#: inc/radio.class.php:265 inc/yesno.class.php:129
+#: inc/radio.class.php:267 inc/yesno.class.php:129
 msgid "Value to check"
 msgstr ""
 
@@ -353,8 +353,8 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:835 inc/dropdownobject.class.php:803
 #: inc/dropdownobject.class.php:806 inc/dropdownobject.class.php:816
 #: inc/dropdownobject.class.php:838 inc/dropdownobject.class.php:854
-#: inc/dropdownobject.class.php:865 inc/radio.class.php:285
-#: inc/radio.class.php:298
+#: inc/dropdownobject.class.php:865 inc/radio.class.php:287
+#: inc/radio.class.php:300
 msgid "Not null value"
 msgstr ""
 
@@ -362,7 +362,7 @@ msgstr ""
 #: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:895
 #: inc/dropdownmultiple.class.php:937 inc/dropdownmultiple.class.php:1071
 #: inc/dropdownobject.class.php:941 inc/email.class.php:260
-#: inc/radio.class.php:375 inc/tel.class.php:262 inc/text.class.php:260
+#: inc/radio.class.php:377 inc/tel.class.php:262 inc/text.class.php:260
 #: inc/textarea.class.php:212 inc/url.class.php:260 inc/wizard.class.php:1963
 #: inc/yesno.class.php:215
 msgctxt "button"
@@ -373,7 +373,7 @@ msgstr ""
 #: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:896
 #: inc/dropdownmultiple.class.php:939 inc/dropdownmultiple.class.php:1073
 #: inc/dropdownobject.class.php:942 inc/email.class.php:262
-#: inc/radio.class.php:376 inc/tel.class.php:264 inc/text.class.php:261
+#: inc/radio.class.php:378 inc/tel.class.php:264 inc/text.class.php:261
 #: inc/textarea.class.php:213 inc/url.class.php:262 inc/wizard.class.php:1006
 #: inc/wizard.class.php:1938 inc/wizard.class.php:1961
 #: inc/wizard.class.php:1974 inc/wizard.class.php:1978 inc/yesno.class.php:216
@@ -475,13 +475,13 @@ msgstr ""
 #: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:453
 #: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:508
 #: inc/freetable.class.php:663 inc/freetablefield.class.php:333
-#: inc/radio.class.php:171
+#: inc/radio.class.php:173
 msgid "Rank"
 msgstr ""
 
 #: inc/checkbox.class.php:194 inc/dropdownmeta.class.php:477
 #: inc/dropdownmultiple.class.php:484 inc/dropdownmultiple.class.php:571
-#: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:192
+#: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:194
 #: inc/yesno.class.php:98
 msgid "Default value"
 msgid_plural "Default values"
