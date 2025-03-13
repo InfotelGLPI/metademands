@@ -47,11 +47,13 @@ switch ($_POST['action']) {
                 PluginMetademandsFieldCustomvalue::addNewValue(
                     $_POST['count'],
                     $_POST['display_comment'],
-                    $_POST['display_default']
+                    $_POST['display_default'],
+                    $_POST['field_id']
                 );
             } else {
                 PluginMetademandsFreetablefield::addNewValue(
                     $_POST['count'],
+                    $_POST['field_id']
                 );
             }
         }

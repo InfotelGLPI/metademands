@@ -313,12 +313,6 @@ class PluginMetademandsFreetablefield extends CommonDBChild
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
-        echo "<td align='center' id='show_custom_fields'>";
-        echo "<span id = 'add_custom_values' style='display:none'>";
-        echo Html::submit("", ['name'  => 'add',
-            'class' => 'btn btn-primary',
-            'icon'  => 'fas fa-save']);
-        echo "</td>";
     }
 
 
@@ -327,9 +321,10 @@ class PluginMetademandsFreetablefield extends CommonDBChild
      * @param $display_comment
      * @param $display_default
      */
-    public static function addNewValue($rank)
+    public static function addNewValue($rank, $fields_id)
     {
-
+        $target = PluginMetademandsFreetablefield::getFormURL();
+        echo "<form method='post' action=\"$target\">";
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr class='tab_bg_1'>";
 
@@ -422,9 +417,18 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         echo "</td>";
 
         echo Html::hidden('rank', ['value' => $rank]);
+        echo Html::hidden('fields_id', ['value' => $fields_id]);
+        echo "</tr>";
 
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo Html::submit("", ['name'  => 'add',
+            'class' => 'btn btn-primary',
+            'icon'  => 'fas fa-save']);
+        echo "</td>";
         echo "</tr>";
         echo "</table>";
+        Html::closeForm();
     }
 
 

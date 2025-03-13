@@ -106,7 +106,7 @@ if (isset($_POST["add"])) {
     $internal_names = $_POST['internal_name'];
     $names = $_POST['name'];
     $is_mandatorys = $_POST['is_mandatory'];
-    $dropdown_values = $_POST['dropdown_values'];
+    $dropdown_values = $_POST['dropdown_values'] ?? [];
     $comments = $_POST['comment'] ?? "";
     $types = $_POST['type'] ?? "";
     $ids = $_POST['id'];
@@ -140,14 +140,15 @@ if (isset($_POST["add"])) {
 
     //    Check update rights for fields
     foreach ($inputs as $key => $input) {
-        $fieldcustom->check(-1, UPDATE, $_POST);
+        $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
+        $fieldcustom->check(-1, UPDATE, $input);
         $fieldcustom->update($input);
     }
 
     Html::back();
 } elseif (isset($_POST["delete"])) {
     $input['id'] = $_POST['freetablefield_id'];
-
+    $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
     //TODO update ranks
     $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
     $condition_del['rank'] = ['>', $_POST['rank']];

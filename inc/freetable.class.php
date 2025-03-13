@@ -111,6 +111,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                     }
                 }
                 $colspanfields = count($customs);
+                if (count($customs) > 3) {
+                    $size = 20;
+                }
                 if (count($customs) > 4) {
                     $size = 10;
                 }
@@ -650,11 +653,10 @@ class PluginMetademandsFreetable extends CommonDBTM
 
         if (is_array($custom_values) && !empty($custom_values)) {
             echo "<div id='drag'>";
+            $target = PluginMetademandsFreetablefield::getFormURL();
+            echo "<form method='post' action=\"$target\">";
             echo "<table class='tab_cadre_fixe'>";
-
             foreach ($custom_values as $key => $value) {
-                $target = PluginMetademandsFreetablefield::getFormURL();
-                echo "<form method='post' action=\"$target\">";
                 echo "<tr class='tab_bg_1'>";
 
                 echo "<td class='rowhandler control center'>";
@@ -694,6 +696,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                     echo __('Comment') . " ";
                     echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 20]);
                     echo "</span>";
+                    echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
                     echo "</td>";
                 } else {
                     echo "<td class='rowhandler control left'>";
@@ -711,6 +714,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                         'cols' => 5
                     ]);
                     echo "</span>";
+                    echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
                     echo "</td>";
                 }
 
@@ -729,7 +733,6 @@ class PluginMetademandsFreetable extends CommonDBTM
 
                 echo "<td class='rowhandler control center'>";
                 echo Html::hidden('id[' . $key . ']', ['value' => $key]);
-
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
@@ -755,11 +758,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                 echo "</tr>";
 
                 $maxrank = $value['rank'];
-
-                Html::closeForm();
             }
-
+            echo Html::hidden('plugin_metademands_fields_id', ['value' => $params['plugin_metademands_fields_id']]);
             echo "</table>";
+            Html::closeForm();
             echo "</div>";
             echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
 
@@ -775,8 +777,6 @@ class PluginMetademandsFreetable extends CommonDBTM
             }
         } else {
             if ($nbfields < 6) {
-                $target = PluginMetademandsFreetablefield::getFormURL();
-                echo "<form method='post' action=\"$target\">";
                 echo "<tr class='tab_bg_1'>";
                 echo "<td align='right'  id='show_custom_fields'>";
                 if (isset($params['plugin_metademands_fields_id'])) {
@@ -785,7 +785,6 @@ class PluginMetademandsFreetable extends CommonDBTM
                 PluginMetademandsFreetablefield::initCustomValue(-1, $params["plugin_metademands_fields_id"]);
                 echo "</td>";
                 echo "</tr>";
-                Html::closeForm();
             }
         }
         echo "</td>";

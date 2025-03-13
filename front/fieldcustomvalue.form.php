@@ -133,6 +133,7 @@ if (isset($_POST["add"])) {
 
         //    Check update rights for fields
         foreach ($inputs as $key => $input) {
+            $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
             $fieldcustom->check(-1, UPDATE, $_POST);
             $fieldcustom->update($input);
         }
@@ -141,7 +142,7 @@ if (isset($_POST["add"])) {
     Html::back();
 } else if (isset($_POST["delete"])) {
     $input['id'] = $_POST['customvalues_id'];
-
+    $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
     //TODO update ranks
     $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
     $condition_del['rank'] = ['>', $_POST['rank']];
