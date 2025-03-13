@@ -81,10 +81,12 @@ class PluginMetademandsRadio extends CommonDBTM
                 foreach ($custom_values as $key => $label) {
                     $field .= "<div class='custom-control custom-radio $inline'>";
                     $checked = "";
-                    if (isset($value[$key])) {
-                        $checked = (isset($label['is_default']) && $label['is_default'] == 1) ? 'checked' : '';
-                    } elseif (isset($label['is_default']) && $on_order == false) {
+
+                    if (empty($value) && isset($label['is_default']) && $on_order == false) {
                         $checked = ($label['is_default'] == 1) ? 'checked' : '';
+                    }
+                    if (isset($value) && $value == $key) {
+                        $checked = 'checked';
                     }
                     $required = "";
                     if ($data['is_mandatory'] == 1) {
