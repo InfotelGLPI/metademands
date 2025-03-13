@@ -252,22 +252,15 @@ class PluginMetademandsText extends CommonDBTM
             $script = "console.log('taskScript-text $id');";
         }
 
-        //if reload form on loading
-        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if ($fieldSession > 0) {
-                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
-                    }
-                }
-            }
-        }
-
-        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-        $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
         if (count($check_values) > 0) {
+            if (isset($data['value'])) {
+                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            }
+
+            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
             foreach ($check_values as $idc => $check_value) {
                 $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
                 if ($tasks_id) {
@@ -434,9 +427,10 @@ class PluginMetademandsText extends CommonDBTM
 
             //by default - hide all
             $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-            if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            if (!isset($data['value'])) {
                 $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
             }
+            $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 $blocks_idc = [];
                 $hidden_block = $check_value['hidden_block'];
@@ -462,20 +456,10 @@ class PluginMetademandsText extends CommonDBTM
                         }
                     }
 
-                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                        if (is_array($session_value)) {
-                            foreach ($session_value as $k => $fieldSession) {
-                                if ($fieldSession != "" && $hidden_block > 0) {
-                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                                }
-                            }
-                        } else {
-                            if ($session_value == $idc && $hidden_block > 0) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                            }
-                        }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_block;
                     }
+
                     $script .= " } else {";
 
                     //specific - one value
@@ -492,6 +476,9 @@ class PluginMetademandsText extends CommonDBTM
 //                }
 //                $script .= " }";
                 }
+            }
+            if ($display > 0) {
+                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
             }
             $script .= "fixButtonIndicator();";
             $script .= "});";

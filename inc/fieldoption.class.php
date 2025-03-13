@@ -1699,14 +1699,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $hidden_blocks = [];
         $childs = [];
         $childs_blocks = [];
+
         foreach ($check_values as $idc => $check_value) {
             if ($check_value['hidden_block'] > 0) {
-
-                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])
-                    && $_SESSION['plugin_metademands'][$metaid]['fields'][$id] == 0
-                && $data['type'] == "checkbox") {
-                    continue;
-                }
                 $hidden_blocks[] = $check_value['hidden_block'];
             }
             $childs_blocks[] = json_decode($check_value['childs_blocks'], true);

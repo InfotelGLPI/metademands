@@ -203,73 +203,65 @@ class PluginMetademandsTextarea extends CommonDBTM
             $script = "console.log('taskScript-textarea $id');";
         }
 
-        //if reload form on loading
-        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if ($fieldSession > 0) {
-                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+        if (count($check_values) > 0) {
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            }
+
+            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+                if ($tasks_id) {
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "});";
                     }
                 }
             }
-        }
-
-        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-        $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
-
-        foreach ($check_values as $idc => $check_value) {
-            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
-            if ($tasks_id) {
-                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                    $script .= "});";
-                }
-            }
-        }
-        if (count($check_values) > 0) {
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             foreach ($check_values as $idc => $check_value) {
                 $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
 
                 $script .= "if ($(this).val().trim().length < 1) {
-                                 $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                     data: { tasks_id: $tasks_id,
-                                  used: 0 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$title'
-                                       }
-                                    },
-                                });
-
-                                 ";
+                                     $.ajax({
+                                         url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                         data: { tasks_id: $tasks_id,
+                                      used: 0 },
+                                      success: function(response){
+                                           if (response != 1) {
+                                               document.getElementById('nextBtn').innerHTML = '$title'
+                                           }
+                                        },
+                                    });
+    
+                                     ";
 
                 $script .= "      } else {
-                                 $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                     data: { tasks_id: $tasks_id,
-                                  used: 1 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
-                                       }
-                                    },
-                                });
-
-                                 
-                                 ";
+                                     $.ajax({
+                                         url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                         data: { tasks_id: $tasks_id,
+                                      used: 1 },
+                                      success: function(response){
+                                           if (response != 1) {
+                                               document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                           }
+                                        },
+                                    });
+    
+                                     
+                                     ";
                 $script .= "}";
             }
             $script .= "});";
 
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         }
-
     }
 
     static function fieldsHiddenScript($data)
@@ -397,9 +389,10 @@ class PluginMetademandsTextarea extends CommonDBTM
 
                 //by default - hide all
                 $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-                if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                if (!isset($data['value'])) {
                     $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
                 }
+                $display = 0;
                 foreach ($check_values as $idc => $check_value) {
                     $blocks_idc = [];
                     $hidden_block = $check_value['hidden_block'];
@@ -425,19 +418,8 @@ class PluginMetademandsTextarea extends CommonDBTM
                             }
                         }
 
-                        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                            if (is_array($session_value)) {
-                                foreach ($session_value as $k => $fieldSession) {
-                                    if ($fieldSession != "" && $hidden_block > 0) {
-                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                                    }
-                                }
-                            } else {
-                                if ($session_value == $idc && $hidden_block > 0) {
-                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                                }
-                            }
+                        if (isset($data['value']) && $idc == $data['value']) {
+                            $display = $hidden_block;
                         }
 
                         $script .= " } else {";
@@ -458,6 +440,12 @@ class PluginMetademandsTextarea extends CommonDBTM
 //                    $script .= " }";
                     }
                 }
+
+                if ($display > 0) {
+                    $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                }
+
+
                 $script .= "fixButtonIndicator();";
                 $script .= "});";
             }

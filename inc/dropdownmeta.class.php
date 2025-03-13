@@ -886,40 +886,32 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         if ($debug) {
             $script = "console.log('taskScript-dropdownmeta $id');";
         }
+        if (count($check_values) > 0) {
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            }
 
-        //if reload form on loading
-        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if ($fieldSession > 0) {
-                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+                if ($tasks_id) {
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "});";
                     }
                 }
             }
-        }
 
-        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-        $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
-
-        foreach ($check_values as $idc => $check_value) {
-            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
-            if ($tasks_id) {
-                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                    $script .= "});";
-                }
+            $name = "field[" . $data["id"] . "]";
+            if ($data["item"] == "ITILCategory_Metademands") {
+                $name = "field_plugin_servicecatalog_itilcategories_id";
             }
-        }
 
-        $name = "field[" . $data["id"] . "]";
-        if ($data["item"] == "ITILCategory_Metademands") {
-            $name = "field_plugin_servicecatalog_itilcategories_id";
-        }
-
-        if (count($check_values) > 0) {
             $script .= "$('[name=\"$name\"]').change(function() {";
             $script .= "var tohide = {};";
             foreach ($check_values as $idc => $check_value) {
@@ -1136,57 +1128,51 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $onchange = "console.log('blocksHiddenScript-dropdownmeta $id');";
         }
 
-        //Initialize default value - force change after onchange fonction
-        foreach ($check_values as $idc => $check_value) {
-            //Default values
-            if (isset($data['custom_values'])
-                && is_array($data['custom_values'])
-                && count($data['custom_values']) > 0) {
-                $custom_values = $data['custom_values'];
-                foreach ($custom_values as $k => $custom_value) {
-                    if ($k == $idc && $custom_value['is_default'] == 1) {
-                        $post_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
-                    }
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                            $metaid,
-                                            $childs
-                                        );
+        if (count($check_values) > 0) {
+            //Initialize default value - force change after onchange fonction
+            foreach ($check_values as $idc => $check_value) {
+                //Default values
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
+                    $custom_values = $data['custom_values'];
+                    foreach ($custom_values as $k => $custom_value) {
+                        if ($k == $idc && $custom_value['is_default'] == 1) {
+                            $post_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
+                        }
+                        if (is_array($childs_by_checkvalue)) {
+                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                if ($idc == $k) {
+                                    foreach ($childs_blocks as $childs) {
+                                        $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                         " . PluginMetademandsFieldoption::setMandatoryBlockFields(
+                                                $metaid,
+                                                $childs
+                                            );
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
 
-        //by default - hide all
-        $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-        if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
-        }
-
-        //if reload form on loading
-        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if ($fieldSession > 0) {
-                        $pre_onchange .= "$('[name=\"$name\"]').val('$fieldSession').trigger('change');";
-                    }
-                }
+            //by default - hide all
+            $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+            if (!isset($data['value'])) {
+                $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
             }
-        }
-        if (count($check_values) > 0) {
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"$name\"]').val(".$data['value'].").trigger('change');";
+            }
+
             $onchange .= "$('[name=\"$name\"]').change(function() {";
 
             $onchange .= "var tohide = {};";
-
+            $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 $hidden_block = $check_value['hidden_block'];
 
@@ -1227,20 +1213,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 });
           ";
 
-                //if reload form
-                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if (is_array($session_value)) {
-                        foreach ($session_value as $k => $fieldSession) {
-                            if ($fieldSession == $idc && $hidden_block > 0) {
-                                $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                            }
-                        }
-                    } else {
-                        if ($session_value == $idc && $hidden_block > 0) {
-                            $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                        }
-                    }
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $hidden_block;
                 }
 
                 if ($data["item"] == "ITILCategory_Metademands") {
@@ -1250,16 +1224,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     }
                 }
             }
-//            $onchange .= "if ($(this).val() == 0) {";
-//            $onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-//            if (is_array($childs_by_checkvalue)) {
-//                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-//                    foreach ($childs_blocks as $childs) {
-//                        $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();";
-//                    }
-//                }
-//            }
-//            $onchange .= " }";
+            if ($display > 0) {
+                $pre_onchange .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+            }
 
             $onchange .= "fixButtonIndicator();});";
 
