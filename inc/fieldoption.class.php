@@ -2006,14 +2006,13 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 $field =  new PluginMetademandsField();
                 if ($field->getFromDB($hidden_link) && $field->fields['type'] == 'upload') {
 
-                    $script .= "var div = document.getElementById('fileupload_info_ticketfield$hidden_link');
-                    
+                    $script .= "
+                    var div = document.getElementById('fileupload_info_ticketfield$hidden_link');
                     if (!div) return;
                     var nextElem = div.nextElementSibling;
                     while (nextElem && nextElem.tagName !== 'INPUT') {
                         nextElem = nextElem.nextElementSibling;
                     }
-                    console.log(nextElem);
                      if (nextElem) {
                         nextElem.setAttribute('required', 'required');
                     }";

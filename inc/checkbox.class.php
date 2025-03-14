@@ -606,7 +606,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                $('[id-field =\"field'+key+'\"]').show();
-//                               " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
+                               " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
                             }
                          });";
                 $onchange .= "}";
