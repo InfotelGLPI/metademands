@@ -39,6 +39,12 @@ Session::checkLoginUser();
 $fieldUser = new PluginMetademandsField();
 $fieldparameter = new PluginMetademandsFieldParameter();
 
+if (isset($_POST["fields_id"])
+    && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["fields_id"]])) {
+    $_POST['display_type'] = $fieldparameter->fields['display_type'];
+}
+
+
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find([
@@ -53,7 +59,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                 ])) {
                     $id = $field['id'];
                     $_POST["field"] = "field[$id]";
+                    $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                     $_POST['limit'] = $fieldparameter->fields['default'];
+                    $_POST['display_type'] = $fieldparameter->fields['display_type'];
                 }
             }
         }
@@ -85,16 +93,35 @@ if (isset($_POST['fields_id'])
     $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
-
 $rand = mt_rand();
+
 $p = [
     'rand' => $rand,
     'name' => $_POST["field"],
     'value' => $val
 ];
 
-PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
+if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
 
-$_POST['name'] = "mydevices_user";
+    $p['selected_items_id'] = $_POST['selected_items_id'] ?? 0;
+    $p['selected_itemtype'] = $_POST['selected_itemtype'] ?? "";
+    $p['is_mandatory'] = $_POST['is_mandatory'] ?? 0;
+    $p['limit'] = $_POST['limit'] ? $limit : [];
+    if ((isset($_POST['value']) && ($_POST["value"] > 0))) {
+        $p['users_id'] = $_POST['value'] ?? Session::getLoginUserID();
+    }
+    $users_id = $p['users_id'];
+
+    PluginMetademandsDropdownmeta::getItemsForUser($p);
+    $_POST['name'] = "mydevices_user$users_id";
+
+} else {
+
+    PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
+    $_POST['name'] = "mydevices_user";
+
+}
+
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);
+

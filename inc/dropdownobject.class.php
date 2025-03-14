@@ -89,7 +89,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     );
                     echo "});</script>";
                 }
-                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsloc
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
@@ -112,8 +112,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         false
                     );
                     echo "});</script>";
-                }
-                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+//                }
+//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramstit
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
@@ -136,8 +136,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         false
                     );
                     echo "});</script>";
-                }
-                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+//                }
+//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramscat
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
@@ -160,8 +160,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         false
                     );
                     echo "});</script>";
-                }
-                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+//                }
+//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsgroup
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
@@ -185,7 +185,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     );
                     echo "});</script>";
 
-                }
+//                }
                 $paramsentity
                     = ['value'          => '__VALUE__',
                     'id_fielduser'   => $data['id'],
@@ -210,7 +210,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 );
                 echo "});</script>";
 
-                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsdev
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
@@ -233,8 +233,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         false
                     );
                     echo "});</script>";
-                }
-                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+//                }
+//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsman
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
@@ -257,7 +257,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         false
                     );
                     echo "});</script>";
-                }
+//                }
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                 }

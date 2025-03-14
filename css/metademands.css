@@ -515,3 +515,65 @@ textarea.invalid,
 .select2-container .select2-selection--single {
     max-width: 500px !important;
 }
+
+.buttonelt {
+    max-width: 200px;
+    min-width: 200px;
+    border: 1px solid #000;
+    margin-right: 5px;
+    margin-top: 5px !important;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    min-height: 130px;
+    font-weight: unset;
+    font-size: 13px;
+}
+
+.my_items {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+.tooltipelt .tooltipelttext {
+    visibility: hidden;
+    color: red;
+    text-align: left;
+    padding-top: 5px;
+    z-index: 1;
+}
+
+.tooltipelt.active .tooltipelttext {
+    visibility: visible;
+}
+
+.alertelt .alertelttext {
+    visibility: hidden;
+    color: red;
+    text-align: left;
+    padding-top: 5px;
+    z-index: 1;
+}
+
+.alertelt.active .alertelttext {
+    visibility: visible;
+}
+
+.buttonelt-title {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    padding-top: 10px !important;
+    font-weight: unset;
+}
+
+.buttonelt:hover,
+.buttonelt:focus,
+.buttonelt:active {
+    background-color: #CCC !important;
+    color: white;
+}
+
+.buttonelt_color {
+    background-color: #CCC !important;
+    color: white;
+}

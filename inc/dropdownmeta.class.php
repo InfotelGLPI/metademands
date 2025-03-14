@@ -48,6 +48,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         'mydevices'
     ];
 
+    const CLASSIC_DISPLAY = 0;
+    const ICON_DISPLAY = 1;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -77,7 +79,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             case 'other':
                 if (!empty($data['custom_values'])) {
                     $custom_values = $data['custom_values'];
-
 
 
                     $default_value = "";
@@ -201,16 +202,20 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 break;
             case 'mydevices':
                 $field = "";
-                if ($on_order == false) {
-                    // My items
-                    //TODO : used_by_ticket -> link with item's ticket
-                    $field = "";
-                    $default_values = $data['default_values'] ?? [];
 
-                    $_POST['field'] = $namefield . "[" . $data['id'] . "]";
-                    //                     $users_id = 0;
+                if ($on_order == false) {
+
+                    if ($data["display_type"] != self::ICON_DISPLAY) {
+
+                        // My items
+                        //TODO : used_by_ticket -> link with item's ticket
+                        $field = "";
+                        $default_values = $data['default_values'] ?? [];
+
+                        $_POST['field'] = $namefield . "[" . $data['id'] . "]";
+                        //                     $users_id = 0;
                     if ($data['link_to_user'] > 0) {
-                        echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
+
                         $fieldUser = new PluginMetademandsField();
                         $fieldUser->getFromDBByCrit([
                             'id' => $data['link_to_user'],
@@ -227,24 +232,106 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         $_POST['fields_id'] = $data['id'];
                         $_POST['limit'] = json_encode($default_values);
                         $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
+
+                        $selected_items_id = 0;
+                        $selected_itemtype = "";
+
+                        $_POST['value'] = $data['link_to_user'];
+                        $users_id = $_POST['value'];
+                        echo "<div id='mydevices_user$users_id' class=\"input-group\">";
+
+                        if (isset($value) && !empty($value)) {
+                            $splitter = explode("_", $value);
+                            if (count($splitter) == 2) {
+                                $selected_itemtype = $splitter[0];
+                                $selected_items_id = $splitter[1];
+                            }
+                        }
+                        $_POST['selected_items_id'] = $selected_items_id;
+                        $_POST['selected_itemtype'] = $selected_itemtype;
+                        $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
                         include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
                         echo "</div>";
+
+                        if ($data['is_mandatory']) {
+                            echo "<div class='alertelt active'><div class='alertelttext'><span>";
+                            echo __('This field is mandatory, please select your equipment', 'metamemands');
+                            echo "</span></div>";
+                        }
+
+//                        echo "<div class='tooltipelt'><div class='tooltipelttext'><span>";
+//                        echo __('If your equipment is not listed, thanks to add its name on ticket description', 'metamemands');
+//                        echo "</span></div>";
                     } else {
                         $rand = mt_rand();
+
                         $p = [
                             'rand' => $rand,
                             'name' => $_POST["field"],
-                            'value' => $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0
+                            'value' => $data['value'] ?? 0,
+                            'is_mandatory' => $data['is_mandatory'] ?? 0,
+                            'users_id' => Session::getLoginUserID(),
+                            'limit' => $default_values
                         ];
-                        $field .= PluginMetademandsField::dropdownMyDevices(
-                            Session::getLoginUserID(),
-                            $_SESSION['glpiactiveentities'],
-                            0,
-                            0,
-                            $p,
-                            $default_values,
-                            false
-                        );
+                        $p['selected_itemtype'] = "";
+                        $p['selected_items_id'] = 0;
+                        if (isset($value) && !empty($value)) {
+                            $splitter = explode("_", $value);
+                            if (count($splitter) == 2) {
+                                $p['selected_itemtype'] = $splitter[0];
+                                $p['selected_items_id'] = $splitter[1];
+                            }
+                        }
+
+                        $field .= self::getItemsForUser($p);
+                    }
+
+                    } else {
+                        // My items
+                        //TODO : used_by_ticket -> link with item's ticket
+                        $field = "";
+                        $default_values = $data['default_values'] ?? [];
+
+                        $_POST['field'] = $namefield . "[" . $data['id'] . "]";
+                        //                     $users_id = 0;
+                        if ($data['link_to_user'] > 0) {
+                            echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                            $fieldUser = new PluginMetademandsField();
+                            $fieldUser->getFromDBByCrit([
+                                'id' => $data['link_to_user'],
+                                'type' => "dropdown_object",
+                                'item' => User::getType()
+                            ]);
+                            $_POST['value'] = 0;
+                            if (!empty($fieldUser->fields)) {
+                                $params = PluginMetademandsField::getAllParamsFromField($fieldUser);
+                                $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID(
+                                );
+                            }
+
+                            $_POST['id_fielduser'] = $data['link_to_user'];
+                            $_POST['fields_id'] = $data['id'];
+                            $_POST['limit'] = json_encode($default_values);
+                            $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
+                            include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
+                            echo "</div>";
+                        } else {
+                            $rand = mt_rand();
+                            $p = [
+                                'rand' => $rand,
+                                'name' => $_POST["field"],
+                                'value' => $data['value'] ?? 0,
+                            ];
+                            $field .= PluginMetademandsField::dropdownMyDevices(
+                                Session::getLoginUserID(),
+                                $_SESSION['glpiactiveentities'],
+                                0,
+                                0,
+                                $p,
+                                $default_values,
+                                false
+                            );
+                        }
                     }
                 } else {
                     $dbu = new DbUtils();
@@ -261,6 +348,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         );
                     }
                 }
+
                 break;
             case 'urgency':
                 $field = "";
@@ -429,6 +517,506 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         echo $field;
     }
 
+
+    public
+    static function getItemsForUser(
+        $values
+    ) {
+        global $CFG_GLPI, $DB;
+
+        if (!isset($values['users_id'])) {
+            return false;
+        }
+//        $config = new PluginServicecatalogConfig();
+        $users_id_requester = $values['users_id'];
+
+//        if ($config->useItemtypesDisplay() == 1) {
+//
+//        } else {
+//            $ticket = new ticket();
+//            $params['_users_id_requester'] = $users_id_requester;
+//            $params['itemtype'] = 'Ticket';
+//            $params['_canupdate'] = true;
+//
+//            Item_Ticket::itemAddForm($ticket, $params);
+//
+//            echo "<span style='color: red;text-align: left;padding-top: 5px;'>";
+//            echo __('If your equipment is not listed, thanks to add its name on ticket description', 'servicecatalog');
+//            echo "</span>";
+//        }
+
+        echo "<div class='container' style='display:contents;'>";
+        echo "<div class='row' data-toggle='buttons' style='margin-left: 1px;'>";
+
+        $objects_items_id = [];
+
+        $objects = $CFG_GLPI["linkuser_types"];
+        if (count($values['limit']) > 0) {
+            $objects = $values['limit'];
+        }
+        $objects[] = "Other";
+        echo Html::scriptBlock("var hardwareType = [];");
+
+        if (is_array($objects)
+            && count($objects) > 0) {
+            echo "<span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __('My devices') . "</h5>";
+        }
+        $i = 0;
+        foreach ($objects as $itemtype) {
+            if (($item = getItemForItemtype($itemtype))
+                && Ticket::isPossibleToAssignType($itemtype)
+                && $itemtype != "Other"
+                && $itemtype != "Certificate"
+                && $itemtype != "Rack"
+                && $itemtype != "DatabaseInstance"
+                && $itemtype != "Simcard"
+                && $itemtype != "PluginSimcardSimcard"
+                && $itemtype != "PluginOrderOrder"
+                && $itemtype != "Other"
+                && $itemtype != "Domain"
+                && $itemtype != "Line"
+                && $itemtype != "PDU"
+                && $itemtype != "PluginBadgesBadge"
+                && $itemtype != "PluginResourcesResource"
+            ) {
+                $where = [];
+                $itemtable = getTableForItemType($itemtype);
+
+                if ($itemtype != "Appliance"
+                ) {
+                    $where['users_id'] = $users_id_requester;
+                }
+
+                if (is_array($objects_items_id)
+                    && count($objects_items_id) > 0) {
+                    $where = [];
+                    $where['id'] = $objects_items_id;
+                }
+                $criteria = [
+                    'FROM' => $itemtable,
+                    'WHERE' => $where + getEntitiesRestrictCriteria(
+                            $itemtable,
+                            '',
+                            $_SESSION["glpiactive_entity"],
+                            $item->maybeRecursive()
+                        ),
+                    'ORDER' => $item->getNameField()
+                ];
+
+                if ($item->maybeDeleted()) {
+                    $criteria['WHERE']['is_deleted'] = 0;
+                }
+                if ($item->maybeTemplate()) {
+                    $criteria['WHERE']['is_template'] = 0;
+                }
+
+                $user = new User();
+                $locations_id = 0;
+                if ($user->getFromDB($users_id_requester)) {
+                    $locations_id = $user->fields['locations_id'];
+                }
+                if ($itemtype == "Printer" && $locations_id > 0) {
+                    $criteria['WHERE']['locations_id'] = $locations_id;
+                }
+
+                if (in_array($itemtype, $CFG_GLPI["helpdesk_visible_types"]) && $itemtype != "Database") {
+                    $criteria['WHERE']['is_helpdesk_visible'] = 1;
+                }
+
+                $iterator = $DB->request($criteria);
+                $nb = count($iterator);
+                if ($nb > 0) {
+                    $i = 1;
+                    foreach ($iterator as $data) {
+                        $items_id = $data["id"];
+                        $typename = $item->getTypeName(1);
+                        $type = $item->getType();
+//                        if ($type == "Appliance"
+//                            && !PluginServicecatalogApplianceLink::isApplianceAllowed($items_id)) {
+//                            continue;
+//                        }
+
+                        $varname = "hardwareType_" . $type . "_" . $items_id;
+                        echo Html::scriptBlock("hardwareType.push('$varname');");
+
+                        $checked = "";
+                        $active = "";
+                        if (isset($values["items_id"]) && is_array($values["items_id"])) {
+                            $arr = $values["items_id"];
+                            foreach ($arr as $elttype => $arr2) {
+                                if (in_array($items_id, $arr2) && $elttype == $itemtype) {
+                                    $checked = "checked";
+                                    $active = "active buttonelt_color";
+                                }
+                            }
+                        }
+                        if (is_array($objects_items_id)
+                            && count($objects_items_id) == 1 && in_array($items_id, $objects_items_id)) {
+                            $checked = "checked";
+                            $active = "active buttonelt_color";
+                        }
+
+                        if ($values['selected_items_id'] == $items_id
+                            && $values['selected_itemtype'] == $itemtype) {
+                            $checked = "checked";
+                            $active = "active buttonelt_color";
+                        }
+
+                        echo "<label id='$varname' class='btn buttonelt col-md-2 center $active'
+                                            onclick='changeBackgroundColor(\"$varname\",\"buttonelt_color\")'>";
+
+                        $value = $itemtype . "_" . $items_id;
+                        echo "<input type='radio' class='my_items' name='".$values['name']."' value='$value' $checked>";
+
+                        echo "<div class='center'>";
+                        $icon = self::getIconForType($itemtype);
+
+                        $ok = 0;
+                        $obj = new $itemtype();
+                        if ($obj->getFromDB($items_id)) {
+                            $className = strtolower(get_class($obj));
+                            $model = $className . "models";
+                            if (isset($obj->fields[$model . "_id"]) && !empty($obj->fields[$model . "_id"])) {
+                                if ($itemModel = getItemForItemtype($type . 'Model')) {
+                                    $itemModel->getFromDB($obj->fields[$model . "_id"]);
+                                    $pictures = [];
+                                    if ($itemModel->fields['pictures'] != null) {
+                                        $pictures = json_decode($itemModel->fields['pictures'], true);
+
+                                        if (isset($pictures) && is_array($pictures)) {
+                                            foreach ($pictures as $picture) {
+                                                $picture_url = Toolbox::getPictureUrl($picture);
+                                                $icon = "<img class='user_picture' style='width: 30%;height: 30%;' 
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
+                                                    $picture_url . "'>";
+                                                $ok = 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if ($itemtype == "Appliance") {
+                                if ($obj->fields['pictures'] != null) {
+                                    $pictures = json_decode($obj->fields['pictures'], true);
+
+                                    if (isset($pictures) && is_array($pictures)) {
+                                        foreach ($pictures as $picture) {
+                                            $picture_url = Toolbox::getPictureUrl($picture);
+                                            $icon = "<img class='user_picture' style='width: 30%;height: 30%;' 
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
+                                                $picture_url . "'>";
+                                            $ok = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if ($ok == 1) {
+                            echo "$icon&nbsp;";
+                        } else {
+                            echo "<i style='font-size:4em' class='$icon fa-3x mr-3'></i>&nbsp;";
+                        }
+
+                        echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
+                        echo $data[$item->getNameField()] . "&nbsp;";
+                        $comment = "";
+                        if (isset($data['serial']) && !empty($data['serial'])) {
+                            $comment = __('Serial number') . " : " . $data['serial'];
+                        }
+                        if (!empty($comment)) {
+                            echo "&nbsp;";
+                            echo Html::showToolTip($comment);
+                        }
+
+                        echo "</h5><br>";
+                        echo $typename;
+                        echo "</div>";
+                        echo "</label>";
+                    }
+                }
+            }
+        }
+//        if ($itemtype == "Other") {
+//            echo Html::scriptBlock("hardwareType.push('hardwareType_0');");
+//            $checked = "";
+//            $active = "";
+//            if (isset($elttype) && $elttype == $itemtype) {
+//                $checked = "checked";
+//                $active = "active buttonelt_color";
+//            }
+//
+//            echo "<label id='hardwareType_0' class='btn buttonelt col-md-2 center $active'
+//                            onclick='changeBackgroundColor(\"hardwareType_0\",\"buttonelt_color\")'>";
+//            $value = $itemtype . "_0";
+//            echo "<input type='radio' class='my_items' name='my_items' value='$value' $checked>";
+//            $icon = "fas fa-question";
+//            echo "<div class='center' style=''>";
+//            echo "<i style='font-size:4em' class='$icon fa-3x'></i>";
+//            echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
+//            echo __('My equipment does not appear', 'metamemands');
+//            echo "</h5><br>";
+//            echo "</div>";
+//
+//            echo "</label>";
+//        }
+
+        if ($i == 0) {
+            echo  __('No equipment founded', 'metademands');
+            echo Html::scriptBlock("var tooltip = document.querySelector('.alertelt');
+                         if (tooltip != null) {
+                            tooltip.classList.remove('active');
+                         }");
+        }
+        if (is_array($objects)
+            && count($objects) > 0) {
+            echo "</span>";
+        }
+        if (Session::haveRight("show_group_hardware", "1")
+            && (!is_array($objects_items_id) || count($objects_items_id) == 0)) {
+            $entity_restrict = $_SESSION["glpiactive_entity"];
+            $iterator = $DB->request([
+                'SELECT' => [
+                    'glpi_groups_users.groups_id',
+                    'glpi_groups.name'
+                ],
+                'FROM' => 'glpi_groups_users',
+                'LEFT JOIN' => [
+                    'glpi_groups' => [
+                        'ON' => [
+                            'glpi_groups_users' => 'groups_id',
+                            'glpi_groups' => 'id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                        'glpi_groups_users.users_id' => $users_id_requester
+                    ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true)
+            ]);
+
+            $devices = [];
+            $groups = [];
+            if (count($iterator)) {
+                foreach ($iterator as $data) {
+                    $a_groups = getAncestorsOf("glpi_groups", $data["groups_id"]);
+                    $a_groups[$data["groups_id"]] = $data["groups_id"];
+                    $groups = array_merge($groups, $a_groups);
+                }
+
+                foreach ($CFG_GLPI["linkgroup_types"] as $itemtype_groups) {
+                    if (
+                        ($item = getItemForItemtype($itemtype_groups))
+                        && Ticket::isPossibleToAssignType($itemtype_groups)
+                    ) {
+                        $itemtable = getTableForItemType($itemtype_groups);
+                        $criteria = [
+                            'FROM' => $itemtable,
+                            'WHERE' => [
+                                    'groups_id' => $groups
+                                ] + getEntitiesRestrictCriteria(
+                                    $itemtable,
+                                    '',
+                                    $entity_restrict,
+                                    $item->maybeRecursive()
+                                ),
+                            'ORDER' => $item->getNameField()
+                        ];
+
+                        if ($item->maybeDeleted()) {
+                            $criteria['WHERE']['is_deleted'] = 0;
+                        }
+                        if ($item->maybeTemplate()) {
+                            $criteria['WHERE']['is_template'] = 0;
+                        }
+
+                        $iterator = $DB->request($criteria);
+                        if (count($iterator)) {
+                            $type_name = $item->getTypeName();
+                            if (!isset($already_add[$itemtype_groups])) {
+                                $already_add[$itemtype_groups] = [];
+                            }
+                            foreach ($iterator as $data) {
+                                if (!in_array($data["id"], $already_add[$itemtype_groups])) {
+                                    $devices[$itemtype_groups][] = $data["id"];
+
+                                    $already_add[$itemtype_groups][] = $data["id"];
+                                }
+                            }
+                        }
+                    }
+                }
+                if (count($devices)) {
+                    echo "<br><span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __(
+                            'Devices own by my groups'
+                        ) . "</h5>";
+//                                $my_devices[__('Devices own by my groups')] = $devices;
+//                                Toolbox::loginfo($devices);
+                    foreach ($devices as $itemtype_groups => $list_items_id) {
+                        if ($item = getItemForItemtype($itemtype_groups)
+                            && Ticket::isPossibleToAssignType($itemtype_groups)
+                            && $itemtype_groups != "Other"
+                            && $itemtype_groups != "Certificate"
+                            && $itemtype_groups != "Rack"
+                            && $itemtype_groups != "DatabaseInstance"
+                            && $itemtype_groups != "Simcard"
+                            && $itemtype_groups != "PluginSimcardSimcard"
+                            && $itemtype_groups != "PluginOrderOrder"
+                            && $itemtype_groups != "Other"
+                            && $itemtype_groups != "Domain"
+                            && $itemtype_groups != "Line"
+                            && $itemtype_groups != "PDU"
+                            && $itemtype_groups != "PluginBadgesBadge"
+                            && $itemtype_groups != "PluginResourcesResource"
+                            && in_array($itemtype_groups, $objects)
+                        ) {
+                            foreach ($list_items_id as $key => $items_id) {
+                                $varname = "hardwareType_" . $itemtype_groups . "_" . $items_id;
+                                echo Html::scriptBlock("hardwareType.push('$varname');");
+
+                                $checked = "";
+                                $active = "";
+                                if (isset($values["items_id"]) && is_array($values["items_id"])) {
+                                    $arr = $values["items_id"];
+                                    foreach ($arr as $elttype => $arr2) {
+                                        if (in_array($items_id, $arr2) && $elttype == $itemtype_groups) {
+                                            $checked = "checked";
+                                            $active = "active buttonelt_color";
+                                        }
+                                    }
+                                }
+                                if (is_array($objects_items_id)
+                                    && count($objects_items_id) == 1 && in_array($items_id, $objects_items_id)) {
+                                    $checked = "checked";
+                                    $active = "active buttonelt_color";
+                                }
+
+                                if ($values['selected_items_id'] == $items_id
+                                    && $values['selected_itemtype'] == $itemtype_groups) {
+                                    $checked = "checked";
+                                    $active = "active buttonelt_color";
+                                }
+
+                                echo "<label id='$varname' class='btn buttonelt col-md-2 center $active'
+                                            onclick='changeBackgroundColor(\"$varname\",\"buttonelt_color\")'>";
+
+                                $value = $itemtype_groups . "_" . $items_id;
+                                echo "<input type='radio' class='my_items' name='".$values['name']."' value='$value' $checked>";
+
+                                echo "<div class='center'>";
+                                $icon = self::getIconForType($itemtype_groups);
+
+                                $ok = 0;
+                                $obj = new $itemtype_groups();
+                                if ($obj->getFromDB($items_id)) {
+                                    $className = strtolower(get_class($obj));
+                                    $model = $className . "models";
+                                    if (isset($obj->fields[$model . "_id"]) && !empty($obj->fields[$model . "_id"])) {
+                                        if ($itemModel = getItemForItemtype($itemtype_groups . 'Model')) {
+                                            $itemModel->getFromDB($obj->fields[$model . "_id"]);
+                                            $pictures = [];
+                                            if ($itemModel->fields['pictures'] != null) {
+                                                $pictures = json_decode($itemModel->fields['pictures'], true);
+
+                                                if (isset($pictures) && is_array($pictures)) {
+                                                    foreach ($pictures as $picture) {
+                                                        $picture_url = Toolbox::getPictureUrl($picture);
+                                                        $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
+                                                            $picture_url . "'>";
+                                                        $ok = 1;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if ($itemtype_groups == "Appliance") {
+                                        if ($obj->fields['pictures'] != null) {
+                                            $pictures = json_decode($obj->fields['pictures'], true);
+
+                                            if (isset($pictures) && is_array($pictures)) {
+                                                foreach ($pictures as $picture) {
+                                                    $picture_url = Toolbox::getPictureUrl($picture);
+                                                    $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
+                                                        $picture_url . "'>";
+                                                    $ok = 1;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if ($ok == 1) {
+                                    echo "$icon&nbsp;";
+                                } else {
+                                    echo "<i style='font-size:4em' class='$icon fa-3x mr-3'></i>&nbsp;";
+                                }
+
+                                echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
+                                echo $obj->getName() . "&nbsp;";
+                                $comment = "";
+                                if (isset($obj->fields['serial']) && !empty($obj->fields['serial'])) {
+                                    $comment = __('Serial number') . " : " . $obj->fields['serial'];
+                                }
+                                if (!empty($comment)) {
+                                    echo "&nbsp;";
+                                    echo Html::showToolTip($comment);
+                                }
+
+                                echo "</h5><br>";
+                                echo $obj->getTypeName();
+                                echo "</div>";
+                                echo "</label>";
+                            }
+                        }
+                    }
+                    echo "</span>";
+                }
+            }
+        }
+
+        echo "</div></div>";
+
+        if ($values['is_mandatory'] && $i > 0) {
+            echo Html::scriptBlock("var tooltip = document.querySelector('.alertelt');
+                         if (tooltip != null) {
+                            tooltip.classList.add('active');
+                         }");
+        }
+
+        echo Html::scriptBlock(
+            "
+                        function changeBackgroundColor(idLabel,newCss) {
+                        
+                           hardwareType.forEach(function(item, index, array) {
+                                 document.getElementById(item).className='btn buttonelt col-md-2 center';
+                              });
+                           document.getElementById(idLabel).className='btn buttonelt col-md-2 center '+newCss;
+                           
+                           var buttonelt = document.getElementById('hardwareType_0');
+                           var tooltip = document.querySelector('.tooltipelt');
+                           if (buttonelt.innerHTML.length > 0) {
+                               tooltip.classList.remove('active');
+                               $('.tooltipelt').hide();
+                               buttonelt.addEventListener('click', function() {
+                                 tooltip.classList.add('active');
+                                 $('.tooltipelt').show();
+                               });
+                            } else {
+                                $('.tooltipelt').hide();
+                            }
+                        }"
+        );
+    }
+
+    public static function getIconForType($type)
+    {
+        if (!empty($type)) {
+            $item = new $type();
+            return 'fas ' . $item->getIcon();
+        } else {
+            return 'far fa-question-circle';
+        }
+    }
+
     static function showFieldCustomValues($params)
     {
         global $CFG_GLPI;
@@ -524,7 +1112,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='5' align='left' id='show_custom_fields'>";
-            PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"]);
+            PluginMetademandsFieldCustomvalue::initCustomValue(
+                $maxrank,
+                false,
+                true,
+                $params["plugin_metademands_fields_id"]
+            );
             echo "</td>";
             echo "</tr>";
             PluginMetademandsFieldCustomvalue::importCustomValue($params);
@@ -537,16 +1130,19 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
                 }
-                PluginMetademandsFieldCustomvalue::initCustomValue(-1, false, true, $params["plugin_metademands_fields_id"]);
+                PluginMetademandsFieldCustomvalue::initCustomValue(
+                    -1,
+                    false,
+                    true,
+                    $params["plugin_metademands_fields_id"]
+                );
                 echo "</td>";
                 echo "</tr>";
                 Html::closeForm();
                 PluginMetademandsFieldCustomvalue::importCustomValue($params);
-
-            } else if ($params['item'] == 'urgency'
+            } elseif ($params['item'] == 'urgency'
                 || $params['item'] == 'impact'
                 || $params['item'] == 'priority') {
-
                 $default_values = $params['default_values'];
                 if (is_array($default_values) && count($default_values) > 0) {
                     foreach ($default_values as $key => $default_value) {
@@ -560,9 +1156,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $options['display_emptychoice'] = true;
                 if ($params['item'] == 'urgency') {
                     Ticket::dropdownUrgency($options);
-                } else if ($params['item'] == 'impact') {
+                } elseif ($params['item'] == 'impact') {
                     Ticket::dropdownImpact($options);
-                } else if ($params['item'] == 'priority') {
+                } elseif ($params['item'] == 'priority') {
                     Ticket::dropdownPriority($options);
                 }
 
@@ -579,7 +1175,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "</tr>";
                 Html::closeForm();
             } elseif ($params['item'] == 'mydevices') {
-
                 $default_values = $params['default_values'];
 
                 echo "<form method='post' action=\"$target\">";
@@ -618,7 +1213,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "</td>";
                 echo "</tr>";
                 Html::closeForm();
-
             }
         }
         echo "</td>";
@@ -636,6 +1230,18 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('used_by_child', $params['used_by_child']);
+            echo "</td>";
+        } if ($params["item"] == "mydevices") {
+            $disp = [];
+            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
+            $disp[self::ICON_DISPLAY] = __("Icon display", "metademands");
+
+            echo "<td>";
+            echo __('Display type of the field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'],
+                'display' => false]);
             echo "</td>";
         } else {
             echo "<td colspan='2'></td>";
@@ -889,11 +1495,14 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         if (count($check_values) > 0) {
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+                    'Next',
+                    'metademands'
+                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -1024,7 +1633,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             if (isset($data['custom_values'])
                 && is_array($data['custom_values'])
                 && count($data['custom_values']) > 0
-             && !isset($data['value'])) {
+                && !isset($data['value'])) {
                 $custom_values = $data['custom_values'];
                 foreach ($custom_values as $k => $custom_value) {
                     if ($custom_value['is_default'] == 1) {
@@ -1041,7 +1650,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
 
@@ -1065,7 +1674,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     $display = $hidden_link;
                 }
 
-                $onchange .= "$.each( tohide, function( key, value ) {           
+                $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
@@ -1167,7 +1776,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"$name\"]').val(".$data['value'].").trigger('change');";
+                $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
             }
 
             $onchange .= "$('[name=\"$name\"]').change(function() {";
