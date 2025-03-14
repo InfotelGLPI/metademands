@@ -1992,7 +1992,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function setMandatoryFieldsByField($field_id, $hidden_link)
     {
-        //cannot be used for multples valus like checkbox or radio
+        //cannot be used for multples values like checkbox or radio
         $script = '';
         $fieldoptions = new PluginMetademandsFieldOption();
         $fields_data = $fieldoptions->find(['plugin_metademands_fields_id' => $field_id, 'hidden_link' => $hidden_link]
@@ -2003,6 +2003,22 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if ($data['fields_link'] == $hidden_link && $hidden_link > 0) {
                     $script .= "$(\"[name='field[$hidden_link]']\").attr('required', 'required');";
                 }
+                $field =  new PluginMetademandsField();
+                if ($field->getFromDB($hidden_link) && $field->fields['type'] == 'upload') {
+
+                    $script .= "var div = document.getElementById('fileupload_info_ticketfield$hidden_link');
+                    
+                    if (!div) return;
+                    var nextElem = div.nextElementSibling;
+                    while (nextElem && nextElem.tagName !== 'INPUT') {
+                        nextElem = nextElem.nextElementSibling;
+                    }
+                    console.log(nextElem);
+                     if (nextElem) {
+                        nextElem.setAttribute('required', 'required');
+                    }";
+                }
+
             }
             $script .= "fixButtonIndicator();";
         }
