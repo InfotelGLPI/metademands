@@ -939,7 +939,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 //                }
 //            }
 
-                $script .= "$.each( tohide, function( key, value ) {           
+                $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -1080,6 +1080,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
             }
 
             $onchange .= "});";

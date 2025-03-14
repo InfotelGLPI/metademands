@@ -557,7 +557,6 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 $hidden_link = $check_value['hidden_link'];
 
                 $onchange .= " if (this.checked){";
-                //                                        foreach ($hidden_link as $key => $fields) {
                 $onchange .= " if ($(this).val() == $idc || $idc == -1) {
                             if ($hidden_link in tohide) {
                             } else {
@@ -575,7 +574,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                     }
                 }
 
-                $onchange .= "$.each( tohide, function( key, value ) {                      
+                $onchange .= "$.each(tohide, function( key, value ) {
                             if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                                 " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
@@ -588,7 +587,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
                 $onchange .= "} else {";
                 //not checked
-                $onchange .= "if($(this).val() == $idc){
+                $onchange .= "if ($(this).val() == $idc) {
                             if ($hidden_link in tohide) {
                             } else {
                                tohide[$hidden_link] = true;
@@ -616,6 +615,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             if (count($display) > 0) {
                 foreach ($display as $see) {
                     $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
                 }
             }
 

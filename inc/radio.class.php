@@ -537,6 +537,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
             }
 
             $onchange .= "});";
@@ -602,7 +603,9 @@ class PluginMetademandsRadio extends CommonDBTM
             //Si la valeur est en session
             //specific
             if (isset($data['value'])) {
-                $script .= "$('[bloc-id =\"bloc" . $check_values[$data['value']]['hidden_block'] . "\"]').show();";
+                if (isset($check_values[$data['value']]['hidden_block'])) {
+                    $script .= "$('[bloc-id =\"bloc" . $check_values[$data['value']]['hidden_block'] . "\"]').show();";
+                }
             }
 
 

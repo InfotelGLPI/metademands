@@ -379,6 +379,7 @@ class PluginMetademandsEmail extends CommonDBTM
             }
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
             }
 
             $onchange .= "});";
