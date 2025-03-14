@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-13 12:27+0000\n"
+"POT-Creation-Date: 2025-03-14 15:29+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -157,7 +157,7 @@ msgid "Example"
 msgstr "Exemple"
 
 #: ajax/viewtypefields.php:55 inc/dropdown.class.php:245
-#: inc/dropdownmeta.class.php:646 inc/dropdownobject.class.php:570
+#: inc/dropdownmeta.class.php:1252 inc/dropdownobject.class.php:570
 #: inc/dropdownobject.class.php:662 inc/tel.class.php:120
 #: inc/text.class.php:117
 msgid "Link this to a user field"
@@ -277,36 +277,36 @@ msgstr "Il y a un problème avec le panier"
 msgid "Basket"
 msgstr "Panier"
 
-#: inc/basket.class.php:124 inc/basket.class.php:1265
-#: inc/basket.class.php:1662 inc/basket.class.php:1979
+#: inc/basket.class.php:124 inc/basket.class.php:1266
+#: inc/basket.class.php:1663 inc/basket.class.php:1980
 #: inc/basketobject.class.php:116 inc/basketobject.class.php:221
 msgid "Reference"
 msgstr "Référence"
 
-#: inc/basket.class.php:126 inc/basket.class.php:1266
-#: inc/basket.class.php:1664 inc/basket.class.php:1980
+#: inc/basket.class.php:126 inc/basket.class.php:1267
+#: inc/basket.class.php:1665 inc/basket.class.php:1981
 #: inc/basketobject.class.php:99 inc/basketobject.class.php:197
 msgid "Designation"
 msgstr "Désignation"
 
-#: inc/basket.class.php:133 inc/basket.class.php:1295
-#: inc/basket.class.php:1687
+#: inc/basket.class.php:133 inc/basket.class.php:1296
+#: inc/basket.class.php:1688
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
-#: inc/basket.class.php:140 inc/basket.class.php:1301
-#: inc/basket.class.php:1678 inc/basket.class.php:1987
+#: inc/basket.class.php:140 inc/basket.class.php:1302
+#: inc/basket.class.php:1679 inc/basket.class.php:1988
 msgid "Unit"
 msgstr "Unité"
 
-#: inc/basket.class.php:143 inc/basket.class.php:1303
-#: inc/basket.class.php:1694 inc/basket.class.php:1996
+#: inc/basket.class.php:143 inc/basket.class.php:1304
+#: inc/basket.class.php:1695 inc/basket.class.php:1997
 msgid "Unit price (HT)"
 msgstr "Prix unitaire (HT)"
 
-#: inc/basket.class.php:149 inc/basket.class.php:1309
-#: inc/basket.class.php:1682 inc/basket.class.php:1982
-#: inc/basket.class.php:2019
+#: inc/basket.class.php:149 inc/basket.class.php:1310
+#: inc/basket.class.php:1683 inc/basket.class.php:1983
+#: inc/basket.class.php:2020
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -314,15 +314,15 @@ msgstr "Quantité"
 msgid "Select"
 msgstr "Sélectionner"
 
-#: inc/basket.class.php:159 inc/basket.class.php:1315
-#: inc/basket.class.php:1702 inc/basket.class.php:1999
+#: inc/basket.class.php:159 inc/basket.class.php:1316
+#: inc/basket.class.php:1703 inc/basket.class.php:2000
 msgid "Total (HT)"
 msgstr "Total (HT)"
 
 #: inc/basket.class.php:162 inc/basket.class.php:167 inc/basket.class.php:172
-#: inc/basket.class.php:1317 inc/basket.class.php:1320
-#: inc/basket.class.php:1323 inc/basket.class.php:1917
-#: inc/basket.class.php:1921
+#: inc/basket.class.php:1318 inc/basket.class.php:1321
+#: inc/basket.class.php:1324 inc/basket.class.php:1918
+#: inc/basket.class.php:1922
 msgid "Total"
 msgstr "Total"
 
@@ -338,8 +338,8 @@ msgstr "Chercher un nom.."
 msgid "Search for description.."
 msgstr "Chercher une description.."
 
-#: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1393
-#: inc/basket.class.php:1463 inc/basket.class.php:1775
+#: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1394
+#: inc/basket.class.php:1464 inc/basket.class.php:1776
 msgid "On quotation"
 msgstr "Sur catalogue"
 
@@ -354,30 +354,30 @@ msgstr "Avec le prix unitaire (HT)"
 #: inc/basket.class.php:471 inc/checkbox.class.php:269
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
-#: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:691
+#: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:1297
 #: inc/dropdownmultiple.class.php:719 inc/dropdownobject.class.php:739
 #: inc/field.class.php:1075 inc/fieldoption.class.php:343
-#: inc/radio.class.php:265 inc/yesno.class.php:129
+#: inc/radio.class.php:267 inc/yesno.class.php:129
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
 #: inc/basket.class.php:472 inc/checkbox.class.php:289
 #: inc/checkbox.class.php:302 inc/dropdown.class.php:304
-#: inc/dropdown.class.php:340 inc/dropdownmeta.class.php:761
-#: inc/dropdownmeta.class.php:771 inc/dropdownmeta.class.php:792
+#: inc/dropdown.class.php:340 inc/dropdownmeta.class.php:1367
+#: inc/dropdownmeta.class.php:1377 inc/dropdownmeta.class.php:1398
 #: inc/dropdownmultiple.class.php:835 inc/dropdownobject.class.php:803
 #: inc/dropdownobject.class.php:806 inc/dropdownobject.class.php:816
 #: inc/dropdownobject.class.php:838 inc/dropdownobject.class.php:854
-#: inc/dropdownobject.class.php:865 inc/radio.class.php:285
-#: inc/radio.class.php:298
+#: inc/dropdownobject.class.php:865 inc/radio.class.php:287
+#: inc/radio.class.php:300
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
 #: inc/basket.class.php:589 inc/checkbox.class.php:405
-#: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:895
+#: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:1501
 #: inc/dropdownmultiple.class.php:937 inc/dropdownmultiple.class.php:1071
 #: inc/dropdownobject.class.php:941 inc/email.class.php:260
-#: inc/radio.class.php:375 inc/tel.class.php:262 inc/text.class.php:260
+#: inc/radio.class.php:377 inc/tel.class.php:262 inc/text.class.php:260
 #: inc/textarea.class.php:212 inc/url.class.php:260 inc/wizard.class.php:1963
 #: inc/yesno.class.php:215
 msgctxt "button"
@@ -385,47 +385,47 @@ msgid "Save & Post"
 msgstr "Sauver et envoyer"
 
 #: inc/basket.class.php:591 inc/checkbox.class.php:406
-#: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:896
+#: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:1503
 #: inc/dropdownmultiple.class.php:939 inc/dropdownmultiple.class.php:1073
 #: inc/dropdownobject.class.php:942 inc/email.class.php:262
-#: inc/radio.class.php:376 inc/tel.class.php:264 inc/text.class.php:261
+#: inc/radio.class.php:378 inc/tel.class.php:264 inc/text.class.php:261
 #: inc/textarea.class.php:213 inc/url.class.php:262 inc/wizard.class.php:1006
 #: inc/wizard.class.php:1938 inc/wizard.class.php:1961
 #: inc/wizard.class.php:1974 inc/wizard.class.php:1978 inc/yesno.class.php:216
 msgid "Next"
 msgstr "Suivant"
 
-#: inc/basket.class.php:1255
+#: inc/basket.class.php:1256
 msgid "Basket summary"
 msgstr "Récapitulatif du panier"
 
-#: inc/basket.class.php:1495
+#: inc/basket.class.php:1496
 msgid "Grand total"
 msgstr "Total général"
 
-#: inc/basket.class.php:1500
+#: inc/basket.class.php:1501
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr "* Les prix sont des estimations et ne constituent pas une estimation"
 
-#: inc/basket.class.php:1508 inc/basket.class.php:1915
+#: inc/basket.class.php:1509 inc/basket.class.php:1916
 #: inc/metademandpdf.class.php:413 inc/metademandpdf.class.php:507
 msgid "Grand total (HT)"
 msgstr "Total général (HT)"
 
-#: inc/basket.class.php:1523 inc/basketline.class.php:94
+#: inc/basket.class.php:1524 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr "Envoyer la commande"
 
-#: inc/basket.class.php:1595
+#: inc/basket.class.php:1596
 msgid "No items on basket"
 msgstr "Pas d'éléments dans le panier"
 
-#: inc/basket.class.php:1671
+#: inc/basket.class.php:1672
 msgid "Order type"
 msgstr "Type de commande"
 
-#: inc/basket.class.php:1783
+#: inc/basket.class.php:1784
 msgid "On catalog"
 msgstr "Sur catalogue"
 
@@ -488,16 +488,16 @@ msgstr[2] "Types d'objet"
 msgid "Checkbox"
 msgstr "Case à cocher"
 
-#: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:453
+#: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:1041
 #: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:508
 #: inc/freetable.class.php:663 inc/freetablefield.class.php:333
-#: inc/radio.class.php:171
+#: inc/radio.class.php:173
 msgid "Rank"
 msgstr "Rang"
 
-#: inc/checkbox.class.php:194 inc/dropdownmeta.class.php:477
+#: inc/checkbox.class.php:194 inc/dropdownmeta.class.php:1065
 #: inc/dropdownmultiple.class.php:484 inc/dropdownmultiple.class.php:571
-#: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:192
+#: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:194
 #: inc/yesno.class.php:98
 msgid "Default value"
 msgid_plural "Default values"
@@ -700,7 +700,7 @@ msgid "Date"
 msgstr "Date"
 
 #: inc/date.class.php:99 inc/datetime.class.php:99 inc/dropdown.class.php:232
-#: inc/dropdownmeta.class.php:635 inc/dropdownobject.class.php:599
+#: inc/dropdownmeta.class.php:1229 inc/dropdownobject.class.php:599
 #: inc/dropdownobject.class.php:681
 msgid "Use this field for child ticket field"
 msgstr "Utiliser ce champ comme champ des tickets enfants"
@@ -755,15 +755,35 @@ msgstr ""
 "Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir"
 " continuer ?"
 
-#: inc/dropdownmeta.class.php:61 inc/freetablefield.class.php:128
+#: inc/dropdownmeta.class.php:63 inc/freetablefield.class.php:128
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
-#: inc/dropdownmeta.class.php:670 inc/dropdownobject.class.php:630
+#: inc/dropdownmeta.class.php:258
+msgid "This field is mandatory, please select your equipment"
+msgstr "Ce champ est obligatoire, merci de sélectionner votre équipement"
+
+#: inc/dropdownmeta.class.php:764
+msgid "No equipment founded"
+msgstr "Pas d'équipement trouvé"
+
+#: inc/dropdownmeta.class.php:1236 inc/dropdownmultiple.class.php:646
+msgid "Classic display"
+msgstr "Affichage classique"
+
+#: inc/dropdownmeta.class.php:1237
+msgid "Icon display"
+msgstr "Affichage avec des icônes"
+
+#: inc/dropdownmeta.class.php:1240 inc/dropdownmultiple.class.php:650
+msgid "Display type of the field"
+msgstr "Type d'affichage du champ"
+
+#: inc/dropdownmeta.class.php:1276 inc/dropdownobject.class.php:630
 msgid "Read-Only"
 msgstr "Lecture seule"
 
-#: inc/dropdownmeta.class.php:677
+#: inc/dropdownmeta.class.php:1283
 msgid "Hidden field"
 msgstr "Champ caché"
 
@@ -791,17 +811,9 @@ msgstr "Tout cocher"
 msgid "Unselect all"
 msgstr "Tout décocher"
 
-#: inc/dropdownmultiple.class.php:646
-msgid "Classic display"
-msgstr "Affichage classique"
-
 #: inc/dropdownmultiple.class.php:647
 msgid "Double column display"
 msgstr "Affichage en double colonnes"
-
-#: inc/dropdownmultiple.class.php:650
-msgid "Display type of the field"
-msgstr "Type d'affichage du champ"
 
 #: inc/dropdownmultiple.class.php:664 inc/dropdownobject.class.php:591
 msgid "Only users of my groups"
