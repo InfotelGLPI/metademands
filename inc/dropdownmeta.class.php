@@ -50,6 +50,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     const CLASSIC_DISPLAY = 0;
     const ICON_DISPLAY = 1;
+
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -204,9 +205,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $field = "";
 
                 if ($on_order == false) {
-
-                    if ($data["display_type"] != self::ICON_DISPLAY) {
-
+                    if ($data["display_type"] == self::ICON_DISPLAY) {
                         // My items
                         //TODO : used_by_ticket -> link with item's ticket
                         $field = "";
@@ -214,78 +213,77 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
                         $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                         //                     $users_id = 0;
-                    if ($data['link_to_user'] > 0) {
-
-                        $fieldUser = new PluginMetademandsField();
-                        $fieldUser->getFromDBByCrit([
-                            'id' => $data['link_to_user'],
-                            'type' => "dropdown_object",
-                            'item' => User::getType()
-                        ]);
-                        $_POST['value'] = 0;
-                        if (!empty($fieldUser->fields)) {
-                            $params = PluginMetademandsField::getAllParamsFromField($fieldUser);
-                            $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-                        }
-
-                        $_POST['id_fielduser'] = $data['link_to_user'];
-                        $_POST['fields_id'] = $data['id'];
-                        $_POST['limit'] = json_encode($default_values);
-                        $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
-
-                        $selected_items_id = 0;
-                        $selected_itemtype = "";
-
-                        $_POST['value'] = $data['link_to_user'];
-                        $users_id = $_POST['value'];
-                        echo "<div id='mydevices_user$users_id' class=\"input-group\">";
-
-                        if (isset($value) && !empty($value)) {
-                            $splitter = explode("_", $value);
-                            if (count($splitter) == 2) {
-                                $selected_itemtype = $splitter[0];
-                                $selected_items_id = $splitter[1];
+                        if ($data['link_to_user'] > 0) {
+                            $fieldUser = new PluginMetademandsField();
+                            $fieldUser->getFromDBByCrit([
+                                'id' => $data['link_to_user'],
+                                'type' => "dropdown_object",
+                                'item' => User::getType()
+                            ]);
+                            $_POST['value'] = 0;
+                            if (!empty($fieldUser->fields)) {
+                                $params = PluginMetademandsField::getAllParamsFromField($fieldUser);
+                                $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID(
+                                );
                             }
-                        }
-                        $_POST['selected_items_id'] = $selected_items_id;
-                        $_POST['selected_itemtype'] = $selected_itemtype;
-                        $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
-                        include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
-                        echo "</div>";
 
-                        if ($data['is_mandatory']) {
-                            echo "<div class='alertelt active'><div class='alertelttext'><span>";
-                            echo __('This field is mandatory, please select your equipment', 'metamemands');
-                            echo "</span></div>";
-                        }
+                            $_POST['id_fielduser'] = $data['link_to_user'];
+                            $_POST['fields_id'] = $data['id'];
+                            $_POST['limit'] = json_encode($default_values);
+                            $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
+
+                            $selected_items_id = 0;
+                            $selected_itemtype = "";
+
+                            $_POST['value'] = $data['link_to_user'];
+                            $users_id = $_POST['value'];
+                            echo "<div id='mydevices_user$users_id' class=\"input-group\">";
+
+                            if (isset($value) && !empty($value)) {
+                                $splitter = explode("_", $value);
+                                if (count($splitter) == 2) {
+                                    $selected_itemtype = $splitter[0];
+                                    $selected_items_id = $splitter[1];
+                                }
+                            }
+                            $_POST['selected_items_id'] = $selected_items_id;
+                            $_POST['selected_itemtype'] = $selected_itemtype;
+                            $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
+                            include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
+                            echo "</div>";
+
+                            if ($data['is_mandatory']) {
+                                echo "<div class='alertelt active'><div class='alertelttext'><span>";
+                                echo __('This field is mandatory, please select your equipment', 'metamemands');
+                                echo "</span></div>";
+                            }
 
 //                        echo "<div class='tooltipelt'><div class='tooltipelttext'><span>";
 //                        echo __('If your equipment is not listed, thanks to add its name on ticket description', 'metamemands');
 //                        echo "</span></div>";
-                    } else {
-                        $rand = mt_rand();
+                        } else {
+                            $rand = mt_rand();
 
-                        $p = [
-                            'rand' => $rand,
-                            'name' => $_POST["field"],
-                            'value' => $data['value'] ?? 0,
-                            'is_mandatory' => $data['is_mandatory'] ?? 0,
-                            'users_id' => Session::getLoginUserID(),
-                            'limit' => $default_values
-                        ];
-                        $p['selected_itemtype'] = "";
-                        $p['selected_items_id'] = 0;
-                        if (isset($value) && !empty($value)) {
-                            $splitter = explode("_", $value);
-                            if (count($splitter) == 2) {
-                                $p['selected_itemtype'] = $splitter[0];
-                                $p['selected_items_id'] = $splitter[1];
+                            $p = [
+                                'rand' => $rand,
+                                'name' => $_POST["field"],
+                                'value' => $data['value'] ?? 0,
+                                'is_mandatory' => $data['is_mandatory'] ?? 0,
+                                'users_id' => Session::getLoginUserID(),
+                                'limit' => $default_values
+                            ];
+                            $p['selected_itemtype'] = "";
+                            $p['selected_items_id'] = 0;
+                            if (isset($value) && !empty($value)) {
+                                $splitter = explode("_", $value);
+                                if (count($splitter) == 2) {
+                                    $p['selected_itemtype'] = $splitter[0];
+                                    $p['selected_items_id'] = $splitter[1];
+                                }
                             }
+
+                            $field .= self::getItemsForUser($p);
                         }
-
-                        $field .= self::getItemsForUser($p);
-                    }
-
                     } else {
                         // My items
                         //TODO : used_by_ticket -> link with item's ticket
@@ -666,7 +664,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                             onclick='changeBackgroundColor(\"$varname\",\"buttonelt_color\")'>";
 
                         $value = $itemtype . "_" . $items_id;
-                        echo "<input type='radio' class='my_items' name='".$values['name']."' value='$value' $checked>";
+                        echo "<input type='radio' class='my_items' name='" . $values['name'] . "' value='$value' $checked>";
 
                         echo "<div class='center'>";
                         $icon = self::getIconForType($itemtype);
@@ -761,11 +759,13 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 //        }
 
         if ($i == 0) {
-            echo  __('No equipment founded', 'metademands');
-            echo Html::scriptBlock("var tooltip = document.querySelector('.alertelt');
+            echo __('No equipment founded', 'metademands');
+            echo Html::scriptBlock(
+                "var tooltip = document.querySelector('.alertelt');
                          if (tooltip != null) {
                             tooltip.classList.remove('active');
-                         }");
+                         }"
+            );
         }
         if (is_array($objects)
             && count($objects) > 0) {
@@ -899,7 +899,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                             onclick='changeBackgroundColor(\"$varname\",\"buttonelt_color\")'>";
 
                                 $value = $itemtype_groups . "_" . $items_id;
-                                echo "<input type='radio' class='my_items' name='".$values['name']."' value='$value' $checked>";
+                                echo "<input type='radio' class='my_items' name='" . $values['name'] . "' value='$value' $checked>";
 
                                 echo "<div class='center'>";
                                 $icon = self::getIconForType($itemtype_groups);
@@ -976,10 +976,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         echo "</div></div>";
 
         if ($values['is_mandatory'] && $i > 0) {
-            echo Html::scriptBlock("var tooltip = document.querySelector('.alertelt');
+            echo Html::scriptBlock(
+                "var tooltip = document.querySelector('.alertelt');
                          if (tooltip != null) {
                             tooltip.classList.add('active');
-                         }");
+                         }"
+            );
         }
 
         echo Html::scriptBlock(
@@ -1231,7 +1233,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             echo "<td>";
             Dropdown::showYesNo('used_by_child', $params['used_by_child']);
             echo "</td>";
-        } if ($params["item"] == "mydevices") {
+        }
+        if ($params["item"] == "mydevices") {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::ICON_DISPLAY] = __("Icon display", "metademands");
@@ -1240,8 +1243,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             echo __('Display type of the field', 'metademands');
             echo "</td>";
             echo "<td>";
-            echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'],
-                'display' => false]);
+            echo Dropdown::showFromArray("display_type", $disp, [
+                'value' => $params['display_type'],
+                'display' => false
+            ]);
             echo "</td>";
         } else {
             echo "<td colspan='2'></td>";
