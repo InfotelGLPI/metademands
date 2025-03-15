@@ -36,6 +36,9 @@ Session::checkLoginUser();
 if (isset($_POST['action'])
     && $_POST['action'] == 'reloaditem') {
     if (isset($_POST["type"])) {
-        PluginMetademandsField::dropdownFieldItems($_POST['type'], ['with_empty_value' => true]);
+        if (in_array($_POST['type'], PluginMetademandsField::$field_withobjects)) {
+            echo __('Object', 'metademands') . "&nbsp;";
+            PluginMetademandsField::dropdownFieldItems($_POST['type'], ['with_empty_value' => true]);
+        }
     }
 }

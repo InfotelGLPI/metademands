@@ -121,6 +121,14 @@ class PluginMetademandsField extends CommonDBChild
         'mydevices',
     ];
 
+    public static $field_withobjects = [
+        'dropdown',
+        'dropdown_object',
+        'dropdown_meta',
+        'dropdown_multiple',
+        'basket',
+    ];
+
     public static $not_null = 'NOT_NULL';
 
 
@@ -4006,8 +4014,10 @@ JAVASCRIPT
 
         echo "<td class='center'>";
         echo "<span id='plugin_metademands_item'>";
-        echo __('Object', 'metademands')."&nbsp;";
-        self::dropdownFieldItems($p['type'], ['value' => $p["item"], 'with_empty_value' => true]);
+        if (in_array($p['type'], self::$field_withobjects)) {
+            echo __('Object', 'metademands')."&nbsp;";
+            self::dropdownFieldItems($p['type'], ['value' => $p["item"], 'with_empty_value' => true]);
+        }
         echo "</span>";
         echo "</td>";
 
