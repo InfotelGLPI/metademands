@@ -2851,6 +2851,7 @@ JAVASCRIPT
                 foreach ($ids as $id) {
                     $field = new PluginMetademandsField();
                     $param = new PluginMetademandsFieldParameter();
+                    $msg = MassiveAction::ACTION_OK;
                     if ($param->getFromDBByCrit(["plugin_metademands_fields_id" => $id])) {
                         $field->getFromDB($id);
                         if ($field->fields['type'] == 'title-block'

@@ -58,6 +58,13 @@ class PluginMetademandsFreetable extends CommonDBTM
         $field = "";
 
         $plugin_metademands_metademands_id = $data['plugin_metademands_metademands_id'];
+        $meta = new PluginMetademandsMetademand();
+        $meta->getFromDB($plugin_metademands_metademands_id);
+        $background_color = "";
+        if (isset($meta->fields['background_color'])
+        && $meta->fields['background_color'] != "") {
+            $background_color = "background-color:".$meta->fields['background_color'].";";
+        }
         $plugin_metademands_fields_id = $data['id'];
 
         if (!isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$data['id']])) {
@@ -77,7 +84,7 @@ class PluginMetademandsFreetable extends CommonDBTM
         }
         $colspan = '4';
 
-        $style_th = "style='text-align: left;'";
+        $style_th = "style='text-align: left;$background_color'";
         $field .= Html::hidden('is_freetable_mandatory['.$data['id'].']', ['value' => $data['is_mandatory']]);
         $colspanfields = 0;
         $addfields = [];
@@ -122,7 +129,7 @@ class PluginMetademandsFreetable extends CommonDBTM
 
         $rand = $data['id'];
         $field .= "<script>localStorage.setItem('nextnb', $nb);</script>";
-        $field .= "<table class='tab_cadre' width='100%' id ='freetable_table$rand' style='overflow: auto;width:100%'>";//display: block;
+        $field .= "<table class='tab_cadre' width='100%' id ='freetable_table$rand' style='overflow: auto;width:100%;$background_color'>";//display: block;
         $field .= "<tr class='tab_bg_1'>";
         foreach ($addfields as $k => $addfield) {
             $field .= "<th $style_th>";
@@ -144,7 +151,7 @@ class PluginMetademandsFreetable extends CommonDBTM
         $types_encoded_fields = json_encode($types);
         $dropdown_values_encoded_fields = [];
         $dropdown_values_encoded_fields = json_encode($dropdown_values);
-        $field .= "<th style='text-align: center;' colspan='2' onclick='addLine$rand()'><i class='fa-solid fa-plus btn btn-info'></i></th>";
+        $field .= "<th style='text-align: center;$background_color' colspan='2' onclick='addLine$rand()'><i class='fa-solid fa-plus btn btn-info'></i></th>";
         $field .= "</tr>";
 
         $style = "";
