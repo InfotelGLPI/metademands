@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-15 10:31+0000\n"
+"POT-Creation-Date: 2025-03-15 10:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -153,7 +153,7 @@ msgid "Example"
 msgstr ""
 
 #: ajax/viewtypefields.php:55 inc/dropdown.class.php:245
-#: inc/dropdownmeta.class.php:1252 inc/dropdownobject.class.php:570
+#: inc/dropdownmeta.class.php:1257 inc/dropdownobject.class.php:570
 #: inc/dropdownobject.class.php:662 inc/tel.class.php:120
 #: inc/text.class.php:117
 msgid "Link this to a user field"
@@ -344,7 +344,7 @@ msgstr ""
 #: inc/basket.class.php:477 inc/checkbox.class.php:269
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
-#: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:1297
+#: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:1302
 #: inc/dropdownmultiple.class.php:719 inc/dropdownobject.class.php:739
 #: inc/field.class.php:1100 inc/fieldoption.class.php:343
 #: inc/radio.class.php:267 inc/yesno.class.php:129
@@ -353,8 +353,8 @@ msgstr ""
 
 #: inc/basket.class.php:478 inc/checkbox.class.php:289
 #: inc/checkbox.class.php:302 inc/dropdown.class.php:304
-#: inc/dropdown.class.php:340 inc/dropdownmeta.class.php:1367
-#: inc/dropdownmeta.class.php:1377 inc/dropdownmeta.class.php:1398
+#: inc/dropdown.class.php:340 inc/dropdownmeta.class.php:1372
+#: inc/dropdownmeta.class.php:1382 inc/dropdownmeta.class.php:1403
 #: inc/dropdownmultiple.class.php:835 inc/dropdownobject.class.php:803
 #: inc/dropdownobject.class.php:806 inc/dropdownobject.class.php:816
 #: inc/dropdownobject.class.php:838 inc/dropdownobject.class.php:854
@@ -364,7 +364,7 @@ msgid "Not null value"
 msgstr ""
 
 #: inc/basket.class.php:595 inc/checkbox.class.php:405
-#: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:1501
+#: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:1506
 #: inc/dropdownmultiple.class.php:937 inc/dropdownmultiple.class.php:1071
 #: inc/dropdownobject.class.php:941 inc/email.class.php:260
 #: inc/radio.class.php:377 inc/tel.class.php:262 inc/text.class.php:260
@@ -375,7 +375,7 @@ msgid "Save & Post"
 msgstr ""
 
 #: inc/basket.class.php:597 inc/checkbox.class.php:406
-#: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:1503
+#: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:1508
 #: inc/dropdownmultiple.class.php:939 inc/dropdownmultiple.class.php:1073
 #: inc/dropdownobject.class.php:942 inc/email.class.php:262
 #: inc/radio.class.php:378 inc/tel.class.php:264 inc/text.class.php:261
@@ -477,14 +477,14 @@ msgstr[1] ""
 msgid "Checkbox"
 msgstr ""
 
-#: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:1041
+#: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:1043
 #: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:508
 #: inc/freetable.class.php:670 inc/freetablefield.class.php:333
 #: inc/radio.class.php:173
 msgid "Rank"
 msgstr ""
 
-#: inc/checkbox.class.php:194 inc/dropdownmeta.class.php:1065
+#: inc/checkbox.class.php:194 inc/dropdownmeta.class.php:1067
 #: inc/dropdownmultiple.class.php:484 inc/dropdownmultiple.class.php:571
 #: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:194
 #: inc/yesno.class.php:98
@@ -686,7 +686,7 @@ msgid "Date"
 msgstr ""
 
 #: inc/date.class.php:99 inc/datetime.class.php:99 inc/dropdown.class.php:232
-#: inc/dropdownmeta.class.php:1229 inc/dropdownobject.class.php:599
+#: inc/dropdownmeta.class.php:1231 inc/dropdownobject.class.php:599
 #: inc/dropdownobject.class.php:681
 msgid "Use this field for child ticket field"
 msgstr ""
@@ -739,35 +739,35 @@ msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:63 inc/freetablefield.class.php:128
+#: inc/dropdownmeta.class.php:64 inc/freetablefield.class.php:128
 msgid "Dropdown"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:258
+#: inc/dropdownmeta.class.php:257
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:764
+#: inc/dropdownmeta.class.php:762
 msgid "No equipment founded"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:1236 inc/dropdownmultiple.class.php:646
+#: inc/dropdownmeta.class.php:1239 inc/dropdownmultiple.class.php:646
 msgid "Classic display"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:1237
+#: inc/dropdownmeta.class.php:1240
 msgid "Icon display"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:1240 inc/dropdownmultiple.class.php:650
+#: inc/dropdownmeta.class.php:1243 inc/dropdownmultiple.class.php:650
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:1276 inc/dropdownobject.class.php:630
+#: inc/dropdownmeta.class.php:1281 inc/dropdownobject.class.php:630
 msgid "Read-Only"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:1283
+#: inc/dropdownmeta.class.php:1288
 msgid "Hidden field"
 msgstr ""
 
