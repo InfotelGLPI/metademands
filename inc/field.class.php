@@ -995,10 +995,27 @@ class PluginMetademandsField extends CommonDBChild
             echo "</script>\n";
         }
 
+        $cond['plugin_metademands_metademands_id'] = $item->getID();
+
+        if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
+            && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] != 0) {
+            $cond['rank'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'];
+        }
+        if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'])
+        && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'] != 0) {
+            $cond['type'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'];
+        }
+        if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'])
+            && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'] != 0) {
+            $cond['item'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'];
+        }
+
+        self::searchForm($item, $cond);
+
         $self = new self();
 
         $data = $self->find(
-            ['plugin_metademands_metademands_id' => $item->getID()],
+            $cond,
             ['rank', 'order']
         );
 
@@ -1292,6 +1309,8 @@ class PluginMetademandsField extends CommonDBChild
         foreach ($param as $key => $val) {
             $p[$key] = $val;
         }
+
+        $p['on_change'] = 'plugin_metademands_reloaditem();';
 
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1707,6 +1726,10 @@ class PluginMetademandsField extends CommonDBChild
 
         switch ($typefield) {
             case "dropdown_multiple":
+                if ($p["with_empty_value"]) {
+                    $options[0] = Dropdown::EMPTY_VALUE;
+                }
+
                 foreach ($type_fields_multiple as $key => $items) {
                     if (empty($items)) {
                         $options[$key] = self::getFieldItemsName("dropdown_multiple", $items);
@@ -1726,9 +1749,17 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case "dropdown":
                 $options = Dropdown::getStandardDropdownItemTypes();
+                if ($p["with_empty_value"]) {
+                    $allowedDropdownValues[0] = Dropdown::EMPTY_VALUE;
+                    $options = array_merge($allowedDropdownValues, $options);
+                }
+
                 return Dropdown::showFromArray($name, $options, $p);
                 break;
             case "dropdown_meta":
+                if ($p["with_empty_value"]) {
+                    $options[0] = Dropdown::EMPTY_VALUE;
+                }
                 foreach ($type_fields as $key => $items) {
                     if (empty($items)) {
                         $options[$key] = self::getFieldItemsName("dropdown_meta", $items);
@@ -1748,6 +1779,10 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case "dropdown_object":
                 $options = self::getGlpiObject();
+                if ($p["with_empty_value"]) {
+                    $allowedDropdownValues[0] = Dropdown::EMPTY_VALUE;
+                    $options = array_merge($allowedDropdownValues, $options);
+                }
                 return Dropdown::showFromArray($name, $options, $p);
                 break;
             case "basket":
@@ -3917,5 +3952,86 @@ JAVASCRIPT
                 $pluginField->add($input);
             }
         }
+    }
+
+    public static function searchForm($item, $cond)
+    {
+        global $DB;
+
+        $params = $cond ?? [];
+
+        $p['type'] = '';
+        $p['item'] = '';
+        $p['rank'] = 0;
+        foreach ($params as $key => $val) {
+            $p[$key] = $val;
+        }
+
+        echo "<form name='form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/field.php'>";
+        echo "<div class='center'><table class='tab_cadrehov'>";
+        echo "<tr class='tab_bg_2'>";
+
+        echo "<td class='center'>";
+        $iterator = $DB->request([
+            'SELECT'    => ['MAX' => 'rank AS maxrank'],
+            'FROM'      => 'glpi_plugin_metademands_fields',
+            'WHERE'     => [
+                'plugin_metademands_metademands_id'  => $item->getID()
+            ],
+        ]);
+
+        $max = PluginMetademandsField::MAX_FIELDS;
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
+                $max = $data['maxrank'];
+            }
+        }
+
+
+        echo __('Block', 'metademands')."&nbsp;";
+        Dropdown::showNumber('block', [
+            'value' => $p['rank'],
+            'min' => 1,
+            'max' => $max,
+            'toadd' => [0 => Dropdown::EMPTY_VALUE]
+        ]);
+        echo "</td>";
+
+        echo "<td class='center'>";
+        echo __('Field type', 'metademands')."&nbsp;";
+        $mrand = self::dropdownFieldTypes(
+            self::$field_types, ['value' => $p['type'], 'metademands_id' => $item->getID()]
+        );
+        echo "</td>";
+
+        echo "<td class='center'>";
+        echo "<span id='plugin_metademands_item'>";
+        echo __('Object', 'metademands')."&nbsp;";
+        self::dropdownFieldItems($p['type'], ['value' => $p["item"], 'with_empty_value' => true]);
+        echo "</span>";
+        echo "</td>";
+
+        echo "<script type='text/javascript'>";
+        echo "function plugin_metademands_reloaditem() {";
+        $params = ['action'            => 'reloaditem',
+            'type'              => '__VALUE__',
+        ];
+        Ajax::updateItemJsCode(
+            'plugin_metademands_item',
+            PLUGIN_METADEMANDS_WEBDIR . '/ajax/reloaditem.php',
+            $params,
+            'dropdown_type' . $mrand
+        );
+        echo "};";
+        echo "</script>";
+
+        echo "<td>";
+        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
+        echo Html::submit(_sx('button', 'Post'), ['name' => 'search', 'class' => 'btn btn-primary']);
+        echo "</td>";
+        echo "</tr>";
+
+        echo "</table></div>";
+        Html::closeForm();
     }
 }
