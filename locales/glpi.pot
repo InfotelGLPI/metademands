@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-15 10:41+0000\n"
+"POT-Creation-Date: 2025-03-15 11:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgid ""
 msgstr ""
 
 #: ajax/reloaditem.php:40 inc/field.class.php:797 inc/field.class.php:805
-#: inc/field.class.php:1097 inc/field.class.php:2673 inc/field.class.php:4018
+#: inc/field.class.php:1097 inc/field.class.php:2677 inc/field.class.php:4022
 msgid "Object"
 msgstr ""
 
@@ -559,7 +559,7 @@ msgid "Field"
 msgstr ""
 
 #: inc/condition.class.php:349 inc/condition.class.php:916
-#: inc/field.class.php:4009
+#: inc/field.class.php:4013
 msgid "Field type"
 msgstr ""
 
@@ -829,7 +829,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:766 inc/field.class.php:1105
-#: inc/field.class.php:2738 inc/field.class.php:3999 inc/step.class.php:299
+#: inc/field.class.php:2742 inc/field.class.php:4003 inc/step.class.php:299
 #: inc/step.class.php:381
 msgid "Block"
 msgstr ""
@@ -842,7 +842,7 @@ msgstr ""
 msgid "Please add a type category field"
 msgstr ""
 
-#: inc/field.class.php:542 inc/field.class.php:2671 inc/field.class.php:2756
+#: inc/field.class.php:542 inc/field.class.php:2675 inc/field.class.php:2760
 msgid "Additional label"
 msgstr ""
 
@@ -887,7 +887,7 @@ msgstr ""
 msgid "Use this field as object field"
 msgstr ""
 
-#: inc/field.class.php:1106 inc/field.class.php:2747
+#: inc/field.class.php:1106 inc/field.class.php:2751
 msgid "Order"
 msgstr ""
 
@@ -899,28 +899,28 @@ msgstr ""
 msgid "Father's field"
 msgstr ""
 
-#: inc/field.class.php:1835
+#: inc/field.class.php:1839
 msgid "My values"
 msgstr ""
 
-#: inc/field.class.php:1837
+#: inc/field.class.php:1841
 msgid "Category of the metademand"
 msgstr ""
 
-#: inc/field.class.php:2025
+#: inc/field.class.php:2029
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:2855
+#: inc/field.class.php:2859
 msgid "Modify icon"
 msgstr ""
 
-#: inc/field.class.php:2856
+#: inc/field.class.php:2860
 msgid "Modify color"
 msgstr ""
 
-#: inc/field.class.php:2883 inc/field.class.php:2904
+#: inc/field.class.php:2887 inc/field.class.php:2908
 msgid "You cannot do this for this field"
 msgstr ""
 
