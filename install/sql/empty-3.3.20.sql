@@ -457,6 +457,11 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `use_draft`                         tinyint               DEFAULT 0,
     `show_form_changes`                 tinyint      NOT NULL DEFAULT '0',
     `add_groups_with_regex`             tinyint      NOT NULL DEFAULT '0',
+    `icon_request`                      varchar(255)          DEFAULT NULL,
+    `icon_incident`                     varchar(255)          DEFAULT NULL,
+    `icon_problem`                      varchar(255)          DEFAULT NULL,
+    `icon_change`                       varchar(255)          DEFAULT NULL,
+    `see_top`                           tinyint      NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

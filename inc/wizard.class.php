@@ -393,26 +393,43 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
-                echo "<h4><div class='alert alert-light' role='alert'>";
+                echo "<h3><div class='alert alert-light' role='alert'>";
                 $icon = "fa-share-alt";
                 if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
                 }
                 echo "<i class='fa-2x fas $icon'></i>&nbsp;";
                 echo __('What you want to do ?', 'metademands');
-                echo "</div></h4></div></div>";
+                echo "</div></h3></div></div>";
+
             } elseif ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
-                echo "<h4><div class='alert alert-light' role='alert'>";
+                echo "<h3><div class='alert alert-light' role='alert'>";
                 $icon = "fa-share-alt";
+
+                $config = PluginMetademandsConfig::getInstance();
+                if (!empty($config['icon_incident']) && $parameters['meta_type'] == Ticket::INCIDENT_TYPE) {
+                    $icon = $config['icon_incident'];
+                }
+                if (!empty($config['icon_request']) && $parameters['meta_type'] == Ticket::DEMAND_TYPE) {
+                    $icon = $config['icon_request'];
+                }
+                if (!empty($config['icon_problem']) && $parameters['meta_type'] == "Problem") {
+                    $icon = $config['icon_problem'];
+                }
+                if (!empty($config['icon_change']) && $parameters['meta_type'] == "Change") {
+                    $icon = $config['icon_change'];
+                }
                 if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
                 }
+
                 echo "<i class='fa-2x fas $icon'></i>&nbsp;";
                 echo __('Form choice', 'metademands');
-                echo "</div></h4></div></div>";
+                echo "</div></h3></div></div>";
+
             } elseif ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
@@ -426,7 +443,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $color = self::hex2rgba($title_color, "0.03");
                 $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
-                echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
+                echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";
 
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($parameters['metademands_id'])) {
@@ -480,7 +497,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 || $helpdesk_category->fields['service_use'] != null
                                 || $helpdesk_category->fields['service_supervision'] != null
                                 || $helpdesk_category->fields['service_rules'] != null)) {
-//                            echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
+
                             echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
                                     'More informations',
                                     'servicecatalog'
@@ -754,7 +771,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
 
         $dbu = new DbUtils();
-        $query = "SELECT `id`,`name`
+        $query = "SELECT `id`,`name`, 'comment'
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE (is_order = 1  OR `itilcategories_id` <> '')
                    AND $crit  
@@ -876,10 +893,23 @@ class PluginMetademandsWizard extends CommonDBTM
         if (count($data) > 0) {
             foreach ($data as $type => $typename) {
                 echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . PluginMetademandsMetademand::STEP_LIST . "&meta_type=$type'>";
-                echo '<div class="btnsc-normal" >';
+                echo '<div class="btnsc-normal-type" >';
                 $fasize = "fa-6x";
                 echo "<div class='center'>";
+                $config = PluginMetademandsConfig::getInstance();
                 $icon = "fa-share-alt";
+                if (!empty($config['icon_incident']) && $type == Ticket::INCIDENT_TYPE) {
+                    $icon = $config['icon_incident'];
+                }
+                if (!empty($config['icon_request']) && $type == Ticket::DEMAND_TYPE) {
+                    $icon = $config['icon_request'];
+                }
+                if (!empty($config['icon_problem']) && $type == "Problem") {
+                    $icon = $config['icon_problem'];
+                }
+                if (!empty($config['icon_change']) && $type == "Change") {
+                    $icon = $config['icon_change'];
+                }
                 echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
                 echo "</div>";
                 echo "<br><p style='font-weight: normal;font-size: 13px;'>";
@@ -891,6 +921,111 @@ class PluginMetademandsWizard extends CommonDBTM
         } else {
             echo "<div class='alert alert-important alert-info center'>";
             echo __("No existing forms founded", 'metademands');
+            echo "</div>";
+        }
+    }
+
+
+    public static function showMostUsedMetademands($type)
+    {
+        global $DB;
+
+        switch ($type) {
+            case Ticket::INCIDENT_TYPE:
+                $crit = [
+                    'glpi_itilcategories.is_incident' => 1,
+                    'glpi_itilcategories.entities_id' => $_SESSION["glpiactive_entity"],
+                    'glpi_tickets.type' => $type
+                ];
+
+                break;
+            case Ticket::DEMAND_TYPE:
+                $crit = [
+                    'glpi_itilcategories.is_request' => 1,
+                    'glpi_itilcategories.entities_id' => $_SESSION["glpiactive_entity"],
+                    'glpi_tickets.type' => $type
+                ];
+                break;
+            default:
+                $crit = "";
+                break;
+        }
+        if (Session::getCurrentInterface() != "central") {
+            $crit['glpi_itilcategories.is_helpdeskvisible'] = 1;
+        }
+        $criteria = [
+            'SELECT' => [
+                'glpi_plugin_metademands_metademands.name',
+                'glpi_plugin_metademands_metademands.id as plugin_metademands_metademands_id',
+                'glpi_itilcategories.id',
+                'COUNT' => 'glpi_tickets.id AS count'
+            ],
+            'FROM' => 'glpi_tickets',
+            'LEFT JOIN'       => [
+                'glpi_itilcategories' => [
+                    'ON' => [
+                        'glpi_itilcategories' => 'id',
+                        'glpi_tickets'          => 'itilcategories_id'
+                    ]
+                ],
+                'glpi_plugin_metademands_tickets_metademands' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id',
+                        'glpi_tickets'          => 'id'
+                    ]
+                ],
+                'glpi_plugin_metademands_metademands' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_tickets_metademands' => 'plugin_metademands_metademands_id',
+                        'glpi_plugin_metademands_metademands'          => 'id'
+                    ]
+                ]
+            ],
+            'WHERE'     => [
+                'glpi_tickets.is_deleted'  => 0,
+                'glpi_plugin_metademands_metademands.is_deleted'  => 0,
+                'glpi_tickets.users_id_recipient'  => Session::getLoginUserID(),
+                'NOT' => ['glpi_itilcategories.id' => 'NULL'],
+            ],
+            'GROUPBY'   => 'glpi_itilcategories.id',
+            'ORDERBY'    => 'count DESC',
+            'LIMIT'    => 5,
+
+        ];
+
+        if (isset($crit) && !empty($crit)) {
+            $criteria['WHERE'] = $criteria['WHERE'] + $crit;
+        }
+
+        $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_tickets'
+            );
+
+        $iterator = $DB->request($criteria);
+
+        if (count($iterator) > 0) {
+
+            echo "<div style='display:flex;'>";
+            foreach ($iterator as $row) {
+                $meta = new PluginMetademandsMetademand();
+                $meta->getFromDB($row['plugin_metademands_metademands_id']);
+                $icon = "fa-share-alt";
+                if (!empty($meta->fields['icon'])) {
+                    $icon = $meta->fields['icon'];
+                }
+
+                echo "<a href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $row['plugin_metademands_metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW . "'>";
+                echo "<div style='margin-right: 5px;'>";
+                echo "<h6>";
+                echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;'>";
+                echo "<i class='fas ".$icon." fa-1x'></i>";
+                echo "&nbsp;";
+                echo  $row['name'];
+                echo "</div>";
+                echo "</h6>";
+                echo "</div>";
+                echo "</a>";
+            }
             echo "</div>";
         }
     }
@@ -908,7 +1043,12 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($config['display_type'] == 1) {
             $metademands = self::selectMetademands(false, "", $type);
             if (count($metademands) > 1) {
+
                 echo "<div id='listmeta'>";
+
+                if ($config['see_top'] && ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE)) {
+                    self::showMostUsedMetademands($type);
+                }
                 $title = __("Find a form", "metademands");
                 echo "<div tabindex='-1' id='mt-fuzzysearch'>";
                 echo "<div class='modal-content'>";
@@ -923,41 +1063,53 @@ class PluginMetademandsWizard extends CommonDBTM
                 foreach ($metademands as $id => $name) {
                     $meta = new PluginMetademandsMetademand();
                     if ($meta->getFromDB($id)) {
-                        echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . PluginMetademandsMetademand::STEP_SHOW . "'>";
-                        echo '<div class="btnsc-normal" >';
-                        $fasize = "fa-3x";
-                        echo "<div class='center'>";
+
                         $icon = "fa-share-alt";
+                        $name_meta = '';
+                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                            $name_meta = $meta->getName();
+                        } else {
+                            $name_meta = $n;
+                        }
+                        $comment_meta = '';
+                        if (empty($comm = PluginMetademandsMetademand::displayField(
+                                $meta->getID(),
+                                'comment')) && !empty($meta->fields['comment'])) {
+                            $comment_meta = $meta->fields['comment'];
+                        } elseif (!empty(
+                        $comm = PluginMetademandsMetademand::displayField(
+                            $meta->getID(),'comment'))) {
+                            $comment_meta = $comm;
+                        }
+
+                        if (!empty($config['icon_incident']) && $type == Ticket::INCIDENT_TYPE) {
+                            $icon = $config['icon_incident'];
+                        }
+                        if (!empty($config['icon_request']) && $type == Ticket::DEMAND_TYPE) {
+                            $icon = $config['icon_request'];
+                        }
+                        if (!empty($config['icon_problem']) && $type == "Problem") {
+                            $icon = $config['icon_problem'];
+                        }
+                        if (!empty($config['icon_change']) && $type == "Change") {
+                            $icon = $config['icon_change'];
+                        }
                         if (!empty($meta->fields['icon'])) {
                             $icon = $meta->fields['icon'];
                         }
+
+                        echo "<a class='bt-buttons' title=\"".Glpi\RichText\RichText::getTextFromHtml($comment_meta)."\" href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . PluginMetademandsMetademand::STEP_SHOW . "'>";
+                        echo '<div class="btnsc-normal" >';
+                        $fasize = "fa-3x";
+                        echo "<div class='center'>";
                         echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
                         echo "</div>";
+                        echo "<br><p style='font-size: 14px;'>";
+                        echo Html::resume_text($name_meta, 60);
 
-                        echo "<br><p>";
-                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
-                            echo $meta->getName();
-                        } else {
-                            echo $n;
-                        }
-
-                        if (empty(
-                            $comm = PluginMetademandsMetademand::displayField(
-                                $meta->getID(),
-                                'comment'
-                            )
-                            ) && !empty($meta->fields['comment'])) {
+                        if (!empty($comment_meta)) {
                             echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                            echo $meta->fields['comment'];
-                            echo "</span></em>";
-                        } elseif (!empty(
-                        $comm = PluginMetademandsMetademand::displayField(
-                            $meta->getID(),
-                            'comment'
-                        )
-                        )) {
-                            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                            echo $comm;
+                            echo Html::resume_text($comment_meta, 60);
                             echo "</span></em>";
                         }
 

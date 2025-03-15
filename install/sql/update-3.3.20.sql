@@ -15,3 +15,9 @@ CREATE TABLE `glpi_plugin_metademands_freetablefields`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
+
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `icon_request` varchar(255) DEFAULT NULL;
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `icon_incident` varchar(255) DEFAULT NULL;
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `icon_problem` varchar(255) DEFAULT NULL;
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `icon_change` varchar(255) DEFAULT NULL;
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `see_top` tinyint NOT NULL DEFAULT '1';

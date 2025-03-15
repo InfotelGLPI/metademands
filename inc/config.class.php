@@ -176,7 +176,6 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-
       echo "<td>";
       echo __('Childs tickets get parent content', 'metademands');
       echo "</td>";
@@ -193,7 +192,6 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-
       echo "<td>";
       echo __('Use drafts', 'metademands');
       echo "</td>";
@@ -207,11 +205,9 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "<td>";
       Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
       echo "</td>";
-
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-
       echo "<td>";
       echo __('Language Tech', 'metademands');
       echo "</td>";
@@ -226,16 +222,140 @@ class PluginMetademandsConfig extends CommonDBTM {
       Dropdown::showYesNo('display_buttonlist_servicecatalog', $config['display_buttonlist_servicecatalog']);
       echo "</td>";
       echo "</tr>";
-      echo "<tr class='tab_bg_1'>";
 
+      echo "<tr class='tab_bg_1'>";
       echo "<td>";
       echo __('Allow adding groups by regex', 'metademands');
       echo "</td>";
       echo "<td>";
        Dropdown::showYesNo('add_groups_with_regex', $config['add_groups_with_regex']);
       echo "</td>";
+
+       echo "<td>";
+       echo __('See top metademands', 'metademands');
+       echo "</td>";
+       echo "<td>";
+       Dropdown::showYesNo('see_top', $config['see_top']);
+       echo "</td>";
+
       echo "</tr>";
 
+
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>";
+       echo __('Icon for incidents', 'metademands');
+       echo "</td>";
+       echo "<td>";
+       $icon_selector_id = 'icon_' . mt_rand();
+       echo Html::select(
+           'icon_incident',
+           [$config['icon_incident'] => $config['icon_incident']],
+           [
+               'id'       => $icon_selector_id,
+               'selected' => $config['icon_incident'],
+               'style'    => 'width:175px;'
+           ]
+       );
+
+       echo Html::script('js/Forms/FaIconSelector.js');
+       echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+       );
+
+       echo "</td>";
+
+       echo "<td>";
+       echo __('Icon for requests', 'metademands');
+       echo "</td>";
+       echo "<td>";
+       $icon_selector_id = 'icon_' . mt_rand();
+       echo Html::select(
+           'icon_request',
+           [$config['icon_request'] => $config['icon_request']],
+           [
+               'id'       => $icon_selector_id,
+               'selected' => $config['icon_request'],
+               'style'    => 'width:175px;'
+           ]
+       );
+
+       echo Html::script('js/Forms/FaIconSelector.js');
+       echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+       );
+
+       echo "</td>";
+       echo "</tr>";
+
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>";
+       echo __('Icon for problems', 'metademands');
+       echo "</td>";
+       echo "<td>";
+       $icon_selector_id = 'icon_' . mt_rand();
+       echo Html::select(
+           'icon_problem',
+           [$config['icon_problem'] => $config['icon_problem']],
+           [
+               'id'       => $icon_selector_id,
+               'selected' => $config['icon_problem'],
+               'style'    => 'width:175px;'
+           ]
+       );
+
+       echo Html::script('js/Forms/FaIconSelector.js');
+       echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+       );
+
+       echo "</td>";
+
+       echo "<td>";
+       echo __('Icon for changes', 'metademands');
+       echo "</td>";
+       echo "<td>";
+       $icon_selector_id = 'icon_' . mt_rand();
+       echo Html::select(
+           'icon_change',
+           [$config['icon_change'] => $config['icon_change']],
+           [
+               'id'       => $icon_selector_id,
+               'selected' => $config['icon_change'],
+               'style'    => 'width:175px;'
+           ]
+       );
+
+       echo Html::script('js/Forms/FaIconSelector.js');
+       echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+       );
+
+       echo "</td>";
+       echo "</tr>";
 
       if ($config['display_buttonlist_servicecatalog'] == 1) {
 

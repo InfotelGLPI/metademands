@@ -9328,9 +9328,20 @@ HTML;
                         } else {
                             $name = $n;
                         }
+                        $comment_meta = "";
+                        if (empty($comm = PluginMetademandsMetademand::displayField(
+                                $meta->getID(),
+                                'comment')) && !empty($meta->fields['comment'])) {
+                            $comment_meta = $meta->fields['comment'];
+                        } elseif (!empty(
+                        $comm = PluginMetademandsMetademand::displayField(
+                            $meta->getID(),'comment'))) {
+                            $comment_meta = $comm;
+                        }
 
                         $metas[] = [
                             'title' => $name,
+                            'comment' => ($comment_meta != null)?Html::resume_text(Glpi\RichText\RichText::getTextFromHtml($comment_meta), "50"):"",
                             'icon' => $icon,
                             'url' => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2",
                         ];

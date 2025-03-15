@@ -12,9 +12,9 @@ color: unset;
 /* Wrapper Style */
 
 
-div[class^="btnsc"] {
+div[class="btnsc-normal"] {
    margin: 0 10px 10px 0;
-   height: 260px !important;
+   height: 200px !important;
    cursor: pointer;
    transition: all .4s ease;
    user-drag: element;
@@ -29,6 +29,25 @@ div[class^="btnsc"] {
    user-drag: element;
    border: solid #CCC 1px;
    background-color: #FFF;
+}
+
+div[class="btnsc-normal-type"] {
+    margin: 0 10px 10px 0;
+    /*height: 260px !important;*/
+    cursor: pointer;
+    transition: all .4s ease;
+    user-drag: element;
+    text-align: center;
+    -moz-border-radius: 10px;
+    width: 250px;
+    float: left;
+    list-style-type: none;
+    padding: 4px 15px 15px 15px;
+    overflow: auto;
+    transition: all .4s ease;
+    user-drag: element;
+    border: solid #CCC 1px;
+    background-color: #FFF;
 }
 
 @media (max-width: 768px) {
