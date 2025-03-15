@@ -1734,7 +1734,8 @@ class PluginMetademandsField extends CommonDBChild
 
         switch ($typefield) {
             case "dropdown_multiple":
-                if ($p["with_empty_value"]) {
+                if (isset($p["with_empty_value"])
+                    && $p["with_empty_value"] == true) {
                     $options[0] = Dropdown::EMPTY_VALUE;
                 }
 
@@ -1757,7 +1758,8 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case "dropdown":
                 $options = Dropdown::getStandardDropdownItemTypes();
-                if ($p["with_empty_value"]) {
+                if (isset($p["with_empty_value"])
+                    && $p["with_empty_value"] == true) {
                     $allowedDropdownValues[0] = Dropdown::EMPTY_VALUE;
                     $options = array_merge($allowedDropdownValues, $options);
                 }
@@ -1765,7 +1767,8 @@ class PluginMetademandsField extends CommonDBChild
                 return Dropdown::showFromArray($name, $options, $p);
                 break;
             case "dropdown_meta":
-                if ($p["with_empty_value"]) {
+                if (isset($p["with_empty_value"])
+                    && $p["with_empty_value"] == true) {
                     $options[0] = Dropdown::EMPTY_VALUE;
                 }
                 foreach ($type_fields as $key => $items) {
@@ -1787,7 +1790,8 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case "dropdown_object":
                 $options = self::getGlpiObject();
-                if ($p["with_empty_value"]) {
+                if (isset($p["with_empty_value"])
+                    && $p["with_empty_value"] == true) {
                     $allowedDropdownValues[0] = Dropdown::EMPTY_VALUE;
                     $options = array_merge($allowedDropdownValues, $options);
                 }
