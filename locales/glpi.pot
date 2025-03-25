@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-25 16:22+0000\n"
+"POT-Creation-Date: 2025-03-25 17:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -269,79 +269,84 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: inc/basket.class.php:129 inc/basket.class.php:1272 inc/basket.class.php:1669
-#: inc/basket.class.php:1986 inc/basketobject.class.php:116
+#: inc/basket.class.php:135 inc/basket.class.php:1304 inc/basket.class.php:1701
+#: inc/basket.class.php:2018 inc/basketobject.class.php:116
 #: inc/basketobject.class.php:221
 msgid "Reference"
 msgstr ""
 
-#: inc/basket.class.php:131 inc/basket.class.php:1273 inc/basket.class.php:1671
-#: inc/basket.class.php:1987 inc/basketobject.class.php:99
+#: inc/basket.class.php:137 inc/basket.class.php:1305 inc/basket.class.php:1703
+#: inc/basket.class.php:2019 inc/basketobject.class.php:99
 #: inc/basketobject.class.php:197
 msgid "Designation"
 msgstr ""
 
-#: inc/basket.class.php:138 inc/basket.class.php:1302 inc/basket.class.php:1694
+#: inc/basket.class.php:144 inc/basket.class.php:1334 inc/basket.class.php:1726
 msgid "Estimated unit price"
 msgstr ""
 
-#: inc/basket.class.php:145 inc/basket.class.php:1308 inc/basket.class.php:1685
-#: inc/basket.class.php:1994
+#: inc/basket.class.php:151 inc/basket.class.php:1340 inc/basket.class.php:1717
+#: inc/basket.class.php:2026
 msgid "Unit"
 msgstr ""
 
-#: inc/basket.class.php:148 inc/basket.class.php:1310 inc/basket.class.php:1701
-#: inc/basket.class.php:2003
+#: inc/basket.class.php:154 inc/basket.class.php:1342 inc/basket.class.php:1733
+#: inc/basket.class.php:2035
 msgid "Unit price (HT)"
 msgstr ""
 
-#: inc/basket.class.php:154 inc/basket.class.php:1316 inc/basket.class.php:1689
-#: inc/basket.class.php:1989 inc/basket.class.php:2026
+#: inc/basket.class.php:160 inc/basket.class.php:1348 inc/basket.class.php:1721
+#: inc/basket.class.php:2021 inc/basket.class.php:2058
 msgid "Quantity"
 msgstr ""
 
-#: inc/basket.class.php:157
+#: inc/basket.class.php:163
 msgid "Select"
 msgstr ""
 
-#: inc/basket.class.php:164 inc/basket.class.php:1322 inc/basket.class.php:1709
-#: inc/basket.class.php:2006
+#: inc/basket.class.php:170 inc/basket.class.php:1354 inc/basket.class.php:1741
+#: inc/basket.class.php:2038
 msgid "Total (HT)"
 msgstr ""
 
-#: inc/basket.class.php:167 inc/basket.class.php:172 inc/basket.class.php:177
-#: inc/basket.class.php:1324 inc/basket.class.php:1327
-#: inc/basket.class.php:1330 inc/basket.class.php:1924
-#: inc/basket.class.php:1928
+#: inc/basket.class.php:173 inc/basket.class.php:178 inc/basket.class.php:183
+#: inc/basket.class.php:1356 inc/basket.class.php:1359
+#: inc/basket.class.php:1362 inc/basket.class.php:1956
+#: inc/basket.class.php:1960
 msgid "Total"
 msgstr ""
 
-#: inc/basket.class.php:189
+#: inc/basket.class.php:195
 msgid "Search.."
 msgstr ""
 
-#: inc/basket.class.php:192
+#: inc/basket.class.php:198
 msgid "Search for names.."
 msgstr ""
 
-#: inc/basket.class.php:195
+#: inc/basket.class.php:201
 msgid "Search for description.."
 msgstr ""
 
-#: inc/basket.class.php:233 inc/basket.class.php:376 inc/basket.class.php:1400
-#: inc/basket.class.php:1470 inc/basket.class.php:1782
+#: inc/basket.class.php:239 inc/basket.class.php:382 inc/basket.class.php:477
+#: inc/basket.class.php:1432 inc/basket.class.php:1502
+#: inc/basket.class.php:1814
 msgid "On quotation"
 msgstr ""
 
-#: inc/basket.class.php:443
+#: inc/basket.class.php:449
 msgid "With quantity"
 msgstr ""
 
-#: inc/basket.class.php:455
+#: inc/basket.class.php:461
 msgid "With unit price (HT)"
 msgstr ""
 
-#: inc/basket.class.php:477 inc/checkbox.class.php:269
+#: inc/basket.class.php:486
+msgid "Accessory"
+msgstr ""
+
+#: inc/basket.class.php:509 inc/checkbox.class.php:269
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
 #: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:1302
@@ -351,7 +356,7 @@ msgstr ""
 msgid "Value to check"
 msgstr ""
 
-#: inc/basket.class.php:478 inc/checkbox.class.php:289
+#: inc/basket.class.php:510 inc/checkbox.class.php:289
 #: inc/checkbox.class.php:302 inc/dropdown.class.php:304
 #: inc/dropdown.class.php:340 inc/dropdownmeta.class.php:1372
 #: inc/dropdownmeta.class.php:1382 inc/dropdownmeta.class.php:1403
@@ -363,7 +368,7 @@ msgstr ""
 msgid "Not null value"
 msgstr ""
 
-#: inc/basket.class.php:595 inc/checkbox.class.php:405
+#: inc/basket.class.php:627 inc/checkbox.class.php:405
 #: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:1506
 #: inc/dropdownmultiple.class.php:937 inc/dropdownmultiple.class.php:1071
 #: inc/dropdownobject.class.php:941 inc/email.class.php:260
@@ -374,7 +379,7 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/basket.class.php:597 inc/checkbox.class.php:406
+#: inc/basket.class.php:629 inc/checkbox.class.php:406
 #: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:1508
 #: inc/dropdownmultiple.class.php:939 inc/dropdownmultiple.class.php:1073
 #: inc/dropdownobject.class.php:942 inc/email.class.php:262
@@ -385,37 +390,37 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: inc/basket.class.php:1262
+#: inc/basket.class.php:1294
 msgid "Basket summary"
 msgstr ""
 
-#: inc/basket.class.php:1502
+#: inc/basket.class.php:1534
 msgid "Grand total"
 msgstr ""
 
-#: inc/basket.class.php:1507
+#: inc/basket.class.php:1539
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
-#: inc/basket.class.php:1515 inc/basket.class.php:1922
+#: inc/basket.class.php:1547 inc/basket.class.php:1954
 #: inc/metademandpdf.class.php:413 inc/metademandpdf.class.php:507
 msgid "Grand total (HT)"
 msgstr ""
 
-#: inc/basket.class.php:1530 inc/basketline.class.php:94
+#: inc/basket.class.php:1562 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr ""
 
-#: inc/basket.class.php:1602
+#: inc/basket.class.php:1634
 msgid "No items on basket"
 msgstr ""
 
-#: inc/basket.class.php:1678
+#: inc/basket.class.php:1710
 msgid "Order type"
 msgstr ""
 
-#: inc/basket.class.php:1790
+#: inc/basket.class.php:1822
 msgid "On catalog"
 msgstr ""
 
