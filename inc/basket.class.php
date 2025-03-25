@@ -83,13 +83,19 @@ class PluginMetademandsBasket extends CommonDBTM
         $criteria['WHERE'] = ['plugin_metademands_basketobjecttypes_id' => $data['item']];
 
         $where = [];
-        if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
-            $where = [
-                'OR' => [
-                    'glpi_plugin_ordermaterial_materials.estimated_price' => ['>', 0],
-                    'glpi_plugin_ordermaterial_materials.is_specific' => 1,
-                ]
-            ];
+        if (Plugin::isPluginActive('ordermaterial')) {
+
+            if (isset($custom_values[2]) && $custom_values[2] == 1) {
+                $where = [
+                    'OR' => [
+                        'glpi_plugin_ordermaterial_materials.estimated_price' => ['>', 0],
+                        'glpi_plugin_ordermaterial_materials.is_specific' => 1,
+                    ]
+                ];
+            }
+            if (isset($custom_values[3]) && $custom_values[3] == 1) {
+                $where['glpi_plugin_ordermaterial_materials.is_accessory'] =  1;
+            }
             if (count($where)) {
                 $criteria['LEFT JOIN'][PluginOrdermaterialMaterial::getTable()] = [
                     'ON' => [
@@ -460,6 +466,32 @@ class PluginMetademandsBasket extends CommonDBTM
             echo "<td colspan='2'></td>";
             echo "</tr>";
         }
+
+        if (Plugin::isPluginActive('ordermaterial')) {
+
+            $is_specific = $params['custom_values'][2] ?? 0;
+            $is_accessory = $params['custom_values'][3] ?? 0;
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('On quotation', 'ordermaterial');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('custom[2]', $is_specific);
+            echo "</td>";
+            echo "<td colspan='2'></td>";
+            echo "</tr>";
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo  __('Accessory', 'ordermaterial');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('custom[3]', $is_accessory);
+            echo "</td>";
+            echo "<td colspan='2'></td>";
+            echo "</tr>";
+        }
+
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo Html::submit("", ['name'  => 'update',
