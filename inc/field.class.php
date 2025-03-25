@@ -952,7 +952,7 @@ class PluginMetademandsField extends CommonDBChild
      */
     private static function listFields($item)
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $PLUGIN_HOOKS;
 
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
@@ -1032,6 +1032,20 @@ class PluginMetademandsField extends CommonDBChild
         $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
         $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
+        $new_types = [];
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $new_fields = self::addPluginDropdownFieldItems($plug);
+                if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                    foreach ($new_fields as $plugin) {
+                        foreach ($plugin as $k => $field) {
+                            $new_types[] = $k;
+                        }
+                    }
+                }
+            }
+        }
+
         $koparams = 0;
         $kocustom = 0;
         foreach ($data as $value) {
@@ -1044,7 +1058,8 @@ class PluginMetademandsField extends CommonDBChild
                         $value['type'],
                         $allowed_customvalues_types
                     ) && ($value['item'] != "ITILCategory_Metademands"
-                        && !in_array($value["item"], self::$field_specificobjects)))
+                        && !in_array($value["item"], self::$field_specificobjects))
+                    && !in_array($value['item'], $new_types))
                 || (in_array(
                         $value['item'],
                         $allowed_customvalues_items
@@ -1108,6 +1123,20 @@ class PluginMetademandsField extends CommonDBChild
             // Init navigation list for field items
             Session::initNavigateListItems($self->getType(), self::getTypeName(1));
 
+            $new_types = [];
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                    $new_fields = self::addPluginDropdownFieldItems($plug);
+                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                        foreach ($new_fields as $plugin) {
+                            foreach ($plugin as $k => $field) {
+                                $new_types[] = $k;
+                            }
+                        }
+                    }
+                }
+            }
+
             foreach ($data as $value) {
                 Session::addToNavigateListItems($self->getType(), $value['id']);
 
@@ -1125,11 +1154,13 @@ class PluginMetademandsField extends CommonDBChild
                                     $value['type'],
                                     $allowed_customvalues_types
                                 ) && ($value['item'] != "ITILCategory_Metademands"
-                                    && !in_array($value["item"], self::$field_specificobjects)))
+                                    && !in_array($value["item"], self::$field_specificobjects))
+                                && !in_array($value['item'], $new_types))
                             || (in_array(
                                     $value['item'],
                                     $allowed_customvalues_items
-                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group'))
+                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
+                        )
                         && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                 }
@@ -1317,8 +1348,6 @@ class PluginMetademandsField extends CommonDBChild
         foreach ($param as $key => $val) {
             $p[$key] = $val;
         }
-
-        $p['on_change'] = 'plugin_metademands_reloaditem();';
 
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -4012,7 +4041,7 @@ JAVASCRIPT
         echo "<td class='center'>";
         echo __('Field type', 'metademands')."&nbsp;";
         $mrand = self::dropdownFieldTypes(
-            self::$field_types, ['value' => $p['type'], 'metademands_id' => $item->getID()]
+            self::$field_types, ['value' => $p['type'], 'metademands_id' => $item->getID(), 'on_change' => 'plugin_metademands_reloaditem();']
         );
         echo "</td>";
 
