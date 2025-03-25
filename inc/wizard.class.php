@@ -3101,6 +3101,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                   fieldmandatory = true;
                                }
                             }
+                            const richtextarea = document.querySelector('textarea[id=\"' + fieldid +'\"]');
+                            const nextDiv = richtextarea.nextElementSibling;
+                            
+                            if (nextDiv && nextDiv.tagName.toLowerCase() === 'div') {
+                                if(nextDiv.classList.contains('required')) {
+                                  fieldmandatory = true;
+                               }
+                            }
                             if (res != 'none' && fieldmandatory == true) {
                                 if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
                                     var contenu = tinymce.get(textarea.id).getContent();
