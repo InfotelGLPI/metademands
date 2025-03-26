@@ -9058,6 +9058,9 @@ JAVASCRIPT
         if ($bypass === true && is_numeric($title)) {
             return str_replace("#" . $title . "#", "", $line);
         }
+        if (!is_array($users_id)) {
+            $users_id = [$users_id];
+        }
 
         switch ($field) {
             case "login":
