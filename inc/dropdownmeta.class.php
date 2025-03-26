@@ -1046,6 +1046,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         'fields_id',
                         ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
                     );
+                    echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
                 }
                 echo "</td>";
 

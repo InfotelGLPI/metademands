@@ -173,6 +173,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 echo __('Rank', 'metademands') . " " . $value['rank'] . " ";
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']);
+                    echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
                 }
                 echo "</td>";
 
