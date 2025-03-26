@@ -1105,11 +1105,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
                         echo "</div>";
                         echo "<br><p style='font-size: 14px;'>";
-                        echo Html::resume_text($name_meta, 60);
+                        echo Html::resume_text($name_meta, 40);
 
                         if (!empty($comment_meta)) {
                             echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                            echo Html::resume_text($comment_meta, 60);
+                            echo Html::resume_text($comment_meta, 50);
                             echo "</span></em>";
                         }
 
