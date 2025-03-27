@@ -2043,7 +2043,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 break;
                                             case 'select-one':
                                             case 'select-multiple':
-                                                //jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0').trigger('change');
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
