@@ -2846,6 +2846,10 @@ JAVASCRIPT
                                     $input
                                 );
                             }
+                            if (isset($_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'])) {
+                                $options['ancestor_tickets_id'] = $_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'];
+                            }
+
                             //case of child metademands for link it
                             if (!empty($options['ancestor_tickets_id'])) {
                                 // Add son link to parent
