@@ -53,6 +53,8 @@ class PluginMetademandsTitle extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
 
         if ($data['hide_title'] == 0) {
             $color = PluginMetademandsWizard::hex2rgba($data['color'], "0.03");
@@ -72,6 +74,9 @@ class PluginMetademandsTitle extends CommonDBTM
             }
 
             echo $label;
+            if ($debug) {
+                echo " (ID:". $data['id'].")";
+            }
 
             if (isset($data['label2']) && !empty($data['label2'])) {
                 echo "&nbsp;";

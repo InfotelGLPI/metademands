@@ -2044,6 +2044,8 @@ class PluginMetademandsField extends CommonDBChild
                 ) . "?id=" . $data['id'] . "'>";
             $config_link .= "<i class='fas fa-wrench'></i></a>";
         }
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
 
         $required = "";
 //        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
@@ -2085,6 +2087,10 @@ class PluginMetademandsField extends CommonDBChild
                 if ($hidden == 0) {
                     echo "<div $required class='col-form-label metademand-label'>";
                     echo Toolbox::stripslashes_deep($label) . " $upload";
+
+                    if ($debug) {
+                        echo " (ID:". $data['id'].")";
+                    }
                     if ($preview) {
                         echo $config_link;
                     }

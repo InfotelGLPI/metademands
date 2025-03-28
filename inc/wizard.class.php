@@ -1394,6 +1394,9 @@ class PluginMetademandsWizard extends CommonDBTM
             unset($_SESSION['plugin_metademands'][$user_id]);
             Html::redirect($url);
         }
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+
         $metademands = new PluginMetademandsMetademand();
         $dbu = new DbUtils();
         $metademands->getFromDB($metademands_id);
@@ -1568,7 +1571,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $style = "";
 
                 // Color
-                if ($preview) {
+                if ($preview || $debug) {
                     $color = PluginMetademandsField::setColor($block);
                     $style = "padding-top:5px;
                       padding-bottom:10px;
@@ -1643,7 +1646,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<div class='card-body' bloc-hideid='bloc" . $block . "'>";
 
-                if ($preview) {
+                if ($preview || $debug) {
                     echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "'>";
                 } else {
                     echo "<div class=\"row\" style='$style;padding: 0.5rem 0.5rem;'>";
@@ -1709,7 +1712,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         // Title block field
                         if ($data['type'] == 'title-block') {
-                            if ($preview) {
+                            if ($preview || $debug) {
                                 $color = PluginMetademandsField::setColor($block);
                                 $style = 'padding-top:5px;
                                           padding-bottom:10px;
@@ -1741,6 +1744,10 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
 
                             echo $label;
+
+                            if ($debug) {
+                                echo " (ID:". $data['id'].")";
+                            }
                             echo $config_link;
                             if (isset($data['label2']) && !empty($data['label2'])) {
                                 echo "&nbsp;";
@@ -1783,7 +1790,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         echo "<div bloc-hideid='bloc" . $block . "'>";
 
-                        if ($preview) {
+                        if ($preview || $debug) {
                             $color = PluginMetademandsField::setColor($block);
                             echo '<style type="text/css">
                            .preview-md-';
@@ -1926,7 +1933,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     // Next row
                     if ($count > $columns) {
-                        if ($preview) {
+                        if ($preview || $debug) {
                             $color = PluginMetademandsField::setColor($data['rank']);
                             $style_left_right = 'padding-bottom:10px;
                                        border-left :3px solid #' . $color . ';

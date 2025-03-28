@@ -53,11 +53,13 @@ class PluginMetademandsTitleblock extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         $color = PluginMetademandsWizard::hex2rgba($data['color'], "0.03");
         $rank = $data['rank'];
         $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
 
-        if ($preview) {
+        if ($preview || $debug) {
             echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
         } else {
             echo "<div class='card-header' $style_background>";
@@ -73,6 +75,9 @@ class PluginMetademandsTitleblock extends CommonDBTM
         }
 
         echo $label;
+        if ($debug) {
+            echo " (ID:". $data['id'].")";
+        }
         echo $config_link;
         if (isset($data['label2']) && !empty($data['label2'])) {
             echo "&nbsp;";
