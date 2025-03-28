@@ -287,6 +287,49 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                 $params["item"] = "checkbox";
             }
 
+            if (in_array($params['type'], $allowed_customvalues_types)
+                || in_array($params['item'], $allowed_customvalues_items)) {
+                foreach ($params['custom_values'] as $key => $value) {
+                    $ranks[] = $value['rank'];
+                }
+                $hasDuplicates = count($ranks) > count(array_unique($ranks));
+                if ($hasDuplicates == true) {
+                    echo "<div class='alert alert-warning d-flex'>";
+                    echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                            'You have duplicates rank!',
+                            'metademands'
+                        );
+                    echo "</div>";
+                }
+
+                if (PluginMetademandsFieldCustomvalue::isSequentialFromZero($ranks) == false) {
+                    echo "<div class='alert alert-warning flex'>";
+                    echo "<div class='left'>";
+                    echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                            'The ranks are not ordered correctly, you will not be able to order them!',
+                            'metademands'
+                        );
+                    echo "<br><br>";
+                    echo _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands');
+                    echo "</div>";
+                    echo "<div class='right'>";
+                    $target = PluginMetademandsFieldCustomvalue::getFormURL();
+                    Html::showSimpleForm(
+                        $target,
+                        'fixranks',
+                        _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
+                        [
+                            'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
+                        ],
+                        'fa-wrench',
+                        "class='btn btn-warning'"
+                    );
+                    echo "</div>";
+                    echo "</div>";
+                }
+            }
+
+
             if ($params["type"] != "dropdown_multiple") {
                 switch ($params['item']) {
                     case 'impact':
@@ -621,5 +664,30 @@ JAVASCRIPT
 
 
         return $input;
+    }
+
+    static function isSequentialFromZero(array $arr) {
+        if (empty($arr) || $arr[0] !== 0) {
+            return false; // Vérifie que le tableau n'est pas vide et commence bien par 0
+        }
+
+        for ($i = 1; $i < count($arr); $i++) {
+            if ($arr[$i] - $arr[$i - 1] !== 1) {
+                return false; // Vérifie que la progression est bien de +1
+            }
+        }
+        return true;
+    }
+
+    static function fixRanks(array $data) {
+        // Extraire les clés du tableau
+        $keys = array_keys($data);
+
+        // Réinitialiser le rank à partir de 0
+        foreach ($keys as $index => $key) {
+            $data[$key]['rank'] = $index;
+        }
+
+        return $data;
     }
 }

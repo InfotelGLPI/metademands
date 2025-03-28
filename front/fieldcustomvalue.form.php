@@ -159,6 +159,19 @@ if (isset($_POST["add"])) {
     $fieldcustom->delete($input, 1);
 
     Html::back();
+} else if (isset($_POST["fixranks"])) {
+
+    $field = new PluginMetademandsField();
+    if ($field->getFromDB($_POST["plugin_metademands_fields_id"])) {
+        $params = PluginMetademandsField::getAllParamsFromField($field);
+        $custom_values = $params['custom_values'];
+        $newranks = PluginMetademandsFieldCustomvalue::fixRanks($custom_values);
+        foreach ($newranks as $id => $newrank) {
+            $fieldcustom->update($newrank);
+        }
+    }
+
+    Html::back();
 } else {
     $fieldcustom->checkGlobal(READ);
     Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
