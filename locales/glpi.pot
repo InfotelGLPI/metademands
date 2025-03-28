@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 10:58+0000\n"
+"POT-Creation-Date: 2025-03-28 12:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -483,7 +483,7 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:1043
-#: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:508
+#: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:551
 #: inc/freetable.class.php:670 inc/freetablefield.class.php:333
 #: inc/radio.class.php:173
 msgid "Rank"
@@ -491,7 +491,7 @@ msgstr ""
 
 #: inc/checkbox.class.php:195 inc/dropdownmeta.class.php:1068
 #: inc/dropdownmultiple.class.php:484 inc/dropdownmultiple.class.php:572
-#: inc/fieldcustomvalue.class.php:527 inc/radio.class.php:195
+#: inc/fieldcustomvalue.class.php:570 inc/radio.class.php:195
 #: inc/yesno.class.php:98
 msgid "Default value"
 msgid_plural "Default values"
@@ -949,21 +949,35 @@ msgstr ""
 msgid "You cannot do this for this field"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:462
+#: inc/fieldcustomvalue.class.php:299
+msgid "You have duplicates rank!"
+msgstr ""
+
+#: inc/fieldcustomvalue.class.php:309
+msgid ""
+"The ranks are not ordered correctly, you will not be able to order them!"
+msgstr ""
+
+#: inc/fieldcustomvalue.class.php:313 inc/fieldcustomvalue.class.php:320
+msgctxt "button"
+msgid "Do you want to fix them ? Warning you must check your options after!"
+msgstr ""
+
+#: inc/fieldcustomvalue.class.php:505
 msgid "Reset and import custom values"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:473
+#: inc/fieldcustomvalue.class.php:516
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:474
+#: inc/fieldcustomvalue.class.php:517
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:611
+#: inc/fieldcustomvalue.class.php:654
 msgid "You can't add a custom value without name"
 msgstr ""
 
