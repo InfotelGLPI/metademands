@@ -1155,7 +1155,7 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                 || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK) {
                 $AND = "AND glpi_tickets.status IN ( " . implode(",", Ticket::getNotSolvedStatusArray()) . ")";
             }
-            if (is_int($val)) {
+            if (is_numeric($val)) {
                 return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
                         AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
             }
