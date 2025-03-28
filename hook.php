@@ -1144,7 +1144,9 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
 
     switch ($table . "." . $field) {
         case "glpi_plugin_metademands_tickets_metademands.status":
-            return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
+            if (is_numeric($val)) {
+                return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
+            }
             break;
 
         case "glpi_plugin_metademands_metademandvalidations.validate":
