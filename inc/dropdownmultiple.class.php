@@ -1189,6 +1189,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
 
         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
             $onchange = "";
@@ -1277,7 +1278,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                 $('[id-field =\"field'+key+'\"]').hide();
-                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
+                                sessionStorage.setItem('hiddenlink$name', key);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
@@ -1362,7 +1364,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 
                             if (value == true) {
                                 $('[id-field =\"field'+key+'\"]').hide();
-                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
+                                sessionStorage.setItem('hiddenlink$name', key);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();

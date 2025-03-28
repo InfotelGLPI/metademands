@@ -293,8 +293,8 @@ class PluginMetademandsYesno extends CommonDBTM
     {
 
         $check_values = $data['options'] ?? [];
-
         $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
 
         $onchange = "";
         $pre_onchange = "";
@@ -339,7 +339,8 @@ class PluginMetademandsYesno extends CommonDBTM
                             " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
-                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
+                            sessionStorage.setItem('hiddenlink$name', $hidden_link);
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                            }";
 
                 if (isset($data['value']) && $idc == $data['value']) {

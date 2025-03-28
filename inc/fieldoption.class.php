@@ -2024,10 +2024,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
         return $script;
     }
 
-    public static function resetMandatoryFieldsByField($id)
+    public static function resetMandatoryFieldsByField($name)
     {
-        return "$('div[id-field =\"field$id\"]').find(':input').each(function() {
-     
+
+        return "var fieldid = sessionStorage.getItem('hiddenlink$name');
+        $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
+
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':

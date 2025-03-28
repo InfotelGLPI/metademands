@@ -325,7 +325,7 @@ class PluginMetademandsTel extends CommonDBTM
 
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
-
+        $name = "field[" . $data["id"] . "]";
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
@@ -355,7 +355,8 @@ class PluginMetademandsTel extends CommonDBTM
                 if (isset($idc) && $idc == 1) {
                     $onchange .= "if ($(this).val().trim().length < 1) {
                                      $('[id-field =\"field" . $hidden_link . "\"]').hide();
-                                      " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
+                                     sessionStorage.setItem('hiddenlink$name', $hidden_link);
+                                      " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                   } else {
                                      $('[id-field =\"field" . $hidden_link . "\"]').show();
                                   }
@@ -369,7 +370,8 @@ class PluginMetademandsTel extends CommonDBTM
                                     $('[id-field =\"field" . $hidden_link . "\"]').show();
                                  } else {
                                     $('[id-field =\"field" . $hidden_link . "\"]').hide();
-                                     " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
+                                    sessionStorage.setItem('hiddenlink$name', $hidden_link);
+                                     " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                  }";
 
                     $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
