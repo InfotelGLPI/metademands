@@ -2562,14 +2562,38 @@ JAVASCRIPT
                                         $fields_field->fields['plugin_fields_containers_id']
                                     )) {
                                         if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                            if ($fields_field->fields['type'] == 'dropdown') {
+                                            if ($fields_field->fields['type'] === 'dropdown') {
+                                                $val_f = 0;
+                                                if ($values['fields'][$plfield['plugin_metademands_fields_id']] == "") {
+                                                    $values['fields'][$plfield['plugin_metademands_fields_id']] = 0;
+                                                }
+                                                $className = 'PluginFields' . ucfirst($fields_field->fields['name']) . 'Dropdown';
+                                                if (getItemForItemtype($className)) {
+                                                    $classf = new $className();
+                                                    $valuesf = $classf->find();
+
+                                                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                                                    if ($customs = $field_custom->find(
+                                                        ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                                    )) {
+                                                        if (count($customs) > 0) {
+                                                            foreach ($customs as $custom) {
+                                                                foreach ($valuesf as $valuef) {
+                                                                    if ($custom['name'] == $valuef['name']) {
+                                                                        $val_f = $valuef['id'];
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                                 if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
-                                                    $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                                    $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                    $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
+                                                    $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
                                                 }
                                             } elseif ($fields_field->fields['type'] == 'yesno') {
-                                                $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
-                                                $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                                $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                             } else {
                                                 $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
@@ -2667,13 +2691,38 @@ JAVASCRIPT
                                         if ($fields_container->getFromDB(
                                             $fields_field->fields['plugin_fields_containers_id']
                                         )) {
+
                                             if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                                if ($fields_field->fields['type'] == 'dropdown') {
+                                                if ($fields_field->fields['type'] === 'dropdown') {
+                                                    $val_f = 0;
+                                                    if ($values['fields'][$plfield['plugin_metademands_fields_id']] == "") {
+                                                        $values['fields'][$plfield['plugin_metademands_fields_id']] = 0;
+                                                    }
                                                     if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
-                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                        $className = 'PluginFields' . ucfirst($fields_field->fields['name']) . 'Dropdown';
+                                                        if (getItemForItemtype($className)) {
+                                                            $classf = new $className();
+                                                            $valuesf = $classf->find();
+
+                                                            $field_custom = new PluginMetademandsFieldCustomvalue();
+                                                            if ($customs = $field_custom->find(
+                                                                ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                                            )) {
+                                                                if (count($customs) > 0) {
+                                                                    foreach ($customs as $custom) {
+                                                                        foreach ($valuesf as $valuef) {
+                                                                            if ($custom['name'] == $valuef['name']) {
+                                                                                $val_f = $valuef['id'];
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
                                                     }
                                                 } elseif ($fields_field->fields['type'] == 'yesno') {
-                                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 } else {
                                                     $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 }
@@ -2681,8 +2730,15 @@ JAVASCRIPT
                                         }
                                     }
                                 }
-
-                                foreach ($inputField as $containers_id => $vals) {
+                                $cleaninput = [];
+                                foreach ($inputField as $c_id => $c_vals) {
+                                    foreach ($c_vals as $c_name => $c_val) {
+                                        if (!empty($c_val)) {
+                                            $cleaninput[$c_id][$c_name] = $c_val;
+                                        }
+                                    }
+                                }
+                                foreach ($cleaninput as $containers_id => $vals) {
                                     $container = new PluginFieldsContainer();
                                     $vals['plugin_fields_containers_id'] = $containers_id;
                                     $vals['itemtype'] = $object_class;
@@ -6191,7 +6247,16 @@ JAVASCRIPT
                         }
 
                         if (Plugin::isPluginActive('fields')) {
-                            foreach ($inputField as $containers_id => $vals) {
+                            $cleaninput = [];
+                            foreach ($inputField as $c_id => $c_vals) {
+                                foreach ($c_vals as $c_name => $c_val) {
+                                    if (!empty($c_val)) {
+                                        $cleaninput[$c_id][$c_name] = $c_val;
+                                    }
+                                }
+                            }
+                            foreach ($cleaninput as $containers_id => $vals) {
+
                                 $container = new PluginFieldsContainer();
                                 $vals['plugin_fields_containers_id'] = $containers_id;
                                 $vals['itemtype'] = "Ticket";

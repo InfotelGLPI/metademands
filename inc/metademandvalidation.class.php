@@ -198,20 +198,45 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                                 if ($fields_field->fields['type'] == 'dropdown') {
                                     if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])
                                         || empty($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])) {
-                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+
+                                        $val_f = 0;
+                                        if ($values_form[$plfield['plugin_metademands_fields_id']] == "") {
+                                            $values_form[$plfield['plugin_metademands_fields_id']] = 0;
+                                        }
+                                        $className = 'PluginFields' . ucfirst($fields_field->fields['name']) . 'Dropdown';
+                                        if (getItemForItemtype($className)) {
+                                            $classf = new $className();
+                                            $valuesf = $classf->find();
+
+                                            $field_custom = new PluginMetademandsFieldCustomvalue();
+                                            if ($customs = $field_custom->find(
+                                                ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                            )) {
+                                                if (count($customs) > 0) {
+                                                    foreach ($customs as $custom) {
+                                                        foreach ($valuesf as $valuef) {
+                                                            if ($custom['name'] == $valuef['name']) {
+                                                                $val_f = $valuef['id'];
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
                                     }
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
-                                    if (is_int($val)) {
-                                        $val = $val - 1;
-                                    } else {
-                                        if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
-                                            || empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
-                                            $val = 0;
-                                        } else {
-                                            $val = $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']];
-                                        }
-                                    }
+//                                    if (is_int($val)) {
+//                                        $val = $val - 1;
+//                                    } else {
+//                                        if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
+//                                            || empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
+//                                            $val = 0;
+//                                        } else {
+//                                            $val = $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']];
+//                                        }
+//                                    }
                                     $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $val;
                                 } else {
                                     if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']]) ||
@@ -225,12 +250,37 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                         if ($fields_container->fields['type'] == 'dom') {
                             if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
                                 if ($fields_field->fields['type'] == 'dropdown') {
-                                    $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+
+                                    $val_f = 0;
+                                    if ($values_form[$plfield['plugin_metademands_fields_id']] == "") {
+                                        $values_form[$plfield['plugin_metademands_fields_id']] = 0;
+                                    }
+                                    $className = 'PluginFields' . ucfirst($fields_field->fields['name']) . 'Dropdown';
+                                    if (getItemForItemtype($className)) {
+                                        $classf = new $className();
+                                        $valuesf = $classf->find();
+
+                                        $field_custom = new PluginMetademandsFieldCustomvalue();
+                                        if ($customs = $field_custom->find(
+                                            ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                        )) {
+                                            if (count($customs) > 0) {
+                                                foreach ($customs as $custom) {
+                                                    foreach ($valuesf as $valuef) {
+                                                        if ($custom['name'] == $valuef['name']) {
+                                                            $val_f = $valuef['id'];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
-                                    if (is_int($val)) {
-                                        $val = $val - 1;
-                                    }
+//                                    if (is_int($val)) {
+//                                        $val = $val - 1;
+//                                    }
                                     $inputFieldMain[$fields_field->fields['name']] = $val;
                                 } else {
                                     $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
