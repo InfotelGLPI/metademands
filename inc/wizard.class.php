@@ -957,7 +957,6 @@ class PluginMetademandsWizard extends CommonDBTM
             'SELECT' => [
                 'glpi_plugin_metademands_metademands.name',
                 'glpi_plugin_metademands_metademands.id as plugin_metademands_metademands_id',
-                'glpi_itilcategories.id',
                 'COUNT' => 'glpi_tickets.id AS count'
             ],
             'FROM' => 'glpi_tickets',
@@ -987,7 +986,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 'glpi_tickets.users_id_recipient'  => Session::getLoginUserID(),
                 'NOT' => ['glpi_itilcategories.id' => 'NULL'],
             ],
-            'GROUPBY'   => 'glpi_itilcategories.id',
+            'GROUPBY'   => ['glpi_plugin_metademands_metademands.id'],
             'ORDERBY'    => 'count DESC',
             'LIMIT'    => 5,
 
@@ -1002,7 +1001,7 @@ class PluginMetademandsWizard extends CommonDBTM
             );
 
         $iterator = $DB->request($criteria);
-
+Toolbox::logInfo($iterator);
         if (count($iterator) > 0) {
 
             echo "<div style='display:flex;'>";
