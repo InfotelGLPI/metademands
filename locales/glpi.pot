@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-29 09:57+0000\n"
+"POT-Creation-Date: 2025-03-29 11:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -373,7 +373,7 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:938 inc/dropdownmultiple.class.php:1072
 #: inc/dropdownobject.class.php:941 inc/email.class.php:260
 #: inc/radio.class.php:378 inc/tel.class.php:262 inc/text.class.php:260
-#: inc/textarea.class.php:212 inc/url.class.php:260 inc/wizard.class.php:2122
+#: inc/textarea.class.php:212 inc/url.class.php:260 inc/wizard.class.php:2121
 #: inc/yesno.class.php:215
 msgctxt "button"
 msgid "Save & Post"
@@ -384,9 +384,9 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:940 inc/dropdownmultiple.class.php:1074
 #: inc/dropdownobject.class.php:942 inc/email.class.php:262
 #: inc/radio.class.php:379 inc/tel.class.php:264 inc/text.class.php:261
-#: inc/textarea.class.php:213 inc/url.class.php:262 inc/wizard.class.php:1158
-#: inc/wizard.class.php:2097 inc/wizard.class.php:2120
-#: inc/wizard.class.php:2133 inc/wizard.class.php:2137 inc/yesno.class.php:216
+#: inc/textarea.class.php:213 inc/url.class.php:262 inc/wizard.class.php:1157
+#: inc/wizard.class.php:2096 inc/wizard.class.php:2119
+#: inc/wizard.class.php:2132 inc/wizard.class.php:2136 inc/yesno.class.php:216
 msgid "Next"
 msgstr ""
 
@@ -759,7 +759,7 @@ msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:568 inc/wizard.class.php:2386
+#: inc/draft.class.php:568 inc/wizard.class.php:2385
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -1550,7 +1550,7 @@ msgstr ""
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:9365 inc/wizard.class.php:1052
+#: inc/metademand.class.php:9365 inc/wizard.class.php:1051
 msgid "Find a form"
 msgstr ""
 
@@ -2169,82 +2169,82 @@ msgstr ""
 msgid "Make a change request"
 msgstr ""
 
-#: inc/wizard.class.php:1124
+#: inc/wizard.class.php:1123
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/wizard.class.php:1240 inc/wizard.class.php:1300
+#: inc/wizard.class.php:1239 inc/wizard.class.php:1299
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:1310
+#: inc/wizard.class.php:1309
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1413
+#: inc/wizard.class.php:1412
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1478
+#: inc/wizard.class.php:1477
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2086
+#: inc/wizard.class.php:2085
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: inc/wizard.class.php:2094
+#: inc/wizard.class.php:2093
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:2127
+#: inc/wizard.class.php:2126
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:2138
+#: inc/wizard.class.php:2137
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:2154
+#: inc/wizard.class.php:2153
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:2155
+#: inc/wizard.class.php:2154
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: inc/wizard.class.php:2219
+#: inc/wizard.class.php:2218
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:2229
+#: inc/wizard.class.php:2228
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3947
+#: inc/wizard.class.php:3946
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3958
+#: inc/wizard.class.php:3957
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:4000
+#: inc/wizard.class.php:3999
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:4012
+#: inc/wizard.class.php:4011
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
