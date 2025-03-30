@@ -211,9 +211,22 @@ button.clear-basket {
     margin-top: 15px;
 }
 
-.mydraft {
+.mydraft-withouttitle {
     float: right;
+    display: inline;
     color: #898787;
+    z-index: 1000;
+    position: relative;
+    top: 10px;
+    right: 10px;
+}
+
+.mydraft-withtitle {
+    float: right;
+    display: inline;
+    color: #898787;
+    z-index: 1000;
+    position: relative;
 }
 
 .mydraft-text {

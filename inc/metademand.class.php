@@ -1306,7 +1306,9 @@ JAVASCRIPT
         Dropdown::showYesNo("is_basket", $this->fields['is_basket']);
         echo "</td>";
 
-        echo "<td colspan='2'></td>";
+        echo "<td>" . __('Hide title', 'metademands') . "</td><td>";
+        Dropdown::showYesNo("hide_title", $this->fields['hide_title']);
+        echo "</td>";
         echo "</tr>";
 
         if ($this->fields['object_to_create'] == 'Ticket') {
