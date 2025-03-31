@@ -207,10 +207,11 @@ class PluginMetademandsDropdown extends CommonDBTM
                 if ($data['item'] == "PluginResourcesResource") {
                     $opt['showHabilitations'] = true;
                 }
-
-                $container_class = new $data['item']();
-                $field           = "";
-                $field           .= $container_class::dropdown($opt);
+                if ($item = getItemForItemtype($data['item'])) {
+                    $container_class = new $data['item']();
+                    $field = "";
+                    $field .= $container_class::dropdown($opt);
+                }
                 break;
         }
 
