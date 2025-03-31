@@ -192,9 +192,8 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
             );
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
             // Create item
-            $options['itemtype'] = get_class($item);
-            $options['items_id'] = $item->getID();
-//            $this->check(-1, CREATE, $options);
+            $options['plugin_metademands_fields_id'] = $options['parent']->getField('id');
+            $this->check(-1, CREATE, $options);
         }
 
         $this->showFormHeader($options);

@@ -257,9 +257,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
       if ($ID > 0) {
          $this->check($ID, UPDATE);
       } else {
-         $options['itemtype'] = get_class($item);
-         $options['items_id'] = $item->getID();
-
+          $options['plugin_metademands_fields_id'] = $options['parent']->getField('id');
          // Create item
          $this->check(-1, CREATE, $options);
       }

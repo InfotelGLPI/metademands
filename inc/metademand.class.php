@@ -559,26 +559,27 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $override_input['plugin_metademands_tasks_id'] = 0;
                     $idfield = $field->clone($override_input);
 
-                    $fields_parameters = PluginMetademandsFieldParameter::getItemsAssociatedTo(
-                        "PluginMetademandsField",
-                        $field->fields["id"]
-                    );
-                    if (!empty($fields_parameters)) {
-                        $override_input['plugin_metademands_fields_id'] = $idfield;
-                        $fields_parameters[0]->clone($override_input);
-                    }
-
-                    $fields_options = PluginMetademandsFieldOption::getItemsAssociatedTo(
-                        "PluginMetademandsField",
-                        $field->fields["id"]
-                    );
-                    if (!empty($fields_options)) {
-                        foreach ($fields_options as $k => $fields_option) {
-                            $override_input['plugin_metademands_fields_id'] = $idfield;
-                            $fields_options[$k]->clone($override_input);
-                        }
-
-                    }
+//                    $fields_parameters = PluginMetademandsFieldParameter::getItemsAssociatedTo(
+//                        "PluginMetademandsField",
+//                        $field->fields["id"]
+//                    );
+//                    if (!empty($fields_parameters)) {
+//                        $override_input['plugin_metademands_fields_id'] = $idfield;
+//                        Toolbox::logInfo($override_input);
+//                        $fields_parameters[0]->clone($override_input);
+//                    }
+//
+//                    $fields_options = PluginMetademandsFieldOption::getItemsAssociatedTo(
+//                        "PluginMetademandsField",
+//                        $field->fields["id"]
+//                    );
+//                    if (!empty($fields_options)) {
+//                        foreach ($fields_options as $k => $fields_option) {
+//                            $override_input['plugin_metademands_fields_id'] = $idfield;
+//                            $fields_options[$k]->clone($override_input);
+//                        }
+//
+//                    }
 //                    $fields_customvalues = PluginMetademandsFieldCustomvalue::getItemsAssociatedTo(
 //                        "PluginMetademandsField",
 //                        $field->fields["id"]

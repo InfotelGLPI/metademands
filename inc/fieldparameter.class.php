@@ -182,9 +182,8 @@ class PluginMetademandsFieldParameter extends CommonDBChild
             $metademand_fields->getFromDB($item->getID());
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
             // Create item
-            $options['itemtype'] = get_class($item);
-            $options['items_id'] = $item->getID();
-//            $this->check(-1, CREATE, $options);
+            $options['plugin_metademands_fields_id'] = $options['parent']->getField('id');
+            $this->check(-1, CREATE, $options);
         }
 
         $this->showFormHeader($options);
@@ -763,10 +762,12 @@ class PluginMetademandsFieldParameter extends CommonDBChild
         $pluginField = new PluginMetademandsPluginfields();
         $input = [];
         if (isset($this->input['plugin_fields_fields_id'])) {
-            $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
-            $input['plugin_metademands_fields_id'] = $this->fields['plugin_metademands_fields_id'];
-            $input['plugin_metademands_metademands_id'] = $this->input['plugin_metademands_metademands_id'];
-            $pluginField->add($input);
+            if (!$pluginField->getFromDBByCrit(['plugin_metademands_fields_id' => $this->input['plugin_metademands_fields_id']])) {
+                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+                $input['plugin_metademands_fields_id'] = $this->fields['plugin_metademands_fields_id'];
+                $input['plugin_metademands_metademands_id'] = $this->input['plugin_metademands_metademands_id'];
+                $pluginField->add($input);
+            }
         }
     }
 
