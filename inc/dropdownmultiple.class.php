@@ -477,7 +477,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 echo "<tr class='tab_bg_1'>";
 
                 echo "<th>";
-                echo _n('Custom value', 'Custom values',2,'metademands');
+                echo PluginMetademandsFieldCustomvalue::getTypeName(2);
                 echo "</th>";
 
                 echo "<th width='20%'>";

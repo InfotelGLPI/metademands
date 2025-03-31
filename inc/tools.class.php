@@ -412,5 +412,92 @@ class PluginMetademandsTools extends CommonDBTM
         }
 
         echo "</table></div>";
+
+        echo "<br><div class='left'>";
+        echo "<table class='tab_cadre_fixe'>";
+
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+        $metafield = new PluginMetademandsField();
+        $not_ordered_fields = [];
+
+        if ($fields = $metafield->find()) {
+            foreach ($fields as $field) {
+                if (in_array($field['type'], $allowed_customvalues_types)
+                    || in_array($field['item'], $allowed_customvalues_items)) {
+                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                    if ($fields_custom = $field_custom->find(['plugin_metademands_fields_id' => $field['id']])) {
+                        foreach ($fields_custom as $key => $value) {
+                            $ranks[$field['id']][] = $value['rank'];
+                        }
+
+                        foreach ($fields_custom as $fields_custom) {
+                            if (PluginMetademandsFieldCustomvalue::isSequentialFromZero(
+                                    $ranks[$field['id']]
+                                ) == false) {
+                                $not_ordered_fields[] = $field['id'];
+                            }
+                        }
+                    }
+                }
+            }
+            $not_ordered_fields = array_unique($not_ordered_fields);
+            if (count($not_ordered_fields) > 0) {
+                echo "<tr class='tab_bg_2'>";
+                echo "<th class='left'>";
+                echo __('Ranks problem with fields', 'metademands');
+                echo "</th>";
+                echo "</tr>";
+
+                echo "<tr class='tab_bg_2'>";
+                echo "<td class='left'>";
+
+                foreach ($not_ordered_fields as $not_ordered_field) {
+                    $field_to_order = new PluginMetademandsField();
+                    $field_to_order->getfromDB($not_ordered_field);
+                    echo "<table class='tab_cadre_fixe'>";
+                    echo "<tr class='tab_bg_2'>";
+                    echo "<th class='left' width='50%'>";
+                    echo __('Field');
+                    echo "</th>";
+                    echo "<th class='left'>";
+                    echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
+                    echo "</th>";
+                    echo "<th class='center'>";
+                    echo "</th>";
+                    echo "</tr>";
+
+                    echo "<tr class='tab_bg_2'>";
+                    echo "<td class='left'>";
+                    echo $field_to_order->getLink();
+                    echo "</td>";
+                    echo "<td class='left'>";
+                    echo Dropdown::getDropdownName(
+                        "glpi_plugin_metademands_metademands",
+                        $field_to_order->fields['plugin_metademands_metademands_id']
+                    );
+                    echo "</td>";
+                    echo "<td class='right'>";
+                    echo Html::getSimpleForm(
+                        PluginMetademandsFieldCustomvalue::getFormURL(),
+                        'fixranks',
+                        _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
+                        ['plugin_metademands_fields_id' => $not_ordered_field],
+                        'fa-wrench',
+                    );
+                    echo "</td>";
+                    echo "</tr>";
+                    echo "</table>";
+                }
+            }  else {
+                echo "<tr class='tab_bg_2'>";
+                echo "<th class='left'>";
+                echo __('No problem with founded', 'metademands');
+                echo "</th>";
+                echo "</tr>";
+            }
+            echo "</table></div>";
+        }
     }
 }

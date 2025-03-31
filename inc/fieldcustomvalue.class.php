@@ -198,7 +198,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         }
 
         $this->showFormHeader($options);
-        $target = PluginMetademandsFieldCustomvalue::getFormURL();
+        $target = self::getFormURL();
         echo "<form method='post' action=\"$target\">";
         echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
         echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
@@ -271,7 +271,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                 && $params['item'] != 'User') {
                 echo "<tr class='tab_bg_1'>";
                 echo "<th colspan='5'>";
-                echo _n('Custom value', 'Custom values',2,'metademands');
+                echo self::getTypeName(2);
                 echo "</th>";
                 echo "</tr>";
             }
@@ -302,7 +302,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                     echo "</div>";
                 }
 
-                if (PluginMetademandsFieldCustomvalue::isSequentialFromZero($ranks) == false) {
+                if (self::isSequentialFromZero($ranks) == false) {
                     echo "<div class='alert alert-warning flex'>";
                     echo "<div class='left'>";
                     echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
@@ -313,7 +313,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                     echo _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands');
                     echo "</div>";
                     echo "<div class='right'>";
-                    $target = PluginMetademandsFieldCustomvalue::getFormURL();
+                    $target = self::getFormURL();
                     Html::showSimpleForm(
                         $target,
                         'fixranks',
@@ -541,7 +541,7 @@ JAVASCRIPT
     public static function addNewValue($rank, $display_comment, $display_default, $fields_id)
     {
 
-        $target = PluginMetademandsFieldCustomvalue::getFormURL();
+        $target = self::getFormURL();
         echo "<form method='post' action=\"$target\">";
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr class='tab_bg_1'>";

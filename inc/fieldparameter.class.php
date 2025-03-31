@@ -78,11 +78,6 @@ class PluginMetademandsFieldParameter extends CommonDBChild
         return _n('Parameter', 'Parameters', $nb, 'metademands');
     }
 
-    static function getCustomTypeName($nb = 0)
-    {
-        return _n('Custom value', 'Custom values', $nb, 'metademands');
-    }
-
 
     static function getIcon()
     {
