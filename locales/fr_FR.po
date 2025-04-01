@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-31 07:39+0000\n"
+"POT-Creation-Date: 2025-04-01 10:27+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -135,7 +135,7 @@ msgstr ""
 "complétera les informations suivantes."
 
 #: ajax/reloaditem.php:40 inc/field.class.php:797 inc/field.class.php:805
-#: inc/field.class.php:1112 inc/field.class.php:2712 inc/field.class.php:4057
+#: inc/field.class.php:1249 inc/field.class.php:2921 inc/field.class.php:4266
 msgid "Object"
 msgstr "Objet"
 
@@ -151,17 +151,17 @@ msgstr "Vide"
 msgid "Not empty"
 msgstr "Non vide"
 
-#: ajax/viewfieldinfos.php:43 inc/fieldcustomvalue.class.php:214
-#: inc/fieldparameter.class.php:206 inc/freetablefield.class.php:187
+#: ajax/viewfieldinfos.php:43 inc/fieldcustomvalue.class.php:213
+#: inc/fieldparameter.class.php:205 inc/freetablefield.class.php:186
 msgid "Field informations"
 msgstr "Informations du champ"
 
-#: ajax/viewfieldinfos.php:54 inc/fieldcustomvalue.class.php:225
-#: inc/fieldparameter.class.php:217 inc/freetablefield.class.php:198
+#: ajax/viewfieldinfos.php:54 inc/fieldcustomvalue.class.php:224
+#: inc/fieldparameter.class.php:216 inc/freetablefield.class.php:197
 msgid "Example"
 msgstr "Exemple"
 
-#: ajax/viewtypefields.php:55 inc/dropdown.class.php:245
+#: ajax/viewtypefields.php:55 inc/dropdown.class.php:246
 #: inc/dropdownmeta.class.php:1258 inc/dropdownobject.class.php:570
 #: inc/dropdownobject.class.php:662 inc/tel.class.php:120
 #: inc/text.class.php:117
@@ -364,16 +364,16 @@ msgstr "Accessoire"
 #: inc/basket.class.php:509 inc/checkbox.class.php:270
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
-#: inc/dropdown.class.php:270 inc/dropdownmeta.class.php:1303
+#: inc/dropdown.class.php:271 inc/dropdownmeta.class.php:1303
 #: inc/dropdownmultiple.class.php:720 inc/dropdownobject.class.php:739
-#: inc/field.class.php:1115 inc/fieldoption.class.php:343
+#: inc/field.class.php:1251 inc/fieldoption.class.php:343
 #: inc/radio.class.php:268 inc/yesno.class.php:129
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
 #: inc/basket.class.php:510 inc/checkbox.class.php:290
-#: inc/checkbox.class.php:303 inc/dropdown.class.php:304
-#: inc/dropdown.class.php:340 inc/dropdownmeta.class.php:1373
+#: inc/checkbox.class.php:303 inc/dropdown.class.php:305
+#: inc/dropdown.class.php:341 inc/dropdownmeta.class.php:1373
 #: inc/dropdownmeta.class.php:1383 inc/dropdownmeta.class.php:1404
 #: inc/dropdownmultiple.class.php:836 inc/dropdownobject.class.php:803
 #: inc/dropdownobject.class.php:806 inc/dropdownobject.class.php:816
@@ -384,7 +384,7 @@ msgid "Not null value"
 msgstr "Valeur non nulle"
 
 #: inc/basket.class.php:627 inc/checkbox.class.php:406
-#: inc/dropdown.class.php:433 inc/dropdownmeta.class.php:1507
+#: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:1507
 #: inc/dropdownmultiple.class.php:938 inc/dropdownmultiple.class.php:1072
 #: inc/dropdownobject.class.php:941 inc/email.class.php:260
 #: inc/radio.class.php:378 inc/tel.class.php:262 inc/text.class.php:260
@@ -395,7 +395,7 @@ msgid "Save & Post"
 msgstr "Sauver et envoyer"
 
 #: inc/basket.class.php:629 inc/checkbox.class.php:407
-#: inc/dropdown.class.php:434 inc/dropdownmeta.class.php:1509
+#: inc/dropdown.class.php:435 inc/dropdownmeta.class.php:1509
 #: inc/dropdownmultiple.class.php:940 inc/dropdownmultiple.class.php:1074
 #: inc/dropdownobject.class.php:942 inc/email.class.php:262
 #: inc/radio.class.php:379 inc/tel.class.php:264 inc/text.class.php:261
@@ -499,15 +499,15 @@ msgid "Checkbox"
 msgstr "Case à cocher"
 
 #: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:1043
-#: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:551
-#: inc/freetable.class.php:670 inc/freetablefield.class.php:333
+#: inc/dropdownmultiple.class.php:547 inc/fieldcustomvalue.class.php:550
+#: inc/freetable.class.php:670 inc/freetablefield.class.php:332
 #: inc/radio.class.php:173
 msgid "Rank"
 msgstr "Rang"
 
 #: inc/checkbox.class.php:195 inc/dropdownmeta.class.php:1068
 #: inc/dropdownmultiple.class.php:484 inc/dropdownmultiple.class.php:572
-#: inc/fieldcustomvalue.class.php:570 inc/radio.class.php:195
+#: inc/fieldcustomvalue.class.php:569 inc/radio.class.php:195
 #: inc/yesno.class.php:98
 msgid "Default value"
 msgid_plural "Default values"
@@ -582,7 +582,7 @@ msgid "Field"
 msgstr "Champ"
 
 #: inc/condition.class.php:349 inc/condition.class.php:916
-#: inc/field.class.php:4048
+#: inc/field.class.php:4257
 msgid "Field type"
 msgstr "Type de champ"
 
@@ -730,7 +730,7 @@ msgstr "Interface"
 msgid "Date"
 msgstr "Date"
 
-#: inc/date.class.php:99 inc/datetime.class.php:99 inc/dropdown.class.php:232
+#: inc/date.class.php:99 inc/datetime.class.php:99 inc/dropdown.class.php:233
 #: inc/dropdownmeta.class.php:1232 inc/dropdownobject.class.php:599
 #: inc/dropdownobject.class.php:681
 msgid "Use this field for child ticket field"
@@ -854,7 +854,7 @@ msgstr ""
 "liste déroulante"
 
 #: inc/dropdownmultiple.class.php:694 inc/dropdownobject.class.php:637
-#: inc/fieldparameter.class.php:812
+#: inc/fieldparameter.class.php:813
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
@@ -871,8 +871,8 @@ msgstr "Si le champ est vide"
 msgid "Wizard creation"
 msgstr "Création du formulaire"
 
-#: inc/field.class.php:386 inc/field.class.php:766 inc/field.class.php:1120
-#: inc/field.class.php:2777 inc/field.class.php:4038 inc/step.class.php:299
+#: inc/field.class.php:386 inc/field.class.php:766 inc/field.class.php:1101
+#: inc/field.class.php:2986 inc/field.class.php:4247 inc/step.class.php:299
 #: inc/step.class.php:381
 msgid "Block"
 msgstr "Bloc"
@@ -885,7 +885,7 @@ msgstr "Afficher le champ après"
 msgid "Please add a type category field"
 msgstr "Merci d'ajouter le champ : Catégorie de la métademande"
 
-#: inc/field.class.php:542 inc/field.class.php:2710 inc/field.class.php:2795
+#: inc/field.class.php:542 inc/field.class.php:2919 inc/field.class.php:3004
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
@@ -905,66 +905,87 @@ msgstr "Ajouter un nouveau champ"
 msgid "Add a existing field"
 msgstr "Ajouter un champ existant"
 
-#: inc/field.class.php:1076
+#: inc/field.class.php:1164
+msgid ""
+"The fields are not ordered correctly, you will not be able to order them!"
+msgstr ""
+"Les champs ne sont pas ordonnés correctement, vous ne pourrez pas les "
+"ordonner !"
+
+#: inc/field.class.php:1168 inc/field.class.php:1175
+msgctxt "button"
+msgid "Do you want to fix them ?"
+msgstr "Voulez-vous les corriger ?"
+
+#: inc/field.class.php:1212
 msgid "Warning : there are fields without parameters, please check"
 msgstr "Attention : il y a des champs sans paramètres, merci de vérifier"
 
-#: inc/field.class.php:1083
+#: inc/field.class.php:1219
 msgid "Warning : there are fields without custom values, please check"
 msgstr ""
 "Attention : il y a des champs sans valeurs personnalisées, merci de vérifier"
 
-#: inc/field.class.php:1101
-msgid "Form fields"
-msgstr "Champs du formulaire"
+#: inc/field.class.php:1250 inc/freetable.class.php:731
+#: inc/freetablefield.class.php:411
+msgid "Mandatory"
+msgstr "Obligatoire"
 
-#: inc/field.class.php:1114 inc/fieldoption.class.php:344
-#: inc/fieldoption.class.php:1037
-msgid "Link a task to the field"
-msgstr "Lier le champ à une sous demande"
-
-#: inc/field.class.php:1117 inc/fieldparameter.class.php:418
+#: inc/field.class.php:1253 inc/fieldparameter.class.php:417
 msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
-#: inc/field.class.php:1119 inc/fieldparameter.class.php:452
+#: inc/field.class.php:1255 inc/fieldparameter.class.php:451
 msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
-#: inc/field.class.php:1121 inc/field.class.php:2786
-msgid "Order"
-msgstr "Ordre"
+#: inc/field.class.php:1256 inc/fieldoption.class.php:344
+#: inc/fieldoption.class.php:1035
+msgid "Launch a task with the field"
+msgstr "Lancer une sous-demande avec le champ"
 
-#: inc/field.class.php:1253
+#: inc/field.class.php:1257
+msgid "Actions"
+msgstr "Actions"
+
+#: inc/field.class.php:1386
 msgid "Multiples"
 msgstr "Multiples"
 
-#: inc/field.class.php:1463
+#: inc/field.class.php:1510
+msgid "Are you sure you want to delete this field ?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce champ ?"
+
+#: inc/field.class.php:1672
 msgid "Father's field"
 msgstr "Champ père"
 
-#: inc/field.class.php:1868
+#: inc/field.class.php:2077
 msgid "My values"
 msgstr "Valeurs personnalisées"
 
-#: inc/field.class.php:1870
+#: inc/field.class.php:2079
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
-#: inc/field.class.php:2060
+#: inc/field.class.php:2269
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Nombre maximum de documents : %s "
 
-#: inc/field.class.php:2894
+#: inc/field.class.php:2995
+msgid "Order"
+msgstr "Ordre"
+
+#: inc/field.class.php:3103
 msgid "Modify icon"
 msgstr "Modifier l'icône"
 
-#: inc/field.class.php:2895
+#: inc/field.class.php:3104
 msgid "Modify color"
 msgstr "Modifier la couleur"
 
-#: inc/field.class.php:2922 inc/field.class.php:2943
+#: inc/field.class.php:3131 inc/field.class.php:3152
 msgid "You cannot do this for this field"
 msgstr "Vous ne pouvez pas faire ceci pour ce champ"
 
@@ -975,18 +996,18 @@ msgstr[0] "Valeur personnalisée"
 msgstr[1] "Valeurs personnalisées"
 msgstr[2] "Valeurs personnalisées"
 
-#: inc/fieldcustomvalue.class.php:299
+#: inc/fieldcustomvalue.class.php:298
 msgid "You have duplicates rank!"
 msgstr "Vous avez des rangs en doublon !"
 
-#: inc/fieldcustomvalue.class.php:309
+#: inc/fieldcustomvalue.class.php:308
 msgid ""
 "The ranks are not ordered correctly, you will not be able to order them!"
 msgstr ""
 "Les rangs ne sont pas ordonnés correctement., vous ne pourrez pas les "
 "ordonner correctement !"
 
-#: inc/fieldcustomvalue.class.php:313 inc/fieldcustomvalue.class.php:320
+#: inc/fieldcustomvalue.class.php:312 inc/fieldcustomvalue.class.php:319
 #: inc/tools.class.php:485
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
@@ -994,15 +1015,15 @@ msgstr ""
 "Voulez-vous les corriger ? Attention vous devrez vérifier les options après "
 "!"
 
-#: inc/fieldcustomvalue.class.php:505
+#: inc/fieldcustomvalue.class.php:504
 msgid "Reset and import custom values"
 msgstr "Supprimer et importer les valeurs personnalisées"
 
-#: inc/fieldcustomvalue.class.php:516
+#: inc/fieldcustomvalue.class.php:515
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr "Etes-vous sur ? Les valeurs personnalisées seront supprimées !"
 
-#: inc/fieldcustomvalue.class.php:517
+#: inc/fieldcustomvalue.class.php:516
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1010,7 +1031,7 @@ msgstr ""
 "Merci de respecter ce format : nom; affiché par défaut(0|1); commentaire; - "
 "trié par ordre d'affichage"
 
-#: inc/fieldcustomvalue.class.php:654
+#: inc/fieldcustomvalue.class.php:653
 msgid "You can't add a custom value without name"
 msgstr "Vous ne pouvez pas ajouter de valeur personnalisée sans nom"
 
@@ -1022,14 +1043,14 @@ msgstr[1] "Options"
 msgstr[2] "Options"
 
 #: inc/fieldoption.class.php:130 inc/fieldoption.class.php:345
-#: inc/fieldoption.class.php:1050
-msgid "Link a field to the field"
-msgstr "Lier le champ à un autre champ"
+#: inc/fieldoption.class.php:1048
+msgid "Make this field mandatory"
+msgstr "Rendre ce champ obligatoire"
 
 #: inc/fieldoption.class.php:139 inc/fieldoption.class.php:346
-#: inc/fieldoption.class.php:1077
-msgid "Link a hidden field"
-msgstr "Lier à un champ caché"
+#: inc/fieldoption.class.php:1075
+msgid "Display this hidden field"
+msgstr "Afficher ce champ caché"
 
 #: inc/fieldoption.class.php:281
 msgid "No options are allowed for this field type"
@@ -1050,50 +1071,50 @@ msgstr "Ajouter une nouvelle option"
 msgid "List of options"
 msgstr "Liste d'options"
 
-#: inc/fieldoption.class.php:347 inc/fieldoption.class.php:1101
-msgid "Link a hidden block"
-msgstr "Lier un bloc caché"
+#: inc/fieldoption.class.php:347 inc/fieldoption.class.php:1099
+msgid "Display this hidden block"
+msgstr "Afficher ce bloc caché"
 
-#: inc/fieldoption.class.php:348 inc/fieldoption.class.php:1155
+#: inc/fieldoption.class.php:348 inc/fieldoption.class.php:1153
 msgid "Childs blocks"
 msgstr "Blocs enfants"
 
-#: inc/fieldoption.class.php:349 inc/fieldoption.class.php:1171
-msgid "Link a validation"
-msgstr "Lier a une demande de validation"
+#: inc/fieldoption.class.php:349 inc/fieldoption.class.php:1169
+msgid "Launch a validation"
+msgstr "Lancer une validation"
 
-#: inc/fieldoption.class.php:350 inc/fieldoption.class.php:1198
+#: inc/fieldoption.class.php:350 inc/fieldoption.class.php:1196
 msgid "Bind to the value of this checkbox"
 msgstr "Lier à la valeur de cette case à cocher"
 
-#: inc/fieldoption.class.php:1039
+#: inc/fieldoption.class.php:1037
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la sous-demande "
 "est créée"
 
-#: inc/fieldoption.class.php:1052
+#: inc/fieldoption.class.php:1050
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
 " obligatoire"
 
-#: inc/fieldoption.class.php:1079
+#: inc/fieldoption.class.php:1077
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
 " visible"
 
-#: inc/fieldoption.class.php:1103
+#: inc/fieldoption.class.php:1101
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le bloc devient "
 "visible"
 
-#: inc/fieldoption.class.php:1128
+#: inc/fieldoption.class.php:1126
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
@@ -1101,7 +1122,7 @@ msgstr ""
 "Ce bloc est déjà utilisé par un autre champ. Vous pouvez rencontrer des "
 "problèmes si la valeur à vérifier est déjà utilisée"
 
-#: inc/fieldoption.class.php:1157
+#: inc/fieldoption.class.php:1155
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
@@ -1109,7 +1130,7 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: inc/fieldoption.class.php:1173
+#: inc/fieldoption.class.php:1171
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
@@ -1117,7 +1138,7 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la demande de "
 "validation sera envoyée à l'utilisateur"
 
-#: inc/fieldoption.class.php:1200
+#: inc/fieldoption.class.php:1198
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
@@ -1125,7 +1146,7 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la valeur de la "
 "case à cocher est définie"
 
-#: inc/fieldoption.class.php:1317 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1315 inc/mailtask.class.php:150
 #: inc/step.class.php:270 inc/step.class.php:392 inc/step.class.php:416
 #: inc/task.class.php:766 inc/task.class.php:1163 inc/tickettask.class.php:168
 #, php-format
@@ -1139,15 +1160,15 @@ msgstr[0] "Paramètre"
 msgstr[1] "Paramètres"
 msgstr[2] "Paramètres"
 
-#: inc/fieldparameter.class.php:398 inc/metademand.class.php:1309
+#: inc/fieldparameter.class.php:397 inc/metademand.class.php:1310
 msgid "Hide title"
 msgstr "Cacher le titre"
 
-#: inc/fieldparameter.class.php:410
+#: inc/fieldparameter.class.php:409
 msgid "Takes the whole row"
 msgstr "Prend toute la ligne"
 
-#: inc/fieldparameter.class.php:635
+#: inc/fieldparameter.class.php:634
 msgid "Link this to a plugin \"fields\" field"
 msgstr "Lier ce champ à un champ du plugin \"fields\""
 
@@ -1200,32 +1221,28 @@ msgid "You can't create a new line when there is an existing one"
 msgstr ""
 "Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
 
-#: inc/freetable.class.php:682 inc/freetablefield.class.php:334
+#: inc/freetable.class.php:682 inc/freetablefield.class.php:333
 msgid "Internal name"
 msgstr "Nom interne"
 
-#: inc/freetable.class.php:689 inc/freetablefield.class.php:347
+#: inc/freetable.class.php:689 inc/freetablefield.class.php:346
 #: inc/information.class.php:161
 msgid "Type"
 msgstr "Type"
 
-#: inc/freetable.class.php:696 inc/freetablefield.class.php:381
+#: inc/freetable.class.php:696 inc/freetablefield.class.php:380
 msgid "Display name"
 msgstr "Nom affiché"
 
-#: inc/freetable.class.php:712 inc/freetablefield.class.php:389
+#: inc/freetable.class.php:712 inc/freetablefield.class.php:388
 msgid "Dropdown values"
 msgstr "Valeurs de la liste déroulante"
 
-#: inc/freetable.class.php:713 inc/freetablefield.class.php:390
+#: inc/freetable.class.php:713 inc/freetablefield.class.php:389
 msgid "One value by line, separated by comma"
 msgstr "Une valeur par ligne, séparée par une virgule"
 
-#: inc/freetable.class.php:731 inc/freetablefield.class.php:412
-msgid "Mandatory"
-msgstr "Obligatoire"
-
-#: inc/freetablefield.class.php:50 inc/freetablefield.class.php:224
+#: inc/freetablefield.class.php:50 inc/freetablefield.class.php:223
 msgid "Free table field"
 msgid_plural "Free table fields"
 msgstr[0] "Champ de la table libre"
@@ -1236,19 +1253,19 @@ msgstr[2] "Champs de la table libre"
 msgid "Text"
 msgstr "Texte"
 
-#: inc/freetablefield.class.php:225
+#: inc/freetablefield.class.php:224
 msgid "(6 fields maximum)"
 msgstr "(6 champs maximum)"
 
-#: inc/freetablefield.class.php:335
+#: inc/freetablefield.class.php:334
 msgid "No spaces, no special characters"
 msgstr "Pas d'espaces, pas de caractères spéciaux"
 
-#: inc/freetablefield.class.php:445
+#: inc/freetablefield.class.php:444
 msgid "You can't add a field without name"
 msgstr "Vous ne pouvez pas ajouter un champ sans nom"
 
-#: inc/freetablefield.class.php:454
+#: inc/freetablefield.class.php:453
 msgid "You can't add a field without type"
 msgstr "Vous ne pouvez pas ajouter un champ sans type"
 
@@ -1398,76 +1415,76 @@ msgstr ""
 "Il existe des sous-métademandes ou ceci est un sous-métademande. Cette "
 "métademande ne peut pas être en mode panier"
 
-#: inc/metademand.class.php:738 inc/metademand.class.php:1321
+#: inc/metademand.class.php:739 inc/metademand.class.php:1322
 msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr "Masquer les valeurs \"Non\" et les valeurs vides dans les tickets"
 
-#: inc/metademand.class.php:746 inc/metademand.class.php:1286
+#: inc/metademand.class.php:747 inc/metademand.class.php:1287
 msgid "Permit multiple form"
 msgstr "Permettre les formulaires multiples"
 
-#: inc/metademand.class.php:754 inc/metademand.class.php:1291
+#: inc/metademand.class.php:755 inc/metademand.class.php:1292
 msgid "Create one ticket for all lines of the basket"
 msgstr "Créer un seul ticket pour toutes les lignes du panier"
 
-#: inc/metademand.class.php:772 inc/metademand.class.php:1118
+#: inc/metademand.class.php:773 inc/metademand.class.php:1119
 msgid "Object to create"
 msgstr "Objet à créer"
 
-#: inc/metademand.class.php:790 inc/metademand.class.php:1331
+#: inc/metademand.class.php:791 inc/metademand.class.php:1332
 msgid "Title color"
 msgstr "Couleur du titre"
 
-#: inc/metademand.class.php:799 inc/metademand.class.php:1328
+#: inc/metademand.class.php:800 inc/metademand.class.php:1329
 msgid "Background color"
 msgstr "Couleur de l'arrière plan"
 
-#: inc/metademand.class.php:808 inc/metademand.class.php:1088
+#: inc/metademand.class.php:809 inc/metademand.class.php:1089
 msgid "Allow form modification before validation"
 msgstr "Autoriser la modification du formulaire avant validation"
 
-#: inc/metademand.class.php:816 inc/metademand.class.php:1092
+#: inc/metademand.class.php:817 inc/metademand.class.php:1093
 msgid "Allow form modification after validation"
 msgstr "Autoriser la modification du formulaire après validation"
 
-#: inc/metademand.class.php:824 inc/metademand.class.php:1305
+#: inc/metademand.class.php:825 inc/metademand.class.php:1306
 msgid "Use as basket"
 msgstr "Utiliser comme un panier"
 
-#: inc/metademand.class.php:1071 inc/wizard.class.php:373
+#: inc/metademand.class.php:1072 inc/wizard.class.php:373
 msgid "This form is in maintenance mode"
 msgstr "Ce formulaire est en maintenance"
 
-#: inc/metademand.class.php:1102
+#: inc/metademand.class.php:1103
 msgid "Step-by-step mode"
 msgstr "Mode pas à pas"
 
-#: inc/metademand.class.php:1199
+#: inc/metademand.class.php:1200
 msgid "All available categories"
 msgstr "Toutes les catégories disponibles"
 
-#: inc/metademand.class.php:1295
+#: inc/metademand.class.php:1296
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 "Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
 
-#: inc/metademand.class.php:1317
+#: inc/metademand.class.php:1318
 msgid "Need validation to create subticket"
 msgstr "Nécessite la validation pour créer les tickets enfants"
 
-#: inc/metademand.class.php:1339
+#: inc/metademand.class.php:1340
 msgid "Create tasks (not child tickets)"
 msgstr "Créer des tâches (et pas des sous-tickets)"
 
-#: inc/metademand.class.php:1349
+#: inc/metademand.class.php:1350
 msgid "Define initial requester as requester for child tickets"
 msgstr "Définir le demandeur initial comme demandeur de tickets enfants"
 
-#: inc/metademand.class.php:1356 inc/metademand.class.php:7737
+#: inc/metademand.class.php:1357 inc/metademand.class.php:7737
 msgid "Export"
 msgstr "Export"
 
-#: inc/metademand.class.php:1372
+#: inc/metademand.class.php:1373
 msgid ""
 "Tasks tree cannot be changed as unresolved related tickets exist or activate"
 " maintenance mode"
@@ -1475,28 +1492,28 @@ msgstr ""
 "L'arborescence des tâches ne peut pas être modifiée car des tickets associés"
 " non résolus existent ou activez le mode de maintenance"
 
-#: inc/metademand.class.php:1528
+#: inc/metademand.class.php:1529
 msgid "field add on demand"
 msgstr "ajout du champ à la demande"
 
-#: inc/metademand.class.php:1530
+#: inc/metademand.class.php:1531
 msgid "field update on demand"
 msgstr "champ mise à jour sur la demande"
 
-#: inc/metademand.class.php:1532
+#: inc/metademand.class.php:1533
 msgid "field delete on demand"
 msgstr "champ supprimé sur la demande"
 
-#: inc/metademand.class.php:2654
+#: inc/metademand.class.php:2655
 msgid "There is a problem on object creation"
 msgstr "Il y a un problème avec la création de l'objet"
 
-#: inc/metademand.class.php:3530 inc/metademand.class.php:6183
+#: inc/metademand.class.php:3531 inc/metademand.class.php:6183
 #: inc/ticket_metademand.class.php:644
 msgid "Child Ticket"
 msgstr "Ticket enfant"
 
-#: inc/metademand.class.php:3546 inc/metademand.class.php:6199
+#: inc/metademand.class.php:3547 inc/metademand.class.php:6199
 #: inc/ticket_metademand.class.php:656
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
@@ -1504,21 +1521,21 @@ msgstr[0] "Ticket parent"
 msgstr[1] "Tickets parents"
 msgstr[2] "Tickets parents"
 
-#: inc/metademand.class.php:4691
+#: inc/metademand.class.php:4692
 msgid "Demand add failed"
 msgstr "Echec de l'ajout de la demande"
 
-#: inc/metademand.class.php:4696
+#: inc/metademand.class.php:4697
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr "Demande \"%s\" ajouté avec succès"
 
-#: inc/metademand.class.php:4702
+#: inc/metademand.class.php:4703
 #, php-format
 msgid "Ticket \"%s\" successfully updated"
 msgstr "Ticket \"%s\" mis à jour avec succès"
 
-#: inc/metademand.class.php:4709
+#: inc/metademand.class.php:4710
 #, php-format
 msgid "%1$s %2$s successfully created"
 msgstr "%1$s %2$s créé avec succès"
@@ -2185,8 +2202,8 @@ msgid "Ranks problem with fields"
 msgstr "Problèmes de rangs des champs"
 
 #: inc/tools.class.php:496
-msgid "No problem with founded"
-msgstr "Pas de problème de rang trouvé"
+msgid "No problem with ranks founded"
+msgstr "Aucun problème avec les rangs trouvé"
 
 #: inc/upload.class.php:52
 msgid "Add attachment"
