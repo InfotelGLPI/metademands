@@ -127,7 +127,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'id' => '814',
             'table' => $this->getTable(),
             'field' => 'fields_link',
-            'name' => __('Link a field to the field', 'metademands'),
+            'name' => __('Make this field mandatory', 'metademands'),
             'datatype' => 'specific',
             'massiveaction' => true
         ];
@@ -136,7 +136,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'id' => '815',
             'table' => $this->getTable(),
             'field' => 'hidden_link',
-            'name' => __('Link a hidden field', 'metademands'),
+            'name' => __('Display this hidden field', 'metademands'),
             'datatype' => 'specific',
             'massiveaction' => true
         ];
@@ -341,12 +341,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
             echo "<th>" . __("ID") . "</th>";
             echo "<th>" . __('Value to check', 'metademands') . "</th>";
-            echo "<th>" . __('Link a task to the field', 'metademands') . "</th>";
-            echo "<th>" . __('Link a field to the field', 'metademands') . "</th>";
-            echo "<th>" . __('Link a hidden field', 'metademands') . "</th>";
-            echo "<th>" . __('Link a hidden block', 'metademands') . "</th>";
+            echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
+            echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
+            echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
+            echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
             echo "<th>" . __('Childs blocks', 'metademands') . "</th>";
-            echo "<th>" . __('Link a validation', 'metademands') . "</th>";
+            echo "<th>" . __('Launch a validation', 'metademands') . "</th>";
             echo "<th>" . __('Bind to the value of this checkbox', 'metademands') . "</th>";
 //            echo "<th>" . __('Hide submit button', 'metademands') . "</th>";
             echo "</tr>";
@@ -1032,7 +1032,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         // Show task link
         if ($task) {
             echo '<tr><td>';
-            echo __('Link a task to the field', 'metademands');
+            echo __('Launch a task with the field', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                     'If the value selected equals the value to check, the task is created',
                     'metademands'
@@ -1045,7 +1045,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         // Show field link
         if ($field) {
             echo "<tr><td>";
-            echo __('Link a field to the field', 'metademands');
+            echo __('Make this field mandatory', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                     'If the value selected equals the value to check, the field becomes mandatory',
                     'metademands'
@@ -1072,7 +1072,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
         if ($hidden) {
             echo "<tr><td>";
-            echo __('Link a hidden field', 'metademands');
+            echo __('Display this hidden field', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                     'If the value selected equals the value to check, the field becomes visible',
                     'metademands'
@@ -1096,7 +1096,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
             echo "<tr>";
             echo "<td>";
-            echo __('Link a hidden block', 'metademands');
+            echo __('Display this hidden block', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                     'If the value selected equals the value to check, the block becomes visible',
                     'metademands'
@@ -1166,7 +1166,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             || ($field_class->getField("type") == "dropdown_multiple"
                     &&  $field_class->getField("item") == "Group")) {
                 echo "<tr><td>";
-                echo __('Link a validation', 'metademands');
+                echo __('Launch a validation', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
                         'If the value selected equals the value to check, the validation is sent to the user',
                         'metademands'

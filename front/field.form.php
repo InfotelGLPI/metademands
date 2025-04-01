@@ -145,6 +145,26 @@ if (isset($_POST["add"])) {
     }
 
     Html::back();
+}  else if (isset($_POST["fixorders"])) {
+
+    $field = new PluginMetademandsField();
+    if ($field_values = $field->find(["plugin_metademands_metademands_id" =>$_POST["plugin_metademands_metademands_id"],
+        'rank' => $_POST["rank"]])) {
+        if (count($field_values) > 0) {
+
+            foreach ($field_values as $k => $field_value) {
+                $orders[$k]['order'] = $field_value['order'];
+            }
+
+            $neworders = PluginMetademandsField::fixOrders($orders);
+            foreach ($neworders as $id => $neworder) {
+                $input['id'] = $id;
+                $input['order'] = $neworder['order'];
+                $field->update($input);
+            }
+        }
+    }
+    Html::back();
 } elseif (isset($_POST["purge"])) {
     // Check update rights for fields
     $field->check(-1, UPDATE, $_POST);

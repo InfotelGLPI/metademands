@@ -1010,7 +1010,7 @@ class PluginMetademandsField extends CommonDBChild
             $cond['rank'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'];
         }
         if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'])
-        && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'] != 0) {
+            && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'] != 0) {
             $cond['type'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'];
         }
         if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'])
@@ -1019,6 +1019,50 @@ class PluginMetademandsField extends CommonDBChild
         }
 
         self::searchForm($item, $cond);
+
+        echo Html::scriptBlock(
+            '
+           
+           $(document).ready(function () {
+                var hash = window.location.hash;
+            
+                function updateActiveTab(rank) {
+                    document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
+                    document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
+            
+                    document.getElementById("ablock" + rank)?.classList.add("active");
+                    $("div[id^=\"block\"]").hide();
+                    $("#block" + rank).show();
+                    
+                    window.location.hash = "#block" + rank; // Mise à jour manuelle
+                }
+                
+                var fieldid = sessionStorage.getItem("loadedblock");
+                if (typeof fieldid !== "undefined" && fieldid != null && fieldid.length > 0) {
+                     updateActiveTab(fieldid.substr(5));
+                }
+                if (hash.startsWith("#block")) {
+                    updateActiveTab(hash.replace("#block", ""));
+                } else {
+                    updateActiveTab(1); // Sélectionne par défaut block1
+                }
+            
+                $("#fieldslist a").click(function (e) {
+                    e.preventDefault();
+                    var tabId = $(this).attr("href").replace("#", "");
+                    sessionStorage.setItem("loadedblock", tabId);
+                    updateActiveTab(tabId.replace("block", ""));
+                });
+            
+                $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+                    var id = $(e.target).attr("href").substr(1);
+                    window.location.hash = id;
+                });
+            });
+            
+
+            '
+        );
 
         $self = new self();
 
@@ -1048,284 +1092,449 @@ class PluginMetademandsField extends CommonDBChild
 
         $koparams = 0;
         $kocustom = 0;
+
+        $blocks = [];
+        $block_fields = [];
+
+
         foreach ($data as $value) {
-            if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']])) {
-                $koparams++;
-            }
-
-            if (isset($value['type'])
-                && (in_array(
-                        $value['type'],
-                        $allowed_customvalues_types
-                    ) && ($value['item'] != "ITILCategory_Metademands"
-                        && !in_array($value["item"], self::$field_specificobjects))
-                    && !in_array($value['item'], $new_types))
-                || (in_array(
-                        $value['item'],
-                        $allowed_customvalues_items
-                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
-                $field_custom = new PluginMetademandsFieldCustomvalue();
-                if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
-                    $kocustom++;
-                }
-            }
+            $blocks[$value['rank']] = __('Block', 'metademands') . " " . $value['rank'];
         }
-        if ($koparams > 0) {
-            echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo "<b>" . __(
-                    'Warning : there are fields without parameters, please check',
-                    'metademands'
-                ) . "</b></div>";
-        }
-        if ($kocustom > 0) {
-            echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo "<b>" . __(
-                    'Warning : there are fields without custom values, please check',
-                    'metademands'
-                ) . "</b></div>";
-        }
-
-        $fieldopt = new PluginMetademandsFieldOption();
-
-        if (is_array($data) && count($data) > 0) {
-            if ($canedit) {
-                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-                $massiveactionparams = [
-                    'item' => __CLASS__,
-                    'container' => 'mass' . __CLASS__ . $rand
-                ];
-                Html::showMassiveActions($massiveactionparams);
+        if (count($blocks) > 0) {
+            echo "<div class='tabs-container'>";
+            echo "<button class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
+            echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
+            echo "<ul class='nav nav-tabs flex-nowrap' role='tablist' id='fieldslist'>";
+            foreach ($blocks as $idblock => $block) {
+                $nameblock = $block;
+                echo "<li class='nav-item'>";
+                echo "<a class='nav-link tablinks' id='ablock$idblock' href='#block".$idblock."' data-toggle='tab'>".$nameblock."</a>";
+                echo "</li>";
             }
-            echo "<div class='left'>";
-            echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-            echo "<th class='center b' colspan='12'>" . __('Form fields', 'metademands') . "</th>";
-            echo "</tr><tr>";
-            if ($canedit) {
-                echo "<th width='10'>";
-                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-                echo "</th>";
-            }
-            echo "<th class='center b'></th>";
-            echo "<th class='center b'>" . __('ID') . "</th>";
-            echo "<th class='center b'>" . __('Label') . "</th>";
-            echo "<th class='center b'>" . __('Type') . "</th>";
-            echo "<th class='center b'>" . __('Object', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Mandatory field') . "</th>";
-            echo "<th class='center b'>" . __('Link a task to the field', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Value to check', 'metademands') . "</th>";
-            if ($item->fields['is_order'] == 1) {
-                echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
-            }
-            echo "<th class='center b'>" . __('Use this field as object field', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Block', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Order', 'metademands') . "</th>";
-            echo "</tr>";
-            // Init navigation list for field items
-            Session::initNavigateListItems($self->getType(), self::getTypeName(1));
+            echo "</ul>";
+            echo "</div>";
+            echo "<button class='scroll-btn scroll-right'><i class='fas fa-chevron-right'></i></button>";
+            echo "</div>";
 
-            $new_types = [];
-            if (isset($PLUGIN_HOOKS['metademands'])) {
-                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    $new_fields = self::addPluginDropdownFieldItems($plug);
-                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                        foreach ($new_fields as $plugin) {
-                            foreach ($plugin as $k => $field) {
-                                $new_types[] = $k;
-                            }
-                        }
+            echo Html::scriptBlock('
+                setTimeout(() => {
+                    const scrollContainer = document.querySelector(".scrollable-tabs");
+                    const scrollLeftBtn = document.querySelector(".scroll-left");
+                    const scrollRightBtn = document.querySelector(".scroll-right");
+                
+                    if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
+                        scrollLeftBtn.addEventListener("click", function () {
+                            scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
+                        });
+                
+                        scrollRightBtn.addEventListener("click", function () {
+                            scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
+                        });
+                    }
+                }, 500);
+            ');
+
+            foreach ($blocks as $idblock => $block) {
+                foreach ($data as $value) {
+                    if ($idblock == $value['rank']) {
+                        $block_fields[$idblock][] = $value;
                     }
                 }
+            }
+        }
+
+        foreach ($block_fields as $idblock => $data) {
+            $rand = mt_rand();
+            $defaultblock = "";
+            if ($idblock == 1) {
+                $defaultblock = "active";
+            }
+            echo "<div id='block$idblock' class='tabfieldcontent $defaultblock'>";
+
+            $orders = [];
+            foreach ($data as $value) {
+                $orders[] = $value['order'];
+            }
+
+            if (!isset($_SESSION['plugin_metademands_searchresults'][$value['plugin_metademands_metademands_id']]['block'])
+                && self::isSequentialFromOne($orders) == false) {
+                echo "<div class='alert alert-warning flex'>";
+                echo "<div class='left'>";
+                echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                        'The fields are not ordered correctly, you will not be able to order them!',
+                        'metademands'
+                    );
+                echo "<br><br>";
+                echo _x('button', 'Do you want to fix them ?', 'metademands');
+                echo "</div>";
+                echo "<div class='right'>";
+                $target = self::getFormURL();
+                Html::showSimpleForm(
+                    $target,
+                    'fixorders',
+                    _x('button', 'Do you want to fix them ?', 'metademands'),
+                    [
+                        'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id'],
+                        'rank' => $value['rank'],
+                    ],
+                    'fa-wrench',
+                    "class='btn btn-warning'"
+                );
+                echo "</div>";
+                echo "</div>";
             }
 
             foreach ($data as $value) {
-                Session::addToNavigateListItems($self->getType(), $value['id']);
+                if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']])) {
+                    $koparams++;
+                }
 
-                echo "<tr class='tab_bg_1'>";
+                if (isset($value['type'])
+                    && (in_array(
+                            $value['type'],
+                            $allowed_customvalues_types
+                        ) && ($value['item'] != "ITILCategory_Metademands"
+                            && !in_array($value["item"], self::$field_specificobjects))
+                        && !in_array($value['item'], $new_types))
+                    || (in_array(
+                            $value['item'],
+                            $allowed_customvalues_items
+                        ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
+                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                    if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
+                        $kocustom++;
+                    }
+                }
+            }
+            if ($koparams > 0) {
+                echo "<div class='alert alert-important alert-warning d-flex'>";
+                echo "<b>" . __(
+                        'Warning : there are fields without parameters, please check',
+                        'metademands'
+                    ) . "</b></div>";
+            }
+            if ($kocustom > 0) {
+                echo "<div class='alert alert-important alert-warning d-flex'>";
+                echo "<b>" . __(
+                        'Warning : there are fields without custom values, please check',
+                        'metademands'
+                    ) . "</b></div>";
+            }
+
+            $fieldopt = new PluginMetademandsFieldOption();
+
+            if (is_array($data) && count($data) > 0) {
                 if ($canedit) {
-                    echo "<td class='center'>";
-                    Html::showMassiveActionCheckBox(__CLASS__, $value["id"]);
-                    echo "</td>";
+                    Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
+                    $massiveactionparams = [
+                        'item' => __CLASS__,
+                        'container' => 'mass' . __CLASS__ . $rand
+                    ];
+                    Html::showMassiveActions($massiveactionparams);
                 }
-
-                echo "<td>";
-
-                if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]) || ((isset($value['type'])
-                            && (in_array(
-                                    $value['type'],
-                                    $allowed_customvalues_types
-                                ) && ($value['item'] != "ITILCategory_Metademands"
-                                    && !in_array($value["item"], self::$field_specificobjects))
-                                && !in_array($value['item'], $new_types))
-                            || (in_array(
-                                    $value['item'],
-                                    $allowed_customvalues_items
-                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
-                        )
-                        && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
-                    echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
+                echo "<div id='drag$rand'>";
+                echo "<table class='tab_cadre_fixehov'>";
+//                echo "<tr class='tab_bg_2'>";
+//                echo "<th class='center b' colspan='12'>" . __('Form fields', 'metademands') . " ".$blocks[$idblock]."</th>";
+//                echo "</tr>";
+                echo "<tr>";
+                if ($canedit) {
+                    echo "<th width='10'>";
+                    echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                    echo "</th>";
                 }
-                echo "</td>";
-                echo "<td>";
-                echo $value['id'];
-                echo "</td>";
-
-                $name = "";
-                if (isset($value['name'])) {
-                    $name = $value['name'];
-                }
-
-                echo "<td>";
-                echo " <a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'] . "'>";
-                if (empty(trim($name))) {
-                    echo __('ID') . " - " . $value['id'];
-                } else {
-                    echo Toolbox::stripslashes_deep($name);
-                }
-                echo "</a>";
-                echo "</td>";
-                echo "<td>" . self::getFieldTypesName($value['type']);
-                //name of parent field
-                if ($value['type'] == 'parent_field') {
-                    if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $value['id']])) {
-                        $field = new self();
-                        if ($field->getFromDB($fieldopt->fields['parent_field_id'])) {
-                            if (empty(trim($field->fields['name']))) {
-                                echo " ( ID - " . $value['parent_field_id'] . ")";
-                            } else {
-                                echo " (" . $field->fields['name'] . ")";
-                            }
-                        }
-                    }
-                }
-                echo "</td>";
-                echo "<td>" . self::getFieldItemsName($value['type'], $value['item']) . "</td>";
-                echo "<td>";
-                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
-                    if ($fieldparameter->fields['is_mandatory'] == 1) {
-                        echo "<span class='red'>";
-                    }
-                    echo Dropdown::getYesNo($fieldparameter->fields['is_mandatory']);
-                    if ($fieldparameter->fields['is_mandatory'] == 1) {
-                        echo "</span>";
-                    }
-                }
-                echo "</td>";
-
-                echo "<td>";
-
-                $fieldopt = new PluginMetademandsFieldOption();
-                if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
-                    foreach ($opts as $opt) {
-                        $tasks = [];
-                        if (!empty($opt['plugin_metademands_tasks_id'])) {
-                            $tasks[] = $opt['plugin_metademands_tasks_id'];
-                        }
-                        if (is_array($tasks)) {
-                            foreach ($tasks as $k => $task) {
-                                $metatask = new PluginMetademandsTask();
-                                if ($metatask->getFromDB($task)) {
-                                    if ($metatask->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
-                                        $metachildtask = new PluginMetademandsMetademandTask();
-                                        if ($metachildtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $task])) {
-                                            echo Dropdown::getDropdownName(
-                                                'glpi_plugin_metademands_metademands',
-                                                $metachildtask->fields['plugin_metademands_metademands_id']
-                                            );
-                                        }
-                                    } else {
-                                        echo $metatask->getName();
-                                    }
-                                    echo "<br>";
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    echo Dropdown::EMPTY_VALUE;
-                }
-                echo "</td>";
-
-                echo "<td>";
-                $fieldopt = new PluginMetademandsFieldOption();
-                if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
-                    $nbopts = count($opts);
-                    if ($nbopts > 1) {
-                        echo __('Multiples', 'metademands');
-                    } else {
-                        foreach ($opts as $opt) {
-                            $datao['item'] = $value['item'];
-                            $datao['type'] = $value['type'];
-                            $datao['id'] = $value['id'];
-                            $datao['check_value'] = $opt['check_value'];
-                            $datao['parent_field_id'] = $opt['parent_field_id'];
-
-                            $metademand_custom = new PluginMetademandsFieldCustomvalue();
-                            $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
-                            $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
-
-                            if (isset($value['type'])
-                                && in_array($value['type'], $allowed_customvalues_types)
-                                || in_array($value['item'], $allowed_customvalues_items)) {
-                                $datao['custom_values'] = [];
-                                if ($customs = $metademand_custom->find(
-                                    ["plugin_metademands_fields_id" => $value['id']],
-                                    "rank"
-                                )) {
-                                    if (count($customs) > 0) {
-                                        $datao['custom_values'] = $customs;
-                                    }
-                                }
-                            } else {
-                                $datao['custom_values'] = $value['custom_values'] ?? [];
-                            }
-
-                            echo PluginMetademandsFieldOption::getValueToCheck($datao);
-                        }
-                    }
-                } else {
-                    echo Dropdown::EMPTY_VALUE;
-                }
-                echo "</td>";
+                echo "<th class='center b'></th>";
+                echo "<th class='center b'>" . __('ID') . "</th>";
+                echo "<th class='center b'>" . __('Label') . "</th>";
+                echo "<th class='center b'>" . __('Type') . " / ".__('Object', 'metademands')."</th>";
+                echo "<th class='center b'>" . __('Mandatory', 'metademands') . "</th>";
+                echo "<th class='center b'>" . __('Value to check', 'metademands') . "</th>";
                 if ($item->fields['is_order'] == 1) {
-                    echo "<td>" . Dropdown::getYesNo($fieldparameter->fields['is_basket']) . "</td>";
+                    echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
                 }
-                echo "<td>";
+                echo "<th class='center b'>" . __('Use this field as object field', 'metademands') . "</th>";
+                echo "<th class='center b'>" . __('Launch a task with the field', 'metademands') . "</th>";
+                echo "<th class='center b' style='width: 70px;'>" . __('Actions', 'metademands') . "</th>";
+                echo "</tr>";
 
-                $searchOption = Search::getOptions('Ticket');
-                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
-                    if ($fieldparameter->fields['used_by_ticket']
-                        && $value['type'] !== 'text'
-                        && $value['type'] !== 'email'
-                        && $value['type'] !== 'tel'
-                        && $value['type'] !== 'url') {
-                        echo $searchOption[$fieldparameter->fields['used_by_ticket']]['name'];
+                // Init navigation list for field items
+                Session::initNavigateListItems($self->getType(), self::getTypeName(1));
+
+                $new_types = [];
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $new_fields = self::addPluginDropdownFieldItems($plug);
+                        if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                            foreach ($new_fields as $plugin) {
+                                foreach ($plugin as $k => $field) {
+                                    $new_types[] = $k;
+                                }
+                            }
+                        }
                     }
                 }
-                echo "</td>";
 
-                echo "<td class='center' style='color:white;background-color: #" . self::setColor(
-                        $value['rank']
-                    ) . "!important'>";
-                echo $value['rank'] . "</td>";
-                echo "<td class='center' style='color:white;background-color: #" . self::setColor(
-                        $value['rank']
-                    ) . "'>";
-                echo empty($value['order']) ? __('None') : $value['order'];
-                echo "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
+                foreach ($data as $value) {
+                    Session::addToNavigateListItems($self->getType(), $value['id']);
 
-            if ($canedit && count($data)) {
-                $massiveactionparams['ontop'] = false;
-                Html::showMassiveActions($massiveactionparams);
-                Html::closeForm();
+                    echo "<tr class='tab_bg_1'>";
+                    if ($canedit) {
+                        echo "<td class='rowhandler control center'>";
+//                        echo "<div class=\"drag\">";
+                        Html::showMassiveActionCheckBox(__CLASS__, $value["id"]);
+//                        echo "</div>";
+                        echo "</td>";
+                    }
+
+                    echo "<td>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]
+                        ) || ((isset($value['type'])
+                                && (in_array(
+                                        $value['type'],
+                                        $allowed_customvalues_types
+                                    ) && ($value['item'] != "ITILCategory_Metademands"
+                                        && !in_array($value["item"], self::$field_specificobjects))
+                                    && !in_array($value['item'], $new_types))
+                                || (in_array(
+                                        $value['item'],
+                                        $allowed_customvalues_items
+                                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
+                            )
+                            && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
+                        echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
+                    }
+                    echo "</div>";
+                    echo "</td>";
+
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    echo $value['id'];
+                    echo "</div>";
+                    echo "</td>";
+
+                    $name = "";
+                    if (isset($value['name'])) {
+                        $name = $value['name'];
+                    }
+
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    echo " <a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'] . "'>";
+                    if (empty(trim($name))) {
+                        echo __('ID') . " - " . $value['id'];
+                    } else {
+                        echo Toolbox::stripslashes_deep($name);
+                    }
+                    echo "</a>";
+                    echo "</div>";
+                    echo "</td>";
+
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    echo self::getFieldTypesName($value['type']);
+                    //name of parent field
+                    if ($value['type'] == 'parent_field') {
+                        if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $value['id']])) {
+                            $field = new self();
+                            if ($field->getFromDB($fieldopt->fields['parent_field_id'])) {
+                                if (empty(trim($field->fields['name']))) {
+                                    echo " ( ID - " . $value['parent_field_id'] . ")";
+                                } else {
+                                    echo " (" . $field->fields['name'] . ")";
+                                }
+                            }
+                        }
+                    }
+
+                    $itemtypename = self::getFieldItemsName($value['type'], $value['item']);
+                    if ($itemtypename != Dropdown::EMPTY_VALUE) {
+                        echo " (";
+                        echo $itemtypename;
+                        echo ")";
+                    }
+                    echo "</td>";
+
+
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
+                        if ($fieldparameter->fields['is_mandatory'] == 1) {
+                            echo "<span class='red'>";
+                        }
+                        echo Dropdown::getYesNo($fieldparameter->fields['is_mandatory']);
+                        if ($fieldparameter->fields['is_mandatory'] == 1) {
+                            echo "</span>";
+                        }
+                    }
+                    echo "</div>";
+                    echo "</td>";
+
+
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    $fieldopt = new PluginMetademandsFieldOption();
+                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
+                        $nbopts = count($opts);
+                        if ($nbopts > 1) {
+                            echo __('Multiples', 'metademands');
+                        } else {
+                            foreach ($opts as $opt) {
+                                $datao['item'] = $value['item'];
+                                $datao['type'] = $value['type'];
+                                $datao['id'] = $value['id'];
+                                $datao['check_value'] = $opt['check_value'];
+                                $datao['parent_field_id'] = $opt['parent_field_id'];
+
+                                $metademand_custom = new PluginMetademandsFieldCustomvalue();
+                                $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                                $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                                if (isset($value['type'])
+                                    && in_array($value['type'], $allowed_customvalues_types)
+                                    || in_array($value['item'], $allowed_customvalues_items)) {
+                                    $datao['custom_values'] = [];
+                                    if ($customs = $metademand_custom->find(
+                                        ["plugin_metademands_fields_id" => $value['id']],
+                                        "rank"
+                                    )) {
+                                        if (count($customs) > 0) {
+                                            $datao['custom_values'] = $customs;
+                                        }
+                                    }
+                                } else {
+                                    $datao['custom_values'] = $value['custom_values'] ?? [];
+                                }
+
+                                echo PluginMetademandsFieldOption::getValueToCheck($datao);
+                            }
+                        }
+                    } else {
+                        echo Dropdown::EMPTY_VALUE;
+                    }
+                    echo "</div>";
+                    echo "</td>";
+                    if ($item->fields['is_order'] == 1) {
+                        echo "<td class='rowhandler control center'>";
+                        echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                        echo Dropdown::getYesNo($fieldparameter->fields['is_basket']) . "</td>";
+                        echo "</div>";
+                    }
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    $searchOption = Search::getOptions('Ticket');
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
+                        if ($fieldparameter->fields['used_by_ticket']
+                            && $value['type'] !== 'text'
+                            && $value['type'] !== 'email'
+                            && $value['type'] !== 'tel'
+                            && $value['type'] !== 'url') {
+                            echo $searchOption[$fieldparameter->fields['used_by_ticket']]['name'];
+                        } else {
+                            echo Dropdown::EMPTY_VALUE;
+                        }
+                    } else {
+                        echo Dropdown::EMPTY_VALUE;
+                    }
+                    echo "</div>";
+                    echo "</td>";
+
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
+border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    $fieldopt = new PluginMetademandsFieldOption();
+                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
+                        foreach ($opts as $opt) {
+                            $tasks = [];
+                            if (!empty($opt['plugin_metademands_tasks_id'])) {
+                                $tasks[] = $opt['plugin_metademands_tasks_id'];
+                            }
+                            if (is_array($tasks)) {
+                                if (count($tasks) > 0) {
+                                    foreach ($tasks as $k => $task) {
+                                        $metatask = new PluginMetademandsTask();
+                                        if ($metatask->getFromDB($task)) {
+                                            if ($metatask->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
+                                                $metachildtask = new PluginMetademandsMetademandTask();
+                                                if ($metachildtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $task]
+                                                )) {
+                                                    echo Dropdown::getDropdownName(
+                                                        'glpi_plugin_metademands_metademands',
+                                                        $metachildtask->fields['plugin_metademands_metademands_id']
+                                                    );
+                                                }
+                                            } else {
+                                                echo $metatask->getName();
+                                            }
+                                            echo "<br>";
+                                        }
+                                    }
+                                } else {
+                                    echo Dropdown::EMPTY_VALUE;
+                                }
+                            }
+                        }
+                    } else {
+                        echo Dropdown::EMPTY_VALUE;
+                    }
+                    echo "</div>";
+                    echo "</td>";
+
+                    $form = self::getFormURL();
+                    echo "<td class='rowhandler control center'>";
+                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    $debug = (isset($_SESSION['glpi_use_mode'])
+                    && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+                    if ($debug) {
+                        echo $value['order'];
+                    }
+                    echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
+                    echo "</div>";
+                    echo "&nbsp;";
+                    echo Html::getSimpleForm(
+                        $form,
+                        'purge',
+                        "",
+                        ["id" => $value['id'],
+                            "plugin_metademands_metademands_id" => $value['plugin_metademands_metademands_id']],
+                        "fa-times-circle fa-1x",
+                        "",
+                        __('Are you sure you want to delete this field ?', 'metademands')
+                    );
+                    echo "</td>";
+                    echo "</tr>";
+                }
+                echo "</table>";
+                echo "</div>";
+
+                if ($canedit && count($data)) {
+                    $massiveactionparams['ontop'] = false;
+                    Html::showMassiveActions($massiveactionparams);
+                    Html::closeForm();
+                }
+
+                $plugin_metademands_metademands_id = $value['plugin_metademands_metademands_id'];
+                echo "<script type='text/javascript' >\n";
+                echo "$(document).ready(function() {
+                plugin_metademands_orderredipsInit($rand, $plugin_metademands_metademands_id )});";
+                echo "\n</script>";
+
+            } else {
+                echo "<div class='center first-bloc'>";
+                echo "<table class='tab_cadre_fixe'>";
+                echo "<tr  class='tab_bg_1'><td class='center'>" . __('No item to display') . "</td></tr>";
+                echo "</table>";
+                echo "</div>";
             }
-        } else {
-            echo "<div class='center first-bloc'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr  class='tab_bg_1'><td class='center'>" . __('No item to display') . "</td></tr>";
-            echo "</table>";
+
             echo "</div>";
         }
     }
@@ -4082,5 +4291,90 @@ JAVASCRIPT
 
         echo "</table></div>";
         Html::closeForm();
+    }
+
+
+    /**
+     * @param array $params
+     */
+    public function reorder(array $params)
+    {
+        if (isset($params['old_order'])
+            && isset($params['new_order'])) {
+            $crit = [
+                'order' => $params['old_order'],
+                'rank' => $params['rank'],
+                'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+            ];
+
+            $itemMove = new self();
+            $itemMove->getFromDBByCrit($crit);
+
+            if (isset($itemMove->fields["id"])) {
+                // Reorganization of all fields
+                if ($params['old_order'] < $params['new_order']) {
+                    $toUpdateList = $this->find([
+                        '`order`' => ['>', $params['old_order']],
+                        'order' => ['<=', $params['new_order']],
+                        'rank' => $params['rank'],
+                        'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+                    ]);
+
+                    foreach ($toUpdateList as $toUpdate) {
+                        $this->update([
+                            'id' => $toUpdate['id'],
+                            'order' => $toUpdate['order'] - 1
+                        ]);
+                    }
+                } else {
+                    $toUpdateList = $this->find([
+                        '`order`' => ['<', $params['old_order']],
+                        'order' => ['>=', $params['new_order']],
+                        'rank' => $params['rank'],
+                        'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+                    ]);
+
+                    foreach ($toUpdateList as $toUpdate) {
+                        $this->update([
+                            'id' => $toUpdate['id'],
+                            'order' => $toUpdate['order'] + 1
+                        ]);
+                    }
+                }
+
+                if (isset($itemMove->fields["id"])
+                    && $itemMove->fields['id'] > 0) {
+                    $this->update([
+                        'id' => $itemMove->fields['id'],
+                        'order' => $params['new_order']
+                    ]);
+                }
+            }
+        }
+    }
+
+    static function isSequentialFromOne(array $arr) {
+        if (empty($arr) || $arr[0] !== 1) {
+            return false; // Vérifie que le tableau n'est pas vide et commence bien par 0
+        }
+
+        for ($i = 1; $i < count($arr); $i++) {
+            if ($arr[$i] - $arr[$i - 1] !== 1) {
+                return false; // Vérifie que la progression est bien de +1
+            }
+        }
+        return true;
+    }
+
+    static function fixOrders(array $data) {
+        // Extraire les clés du tableau
+        $keys = array_keys($data);
+
+        // Réinitialiser le rank à partir de 0
+        foreach ($keys as $index => $key) {
+            $data[$key]['order'] = $index + 1;
+        }
+
+        return $data;
     }
 }

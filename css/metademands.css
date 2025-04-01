@@ -590,3 +590,76 @@ textarea.invalid,
     background-color: #CCC !important;
     color: white;
 }
+
+/* Style the tab */
+.tabfield {
+    overflow: hidden;
+}
+
+.tabfieldcontent:not(.active) {
+    display: none;
+}
+
+.tabs-container {
+    position: relative;
+}
+
+.scrollable-tabs {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scrollable-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-tabs .nav-item {
+    flex-shrink: 0;
+}
+
+.scrollable-tabs {
+    margin-right: 30px;
+    margin-left: 30px;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: #333;
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.scroll-left {
+    left: 0;
+}
+.scroll-right {
+    right: 0;
+}
+
+/* Style the tab content */
+.tabfieldcontent {
+    /*display: none;*/
+    animation: fadeEffect 1s;
+    padding-top: 15px;
+    /*border: 1px solid #ccc;*/
+}
+
+/* Fade in tabs */
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
