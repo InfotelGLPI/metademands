@@ -493,7 +493,7 @@ class PluginMetademandsTools extends CommonDBTM
             }  else {
                 echo "<tr class='tab_bg_2'>";
                 echo "<th class='left'>";
-                echo __('No problem with ranks founded', 'metademands');
+                echo __('No problems with ranks found', 'metademands');
                 echo "</th>";
                 echo "</tr>";
             }
