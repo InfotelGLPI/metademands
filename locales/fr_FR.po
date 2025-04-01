@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-01 10:27+0000\n"
+"POT-Creation-Date: 2025-04-01 10:40+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -2202,7 +2202,7 @@ msgid "Ranks problem with fields"
 msgstr "Problèmes de rangs des champs"
 
 #: inc/tools.class.php:496
-msgid "No problem with ranks founded"
+msgid "No problems with ranks found"
 msgstr "Aucun problème avec les rangs trouvé"
 
 #: inc/upload.class.php:52
