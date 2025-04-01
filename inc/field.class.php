@@ -1013,7 +1013,15 @@ class PluginMetademandsField extends CommonDBChild
             $cond['item'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'];
         }
 
-        self::searchForm($item, $cond);
+        $self = new self();
+        $data = $self->find(
+            $cond,
+            ['rank', 'order']
+        );
+        if (count($data) > 0) {
+            Toolbox::logInfo($data);
+            self::searchForm($item, $cond);
+        }
 
         echo Html::scriptBlock(
             '
@@ -1059,13 +1067,6 @@ class PluginMetademandsField extends CommonDBChild
             
 
             '
-        );
-
-        $self = new self();
-
-        $data = $self->find(
-            $cond,
-            ['rank', 'order']
         );
 
         $fieldparameter = new PluginMetademandsFieldParameter();
@@ -3216,13 +3217,16 @@ JAVASCRIPT
                 $select[$id] = __('ID') . " - " . $id;
             }
         }
-        $previous_order = $params['order'] - 1;
-        $field = new PluginMetademandsField();
-        if ($field->getFromDBByCrit(['rank' => $params['rank'],
-            'order' => $previous_order,
-            'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']])) {
-            $previous_fields_id = $field->fields['id'];
+        if ($params['order'] > 0) {
+            $previous_order = $params['order'] - 1;
+            $field = new PluginMetademandsField();
+            if ($field->getFromDBByCrit(['rank' => $params['rank'],
+                'order' => $previous_order,
+                'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']])) {
+                $previous_fields_id = $field->fields['id'];
+            }
         }
+
         Dropdown::showFromArray('plugin_metademands_fields_id', $select, ['value' => $previous_fields_id]);
     }
 
