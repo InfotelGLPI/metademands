@@ -40,12 +40,12 @@ if (!isset($_POST['step'])) {
 switch ($_POST['step']) {
     case 'order':
         $fields = new PluginMetademandsField();
-        $fields->showOrderDropdown(
-            $_POST['rank'],
-            $_POST['fields_id'],
-            $_POST['previous_fields_id'],
-            $_POST["metademands_id"]
-        );
+
+        $params['rank'] = $_POST['rank'];
+        $params['id'] = $_POST['fields_id'];
+        $params['plugin_metademands_fields_id'] = $_POST['previous_fields_id'];
+        $params['plugin_metademands_metademands_id'] = $_POST["metademands_id"];
+        $fields->showOrderDropdown($params);
         break;
     case 'object':
         global $CFG_GLPI;

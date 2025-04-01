@@ -417,10 +417,7 @@ class PluginMetademandsField extends CommonDBChild
             echo "<td>";
             echo "<span id='show_order'>";
             $this->showOrderDropdown(
-                $this->fields['rank'],
-                $this->fields['id'],
-                $this->fields['plugin_metademands_fields_id'],
-                $this->fields["plugin_metademands_metademands_id"]
+                $this->fields
             );
             echo "</span>";
             echo "</td>";
@@ -902,12 +899,10 @@ class PluginMetademandsField extends CommonDBChild
         if ($this->fields['type'] != "title-block") {
             echo "<td>" . __('Display field after', 'metademands') . "</td>";
             echo "<td>";
+
             echo "<span id='show_order'>";
             $this->showOrderDropdown(
-                $this->fields['rank'],
-                $this->fields['id'],
-                $this->fields['plugin_metademands_fields_id'],
-                $this->fields["plugin_metademands_metademands_id"]
+                $this->fields
             );
             echo "</span>";
             echo "</td>";
@@ -1025,7 +1020,7 @@ class PluginMetademandsField extends CommonDBChild
            
            $(document).ready(function () {
                 var hash = window.location.hash;
-            
+
                 function updateActiveTab(rank) {
                     document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
                     document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
@@ -1039,7 +1034,9 @@ class PluginMetademandsField extends CommonDBChild
                 
                 var fieldid = sessionStorage.getItem("loadedblock");
                 if (typeof fieldid !== "undefined" && fieldid != null && fieldid.length > 0) {
+                
                      updateActiveTab(fieldid.substr(5));
+                     hash = "#block" + fieldid.substr(5);
                 }
                 if (hash.startsWith("#block")) {
                     updateActiveTab(hash.replace("#block", ""));
@@ -3199,29 +3196,34 @@ JAVASCRIPT
      * @param $previous_fields_id
      * @param $metademands_id
      */
-    public function showOrderDropdown($rank, $fields_id, $previous_fields_id, $metademands_id)
+    public function showOrderDropdown($params)
     {
-        if (empty($rank)) {
-            $rank = 1;
+        if (empty($params['rank'])) {
+            $params['rank'] = 1;
         }
-        $restrict = ['rank' => $rank, 'plugin_metademands_metademands_id' => $metademands_id];
-        //      $restrict += ['NOT' => ['type' => 'title-block']];
-        if (!empty($fields_id)) {
-            $restrict += ['NOT' => ['id' => $fields_id]];
+        $restrict = ['rank' => $params['rank'],
+            'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']];
+        if (!empty($fields['id'])) {
+            $restrict += ['NOT' => ['id' => $params['id']]];
         }
 
-        $order = [Dropdown::EMPTY_VALUE];
+        $previous_fields_id = $params['plugin_metademands_fields_id'];
+        $select = [Dropdown::EMPTY_VALUE];
 
         foreach ($this->find($restrict, ['order']) as $id => $values) {
-            $order[$id] = $values['name'] ? Toolbox::stripslashes_deep($values['name']) : $id;
-            //if (!empty($values['label2'])) {
-            //   $order[$id] .= ' - ' . $values['label2'];
-            //}
-            if (empty(trim($order[$id]))) {
-                $order[$id] = __('ID') . " - " . $id;
+            $select[$id] = $values['name'] ? Toolbox::stripslashes_deep($values['name']) : $id;
+            if (empty(trim($select[$id]))) {
+                $select[$id] = __('ID') . " - " . $id;
             }
         }
-        Dropdown::showFromArray('plugin_metademands_fields_id', $order, ['value' => $previous_fields_id]);
+        $previous_order = $params['order'] - 1;
+        $field = new PluginMetademandsField();
+        if ($field->getFromDBByCrit(['rank' => $params['rank'],
+            'order' => $previous_order,
+            'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']])) {
+            $previous_fields_id = $field->fields['id'];
+        }
+        Dropdown::showFromArray('plugin_metademands_fields_id', $select, ['value' => $previous_fields_id]);
     }
 
     /**
