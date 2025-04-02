@@ -1332,7 +1332,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                 //Si la valeur est en session
                 if (isset($data['value'])) {
-                    Toolbox::logInfo($data['value']);
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 }
 

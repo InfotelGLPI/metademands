@@ -1019,54 +1019,52 @@ class PluginMetademandsField extends CommonDBChild
             ['rank', 'order']
         );
         if (count($data) > 0) {
-            Toolbox::logInfo($data);
             self::searchForm($item, $cond);
         }
 
         echo Html::scriptBlock(
-            '
-           
-           $(document).ready(function () {
-                var hash = window.location.hash;
-
-                function updateActiveTab(rank) {
-                    document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
-                    document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
-            
-                    document.getElementById("ablock" + rank)?.classList.add("active");
-                    $("div[id^=\"block\"]").hide();
-                    $("#block" + rank).show();
+            '$(document).ready(function () {
+                        var hash = window.location.hash;
+                        var fieldid = sessionStorage.getItem("loadedblock");
                     
-                    window.location.hash = "#block" + rank; // Mise à jour manuelle
-                }
-                
-                var fieldid = sessionStorage.getItem("loadedblock");
-                if (typeof fieldid !== "undefined" && fieldid != null && fieldid.length > 0) {
-                
-                     updateActiveTab(fieldid.substr(5));
-                     hash = "#block" + fieldid.substr(5);
-                }
-                if (hash.startsWith("#block")) {
-                    updateActiveTab(hash.replace("#block", ""));
-                } else {
-                    updateActiveTab(1); // Sélectionne par défaut block1
-                }
-            
-                $("#fieldslist a").click(function (e) {
-                    e.preventDefault();
-                    var tabId = $(this).attr("href").replace("#", "");
-                    sessionStorage.setItem("loadedblock", tabId);
-                    updateActiveTab(tabId.replace("block", ""));
-                });
-            
-                $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
-                    var id = $(e.target).attr("href").substr(1);
-                    window.location.hash = id;
-                });
-            });
-            
-
-            '
+                        function updateActiveTab(rank) {
+                            document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
+                            document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
+                    
+                            document.getElementById("ablock" + rank)?.classList.add("active");
+                            $("div[id^=\"block\"]").hide();
+                            $("#block" + rank).show();
+                        }
+                    
+                    
+                        if (fieldid && document.getElementById(fieldid)) {
+                            updateActiveTab(fieldid.replace("block", ""));
+                            hash = "#" + fieldid;
+                        } else if (hash.startsWith("#block") && document.getElementById(hash.substring(1))) {
+                            updateActiveTab(hash.replace("#block", ""));
+                        } else {
+                            updateActiveTab(1);
+                            sessionStorage.setItem("loadedblock", "block1");
+                            window.location.hash = "#block1";
+                        }
+                    
+                    $("#fieldslist a").click(function (e) {
+                        e.preventDefault();
+                        var tabId = $(this).attr("href").replace("#", "");
+                    
+                        if (document.getElementById(tabId)) {
+                            sessionStorage.setItem("loadedblock", tabId);
+                            updateActiveTab(tabId.replace("block", ""));
+                            window.location.hash = tabId;
+                        }
+                    });
+                    
+                    $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+                        var id = $(e.target).attr("href").substr(1);
+                        sessionStorage.setItem("loadedblock", id);
+                        window.location.hash = id;
+                    });
+                    });'
         );
 
         $fieldparameter = new PluginMetademandsFieldParameter();
@@ -1095,14 +1093,32 @@ class PluginMetademandsField extends CommonDBChild
         $block_fields = [];
 
 
-        foreach ($data as $value) {
-            $blocks[$value['rank']] = __('Block', 'metademands') . " " . $value['rank'];
+        $databyblocks = [];
+        foreach ($data as $id => $value) {
+            $databyblocks[$value['rank']][] = $data[$id];
+        }
+
+        foreach ($databyblocks as $blockid => $blockfields) {
+            $i = 0;
+            foreach ($blockfields as $value) {
+                if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
+                    $i++;
+                    if ($i > 0) {
+                        $blocks[$blockid] = $value['name'];
+                    }
+                }
+                if ($i == 0) {
+                    $title = __('Block', 'metademands') . " " . $value['rank'];
+                    $blocks[$blockid] = $title;
+                }
+            }
         }
         if (count($blocks) > 0) {
             echo "<div class='tabs-container'>";
             echo "<button class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
             echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
             echo "<ul class='nav nav-tabs flex-nowrap' role='tablist' id='fieldslist'>";
+
             foreach ($blocks as $idblock => $block) {
                 $nameblock = $block;
                 echo "<li class='nav-item'>";
@@ -1535,6 +1551,52 @@ border-style: none !important; border-color: initial !important;border-image: in
 
             echo "</div>";
         }
+        echo "<br><h3>";
+        echo __('Block overview', 'metademands');
+        echo "</h3>";
+        $id = $item->getID();
+        $url = PLUGIN_METADEMANDS_WEBDIR;
+        echo "<script type='text/javascript'>";
+        echo "$(document).ready(function () {
+                var meta_id = $id;
+                var urlmeta = '$url';
+                var fieldid = 1; // Par défaut, on charge avec fieldid = 1
+            
+                function loadPreview(fieldid) {
+                    $.ajax({
+                        url: urlmeta + '/ajax/previewMetademand.php',
+                        type: 'POST',
+                        datatype: 'HTML',
+                        data: { block: fieldid, metademands_id: meta_id },
+                        success: function (response) {
+                            $('#see_block_preview').html(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr);
+                            console.log(status);
+                            console.log(error);
+                        }
+                    });
+                }
+            
+                if (fieldid === 1) {
+                    loadPreview(fieldid);
+                }
+                var storefieldid = sessionStorage.getItem('loadedblock');
+                if (storefieldid) {
+                    loadPreview(parseInt(storefieldid.substr(5)));
+                }
+                $('#fieldslist a').click(function (e) {
+                    e.preventDefault();
+                    var tabId = $(this).attr('href').replace('#', '');
+                    if (typeof tabId !== 'undefined' && tabId.length > 0) {
+                        fieldid = parseInt(tabId.substr(5)); // Mise à jour du fieldid
+                        loadPreview(fieldid); // Recharger AJAX avec la nouvelle valeur
+                    }
+                });
+            });";
+        echo "</script>";
+        echo "<span id='see_block_preview'></span>";
     }
 
     /**

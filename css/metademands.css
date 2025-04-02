@@ -629,9 +629,9 @@ textarea.invalid,
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.1);
+    /*background: rgba(0, 0, 0, 0.1);*/
     border: none;
-    color: #333;
+    color: #878080;
     font-size: 1.2rem;
     padding: 5px 10px;
     cursor: pointer;

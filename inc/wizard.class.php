@@ -217,6 +217,123 @@ class PluginMetademandsWizard extends CommonDBTM
         }
     }
 
+    /**
+     * @param $parameters
+     * @return void
+     */
+    public function showMetademandTitle($meta, $parameters) {
+
+        echo "<div class=\"row\">";
+        echo "<div class=\"col-md-12 md-title\">";
+        echo "<div style='background-color: #FFF'>";
+
+        $title_color = "#000";
+        if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+            $title_color = $meta->fields['title_color'];
+        }
+
+        $color = self::hex2rgba($title_color, "0.03");
+        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+        echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";
+
+        $meta = new PluginMetademandsMetademand();
+        if ($meta->getFromDB($parameters['metademands_id'])) {
+            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+                $icon = $meta->fields['icon'];
+            }
+        }
+
+        echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+        if (!empty($icon)) {
+            echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+        }
+        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+            echo $meta->getName();
+        } else {
+            echo $n;
+        }
+        if (isset($parameters['itilcategories_id'])
+            && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+            $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+            if (is_array($cats) && count($cats) > 1) {
+                $itilCategory = new ITILCategory();
+                if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
+                    echo " - " . $itilCategory->fields['completename'];
+                }
+            }
+        }
+        if ($meta->getFromDB($parameters['metademands_id'])
+            && Plugin::isPluginActive('servicecatalog')) {
+            $configsc = new PluginServicecatalogConfig();
+            $seedetail = 1;
+            if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
+                $seedetail = $configsc->getDetailBeforeFormRedirect();
+            }
+            if ($configsc->seeCategoryDetails() && $seedetail == 0) {
+                $itilcategories_id = 0;
+                $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                if (is_array($cats) && count($cats) == 1) {
+                    foreach ($cats as $cat) {
+                        $itilcategories_id = $cat;
+                    }
+                }
+                $type = $meta->fields['type'];
+                $helpdesk_category = new PluginServicecatalogCategory();
+                if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
+                    && ($helpdesk_category->fields['comment_incident'] != null
+                        || $helpdesk_category->fields['comment_request'] != null
+                        || $helpdesk_category->fields['service_detail'] != null
+                        || $helpdesk_category->fields['service_users'] != null
+                        || $helpdesk_category->fields['service_ttr'] != null
+                        || $helpdesk_category->fields['service_use'] != null
+                        || $helpdesk_category->fields['service_supervision'] != null
+                        || $helpdesk_category->fields['service_rules'] != null)) {
+                    echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
+                            'More informations',
+                            'servicecatalog'
+                        ) . "\"> ";
+                    //                            echo __('More informations of this category ? click here', 'servicecatalog');
+                    echo "</i>";
+                    //                            echo "</div>";
+                    echo Ajax::createIframeModalWindow(
+                        'categorydetails' . $itilcategories_id,
+                        PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
+                        [
+                            'title' => __('More informations', 'servicecatalog'),
+                            'display' => false,
+                            'width' => 1050,
+                            'height' => 500
+                        ]
+                    );
+                }
+            }
+        }
+
+        if (Session::getCurrentInterface() == 'central'
+            && Session::haveRight('plugin_metademands', UPDATE)
+            && !$parameters['seeform']) {
+            echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
+                    'PluginMetademandsMetademand'
+                ) . "?id=" . $parameters['metademands_id'] . "'>
+                            <i class='fas fa-wrench'></i></a>";
+        }
+        echo "</h2>";
+
+        self::showmodelsAndDrafts($parameters, true);
+
+        echo "</div>";
+        echo "</div>";
+        echo "</div>";
+
+        if (!empty($meta->fields['comment'])) {
+            if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+                $comment = $meta->fields['comment'];
+            }
+            echo "<div class='center' style='background: #fbf9f9;padding: 10px;'><i>" . nl2br(
+                    $comment
+                ) . "</i></div>";
+        }
+    }
 
     public function showmodelsAndDrafts($parameters, $with_title = 1)
     {
@@ -350,12 +467,10 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $meta = new PluginMetademandsMetademand();
         $maintenance_mode = 0;
-        $is_basket = 0;
         $title = 1;
 
         if ($meta->getFromDB($parameters['metademands_id'])) {
             $maintenance_mode = $meta->fields['maintenance_mode'];
-            $is_basket = $meta->fields['is_order'];
             $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
             $title = $meta->fields['hide_title'] ? 0 : 1;
         }
@@ -524,120 +639,7 @@ class PluginMetademandsWizard extends CommonDBTM
             } elseif ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
 
                 if ($title == 1) {
-                    // Wizard title
-                    echo "<div class=\"row\">";
-                    echo "<div class=\"col-md-12 md-title\">";
-                    echo "<div style='background-color: #FFF'>";
-
-                    $title_color = "#000";
-                    if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                        $title_color = $meta->fields['title_color'];
-                    }
-
-                    $color = self::hex2rgba($title_color, "0.03");
-                    $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
-                    echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";
-
-                    $meta = new PluginMetademandsMetademand();
-                    if ($meta->getFromDB($parameters['metademands_id'])) {
-                        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                            $icon = $meta->fields['icon'];
-                        }
-                    }
-
-                    echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-                    if (!empty($icon)) {
-                        echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
-                    }
-                    if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
-                        echo $meta->getName();
-                    } else {
-                        echo $n;
-                    }
-                    if (isset($parameters['itilcategories_id'])
-                        && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
-                        $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
-                        if (is_array($cats) && count($cats) > 1) {
-                            $itilCategory = new ITILCategory();
-                            if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
-                                echo " - " . $itilCategory->fields['completename'];
-                            }
-                        }
-                    }
-                    if ($meta->getFromDB($parameters['metademands_id'])
-                        && Plugin::isPluginActive('servicecatalog')) {
-                        $configsc = new PluginServicecatalogConfig();
-                        $seedetail = 1;
-                        if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
-                            $seedetail = $configsc->getDetailBeforeFormRedirect();
-                        }
-                        if ($configsc->seeCategoryDetails() && $seedetail == 0) {
-                            $itilcategories_id = 0;
-                            $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
-                            if (is_array($cats) && count($cats) == 1) {
-                                foreach ($cats as $cat) {
-                                    $itilcategories_id = $cat;
-                                }
-                            }
-                            $type = $meta->fields['type'];
-                            $helpdesk_category = new PluginServicecatalogCategory();
-                            if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
-                                && ($helpdesk_category->fields['comment_incident'] != null
-                                    || $helpdesk_category->fields['comment_request'] != null
-                                    || $helpdesk_category->fields['service_detail'] != null
-                                    || $helpdesk_category->fields['service_users'] != null
-                                    || $helpdesk_category->fields['service_ttr'] != null
-                                    || $helpdesk_category->fields['service_use'] != null
-                                    || $helpdesk_category->fields['service_supervision'] != null
-                                    || $helpdesk_category->fields['service_rules'] != null)) {
-                                echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                                        'More informations',
-                                        'servicecatalog'
-                                    ) . "\"> ";
-    //                            echo __('More informations of this category ? click here', 'servicecatalog');
-                                echo "</i>";
-    //                            echo "</div>";
-                                echo Ajax::createIframeModalWindow(
-                                    'categorydetails' . $itilcategories_id,
-                                    PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
-                                    [
-                                        'title' => __('More informations', 'servicecatalog'),
-                                        'display' => false,
-                                        'width' => 1050,
-                                        'height' => 500
-                                    ]
-                                );
-                            }
-                        }
-                    }
-
-                    if (Session::getCurrentInterface() == 'central'
-                        && Session::haveRight('plugin_metademands', UPDATE)
-                        && !$parameters['seeform']) {
-                        echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                                'PluginMetademandsMetademand'
-                            ) . "?id=" . $parameters['metademands_id'] . "'>
-                            <i class='fas fa-wrench'></i></a>";
-                    }
-                    echo "</h2>";
-
-                    self::showmodelsAndDrafts($parameters, true);
-
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                }
-//                 End Wizard title
-
-
-                if ($meta->getFromDB($parameters['metademands_id'])
-                    && !empty($meta->fields['comment'])) {
-                    if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
-                        $comment = $meta->fields['comment'];
-                    }
-                    echo "<div class='center' style='background: #fbf9f9;padding: 10px;'><i>" . nl2br(
-                            $comment
-                        ) . "</i></div>";
+                    self::showMetademandTitle($meta, $parameters);
                 }
 
                 // Display user informations
@@ -1202,7 +1204,8 @@ class PluginMetademandsWizard extends CommonDBTM
         $meta_validated,
         $preview = false,
         $options = [],
-        $seeform = false
+        $seeform = false,
+        $block = 0
     ) {
         $parameters = ['itilcategories_id' => 0];
 
@@ -1233,11 +1236,23 @@ class PluginMetademandsWizard extends CommonDBTM
             foreach ($metademands_data as $form_step => $data) {
                 if ($form_step == $step) {
                     foreach ($data as $form_metademands_id => $line) {
+
+                        $fields = $line['form'];
+                        if ($block > 0) {
+                            $fieldsbyblock = [];
+                            foreach ($fields as $fid => $field) {
+                                if ($field['rank'] == $block) {
+                                    $fieldsbyblock[] = $fields[$fid];
+                                }
+                            }
+                            $fields = $fieldsbyblock;
+                        }
+
                         self::constructForm(
                             $metademands_id,
                             $metademands_data,
                             $step,
-                            $line['form'],
+                            $fields,
                             $preview,
                             $parameters['itilcategories_id'],
                             $seeform,

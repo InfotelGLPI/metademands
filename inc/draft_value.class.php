@@ -315,7 +315,6 @@ class PluginMetademandsDraft_Value extends CommonDBTM
                             }
 
                             $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
-                            Toolbox::logInfo($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id]);
                         } else {
                             $field['value'] = json_encode($values[$fields_id]);
                             $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
