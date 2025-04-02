@@ -591,13 +591,13 @@ textarea.invalid,
     color: white;
 }
 
-/* Style the tab */
-.tabfield {
-    overflow: hidden;
-}
-
 .tabfieldcontent:not(.active) {
     display: none;
+}
+
+.tablinks.active {
+    font-weight: 700;
+    border-left-color: #bdbdbd !important;
 }
 
 .tabs-container {
