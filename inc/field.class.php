@@ -1532,8 +1532,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                                             echo "<br>";
                                         }
                                     }
-                                } else {
-                                    echo Dropdown::EMPTY_VALUE;
                                 }
                             }
                         }

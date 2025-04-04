@@ -147,8 +147,8 @@ class PluginMetademandsTitle extends CommonDBTM
          );
 JAVASCRIPT
         );
+        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
-
         echo "</tr>";
     }
 

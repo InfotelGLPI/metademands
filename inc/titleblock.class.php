@@ -136,6 +136,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
         echo "</td>";
         echo "<td>";
         $icon_selector_id = 'icon_' . mt_rand();
+
         echo Html::select(
             'icon',
             [$params['icon'] => $params['icon']],
@@ -157,6 +158,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
          );
 JAVASCRIPT
         );
+        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
     }

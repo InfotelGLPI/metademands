@@ -753,6 +753,9 @@ class PluginMetademandsFieldParameter extends CommonDBChild
         if (!$this->checkMandatoryFields($input)) {
             return false;
         }
+        if (isset($input["_blank_picture"])) {
+            $input['icon'] = 'NULL';
+        }
 
         return $input;
     }

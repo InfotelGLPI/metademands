@@ -320,7 +320,7 @@ class PluginMetademandsWizard extends CommonDBTM
         echo "</h2>";
 
         self::showmodelsAndDrafts($parameters, true);
-
+        echo "</div>";
         if (!empty($meta->fields['comment'])) {
             if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
@@ -333,7 +333,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "</span>";
         }
 
-        echo "</div>";
+
         echo "</div>";
         echo "</div>";
     }
@@ -1601,10 +1601,10 @@ class PluginMetademandsWizard extends CommonDBTM
                 </script>";
             }
 
-            $displayBlocksAsTab = 0;
+            $displayBlocksAsTab = 1;
 
             if ($metademands->fields['step_by_step_mode'] == 1
-                && $displayBlocksAsTab == 1) {
+                && $displayBlocksAsTab == 1  && !$preview) {
                 $blocks = [];
 
                 echo Html::scriptBlock(
@@ -1777,7 +1777,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<div bloc-id='bloc" . $block . "' style='$style' class='card tab-sc-child-" . $block . "'>";
 
-                if ($displayBlocksAsTab == 0 && $line[$keys[0]]['type'] == 'title-block') {
+                if (($displayBlocksAsTab == 0 || $preview) && $line[$keys[0]]['type'] == 'title-block') {
 
                     $data = $line[$keys[0]];
                     $fieldparameter = new PluginMetademandsFieldParameter();
@@ -2273,7 +2273,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
 
-                if ($see_summary == 0) {
+                if ($see_summary == 0 && $displayBlocksAsTab == 0) {
                     //Circles which indicates the steps of the form:
                     echo "<div class='step_wizard_div center'>";
 

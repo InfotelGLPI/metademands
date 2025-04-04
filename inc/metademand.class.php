@@ -520,6 +520,9 @@ class PluginMetademandsMetademand extends CommonDBTM
             $input['type'] = 0;
             $input['force_create_tasks'] = 1;
         }
+        if (isset($input["_blank_picture"])) {
+            $input['icon'] = 'NULL';
+        }
 
         return $input;
     }
@@ -1272,13 +1275,7 @@ class PluginMetademandsMetademand extends CommonDBTM
          );
 JAVASCRIPT
         );
-        //      $opt = [
-        //         'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
-        //         'maxlength' => 50,
-        //         'size'      => 50,
-        //      ];
-        //      echo Html::input('icon', $opt);
-
+        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
 
