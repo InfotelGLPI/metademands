@@ -113,9 +113,18 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["update"])) {
-    if ($_POST["type"] == 'checkbox'
-        || $_POST["type"] == 'radio') {
-        $_POST["item"] = 0;
+
+    if ($_POST["type"] == 'checkbox') {
+        $_POST["item"] = 'checkbox';
+    }
+
+    if ($_POST["type"] == 'radio') {
+        $_POST["item"] = 'radio';
+    }
+
+    if (($_POST["type"] == 'dropdown_meta' || $_POST["type"] == 'dropdown_multiple')
+    && ($_POST["item"] = 'radio' || $_POST["item"] == 'checkbox')) {
+        $_POST["item"] = 'other';
     }
 
     if (!isset($_POST['item'])) {
@@ -124,9 +133,11 @@ if (isset($_POST["add"])) {
 
     //convert radio | checkbox to dropdown_meta - other
     if (isset($_POST["type"]) && isset($_POST['item'])
-        && $_POST["type"] == $_POST["item"] && ($_POST["item"] == "dropdown_meta" || $_POST["item"] == "dropdown_multiple")) {
+        && $_POST["type"] == $_POST["item"]
+        && ($_POST["item"] == "dropdown_meta" || $_POST["item"] == "dropdown_multiple")) {
         $_POST['item'] = "other";
     }
+
 
     //    Check update rights for fields
     $field->check(-1, UPDATE, $_POST);
