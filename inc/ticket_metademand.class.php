@@ -160,6 +160,8 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                  $ID,
                  [
                      'row_num' => $i,
+                     'type_for_massiveaction' => __CLASS__,
+                     'id_for_massiveaction'   => $ID
                  ]
              );
          }

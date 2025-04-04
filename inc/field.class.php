@@ -1092,7 +1092,6 @@ class PluginMetademandsField extends CommonDBChild
         $blocks = [];
         $block_fields = [];
 
-
         $databyblocks = [];
         foreach ($data as $id => $value) {
             $databyblocks[$value['rank']][] = $data[$id];
@@ -3279,7 +3278,8 @@ JAVASCRIPT
                 $select[$id] = __('ID') . " - " . $id;
             }
         }
-        if ($params['order'] > 0) {
+        if (isset($params['order'])
+            && $params['order'] > 0) {
             $previous_order = $params['order'] - 1;
             $field = new PluginMetademandsField();
             if ($field->getFromDBByCrit(['rank' => $params['rank'],

@@ -288,43 +288,46 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
 
             if (in_array($params['type'], $allowed_customvalues_types)
                 || in_array($params['item'], $allowed_customvalues_items)) {
+                $ranks = [];
                 foreach ($params['custom_values'] as $key => $value) {
                     $ranks[] = $value['rank'];
                 }
-                $hasDuplicates = count($ranks) > count(array_unique($ranks));
-                if ($hasDuplicates == true) {
-                    echo "<div class='alert alert-warning d-flex'>";
-                    echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
-                            'You have duplicates rank!',
-                            'metademands'
-                        );
-                    echo "</div>";
-                }
+                if (count($ranks) > 0) {
+                    $hasDuplicates = count($ranks) > count(array_unique($ranks));
+                    if ($hasDuplicates == true) {
+                        echo "<div class='alert alert-warning d-flex'>";
+                        echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                                'You have duplicates rank!',
+                                'metademands'
+                            );
+                        echo "</div>";
+                    }
 
-                if (self::isSequentialFromZero($ranks) == false) {
-                    echo "<div class='alert alert-warning flex'>";
-                    echo "<div class='left'>";
-                    echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
-                            'The ranks are not ordered correctly, you will not be able to order them!',
-                            'metademands'
+                    if (self::isSequentialFromZero($ranks) == false) {
+                        echo "<div class='alert alert-warning flex'>";
+                        echo "<div class='left'>";
+                        echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                                'The ranks are not ordered correctly, you will not be able to order them!',
+                                'metademands'
+                            );
+                        echo "<br><br>";
+                        echo _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands');
+                        echo "</div>";
+                        echo "<div class='right'>";
+                        $target = self::getFormURL();
+                        Html::showSimpleForm(
+                            $target,
+                            'fixranks',
+                            _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
+                            [
+                                'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
+                            ],
+                            'fa-wrench',
+                            "class='btn btn-warning'"
                         );
-                    echo "<br><br>";
-                    echo _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands');
-                    echo "</div>";
-                    echo "<div class='right'>";
-                    $target = self::getFormURL();
-                    Html::showSimpleForm(
-                        $target,
-                        'fixranks',
-                        _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
-                        [
-                            'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
-                        ],
-                        'fa-wrench',
-                        "class='btn btn-warning'"
-                    );
-                    echo "</div>";
-                    echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
+                    }
                 }
             }
 
