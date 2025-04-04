@@ -1003,6 +1003,46 @@ class PluginMetademandsField extends CommonDBChild
         if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
             && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] != 0) {
             $cond['rank'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'];
+            $block = $cond['rank'];
+            $id = $item->getID();
+            $url = PLUGIN_METADEMANDS_WEBDIR;
+            echo "<script type='text/javascript' >\n";
+            echo "$(document).ready(function() {
+                        var fieldid = $block || sessionStorage.getItem('loadedblock') || '1';
+                        var meta_id = $id;
+                        var urlmeta = '$url';
+
+                        sessionStorage.setItem('loadedblock', fieldid);
+                        function updateActiveTab(rank) {
+                            document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
+                            document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
+                    
+                            document.getElementById('ablock' + rank)?.classList.add('active');
+                            $('div[id^=\"block\"]').hide();
+                            $('#block' + rank).show();
+                        }
+                         updateActiveTab(fieldid);
+                        function loadPreview(fieldid) {
+                            $.ajax({
+                                url: urlmeta + '/ajax/previewMetademand.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { block: fieldid, metademands_id: meta_id },
+                                success: function (response) {
+                                    $('#see_block_preview').html(response);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.log(xhr);
+                                    console.log(status);
+                                    console.log(error);
+                                }
+                            });
+                        }
+                       
+                        loadPreview(fieldid);
+                        window.location.hash = '#block' + fieldid;
+                });";
+            echo "\n</script>";
         }
         if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'])
             && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'] != 0) {
@@ -1022,10 +1062,12 @@ class PluginMetademandsField extends CommonDBChild
             self::searchForm($item, $cond);
         }
 
-        echo Html::scriptBlock(
-            '$(document).ready(function () {
+        if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
+            || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
+            echo Html::scriptBlock(
+                '$(document).ready(function () {
                         var hash = window.location.hash;
-                        var fieldid = sessionStorage.getItem("loadedblock");
+                        var fieldid = sessionStorage.getItem("loadedblock") || "1";
                     
                         function updateActiveTab(rank) {
                             document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
@@ -1065,8 +1107,8 @@ class PluginMetademandsField extends CommonDBChild
                         window.location.hash = id;
                     });
                     });'
-        );
-
+            );
+        }
         $fieldparameter = new PluginMetademandsFieldParameter();
 
         $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
@@ -1553,13 +1595,16 @@ border-style: none !important; border-color: initial !important;border-image: in
         echo "<br><h3>";
         echo __('Block overview', 'metademands');
         echo "</h3>";
-        $id = $item->getID();
-        $url = PLUGIN_METADEMANDS_WEBDIR;
-        echo "<script type='text/javascript'>";
-        echo "$(document).ready(function () {
+
+        if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
+        || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
+            $id = $item->getID();
+            $url = PLUGIN_METADEMANDS_WEBDIR;
+            echo "<script type='text/javascript'>";
+            echo "$(document).ready(function () {
                 var meta_id = $id;
                 var urlmeta = '$url';
-                var fieldid = 1; // Par défaut, on charge avec fieldid = 1
+                var fieldid = '1';
             
                 function loadPreview(fieldid) {
                     $.ajax({
@@ -1594,7 +1639,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     }
                 });
             });";
-        echo "</script>";
+            echo "</script>";
+        }
         echo "<span id='see_block_preview'></span>";
     }
 

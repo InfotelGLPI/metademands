@@ -233,7 +233,7 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         $color = self::hex2rgba($title_color, "0.03");
-        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;'";
         echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";
 
         $meta = new PluginMetademandsMetademand();
@@ -321,10 +321,6 @@ class PluginMetademandsWizard extends CommonDBTM
 
         self::showmodelsAndDrafts($parameters, true);
 
-        echo "</div>";
-        echo "</div>";
-        echo "</div>";
-
         if (!empty($meta->fields['comment'])) {
             if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
@@ -332,7 +328,14 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "<div class='center' style='background: #fbf9f9;padding: 10px;'><i>" . nl2br(
                     $comment
                 ) . "</i></div>";
+        } else {
+            echo "<span style='margin-bottom: 10px'>&nbsp;";
+            echo "</span>";
         }
+
+        echo "</div>";
+        echo "</div>";
+        echo "</div>";
     }
 
     public function showmodelsAndDrafts($parameters, $with_title = 1)
@@ -1576,18 +1579,21 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (x[nextTab] != undefined) {
                                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
                                 let id_bloc = parseInt(bloc.replace('bloc', ''));
-                                if (!metademands.listBlock.includes(id_bloc)) {
-                                    create = true;
+                                if (typeof metademands !== 'undefined') {
+                                    if (!metademands.listBlock.includes(id_bloc)) {
+                                        create = true;
+                                    }
                                 }
                             }
-                            
-                            if (nextTab >= x.length) {
-                                document.getElementById('nextBtn').innerHTML = metademands.submittitle;
-                            } else {
-                                if (create) {
-                                    document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
+                            if (typeof metademands !== 'undefined') {
+                                if (nextTab >= x.length) {
+                                    document.getElementById('nextBtn').innerHTML = metademands.submittitle;
                                 } else {
-                                    document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
+                                    if (create) {
+                                        document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
+                                    } else {
+                                        document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
+                                    }
                                 }
                             }
                         }
@@ -1595,6 +1601,135 @@ class PluginMetademandsWizard extends CommonDBTM
                 </script>";
             }
 
+            $displayBlocksAsTab = 0;
+
+            if ($metademands->fields['step_by_step_mode'] == 1
+                && $displayBlocksAsTab == 1) {
+                $blocks = [];
+
+                echo Html::scriptBlock(
+                    '$(document).ready(function () {
+                        var hash = window.location.hash;
+                        var fieldid = sessionStorage.getItem("loadedblock");
+                    
+                        function updateActiveTab(rank) {
+                            document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
+                            document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
+                    
+                            document.getElementById("ablock" + rank)?.classList.add("active");
+                            $("div[id^=\"block\"]").hide();
+                            $("#block" + rank).show();
+                        }
+                    
+                    
+                        if (fieldid && document.getElementById(fieldid)) {
+                            updateActiveTab(fieldid.replace("block", ""));
+                            hash = "#" + fieldid;
+                        } else if (hash.startsWith("#block") && document.getElementById(hash.substring(1))) {
+                            updateActiveTab(hash.replace("#block", ""));
+                        } else {
+                            updateActiveTab(1);
+                            sessionStorage.setItem("loadedblock", "block1");
+                            window.location.hash = "#block1";
+                        }
+                    
+                    $("#fieldslist a").click(function (e) {
+                        e.preventDefault();
+                        var tabId = $(this).attr("href").replace("#", "");
+                    
+                        if (document.getElementById(tabId)) {
+                            sessionStorage.setItem("loadedblock", tabId);
+                            updateActiveTab(tabId.replace("block", ""));
+                            window.location.hash = tabId;
+                        }
+                    });
+                    
+                    $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+                        var id = $(e.target).attr("href").substr(1);
+                        sessionStorage.setItem("loadedblock", id);
+                        window.location.hash = id;
+                    });
+                });'
+                );
+
+                foreach ($allfields as $blockid => $blockfields) {
+                    $i = 0;
+                    foreach ($blockfields as $value) {
+                        if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
+                            $i++;
+                            if ($i > 0) {
+                                $blocks[$blockid] = $value['name'];
+                            }
+                        }
+                        if ($i == 0) {
+                            $title = __('Block', 'metademands') . " " . $value['rank'];
+                            $blocks[$blockid] = $title;
+                        }
+                    }
+                }
+                if (count($blocks) > 0) {
+                    echo "<div class='tabs-container'>";
+                    echo "<button form='' class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
+                    echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
+                    echo "<ul class='nav nav-tabs flex-nowrap' role='tablist' id='fieldslist'>";
+                    $hiddenblocks = [];
+                    foreach ($blocks as $idblock => $block) {
+                        $nameblock = $block;
+
+                        $display ='display:block';
+                        if ($idblock == 1) {
+                            $display ='display:block';
+                        }
+                        $field = new PluginMetademandsField();
+
+                        $fieldsmeta = $field->find(["plugin_metademands_metademands_id" => $metademands->getID()]);
+                        foreach ($fieldsmeta as $fieldmeta) {
+                            $fieldopt = new PluginMetademandsFieldOption();
+                            if ($opts = $fieldopt->find(
+                                [
+                                    "plugin_metademands_fields_id" => $fieldmeta['id'],
+                                    "hidden_block" => $idblock
+                                ]
+                            )) {
+                                foreach ($opts as $opt) {
+                                    $hiddenblocks[] = $opt['hidden_block'];
+                                }
+                            }
+                        }
+                        if (in_array($idblock, $hiddenblocks)) {
+                            $display ='display:none';
+                        }
+
+                        echo "<li class='nav-item'>";
+                        echo "<a class='nav-link tablinks' style='$display' id='ablock$idblock' href='#block" . $idblock . "' data-toggle='tab'>" . $nameblock . "</a>";
+                        echo "</li>";
+                    }
+                    echo "</ul>";
+                    echo "</div>";
+                    echo "<button form='' class='scroll-btn scroll-right'><i class='fas fa-chevron-right'></i></button>";
+                    echo "</div>";
+
+                    echo Html::scriptBlock(
+                        '
+                setTimeout(() => {
+                    const scrollContainer = document.querySelector(".scrollable-tabs");
+                    const scrollLeftBtn = document.querySelector(".scroll-left");
+                    const scrollRightBtn = document.querySelector(".scroll-right");
+                
+                    if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
+                        scrollLeftBtn.addEventListener("click", function () {
+                            scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
+                        });
+                
+                        scrollRightBtn.addEventListener("click", function () {
+                            scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
+                        });
+                    }
+                }, 500);
+            '
+                    );
+                }
+            }
             foreach ($allfields as $block => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
                     if (!in_array($block, $all_hidden_blocks)) {
@@ -1642,10 +1777,12 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<div bloc-id='bloc" . $block . "' style='$style' class='card tab-sc-child-" . $block . "'>";
 
-                if ($line[$keys[0]]['type'] == 'title-block') {
+                if ($displayBlocksAsTab == 0 && $line[$keys[0]]['type'] == 'title-block') {
+
                     $data = $line[$keys[0]];
                     $fieldparameter = new PluginMetademandsFieldParameter();
-                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $line[$keys[0]]['id']])) {
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $line[$keys[0]]['id']]
+                    )) {
                         unset($fieldparameter->fields['plugin_metademands_fields_id']);
                         unset($fieldparameter->fields['id']);
 
@@ -1672,15 +1809,22 @@ class PluginMetademandsWizard extends CommonDBTM
                         && in_array($line[$keys[0]]['type'], $allowed_customvalues_types)
                         || in_array($line[$keys[0]]['item'], $allowed_customvalues_items)) {
                         $field_custom = new PluginMetademandsFieldCustomvalue();
-                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $line[$keys[0]]['id']],
-                            "rank")) {
+                        if ($customs = $field_custom->find(
+                            ["plugin_metademands_fields_id" => $line[$keys[0]]['id']],
+                            "rank"
+                        )) {
                             if (count($customs) > 0) {
                                 $line[$keys[0]]['custom_values'] = $customs;
                             }
                         }
                     }
 
-                    PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $itilcategories_id);
+                    PluginMetademandsField::displayFieldByType(
+                        $metademands_data,
+                        $data,
+                        $preview,
+                        $itilcategories_id
+                    );
                 }
 
                 echo "<div class='card-body' bloc-hideid='bloc" . $block . "'>";
@@ -1978,18 +2122,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                        border-left :3px solid #' . $color . ';
                                        border-right :3px solid #' . $color;
                         }
-
-//                        echo "</div>";
-
-//                        $background_color = "";
-//                        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-//                            $background_color = $meta->fields['background_color'];
-//                        }
-//                        if ($preview) {
-//                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";'>";
-//                        } else {
-//                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";$style_left_right'>";
-//                        }
 
                         $count = 0;
                     }
@@ -2723,6 +2855,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      } else {
                         var x = document.getElementsByClassName('tab-nostep');
                      }
+                     
                      // Exit the function if any field in the current tab is invalid:
                      if (n == 1 && !validateForm()) return false;
                   
@@ -2736,6 +2869,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                      // Increase or decrease the current tab by 1:
                      currentTab = currentTab + n;
+                     
                     
                      create = false;
                      createNow = false;
@@ -2847,30 +2981,37 @@ class PluginMetademandsWizard extends CommonDBTM
 
                      bloc = x[currentTab].firstChild.getAttribute('bloc-id');
                      id_bloc = parseInt(bloc.replace('bloc',''));
- 
-                     if(!metademands.listBlock.includes(id_bloc)) { 
-                        var meta_id = {$ID};
-                        if (typeof tinyMCE !== 'undefined') {
-                           tinyMCE.triggerSave();
-                        }
-                        var updatestepform = '$updateStepform';
-                        jQuery('.resume_builder_input').trigger('change');
-                        $('select[id$=\"_to\"] option').each(function () {
-                           $(this).prop('selected', true);
-                        });
-                        arrayDatas = $('#wizard_form').serializeArray();
-                        arrayDatas.push({name: 'block_id', value: id_bloc});
-                        arrayDatas.push({name: 'action', value: 'nextUser'});
-                        arrayDatas.push({name: 'update_stepform', value: updatestepform});
-                        if(modal == true) {
-                            showModal(arrayDatas);
-                        } else {
-                            nextUser(arrayDatas);
-                        }
-
-                     } else {
-                        showTab(currentTab,create, submittitle, submitmsg);
+                     
+                     document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
+                     document.getElementById('ablock' + id_bloc)?.classList.add('active');
+                     
+                     if (typeof metademands !== 'undefined') {
+                     
+                         if(!metademands.listBlock.includes(id_bloc)) {
+                            var meta_id = {$ID};
+                            if (typeof tinyMCE !== 'undefined') {
+                               tinyMCE.triggerSave();
+                            }
+                            var updatestepform = '$updateStepform';
+                            jQuery('.resume_builder_input').trigger('change');
+                            $('select[id$=\"_to\"] option').each(function () {
+                               $(this).prop('selected', true);
+                            });
+                            arrayDatas = $('#wizard_form').serializeArray();
+                            arrayDatas.push({name: 'block_id', value: id_bloc});
+                            arrayDatas.push({name: 'action', value: 'nextUser'});
+                            arrayDatas.push({name: 'update_stepform', value: updatestepform});
+                            if(modal == true) {
+                                showModal(arrayDatas);
+                            } else {
+                                nextUser(arrayDatas);
+                            }
+    
+                         } else {
+                            showTab(currentTab,create, submittitle, submitmsg);
+                         }
                      }
+                     
                      // Otherwise, display the correct tab:
                   }
                   

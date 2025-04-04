@@ -46,8 +46,12 @@ plugin_metademands_orderredipsInit = function (rand, plugin_metademands_metadema
         var old_index = sourceRowIndex;
         var new_index = pos[1];
         var hash = window.location.hash;
-        var rank = hash.substring(6);
 
+        var rank = hash.substring(6);
+        var fieldid = sessionStorage.getItem("loadedblock");
+        if (!hash && fieldid) {
+            rank = fieldid.substring(5);
+        }
         jQuery.ajax({
             type: "POST",
             url: "../ajax/reorderfields.php",

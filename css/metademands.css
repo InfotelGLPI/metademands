@@ -598,6 +598,9 @@ textarea.invalid,
 .tablinks.active {
     font-weight: 700;
     border-left-color: #bdbdbd !important;
+    border-left-width: 5px;
+    border-right-color: transparent !important;
+    border-right-color: #bdbdbd !important;
 }
 
 .tabs-container {
@@ -629,7 +632,7 @@ textarea.invalid,
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    /*background: rgba(0, 0, 0, 0.1);*/
+    background: unset;
     border: none;
     color: #878080;
     font-size: 1.2rem;
@@ -662,4 +665,9 @@ textarea.invalid,
 @keyframes fadeEffect {
     from {opacity: 0;}
     to {opacity: 1;}
+}
+
+.nav-tabs .nav-link.active {
+    background: #ffffff;
+    border-bottom-color: transparent;
 }
