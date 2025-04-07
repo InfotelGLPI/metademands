@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 09:26+0000\n"
+"POT-Creation-Date: 2025-04-07 11:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgid ""
 msgstr ""
 
 #: ajax/reloaditem.php:40 inc/field.class.php:794 inc/field.class.php:802
-#: inc/field.class.php:1319 inc/field.class.php:3182 inc/field.class.php:4536
+#: inc/field.class.php:1319 inc/field.class.php:3188 inc/field.class.php:4542
 msgid "Object"
 msgstr ""
 
@@ -564,7 +564,7 @@ msgid "Field"
 msgstr ""
 
 #: inc/condition.class.php:349 inc/condition.class.php:916
-#: inc/field.class.php:4527
+#: inc/field.class.php:4533
 msgid "Field type"
 msgstr ""
 
@@ -851,7 +851,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:763 inc/field.class.php:1167
-#: inc/field.class.php:3247 inc/field.class.php:4517 inc/step.class.php:299
+#: inc/field.class.php:3253 inc/field.class.php:4523 inc/step.class.php:299
 #: inc/step.class.php:381 inc/wizard.class.php:1679
 msgid "Block"
 msgstr ""
@@ -864,7 +864,7 @@ msgstr ""
 msgid "Please add a type category field"
 msgstr ""
 
-#: inc/field.class.php:539 inc/field.class.php:3180 inc/field.class.php:3265
+#: inc/field.class.php:539 inc/field.class.php:3186 inc/field.class.php:3271
 msgid "Additional label"
 msgstr ""
 
@@ -948,24 +948,24 @@ msgstr ""
 msgid "Category of the metademand"
 msgstr ""
 
-#: inc/field.class.php:2477
+#: inc/field.class.php:2480
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:3256
+#: inc/field.class.php:3262
 msgid "Order"
 msgstr ""
 
-#: inc/field.class.php:3364
+#: inc/field.class.php:3370
 msgid "Modify icon"
 msgstr ""
 
-#: inc/field.class.php:3365
+#: inc/field.class.php:3371
 msgid "Modify color"
 msgstr ""
 
-#: inc/field.class.php:3392 inc/field.class.php:3413
+#: inc/field.class.php:3398 inc/field.class.php:3419
 msgid "You cannot do this for this field"
 msgstr ""
 
