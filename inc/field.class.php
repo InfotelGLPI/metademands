@@ -2434,7 +2434,10 @@ border-style: none !important; border-color: initial !important;border-image: in
             $class = "form-group ";
         }
         $bottomclass = "";
-        if ($data['type'] != 'informations' && $data['type'] != 'title-block' && $data['type'] != 'title') {
+
+        if ($data['type'] != 'informations'
+            && $data['type'] != 'title-block'
+            && $data['type'] != 'title') {
             if (isset($data['row_display'])
                 && $data['row_display'] == 1) {
                 $bottomclass = "col-md-12 md-bottom";
@@ -2570,9 +2573,12 @@ border-style: none !important; border-color: initial !important;border-image: in
             }
         }
 
+
         // Label 2 (date interval)
         if (!empty($data['label2'])
-            && $data['type'] != 'link') {
+            && $data['type'] != 'link'
+            && $data['type'] != "title-block"
+            && $data['type'] != "title") {
             $required = "";
             $required_icon = "";
             if ($data['is_mandatory']) {
