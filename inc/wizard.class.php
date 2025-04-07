@@ -3348,7 +3348,6 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                            } else if (isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
-                              console.log('ici');
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
                               if (res != 'none' && parseInt(z[i].value) < parseInt(minimal_mandatory) ) {
