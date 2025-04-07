@@ -16,6 +16,7 @@ Create your own end-user wizard and generate child tickets for each group of tec
 Characteristics :
 
 - [X] Generate your own assistants
+- [X] Use setp by step on your own forms
 - [X] Link with the ticket category to launch it automatically
 - [X] Create a father / childs tickets
 - [X] Semi-automatic creation of child tickets
@@ -24,13 +25,15 @@ Characteristics :
 - [X] Create PDF for your demands
 - [X] Translation of forms
 - [X] Meta Incidents
-- [X] Meta Changes
+- [X] Meta Problems / Changes
 - [X] Save your forms as Draft
 - [X] Use tags for titles
 - [X] Bootstrap Buttons
 - [X] Export / Import forms
 
 For next version :
+- [X] add sub blocks on a form
+
 Help us to add new features
 
 
