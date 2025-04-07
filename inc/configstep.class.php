@@ -128,11 +128,26 @@ class PluginMetademandsConfigstep extends CommonDBTM
             $userLink = $confStep->fields['link_user_block'];
             $multipleGroup = $confStep->fields['multiple_link_groups_blocks'];
             $addasrequester = $confStep->fields['add_user_as_requester'];
+            $blocksastab = $confStep->fields['see_blocks_as_tab'];
         }
 
         echo "<form name = 'form' method='post' action='".Toolbox::getItemTypeFormURL('PluginMetademandsConfigstep')."'>";
         echo "<div align='center'><table class='tab_cadre_fixe'>";
         echo "<tr><th colspan='6'>".self::getTypeName()."</th></tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('See blocks as tab', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showYesNo('see_blocks_as_tab', $blocksastab);
+        echo "</td>";
+        echo "<td>";
+        echo "</td>";
+        echo "<td>";
+        echo "</td>";
+        echo "</tr>";
+
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Link multiple groups to a block', 'metademands');
@@ -147,6 +162,7 @@ class PluginMetademandsConfigstep extends CommonDBTM
         Dropdown::showYesNo('link_user_block', $userLink);
         echo "</td>";
         echo "</tr>";
+
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Add all form actors as ticket requester', 'metademands');
@@ -162,6 +178,7 @@ class PluginMetademandsConfigstep extends CommonDBTM
         Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $step_by_step]);
         echo "</td>";
         echo "</tr>";
+
         echo "<tr><td class='tab_bg_2 center' colspan='6'>";
         echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
         echo Html::submit(_sx('button', 'Update'), ['name' => 'update_configstep', 'class' => 'btn btn-primary']);

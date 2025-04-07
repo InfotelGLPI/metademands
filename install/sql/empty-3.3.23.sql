@@ -703,6 +703,7 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
 (
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
+    `see_blocks_as_tab`                 tinyint      NOT NULL DEFAULT '0',
     `link_user_block`                   tinyint      NOT NULL DEFAULT '0',
     `multiple_link_groups_blocks`       tinyint      NOT NULL DEFAULT '0',
     `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',

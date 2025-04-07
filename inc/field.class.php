@@ -1068,44 +1068,59 @@ class PluginMetademandsField extends CommonDBChild
                 '$(document).ready(function () {
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem("loadedblock") || "1";
-                    
+                            
                         function updateActiveTab(rank) {
-                            document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
-                            document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
-                    
-                            document.getElementById("ablock" + rank)?.classList.add("active");
-                            $("div[id^=\"block\"]").hide();
-                            $("#block" + rank).show();
+                            $("a[id^=\"ablock\"]").removeClass("active");
+                            $("div[id^=\"block\"]").removeClass("active").hide();
+                            $("#ablock" + rank).addClass("active");
+                            $("#block" + rank).addClass("active").show();
                         }
-                    
-                    
+
                         if (fieldid && document.getElementById(fieldid)) {
                             updateActiveTab(fieldid.replace("block", ""));
                             hash = "#" + fieldid;
                         } else if (hash.startsWith("#block") && document.getElementById(hash.substring(1))) {
                             updateActiveTab(hash.replace("#block", ""));
+                            sessionStorage.setItem("loadedblock", hash.substring(1));
                         } else {
                             updateActiveTab(1);
                             sessionStorage.setItem("loadedblock", "block1");
                             window.location.hash = "#block1";
                         }
                     
-                    $("#fieldslist a").click(function (e) {
-                        e.preventDefault();
-                        var tabId = $(this).attr("href").replace("#", "");
-                    
-                        if (document.getElementById(tabId)) {
-                            sessionStorage.setItem("loadedblock", tabId);
-                            updateActiveTab(tabId.replace("block", ""));
-                            window.location.hash = tabId;
+                        $("#fieldslist a").click(function (e) {
+                            e.preventDefault();
+                            var tabId = $(this).attr("href").replace("#", "");
+                        
+                            if (document.getElementById(tabId)) {
+                                var rank = tabId.replace("block", "");
+                                sessionStorage.setItem("loadedblock", tabId);
+                                updateActiveTab(rank);
+                                window.location.hash = tabId;
+                            }
+                        });
+                        
+                        $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+                            var id = $(e.target).attr("href").substr(1);
+                            sessionStorage.setItem("loadedblock", id);
+                            window.location.hash = "#" + id;
+                        });
+                        
+                        function scrollToActiveTab() {
+                            const activeTab = document.querySelector(".scrollable-tabs .active");
+                            const container = document.querySelector(".scrollable-tabs");
+                            
+                            if (activeTab && container) {
+                                const offsetLeft = activeTab.offsetLeft;
+                                const containerWidth = container.clientWidth;
+                                const tabWidth = activeTab.offsetWidth;
+                        
+                                // Centrage de l’onglet actif
+                                const scrollTo = offsetLeft - (containerWidth / 2) + (tabWidth / 2);
+                                container.scrollTo({ left: scrollTo, behavior: "smooth" });
+                            }
                         }
-                    });
-                    
-                    $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
-                        var id = $(e.target).attr("href").substr(1);
-                        sessionStorage.setItem("loadedblock", id);
-                        window.location.hash = id;
-                    });
+                        scrollToActiveTab(); // Appel au chargement
                     });'
             );
         }
@@ -2345,9 +2360,99 @@ border-style: none !important; border-color: initial !important;border-image: in
      * @param string $config_link
      * @param int $itilcategories_id
      */
-    public static function displayFieldByType($metademands_data, $data, $preview = false, $itilcategories_id = 0)
+    public static function displayFieldByType($metademands, $metademands_data, $data, $preview = false, $itilcategories_id = 0, $count = 0)
     {
         global $PLUGIN_HOOKS;
+
+        $fieldparameter = new PluginMetademandsFieldParameter();
+        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
+            unset($fieldparameter->fields['plugin_metademands_fields_id']);
+            unset($fieldparameter->fields['id']);
+
+            $params = $fieldparameter->fields;
+            $data = array_merge($data, $params);
+
+            if (isset($fieldparameter->fields['default'])) {
+                $data['default_values'] = PluginMetademandsFieldParameter::_unserialize(
+                    $fieldparameter->fields['default']
+                );
+            }
+
+            if (isset($fieldparameter->fields['custom'])) {
+                $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize(
+                    $fieldparameter->fields['custom']
+                );
+            }
+        }
+
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+        if (isset($data['type'])
+            && (in_array($data['type'], $allowed_customvalues_types)
+                || in_array($data['item'], $allowed_customvalues_items))
+            && $data['item'] != "urgency"
+            && $data['item'] != "priority"
+            && $data['item'] != "impact") {
+            $field_custom = new PluginMetademandsFieldCustomvalue();
+            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
+                if (count($customs) > 0) {
+                    $data['custom_values'] = $customs;
+                }
+            }
+        }
+        // If values are saved in session we retrieve it
+        if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
+
+            foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
+                if (strval($data['id']) === strval($id)) {
+                    $data['value'] = $value;
+                } elseif ($data['id'] . '-2' === $id) {
+                    $data['value-2'] = $value;
+                }
+            }
+        }
+
+        // start wrapper div classes
+        if ($data['type'] == 'title') {
+            $data['row_display'] = 1;
+            $data['is_mandatory'] = 0;
+        }
+        $style = "";
+        $class = "";
+        if (isset($data['row_display'])
+            && $data['row_display'] == 1 && $data['type'] == "link") {
+            $class = "center";
+        }
+        //Add possibility to hide field
+        if ($data['type'] == 'dropdown_meta'
+            && $data['item'] == "ITILCategory_Metademands"
+            && Session::getCurrentInterface() != 'central') {
+            $class .= " itilmeta";
+        }
+        if ($data['type'] != 'informations') {
+            $class = "form-group ";
+        }
+        $bottomclass = "";
+        if ($data['type'] != 'informations' && $data['type'] != 'title-block' && $data['type'] != 'title') {
+            if (isset($data['row_display'])
+                && $data['row_display'] == 1) {
+                $bottomclass = "col-md-12 md-bottom";
+            } else {
+                $bottomclass = "col-md-6 md-bottom";
+            }
+        }
+        if (isset($data['row_display'])
+            && $data['row_display'] == 1) {
+            echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+            $count++;
+        } else {
+            if ($data['type'] != 'title-block' && $data['type'] != 'title') {
+                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+            } else {
+                echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-12 $bottomclass $class\">";
+            }
+        }
 
         $config_link = "";
         if (Session::getCurrentInterface() == 'central' && $preview) {
@@ -2464,6 +2569,59 @@ border-style: none !important; border-color: initial !important;border-image: in
                 echo "</div>";
             }
         }
+
+        // Label 2 (date interval)
+        if (!empty($data['label2'])
+            && $data['type'] != 'link') {
+            $required = "";
+            $required_icon = "";
+            if ($data['is_mandatory']) {
+                $required = "class='metademands_wizard_red'";
+                $required_icon = " * ";
+            }
+
+            if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
+                echo "</div><div class=\"form-group col-md-6 md-bottom\">";
+            }
+            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
+            }
+            $style = "";
+            if ($data['type'] != 'informations') {
+                $style = "style='padding: 10px;margin-top:10px'";
+            }
+
+            if ($data['type'] != 'informations') {
+                if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
+                    echo "<div class='alert alert-secondary' $style>";
+                    echo Glpi\RichText\RichText::getSafeHtml($label2);
+                    echo "</div>";
+                } else {
+                    echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
+                            $label2
+                        ) . "<span $required>" . $required_icon . "</span></div>";
+                }
+            }
+            $value2 = '';
+            if (isset($data['value-2'])) {
+                $value2 = $data['value-2'];
+            }
+            if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
+                $namefield = "field[" . $data['id'] . "-2]";
+                $end = true;
+                switch ($data['type']) {
+                    case 'date_interval':
+                        PluginMetademandsDateinterval::showWizardField($data, $namefield, $value2, $end);
+                        $count++;
+                        break;
+                    case 'datetime_interval':
+                        PluginMetademandsDateTimeinterval::showWizardField($data, $namefield, $value2, $end);
+                        $count++;
+                        break;
+                }
+            }
+        }
+        echo "</div>";
     }
 
 

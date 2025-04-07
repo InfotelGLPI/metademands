@@ -532,7 +532,7 @@ class PluginMetademandsRadio extends CommonDBTM
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         } else {
                             $('[id-field =\"field'+key+'\"]').show();
-//                            " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
+                            $('[name =\"field['+key+']\"]').attr('required', 'required');
                         }
                     });";
             }
@@ -611,7 +611,9 @@ class PluginMetademandsRadio extends CommonDBTM
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
-                                        $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                        $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                          " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                                 $metaid,
                                                 $childs
@@ -666,6 +668,9 @@ class PluginMetademandsRadio extends CommonDBTM
 
                     $onchange .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
+                         var id = 'ablock'+ key;
+                         if (document.getElementById(id))
+                         document.getElementById(id).style.display = 'none';
                         $('[bloc-id =\"bloc'+ key +'\"]').hide();
                         sessionStorage.setItem('hiddenbloc$name', key);
                         " . PluginMetademandsFieldoption::setEmptyBlockFields($name) . "";
@@ -675,13 +680,17 @@ class PluginMetademandsRadio extends CommonDBTM
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();";
+                                    $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'none';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').hide();";
                                 }
                             }
                         }
                     }
                     $onchange .= "} else {
-
+                        var id = 'ablock'+ key;
+                         if (document.getElementById(id))
+                         document.getElementById(id).style.display = 'block';
                         $('[bloc-id =\"bloc'+ key +'\"]').show(); 
                         ";
 
@@ -698,7 +707,9 @@ class PluginMetademandsRadio extends CommonDBTM
 
                     if ($data["item"] == "ITILCategory_Metademands") {
                         if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
-                            $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                            $pre_onchange .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
+                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                           " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                         }
                     }
@@ -714,7 +725,9 @@ class PluginMetademandsRadio extends CommonDBTM
             }
 
             if ($display > 0) {
-                $pre_onchange .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                $pre_onchange .= "if (document.getElementById('ablock" . $display . "'))
+                                document.getElementById('ablock" . $display . "').style.display = 'block';
+                $('[bloc-id =\"bloc" . $display . "\"]').show();";
             }
 
             $onchange .= "fixButtonIndicator();

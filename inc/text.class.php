@@ -442,14 +442,18 @@ class PluginMetademandsText extends CommonDBTM
                     $script .= "if ($(this).val().trim().length > 0) {";
                     $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                    $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                    $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                    if (document.getElementById('ablock" . $hidden_block . "'))
+                        document.getElementById('ablock" . $hidden_block . "').style.display = 'block';";
                     $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
+                        document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                    $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                             $metaid,
                                             $childs
@@ -481,7 +485,9 @@ class PluginMetademandsText extends CommonDBTM
                 }
             }
             if ($display > 0) {
-                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                $script2 .= "if (document.getElementById('ablock" . $display . "'))
+                        document.getElementById('ablock" . $display . "').style.display = 'block';
+                $('[bloc-id =\"bloc" . $display . "\"]').show();";
             }
             $script .= "fixButtonIndicator();";
             $script .= "});";

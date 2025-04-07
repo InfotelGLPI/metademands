@@ -1785,6 +1785,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $script .= "var hidden_blocks = {$json_hidden_blocks};
                     var child_blocks = {$json_childs_blocks};
                     var tohideblock = {};";
+
+        //Prepare subblocks
+//        $('[bloc-id=\"subbloc'+key+'\"]').hide();
         $script .= "$.each( hidden_blocks, function( key, value ) {
                         tohideblock[value] = true;
                     });
@@ -1999,7 +2002,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
                 if ($data['fields_link'] == $hidden_link && $hidden_link > 0) {
-                    $script .= "$(\"[name='field[$hidden_link]']\").attr('required', 'required');";
+//                    $script .= "$(\"[name='field[$hidden_link]']\").attr('required', 'required');";
                 }
                 $field =  new PluginMetademandsField();
                 if ($field->getFromDB($hidden_link) && $field->fields['type'] == 'upload') {

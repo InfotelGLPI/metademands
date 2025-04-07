@@ -576,7 +576,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         } else {
                             $('[id-field =\"field'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
+                            $('[name =\"field['+key+']\"]').attr('required', 'required');
                         }
                     });
               ";
@@ -656,14 +656,18 @@ class PluginMetademandsDropdown extends CommonDBTM
                 //specific for radio / dropdowns - one value
                 $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
                 $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                 if (is_array($childs_by_checkvalue)) {
                     foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                         if ($idc == $k) {
                             foreach ($childs_blocks as $childs) {
-                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                $script .= "if (document.getElementById('ablock" . $childs . "'))
+                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                         $metaid,
                                         $childs
@@ -682,7 +686,9 @@ class PluginMetademandsDropdown extends CommonDBTM
                 $script .= "if ($(this).val() != $idc) {";
                 if (is_array($blocks_idc) && count($blocks_idc) > 0) {
                     foreach ($blocks_idc as $k => $block_idc) {
-                        $script .= "$('[bloc-id =\"bloc" . $block_idc . "\"]').hide();";
+                        $script .= "if (document.getElementById('ablock" . $block_idc . "'))
+                document.getElementById('ablock" . $block_idc . "').style.display = 'none';
+                        $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();";
                     }
                 }
                 $script .= " }";
@@ -693,7 +699,9 @@ class PluginMetademandsDropdown extends CommonDBTM
             }
 
             if ($display > 0) {
-                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                $script2 .= "if (document.getElementById('ablock" . $display . "'))
+                document.getElementById('ablock" . $display . "').style.display = 'block';
+                $('[bloc-id =\"bloc" . $display . "\"]').show();";
             }
 
             $script .= "fixButtonIndicator();});";

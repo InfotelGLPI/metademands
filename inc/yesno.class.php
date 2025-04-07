@@ -336,7 +336,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 $val = Toolbox::addslashes_deep($idc);
                 $onchange .= "if ($(this).val() == $val) {
                              $('[id-field =\"field" . $hidden_link . "\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
+                             $('[name =\"field" . $hidden_link . "\"]').attr('required', 'required');
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
@@ -387,8 +387,9 @@ class PluginMetademandsYesno extends CommonDBTM
             }
         }
 
-        $script2 = "";
-        $script = "";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
@@ -398,16 +399,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
         if (count($check_values) > 0) {
 
-            //by default - hide all
-            $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-            if (!isset($data['value'])) {
-                $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
-            }
 
-            $script .= "$('[name=\"$name\"]').change(function() {";
-
-            $script .= "var tohide = {};";
-            $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 $blocks_idc = [];
                 $hidden_block = $data['options'][$idc]['hidden_block'];
@@ -418,14 +410,18 @@ class PluginMetademandsYesno extends CommonDBTM
                     $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
 
                     if ($idc == $custom_values) {
-                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                        $post_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                        if (document.getElementById('ablock" . $hidden_block . "'))
+                        document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                 " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
-                                        $script2 .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                        $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                        if (document.getElementById('ablock" . $childs . "'))
+                                        document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                  " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                                 $metaid,
                                                 $childs
@@ -437,19 +433,42 @@ class PluginMetademandsYesno extends CommonDBTM
                     }
                 }
 
-                $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
+                //by default - hide all
+                $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                if (!isset($data['value'])) {
+                    $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+                }
+
+                //Si la valeur est en session
+                if (isset($data['value'])) {
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                }
+
+                $onchange .= "$('[name=\"$name\"]').change(function() {";
+
+                $onchange .= "var tohide = {};";
+                $display = 0;
+
+                $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
                 //specific for radio / dropdowns - one value
 //            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
-                $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                //Prepare subblocks
+//                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
+
+                $onchange .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                if (document.getElementById('ablock" . $hidden_block . "'))
+                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';";
+                $onchange .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                 if (is_array($childs_by_checkvalue)) {
                     foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                         if ($idc == $k) {
                             foreach ($childs_blocks as $childs) {
-                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                         $metaid,
                                         $childs
@@ -463,36 +482,47 @@ class PluginMetademandsYesno extends CommonDBTM
                     $display = $hidden_block;
                 }
 
-                $script .= " } else {
+                $onchange .= " } else {
                 
                 sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
 
                 //specific - one value
-                $script .= PluginMetademandsFieldoption::setEmptyBlockFields($name);
-                $script .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+                $onchange .= PluginMetademandsFieldoption::setEmptyBlockFields($name);
+                $onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+                if (document.getElementById('ablock" . $hidden_block . "'))
+                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';";
 
                 if (is_array($childs_by_checkvalue)) {
                     foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                         if ($idc == $k) {
                             foreach ($childs_blocks as $childs) {
-                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();";
+                                $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                                if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'none';";
                             }
                         }
                     }
                 }
-                $script .= " }";
+                $onchange .= " }";
 
 
             }
+            //Prepare subblocks
+//                        $('[bloc-id =\"subbloc" . $display . "\"]').show();
             if ($display > 0) {
-                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                $pre_onchange .= "if (document.getElementById('ablock" . $display . "'))
+                        document.getElementById('ablock" . $display . "').style.display = 'block';
+                        $('[bloc-id =\"bloc" . $display . "\"]').show();";
+
             }
 
-            $script .= "fixButtonIndicator();
+            $onchange .= "fixButtonIndicator();
         
         });";
 
-            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
         }
     }
 

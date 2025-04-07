@@ -1,3 +1,5 @@
 groupe proposé dans pas à pas : independant de l'entité
 use same function for meta & pdf
 use dedicated function for hide_no_field by class
+
+define sub-block (in same block)

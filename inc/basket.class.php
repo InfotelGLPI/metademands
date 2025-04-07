@@ -985,7 +985,9 @@ class PluginMetademandsBasket extends CommonDBTM
                           }";
 
 
-                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
+                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
                 if (isset($data['value']) && $idc == $data['value']) {
                     $display = $hidden_block;
                 }
@@ -993,6 +995,9 @@ class PluginMetademandsBasket extends CommonDBTM
                 $script .= "$.each( tohide, function( key, value ) {
                             if(value == true){
                              $('[bloc-id =\"bloc'+key+'\"]').hide();
+                             var id = 'ablock'+ key;
+                             if (document.getElementById(id))
+                             document.getElementById(id).style.display = 'none';
                              $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
                                 switch(this.type) {
                                        case 'password':
@@ -1019,6 +1024,9 @@ class PluginMetademandsBasket extends CommonDBTM
                                    }
                                });
                             } else {
+                             var id = 'ablock'+ key;
+                            if (document.getElementById(id))
+                            document.getElementById(id).style.display = 'block';
                             $('[bloc-id =\"bloc'+key+'\"]').show();
 
                             }
@@ -1050,6 +1058,9 @@ class PluginMetademandsBasket extends CommonDBTM
 
                 $script .= "$.each( tohide, function( key, value ) {
                             if(value == true){
+                                 var id = 'ablock'+ key;
+                                if (document.getElementById(id))
+                                document.getElementById(id).style.display = 'none';
                                  $('[bloc-id =\"bloc'+key+'\"]').hide();
                                  $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
                                     switch(this.type) {
@@ -1080,6 +1091,9 @@ class PluginMetademandsBasket extends CommonDBTM
                                        }
                                    });
                             } else {
+                                 var id = 'ablock'+ key;
+                                 if (document.getElementById(id))
+                                 document.getElementById(id).style.display = 'block';
                                 $('[bloc-id =\"bloc'+key+'\"]').show();
                             }
                         });

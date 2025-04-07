@@ -445,14 +445,18 @@ class PluginMetademandsUrl extends CommonDBTM
                     $script .= "if ($(this).val().trim().length > 0) {";
                     $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                    $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                    $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                        document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                        $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
                     $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
+                        document.getElementById('ablock" . $childs . "').style.display = 'block';
+                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                             $metaid,
                                             $childs

@@ -325,10 +325,18 @@ class PluginMetademandsForm extends CommonDBTM
                           };
                         </script>";
         }
+        $itilcategories_id = 0 ;
+        if (isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+            $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+            if (is_array($cats) && count($cats) == 1) {
+                $itilcategories_id = $cats[0];
+            }
+        }
         $step = PluginMetademandsMetademand::STEP_SHOW;
         $return .= "<script>
                       var meta_id = {$plugin_metademands_metademands_id};
                       var step = {$step};
+                      var itilcategories_id = {$itilcategories_id};
                       function loadForm(form_id) {
                          $('#ajax_loader').show();
                          var data_send = $('#wizard_form').serializeArray();
@@ -342,7 +350,7 @@ class PluginMetademandsForm extends CommonDBTM
                                     if (response == 1) {
                                        document.location.reload();
                                     } else {
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=' + itilcategories_id + '&metademands_id=' + meta_id + '&step=' + step;
                                     }
                                  }
                              });

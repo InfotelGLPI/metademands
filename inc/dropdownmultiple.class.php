@@ -1283,7 +1283,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
-                                " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
+                                $('[name =\"field['+key+']\"]').attr('required', 'required');
                             }
                         });";
                 }
@@ -1368,7 +1368,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
-                                " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
+                                $('[name =\"field['+key+']\"]').attr('required', 'required');
                             }
                         });";
                 }
@@ -1467,7 +1467,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }
                         }
                     }
-                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+                    $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
+                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
                             sessionStorage.setItem('hiddenbloc$name', $hidden_block);
                             " . PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
 
@@ -1486,6 +1488,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                     $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
+                            var id = 'ablock'+ key;
+                             if (document.getElementById(id))
+                             document.getElementById(id).style.display = 'none';
                             $('[bloc-id=\"bloc'+key+'\"]').hide();
                             $.each(tohide, function( key, value ) {
                                 $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
@@ -1528,6 +1533,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                     });
                             });
                          } else {
+                            var id = 'ablock'+ key;
+                            if (document.getElementById(id))
+                            document.getElementById(id).style.display = 'block';
                             $('[bloc-id =\"bloc'+key+'\"]').show();
                             " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
@@ -1541,7 +1549,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         $custom_values = $data['custom_values'];
                         foreach ($custom_values as $k => $custom_value) {
                             if ($k == $idc && isset($custom_value['is_default']) && $custom_value['is_default'] == 1) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                             " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                             }
                         }
@@ -1549,7 +1559,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
                 if (count($display) > 0) {
                     foreach ($display as $see) {
-                        $script2 .= "$('[bloc-id =\"bloc" . $see . "\"]').show();";
+                        $script2 .= "if (document.getElementById('ablock" . $see . "'))
+                                document.getElementById('ablock" . $see . "').style.display = 'none';
+                                $('[bloc-id =\"bloc" . $see . "\"]').show();";
                     }
                 }
                 $script .= "fixButtonIndicator();});";
@@ -1591,7 +1603,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                tohide[" . $hidden_block . "] = false;
                             }";
 
-                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+                    $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
+                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
                            sessionStorage.setItem('hiddenbloc$name', $hidden_block);
                             " . PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
 
@@ -1609,6 +1623,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                     $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
+                            var id = 'ablock'+ key;
+                            if (document.getElementById(id))
+                            document.getElementById(id).style.display = 'none';
                             $('[bloc-id=\"bloc'+key+'\"]').hide();
                             $.each(tohide, function( key, value ) {
                                 $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
@@ -1651,6 +1668,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                     });
                             });
                          } else {
+                            var id = 'ablock'+ key;
+                             if (document.getElementById(id))
+                             document.getElementById(id).style.display = 'block';
                             $('[bloc-id =\"bloc'+key+'\"]').show();
                             " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
@@ -1663,7 +1683,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         $custom_values = $data['custom_values'];
                         foreach ($custom_values as $k => $custom_value) {
                             if ($k == $idc && isset($custom_value['is_default']) && $custom_value['is_default'] == 1) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                             " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                             }
                         }
@@ -1671,7 +1693,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
                 if (count($display) > 0) {
                     foreach ($display as $see) {
-                        $script2 .= "$('[bloc-id =\"bloc" . $see . "\"]').show();";
+                        $script2 .= "if (document.getElementById('ablock" . $see . "'))
+                                document.getElementById('ablock" . $see . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $see . "\"]').show();";
                     }
                 }
                 $script .= "fixButtonIndicator();});";
