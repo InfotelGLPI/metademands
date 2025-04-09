@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 13:36+0000\n"
+"POT-Creation-Date: 2025-04-09 07:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -714,24 +714,24 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: inc/date.class.php:99 inc/datetime.class.php:99 inc/dropdown.class.php:233
+#: inc/date.class.php:100 inc/datetime.class.php:100 inc/dropdown.class.php:233
 #: inc/dropdownmeta.class.php:1232 inc/dropdownobject.class.php:599
 #: inc/dropdownobject.class.php:681
 msgid "Use this field for child ticket field"
 msgstr ""
 
-#: inc/date.class.php:106 inc/dateinterval.class.php:109
-#: inc/datetime.class.php:106 inc/datetimeinterval.class.php:106
+#: inc/date.class.php:107 inc/dateinterval.class.php:110
+#: inc/datetime.class.php:107 inc/datetimeinterval.class.php:106
 msgid "Day greater or equal to now"
 msgstr ""
 
-#: inc/date.class.php:120 inc/dateinterval.class.php:121
-#: inc/datetime.class.php:120 inc/datetimeinterval.class.php:118
+#: inc/date.class.php:121 inc/dateinterval.class.php:122
+#: inc/datetime.class.php:121 inc/datetimeinterval.class.php:118
 msgid "Define the default date"
 msgstr ""
 
-#: inc/date.class.php:126 inc/dateinterval.class.php:131
-#: inc/datetime.class.php:126 inc/datetimeinterval.class.php:128
+#: inc/date.class.php:127 inc/dateinterval.class.php:132
+#: inc/datetime.class.php:127 inc/datetimeinterval.class.php:128
 msgid "Additional number day to the default date"
 msgstr ""
 
