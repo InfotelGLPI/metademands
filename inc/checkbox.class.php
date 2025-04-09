@@ -678,7 +678,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-            $script .= "var todisplay = {};tohide = {};";
+            $script .= "var tohide = {};";
 
             //checkbox : multiple value at each time
             $display = [];
@@ -697,6 +697,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                 if (document.getElementById('ablock" . $hidden_block . "'))
                                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                 $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                                 " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                                 if (is_array($childs_by_checkvalue)) {
@@ -726,7 +727,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
                 $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
                 $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                 if (isset($data['value']) && is_array($data['value'])) {
@@ -749,6 +751,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             if (document.getElementById('ablock" . $hidden_block . "'))
                             document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
                             $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();
+                            $('[bloc-id =\"subbloc'+$hidden_block+'\"]').hide();
                             sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
                 $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($name)
                     . PluginMetademandsFieldoption::setEmptyBlockFields($name);
@@ -775,7 +778,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             if ($fieldSession == $idc && $hidden_block > 0) {
                                 $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show()";
                             }
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -783,7 +787,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                         foreach ($childs_blocks as $childs) {
                                             $script2 .= "if (document.getElementById('ablock" . $childs . "'))
                                                          document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                         $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                                     $metaid,
                                                     $childs
@@ -804,7 +808,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 foreach ($display as $see) {
                     $script2 .= "if (document.getElementById('ablock" . $see . "'))
                     document.getElementById('ablock" . $see . "').style.display = 'block';
-                    $('[bloc-id =\"bloc" . $see . "\"]').show();";
+                    $('[bloc-id =\"bloc" . $see . "\"]').show();
+                    $('[bloc-id =\"subbloc" . $see . "\"]').show();";
                 }
             }
 

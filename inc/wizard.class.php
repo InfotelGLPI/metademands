@@ -1386,7 +1386,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         </script>";
                 }
             }
-            if (!$preview && $see_summary == 0) {
+            if (!$preview && $metademands->fields['step_by_step_mode']  == 0 && $see_summary == 0 ) {
                 echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                 echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
                 echo "</a>";
@@ -1476,14 +1476,32 @@ class PluginMetademandsWizard extends CommonDBTM
             }
         }
 
+        //Prepare subblocks
+        $subblocks = [];
+        $subblocks_data = [];
+        foreach ($allfields as $blockid => $blockfields) {
+            foreach ($blockfields as $value) {
 
-//Prepare subblocks
-//        foreach ($allfields as $blockid => $blockfields) {
-//            if ($blockid == XXX) {
-//                $_SESSION['plugin_meta_test'][$blockid][] = $blockfields;
-//            }
-//        }
-
+                $fieldopt = new PluginMetademandsFieldOption();
+                if ($opts = $fieldopt->find(
+                    [
+                        "plugin_metademands_fields_id" => $value['id'],
+                        "hidden_block_same_block" => 1
+                    ]
+                )) {
+                    foreach ($opts as $opt) {
+                        $subblocks[] = $opt['hidden_block'];
+                    }
+                }
+            }
+            if (count($subblocks) > 0) {
+                foreach ($blockfields as $value) {
+                    if (in_array($value['rank'], $subblocks)) {
+                        $subblocks_data[$value['rank']][] = $value;
+                    }
+                }
+            }
+        }
 
         $use_as_step = 0;
         $stepConfig = new PluginMetademandsConfigstep();
@@ -1615,54 +1633,95 @@ class PluginMetademandsWizard extends CommonDBTM
                 $displayBlocksAsTab = 1;
             }
             //Prepare subblocks
-//            unset($allfields[XXX]);
+            if (!$preview) {
+                if (count($subblocks) > 0) {
+                    foreach ($subblocks as $subblock) {
+                        unset($allfields[$subblock]);
+                    }
+                }
+            }
+
             if ($metademands->fields['step_by_step_mode'] == 1
                 && $displayBlocksAsTab == 1  && !$preview) {
                 $blocks = [];
 
+                $block_id = 0;
+                if (isset($_REQUEST['block_id'])) {
+                    $block_id = $_REQUEST['block_id'];
+                }
                 echo Html::scriptBlock(
-                    '$(document).ready(function () {
+                    "$(document).ready(function () {
                         var hash = window.location.hash;
-                        var fieldid = sessionStorage.getItem("loadedblock");
-                    
+                        var fieldid = sessionStorage.getItem('loadedblock');
+                        var block_id = $block_id;
+
                         function updateActiveTab(rank) {
-                            document.querySelectorAll("a[id^=\"ablock\"]").forEach(a => a.classList.remove("active"));
-                            document.querySelectorAll("div[id^=\"block\"]").forEach(div => div.classList.remove("active"));
-                    
-                            document.getElementById("ablock" + rank)?.classList.add("active");
-                            $("div[id^=\"block\"]").hide();
-                            $("#block" + rank).show();
+                        console.log(rank);
+                            document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
+                            document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
+
+                            document.getElementById('ablock' + rank)?.classList.add('active');
+                            $('div[id^=\"block\"]').hide();
+                            $('#block' + rank).show();
+
+                            document.getElementById('ablock' + rank)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                         }
-                    
-                    
+
+
                         if (fieldid && document.getElementById(fieldid)) {
-                            updateActiveTab(fieldid.replace("block", ""));
-                            hash = "#" + fieldid;
-                        } else if (hash.startsWith("#block") && document.getElementById(hash.substring(1))) {
-                            updateActiveTab(hash.replace("#block", ""));
+                            updateActiveTab(fieldid.replace('block', ''));
+                            hash = '#' + fieldid;
+                        } else if (hash.startsWith('#block') && document.getElementById(hash.substring(1))) {
+                            updateActiveTab(hash.replace('#block', ''));
                         } else {
-                            updateActiveTab(1);
-                            sessionStorage.setItem("loadedblock", "block1");
-                            window.location.hash = "#block1";
+                            if (block_id > 0) {
+                            } else {
+                              block_id = 1;
+                            }
+                            updateActiveTab(block_id);
+                            sessionStorage.setItem('loadedblock', 'block' + block_id);
+                            window.location.hash = '#block' + block_id;
                         }
-                    
-                    $("#fieldslist a").click(function (e) {
+
+
+                     function validateFields() {
+                            var isValid = true;
+                            $('input[required], textarea[required], select[required]').each(function() {
+                                if ($(this).is(':visible') && !$(this).val()) {
+                                    isValid = false;
+                                }
+                            });
+                            return isValid;
+                        }
+
+                    $('#fieldslist a').click(function (e) {
                         e.preventDefault();
-                        var tabId = $(this).attr("href").replace("#", "");
-                    
-                        if (document.getElementById(tabId)) {
-                            sessionStorage.setItem("loadedblock", tabId);
-                            updateActiveTab(tabId.replace("block", ""));
-                            window.location.hash = tabId;
-                        }
+
+                         var tabId = $(this).attr('href').replace('#block', '');
+                         var loadedId = sessionStorage.getItem('loadedblock').replace('block', '');
+
+//                         if (parseInt(tabId.replace('block', '')) > parseInt(loadedId)) {
+//                                if (!validateFields()) return false;
+//                                $('#nextBtn').click();
+//                                sessionStorage.setItem('loadedblock', tabId);
+//                                updateActiveTab(tabId.replace('block', ''));
+//                                window.location.hash = '#block' + tabId;
+//
+//                        } else if (parseInt(tabId.replace('block', '')) < parseInt(loadedId)) {
+//                                $('#prevBtn').click();
+//                                sessionStorage.setItem('loadedblock', tabId);
+//                                updateActiveTab(tabId.replace('block', ''));
+//                                window.location.hash = '#block' + tabId;
+//                        }
+
                     });
-                    
-                    $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
-                        var id = $(e.target).attr("href").substr(1);
-                        sessionStorage.setItem("loadedblock", id);
+
+                    $('ul.nav-tabs > li > a').on('shown.bs.tab', function (e) {
+                        var id = $(e.target).attr('href').substr(1);
+                        sessionStorage.setItem('loadedblock', id);
                         window.location.hash = id;
                     });
-                });'
+                });"
                 );
 
                 foreach ($allfields as $blockid => $blockfields) {
@@ -1672,7 +1731,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
                             $i++;
                             if ($i > 0) {
-                                $blocks[$blockid] = $value['name'];
+                                $name = $value['name'];
+                                if ($debug) {
+                                    $name .= " #$blockid";
+                                }
+                                $blocks[$blockid] = $name;
                             }
                         }
                         if ($i == 0) {
@@ -1753,7 +1816,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
 
-                self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $itilcategories_id);
+                self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id);
 
 
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -2208,7 +2271,7 @@ class PluginMetademandsWizard extends CommonDBTM
     }
 
 
-    static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $itilcategories_id) {
+    static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id) {
 
 
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -2259,7 +2322,7 @@ class PluginMetademandsWizard extends CommonDBTM
             if ($metademands->fields['hide_title'] == 0) {
                 $styleasTab = "overflow: hidden;height: 550px;max-height: 550px;overflow-y: scroll;";
             } else {
-                $styleasTab = "overflow: hidden;height: 700px;max-height: 700px;overflow-y: scroll;";
+                $styleasTab = "overflow: hidden;height: 650px;max-height: 650px;overflow-y: scroll;";
             }
         }
 
@@ -2329,16 +2392,53 @@ class PluginMetademandsWizard extends CommonDBTM
             self::displayBlockFields($metademands, $metademands_data, $preview, $keys, $line, $key, $data, $block, $itilcategories_id);
         }
 
-        //Prepare subblocks
-//        if ($block == XXX-1) {
-//            $subs = $_SESSION['plugin_meta_test'][XXX][0];
-//            echo "<div class='card-body row' bloc-id='subblocXXX'>";
-//
-//            foreach ($subs as $k => $sub) {
-//                self::displayBlockFields($metademands, $metademands_data, $preview, $keys, $subs, $key, $sub, $block, $itilcategories_id);
-//            }
-//            echo "</div>";
-//        }
+        $subblocks = [];
+        $check_values  = [];
+        foreach ($line as $key => $data) {
+            $fieldopt = new PluginMetademandsFieldOption();
+            if ($opts = $fieldopt->find(
+                [
+                    "plugin_metademands_fields_id" => $data['id'],
+                    "hidden_block_same_block" => 1
+                ]
+            )) {
+                foreach ($opts as $opt) {
+                    $check_values[$opt['check_value']] = $opt['hidden_block'];
+                }
+                asort($check_values);
+                $subblocks[$data['rank']] = $check_values;
+            }
+        }
+
+        foreach ($subblocks as $subblock => $subfields) {
+            // Display subblocks
+            if ($block == $subblock) {
+                if (count($subfields) > 0) {
+                    foreach ($subfields as $checkvalue => $subfield) {
+                        $subs = $subblocks_data[$subfield] ?? [];
+                        if (count($subs) > 0) {
+                            echo "<div class='col-md-12 md-bottom form-group row' bloc-id='subbloc" . $subfield . "'>";
+
+                            foreach ($subs as $k => $sub) {
+                                self::displayBlockFields(
+                                    $metademands,
+                                    $metademands_data,
+                                    $preview,
+                                    $keys,
+                                    $subs,
+                                    $k,
+                                    $sub,
+                                    $block,
+                                    $itilcategories_id
+                                );
+                            }
+                        }
+                        echo "</div>";
+                    }
+                }
+
+            }
+        }
 
 
         echo "</div>";
@@ -2688,38 +2788,38 @@ class PluginMetademandsWizard extends CommonDBTM
                     var use_richtext = '$use_richtext';
                     var richtext_ids = {$richtext_id};
                     findFirstTab($block_id);
-                  
-                  if(use_condition == true) {
-                     $('document').ready(checkConditions);
-                     if (show_rule == 2) {
-                        show_button = 0;
-                        if(document.getElementById('nextBtn').innerHTML == submittitle) {
-                           document.getElementById('nextBtn').style.display = 'none';
-                        }
-                     } else if (show_rule == 3) { 
-                           show_button = 1;
-                     }
-                     if (document.getElementById('nextBtn').innerHTML == nexttitle) {
-                        $('#nextBtn').on('click', checkConditions);
-                     }
-                     $('#wizard_form input[type=\"checkbox\"]').on('change', checkConditions);
-                     $('#wizard_form input[type=\"radio\"]').on('change', checkConditions);
-                     $('#wizard_form input').on('change, keyup', checkConditions);
-                     
-                     $('#wizard_form select').on('change', checkConditions);
-                     $('#wizard_form textarea').on('change, keyup', checkConditions);
-                     if(use_richtext){
-                         for( let i = 0; i < richtext_ids.length; i++ ){
-                            let field = 'field' + richtext_ids[i];
-                            tinyMCE.get(field).on('keyup', checkConditions);
-                        } 
-                     }
-                     $('#prevBtn').on('click', function(){
-                        if(document.getElementById('nextBtn').innerHTML == nexttitle) {
-                            document.getElementById('nextBtn').style.display = 'inline';
-                        }
-                     });
-                  }
+                
+
+                   if(use_condition == true) {
+                      $('document').ready(checkConditions);
+                      if (show_rule == 2) {
+                         show_button = 0;
+                         if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                            document.getElementById('nextBtn').style.display = 'none';
+                         }
+                      } else if (show_rule == 3) { 
+                            show_button = 1;
+                      }
+                      if (document.getElementById('nextBtn').innerHTML == nexttitle) {
+                         $('#nextBtn').on('click', checkConditions);
+                      }
+                      $('#wizard_form input[type=\"checkbox\"]').on('change', checkConditions);
+                      $('#wizard_form input[type=\"radio\"]').on('change', checkConditions);
+                      $('#wizard_form input').on('change, keyup', checkConditions);
+                      $('#wizard_form select').on('change', checkConditions);
+                      $('#wizard_form textarea').on('change, keyup', checkConditions);
+                      if(use_richtext){
+                          for( let i = 0; i < richtext_ids.length; i++ ){
+                             let field = 'field' + richtext_ids[i];
+                             tinyMCE.get(field).on('keyup', checkConditions);
+                         } 
+                      }
+                      $('#prevBtn').on('click', function(){
+                         if(document.getElementById('nextBtn').innerHTML == nexttitle) {
+                             document.getElementById('nextBtn').style.display = 'inline';
+                         }
+                      });
+                   }
                   
                     function checkConditions() {
                         var formDatas;
@@ -2983,6 +3083,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             arrayDatas = $('#wizard_form').serializeArray();
                             arrayDatas.push({name: 'block_id', value: id_bloc});
                             arrayDatas.push({name: 'action', value: 'nextUser'});
+                            arrayDatas.push({name: 'form_name', value: '$name'});
                             arrayDatas.push({name: 'update_stepform', value: updatestepform});
                             if(modal == true) {
                                 showModal(arrayDatas);

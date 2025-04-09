@@ -443,6 +443,7 @@ class PluginMetademandsText extends CommonDBTM
                     $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
                     $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                    $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();
                     if (document.getElementById('ablock" . $hidden_block . "'))
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';";
                     $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
@@ -487,7 +488,8 @@ class PluginMetademandsText extends CommonDBTM
             if ($display > 0) {
                 $script2 .= "if (document.getElementById('ablock" . $display . "'))
                         document.getElementById('ablock" . $display . "').style.display = 'block';
-                $('[bloc-id =\"bloc" . $display . "\"]').show();";
+                $('[bloc-id =\"bloc" . $display . "\"]').show();
+                $('[bloc-id =\"subbloc" . $display . "\"]').show();";
             }
             $script .= "fixButtonIndicator();";
             $script .= "});";

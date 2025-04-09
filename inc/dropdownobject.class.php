@@ -1195,7 +1195,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
                 $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
                 $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                 if (is_array($childs_by_checkvalue)) {
@@ -1203,8 +1204,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         if ($idc == $k) {
                             foreach ($childs_blocks as $childs) {
                                 $script .= "if (document.getElementById('ablock" . $childs . "'))
-                document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                         $metaid,
                                         $childs
@@ -1220,15 +1221,17 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         foreach ($session_value as $k => $fieldSession) {
                             if ($fieldSession == $idc && $hidden_block > 0) {
                                 $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                            document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                                            $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                            $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
                             }
                         }
                     } else {
                         if ($session_value == $idc && $hidden_block > 0) {
                             $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                            $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                        document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                                        $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                        $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
                         }
                     }
                 }
@@ -1243,8 +1246,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
                         if (Session::getLoginUserID() == $idc) {
                             $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                            $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                        document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                                        $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                        $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
                         }
                     }
                 }
@@ -1255,8 +1259,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 if (is_array($blocks_idc) && count($blocks_idc) > 0) {
                     foreach ($blocks_idc as $k => $block_idc) {
                         $script .= "if (document.getElementById('ablock" . $block_idc . "'))
-                document.getElementById('ablock" . $block_idc . "').style.display = 'none';
-                        $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();";
+                                    document.getElementById('ablock" . $block_idc . "').style.display = 'none';
+                                    $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();
+                                    $('[bloc-id =\"subbloc" . $block_idc . "\"]').hide();";
                     }
                 }
                 $script .= " }";

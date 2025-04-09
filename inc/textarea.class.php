@@ -406,7 +406,8 @@ class PluginMetademandsTextarea extends CommonDBTM
 
                         $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                        $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                        $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                        $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
                         $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
                         if (is_array($childs_by_checkvalue)) {
@@ -414,8 +415,8 @@ class PluginMetademandsTextarea extends CommonDBTM
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
                                         $script .= "if (document.getElementById('ablock" . $childs . "'))
-                        document.getElementById('ablock" . $childs . "').style.display = 'block';
-                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                    document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                                    $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
                                                 $metaid,
                                                 $childs
@@ -449,7 +450,8 @@ class PluginMetademandsTextarea extends CommonDBTM
                 }
 
                 if ($display > 0) {
-                    $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                    $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();
+                    $('[bloc-id =\"subbloc" . $display . "\"]').show();";
                 }
 
 

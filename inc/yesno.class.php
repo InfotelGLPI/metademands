@@ -455,9 +455,10 @@ class PluginMetademandsYesno extends CommonDBTM
 //            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
                 //Prepare subblocks
-//                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
+
 
                 $onchange .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                 if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';";
                 $onchange .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
@@ -489,6 +490,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 //specific - one value
                 $onchange .= PluginMetademandsFieldoption::setEmptyBlockFields($name);
                 $onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();
                 if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'none';";
 
@@ -508,11 +510,12 @@ class PluginMetademandsYesno extends CommonDBTM
 
             }
             //Prepare subblocks
-//                        $('[bloc-id =\"subbloc" . $display . "\"]').show();
+
             if ($display > 0) {
                 $pre_onchange .= "if (document.getElementById('ablock" . $display . "'))
                         document.getElementById('ablock" . $display . "').style.display = 'block';
-                        $('[bloc-id =\"bloc" . $display . "\"]').show();";
+                        $('[bloc-id =\"bloc" . $display . "\"]').show();
+                        $('[bloc-id =\"subbloc" . $display . "\"]').show();";
 
             }
 

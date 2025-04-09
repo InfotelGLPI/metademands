@@ -333,9 +333,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
             echo "<div class='left'>";
             echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-            echo "<th colspan='10'>" . __("List of options", 'metademands') . "</th></tr><tr>";
+            echo "<th colspan='11'>" . __("List of options", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
-                echo "<th width='10'>";
+                echo "<th width='11'>";
                 echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
                 echo "</th>";
             }
@@ -345,6 +345,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
             echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
             echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
+            echo "<th>" . __('Display this hidden block in the same block', 'metademands') . "</th>";
             echo "<th>" . __('Childs blocks', 'metademands') . "</th>";
             echo "<th>" . __('Launch a validation', 'metademands') . "</th>";
             echo "<th>" . __('Bind to the value of this checkbox', 'metademands') . "</th>";
@@ -464,6 +465,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if ($data['hidden_block'] > 0) {
                     echo $data['hidden_block'];
                 }
+                echo "</td>";
+
+                echo "<td $onhover>";
+                echo Dropdown::getYesNo($data['hidden_block_same_block']);
                 echo "</td>";
 
                 echo "<td $onhover>";
@@ -601,6 +606,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'fields_link' => $this->fields['fields_link'] ?? 0,
             'hidden_link' => $this->fields['hidden_link'] ?? 0,
             'hidden_block' => $this->fields['hidden_block'] ?? 0,
+            'hidden_block_same_block' => $this->fields['hidden_block_same_block'] ?? 0,
             'custom_values' => $custom_values ?? 0,
             'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
@@ -1140,6 +1146,23 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
             echo "</td></tr>";
 
+            echo "<tr>";
+            echo "<td>";
+            echo __('Display this hidden block in the same block', 'metademands');
+            echo '</br><span class="metademands_wizard_comments">' . __(
+                    'If the value selected equals the value to check, the block becomes visible on the same block',
+                    'metademands'
+                ) . '</span>';
+            echo "</td>";
+            echo "<td>";
+
+            if (empty($params['hidden_block_same_block'])) {
+                $params['hidden_block_same_block'] = 0;
+            }
+            Dropdown::showYesNo('hidden_block_same_block', $params['hidden_block_same_block']);
+
+            echo "</td></tr>";
+
             if ($field_class->getField("type") == "checkbox"
                 || $field_class->getField("type") == "radio"
                 || $field_class->getField("type") == "text"
@@ -1445,6 +1468,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
             if (is_array($check_values)) {
                 if (count($check_values) > 0) {
+
+
                     foreach ($check_values as $idc => $check_value) {
                         if (isset($value) && $value != $idc) {
                             continue;
@@ -1458,6 +1483,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 $script .= PluginMetademandsCheckbox::fieldsLinkScript($data, $idc, $rand);
                             } elseif ($data['type'] == 'radio') {
                                 $script .= PluginMetademandsRadio::fieldsLinkScript($data, $idc, $rand);
+                            } elseif ($data['type'] == 'dropdown_multiple') {
+                                $script .= PluginMetademandsDropdownmultiple::fieldsLinkScript($data, $idc, $rand);
                             } else {
                                 $name = "field[" . $data["id"] . "]";
                                 if ($data["item"] == "ITILCategory_Metademands") {
@@ -1787,7 +1814,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     var tohideblock = {};";
 
         //Prepare subblocks
-//        $('[bloc-id=\"subbloc'+key+'\"]').hide();
         $script .= "$.each( hidden_blocks, function( key, value ) {
                         tohideblock[value] = true;
                     });
@@ -1797,6 +1823,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     $.each(tohideblock, function( key, value ) {
                                 if (value == true) {
                                     $('[bloc-id=\"bloc'+key+'\"]').hide();
+                                    $('[bloc-id=\"subbloc'+key+'\"]').hide();
                                     $.each(tohideblock, function( key, value ) {
                                         $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
                                              switch(this.type) {

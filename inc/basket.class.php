@@ -987,7 +987,8 @@ class PluginMetademandsBasket extends CommonDBTM
 
                 $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
-                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();";
                 if (isset($data['value']) && $idc == $data['value']) {
                     $display = $hidden_block;
                 }
@@ -995,6 +996,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $script .= "$.each( tohide, function( key, value ) {
                             if(value == true){
                              $('[bloc-id =\"bloc'+key+'\"]').hide();
+                             $('[bloc-id =\"subbloc'+key+'\"]').hide();
                              var id = 'ablock'+ key;
                              if (document.getElementById(id))
                              document.getElementById(id).style.display = 'none';
@@ -1062,6 +1064,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                 if (document.getElementById(id))
                                 document.getElementById(id).style.display = 'none';
                                  $('[bloc-id =\"bloc'+key+'\"]').hide();
+                                 $('[bloc-id =\"subbloc'+key+'\"]').hide();
                                  $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
                                     switch(this.type) {
                                            case 'password':
@@ -1095,6 +1098,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                  if (document.getElementById(id))
                                  document.getElementById(id).style.display = 'block';
                                 $('[bloc-id =\"bloc'+key+'\"]').show();
+                                $('[bloc-id =\"subbloc'+key+'\"]').show();
                             }
                         });
                         fixButtonIndicator();console.log('hidden-checkbox3');
@@ -1103,7 +1107,8 @@ class PluginMetademandsBasket extends CommonDBTM
             $script .= "});";
 
             if ($display > 0) {
-                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();";
+                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();
+                            $('[bloc-id =\"subbloc" . $display . "\"]').show();";
             }
 
 

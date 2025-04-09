@@ -53,264 +53,265 @@ class PluginMetademandsStepform extends CommonDBTM
      *
      * @return string
      */
-    public static function showFormsForUserMetademand($users_id, $plugin_metademands_metademands_id, $is_model = false)
-    {
-        $self      = new self();
-        $condition = ['users_id'                          => $users_id,
-                      'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
-        if ($is_model == true) {
-            $condition['is_model'] = 1;
-        } else {
-            $condition['is_model'] = 0;
-        }
-        $forms = $self->find($condition, ['date DESC']);
-
-        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
-            $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) ?? '';
-        } else {
-            $formname = '';
-        }
-        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id'])) {
-            $form_id = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id'];
-        } else {
-            $form_id = 0;
-        }
-        $return = "<span class=''>";
-        $rand   = mt_rand();
-        if ($is_model == true) {
-            if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
-                $return .= "<div class='card-header'>";
-                $return .= __("Current form", 'metademands');
-                $return .= "</div>";
-                $return .= "<table class='tab_cadre_fixe'>";
-                $return .= "<tr class=''>";
-                $return .= "<td colspan='4' class='center'>";
-                $return .= Html::hidden('plugin_metademands_forms_id', ['value' => $form_id, 'id' => 'plugin_metademands_forms_id']);
-                $title  = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
-                $return .= Html::input('form_name', ['value'       => $formname,
-                                                     'maxlength'   => 250,
-                                                     'size'        => 20,
-                                                     'class'       => ' ',
-                                                     'placeholder' => __('Form name', 'metademands')]);
-                $self->getFromDB($form_id);
-                if ($self->fields['is_model'] == true) {
-                    $title .= _sx('button', 'Save model', 'metademands');
-                } else {
-                    $title .= _sx('button', 'Save as model', 'metademands');
-                }
-
-                $return .= "&nbsp;";
-                $return .= Html::submit($title, ['name'  => 'save_model',
-                                                 'form'  => '',
-                                                 'id'    => 'FormSave' . $rand,
-                                                 'class' => 'btn btn-success btn-sm']);
-                $return .= "&nbsp;";
-                $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-                $title  .= _sx('button', 'Clean form', 'metademands');
-                $return .= Html::submit($title, ['name'  => 'clean_form',
-                                                 'class' => 'btn btn-warning btn-sm']);
-                $return .= "<br>";
-                $return .= "</td></tr>";
-                $return .= "</table>";
-            } else {
-                $return .= "<div class='card-header'>";
-                $return .= __("New model", 'metademands');
-                $return .= "</div>";
-                $return .= "<table class='tab_cadre_fixe'>";
-                $return .= "<tr class=''>";
-                $return .= "<td colspan='4' class='center'>";
-                $return .= "<br>";
-                $return .= Html::input('form_name', ['maxlength'   => 250,
-                                                     'size'        => 40,
-                                                     'placeholder' => __('Form name', 'metademands')]);
-                $return .= "<br>";
-                $title  = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
-                $title  .= _sx('button', 'Save as model', 'metademands');
-
-                $return .= Html::submit($title, ['name'  => 'save_form',
-                                                 'form'  => '',
-                                                 'id'    => 'FormAdd' . $rand,
-                                                 'class' => 'btn btn-success btn-sm']);
-                $return .= "&nbsp;";
-                $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-                $title  .= _sx('button', 'Clean form', 'metademands');
-                $return .= Html::submit($title, ['name'  => 'clean_form',
-                                                 'class' => 'btn btn-warning btn-sm']);
-                $return .= "<br>";
-                $return .= "</td></tr>";
-            }
-        }
-
-        $return .= "<table class='tab_cadre_fixe'>";
-        //      $return .= "<tr class='tab_bg_1'><th colspan='4' class='center'>";
-        //      $return .= "<div class='card-header'>";
-        //      if ($is_model == true) {
-        //         $return .= __("Your models", 'metademands');
-        //      } else {
-        //         $return .= __("Your created forms", 'metademands');
-        //      }
-        //
-        //      $return .= "</div>";
-        $return .= "<p class='card-text'>";
-        //      $return .= "</th></tr>";
-        $return .= "<tbody id='bodyForm'>";
-        if (count($forms) > 0) {
-            foreach ($forms as $form) {
-                $return .= "<tr class=''>";
-                $return .= "<td>" . Toolbox::stripslashes_deep($form['name']) . "</td>";
-                $return .= "<td>" . Html::convDateTime($form['date']) . "</td>";
-
-                //            $return .= "<td><i class='".($form['is_model'] > 0 ? 'fas' : 'far')." fa-star fa-xs mark-default me-1'
-                //            title='".($form['is_model'] > 0 ? __('Used as model', 'metademands') : __('Mark as model', 'metademands'))."'
-                //            data-bs-toggle='tooltip' data-bs-placement='right' role='button'></i>";
-                //            $return .= "</td>";
-                $return .= "<td>";
-                $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
-                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "' 
-                           data-hasqtip='0' aria-hidden='true'></i>";
-                $return .= "</button>";
-                $return .= "</td>";
-                if ($is_model == true) {
-                    $return .= "<td>";
-                    $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
-                    $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "' 
-                           data-hasqtip='0' aria-hidden='true'></i>";
-                    $return .= "</button>";
-                    $return .= "</td>";
-                }
-                $return .= "</tr>";
-            }
-        } else {
-            $return .= "<tr class=''>";
-            $return .= "<td>";
-            $return .= __("No existing forms founded", 'metademands');
-            $return .= "</td>";
-            $return .= "</tr>";
-        }
-        $return .= "</tbody>";
-        $return .= "</table>";
-        $return .= "</p>";
-        if ($is_model == true) {
-            $return .= "<script>
-                       var meta_id = {$plugin_metademands_metademands_id};
-                       
-                      function deleteForm(form_id) {
-                          var self_delete = false;
-                          if($form_id == form_id ){
-                              self_delete = true;
-                          }
-                          $('#ajax_loader').show();
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/deleteform.php',
-                                type: 'POST',
-                                data:
-                                  {
-                                    users_id:$users_id,
-                                    plugin_metademands_metademands_id: meta_id,
-                                    forms_id: form_id,
-                                    self_delete: self_delete
-                                  },
-                                success: function(response){
-                                    $('#bodyForm').html(response);
-                                    $('#ajax_loader').hide();
-                                    if(self_delete){
-                                        document.location.reload();
-                                    }
-                                 },
-                                error: function(xhr, status, error) {
-                                   console.log(xhr);
-                                   console.log(status);
-                                   console.log(error);
-                                 } 
-                             });
-                       };
-                     </script>";
-        }
-        $step   = PluginMetademandsMetademand::STEP_SHOW;
-        $return .= "<script>
-                      var meta_id = {$plugin_metademands_metademands_id};
-                      var step = {$step};
-                      function loadForm(form_id) {
-                         $('#ajax_loader').show();
-                         var data_send = $('#wizard_form').serializeArray();
-                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
-                                type: 'POST',
-                                data: data_send,
-                                success: function(response){
-                                    $('#ajax_loader').hide();
-                                    if (response == 1) {
-                                       document.location.reload();
-                                    } else {
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
-                                    }
-                                 }
-                             });
-                       };
-                     </script>";
-        if ($is_model == true) {
-            $return .= "<script>
-                          $('#FormAdd$rand').click(function() {
-
-                             if(typeof tinyMCE !== 'undefined'){
-                                tinyMCE.triggerSave();
-                             }
-                             jQuery('.resume_builder_input').trigger('change');
-                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                             $('#ajax_loader').show();
-                             arrayDatas = $('#wizard_form').serializeArray();
-                             arrayDatas.push({name: \"save_form\", value: true});
-                             arrayDatas.push({name: \"is_model\", value: 1});
-                             $.ajax({
-                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                   type: 'POST',
-                                   data: arrayDatas,
-                                   success: function(response){
-                                       $('#ajax_loader').hide();
-                                       document.location.reload();
-                                    },
-                                   error: function(xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                    }
-                                });
-                          });
-                        </script>";
-        }
-        $return .= "<script>
-                          $('#FormSave$rand').click(function() {
-
-                             if(typeof tinyMCE !== 'undefined'){
-                                tinyMCE.triggerSave();
-                             }
-                             jQuery('.resume_builder_input').trigger('change');
-                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                             $('#ajax_loader').show();
-                             arrayDatas = $('#wizard_form').serializeArray();
-                             arrayDatas.push({name: \"save_model\", value: true});
-                             arrayDatas.push({name: \"is_model\", value: 1});
-                             $.ajax({
-                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateform.php',
-                                   type: 'POST',
-                                   data: arrayDatas,
-                                   success: function(response){
-                                       $('#ajax_loader').hide();
-                                       document.location.reload();
-                                    },
-                                   error: function(xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                    }
-                                });
-                          });
-                        </script>";
-        $return .= "</span>";
-
-        return $return;
-    }
+//    public static function showFormsForUserMetademand($users_id, $plugin_metademands_metademands_id, $is_model = false)
+//    {
+//        $self      = new self();
+//        $condition = ['users_id'                          => $users_id,
+//                      'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
+//        if ($is_model == true) {
+//            $condition['is_model'] = 1;
+//        } else {
+//            $condition['is_model'] = 0;
+//        }
+//        $forms = $self->find($condition, ['date DESC']);
+//
+//        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
+//            $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) ?? '';
+//        } else {
+//            $formname = '';
+//        }
+//        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id'])) {
+//            $form_id = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id'];
+//        } else {
+//            $form_id = 0;
+//        }
+//        $return = "<span class=''>";
+//        $rand   = mt_rand();
+//        if ($is_model == true) {
+//            if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
+//                $return .= "<div class='card-header'>";
+//                $return .= __("Current form", 'metademands');
+//                $return .= "</div>";
+//                $return .= "<table class='tab_cadre_fixe'>";
+//                $return .= "<tr class=''>";
+//                $return .= "<td colspan='4' class='center'>";
+//                $return .= Html::hidden('plugin_metademands_forms_id', ['value' => $form_id, 'id' => 'plugin_metademands_forms_id']);
+//                $title  = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
+//                $return .= Html::input('form_name', ['value'       => $formname,
+//                                                     'maxlength'   => 250,
+//                                                     'size'        => 20,
+//                                                     'class'       => ' ',
+//                                                     'placeholder' => __('Form name', 'metademands')]);
+//                $self->getFromDB($form_id);
+//                if ($self->fields['is_model'] == true) {
+//                    $title .= _sx('button', 'Save model', 'metademands');
+//                } else {
+//                    $title .= _sx('button', 'Save as model', 'metademands');
+//                }
+//
+//                $return .= "&nbsp;";
+//                $return .= Html::submit($title, ['name'  => 'save_model',
+//                                                 'form'  => '',
+//                                                 'id'    => 'FormSave' . $rand,
+//                                                 'class' => 'btn btn-success btn-sm']);
+//                $return .= "&nbsp;";
+//                $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
+//                $title  .= _sx('button', 'Clean form', 'metademands');
+//                $return .= Html::submit($title, ['name'  => 'clean_form',
+//                                                 'class' => 'btn btn-warning btn-sm']);
+//                $return .= "<br>";
+//                $return .= "</td></tr>";
+//                $return .= "</table>";
+//            } else {
+//                $return .= "<div class='card-header'>";
+//                $return .= __("New model", 'metademands');
+//                $return .= "</div>";
+//                $return .= "<table class='tab_cadre_fixe'>";
+//                $return .= "<tr class=''>";
+//                $return .= "<td colspan='4' class='center'>";
+//                $return .= "<br>";
+//                $return .= Html::input('form_name', ['maxlength'   => 250,
+//                                                     'size'        => 40,
+//                                                     'placeholder' => __('Form name', 'metademands')]);
+//                $return .= "<br>";
+//                $title  = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
+//                $title  .= _sx('button', 'Save as model', 'metademands');
+//
+//                $return .= Html::submit($title, ['name'  => 'save_form',
+//                                                 'form'  => '',
+//                                                 'id'    => 'FormAdd' . $rand,
+//                                                 'class' => 'btn btn-success btn-sm']);
+//                $return .= "&nbsp;";
+//                $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
+//                $title  .= _sx('button', 'Clean form', 'metademands');
+//                $return .= Html::submit($title, ['name'  => 'clean_form',
+//                                                 'class' => 'btn btn-warning btn-sm']);
+//                $return .= "<br>";
+//                $return .= "</td></tr>";
+//            }
+//        }
+//
+//        $return .= "<table class='tab_cadre_fixe'>";
+//        //      $return .= "<tr class='tab_bg_1'><th colspan='4' class='center'>";
+//        //      $return .= "<div class='card-header'>";
+//        //      if ($is_model == true) {
+//        //         $return .= __("Your models", 'metademands');
+//        //      } else {
+//        //         $return .= __("Your created forms", 'metademands');
+//        //      }
+//        //
+//        //      $return .= "</div>";
+//        $return .= "<p class='card-text'>";
+//        //      $return .= "</th></tr>";
+//        $return .= "<tbody id='bodyForm'>";
+//        if (count($forms) > 0) {
+//            foreach ($forms as $form) {
+//                $return .= "<tr class=''>";
+//                $return .= "<td>" . Toolbox::stripslashes_deep($form['name']) . "</td>";
+//                $return .= "<td>" . Html::convDateTime($form['date']) . "</td>";
+//
+//                //            $return .= "<td><i class='".($form['is_model'] > 0 ? 'fas' : 'far')." fa-star fa-xs mark-default me-1'
+//                //            title='".($form['is_model'] > 0 ? __('Used as model', 'metademands') : __('Mark as model', 'metademands'))."'
+//                //            data-bs-toggle='tooltip' data-bs-placement='right' role='button'></i>";
+//                //            $return .= "</td>";
+//                $return .= "<td>";
+//                $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
+//                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
+//                           data-hasqtip='0' aria-hidden='true'></i>";
+//                $return .= "</button>";
+//                $return .= "</td>";
+//                if ($is_model == true) {
+//                    $return .= "<td>";
+//                    $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
+//                    $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "'
+//                           data-hasqtip='0' aria-hidden='true'></i>";
+//                    $return .= "</button>";
+//                    $return .= "</td>";
+//                }
+//                $return .= "</tr>";
+//            }
+//        } else {
+//            $return .= "<tr class=''>";
+//            $return .= "<td>";
+//            $return .= __("No existing forms founded", 'metademands');
+//            $return .= "</td>";
+//            $return .= "</tr>";
+//        }
+//        $return .= "</tbody>";
+//        $return .= "</table>";
+//        $return .= "</p>";
+//        if ($is_model == true) {
+//            $return .= "<script>
+//                       var meta_id = {$plugin_metademands_metademands_id};
+//
+//                      function deleteForm(form_id) {
+//                          var self_delete = false;
+//                          if($form_id == form_id ){
+//                              self_delete = true;
+//                          }
+//                          $('#ajax_loader').show();
+//                          $.ajax({
+//                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/deleteform.php',
+//                                type: 'POST',
+//                                data:
+//                                  {
+//                                    users_id:$users_id,
+//                                    plugin_metademands_metademands_id: meta_id,
+//                                    forms_id: form_id,
+//                                    self_delete: self_delete
+//                                  },
+//                                success: function(response){
+//                                    $('#bodyForm').html(response);
+//                                    $('#ajax_loader').hide();
+//                                    if(self_delete){
+//                                        document.location.reload();
+//                                    }
+//                                 },
+//                                error: function(xhr, status, error) {
+//                                   console.log(xhr);
+//                                   console.log(status);
+//                                   console.log(error);
+//                                 }
+//                             });
+//                       };
+//                     </script>";
+//        }
+//        $step   = PluginMetademandsMetademand::STEP_SHOW;
+//        $return .= "<script>
+//                      var meta_id = {$plugin_metademands_metademands_id};
+//                      var step = {$step};
+//
+//                      function loadForm(form_id) {
+//                         $('#ajax_loader').show();
+//                         var data_send = $('#wizard_form').serializeArray();
+//                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
+//                          $.ajax({
+//                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
+//                                type: 'POST',
+//                                data: data_send,
+//                                success: function(response){
+//                                    $('#ajax_loader').hide();
+//                                    if (response == 1) {
+//                                       document.location.reload();
+//                                    } else {
+//                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
+//                                    }
+//                                 }
+//                             });
+//                       };
+//                     </script>";
+//        if ($is_model == true) {
+//            $return .= "<script>
+//                          $('#FormAdd$rand').click(function() {
+//
+//                             if(typeof tinyMCE !== 'undefined'){
+//                                tinyMCE.triggerSave();
+//                             }
+//                             jQuery('.resume_builder_input').trigger('change');
+//                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+//                             $('#ajax_loader').show();
+//                             arrayDatas = $('#wizard_form').serializeArray();
+//                             arrayDatas.push({name: \"save_form\", value: true});
+//                             arrayDatas.push({name: \"is_model\", value: 1});
+//                             $.ajax({
+//                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+//                                   type: 'POST',
+//                                   data: arrayDatas,
+//                                   success: function(response){
+//                                       $('#ajax_loader').hide();
+//                                       document.location.reload();
+//                                    },
+//                                   error: function(xhr, status, error) {
+//                                      console.log(xhr);
+//                                      console.log(status);
+//                                      console.log(error);
+//                                    }
+//                                });
+//                          });
+//                        </script>";
+//        }
+//        $return .= "<script>
+//                          $('#FormSave$rand').click(function() {
+//
+//                             if(typeof tinyMCE !== 'undefined'){
+//                                tinyMCE.triggerSave();
+//                             }
+//                             jQuery('.resume_builder_input').trigger('change');
+//                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+//                             $('#ajax_loader').show();
+//                             arrayDatas = $('#wizard_form').serializeArray();
+//                             arrayDatas.push({name: \"save_model\", value: true});
+//                             arrayDatas.push({name: \"is_model\", value: 1});
+//                             $.ajax({
+//                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateform.php',
+//                                   type: 'POST',
+//                                   data: arrayDatas,
+//                                   success: function(response){
+//                                       $('#ajax_loader').hide();
+//                                       document.location.reload();
+//                                    },
+//                                   error: function(xhr, status, error) {
+//                                      console.log(xhr);
+//                                      console.log(status);
+//                                      console.log(error);
+//                                    }
+//                                });
+//                          });
+//                        </script>";
+//        $return .= "</span>";
+//
+//        return $return;
+//    }
 
     /**
      * Display tab for each itel object
@@ -548,9 +549,10 @@ class PluginMetademandsStepform extends CommonDBTM
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
                     $metaID = $name['plugin_metademands_metademands_id'];
-                    echo '<div class="btnsc-normal"  >';
+                    $block_id = $name['block_id'];
+                    echo '<div class="btnsc-normal" style="min-height: 260px" >';
                     $fasize = "fa-4x";
-                    echo '<a class="bt-buttons" href="#" onclick="loadForm' . $rand . '(\'' . $id . '\',\'' . $metaID . '\')">';
+                    echo '<a class="bt-buttons" href="#" onclick="loadForm' . $rand . '(\'' . $id . '\',\'' . $metaID . '\',\'' . $block_id . '\')">';
                     echo "<div class='center'>";
                     $icon = "fa-share-alt";
                     if (!empty($meta->fields['icon'])) {
@@ -579,7 +581,7 @@ class PluginMetademandsStepform extends CommonDBTM
                     echo "</span></em>";
                     echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                     echo __('Step', 'metademands');
-                    echo $name['block_id'];
+                    echo $block_id;
                     echo "</span></em>";
                     //TODO Change to new right
                     if (Session::haveRight("plugin_metademands_cancelform", READ)) {
@@ -623,7 +625,7 @@ class PluginMetademandsStepform extends CommonDBTM
                                 success: function(response){
                                     if (response == 0) {
                                        $('#ajax_loader').hide();
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step  + '&block_id=' + block_id;
                                     }
                                 },
                                 error: function(xhr, status, error) {
