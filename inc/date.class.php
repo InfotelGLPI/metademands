@@ -73,6 +73,7 @@ class PluginMetademandsDate extends CommonDBTM
             $date = date("Y-m-d");
             $addDays = $data['additional_number_day'];
             $value = date('Y-m-d', strtotime($date . " + $addDays days"));
+            $opt['value'] = $value;
             $use_future_date = $data['use_future_date'];
             if (isset($use_future_date) && !empty($use_future_date)) {
                 $opt['min'] = $value;

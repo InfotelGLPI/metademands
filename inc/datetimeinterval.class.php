@@ -72,7 +72,7 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
         if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
             $addDays = $data['additional_number_day'];
             $startDate = time();
-            $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
+            $opt['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
             $mindate = date('Y-m-d', strtotime("+$addDays day", $startDate));
             $use_future_date = $data['use_future_date'];
             if ($value == null && isset($use_future_date) && !empty($use_future_date)) {
