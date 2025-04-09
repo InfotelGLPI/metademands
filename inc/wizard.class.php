@@ -1656,7 +1656,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         var block_id = $block_id;
 
                         function updateActiveTab(rank) {
-                        console.log(rank);
                             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
                             document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
 
@@ -1732,7 +1731,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $i++;
                             if ($i > 0) {
                                 $name = $value['name'];
-                                if ($debug) {
+                                if ($debug || $preview) {
                                     $name .= " #$blockid";
                                 }
                                 $blocks[$blockid] = $name;
@@ -2706,7 +2705,7 @@ class PluginMetademandsWizard extends CommonDBTM
         PluginMetademandsFieldOption::taskScript($data);
 
         //Active champs obligatoires sur les fields_link
-        PluginMetademandsFieldOption::fieldsLinkScript($data);
+        PluginMetademandsFieldOption::fieldsMandatoryScript($data);
 
         //Affiche les hidden_link
         PluginMetademandsFieldOption::fieldsHiddenScript($data);

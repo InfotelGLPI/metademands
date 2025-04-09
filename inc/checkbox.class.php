@@ -274,7 +274,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
 
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
     static function showValueToCheck($item, $params)
@@ -361,20 +361,123 @@ class PluginMetademandsCheckbox extends CommonDBTM
         }
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
+    static function fieldsMandatoryScript($data)
     {
 
-        $fields_link = $data['options'][$idc]['fields_link'];
+        $check_values = $data['options'] ?? [];
+        $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
 
-        $script = "";
-        $script .= "var metademandWizard$rand = $(document).metademandWizard();";
-        $script .= "metademandWizard$rand.metademand_setMandatoryField(
-                                        'metademands_wizard_red" . $fields_link . "',
-                                        'field[" . $data['id'] . "][" . $idc . "]',[";
-        $script .= $idc;
-        $script .= "], '" . $data['item'] . "');";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $pre_onchange = "console.log('fieldsHiddenScript-checkbox $id');";
+        }
+        if (count($check_values) > 0) {
 
-        return $script;
+            //Si la valeur est en session
+            //specific
+            if (isset($data['value']) && is_array($data['value'])) {
+                $values = $data['value'];
+                foreach ($values as $value) {
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                }
+            }
+
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
+            $onchange .= "var tohide = {};";
+            $display = [];
+            foreach ($check_values as $idc => $check_value) {
+                $fields_link = $check_value['fields_link'];
+
+                $onchange .= "if (this.checked){";
+                $onchange .= " if ($(this).val() == $idc || $idc == -1) {
+                            if ($fields_link in tohide) {
+                            } else {
+                                tohide[$fields_link] = true;
+                            }
+                            tohide[$fields_link] = false;
+                        }";
+
+                if (isset($data['value']) && is_array($data['value'])) {
+                    $values = $data['value'];
+                    foreach ($values as $value) {
+                        if ($idc == $value) {
+                            $display[] = $fields_link;
+                        }
+                    }
+                }
+
+                $onchange .= "$.each(tohide, function( key, value ) {
+                            if (value == true) {
+                                var id = '#metademands_wizard_red'+ key;
+                                $(id).html('');
+                                sessionStorage.setItem('hiddenlink$name', key);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                $('[name =\"field[' + key + ']\"]').removeAttr('required');
+                            } else {
+                                var id = '#metademands_wizard_red'+ key;
+                                var fieldid = 'field'+ key;
+                                $(id).html('*');
+                                $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                //Special case Upload field
+                                 if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
+                                    document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
+                                 }
+                            }
+                        });";
+
+                $onchange .= "} else {";
+                //not checked
+                $onchange .= "if ($(this).val() == $idc) {
+                            if ($fields_link in tohide) {
+                            } else {
+                               tohide[$fields_link] = true;
+                            }
+                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
+                                if($(value).val() == $idc || $idc == -1 ){
+                                    tohide[$fields_link] = false;
+                                }
+                            });
+                        }";
+
+                $onchange .= "$.each( tohide, function( key, value ) {
+                            if (value == true) {
+                                var id = '#metademands_wizard_red'+ key;
+                                $(id).html('');
+                                sessionStorage.setItem('hiddenlink$name', key);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                $('[name =\"field[' + key + ']\"]').removeAttr('required');
+                            } else {
+                               var id = '#metademands_wizard_red'+ key;
+                               var fieldid = 'field'+ key;
+                               $(id).html('*');
+                               $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                               //Special case Upload field
+                               if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
+                                   document.querySelector('[id-field=\"field' + fieldid +'\"] div input').required = true;
+                               }
+                            }
+                         });";
+                $onchange .= "}";
+            }
+
+            if (count($display) > 0) {
+                foreach ($display as $see) {
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
+                }
+            }
+
+            $onchange .= "});";
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
+        }
     }
 
     static function taskScript($data)
@@ -581,10 +684,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             $('[id-field =\"field'+key+'\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
                                 " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                                $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
-                                $('[name =\"field['+key+']\"]').attr('required', 'required');
                             }
                         });";
 
@@ -607,10 +708,9 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                $('[id-field =\"field'+key+'\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                               $('[name =\"field['+key+']\"]').removeAttr('required');
+                               $('[name =\"field[' + key + ']\"]').removeAttr('required');
                             } else {
                                $('[id-field =\"field'+key+'\"]').show();
-                               $('[name =\"field['+key+']\"]').attr('required', 'required');
                             }
                          });";
                 $onchange .= "}";

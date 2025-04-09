@@ -321,7 +321,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $div .= "</select>";
         $div .= "</div>";
 
-        $div .= " <div class=\"centralCol\" style='width: 3%;'>
+        $div .= " <div class=\"centralCol\" style='width: 10%;'>
                        <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_rightAll\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
                        <button type=\"button\" id=\"multiselect" . $id . "_rightSelected\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
                        <button type=\"button\" id=\"multiselect" . $id . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
@@ -722,10 +722,15 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         echo "<td>";
-        self::showValueToCheck($fieldoption, $params);
-        echo "</td>";
 
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+//        if ($params['display_type'] == self::CLASSIC_DISPLAY) {
+            self::showValueToCheck($fieldoption, $params);
+//        } else {
+//            echo __('Not available with Double column display', 'metademands');
+//        }
+        echo "</td>";
+        $params['use_richtext'] = 0;
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
     static function showValueToCheck($item, $params)
@@ -907,8 +912,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
-    {
+    static function fieldsMandatoryScript($data) {
 
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
@@ -955,9 +959,20 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                     $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
+                            var id = '#metademands_wizard_red'+ key;
+                            $(id).html('');
+                            sessionStorage.setItem('hiddenlink$name', key);
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         } else {
-                            $('[name =\"field['+key+']\"]').attr('required', 'required');
+                             var id = '#metademands_wizard_red'+ key;
+                             var fieldid = 'field'+ key;
+                             $(id).html('*');
+                             $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                             //Special case Upload field
+                             if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
+                                document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
+                             }
                         }
                     });";
 
@@ -998,12 +1013,19 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         if (index === 1) {
                             id = $('#multiselect" . $data['id'] . "_to').val();
                             if (id == $idc) {
-                                $('[name =\"field['+ $fields_link +']\"]').attr('required', 'required');
+                                 $('#metademands_wizard_red" . $fields_link . "').html('*');
+                                 $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                 //Special case Upload field
+                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
+                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
+                                 }
                             }
                         } else if (index === 2) {
                             id = $('#multiselect" . $data['id'] . "').val();
                             if (id == $idc) {
-                                $('[name =\"field['+ $fields_link +']\"]').removeAttr('required');
+                                $('#metademands_wizard_red" . $fields_link . "').html('');
+                                  sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                             }
                         }
                     }, 50);
@@ -1013,17 +1035,23 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             id = $('#multiselect" . $data['id'] . "').val();
                             setTimeout(() => {
                                 if (id == $idc) {
-                                    $('[name =\"field['+ $fields_link +']\"]').attr('required', 'required');
+                                    $('#metademands_wizard_red" . $fields_link . "').html('*');
+                                     $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                     //Special case Upload field
+                                     if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
+                                        document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
+                                     }
                                 }
                             }, 50);
                             });";
 
                     $onchange .=  "$('#multiselect" . $data["id"] . "_to option').on('dblclick', function() {
-                            e.preventDefault();
                             id = $('#multiselect" . $data['id'] . "_to').val();
                             setTimeout(() => {
                                 if (id == $idc) {
-                                    $('[name =\"field['+ $fields_link +']\"]').removeAttr('required');
+                                    $('#metademands_wizard_red" . $fields_link . "').html('');
+                                    sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                    " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                 }
                             }, 50);
                             });";
@@ -1395,7 +1423,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         } else {
                             $('[id-field =\"field'+key+'\"]').show();
-                            $('[name =\"field['+key+']\"]').attr('required', 'required');
                         }
                     });";
 
@@ -1522,7 +1549,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             });";
 
                     $onchange .=  "$('#multiselect" . $data["id"] . "_to option').on('dblclick', function() {
-                            e.preventDefault();
                             id = $('#multiselect" . $data['id'] . "_to').val();
                             setTimeout(() => {
                                 if (id == $idc) {

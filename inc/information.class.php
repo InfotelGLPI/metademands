@@ -173,8 +173,7 @@ JAVASCRIPT
 
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
-    {
+    static function fieldsMandatoryScript($data) {
 
     }
 

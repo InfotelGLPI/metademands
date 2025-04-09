@@ -544,7 +544,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         echo "</td>";
 
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
     static function showValueToCheck($item, $params)
@@ -598,9 +598,143 @@ class PluginMetademandsBasket extends CommonDBTM
 
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
+    static function fieldsMandatoryScript($data)
     {
+        $check_values = $data['options'] ?? [];
+        $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
 
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $pre_onchange = "console.log('fieldsHiddenScript-basket $id');";
+        }
+        $withquantity = false;
+        $custom_values = isset($data['custom_values']) ? PluginMetademandsFieldParameter::_unserialize($data['custom_values']) : [];
+        if (isset($custom_values[0]) && $custom_values[0] == 1) {
+            $withquantity = true;
+        }
+
+        if (count($check_values) > 0) {
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+            }
+
+            if ($withquantity == false) {
+                $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            } else {
+                $name = "quantity[" . $data["id"] . "]";
+
+                $onchange = "$('[name^=\"$name\"]').change(function() {";
+            }
+
+            $onchange .= "var tohide = {};";
+            $display = 0;
+            foreach ($check_values as $idc => $check_value) {
+                $fields_link = $check_value['fields_link'];
+
+                if ($withquantity == false) {
+                    $onchange .= " if (this.checked){";
+                    //                                        foreach ($hidden_link as $key => $fields) {
+                    $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
+                } else {
+                    $onchange .= "if ($(this).val() > 0 ) { ";
+                }
+                $onchange .= "if ($fields_link in tohide) {
+                         } else {
+                            tohide[$fields_link] = true;
+                         }
+                         tohide[$fields_link] = false;
+                      ";
+
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $fields_link;
+                }
+
+                $onchange .= "$.each(tohide, function( key, value ) {
+                            if (value == true) {
+                               var id = '#metademands_wizard_red'+ key;
+                               $(id).html('');
+                               sessionStorage.setItem('hiddenlink$name', key);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                $('[name =\"field['+key+']\"]').removeAttr('required');
+                            } else {
+                                 var id = '#metademands_wizard_red'+ key;
+                                 var fieldid = 'field'+ key;
+                                 $(id).html('*');
+                                 $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                 //Special case Upload field
+                                 if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
+                                    document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
+                                 }
+                            }
+                        });";
+
+                if ($withquantity == false) {
+                    $onchange .= "} else {";
+
+                    $onchange .= "if($(this).val() == $idc){
+                            if($fields_link in tohide){
+
+                            }else{
+                               tohide[$fields_link] = true;
+                            }
+                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
+                    $onchange .= "if($(value).val() == $idc || $idc == -1 ){
+                                   tohide[$fields_link] = false;
+                                }";
+                    $onchange .= "});";
+
+                    $onchange .= "}";
+
+                    $onchange .= "$.each( tohide, function( key, value ) {
+                            if (value == true) {
+                               var id = '#metademands_wizard_red'+ key;
+                               $(id).html('');
+                               sessionStorage.setItem('hiddenlink$name', key);
+                               " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                               $('[name =\"field['+key+']\"]').removeAttr('required');
+                            } else {
+                                var id = '#metademands_wizard_red'+ key;
+                                var fieldid = 'field'+ key;
+                                $(id).html('*');
+                                $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                //Special case Upload field
+                                 if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
+                                    document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
+                                 }
+                            }
+                         });";
+                    $onchange .= "}
+                    }";
+                } else {
+                    $onchange .= "} else {";
+
+                    $onchange .= "var id = '#metademands_wizard_red'+ key;
+                                  $(id).html('');
+                                  sessionStorage.setItem('hiddenlink$name', key);
+                                  " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                  $('[id-field =\"field" . $fields_link . "\"]').removeAttr('required');";
+
+                    $onchange .= "}";
+                }
+            }
+
+            if ($display > 0) {
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+            }
+
+            $onchange .= "});";
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
+        }
     }
 
     static function taskScript($data)
@@ -756,11 +890,16 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
 
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
-
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $pre_onchange = "console.log('fieldsHiddenScript-basket $id');";
+        }
         $withquantity = false;
         $custom_values = isset($data['custom_values']) ? PluginMetademandsFieldParameter::_unserialize($data['custom_values']) : [];
         if (isset($custom_values[0]) && $custom_values[0] == 1) {
@@ -768,23 +907,23 @@ class PluginMetademandsBasket extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
-            if ($withquantity == false) {
-                $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            } else {
-                $name = "quantity[" . $data["id"] . "]";
-
-                $onchange = "$('[name^=\"$name\"]').change(function() {";
-            }
 
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
                 $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
             }
-
             //Si la valeur est en session
             if (isset($data['value'])) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+            }
+
+            if ($withquantity == false) {
+                $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            } else {
+                $name = "quantity[" . $data["id"] . "]";
+
+                $onchange = "$('[name^=\"$name\"]').change(function() {";
             }
 
             $onchange .= "var tohide = {};";
@@ -811,55 +950,19 @@ class PluginMetademandsBasket extends CommonDBTM
                 }
 
                 //checkbox
-                $onchange .= "$.each( tohide, function( key, value ) {
-                                                        if(value == true){
-                                                           $('[id-field =\"field'+key+'\"]').hide();
-                                                           $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-        
-                                                         switch(this.type) {
-                                                                case 'password':
-                                                                case 'text':
-                                                                case 'textarea':
-                                                                case 'file':
-                                                                case 'date':
-                                                                case 'number':
-                                                                case 'range':
-                                                                case 'tel':
-                                                                case 'email':
-                                                                case 'url':
-                                                                    jQuery(this).val('');
-                                                                    break;
-                                                                case 'select-one':
-                                                                case 'select-multiple':
-                                                                    jQuery(this).val('0').trigger('change');
-                                                                    jQuery(this).val('0');
-                                                                    break;
-                                                                case 'checkbox':
-                                                                case 'radio':
-                                                                     if(this.checked == true) {
-                                                                            this.click();
-                                                                            this.checked = false;
-                                                                            break;
-                                                                        }
-                                                            }
-                                                            regex = /multiselectfield.*_to/g;
-                                                            totest = this.id;
-                                                            found = totest.match(regex);
-                                                            if(found !== null) {
-                                                              regex = /multiselectfield[0-9]*/;
-                                                               found = totest.match(regex);
-                                                               $('#'+found[0]+'_leftAll').click();
-                                                            }
-                                                        });
-                                                           $('[name =\"field['+key+']\"]').removeAttr('required');
-                                                        } else {
-                                                           $('[id-field =\"field'+key+'\"]').show();
-                                                        }
-                                                     });";
+                $onchange .= "$.each(tohide, function( key, value ) {
+                            if (value == true) {
+                            $('[id-field =\"field'+key+'\"]').hide();
+                               sessionStorage.setItem('hiddenlink$name', key);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                            } else {
+                                $('[id-field =\"field'+key+'\"]').show();
+                            }
+                        });";
 
                 if ($withquantity == false) {
                     $onchange .= "} else {";
-                    //                                        foreach ($hidden_link as $key => $fields) {
+
                     $onchange .= "if($(this).val() == $idc){
                             if($hidden_link in tohide){
 
@@ -876,52 +979,17 @@ class PluginMetademandsBasket extends CommonDBTM
 
 
                     $onchange .= "$.each( tohide, function( key, value ) {
-                            if(value == true){
+                            if (value == true) {
                                $('[id-field =\"field'+key+'\"]').hide();
-                               $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-
-                             switch(this.type) {
-                                    case 'password':
-                                    case 'text':
-                                    case 'textarea':
-                                    case 'file':
-                                    case 'date':
-                                    case 'number':
-                                     case 'range':
-                                    case 'tel':
-                                    case 'email':
-                                    case 'url':
-                                        jQuery(this).val('');
-                                        break;
-                                    case 'select-one':
-                                    case 'select-multiple':
-                                        jQuery(this).val('0').trigger('change');
-                                        jQuery(this).val('0');
-                                        break;
-                                    case 'checkbox':
-                                    case 'radio':
-                                         if(this.checked == true) {
-                                                this.click();
-                                                this.checked = false;
-                                                break;
-                                            }
-                                }
-                                regex = /multiselectfield.*_to/g;
-                                totest = this.id;
-                                found = totest.match(regex);
-                                if(found !== null) {
-                                  regex = /multiselectfield[0-9]*/;
-                                   found = totest.match(regex);
-                                   $('#'+found[0]+'_leftAll').click();
-                                }
-                            });
+                               sessionStorage.setItem('hiddenlink$name', key);
+                               " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                $('[name =\"field['+key+']\"]').removeAttr('required');
-                            }else{
+                            } else {
                                $('[id-field =\"field'+key+'\"]').show();
                             }
                          });";
                     $onchange .= "}
-                }";
+                    }";
                 } else {
                     $onchange .= "} else {";
 

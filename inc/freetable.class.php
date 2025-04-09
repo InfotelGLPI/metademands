@@ -818,8 +818,7 @@ class PluginMetademandsFreetable extends CommonDBTM
 //        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
-    {
+    static function fieldsMandatoryScript($data) {
     }
 
     static function fieldsHiddenScript($data)

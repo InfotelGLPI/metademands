@@ -131,7 +131,7 @@ class PluginMetademandsYesno extends CommonDBTM
         echo "<td>";
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
     static function showValueToCheck($item, $params)
@@ -187,9 +187,61 @@ class PluginMetademandsYesno extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
+    static function fieldsMandatoryScript($data)
     {
+        $check_values = $data['options'] ?? [];
+        $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
 
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $onchange = "console.log('fieldsMandatoryScript-yesno $id');";
+        }
+
+        if (count($check_values) > 0) {
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            }
+
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $display = 0;
+            foreach ($check_values as $idc => $check_value) {
+                $fields_link = $check_value['fields_link'];
+
+                $val = Toolbox::addslashes_deep($idc);
+                $onchange .= "if ($(this).val() == $val) {
+                                 $('#metademands_wizard_red" . $fields_link . "').html('*');
+                                $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                 //Special case Upload field
+                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
+                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
+                                 }
+                               } else {
+                                  $('#metademands_wizard_red" . $fields_link . "').html('');
+                                  sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                               }";
+
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $fields_link;
+                }
+            }
+            $onchange .= "});";
+
+            if ($display > 0) {
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+            }
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
+        }
     }
 
     static function taskScript($data)
@@ -336,7 +388,6 @@ class PluginMetademandsYesno extends CommonDBTM
                 $val = Toolbox::addslashes_deep($idc);
                 $onchange .= "if ($(this).val() == $val) {
                              $('[id-field =\"field" . $hidden_link . "\"]').show();
-                             $('[name =\"field" . $hidden_link . "\"]').attr('required', 'required');
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
@@ -399,6 +450,21 @@ class PluginMetademandsYesno extends CommonDBTM
 
         if (count($check_values) > 0) {
 
+            //by default - hide all
+            $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+            if (!isset($data['value'])) {
+                $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+            }
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+            }
+
+            $onchange .= "$('[name=\"$name\"]').change(function() {";
+
+            $onchange .= "var tohide = {};";
+            $display = 0;
 
             foreach ($check_values as $idc => $check_value) {
                 $blocks_idc = [];
@@ -433,30 +499,12 @@ class PluginMetademandsYesno extends CommonDBTM
                     }
                 }
 
-                //by default - hide all
-                $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-                if (!isset($data['value'])) {
-                    $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
-                }
-
-                //Si la valeur est en session
-                if (isset($data['value'])) {
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
-                }
-
-                $onchange .= "$('[name=\"$name\"]').change(function() {";
-
-                $onchange .= "var tohide = {};";
-                $display = 0;
-
                 $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
                 //specific for radio / dropdowns - one value
 //            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
                 //Prepare subblocks
-
-
                 $onchange .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                 $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                 if (document.getElementById('ablock" . $hidden_block . "'))
@@ -506,8 +554,6 @@ class PluginMetademandsYesno extends CommonDBTM
                     }
                 }
                 $onchange .= " }";
-
-
             }
             //Prepare subblocks
 

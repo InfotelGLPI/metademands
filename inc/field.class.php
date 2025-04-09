@@ -1160,7 +1160,11 @@ class PluginMetademandsField extends CommonDBChild
                 if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
                     $i++;
                     if ($i > 0) {
-                        $blocks[$blockid] = $value['name'];
+                        $name = $value['name'];
+//                        if ($debug) {
+                            $name .= " #$blockid";
+//                        }
+                        $blocks[$blockid] = $name;
                     }
                 }
                 if ($i == 0) {
@@ -4518,7 +4522,6 @@ JAVASCRIPT
                 $max = $data['maxrank'];
             }
         }
-
 
         echo __('Block', 'metademands')."&nbsp;";
         Dropdown::showNumber('block', [

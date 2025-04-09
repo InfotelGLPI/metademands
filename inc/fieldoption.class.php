@@ -589,6 +589,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     $custom_values = $customs;
                 }
             }
+            $metademand_params = new PluginMetademandsFieldParameter();
+            $metademand_params->getFromDBByCrit(
+                ["plugin_metademands_fields_id" => $item->getID()]
+            );
         } else {
             $metademand_params = new PluginMetademandsFieldParameter();
             $metademand_params->getFromDBByCrit(
@@ -608,7 +612,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'hidden_block' => $this->fields['hidden_block'] ?? 0,
             'hidden_block_same_block' => $this->fields['hidden_block_same_block'] ?? 0,
             'custom_values' => $custom_values ?? 0,
-            'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
+            'use_richtext' => ($item->fields['type'] == 'textarea') ?? $metademand_params->fields['use_richtext'] ?? 0,
+            'display_type' => ($item->fields['type'] == 'dropdown_multiple') ?? $metademand_params->fields['display_type'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
@@ -1025,9 +1030,18 @@ class PluginMetademandsFieldOption extends CommonDBChild
      * @throws \GlpitestSQLError
      */
 
-    public static function showLinkHtml($id, $params, $task = 1, $field = 1, $hidden = 0)
+    public static function showLinkHtml($id, $params)
     {
         global $PLUGIN_HOOKS, $CFG_GLPI;
+
+        $task = 1;
+        $field = 1;
+        $hidden = 1;
+        if (isset($params['use_richtext']) && $params['use_richtext'] == 1) {
+            $task = 0;
+            $field = 0;
+            $hidden = 0;
+        }
 
         $field_id = $params['plugin_metademands_fields_id'];
         $metademands_id = $params["plugin_metademands_metademands_id"];
@@ -1047,7 +1061,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
             PluginMetademandsTask::showAllTasksDropdown($metademands_id, $params['plugin_metademands_tasks_id']);
             echo "</td></tr>";
         }
-
         // Show field link
         if ($field) {
             echo "<tr><td>";
@@ -1375,7 +1388,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
     {
         global $PLUGIN_HOOKS;
 
-
         switch ($data['type']) {
             case 'title':
                 break;
@@ -1458,65 +1470,95 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function fieldsLinkScript($data)
+    public static function fieldsMandatoryScript($data)
     {
-        if (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) {
-            $value = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']];
-        }
-        if (isset($data['options'])) {
-            $check_values = $data['options'];
+        global $PLUGIN_HOOKS;
 
-            if (is_array($check_values)) {
-                if (count($check_values) > 0) {
-
-
-                    foreach ($check_values as $idc => $check_value) {
-                        if (isset($value) && $value != $idc) {
-                            continue;
-                        }
-                        if (!empty($data['options'][$idc]['fields_link'])) {
-                            $script = "";
-                            $fields_link = $data['options'][$idc]['fields_link'];
-                            $rand = mt_rand();
-
-                            if ($data['type'] == 'checkbox') {
-                                $script .= PluginMetademandsCheckbox::fieldsLinkScript($data, $idc, $rand);
-                            } elseif ($data['type'] == 'radio') {
-                                $script .= PluginMetademandsRadio::fieldsLinkScript($data, $idc, $rand);
-                            } elseif ($data['type'] == 'dropdown_multiple') {
-                                $script .= PluginMetademandsDropdownmultiple::fieldsLinkScript($data, $idc, $rand);
-                            } else {
-                                $name = "field[" . $data["id"] . "]";
-                                if ($data["item"] == "ITILCategory_Metademands") {
-                                    $name = "field_plugin_servicecatalog_itilcategories_id";
-                                }
-                                $script .= "var metademandWizard$rand = $(document).metademandWizard();";
-                                $script .= "metademandWizard$rand.metademand_setMandatoryField(
-                                        'metademands_wizard_red" . $fields_link . "',
-                                        '$name',[";
-                                if ($check_value > 0) {
-                                    $script .= $idc;
-                                }
-                                $script .= "], '" . $data['type'] . "');";
-                            }
-
-                            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+        switch ($data['type']) {
+            case 'title':
+                break;
+            case 'title-block':
+                break;
+            case 'informations':
+                break;
+            case 'text':
+                PluginMetademandsText::fieldsMandatoryScript($data);
+                break;
+            case 'tel':
+                PluginMetademandsTel::fieldsMandatoryScript($data);
+                break;
+            case 'email':
+                PluginMetademandsEmail::fieldsMandatoryScript($data);
+                break;
+            case 'url':
+                PluginMetademandsUrl::fieldsMandatoryScript($data);
+                break;
+            case 'textarea':
+                PluginMetademandsTextarea::fieldsMandatoryScript($data);
+                break;
+            case 'dropdown_meta':
+                PluginMetademandsDropdownmeta::fieldsMandatoryScript($data);
+                break;
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::fieldsMandatoryScript($data);
+                break;
+            case 'dropdown':
+                PluginMetademandsDropdown::fieldsMandatoryScript($data);
+                break;
+            case 'dropdown_multiple':
+                PluginMetademandsDropdownmultiple::fieldsMandatoryScript($data);
+                break;
+            case 'checkbox':
+                PluginMetademandsCheckbox::fieldsMandatoryScript($data);
+                break;
+            case 'radio':
+                PluginMetademandsRadio::fieldsMandatoryScript($data);
+                break;
+            case 'yesno':
+                PluginMetademandsYesno::fieldsMandatoryScript($data);
+                break;
+            case 'number':
+                break;
+            case 'range':
+                break;
+            case 'freetable':
+                break;
+            case 'date':
+                break;
+            case 'time':
+                break;
+            case 'datetime':
+                break;
+            case 'date_interval':
+                break;
+            case 'datetime_interval':
+                break;
+            case 'upload':
+                break;
+            case 'link':
+                break;
+            case 'basket':
+                PluginMetademandsBasket::fieldsMandatoryScript($data);
+                break;
+            case 'parent_field':
+                break;
+            default:
+                //plugin case
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        if (Plugin::isPluginActive($plug)) {
+                            $case = self::addPluginFieldMandatoryLink($plug, $data);
+                            return $case;
                         }
                     }
                 }
-            }
+                break;
         }
     }
 
     public static function fieldsHiddenScript($data)
     {
         global $PLUGIN_HOOKS;
-
-//        if (isset($data['options'])) {
-//            $check_values = $data['options'];
-
-//            if (is_array($check_values)) {
-//                if (count($check_values) > 0) {
 
         switch ($data['type']) {
             case 'title':
@@ -1598,9 +1640,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 }
                 break;
         }
-//                }
-//            }
-//        }
     }
 
     public static function blocksHiddenScript($data)
@@ -2052,12 +2091,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
         return $script;
     }
 
+
     public static function resetMandatoryFieldsByField($name)
     {
 
         return "var fieldid = sessionStorage.getItem('hiddenlink$name');
         $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
-
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -2251,6 +2290,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function addPluginFieldMandatoryLink($plug, $data)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $check_values = $data['options'] ?? [];
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addFieldMandatoryLink'])) {
+                    return $item->addFieldMandatoryLink($data, $check_values);
+                }
+            }
+        }
+    }
 
     /**
      * Load fields from plugins

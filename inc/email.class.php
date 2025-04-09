@@ -174,7 +174,7 @@ class PluginMetademandsEmail extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
 
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 0, 1);
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
     static function showValueToCheck($item, $params)
@@ -231,9 +231,76 @@ class PluginMetademandsEmail extends CommonDBTM
 
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
-    {
+    static function fieldsMandatoryScript($data) {
 
+        $check_values = $data['options'] ?? [];
+        $id = $data["id"];
+        $name = "field[" . $data["id"] . "]";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $onchange = "console.log('fieldsMandatoryScript-tel $id');";
+        }
+
+        if (count($check_values) > 0) {
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            }
+
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $display = 0;
+            foreach ($check_values as $idc => $check_value) {
+                $fields_link = $check_value['fields_link'];
+
+                if (isset($idc) && $idc == 1) {
+                    $onchange .= "if ($(this).val().trim().length < 1) {
+                                 sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                  " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                              } else {
+                                 $('#metademands_wizard_red" . $fields_link . "').html('*');
+                                 $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                 //Special case Upload field
+                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
+                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
+                                 }
+                              }
+                            ";
+
+                } else {
+                    $onchange .= "if ($(this).val().trim().length < 1) {
+                                 $('#metademands_wizard_red" . $fields_link . "').html('*');
+                                 $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                 //Special case Upload field
+                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
+                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
+                                 }
+                             } else {
+                                $('#metademands_wizard_red" . $fields_link . "').html('');
+                                sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                             }";
+
+                }
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $fields_link;
+                }
+            }
+
+            if ($display > 0) {
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+            }
+
+            $onchange .= "});";
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
+        }
     }
 
     static function taskScript($data)
@@ -248,7 +315,7 @@ class PluginMetademandsEmail extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('taskScript-text $id');";
+            $script = "console.log('taskScript-email $id');";
         }
 
         if (count($check_values) > 0) {
@@ -331,7 +398,7 @@ class PluginMetademandsEmail extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $onchange = "console.log('fieldsHiddenScript-text $id');";
+            $onchange = "console.log('fieldsHiddenScript-email $id');";
         }
 
         if (count($check_values) > 0) {
@@ -423,7 +490,7 @@ class PluginMetademandsEmail extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('blocksHiddenScript-text $id');";
+            $script = "console.log('blocksHiddenScript-email $id');";
         }
         if (count($check_values) > 0) {
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";

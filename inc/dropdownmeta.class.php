@@ -1307,7 +1307,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
 
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
     static function showValueToCheck($item, $params)
@@ -1481,8 +1481,84 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsLinkScript($data, $idc, $rand)
-    {
+    static function fieldsMandatoryScript($data) {
+
+        $check_values = $data['options'] ?? [];
+        $id = $data["id"];
+
+        $name = "field[" . $data["id"] . "]";
+        if ($data["item"] == "ITILCategory_Metademands") {
+            $name = "field_plugin_servicecatalog_itilcategories_id";
+        }
+
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $onchange = "console.log('fieldsHiddenScript-dropdownmeta $id');";
+        }
+
+        if (count($check_values) > 0) {
+
+            //Si la valeur est en session
+            if (isset($data['value'])) {
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+            }
+
+
+            $onchange .= "$('[name=\"$name\"]').change(function() {";
+
+            $onchange .= "var tohide = {};";
+
+            $display = 0;
+            foreach ($check_values as $idc => $check_value) {
+                $fields_link = $check_value['fields_link'];
+                $onchange .= "if ($fields_link in tohide) {
+                        } else {
+                            tohide[$fields_link] = true;
+                        }
+                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                            tohide[$fields_link] = false;
+                        }";
+
+
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $fields_link;
+                }
+
+                $onchange .= "$.each( tohide, function( key, value ) {
+                        if (value == true) {
+                            var id = '#metademands_wizard_red'+ key;
+                            $(id).html('');
+                            sessionStorage.setItem('hiddenlink$name', key);
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                            $('[name =\"field['+ key +']\"]').removeAttr('required');
+                        } else {
+                             var id = '#metademands_wizard_red'+ key;
+                             var fieldid = 'field'+ key;
+                             $(id).html('*');
+                             $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                             //Special case Upload field
+                             if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
+                                 document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
+                             }
+                        }
+                    });
+              ";
+            }
+
+            if ($display > 0) {
+                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+            }
+
+            $onchange .= "});";
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
+        }
     }
 
     static function taskScript($data)
@@ -1689,7 +1765,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         } else {
                             $('[id-field =\"field'+key+'\"]').show();
-                            $('[name =\"field['+key+']\"]').attr('required', 'required');
                         }
                     });
               ";
