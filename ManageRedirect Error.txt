@@ -1,7 +1,7 @@
 Add into toolbox.php
 
 
-public static function manageRedirect($where)
+private static function computeRedirect(string $where): ?string
 
 default case dor interface like central :
 
