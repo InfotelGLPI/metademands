@@ -4785,6 +4785,7 @@ JAVASCRIPT
                 $have_freetable = true;
             }
         }
+        $options['formatastable'] = $options['formatastable'] ?? true;
 
         foreach ($values_form as $k => $values) {
             if (is_array($values) && $config_data['show_form_changes']) {
@@ -4917,7 +4918,6 @@ JAVASCRIPT
                     }
                 }
                 $nb++;
-                $formatAsTable = $options['formatastable'] ?? true;
 
                 if (isset($colors) && !empty($colors)) {
                     $i = 0;
@@ -4937,7 +4937,7 @@ JAVASCRIPT
                                 $resultTemp,
                                 $parent_fields_id,
                                 false,
-                                $formatAsTable,
+                                $options['formatastable'],
                                 $langTech,
                                 $color,
                                 $have_freetable
@@ -4958,7 +4958,7 @@ JAVASCRIPT
                         $resultTemp,
                         $parent_fields_id,
                         false,
-                        $formatAsTable,
+                        $options['formatastable'],
                         $langTech,
                         '',
                         $have_freetable

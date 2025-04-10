@@ -63,53 +63,49 @@ class PluginMetademandsTextarea extends CommonDBTM
         $value = Html::cleanPostForTextArea($value);
         $self = new self();
         $required = "";
-        if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
-            $required = "required='required'";
-        }
         if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
             $rand = mt_rand();
             $name = 'field['. $data['id'] .']';
-            $field = Html::textarea([
-                'name' => $name,
+
+            if (!empty($comment)) {
+                $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
+            }
+
+            self::textarea(['name' => $name,
+                'placeholder' => $comment,
                 'value' => $value,
                 'rand' => $rand,
                 'editor_id' => $namefield . $data['id'],
+                'enable_fileupload' => true,
                 'enable_richtext' => true,
-                'enable_fileupload' => false,
 //                'enable_images' => true,
-                'display' => false,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
                 'cols' => 80,
                 'rows' => 6,
-//                'uploads' => $self->uploads
-            ]);
-            $field .=  '<div style="display:none;">';
-            $field .= Html::file(['editor_id'    => $namefield . $data['id'],
-                'filecontainer' => "filecontainer$rand",
-                'onlyimages'    => true,
-                'showtitle'     => false,
-                'multiple'      => true,
-                'display'       => false]);
-            $field .=  '</div>';
-            $field .="<style>
+                'uploads' => $self->uploads]);
+
+            echo Html::scriptBlock("$('.fileupload').hide();");
+            echo"<style>
                         .fileupload.only-uploaded-files {
                             display: none;
                         }
 
                      </style>";
 
-
         } else {
-
+            if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
+                $required = "required='required'";
+            }
             if (!empty($comment)) {
                 $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
             }
             $field = "<textarea $required class='form-control' rows='6' cols='80' 
                placeholder=\"" . $comment . "\" 
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            echo $field;
         }
 
-        echo $field;
+
     }
 
     static function showFieldCustomValues($params)
@@ -552,7 +548,8 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
+        $field['value'] = htmlspecialchars_decode($field['value']);
+
         return $field['value'];
     }
 
@@ -577,4 +574,321 @@ class PluginMetademandsTextarea extends CommonDBTM
         return $result;
     }
 
+    public
+    static function textarea($options = [])
+    {
+        //default options
+        $p['name'] = 'text';
+        $p['filecontainer'] = 'fileupload_info';
+        $p['rand'] = mt_rand();
+        $p['editor_id'] = 'text' . $p['rand'];
+        $p['value'] = '';
+        $p['placeholder'] = '';
+        $p['enable_richtext'] = false;
+        $p['enable_images'] = true;
+        $p['enable_fileupload'] = false;
+        $p['display'] = true;
+        $p['cols'] = 100;
+        $p['rows'] = 15;
+        $p['multiple'] = true;
+        $p['required'] = false;
+        $p['uploads'] = [];
+
+        //merge default options with options parameter
+        $p = array_merge($p, $options);
+
+        $required = $p['required'] ? 'required' : '';
+        $display = '';
+        $display .= "<textarea class='form-control' name='" . $p['name'] . "' id='" . $p['editor_id'] . "'
+                             rows='" . $p['rows'] . "' cols='" . $p['cols'] . "' $required>" .
+            $p['value'] . "</textarea>";
+
+        if ($p['enable_richtext']) {
+            $display .= self::initEditorSystem($p['editor_id'], $p['rand'], false, false, $p['enable_images'], $p['placeholder']);
+        }
+        if (!$p['enable_fileupload'] && $p['enable_richtext'] && $p['enable_images']) {
+            $p_rt = $p;
+            $p_rt['display'] = false;
+            $p_rt['only_uploaded_files'] = true;
+            $p_rt['required'] = false;
+            $display .= Html::file($p_rt);
+        }
+
+        if ($p['enable_fileupload']) {
+            $p_rt = $p;
+            unset($p_rt['name']);
+            $p_rt['display'] = false;
+            $p_rt['required'] = false;
+            $display .= Html::file($p_rt);
+        }
+
+        if ($p['display']) {
+            echo $display;
+            return true;
+        } else {
+            return $display;
+        }
+    }
+
+    /**
+     * Init the Editor System to a textarea
+     *
+     * @param string $name name of the html textarea to use
+     * @param string $rand rand of the html textarea to use (if empty no image paste system)(default '')
+     * @param boolean $display display or get js script (true by default)
+     * @param boolean $readonly editor will be readonly or not
+     * @param boolean $enable_images enable image pasting in rich text
+     *
+     * @return void|string
+     *    integer if param display=true
+     *    string if param display=false (HTML code)
+     **/
+    public
+    static function initEditorSystem($id, $rand = '', $display = true, $readonly = false, $enable_images = true, $placeholder_comment = '')
+    {
+        global $CFG_GLPI, $DB;
+
+        // load tinymce lib
+        Html::requireJs('tinymce');
+
+        $language = $_SESSION['glpilanguage'];
+        if (!file_exists(GLPI_ROOT . "/public/lib/tinymce-i18n/langs6/$language.js")) {
+            $language = $CFG_GLPI["languages"][$_SESSION['glpilanguage']][2];
+            if (!file_exists(GLPI_ROOT . "/public/lib/tinymce-i18n/langs6/$language.js")) {
+                $language = "en_GB";
+            }
+        }
+        $language_url = $CFG_GLPI['root_doc'] . '/public/lib/tinymce-i18n/langs6/' . $language . '.js';
+
+        // Apply all GLPI styles to editor content
+        $content_css = preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::scss(('css/palettes/' . $_SESSION['glpipalette'] ?? 'auror') . '.scss', ['force_no_version' => true]))
+            . ',' . preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::css('public/lib/base.css', ['force_no_version' => true]));
+
+        $cache_suffix = '?v=' . \Glpi\Toolbox\FrontEnd::getVersionCacheKey(GLPI_VERSION);
+        $readonlyjs   = $readonly ? 'true' : 'false';
+
+        $invalid_elements = 'applet,canvas,embed,form,object';
+        if (!$enable_images) {
+            $invalid_elements .= ',img';
+        }
+        if (!GLPI_ALLOW_IFRAME_IN_RICH_TEXT) {
+            $invalid_elements .= ',iframe';
+        }
+
+        $plugins = [
+            'autoresize',
+            'code',
+            'directionality',
+            'fullscreen',
+            'link',
+            'lists',
+            'quickbars',
+            'searchreplace',
+            'table',
+        ];
+        if ($enable_images) {
+            $plugins[] = 'image';
+            $plugins[] = 'glpi_upload_doc';
+        }
+        if ($DB->use_utf8mb4) {
+            $plugins[] = 'emoticons';
+        }
+        $pluginsjs = json_encode($plugins);
+
+        $language_opts = '';
+        if ($language !== 'en_GB') {
+            $language_opts = json_encode([
+                'language' => $language,
+                'language_url' => $language_url
+            ]);
+        }
+
+        $placeholder = Glpi\RichText\RichText::getSafeHtml($placeholder_comment);
+        $placeholder = addslashes($placeholder);
+        $mandatory_field_msg = json_encode(__('The description field is mandatory', 'servicecatalog'));
+        // init tinymce
+        $js = <<<JS
+         $(function() {
+            var is_dark = $('html').css('--is-dark').trim() === 'true';
+            var richtext_layout = "{$_SESSION['glpirichtext_layout']}";
+
+            // init editor
+            tinyMCE.init(Object.assign({
+               license_key: 'gpl',
+
+               link_default_target: '_blank',
+               branding: false,
+               selector: '#{$id}',
+               text_patterns: false,
+               paste_webkit_styles: 'all',
+
+               plugins: {$pluginsjs},
+
+               // Appearance
+               skin_url: is_dark
+                  ? CFG_GLPI['root_doc']+'/public/lib/tinymce/skins/ui/oxide-dark'
+                  : CFG_GLPI['root_doc']+'/public/lib/tinymce/skins/ui/oxide',
+               body_class: 'rich_text_container',
+               content_css: '{$content_css}',
+               highlight_on_focus: false,
+
+               min_height: 250,
+               resize: true,
+
+               // disable path indicator in bottom bar
+               elementpath: false,
+
+                // inline toolbar configuration
+               menubar: false,
+               toolbar: richtext_layout == 'classic'
+                  ? 'styles | bold italic | forecolor backcolor | bullist numlist outdent indent | emoticons table link image | code fullscreen'
+                  : false,
+               quickbars_insert_toolbar: richtext_layout == 'inline'
+                  ? 'emoticons quicktable quickimage quicklink | bullist numlist | outdent indent '
+                  : false,
+               quickbars_selection_toolbar: richtext_layout == 'inline'
+                  ? 'bold italic | styles | forecolor backcolor '
+                  : false,
+               contextmenu: richtext_layout == 'classic'
+                  ? false
+                  : 'copy paste | emoticons table image link | undo redo | code fullscreen',
+
+               // Content settings
+               entity_encoding: 'raw',
+               invalid_elements: '{$invalid_elements}',
+               readonly: {$readonlyjs},
+               relative_urls: false,
+               remove_script_host: false,
+
+               // Misc options
+               browser_spellcheck: true,
+               cache_suffix: '{$cache_suffix}',
+
+               // Security options
+               // Iframes are disabled by default. We assume that administrator that enable it are aware of the potential security issues.
+               sandbox_iframes: false,
+
+               setup: function(editor) {
+                  // "required" state handling
+                  if ($('#$id').attr('required') == 'required') {
+                     $('#$id').removeAttr('required'); // Necessary to bypass browser validation
+
+                     editor.on('submit', function (e) {
+                        if ($('#$id').val() == '') {
+                           const field = $('#$id').closest('.form-field').find('label').text().replace('*', '').trim();
+                           alert({$mandatory_field_msg}.replace('%s', field));
+                           e.preventDefault();
+
+                           // Prevent other events to run
+                           // Needed to not break single submit forms
+                           e.stopPropagation();
+                        }
+                     });
+                     editor.on('keyup', function (e) {
+                        editor.save();
+                        if ($('#$id').val() == '') {
+                           $(editor.container).addClass('required');
+                        } else {
+                           $(editor.container).removeClass('required');
+                        }
+                     });
+                     editor.on('init', function (e) {
+                        if (strip_tags($('#$id').val()) == '') {
+                           $(editor.container).addClass('required');
+                        }
+                     });
+                     editor.on('paste', function (e) {
+                        // Remove required on paste event
+                        // This is only needed when pasting with right click (context menu)
+                        // Pasting with Ctrl+V is already handled by keyup event above
+                        $(editor.container).removeClass('required');
+                     });
+                  }
+                  editor.on('Change', function (e) {
+                     // Nothing fancy here. Since this is only used for tracking unsaved changes,
+                     // we want to keep the logic in common.js with the other form input events.
+                     onTinyMCEChange(e);
+                  });
+                  // ctrl + enter submit the parent form
+                  editor.addShortcut('ctrl+13', 'submit', function() {
+                     editor.save();
+                     submitparentForm($('#$id'));
+                  });
+                  editor.on('init', () => {
+                     if ($('#$id').val() == '') {
+                     editor.setContent(`
+                              <div id="placeholder">
+                            $placeholder
+                        </div>
+                          `);
+                     }
+                  });
+                  // When the editor is clicked we monitor what is being clicked and
+                  // take appropriate actions. This is how we dedect if a insert template
+                  // button has been clicked. This event is triggered for every click inside
+                  // TinyMCE.
+                  // https://www.tiny.cloud/docs/advanced/events/
+                  const placeholderManager = (e) => {
+      
+                     // Check if the content contains the placeholder inserted above.
+                     // The get() function looks for an id attribute.
+                     // https://www.tiny.cloud/docs/api/tinymce.dom/tinymce.dom.domutils/#get
+                     const placeholderExists = editor.dom.get('placeholder');
+                     
+                     if (placeholderExists) {
+      
+                        // In this demo we want to start an empty document with a title.
+                           // This does not force having a title for a document, it's simply
+                           // a convenience feature.
+                           editor.undoManager.transact(() => {
+                              editor.setContent('');
+                           });
+                     }
+                  };
+      
+                  // Bind the click event listener to the placeholder manager function
+                  editor.once('click tap keydown', placeholderManager);
+      
+                  editor.on('Undo', () => {
+                     // Rebind the click event listener when the editor is reverted back
+                     // to the original content
+                     if (!editor.undoManager.hasUndo()) {
+                        editor.once('click tap keydown', placeholderManager);
+                     }
+                  });
+                  editor.on('PreInit', () => {
+                     // To prevent the placeholder to be submitted out of TinyMCE we
+                     // remove it upon serialization. In this case, any <div> tag
+                     // will be removed, so adapt it to your needs.
+                     // https://www.tiny.cloud/docs/api/tinymce.dom/tinymce.dom.serializer/#addnodefilter
+                     editor.serializer.addNodeFilter('div', nodes => {
+                        nodes.forEach(node => {
+                           node.remove();
+                        });
+                     });
+                  });
+               },
+               content_style: `
+                #placeholder {
+                    color: #aaa;
+                    display: flex;
+                    flex-direction: column;
+                    -webkit-user-select: none; /* Prevent any selections on the element */
+                    user-select: none;
+                }
+
+                #placeholder * {
+                    -webkit-user-select: none; /* Prevent any selections on the element */
+                    user-select: none;
+                }`
+            }, {$language_opts}));
+         });
+JS;
+
+        if ($display) {
+            echo Html::scriptBlock($js);
+        } else {
+            return Html::scriptBlock($js);
+        }
+    }
 }
