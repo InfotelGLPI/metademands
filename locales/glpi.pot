@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 09:14+0000\n"
+"POT-Creation-Date: 2025-04-10 11:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -373,7 +373,7 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:1092 inc/dropdownmultiple.class.php:1226
 #: inc/dropdownobject.class.php:1017 inc/email.class.php:327
 #: inc/radio.class.php:435 inc/tel.class.php:329 inc/text.class.php:327
-#: inc/textarea.class.php:281 inc/url.class.php:327 inc/wizard.class.php:1915
+#: inc/textarea.class.php:277 inc/url.class.php:327 inc/wizard.class.php:1915
 #: inc/yesno.class.php:267
 msgctxt "button"
 msgid "Save & Post"
@@ -384,7 +384,7 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:1094 inc/dropdownmultiple.class.php:1228
 #: inc/dropdownobject.class.php:1018 inc/email.class.php:329
 #: inc/radio.class.php:436 inc/tel.class.php:331 inc/text.class.php:328
-#: inc/textarea.class.php:283 inc/url.class.php:329 inc/wizard.class.php:1187
+#: inc/textarea.class.php:279 inc/url.class.php:329 inc/wizard.class.php:1187
 #: inc/wizard.class.php:1890 inc/wizard.class.php:1913
 #: inc/wizard.class.php:1926 inc/wizard.class.php:1930 inc/yesno.class.php:268
 msgid "Next"
@@ -841,7 +841,7 @@ msgid "Glpi Object"
 msgstr ""
 
 #: inc/email.class.php:171 inc/tel.class.php:174 inc/text.class.php:172
-#: inc/textarea.class.php:139 inc/url.class.php:171
+#: inc/textarea.class.php:135 inc/url.class.php:171
 msgid "If field empty"
 msgstr ""
 
@@ -2012,12 +2012,16 @@ msgstr ""
 msgid "Textarea"
 msgstr ""
 
-#: inc/textarea.class.php:125
+#: inc/textarea.class.php:121
 msgid "Use richt text"
 msgstr ""
 
-#: inc/textarea.class.php:145
+#: inc/textarea.class.php:141
 msgid "Not available with Rich text option"
+msgstr ""
+
+#: inc/textarea.class.php:708
+msgid "The description field is mandatory"
 msgstr ""
 
 #: inc/ticket.class.php:51
