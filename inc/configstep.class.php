@@ -161,7 +161,7 @@ class PluginMetademandsConfigstep extends CommonDBTM
             Dropdown::showYesNo('multiple_link_groups_blocks', $multipleGroup);
             echo "</td>";
             echo "<td>";
-            echo __('Allow sending the form to a user', 'metademands');
+            echo __('The user must select a defined user of the selected groups', 'metademands');
             echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('link_user_block', $userLink);

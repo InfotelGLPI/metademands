@@ -1434,18 +1434,33 @@ class PluginMetademandsWizard extends CommonDBTM
     ) {
         global $CFG_GLPI;
 
-        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
+        $metademands = new PluginMetademandsMetademand();
+        $dbu = new DbUtils();
+        $metademands->getFromDB($metademands_id);
+
+        //Redirected after end user Step
         $user_id = Session::getLoginUserID();
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
+
+            $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
+            if (Plugin::isPluginActive('servicecatalog')
+                && Session::haveRight("plugin_servicecatalog", READ)) {
+                if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } else {
+                    $type = $metademands->fields['type'];
+                    if ($type > 0) {
+                        $url = PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1";
+                    } else {
+                        $url =PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php";
+                    }
+                }
+            }
             unset($_SESSION['plugin_metademands'][$user_id]);
             Html::redirect($url);
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-
-        $metademands = new PluginMetademandsMetademand();
-        $dbu = new DbUtils();
-        $metademands->getFromDB($metademands_id);
 
         $paramUrl = "";
         if ($current_ticket > 0 && !$meta_validated) {
@@ -1865,7 +1880,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 if ($use_as_step == 1) {
-                    echo "<div id='nextMsg' class='alert alert-info center'>";
+                    echo "<br><div id='nextMsg' class='alert alert-info center'>";
                     echo "</div>";
                 }
 
@@ -1951,50 +1966,10 @@ class PluginMetademandsWizard extends CommonDBTM
                 $alert = __('Thanks to fill mandatory fields', 'metademands');
                 $alert_regex = __("These fields don\'t respect regex", 'metademands');
 
-                $group_user = new Group_User();
-                $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
-                $groups = [];
-                foreach ($groups_users as $gu) {
-                    $groups[] = $gu['groups_id'];
-                }
-                $list_blocks = [];
-                $list_blocks2 = [];
+
+                $listStepBlocks = [];
                 if ($use_as_step == 1) {
-
-                    $step = new PluginMetademandsStep();
-
-                    if (!empty($groups)) {
-                        $steps = $step->find([
-                            'plugin_metademands_metademands_id' => $ID,
-                            'groups_id' => $groups
-                        ]);
-
-                        foreach ($steps as $s) {
-                            $list_blocks[] = $s['block_id'];
-                        }
-                    }
-
-                    $step2 = new PluginMetademandsStep();
-                    if ($steps2 = $step2->find(['plugin_metademands_metademands_id' => $ID])) {
-                        foreach ($steps2 as $s) {
-                            $list_blocks2[] = $s['block_id'];
-                        }
-                    }
-
-                    $field = new PluginMetademandsField();
-                    $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
-                    $blocks = [];
-
-                    foreach ($fields as $f) {
-                        $blocks[] = $f["rank"];
-                    }
-                    foreach ($blocks as $block) {
-                        if (!in_array($block, $list_blocks2)) {
-                            $list_blocks[] = $block;
-                        }
-                    }
-
-                    $listStepBlocks = array_unique($list_blocks);
+                    $listStepBlocks = PluginMetademandsStep::defineStepblocks($ID);
                 }
 
                 if (!empty($data_form)) {

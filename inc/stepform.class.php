@@ -473,23 +473,15 @@ class PluginMetademandsStepform extends CommonDBTM
             $condition = ['groups_id' => $groups];
         }
         $step       = new PluginMetademandsStep();
-        $steps      = $step->find($condition);
+
         $stepform   = new PluginMetademandsStepform();
         $waitingForms = [];
         $stepforms  = $stepform->find();
-//        foreach ($steps as $s) {
-//            if ($forms = $stepform->find(['plugin_metademands_metademands_id' => $s['plugin_metademands_metademands_id'],
-//                                          'block_id' => $s['block_id']])) {
-//                foreach ($forms as $id => $form) {
-//                if(Session::getLoginUserID() == $form['users_id_dest'] || $form['users_id_dest'] == 0) {
-//                    $stepforms[$id] = $form;
-//                }
-//
-//                }
-//            }
-//        }
+
         foreach ($stepforms as $id => $form) {
-            if((in_array($form['groups_id_dest'], $groups) && $form['users_id_dest'] == 0) || Session::getLoginUserID() == $form['users_id_dest']) {
+            if((in_array($form['groups_id_dest'], $groups)
+                    && $form['users_id_dest'] == 0)
+                || Session::getLoginUserID() == $form['users_id_dest']) {
                 $waitingForms[$id] = $form;
             }
         }

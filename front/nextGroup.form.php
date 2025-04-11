@@ -72,8 +72,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
         );
     }
     $KO = PluginMetademandsStep::nextUser();
-    $dest = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
-    $dest = addslashes($dest);
+
     unset($_SESSION['plugin_metademands']);
 
     if ($KO === false) {
