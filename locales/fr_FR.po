@@ -1990,7 +1990,7 @@ msgstr "Votre ticket sera validée par votre responsable"
 #: inc/step.class.php:617 inc/step.class.php:763
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
-"Vous n'avez pas de superviseur défini, vous ne pouvez pas continuer cette "
+"Vous n'avez pas de responsable défini, vous ne pouvez pas continuer cette "
 "demande"
 
 #: inc/step.class.php:638
