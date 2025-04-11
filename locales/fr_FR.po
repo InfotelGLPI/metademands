@@ -1980,7 +1980,8 @@ msgstr "Pas d'associations trouvées"
 
 #: inc/step.class.php:478
 msgid "Message to next group or validator on form"
-msgstr "Message au groupe suivant ou au validateur sur le formulaire"
+msgstr ""
+"Message affiché avant l'envoi au superviseur ou à l'utilisateur suivant"
 
 #: inc/step.class.php:608 inc/step.class.php:743
 msgid "Your ticket will be validated by your supervisor"
