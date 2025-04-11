@@ -253,8 +253,8 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->addStandardTab('PluginMetademandsField', $ong, $options);
         $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
         if ($this->getField('step_by_step_mode') == 1) {
-            $this->addStandardTab('PluginMetademandsStep', $ong, $options);
             $this->addStandardTab('PluginMetademandsConfigstep', $ong, $options);
+            $this->addStandardTab('PluginMetademandsStep', $ong, $options);
         }
         $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);

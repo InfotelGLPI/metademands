@@ -95,7 +95,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     }
 
 } else {
-    Html::popHeader('nextGroup');
+    Html::popHeader(__('Next recipient', 'metademands'));
     PluginMetademandsStep::showModalForm();
     Html::popFooter();
 }

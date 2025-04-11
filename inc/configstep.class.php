@@ -121,11 +121,13 @@ class PluginMetademandsConfigstep extends CommonDBTM
             return false;
         }
         $userLink = 0;
+        $supervisor_validation = 0;
         $multipleGroup = 0;
         $addasrequester = 0;
         $confStep = new self();
         if($confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->fields['id']])) {
             $userLink = $confStep->fields['link_user_block'];
+            $supervisor_validation = $confStep->fields['supervisor_validation'];
             $multipleGroup = $confStep->fields['multiple_link_groups_blocks'];
             $addasrequester = $confStep->fields['add_user_as_requester'];
             $blocksastab = $confStep->fields['see_blocks_as_tab'];
@@ -143,25 +145,29 @@ class PluginMetademandsConfigstep extends CommonDBTM
         Dropdown::showYesNo('see_blocks_as_tab', $blocksastab);
         echo "</td>";
         echo "<td>";
+        echo __('Activate supervisor validation', 'metademands');
         echo "</td>";
         echo "<td>";
+        Dropdown::showYesNo('supervisor_validation', $supervisor_validation);
         echo "</td>";
         echo "</tr>";
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Link multiple groups to a block', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        Dropdown::showYesNo('multiple_link_groups_blocks', $multipleGroup);
-        echo "</td>";
-        echo "<td>";
-        echo __('Allow sending the form to a user', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        Dropdown::showYesNo('link_user_block', $userLink);
-        echo "</td>";
-        echo "</tr>";
+        if ($supervisor_validation == 0) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Link multiple groups to a block', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('multiple_link_groups_blocks', $multipleGroup);
+            echo "</td>";
+            echo "<td>";
+            echo __('Allow sending the form to a user', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('link_user_block', $userLink);
+            echo "</td>";
+            echo "</tr>";
+        }
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";

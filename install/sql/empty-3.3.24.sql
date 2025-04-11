@@ -691,6 +691,7 @@ CREATE TABLE `glpi_plugin_metademands_steps`
     `plugin_metademands_metademands_id` int unsigned NOT NULL           DEFAULT '0',
     `block_id`                          int unsigned NOT NULL           DEFAULT '0',
     `groups_id`                         int unsigned NOT NULL           DEFAULT '0',
+    `only_by_supervisor`                tinyint      NOT NULL           DEFAULT '0',
     `reminder_delay`                    text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `message`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     PRIMARY KEY (`id`),
@@ -708,6 +709,7 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
     `link_user_block`                   tinyint      NOT NULL DEFAULT '0',
     `multiple_link_groups_blocks`       tinyint      NOT NULL DEFAULT '0',
     `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',
+    `supervisor_validation`             tinyint      NOT NULL DEFAULT '0',
     `step_by_step_interface`            tinyint      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)

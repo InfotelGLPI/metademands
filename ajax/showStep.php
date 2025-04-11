@@ -35,7 +35,7 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$return = PluginMetademandsStep::showModal();
+$return = PluginMetademandsStep::showStep();
 echo json_encode($return);
 
 

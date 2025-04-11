@@ -645,6 +645,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     self::showMetademandTitle($meta, $parameters);
                 }
 
+                if (PluginMetademandsStep::checkSupervisorForUser($meta->getID()) == false) {
+                    return false;
+                }
+
                 // Display user informations
                 $userid = Session::getLoginUserID();
                 // If ticket exists we get its first requester
@@ -1448,10 +1452,10 @@ class PluginMetademandsWizard extends CommonDBTM
             $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
         }
 
-        $ranks = [];
         $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands_id]['block_id'] ?? 99999999;
         if ($block_current_id_stepform != 99999999) {
-            if (!PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform) && $preview == false) {
+            if (!PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform)
+                && $preview == false) {
                 Session::addMessageAfterRedirect(__('You do not have access to the form', 'metademands'));
                 Html::redirect($url);
             }
@@ -1607,7 +1611,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
                                 let id_bloc = parseInt(bloc.replace('bloc', ''));
                                 if (typeof metademands !== 'undefined') {
-                                    if (!metademands.listBlock.includes(id_bloc)) {
+                                    if (!metademands.listStepBlock.includes(id_bloc)) {
                                         create = true;
                                     }
                                 }
@@ -1946,6 +1950,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $json_hidden_blocks = json_encode($hidden_blocks);
                 $alert = __('Thanks to fill mandatory fields', 'metademands');
                 $alert_regex = __("These fields don\'t respect regex", 'metademands');
+
                 $group_user = new Group_User();
                 $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
                 $groups = [];
@@ -1955,8 +1960,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 $list_blocks = [];
                 $list_blocks2 = [];
                 if ($use_as_step == 1) {
+
                     $step = new PluginMetademandsStep();
-                    $steps = [];
+
                     if (!empty($groups)) {
                         $steps = $step->find([
                             'plugin_metademands_metademands_id' => $ID,
@@ -1967,12 +1973,14 @@ class PluginMetademandsWizard extends CommonDBTM
                             $list_blocks[] = $s['block_id'];
                         }
                     }
+
                     $step2 = new PluginMetademandsStep();
                     if ($steps2 = $step2->find(['plugin_metademands_metademands_id' => $ID])) {
                         foreach ($steps2 as $s) {
                             $list_blocks2[] = $s['block_id'];
                         }
                     }
+
                     $field = new PluginMetademandsField();
                     $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
                     $blocks = [];
@@ -1986,12 +1994,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                     }
 
-//                    if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
-//                    }
-//                    if (count($steps) == 0) {
-//                        $submitsteptitle = $submittitle;
-//                    }
-                    $list_blocks = array_unique($list_blocks);
+                    $listStepBlocks = array_unique($list_blocks);
                 }
 
                 if (!empty($data_form)) {
@@ -2061,10 +2064,11 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $modal = true;
                 $updateStepform = 0;
-                if (!isset($stepConfig->fields['link_user_block'])
+                if (!isset($stepConfig->fields['supervisor_validation'])
+                    && !isset($stepConfig->fields['link_user_block'])
                     && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
                     $modal = false;
-                } elseif ($block_current_id_stepform != 99999999) {
+                } else if ($block_current_id_stepform != 99999999) {
                     $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
                         $metademands_id,
                         $block_current_id_stepform + 1
@@ -2130,7 +2134,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $params['name'] = $name;
                 $params['paramUrl'] = $paramUrl;
-                $params['list_blocks'] = $list_blocks;
+                $params['listStepBlocks'] = $listStepBlocks;
                 $params['updateStepform'] = $updateStepform;
                 $params['use_richtext'] = 0;
                 $richtext_id = [];
@@ -2767,7 +2771,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademands.nexthref = '$nexthref';
                     metademands.use_richtext = '$use_richtext';
                     metademands.richtext_ids = {$richtext_id};
-                    metademands.listBlock = [" . implode(",", $list_blocks) . "];
+                    metademands.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                     
                     var nexttitle = '$nexttitle';
                     var submittitle = '$submittitle';
@@ -3069,8 +3073,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      
                      if (typeof metademands !== 'undefined') {
                      
-                         if(!metademands.listBlock.includes(id_bloc)) {
-                            var meta_id = {$ID};
+                         if(!metademands.listStepBlock.includes(id_bloc)) {
                             if (typeof tinyMCE !== 'undefined') {
                                tinyMCE.triggerSave();
                             }
@@ -3085,7 +3088,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             arrayDatas.push({name: 'form_name', value: '$name'});
                             arrayDatas.push({name: 'update_stepform', value: updatestepform});
                             if(modal == true) {
-                                showModal(arrayDatas);
+                                showStep(arrayDatas);
                             } else {
                                 nextUser(arrayDatas);
                             }
@@ -3122,11 +3125,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         );
                   }
                   
-                  function showModal(arrayDatas) {
+                  function showStep(arrayDatas) {
                         $.ajax(
                             {
                                 type : 'POST',
-                                url :'" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/showModal.php',
+                                url :'" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/showStep.php',
                                 data : arrayDatas,
                                 dataType : 'JSON',
                                 success: function(response) {
