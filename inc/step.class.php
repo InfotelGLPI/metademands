@@ -162,39 +162,46 @@ class PluginMetademandsStep extends CommonDBChild
             foreach ($steps as $s) {
                 $list_blocks[] = $s['block_id'];
             }
-        }
 
-        $list_blocks_bygroup = [];
-        if ($steps = $step->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id])) {
-            foreach ($steps as $s) {
-                if ($s['groups_id'] > 0) {
-                    $list_blocks_bygroup[$s['groups_id']] = $s['block_id'];
+            $list_blocks_bygroup = [];
+            if ($steps = $step->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id])) {
+                foreach ($steps as $s) {
+                    if ($s['groups_id'] > 0) {
+                        $list_blocks_bygroup[$s['groups_id']] = $s['block_id'];
+                    }
                 }
             }
-        }
-        $hidden_blocks = [];
-        foreach ($list_blocks_bygroup as $group => $block_ids) {
-            if (!in_array($group, $groups)) {
-                $hidden_blocks[] = $list_blocks_bygroup[$group];
-            }
-        }
-
-        if (count($hidden_blocks) > 0) {
-            foreach ($hidden_blocks as $block_ids) {
-                if (($key = array_search($block_ids, $list_blocks)) !== false) {
-                    unset($list_blocks[$key]);
+            $hidden_blocks = [];
+            foreach ($list_blocks_bygroup as $group => $block_ids) {
+                if (!in_array($group, $groups)) {
+                    $hidden_blocks[] = $list_blocks_bygroup[$group];
                 }
             }
-        }
 
-        $steps_validator = $step->find([
-            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
-            'only_by_supervisor' => 1,
-        ]);
-        if (count($steps_validator) > 0) {
-            foreach ($steps_validator as $s) {
-                if (($key = array_search($s['block_id'], $list_blocks)) !== false) {
-                    unset($list_blocks[$key]);
+            if (count($hidden_blocks) > 0) {
+                foreach ($hidden_blocks as $block_ids) {
+                    if (($key = array_search($block_ids, $list_blocks)) !== false) {
+                        unset($list_blocks[$key]);
+                    }
+                }
+            }
+
+            $steps_validator = $step->find([
+                'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
+                'only_by_supervisor' => 1,
+            ]);
+            if (count($steps_validator) > 0) {
+                foreach ($steps_validator as $s) {
+                    if (($key = array_search($s['block_id'], $list_blocks)) !== false) {
+                        unset($list_blocks[$key]);
+                    }
+                }
+            }
+        } else {
+            $field = new PluginMetademandsField();
+            if ($fields = $field->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id])) {
+                foreach ($fields as $s) {
+                    $list_blocks[] = $s['rank'];
                 }
             }
         }
