@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 12:11+0000\n"
+"POT-Creation-Date: 2025-04-11 14:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,7 +228,7 @@ msgid "The form has been sent to the group %s, you can close the window"
 msgstr ""
 
 #: front/nextGroup.form.php:80 front/nextGroup.form.php:87
-#: front/nextGroup.form.php:97 inc/step.class.php:762
+#: front/nextGroup.form.php:97 inc/step.class.php:769
 msgid "Next recipient"
 msgstr ""
 
@@ -854,8 +854,8 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:763 inc/field.class.php:1171
-#: inc/field.class.php:3257 inc/field.class.php:4526 inc/step.class.php:363
-#: inc/step.class.php:464 inc/wizard.class.php:1760
+#: inc/field.class.php:3257 inc/field.class.php:4526 inc/step.class.php:370
+#: inc/step.class.php:471 inc/wizard.class.php:1760
 msgid "Block"
 msgstr ""
 
@@ -1114,7 +1114,7 @@ msgid ""
 msgstr ""
 
 #: inc/fieldoption.class.php:1351 inc/mailtask.class.php:150
-#: inc/step.class.php:330 inc/step.class.php:476 inc/step.class.php:490
+#: inc/step.class.php:337 inc/step.class.php:483 inc/step.class.php:497
 #: inc/task.class.php:766 inc/task.class.php:1163 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
@@ -1873,62 +1873,62 @@ msgid_plural "Step-by-Step blocks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/step.class.php:301
+#: inc/step.class.php:308
 msgid "Add a new association"
 msgstr ""
 
-#: inc/step.class.php:339
+#: inc/step.class.php:346
 msgid ""
 "Be careful if all blocks are not assigned, they will be displayed to the "
 "last assigned group"
 msgstr ""
 
-#: inc/step.class.php:357
+#: inc/step.class.php:364
 msgid "List of associations"
 msgstr ""
 
-#: inc/step.class.php:368 inc/step.class.php:559
+#: inc/step.class.php:375 inc/step.class.php:566
 msgid "Only by supervisor"
 msgstr ""
 
-#: inc/step.class.php:371
+#: inc/step.class.php:378
 msgid "Message"
 msgstr ""
 
-#: inc/step.class.php:430
+#: inc/step.class.php:437
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:565
+#: inc/step.class.php:572
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: inc/step.class.php:704 inc/step.class.php:841
+#: inc/step.class.php:711 inc/step.class.php:848
 msgid "Your ticket will be validated by your supervisor"
 msgstr ""
 
-#: inc/step.class.php:713 inc/step.class.php:861
+#: inc/step.class.php:720 inc/step.class.php:868
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 
-#: inc/step.class.php:734
+#: inc/step.class.php:741
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: inc/step.class.php:772 inc/step.class.php:808
+#: inc/step.class.php:779 inc/step.class.php:815
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: inc/step.class.php:850 inc/step.class.php:957
+#: inc/step.class.php:857 inc/step.class.php:964
 msgctxt "button"
 msgid "Validate"
 msgstr ""
 
-#: inc/step.class.php:910
+#: inc/step.class.php:917
 msgid "Select the next group"
 msgstr ""
 
-#: inc/step.class.php:1089
+#: inc/step.class.php:1096
 msgid "Error assigning to next group"
 msgstr ""
 
