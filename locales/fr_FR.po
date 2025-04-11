@@ -1968,7 +1968,7 @@ msgstr "Liste des associations"
 
 #: inc/step.class.php:301 inc/step.class.php:473
 msgid "Only by supervisor"
-msgstr "Uniquement par le superviseur"
+msgstr "Uniquement par le responsable"
 
 #: inc/step.class.php:302
 msgid "Message"
@@ -1984,7 +1984,7 @@ msgstr "Message au groupe suivant ou au validateur sur le formulaire"
 
 #: inc/step.class.php:608 inc/step.class.php:743
 msgid "Your ticket will be validated by your supervisor"
-msgstr "Votre ticket sera validé par votre superviseur"
+msgstr "Votre ticket sera validée par votre responsable"
 
 #: inc/step.class.php:617 inc/step.class.php:763
 msgid "You haven't defined supervisor, you cannot continue this request"
