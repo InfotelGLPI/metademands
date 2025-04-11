@@ -715,7 +715,7 @@ msgstr "Voir les blocs comme des onglets"
 
 #: inc/configstep.class.php:148
 msgid "Activate supervisor validation"
-msgstr "Activer la validation du superviseur"
+msgstr "Activer la validation du responsable"
 
 #: inc/configstep.class.php:158
 msgid "Link multiple groups to a block"
