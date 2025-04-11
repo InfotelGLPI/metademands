@@ -714,7 +714,8 @@ class PluginMetademandsTicketField extends CommonDBChild
             $obj = $value['object_to_create'];
 
             $ticket = new $obj();
-            if (count($value['itilcategories_id']) != 1) {
+            if (is_array($value['itilcategories_id'])
+                && count($value['itilcategories_id']) != 1) {
                 continue;
             }
             $meta_tt = $ticket->getITILTemplateToUse(
