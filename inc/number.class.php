@@ -71,7 +71,7 @@ class PluginMetademandsNumber extends CommonDBTM
             $opt = [
                 'value' => $value,
                 'min' => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
-                'max' => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 999999),
+                'max' => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 9999),
                 'step' => ((isset($custom_values[2]) && $custom_values[2] != "") ? $custom_values[2] : 1),
                 'display' => false,
             ];
@@ -112,7 +112,7 @@ class PluginMetademandsNumber extends CommonDBTM
 
         echo "<td>";
         echo '<label>' . __("Maximal count") . '</label>&nbsp;';
-        $opt                   = ['value'         => $max, 'max' => 999999];
+        $opt                   = ['value'         => $max, 'max' => 9999];
         Dropdown::showNumber("custom[1]", $opt);
         echo "</td>";
 
