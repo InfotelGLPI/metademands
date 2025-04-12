@@ -164,23 +164,29 @@ class PluginMetademandsStep extends CommonDBChild
 
             $list_blocks_bygroup = [];
             if ($steps = $step->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id])) {
+
                 foreach ($steps as $s) {
                     if ($s['groups_id'] > 0) {
-                        $list_blocks_bygroup[$s['groups_id']] = $s['block_id'];
+                        $list_blocks_bygroup[$s['groups_id']][] = $s['block_id'];
                     }
                 }
             }
+
             $hidden_blocks = [];
-            foreach ($list_blocks_bygroup as $group => $block_ids) {
-                if (!in_array($group, $groups)) {
-                    $hidden_blocks[] = $list_blocks_bygroup[$group];
+            foreach ($list_blocks_bygroup as $group => $blocks) {
+                foreach ($blocks as $block_ids) {
+                    if (!in_array($group, $groups)) {
+                        $hidden_blocks[] = $list_blocks_bygroup[$group];
+                    }
                 }
             }
 
             if (count($hidden_blocks) > 0) {
-                foreach ($hidden_blocks as $block_ids) {
-                    if (($key = array_search($block_ids, $list_blocks)) !== false) {
-                        unset($list_blocks[$key]);
+                foreach ($hidden_blocks as $blocks) {
+                    foreach ($blocks as $block_ids) {
+                        if (($key = array_search($block_ids, $list_blocks)) !== false) {
+                            unset($list_blocks[$key]);
+                        }
                     }
                 }
             }
@@ -483,7 +489,7 @@ class PluginMetademandsStep extends CommonDBChild
                                     );
                                     echo "&nbsp;:<br>";
                                     foreach ($multiple_blocks[$data['block_id']] as $gid => $gdata) {
-                                        echo Dropdown::getDropdownName(Group::getTable(), $data['groups_id']);
+                                        echo Dropdown::getDropdownName(Group::getTable(), $gdata);
                                         echo "<br>";
                                     }
                                     foreach ($multiple_blocks[$data['block_id']] as $gid => $gdata) {
