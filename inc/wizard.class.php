@@ -1615,7 +1615,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     
                         let create = false;
                         if (use_as_step == 1) {
-//                            let nextTab = metademands.currentTab + 1;
+
                             const asArray = Array.from(x);
                             const displayed = asArray.find(e => e.style.display != 'none');
                             let nextTab = asArray.indexOf(displayed) + 1;
@@ -1627,6 +1627,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (x[nextTab] != undefined) {
                                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
                                 let id_bloc = parseInt(bloc.replace('bloc', ''));
+                                
                                 if (typeof metademands !== 'undefined') {
                                     if (!metademands.listStepBlock.includes(id_bloc)) {
                                         create = true;
@@ -1634,6 +1635,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
                             }
                             if (typeof metademands !== 'undefined') {
+
                                 if (nextTab >= x.length) {
                                     document.getElementById('nextBtn').innerHTML = metademands.submittitle;
                                 } else {
@@ -2137,11 +2139,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 self::validateScript($params);
             }
             else {
-                echo "<script>
-            
-            function fixButtonIndicator() {
-            }
-            </script>";
+                echo "<script>function fixButtonIndicator() {}
+                </script>";
             }
 
             if ($draft_id != 0) {
@@ -2881,6 +2880,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      //... and run a function that will display the correct step indicator:
                      if (use_as_step == 1) {
                         fixStepIndicator(n);
+                        fixButtonIndicator();
                      }
                   }
                   function findFirstTab(block_id) {
@@ -3535,14 +3535,13 @@ class PluginMetademandsWizard extends CommonDBTM
                      if (x[n] != undefined && x[n].className) {
                         x[n].className += ' active';
                      }
-                     
-                     
+
                      if (use_as_step == 1) {
                         var tabx = document.getElementsByClassName('tab-step');
                      } else {
                         var tabx = document.getElementsByClassName('tab-nostep');
                      }
-//                     console.log(tabx);
+
                      bloc = tabx[n].firstChild.getAttribute('bloc-id');
                      id_bloc = parseInt(bloc.replace('bloc',''));
 //                     console.log(id_bloc);
@@ -3560,7 +3559,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                   if (response.length == 0) {
                                       document.getElementById('nextMsg').style.display = 'none';
                                   } else {
-                                      document.getElementById('nextBtn').innerHTML = nextsteptitle;
+
                                       document.getElementById('nextMsg').style.display = 'block';
                                       document.getElementById('nextMsg').innerHTML = response;
                                       sessionStorage.setItem('currentStep', id_bloc);
