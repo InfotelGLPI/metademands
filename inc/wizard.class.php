@@ -645,8 +645,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     self::showMetademandTitle($meta, $parameters);
                 }
 
-                if (PluginMetademandsStep::checkSupervisorForUser($meta->getID()) == false) {
-                    return false;
+                if ($parameters['preview'] == 0) {
+                    if (PluginMetademandsStep::checkSupervisorForUser($meta->getID()) == false) {
+                        return false;
+                    }
                 }
 
                 // Display user informations
