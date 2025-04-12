@@ -631,8 +631,11 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                                         unset($values_form[$i]);
                                     }
                                 }
-
-                                $parent_fields_content = PluginMetademandsMetademand::formatFields($line['form'], $metademand->getID(), [$values_form], ['formatastable' => $l['formatastable']]);
+                                $values[$metademand->getID()] = $values_form[0]['fields'];
+                                $parent_fields_content = PluginMetademandsMetademand::formatFields($line['form'],
+                                    $metademand->getID(),
+                                    $values,
+                                    ['formatastable' => $l['formatastable']]);
                                 $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                             } else {
                                 $parent_fields_content['content'] = $parent_fields['content'];

@@ -79,41 +79,6 @@ if (isset($_POST["add"])) {
 
    Html::back();
 
-
-//} else if (isset($_POST['up'])) {
-//   // Replace current parent task by parent's parent task
-//   foreach ($_POST["up"] as $tasks_id => $parent_task) {
-//
-//      $parent_task = key($parent_task);
-//
-//      if ($task->can($tasks_id, UPDATE)) {
-//         // Get parent data
-//         $parentTaskData = new PluginMetademandsTask();
-//         $parentTaskData->getFromDB($parent_task);
-//         $task->update(['id' => $tasks_id, 'plugin_metademands_tasks_id' => $parentTaskData->fields['plugin_metademands_tasks_id']]);
-//      }
-//   }
-//
-//   Html::back();
-//
-//} else if (isset($_POST['down'])) {
-//   // Replace current parent task by parent's parent task
-//   foreach ($_POST["down"] as $tasks_id => $parent_task) {
-//
-//      $parent_task = key($parent_task);
-//
-//      if ($task->can($tasks_id, UPDATE)) {
-//         // Get first child
-//         $task->getFromDB($tasks_id);
-//         $first_child_task = $task->getChildrenForLevel($parent_task, $task->fields['level']);
-//         $first_child_task = array_shift($first_child_task);
-//         // Current
-//         $task->update(['id' => $tasks_id, 'plugin_metademands_tasks_id' => $first_child_task]);
-//      }
-//   }
-//
-//   Html::back();
-
 } if (isset($_POST["update"])) {
     // Check update rights for clients
     $task->check(-1, UPDATE, $_POST);

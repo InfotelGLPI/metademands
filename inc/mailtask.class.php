@@ -273,7 +273,7 @@ class PluginMetademandsMailTask extends CommonDBChild
         // For exchange
         $mmail->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
         $mmail->SetFrom($CFG_GLPI["from_email"], $CFG_GLPI["from_email_name"], false);
-
+        $mmail->isHTML(true);
 
         if (is_array($recipient)) {
             foreach ($recipient as $r) {

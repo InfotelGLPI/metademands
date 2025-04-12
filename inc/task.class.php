@@ -44,7 +44,6 @@ class PluginMetademandsTask extends CommonDBChild {
     const TICKET_TYPE     = 0;
     const METADEMAND_TYPE = 1;
     const TASK_TYPE       = 2;
-
     const MAIL_TYPE = 3;
 
     public function canCreateItem()

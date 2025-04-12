@@ -3238,7 +3238,8 @@ JAVASCRIPT
                                                             $fields['value'] = $values['fields'][$content];
 
                                                             $fields['value2'] = '';
-                                                            if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
+                                                            if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval')
+                                                                && isset($values['fields'][$content . '-2'])) {
                                                                 $fields['value2'] = $values['fields'][$content . '-2'];
                                                             }
                                                             $result = [];
@@ -3246,6 +3247,7 @@ JAVASCRIPT
                                                             $result[$fields['rank']]['content'] = "";
                                                             $result[$fields['rank']]['display'] = false;
                                                             $parent_fields_id = 0;
+
                                                             $value = self::getContentWithField([],
                                                                 0,
                                                                 $fields,
@@ -3495,8 +3497,12 @@ JAVASCRIPT
                                                 }
                                             }
                                         } else {
+
+                                            //Content of mail
+
                                             $mail = new PluginMetademandsMailTask();
                                             $mail->getFromDBByCrit(["plugin_metademands_tasks_id" => $l['tasks_id']]);
+
                                             if ($l['useBlock']) {
                                                 $blocks_use = json_decode($l['block_use']);
                                                 if (!empty($blocks_use)) {
@@ -3507,12 +3513,14 @@ JAVASCRIPT
                                                         }
                                                     }
 
+                                                    $values[$metademand->getID()] = $values_form[0]['fields'];
                                                     $parent_fields_content = self::formatFields(
                                                         $line['form'],
                                                         $metademand->getID(),
-                                                        [$values_form],
+                                                        $values,
                                                         ['formatastable' => $l['formatastable']]
                                                     );
+
                                                     $parent_fields_content['content'] = Html::cleanPostForTextArea(
                                                         $parent_fields_content['content']
                                                     );
@@ -3540,6 +3548,8 @@ JAVASCRIPT
                                                     $content .= "</td></tr></table><br>";
                                                 }
                                             }
+
+
                                             if (!empty($parent_fields_content['content'])) {
                                                 $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
                                                 $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
@@ -3548,6 +3558,13 @@ JAVASCRIPT
                                                     );
                                                 $content .= "</td></tr></table><br>";
                                             }
+
+                                            $metatask = new PluginMetademandsTask();
+                                            $metatask->getFromDB($l['tasks_id']);
+
+                                            $line['tasks'][$key]['tickettasks_name'] = $metatask->fields['name'];
+                                            $line['tasks'][$key]['content'] = $content;
+
                                             //replace #id# in title with the value
                                             do {
                                                 $match = self::getBetween($l['tickettasks_name'], '[', ']');
@@ -3555,7 +3572,9 @@ JAVASCRIPT
                                                     $explodeTitle = [];
                                                     $explodeTitle = explode("#", $l['tickettasks_name']);
                                                     foreach ($explodeTitle as $title) {
+
                                                         if (isset($values['fields'][$title])) {
+
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($title);
                                                             $fields = $field->fields;
@@ -3584,13 +3603,14 @@ JAVASCRIPT
                                                                 $line['tasks'][$key]['tickettasks_name']
                                                             );
                                                         } else {
+
                                                             $explodeTitle2 = explode(".", $title);
 
                                                             if (isset($values['fields'][$explodeTitle2[0]])) {
                                                                 $field_object = new PluginMetademandsField();
                                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
-                                                                    if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
-                                                                        )) {
+                                                                    if ($field_object->fields['type'] == "dropdown_object"
+                                                                        && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
                                                                         $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser(
                                                                             $explodeTitle2[1],
@@ -3601,14 +3621,6 @@ JAVASCRIPT
                                                                     }
                                                                 }
                                                             }
-                                                            $users_id = $parent_fields['_users_id_requester'];
-                                                            $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser(
-                                                                $title,
-                                                                $users_id,
-                                                                $title,
-                                                                $line['tasks'][$key]['tickettasks_name'],
-                                                                true
-                                                            );
                                                         }
                                                     }
                                                 } else {
@@ -3617,6 +3629,7 @@ JAVASCRIPT
                                                     $find = false;
                                                     $val_to_replace = "";
                                                     foreach ($explodeVal as $str) {
+                                                        Toolbox::logInfo('ici1');
                                                         $explodeTitle = explode("#", $str);
                                                         foreach ($explodeTitle as $title) {
                                                             if (isset($values['fields'][$title])) {
@@ -3679,29 +3692,29 @@ JAVASCRIPT
                                                         }
                                                     }
 
-                                                    if (str_contains($match, "#")) {
-                                                        $line['tasks'][$key]['tickettasks_name'] = str_replace(
-                                                            "[" . $match . "]",
-                                                            $str,
-                                                            $line['tasks'][$key]['tickettasks_name']
-                                                        );
-                                                        $l['tickettasks_name'] = str_replace(
-                                                            "[" . $match . "]",
-                                                            $str,
-                                                            $l['tickettasks_name']
-                                                        );
-                                                    } else {
-                                                        $line['tasks'][$key]['tickettasks_name'] = str_replace(
-                                                            "[" . $match . "]",
-                                                            "<@" . $str . "@>",
-                                                            $line['tasks'][$key]['tickettasks_name']
-                                                        );
-                                                        $l['tickettasks_name'] = str_replace(
-                                                            "[" . $match . "]",
-                                                            "<@" . $str . "@>",
-                                                            $l['tickettasks_name']
-                                                        );
-                                                    }
+//                                                    if (str_contains($match, "#")) {
+//                                                        $line['tasks'][$key]['tickettasks_name'] = str_replace(
+//                                                            "[" . $match . "]",
+//                                                            $str,
+//                                                            $line['tasks'][$key]['tickettasks_name']
+//                                                        );
+//                                                        $l['tickettasks_name'] = str_replace(
+//                                                            "[" . $match . "]",
+//                                                            $str,
+//                                                            $l['tickettasks_name']
+//                                                        );
+//                                                    } else {
+//                                                        $line['tasks'][$key]['tickettasks_name'] = str_replace(
+//                                                            "[" . $match . "]",
+//                                                            "<@" . $str . "@>",
+//                                                            $line['tasks'][$key]['tickettasks_name']
+//                                                        );
+//                                                        $l['tickettasks_name'] = str_replace(
+//                                                            "[" . $match . "]",
+//                                                            "<@" . $str . "@>",
+//                                                            $l['tickettasks_name']
+//                                                        );
+//                                                    }
                                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                                 }
                                             } while (!empty($match));
@@ -3750,8 +3763,8 @@ JAVASCRIPT
                                                             if (isset($values['fields'][$explodeContent2[0]])) {
                                                                 $field_object = new PluginMetademandsField();
                                                                 if ($field_object->getFromDB($explodeContent2[0])) {
-                                                                    if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
-                                                                        )) {
+                                                                    if ($field_object->fields['type'] == "dropdown_object"
+                                                                        && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
                                                                         $line['tasks'][$key]['content'] = self::getContentForUser(
                                                                             $explodeContent2[1],
@@ -3762,14 +3775,6 @@ JAVASCRIPT
                                                                     }
                                                                 }
                                                             }
-                                                            $users_id = $parent_fields['_users_id_requester'];
-                                                            $line['tasks'][$key]['content'] = self::getContentForUser(
-                                                                $content,
-                                                                $users_id,
-                                                                $content,
-                                                                $son_ticket_data['content'],
-                                                                true
-                                                            );
                                                         }
                                                     }
                                                 } else {
