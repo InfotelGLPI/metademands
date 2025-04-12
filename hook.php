@@ -780,6 +780,15 @@ function plugin_metademands_uninstall() {
     }
 
     $options = ['itemtype' => 'PluginMetademandsStepform',
+        'event'    => 'update_step_form',
+        'FIELDS'   => 'id'];
+
+    $notif = new Notification();
+    foreach ($DB->request('glpi_notifications', $options) as $data) {
+        $notif->delete($data);
+    }
+
+    $options = ['itemtype' => 'PluginMetademandsStepform',
                 'event'    => 'delete_step_form',
                 'FIELDS'   => 'id'];
 
@@ -1503,6 +1512,42 @@ VALUES('" . $templates_id . "',
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 
+    // Update
+    $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('Form completed','PluginMetademandsStepform', NOW());";
+    $DB->doQuery($query_id) or die($DB->error());
+
+    $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginMetademandsStepform' AND `name` = 'Form completed'";
+    $result = $DB->doQuery($query_id) or die($DB->error());
+    $templates_id = $DB->result($result, 0, 'id');
+
+    $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
+VALUES('" . $templates_id . "',
+'##pluginmetademandsstepform.action##',
+'##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##
+','##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##');";
+    $DB->doQuery($query);
+
+    $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
+              VALUES ('Form completed', 0, 'PluginMetademandsStepform', 'update_step_form', 1);";
+    $DB->doQuery($query);
+
+    //retrieve notification id
+    $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'Form completed' AND `itemtype` = 'PluginMetademandsStepform' AND `event` = 'update_step_form'";
+    $result = $DB->doQuery($query_id) or die ($DB->error());
+    $notification = $DB->result($result, 0, 'id');
+
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+    $DB->doQuery($query);
 
     $migration->executeMigration();
     return true;

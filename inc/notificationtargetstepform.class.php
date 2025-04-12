@@ -49,7 +49,8 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
     public function getEvents()
     {
         $events = [
-            'new_step_form' => __("A new form has been completed", 'metademands'),
+            'new_step_form' => __("A new form has been created", 'metademands'),
+            'update_step_form' => __('A form has been completed', 'metademands'),
             'delete_step_form' => __('A form has been cancelled', 'metademands'),
         ];
 
