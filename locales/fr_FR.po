@@ -1989,7 +1989,7 @@ msgstr "L'objet est créé"
 
 #: inc/step.class.php:535
 msgid "No visibility defined"
-msgstr "pas de visibilité définie"
+msgstr "Pas de visibilité définie"
 
 #: inc/step.class.php:669
 msgid "Only by supervisor"
