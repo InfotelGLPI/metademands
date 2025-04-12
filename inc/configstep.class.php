@@ -154,18 +154,21 @@ class PluginMetademandsConfigstep extends CommonDBTM
 
         if ($supervisor_validation == 0) {
             echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Link multiple groups to a block', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('multiple_link_groups_blocks', $multipleGroup);
-            echo "</td>";
+
             echo "<td>";
             echo __('The user must select a defined user of the selected groups', 'metademands');
             echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('link_user_block', $userLink);
             echo "</td>";
+
+            echo "<td>";
+            echo __('Link multiple groups to a block', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('multiple_link_groups_blocks', $multipleGroup);
+            echo "</td>";
+
             echo "</tr>";
         }
 

@@ -47,6 +47,11 @@ if (isset($_POST["add"])) {
             foreach ($blocks as $block) {
                 $input['block_id'] = $block;
                 $input['groups_id'] = $_POST["groups_id"];
+                if ($input['groups_id'] > 0) {
+                    $input['only_by_supervisor'] = 0;
+                } else {
+                    $input['only_by_supervisor'] = $_POST["only_by_supervisor"];
+                }
                 $input['message'] = $_POST["message"];
                 $input['plugin_metademands_metademands_id'] = $_POST["plugin_metademands_metademands_id"];
                 $newID = $meta->add($input);

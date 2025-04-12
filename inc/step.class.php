@@ -306,7 +306,7 @@ class PluginMetademandsStep extends CommonDBChild
             echo "</script>\n";
             echo "<div class='center'>" .
                 "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
-                $item->getType() . $item->getID() . "$rand();'>" . __('Add a new association', 'metademands') .
+                $item->getType() . $item->getID() . "$rand();'>" . __('Define a new visibility', 'metademands') .
                 "</a></div><br>";
         }
         $iterator = $DB->request([
@@ -406,7 +406,7 @@ class PluginMetademandsStep extends CommonDBChild
         echo "<ul class='process-chart'>";
         echo "<li class='align-items-center d-flex justify-content-center my-4 pb-6 fs-1 fw-bold'>";
         echo "<i class='ti ti-brand-databricks me-1'></i>";
-        echo "<span>" . __("List of associations", 'metademands') . "</span>";
+        echo "<span>" . __("List of visibilities", 'metademands') . "</span>";
         echo "</li>";
 
         $configStep = new PluginMetademandsConfigstep();
@@ -458,7 +458,7 @@ class PluginMetademandsStep extends CommonDBChild
                     }
                     echo "<a class='btn flex-column' $onhover href='#'>";
                     echo "<div class='d-flex align-items-center'>";
-                    echo " <i class='ti ti-align-box-left-middle me-1'></i>";
+                    echo " <i class='ti ti-align-box-left-middle'></i>";
                     echo "<span>&nbsp;" . __("Block", 'metademands') . "&nbsp;";
                     if (isset($blocks[$data['block_id']])) {
                         echo $blocks[$data['block_id']];
@@ -475,7 +475,6 @@ class PluginMetademandsStep extends CommonDBChild
 
                             if (count($multiple_blocks) > 0) {
                                 if (isset($multiple_blocks[$data['block_id']])) {
-                                    echo "<i class='ti ti-user-check'></i>&nbsp;";
                                     echo _n(
                                         'Only visible for this group',
                                         'Only visible for these groups',
@@ -515,7 +514,7 @@ class PluginMetademandsStep extends CommonDBChild
                     }
 
                     if (!empty($data['message'])) {
-                        echo "<br><i class='ti ti-message-plus'></i>&nbsp;" . Glpi\RichText\RichText::getTextFromHtml(
+                        echo "<br><br><i class='ti ti-message-plus'></i>&nbsp;" . Glpi\RichText\RichText::getTextFromHtml(
                                 $data['message']
                             );
                     }
@@ -525,18 +524,16 @@ class PluginMetademandsStep extends CommonDBChild
                 }
             }
 
+            echo "<li class='end'>";
+            echo "<i class='ti ti-circle-check me-1'></i>";
+            echo "<span>" . __('The object is created', 'metademands') . "</span>";
+            echo "</li>";
+            echo "</ul>";
+            echo "</div>";
+
         } else {
-            echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
-            echo "<th class='b'>" . __("No association found", 'metademands') . "</th></tr></table>";
+            echo "<div class='center b'>" . __("No visibility defined", 'metademands') . "</div>";
         }
-
-
-        echo "<li class='end'>";
-        echo "<i class='ti ti-circle-check me-1'></i>";
-        echo "<span>" . __('The object is created', 'metademands') . "</span>";
-        echo "</li>";
-        echo "</ul>";
-        echo "</div>";
 
         return true;
     }
@@ -648,6 +645,7 @@ class PluginMetademandsStep extends CommonDBChild
                     [
                         'value' => $this->fields['groups_id'],
                         'width' => '100%',
+                        'multiple' => true,
                         'entity' => $_SESSION['glpiactiveentities']
                     ]
                 );
@@ -657,7 +655,10 @@ class PluginMetademandsStep extends CommonDBChild
                     'value' => $this->fields['groups_id']
                 ]);
             }
-
+            echo Html::hidden(
+                'only_by_supervisor',
+                ['value' => 0]
+            );
             echo "</td>";
             echo "</tr>";
         }
@@ -668,6 +669,10 @@ class PluginMetademandsStep extends CommonDBChild
             echo "<tr class='tab_bg_1'><td>" . __("Only by supervisor", 'metademands') . "</td>";
             echo "<td>";
             Dropdown::showYesNo("only_by_supervisor", $this->fields['only_by_supervisor']);
+            echo Html::hidden(
+                'groups_id',
+                ['value' => 0]
+            );
             echo "</td>";
             echo "</tr>";
         }
