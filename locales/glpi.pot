@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 08:24+0000\n"
+"POT-Creation-Date: 2025-04-12 08:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,7 +228,7 @@ msgid "The form has been sent to the group %s, you can close the window"
 msgstr ""
 
 #: front/nextGroup.form.php:80 front/nextGroup.form.php:87
-#: front/nextGroup.form.php:97 inc/step.class.php:874
+#: front/nextGroup.form.php:97 inc/step.class.php:879
 msgid "Next recipient"
 msgstr ""
 
@@ -236,7 +236,7 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
-#: front/step.form.php:56
+#: front/step.form.php:61
 msgid "Used blocks are mandatory"
 msgstr ""
 
@@ -698,19 +698,19 @@ msgstr ""
 msgid "Activate supervisor validation"
 msgstr ""
 
-#: inc/configstep.class.php:158
-msgid "Link multiple groups to a block"
-msgstr ""
-
-#: inc/configstep.class.php:164
+#: inc/configstep.class.php:159
 msgid "The user must select a defined user of the selected groups"
 msgstr ""
 
-#: inc/configstep.class.php:174
+#: inc/configstep.class.php:166
+msgid "Link multiple groups to a block"
+msgstr ""
+
+#: inc/configstep.class.php:177
 msgid "Add all form actors as ticket requester"
 msgstr ""
 
-#: inc/configstep.class.php:180
+#: inc/configstep.class.php:183
 msgid "Interface"
 msgstr ""
 
@@ -855,7 +855,7 @@ msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:763 inc/field.class.php:1171
 #: inc/field.class.php:3257 inc/field.class.php:4526 inc/step.class.php:378
-#: inc/step.class.php:462 inc/step.class.php:573 inc/wizard.class.php:1762
+#: inc/step.class.php:462 inc/step.class.php:570 inc/wizard.class.php:1762
 msgid "Block"
 msgstr ""
 
@@ -1114,7 +1114,7 @@ msgid ""
 msgstr ""
 
 #: inc/fieldoption.class.php:1351 inc/mailtask.class.php:150
-#: inc/step.class.php:339 inc/step.class.php:585 inc/step.class.php:599
+#: inc/step.class.php:339 inc/step.class.php:582 inc/step.class.php:596
 #: inc/task.class.php:766 inc/task.class.php:1163 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
@@ -1874,7 +1874,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/step.class.php:309
-msgid "Add a new association"
+msgid "Define a new visibility"
 msgstr ""
 
 #: inc/step.class.php:348
@@ -1884,65 +1884,65 @@ msgid ""
 msgstr ""
 
 #: inc/step.class.php:409
-msgid "List of associations"
+msgid "List of visibilities"
 msgstr ""
 
-#: inc/step.class.php:480 inc/step.class.php:499
+#: inc/step.class.php:479 inc/step.class.php:498
 msgid "Only visible for this group"
 msgid_plural "Only visible for these groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/step.class.php:510
+#: inc/step.class.php:509
 msgid "Only visible by supervisor"
 msgstr ""
 
-#: inc/step.class.php:514
+#: inc/step.class.php:513
 msgid "Visible by all"
 msgstr ""
 
-#: inc/step.class.php:530
-msgid "No association found"
-msgstr ""
-
-#: inc/step.class.php:536
+#: inc/step.class.php:529
 msgid "The object is created"
 msgstr ""
 
-#: inc/step.class.php:668
+#: inc/step.class.php:535
+msgid "No visibility defined"
+msgstr ""
+
+#: inc/step.class.php:669
 msgid "Only by supervisor"
 msgstr ""
 
-#: inc/step.class.php:675
+#: inc/step.class.php:680
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: inc/step.class.php:817 inc/step.class.php:953
+#: inc/step.class.php:822 inc/step.class.php:958
 msgid "Your ticket will be validated by your supervisor"
 msgstr ""
 
-#: inc/step.class.php:826 inc/step.class.php:978
+#: inc/step.class.php:831 inc/step.class.php:983
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 
-#: inc/step.class.php:847
+#: inc/step.class.php:852
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: inc/step.class.php:884 inc/step.class.php:919
+#: inc/step.class.php:889 inc/step.class.php:924
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: inc/step.class.php:963 inc/step.class.php:1076
+#: inc/step.class.php:968 inc/step.class.php:1081
 msgctxt "button"
 msgid "Validate"
 msgstr ""
 
-#: inc/step.class.php:1029
+#: inc/step.class.php:1034
 msgid "Select the next group"
 msgstr ""
 
-#: inc/step.class.php:1213
+#: inc/step.class.php:1218
 msgid "Error assigning to next group"
 msgstr ""
 
