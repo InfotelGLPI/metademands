@@ -2296,13 +2296,13 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($stepConfig->fields['see_blocks_as_tab'] == 1) {
             $displayBlocksAsTab = 1;
         }
-        if ($displayBlocksAsTab == 1) {
-            if ($metademands->fields['hide_title'] == 0) {
-                $styleasTab = "overflow: hidden;height: 550px;max-height: 550px;overflow-y: scroll;";
-            } else {
-                $styleasTab = "overflow: hidden;height: 650px;max-height: 650px;overflow-y: scroll;";
-            }
-        }
+//        if ($displayBlocksAsTab == 1) {
+//            if ($metademands->fields['hide_title'] == 0) {
+//                $styleasTab = "overflow: hidden;height: 550px;max-height: 550px;overflow-y: scroll;";
+//            } else {
+//                $styleasTab = "overflow: hidden;height: 650px;max-height: 650px;overflow-y: scroll;";
+//            }
+//        }
 
         echo "<div bloc-id='bloc" . $block . "' style='$styleasTab $style' class='card tab-sc-child-" . $block . "'>";
 

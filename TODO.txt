@@ -2,7 +2,7 @@ groupe proposé dans pas à pas : independant de l'entité
 use same function for meta & pdf
 use dedicated function for hide_no_field by class
 
-
+pouvoir créer X tickets pères (X entités)
+lieu - utiliser dans les tickets enfants
 elements associés - utiliser dans les tickets enfants
 
-Step by step - faire valider par responsable direct
