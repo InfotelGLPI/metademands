@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 08:24+0000\n"
+"POT-Creation-Date: 2025-04-12 08:58+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -240,7 +240,7 @@ msgstr ""
 "Le formulaire a été envoyé au groupe %s, vous pouvez fermer la fenêtre"
 
 #: front/nextGroup.form.php:80 front/nextGroup.form.php:87
-#: front/nextGroup.form.php:97 inc/step.class.php:874
+#: front/nextGroup.form.php:97 inc/step.class.php:879
 msgid "Next recipient"
 msgstr "Destinataire suivant"
 
@@ -248,7 +248,7 @@ msgstr "Destinataire suivant"
 msgid "A problem occurred, the form was not sent"
 msgstr "Un problème est survenu, le formulaire n'a pas été envoyé"
 
-#: front/step.form.php:56
+#: front/step.form.php:61
 msgid "Used blocks are mandatory"
 msgstr "Les blocs à utiliser sont obligatoires"
 
@@ -717,21 +717,21 @@ msgstr "Voir les blocs comme des onglets"
 msgid "Activate supervisor validation"
 msgstr "Activer la validation du responsable"
 
-#: inc/configstep.class.php:158
-msgid "Link multiple groups to a block"
-msgstr "Lier plusieurs groupes à un bloc"
-
-#: inc/configstep.class.php:164
+#: inc/configstep.class.php:159
 msgid "The user must select a defined user of the selected groups"
 msgstr ""
 "L'utilisateur doit choisir un utilisateur défini parmi les groupes "
 "sélectionnés"
 
-#: inc/configstep.class.php:174
+#: inc/configstep.class.php:166
+msgid "Link multiple groups to a block"
+msgstr "Lier plusieurs groupes à un bloc"
+
+#: inc/configstep.class.php:177
 msgid "Add all form actors as ticket requester"
 msgstr "Ajouter tous les acteurs du formulaire comme demandeur du ticket"
 
-#: inc/configstep.class.php:180
+#: inc/configstep.class.php:183
 msgid "Interface"
 msgstr "Interface"
 
@@ -881,7 +881,7 @@ msgstr "Création du formulaire"
 
 #: inc/field.class.php:386 inc/field.class.php:763 inc/field.class.php:1171
 #: inc/field.class.php:3257 inc/field.class.php:4526 inc/step.class.php:378
-#: inc/step.class.php:462 inc/step.class.php:573 inc/wizard.class.php:1762
+#: inc/step.class.php:462 inc/step.class.php:570 inc/wizard.class.php:1762
 msgid "Block"
 msgstr "Bloc"
 
@@ -1171,7 +1171,7 @@ msgstr ""
 "case à cocher est définie"
 
 #: inc/fieldoption.class.php:1351 inc/mailtask.class.php:150
-#: inc/step.class.php:339 inc/step.class.php:585 inc/step.class.php:599
+#: inc/step.class.php:339 inc/step.class.php:582 inc/step.class.php:596
 #: inc/task.class.php:766 inc/task.class.php:1163 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
@@ -1953,8 +1953,8 @@ msgstr[1] "Blocs du pas à pas"
 msgstr[2] "Blocs du pas à pas"
 
 #: inc/step.class.php:309
-msgid "Add a new association"
-msgstr "Ajouter une nouvelle association"
+msgid "Define a new visibility"
+msgstr "Définir une nouvelle visibilité"
 
 #: inc/step.class.php:348
 msgid ""
@@ -1965,69 +1965,69 @@ msgstr ""
 "dernier groupe assigné"
 
 #: inc/step.class.php:409
-msgid "List of associations"
-msgstr "Liste des associations"
+msgid "List of visibilities"
+msgstr "Liste des visibilités"
 
-#: inc/step.class.php:480 inc/step.class.php:499
+#: inc/step.class.php:479 inc/step.class.php:498
 msgid "Only visible for this group"
 msgid_plural "Only visible for these groups"
 msgstr[0] "Seulement visible par ce groupe"
 msgstr[1] "Seulement visible par ces groupes"
 msgstr[2] "Seulement visible par ces groupes"
 
-#: inc/step.class.php:510
+#: inc/step.class.php:509
 msgid "Only visible by supervisor"
 msgstr "Seulement visible par le responsable"
 
-#: inc/step.class.php:514
+#: inc/step.class.php:513
 msgid "Visible by all"
 msgstr "Visible par tous"
 
-#: inc/step.class.php:530
-msgid "No association found"
-msgstr "Pas d'associations trouvées"
-
-#: inc/step.class.php:536
+#: inc/step.class.php:529
 msgid "The object is created"
 msgstr "L'objet est créé"
 
-#: inc/step.class.php:668
+#: inc/step.class.php:535
+msgid "No visibility defined"
+msgstr "pas de visibilité définie"
+
+#: inc/step.class.php:669
 msgid "Only by supervisor"
 msgstr "Uniquement par le responsable"
 
-#: inc/step.class.php:675
+#: inc/step.class.php:680
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 "Message affiché avant l'envoi au superviseur ou à l'utilisateur suivant"
 
-#: inc/step.class.php:817 inc/step.class.php:953
+#: inc/step.class.php:822 inc/step.class.php:958
 msgid "Your ticket will be validated by your supervisor"
 msgstr "Votre ticket sera validé par votre responsable"
 
-#: inc/step.class.php:826 inc/step.class.php:978
+#: inc/step.class.php:831 inc/step.class.php:983
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 "Vous n'avez pas de responsable défini, vous ne pouvez pas continuer cette "
 "demande"
 
-#: inc/step.class.php:847
+#: inc/step.class.php:852
 msgid "This group is already assigned to this block"
 msgstr "Ce groupe est déjà lié à un bloc"
 
-#: inc/step.class.php:884 inc/step.class.php:919
+#: inc/step.class.php:889 inc/step.class.php:924
 msgid "There is a problem with the setup"
 msgstr "Il y a un souci de configuration"
 
-#: inc/step.class.php:963 inc/step.class.php:1076
+#: inc/step.class.php:968 inc/step.class.php:1081
 msgctxt "button"
 msgid "Validate"
 msgstr "Valider"
 
-#: inc/step.class.php:1029
+#: inc/step.class.php:1034
 msgid "Select the next group"
 msgstr "Sélectionnez le groupe suivant"
 
-#: inc/step.class.php:1213
+#: inc/step.class.php:1218
 msgid "Error assigning to next group"
 msgstr "Erreur lors de l'attribution au groupe suivant"
 
