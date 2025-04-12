@@ -184,7 +184,9 @@ class PluginMetademandsMetademand extends CommonDBTM
                         true
                     );
                 }
-                if (count($tickets_found) > 0 && $item->getType() == 'Ticket' && $this->canView()) {
+                if (count($tickets_found) > 0
+                    && $item->getType() == 'Ticket'
+                    && $this->canView()) {
                     $name = __('Demand Progression', 'metademands');
                     return self::createTabEntry(
                         $name,
@@ -229,7 +231,6 @@ class PluginMetademandsMetademand extends CommonDBTM
                         $metademands->showProgressionForm($item);
                     }
                 } else {
-                    $metademands->showPluginForTicket($item);
                     $metademands->showProgressionForm($item);
                 }
                 break;
@@ -9194,46 +9195,23 @@ JAVASCRIPT
     {
         switch ($state) {
             case self::TODO:
-                return "<span><i class=\"fas fa-3x fa-hourglass-half\"></i></span>";
+                return "<span><i class=\"fas fa-2x fa-hourglass-half\"></i></span>";
                 break;
             case self::DONE:
-                return "<span><i class=\"fas fa-3x fa-check\"></i></span>";
+                return "<span><i class=\"fas fa-2x fa-check\"></i></span>";
                 break;
             case self::FAIL:
-                return "<span><i class=\"fas fa-3x fa-times\"></i></span>";
+                return "<span><i class=\"fas fa-2x fa-times\"></i></span>";
                 break;
         }
     }
 
     public function showProgressionForm($item)
     {
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/timeline_user.css");
 
-        echo "<table class='tab_cadre_fixe' id='mainformtable'>";
-        echo "<tr class='tab_bg_1 center'>";
-        echo "<th>";
-        echo __('Progression of your demand', 'metademands');
-        echo "</th>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-
-        echo "<section id='timeline'>";
-
-        //begin ticket
-        echo "<article>";
-        echo "<div class='inner'>";
-        echo "<span class='bulle bulleMarge'>";
-        echo "<span style='margin-left: 5px;'><i class='fas fa-3x fa-play'></i></span>";
-        echo "</span>";
-        echo "<h2 class='dateColor'>" . __("Creation date");
-        echo "<i class='fas fa-calendar' style='float: right;'></i></h2>";
-        echo "<p>" . Html::convDateTime($item->fields["date"]) . "</p>";
-        echo "</div>";
-        echo "</article>";
         $tickets_found = [];
         $tickets_next = [];
-        $ticket_metademand_datas = [];
+
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
         $ticket_metademand_datas = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
 
@@ -9247,17 +9225,27 @@ JAVASCRIPT
                 true,
                 true
             );
-        } else {
-            //         $ticket_task      = new PluginMetademandsTicket_Task();
-            //         $ticket_task_data = $ticket_task->find(['tickets_id' => $item->fields['id']]);
-            //
-            //         if (count($ticket_task_data)) {
-            //            $tickets_found = PluginMetademandsTicket::getAncestorTickets($item->fields['id'], true);
-            //         }
         }
 
         $tickets_existant = [];
 
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/_process-chart.css");
+        echo "<div class='row'>";
+        echo "<div class='col-12 col-lg-12'>";
+        echo "<ul class='process-chart'>";
+        echo "<li class='entry-title align-items-center d-flex justify-content-center my-4 pb-6 fs-2 fw-bold'>";
+        echo "<i class='ti ti-brand-databricks me-1'></i>";
+        echo "<span>" . __('Progression of your demand', 'metademands') . "</span>";
+        echo "</li>";
+
+        echo "<li class='entry-point fs-3'>";
+        echo "<span class='icon-stack fa-2x'>";
+        echo "<i class='ti ti-circle-dashed'></i>";
+        echo "<i class='ti ti-calendar' style='font-size: 0.5em;'></i>";
+        echo "</span>";
+        echo "<span>". __("Creation date")." &nbsp;:&nbsp;".Html::convDateTime($item->fields["date"]) ."</span>";
+        echo "</li>";
+    
         if (count($tickets_found)) {
             foreach ($tickets_found as $tickets) {
                 if (!empty($tickets['tickets_id'])) {
@@ -9271,15 +9259,7 @@ JAVASCRIPT
                 foreach ($tickets_existant as $values) {
                     // Get ticket values if it exists
                     $ticket->getFromDB($values['tickets_id']);
-                    $class = "";
                     $fa = "fa-tasks";
-                    $state = self::TODO;
-                    if (in_array($ticket->fields['status'], $ticket->getSolvedStatusArray())
-                        || in_array($ticket->fields['status'], $ticket->getClosedStatusArray())) {
-                        $state = self::DONE;
-                    }
-                    $class_state = "";
-
 
                     if (Plugin::isPluginActive("servicecatalog")) {
                         $fa = PluginServicecatalogCategory::getUsedConfig(
@@ -9287,40 +9267,32 @@ JAVASCRIPT
                             $ticket->fields['itilcategories_id'],
                             'icon'
                         );
-                        $color = PluginServicecatalogCategory::getUsedConfig(
-                            "inherit_config",
-                            $ticket->fields['itilcategories_id'],
-                            "background_color"
-                        );
-                        $class = "background-color: $color;box-shadow: 0 0 0 7px $color !important;";
-                        if ($color == "#000000") {
-                            $class = "background-color: $color;color:#FFF;box-shadow: 0 0 0 7px $color !important;";
-                        }
-
-                        $class_state = "box-shadow: 0 0 0 7px $color !important;";
                     }
 
-                    echo "<article>";
-                    echo "<div class='inner'>";
-                    echo "<span class='bulle bulleMarge bulleDefault' style='$class_state'>";
-                    echo self::getStateItem($state);
+                    $class ='';
+                    if (in_array($ticket->fields['status'], [Ticket::SOLVED, Ticket::CLOSED])) {
+                        $class = 'closedchild';
+                    }
+                    echo "<li class='step'>";
+                    echo "<a class='btn flex-column fs-3 $class' href='".$ticket->getLinkURL()."'>";
+                    echo "<div class='d-flex align-items-center'>";
+                    echo "<i class='fas $fa' style='float: right;'></i>";
+                    echo "<span>&nbsp;" . $ticket->getName();
                     echo "</span>";
-                    echo "<h2 class='dateColor'><i class='fas $fa' style='float: right;'></i>" . $ticket->getLink(
-                        ) . "</h2>";
-
+                    echo "</div>";
+                    echo "<div class='text-muted'>";
                     $statusicon = CommonITILObject::getStatusClass($ticket->fields['status']);
 
                     $dateEnd = (!empty($ticket->fields["solvedate"])) ? __(
                             'Done on',
                             'metademands'
                         ) . " " . Html::convDateTime($ticket->fields["solvedate"]) : __("In progress", 'metademands');
-                    echo "<p>";
+                    echo "<br>";
                     echo "<i class='" . $statusicon . "'></i>&nbsp;";
                     echo $dateEnd;
-                    echo "</p>";
-                    echo "<p></p>";
                     echo "</div>";
-                    echo "</article>";
+                    echo "</a>";
+                    echo "</li>";
                 }
             }
         }
@@ -9330,24 +9302,18 @@ JAVASCRIPT
             "Not yet completed",
             'metademands'
         );
-        $class_end = (!empty($item->fields["solvedate"])) ? "bulleDone" : "";
-        $fa_end = (!empty($item->fields["solvedate"])) ? "fa-check" : "fa-hourglass-half";
-        echo "<article>";
-        echo "<div class='inner'>";
-        echo "<span class='bulle bulleMarge $class_end'>";
-        echo "<span><i class=\"fas fa-3x $fa_end\"></i></span>";
+        $fa_end = (!empty($item->fields["solvedate"])) ? "ti-check" : "ti-hourglass";
+
+        echo "<li class='end fs-3 '>";
+        echo "<span class='icon-stack fa-2x'>";
+        echo "<i class='ti ti-circle-dashed'></i>";
+        echo "<i class='ti $fa_end' style='font-size: 0.5em;'></i>";
         echo "</span>";
+        echo "<span>" . $dateEnd . "</span>";
+        echo "</li>";
 
-        echo "<h2 class='dateColor'>" . __("End date") . "<i class='fas fa-calendar' style='float: right;'></i></h2>";
-        echo " <p>" . $dateEnd . "</p>";
+        echo "</ul><br><br>";
         echo "</div>";
-        echo "</article>";
-
-        echo "</section>";
-
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
     }
 
     /**

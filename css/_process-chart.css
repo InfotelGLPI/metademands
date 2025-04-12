@@ -65,13 +65,29 @@
     }
   }
 
+  .entry-title {
+    position: relative;
+    padding-bottom: 30px;
+    margin-bottom: 15px;
+
+    &::after {
+      content: '\eea7';
+      font-family: tabler-icons, sans-serif;
+      position: absolute;
+      left: 50%;
+      bottom: -10px;
+      font-size: 24px;
+      transform: translateX(-50%);
+    }
+  }
+
   .entry-point, .step {
     position: relative;
     padding-bottom: 30px;
     margin-bottom: 15px;
 
     &::after {
-      content: '\ed54';
+      content: '\ea5f';
       font-family: tabler-icons, sans-serif;
       position: absolute;
       left: 50%;
@@ -85,7 +101,7 @@
     }
 
     .btn {
-      width: 390px;
+      width: 100%;
     }
 
     .text-muted {
@@ -103,4 +119,9 @@
       }
     }
   }
+}
+
+.closedchild {
+  background-color: #efefef;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
 }
