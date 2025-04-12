@@ -1442,9 +1442,8 @@ class PluginMetademandsWizard extends CommonDBTM
 
         //Redirected after end user Step
         $user_id = Session::getLoginUserID();
+        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
-
-            $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
@@ -1895,7 +1894,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID(
                     )]['plugin_metademands_stepforms_id'];
-                    echo "<br><span style='color:darkred'>";
+                    echo "<br><span style='color:darkred;font-size: 14px !important;margin-right: 8px'>";
                     Html::showSimpleForm(
                         $target,
                         'delete_form_from_list',
@@ -1906,10 +1905,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</span>";
                 }
 
-                echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button'>";
+                echo "<button type='button' id='prevBtn' style='margin-right: 8px;font-size: 14px !important;' class='btn btn-primary'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
-                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'>";
+                echo "&nbsp;<button type='button' id='nextBtn' style='margin-right: 8px;font-size: 14px !important;'  class='btn btn-primary'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 

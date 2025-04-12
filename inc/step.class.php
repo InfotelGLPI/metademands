@@ -293,7 +293,7 @@ class PluginMetademandsStep extends CommonDBChild
         $canedit = $item->can($item->getID(), UPDATE);
 
         if ($canedit) {
-            echo "<div id='viewstepbybloc" . $item->getType() . $item->getID() . "$rand'></div>\n";
+            echo "<br><div id='viewstepbybloc" . $item->getType() . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
             echo "function addstepbybloc" . $item->getType() . $item->getID() . "$rand() {\n";
@@ -313,7 +313,7 @@ class PluginMetademandsStep extends CommonDBChild
             echo "<div class='center'>" .
                 "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
                 $item->getType() . $item->getID() . "$rand();'>" . __('Define a new visibility', 'metademands') .
-                "</a></div><br>";
+                "</a></div>";
         }
         $iterator = $DB->request([
             'FROM' => getTableForItemType(__CLASS__),
@@ -923,12 +923,7 @@ class PluginMetademandsStep extends CommonDBChild
         if (isset($_GET['block_id']) && !empty($_GET['block_id'])) {
             $block_id = $_GET['block_id'];
         }
-        if (!$conf->fields['multiple_link_groups_blocks']
-            && !$conf->fields['link_user_block']
-            && !$conf->fields['supervisor_validation']) {
-            echo "<div class='alert alert-important alert-danger d-flex'>";
-            echo "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";
-        } elseif ($conf->fields['supervisor_validation']) {
+        if ($conf->fields['supervisor_validation']) {
             echo "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
             echo "<table class='tab_cadre_fixe'>";
             if (isset($_SESSION['plugin_metademands'][$user_id])) {
@@ -994,8 +989,7 @@ class PluginMetademandsStep extends CommonDBChild
                 echo "</table>";
                 Html::closeform();
             }
-        } elseif ($conf->fields['multiple_link_groups_blocks']
-            || (!$conf->fields['multiple_link_groups_blocks'] && $conf->fields['link_user_block'])) {
+        } else {
             echo "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
             echo "<table class='tab_cadre_fixe'>";
             if (isset($_SESSION['plugin_metademands'][$user_id])) {
