@@ -3532,7 +3532,7 @@ JAVASCRIPT
                                             $son_ticket_data['content'] = $mail->fields['content'] ?? "";
                                             if (!empty($son_ticket_data['content'])) {
                                                 if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                                                    $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
+                                                    $content = "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>";
                                                     $content .= "<tr><th colspan='2'>" . __(
                                                             'Child Ticket',
                                                             'metademands'
@@ -3551,7 +3551,7 @@ JAVASCRIPT
 
 
                                             if (!empty($parent_fields_content['content'])) {
-                                                $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
+                                                $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
                                                 $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
                                                     "</th></tr><tr><td colspan='2'>" . Glpi\RichText\RichText::getSafeHtml(
                                                         $parent_fields_content['content']
@@ -6182,7 +6182,7 @@ JAVASCRIPT
 
                     if (!empty($son_ticket_data['content'])) {
                         if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                            $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
+                            $content = "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>";
                             $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                                 "</th></tr><tr><td colspan='2'>";
                         }
@@ -6198,7 +6198,7 @@ JAVASCRIPT
                         && $task->fields['formatastable'] == true) {
                         if (!empty($parent_fields_content['content'])) {
                             //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                            $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
+                            $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
                             $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
                                 "</th></tr><tr><td colspan='2'>" . Glpi\RichText\RichText::getSafeHtml(
                                     $parent_fields_content['content']
