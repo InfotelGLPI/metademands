@@ -55,11 +55,15 @@ class PluginMetademandsUpload extends CommonDBTM
     static function showWizardField($data, $namefield, $value, $on_order, $idline)
     {
         Html::requireJs('tinymce');
+
+
         $self = new self();
 
         if (is_array($value)) {
             $value = "";
         }
+        $randupload             = mt_rand();
+        $namedrop = 'dropdoc' . $randupload;
 
         $arrayFiles = json_decode($value, true);
 
@@ -94,7 +98,8 @@ class PluginMetademandsUpload extends CommonDBTM
                             'editor_id' => $namefield . $data['id'],
                             'showtitle' => false,
                             'multiple' => true,
-                            'display' => false,
+                            'display'  => false,
+                            'dropZone' => 'dropdoc' . $randupload,
                             'required' => ($data['is_mandatory'] ? true : false),
                             'uploads' => $self->uploads]);
                     } else {
@@ -103,6 +108,7 @@ class PluginMetademandsUpload extends CommonDBTM
                             'editor_id' => $namefield . $data['id'],
                             'showtitle' => false,
                             'display' => false,
+                            'dropZone' => 'dropdoc' . $randupload,
                             'required' => ($data['is_mandatory'] ? true : false),
                             'uploads' => $self->uploads
                         ]);
@@ -116,6 +122,7 @@ class PluginMetademandsUpload extends CommonDBTM
                         'showtitle'     => false,
                         'multiple'      => true,
                         'display'       => false,
+                        'dropZone' => 'dropdoc' . $randupload,
                         'required' => ($data['is_mandatory'] ? true : false),
                         'uploads' => $self->uploads]);
                 } else {
@@ -124,6 +131,7 @@ class PluginMetademandsUpload extends CommonDBTM
                         'editor_id'     => $namefield . $data['id'],
                         'showtitle'     => false,
                         'display'       => false,
+                        'dropZone' => 'dropdoc' . $randupload,
                         'required' => ($data['is_mandatory'] ? true : false),
                         'uploads' => $self->uploads
                     ]);
@@ -137,6 +145,7 @@ class PluginMetademandsUpload extends CommonDBTM
                     'showtitle'     => false,
                     'multiple'      => true,
                     'display'       => false,
+                    'dropZone' => 'dropdoc' . $randupload,
                     'required' => ($data['is_mandatory'] ? true : false),
                     'uploads' => $self->uploads]);
             } else {
@@ -145,13 +154,14 @@ class PluginMetademandsUpload extends CommonDBTM
                     'editor_id'     => $namefield . $data['id'],
                     'showtitle'     => false,
                     'display'       => false,
+                    'dropZone' => 'dropdoc' . $randupload,
                     'required' => ($data['is_mandatory'] ? true : false),
                     'uploads' => $self->uploads
                 ]);
             }
         }
 //        $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
-
+        $field .= Html::scriptBlock("$('#$namedrop').show();");
         echo $field;
     }
 
@@ -216,7 +226,7 @@ class PluginMetademandsUpload extends CommonDBTM
 
     public static function blocksHiddenScript($data)
     {
-        
+
     }
 
 }

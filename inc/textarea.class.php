@@ -67,6 +67,8 @@ class PluginMetademandsTextarea extends CommonDBTM
             $rand = mt_rand();
             $name = 'field['. $data['id'] .']';
 
+            $namedrop = 'dropdoc' . $rand;
+
             if (!empty($comment)) {
                 $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
             }
@@ -83,8 +85,8 @@ class PluginMetademandsTextarea extends CommonDBTM
                 'cols' => 80,
                 'rows' => 6,
                 'uploads' => $self->uploads]);
+            Html::scriptBlock("$('#$namedrop').hide();");
 
-            echo Html::scriptBlock("$('.fileupload').hide();");
             echo"<style>
                         .fileupload.only-uploaded-files {
                             display: none;
@@ -619,6 +621,7 @@ class PluginMetademandsTextarea extends CommonDBTM
             unset($p_rt['name']);
             $p_rt['display'] = false;
             $p_rt['required'] = false;
+            $p_rt['dropZone'] = 'dropdoc' . $p['rand'];
             $display .= Html::file($p_rt);
         }
 
