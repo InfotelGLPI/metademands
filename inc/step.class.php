@@ -418,16 +418,13 @@ class PluginMetademandsStep extends CommonDBChild
         $configStep->getFromDBByCrit([
             'plugin_metademands_metademands_id' => $item->getID(),
         ]);
-
+        $added = [];
         if (count($all_blocks)) {
             $multiple_blocks = [];
             $already_see = [];
 
             foreach ($all_blocks as $blockid => $blockdata) {
 
-//                if (in_array($blockid, $subblocks)) {
-//                    continue;
-//                }
                 if (count($blockdata) > 1) {
                     foreach ($blockdata as $blockdataid => $multipleblockdata) {
                         $multiple_blocks[$multipleblockdata['block_id']][] = $multipleblockdata['groups_id'];
@@ -439,7 +436,7 @@ class PluginMetademandsStep extends CommonDBChild
                     if (in_array($blockid, $already_see)) {
                         continue;
                     }
-
+                    $added[] = $blockid;
                     echo "<li class='step'>";
                     if ($canedit) {
                         $onhover = "style='cursor:pointer'
@@ -465,7 +462,13 @@ class PluginMetademandsStep extends CommonDBChild
                     echo "<a class='btn flex-column' $onhover href='#'>";
                     echo "<div class='d-flex align-items-center'>";
                     echo " <i class='ti ti-align-box-left-middle'></i>";
-                    echo "<span>&nbsp;" . __("Block", 'metademands') . "&nbsp;";
+
+                    if (in_array($blockid, $subblocks)) {
+                        echo "<span>&nbsp;" . __("Sub Block", 'metademands') . "&nbsp;-&nbsp;";
+                    } else {
+                        echo "<span>&nbsp;" . __("Block", 'metademands') . "&nbsp;-&nbsp;";
+                    }
+
                     if (isset($blocks[$data['block_id']])) {
                         echo $blocks[$data['block_id']];
                     } else {
@@ -551,6 +554,26 @@ class PluginMetademandsStep extends CommonDBChild
 
         } else {
             echo "<div class='center b'>" . __("No visibility defined", 'metademands') . "</div>";
+        }
+
+        $ko = 0;
+        foreach ($blocks as $k => $block) {
+            if (!in_array($k, $added)) {
+                $ko++;
+            }
+        }
+        if (count($blocks) > 0 && count($added) > 0 && $ko > 0) {
+            echo "<div class='row'>";
+            echo "<div class='col-12 col-lg-12'>";
+            echo "<div class='center alert alert-danger' style='margin-top:20px'>";
+            echo "<i class='fas fa-times-circle' style='color: darkred'></i>&nbsp;";
+            echo __('There is a problem with the setup', 'metademands')."<br>" . __(
+                    'Your blocks are not all defined',
+                    'metademands'
+                ) . "&nbsp;";
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
         }
 
         return true;
