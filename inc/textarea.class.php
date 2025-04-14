@@ -85,7 +85,8 @@ class PluginMetademandsTextarea extends CommonDBTM
                 'cols' => 80,
                 'rows' => 6,
                 'uploads' => $self->uploads]);
-            Html::scriptBlock("$('#$namedrop').hide();");
+
+            echo Html::scriptBlock("$('#$namedrop').hide();");
 
             echo"<style>
                         .fileupload.only-uploaded-files {
@@ -613,6 +614,7 @@ class PluginMetademandsTextarea extends CommonDBTM
             $p_rt['display'] = false;
             $p_rt['only_uploaded_files'] = true;
             $p_rt['required'] = false;
+            $p_rt['dropZone'] = 'dropdoc' . $p['rand'];
             $display .= Html::file($p_rt);
         }
 
