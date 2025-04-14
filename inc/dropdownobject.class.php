@@ -967,9 +967,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                              $(id).html('*');
                              $('[name =\"field[' + key + ']\"]').attr('required', 'required');
                              //Special case Upload field
-                             if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
-                                document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
-                             }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });
               ";

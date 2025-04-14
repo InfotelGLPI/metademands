@@ -2135,6 +2135,22 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     });";
     }
 
+    public static function checkMandatoryFile($fields_link, $name)
+    {
+        $field = new PluginMetademandsField();
+        if ($field->getFromDB($fields_link)) {
+            if ($field->fields['type'] == 'file') {
+                return "
+                var field = sessionStorage.getItem('mandatoryfile$name');
+                var fieldid = 'field'+ field;
+
+                if (document.querySelector('[id-field=\"' + fieldid + '\"] div input')){
+                    document.querySelector('[id-field=\"' + fieldid + '\"] div input').required = true;
+                }
+                ";
+            }
+        }
+    }
     /**
      * check fields_link to be mandatory
      * @param $id

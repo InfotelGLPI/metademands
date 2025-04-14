@@ -265,9 +265,8 @@ class PluginMetademandsEmail extends CommonDBTM
                                  $('#metademands_wizard_red" . $fields_link . "').html('*');
                                  $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                  //Special case Upload field
-                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
-                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
-                                 }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                               }
                             ";
 
@@ -276,9 +275,8 @@ class PluginMetademandsEmail extends CommonDBTM
                                  $('#metademands_wizard_red" . $fields_link . "').html('*');
                                  $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                  //Special case Upload field
-                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
-                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
-                                 }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                              } else {
                                 $('#metademands_wizard_red" . $fields_link . "').html('');
                                 sessionStorage.setItem('hiddenlink$name', $fields_link);

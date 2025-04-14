@@ -970,9 +970,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                              $(id).html('*');
                              $('[name =\"field[' + key + ']\"]').attr('required', 'required');
                              //Special case Upload field
-                             if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
-                                document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
-                             }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });";
 
@@ -1016,9 +1015,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                  $('#metademands_wizard_red" . $fields_link . "').html('*');
                                  $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                  //Special case Upload field
-                                 if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
-                                    document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
-                                 }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                             }
                         } else if (index === 2) {
                             id = $('#multiselect" . $data['id'] . "').val();
@@ -1038,9 +1036,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                     $('#metademands_wizard_red" . $fields_link . "').html('*');
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
-                                     if(document.querySelector(\"[id-field='field$fields_link'] div input\")){
-                                        document.querySelector(\"[id-field='field$fields_link'] div input\").required = true;
-                                     }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                                 }
                             }, 50);
                             });";

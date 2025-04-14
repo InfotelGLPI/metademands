@@ -668,10 +668,9 @@ class PluginMetademandsBasket extends CommonDBTM
                                  var fieldid = 'field'+ key;
                                  $(id).html('*');
                                  $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                 //Special case Upload field
-                                 if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
-                                    document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
-                                 }
+                                //Special case Upload field
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                             }
                         });";
 
@@ -705,9 +704,8 @@ class PluginMetademandsBasket extends CommonDBTM
                                 $(id).html('*');
                                 $('[name =\"field[' + key + ']\"]').attr('required', 'required');
                                 //Special case Upload field
-                                 if (document.querySelector('[id-field=\"' + fieldid +'\"] div input')) {
-                                    document.querySelector('[id-field=\"' + fieldid +'\"] div input').required = true;
-                                 }
+                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                             }
                          });";
                     $onchange .= "}
