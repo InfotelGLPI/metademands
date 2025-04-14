@@ -405,7 +405,6 @@ class PluginMetademandsStep extends CommonDBChild
             }
         }
 
-
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/_process-chart.css");
         echo "<div class='row'>";
         echo "<div class='col-12 col-lg-12'>";
@@ -423,11 +422,12 @@ class PluginMetademandsStep extends CommonDBChild
         if (count($all_blocks)) {
             $multiple_blocks = [];
             $already_see = [];
+
             foreach ($all_blocks as $blockid => $blockdata) {
 
-                if (in_array($blockid, $subblocks)) {
-                    continue;
-                }
+//                if (in_array($blockid, $subblocks)) {
+//                    continue;
+//                }
                 if (count($blockdata) > 1) {
                     foreach ($blockdata as $blockdataid => $multipleblockdata) {
                         $multiple_blocks[$multipleblockdata['block_id']][] = $multipleblockdata['groups_id'];
@@ -524,8 +524,20 @@ class PluginMetademandsStep extends CommonDBChild
                                 $data['message']
                             );
                     }
+                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/step.form.php";
+
                     echo "</div>";
                     echo "</a>";
+                    echo "<div class='btn flex-column' style='color:darkred'>";
+                    Html::showSimpleForm(
+                        $target,
+                        'delete',
+                        _sx('button', 'Delete visibility', 'metademands'),
+                        ['id' => $data['id']],
+                        'fa-trash-alt fa-1x'
+                    );
+                    echo "</div>";
+
                     echo "</li>";
                 }
             }
@@ -1048,51 +1060,58 @@ class PluginMetademandsStep extends CommonDBChild
                 echo "</tr>";
             }
 
-            echo "<script type='text/javascript'>";
-            echo "function plugin_md_reloaduser(){";
-            $params = [
-                'action' => 'reloadUser',
-                'next_groups_id' => '__VALUE__',
-            ];
-            Ajax::updateItemJsCode(
-                'show_users_by_group',
-                PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownNextUser.php",
-                $params,
-                'dropdown_next_groups_id' . $rand
-            );
-            echo "};";
-            echo "</script>";
+            if (isset($rand)) {
+                echo "<script type='text/javascript'>";
+                echo "function plugin_md_reloaduser(){";
+                $params = [
+                    'action' => 'reloadUser',
+                    'next_groups_id' => '__VALUE__',
+                ];
+                Ajax::updateItemJsCode(
+                    'show_users_by_group',
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownNextUser.php",
+                    $params,
+                    'dropdown_next_groups_id' . $rand
+                );
+                echo "};";
+                echo "</script>";
 
-            if ($conf->fields['link_user_block']) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td colspan='2'>";
-                echo "<div id ='show_users_by_group'>";
-                echo "</div>";
-                echo "</td>";
-                echo "</tr>";
+                if ($conf->fields['link_user_block']) {
+                    echo "<tr class='tab_bg_1'>";
+                    echo "<td colspan='2'>";
+                    echo "<div id ='show_users_by_group'>";
+                    echo "</div>";
+                    echo "</td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<div class='alert alert-important alert-danger d-flex'>";
+                echo "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";
             }
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
+            if (isset($rand)) {
+                echo "<tr class='tab_bg_1'>";
+                echo "<td colspan='2'>";
 
-            echo Html::submit(
-                _sx(
-                    'button',
-                    'Validate',
-                    'metademands'
-                ),
-                [
-                    'name' => 'execute',
-                    'id' => 'formsubmit',
-                    'class' => 'btn btn-primary'
-                ]
-            );
+                echo Html::submit(
+                    _sx(
+                        'button',
+                        'Validate',
+                        'metademands'
+                    ),
+                    [
+                        'name' => 'execute',
+                        'id' => 'formsubmit',
+                        'class' => 'btn btn-primary'
+                    ]
+                );
 
-            echo "</td>";
-            echo "</tr>";
+                echo "</td>";
+                echo "</tr>";
 
-            echo "</table>";
-            Html::closeform();
+                echo "</table>";
+                Html::closeform();
+            }
         }
     }
 
