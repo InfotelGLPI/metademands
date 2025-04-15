@@ -131,7 +131,7 @@ class PluginMetademandsFreetable extends CommonDBTM
             $addfields['total'] =  __('Total (TTC)', 'orderfollowup');
             $commentfields['total'] = '';
             $types['total'] = PluginMetademandsFreetablefield::TYPE_READONLY;
-            $size = 20;
+            $size = 17;
         }
 
         $rand = $data['id'];
@@ -152,17 +152,18 @@ class PluginMetademandsFreetable extends CommonDBTM
             }
             $field .= "</th>";
         }
+
         $encoded_fields = json_encode($addfields);
         $mandatory_encoded_fields = json_encode($is_mandatory);
         $empty_value = Dropdown::EMPTY_VALUE;
         $types_encoded_fields = json_encode($types);
         $dropdown_values_encoded_fields = [];
         $dropdown_values_encoded_fields = json_encode($dropdown_values);
-        $field .= "<th style='text-align: center;$background_color' colspan='2' onclick='addLine$rand()'><i class='fa-solid fa-plus btn btn-info'></i></th>";
+        $field .= "<th style='text-align: right;$background_color' colspan='4' onclick='addLine$rand()'><i class='fa-solid fa-plus btn btn-info'></i></th>";
         $field .= "</tr>";
 
         $style = "";
-        $stylereadonly = "style= \'white-space: nowrap;text-align: right;\'";
+        $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
         if (is_array($values) && count($values) > 0) {
             foreach ($values as $value) {
                 $l = [
@@ -196,7 +197,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $field .= "</select></td>";
                         } else if ($types[$k] == PluginMetademandsFreetablefield::TYPE_NUMBER) {
                             $id = $k.'_'.$idline;
-                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"number\" min=\"0\" value=\"$l[$k]\" style=\"width: 10em;\" disabled></td>";
+                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"number\" min=\"0\" value=\"$l[$k]\" style=\"width: 7em;\" disabled></td>";
                         }
 
                         if (Plugin::isPluginActive('orderfollowup')) {
@@ -207,7 +208,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                 }
                 if (Plugin::isPluginActive('orderfollowup')) {
                     $linetotal = number_format($quantity*$unit_price,2,'.', ' ');
-                    $field .= "<td $stylereadonly id=\"linetotal\">$linetotal €</td>";
+                    $field .= "<td $style id=\"linetotal\">$linetotal €</td>";
                 }
 
                 $field .= "<td><button onclick =\"editLine$rand($idline)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"fas fa-pen\"></i></button></td>";
@@ -263,7 +264,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
                                } else if (type_fields[index] == 3) {
-                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" ></td>');
+                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" ></td>');
                                } else if (type_fields[index] == 4  && orderfollowup_is_active) {
                                    tabfields.push('<td></td>');
                                }
@@ -271,11 +272,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                            });
                            
                            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
-                           tabbutton = '<td style=\"text-align: center;\" colspan=\"2\">'
+                           tabbutton = '<td style=\"text-align: right;\" colspan=\"2\">'
                            + str
                            + '<i class =\"fas fa-check\"></i></button></td>'
-//                           + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + i +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-//                               + '<i class =\"fas fa-trash\"></i></button></td>'
+                           + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + i +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                               + '<i class =\"fas fa-trash\"></i></button></td>'
                                + '</tr>';
                            
                            var joined = [tabtr, tabfields, tabbutton].join(' ');
@@ -303,7 +304,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
                                } else if (type_fields[index] == 3) {
-                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" ></td>');
+                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" ></td>');
                                } else if (type_fields[index] == 4  && orderfollowup_is_active) {
                                    tabfields.push('<td></td>');
                                }
@@ -445,10 +446,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
                                } else if (type_fields[index] == 3) {
-                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" disabled ></td>');
+                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
                                } else if (type_fields[index] == 4 && orderfollowup_is_active) {
                                    //orderfollowup
-                                   tabfields.push('<td $stylereadonly id=\"linetotal\">' + total.toFixed(2) +' €</td>');
+                                   tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
                                }
                                
                             });
@@ -498,10 +499,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
                                } else if (type_fields[index] == 3) {
-                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" disabled ></td>');
+                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
                                } else if (type_fields[index] == 4 && orderfollowup_is_active) {
                                    //orderfollowup
-                                   tabfields.push('<td $stylereadonly id=\"linetotal\">' + total.toFixed(2) +' €</td>');
+                                   tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
                                }
                                
                             });
@@ -551,10 +552,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
                                } else if (type_fields[index] == 3) {
-                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" disabled ></td>');
+                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
                                } else if (type_fields[index] == 4 && orderfollowup_is_active) {
                                    //orderfollowup
-                                   tabfields.push('<td $stylereadonly id=\"linetotal\">' + total.toFixed(2) +' €</td>');
+                                   tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
                                }
                             });
                             tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + ind +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
@@ -658,7 +659,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                         inputs[i].disabled = false;
                     }
                     
-//                    line.querySelector('button[name=\"delete_item\"]').parentNode.remove();
+                    line.querySelector('button[name=\"delete_item\"]').parentNode.remove();
                     line.querySelector('button[name=\"edit_item\"]').parentNode.remove();
                     
                     let td = document.createElement('td');
@@ -676,6 +677,22 @@ class PluginMetademandsFreetable extends CommonDBTM
                     });
                     td.appendChild(button);
                     line.appendChild(td);
+                    
+                    let td1 = document.createElement('td');
+                    td1.setAttribute('class', 'tbl-center');
+                    let button1 = document.createElement('button');
+                    button1.className = 'btn btn-danger';
+                    button1.type = 'button';
+                    
+                    let ico1 = document.createElement('i');
+                    ico1.className = 'fas fa-trash';
+                    button1.appendChild(ico1);
+                    button1.dataset.id = l;
+                    button1.addEventListener('click',function() {
+                      removeLine$rand(this, this.dataset.id);
+                    });
+                    td1.appendChild(button1);
+                    line.appendChild(td1);
                 }
                 //orderfollowup
                 if (orderfollowup_is_active) {
@@ -706,18 +723,18 @@ class PluginMetademandsFreetable extends CommonDBTM
                         i = 0;
                         $('[id^=line_]').each(function (){
                              i++;
-                             grandtotal += $(this).find('[id^=unitprice_]').val() * $(this).find('[id^=quantity_]').val();
+                             grandtotal += $(this).find('[id^=unit_price_]').val() * $(this).find('[id^=quantity_]').val();
                              grandtotalht = grandtotal / (1 + tva);
                         });
 
-                        $('[id^=line_]').css('background-color', '#eeeeee');
+                        $('[id^=line_]').css('background-color', '#f7f7f7');
                         let tr_grantotal = document.getElementById('grandtotal');
                         if (tr_grantotal == null) {
                             grandtotalht = grandtotal / (1 + tva);
                              $('#freetable_table$rand tr[id^=line_]:last').after('<tr $style id=\"grandtotal\">' +
-                         '<th colspan=\"6\" $style > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
+                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
                           '<tr $style id=\"grandtotalht\">' +
-                         '<th colspan=\"6\" $style > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
+                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
                         } else {
 
                            $('#amount_grandtotal').text(grandtotal.toFixed(2) +' €');
@@ -1083,7 +1100,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                         if ($formatAsTable) {
                             $content .= "<td $style_td>";
                         }
-                        $totalrow = floatval($fi['quantity']) * floatval($fi['unitprice']);
+                        $totalrow = floatval($fi['quantity']) * floatval($fi['unit_price']);
                         $content .= Html::formatNumber($totalrow, false, 2) . " €";
                         if ($formatAsTable) {
                             $content .= "</td>";
