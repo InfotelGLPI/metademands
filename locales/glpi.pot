@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-15 14:31+0000\n"
+"POT-Creation-Date: 2025-04-15 15:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -403,7 +403,7 @@ msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
 #: inc/basket.class.php:1632 inc/basket.class.php:2039
-#: inc/freetable.class.php:701 inc/freetable.class.php:1103
+#: inc/freetable.class.php:718 inc/freetable.class.php:1120
 #: inc/metademandpdf.class.php:413 inc/metademandpdf.class.php:507
 msgid "Grand total (HT)"
 msgstr ""
@@ -485,7 +485,7 @@ msgstr ""
 
 #: inc/checkbox.class.php:173 inc/dropdownmeta.class.php:1044
 #: inc/dropdownmultiple.class.php:548 inc/fieldcustomvalue.class.php:553
-#: inc/freetable.class.php:772 inc/freetablefield.class.php:335
+#: inc/freetable.class.php:789 inc/freetablefield.class.php:335
 #: inc/radio.class.php:173
 msgid "Rank"
 msgstr ""
@@ -906,7 +906,7 @@ msgstr ""
 msgid "Warning : there are fields without custom values, please check"
 msgstr ""
 
-#: inc/field.class.php:1332 inc/freetable.class.php:838
+#: inc/field.class.php:1332 inc/freetable.class.php:855
 #: inc/freetablefield.class.php:419
 msgid "Mandatory"
 msgstr ""
@@ -1181,46 +1181,46 @@ msgstr ""
 msgid "Free table"
 msgstr ""
 
-#: inc/freetable.class.php:131 inc/freetable.class.php:1057
+#: inc/freetable.class.php:131 inc/freetable.class.php:1074
 msgid "Total (TTC)"
 msgstr ""
 
-#: inc/freetable.class.php:221
+#: inc/freetable.class.php:222
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
-#: inc/freetable.class.php:700 inc/freetable.class.php:1102
+#: inc/freetable.class.php:717 inc/freetable.class.php:1119
 #: inc/metademandpdf.class.php:498
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: inc/freetable.class.php:701 inc/freetable.class.php:1103
+#: inc/freetable.class.php:718 inc/freetable.class.php:1120
 #: inc/metademandpdf.class.php:507
 msgid "(if VAT 20%)"
 msgstr ""
 
-#: inc/freetable.class.php:734
+#: inc/freetable.class.php:751
 msgid "Validate the basket"
 msgstr ""
 
-#: inc/freetable.class.php:784 inc/freetablefield.class.php:336
+#: inc/freetable.class.php:801 inc/freetablefield.class.php:336
 msgid "Internal name"
 msgstr ""
 
-#: inc/freetable.class.php:791 inc/freetablefield.class.php:349
+#: inc/freetable.class.php:808 inc/freetablefield.class.php:349
 #: inc/information.class.php:161
 msgid "Type"
 msgstr ""
 
-#: inc/freetable.class.php:798 inc/freetablefield.class.php:388
+#: inc/freetable.class.php:815 inc/freetablefield.class.php:388
 msgid "Display name"
 msgstr ""
 
-#: inc/freetable.class.php:814 inc/freetablefield.class.php:396
+#: inc/freetable.class.php:831 inc/freetablefield.class.php:396
 msgid "Dropdown values"
 msgstr ""
 
-#: inc/freetable.class.php:815 inc/freetablefield.class.php:397
+#: inc/freetable.class.php:832 inc/freetablefield.class.php:397
 msgid "One value by line, separated by comma"
 msgstr ""
 
