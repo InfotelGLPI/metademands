@@ -537,7 +537,15 @@ class PluginMetademandsField extends CommonDBChild
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Additional label', 'metademands');
-        echo "&nbsp;<span id='show_label2' style='color:red;display:none;'>&nbsp;*&nbsp;</span>";
+        if ($ID > 0) {
+            if ($this->fields['type'] == "datetime_interval"
+                || $this->fields['type'] == "date_interval") {
+                echo "&nbsp;<span id='show_label2' style='color:red;'>&nbsp;*&nbsp;</span>";
+            }
+        } else {
+            echo "&nbsp;<span id='show_label2' style='color:red;display:none;'>&nbsp;*&nbsp;</span>";
+        }
+
         echo "</td>";
         echo "<td>";
         $label2 = Html::cleanPostForTextArea($this->fields['label2']);
@@ -2607,7 +2615,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo Glpi\RichText\RichText::getSafeHtml($label2);
                     echo "</div>";
                 } else {
-                    echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
+                    echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . Glpi\RichText\RichText::getTextFromHtml(
                             $label2
                         ) . "<span $required>" . $required_icon . "</span></div>";
                 }

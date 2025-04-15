@@ -57,6 +57,14 @@ switch ($_POST['step']) {
                 </div>
             ";
         } else {
+            $type = $_POST['type'];
+            echo Html::scriptBlock("
+                if ('$type' == 'datetime_interval' || '$type' === 'date_interval') {
+                    document.getElementById('show_label2').style.display = 'inline';
+                } else {
+                    document.getElementById('show_label2').style.display = 'none';
+                }
+        ");
 
             $randItem = PluginMetademandsField::dropdownFieldItems(
                 $_POST["type"],

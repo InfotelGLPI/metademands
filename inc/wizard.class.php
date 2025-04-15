@@ -3478,8 +3478,9 @@ class PluginMetademandsWizard extends CommonDBTM
                            }
                         }
                      }
+
                      if (ko > 0) {
-//                        console.log(mandatory);
+
                         valid = false;
                         
                         const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);

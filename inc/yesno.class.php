@@ -217,7 +217,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 $val = Toolbox::addslashes_deep($idc);
                 $onchange .= "if ($(this).val() == $val) {
                                  $('#metademands_wizard_red" . $fields_link . "').html('*');
-                                $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                 $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                  //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', $fields_link);
                                  " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
@@ -359,7 +359,6 @@ class PluginMetademandsYesno extends CommonDBTM
         if (count($check_values) > 0) {
             //Initialize id default value
             foreach ($check_values as $idc => $check_value) {
-                $hidden_link = $check_value['hidden_link'];
                 if (isset($data['custom'])) {
                     $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
                     if ($idc == $custom_values) {
