@@ -378,7 +378,7 @@ class PluginMetademandsDraft_Value extends CommonDBTM
             $field = new PluginMetademandsField();
             if ($field->getFromDB($values['plugin_metademands_fields_id'])) {
                 if ($field->fields['type'] == 'freetable') {
-                    $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['freetables'][$values['plugin_metademands_fields_id']] = json_decode($values['value'], true);
+                    $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['freetables'][$field->getID()] = json_decode($values['value'], true);
                 }
             }
         }

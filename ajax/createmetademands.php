@@ -90,8 +90,18 @@ if (isset($_GET['meta_validated'])) {
 }
 
 if ($nofreetable == false) {
-    if (isset($_POST['see_basket_summary'])) {
-        unset($_POST['see_basket_summary']);
+
+    if (isset($_POST['see_basket_summary']) && $_POST['see_basket_summary'] == 1) {
+
+        $_POST['see_basket_summary'] = 0;
+
+        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
+            $freetables = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'];
+            foreach ($freetables as $field_id => $freetable) {
+                $_POST['freetables'][$field_id] = $freetable;
+            }
+        }
+
         $post = $_POST;
 
         //why i don't know
@@ -112,8 +122,7 @@ if ($nofreetable == false) {
         $metademands->getFromDB($_POST['form_metademands_id']);
 
         if ($metademands->fields['is_basket'] == 1) {
-            //TODO orderfollowup
-            if (isset($_POST['is_freeinput']) && $_POST['is_freeinput'] == 1) {
+            if (Plugin::isPluginActive('orderfollowup')) {
                 echo PluginOrderfollowupFreeinput::displayBasketSummary($post);
             } else {
                 echo PluginMetademandsBasket::displayBasketSummary($post);

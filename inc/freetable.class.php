@@ -127,6 +127,13 @@ class PluginMetademandsFreetable extends CommonDBTM
             }
         }
 
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $addfields['total'] =  __('Total (TTC)', 'orderfollowup');
+            $commentfields['total'] = '';
+            $types['total'] = PluginMetademandsFreetablefield::TYPE_READONLY;
+            $size = 20;
+        }
+
         $rand = $data['id'];
         $field .= "<script>localStorage.setItem('nextnb', $nb);</script>";
         $field .= "<table class='tab_cadre' width='100%' id ='freetable_table$rand' style='overflow: auto;width:100%;$background_color'>";//display: block;
@@ -155,7 +162,7 @@ class PluginMetademandsFreetable extends CommonDBTM
         $field .= "</tr>";
 
         $style = "";
-
+        $stylereadonly = "style= \'white-space: nowrap;text-align: right;\'";
         if (is_array($values) && count($values) > 0) {
             foreach ($values as $value) {
                 $l = [
@@ -172,10 +179,12 @@ class PluginMetademandsFreetable extends CommonDBTM
 
                 foreach ($addfields as $k => $addfield) {
                     if (isset($l[$k])) {
-                        if ($types[$k] == 1) {
-                            $field .= "<td $style><input id=\"$k.'_'.$idline\" name=\"$k\" type = \"text\" value=\"$l[$k]\" size=\"$size\" disabled></td>";
-                        } else {
-                            $field .= "<td $style><select id=\"$k.'_'.$idline\" name=\"$k\">";
+                        if ($types[$k] == PluginMetademandsFreetablefield::TYPE_TEXT) {
+                            $id = $k.'_'.$idline;
+                            $field .= "<td $style><input id=\"$id\" name=\"$k\" type=\"text\" value=\"$l[$k]\" size=\"$size\" disabled></td>";
+                        } else if ($types[$k] == PluginMetademandsFreetablefield::TYPE_SELECT) {
+                            $id = $k.'_'.$idline;
+                            $field .= "<td $style><select id=\"$id\" name=\"$k\">";
 
                             foreach ($dropdown_values[$k] as $dropdown_value) {
                                 $selected = "";
@@ -185,30 +194,46 @@ class PluginMetademandsFreetable extends CommonDBTM
                                 $field .= "<option $selected value=\"$dropdown_value\">" . $dropdown_value . "</option>";
                             }
                             $field .= "</select></td>";
+                        } else if ($types[$k] == PluginMetademandsFreetablefield::TYPE_NUMBER) {
+                            $id = $k.'_'.$idline;
+                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"number\" min=\"0\" value=\"$l[$k]\" style=\"width: 10em;\" disabled></td>";
+                        }
+
+                        if (Plugin::isPluginActive('orderfollowup')) {
+                            $quantity = $l['quantity'];
+                            $unit_price = $l['unitprice'];
                         }
                     }
                 }
+                if (Plugin::isPluginActive('orderfollowup')) {
+                    $linetotal = number_format($quantity*$unit_price,2,'.', ' ');
+                    $field .= "<td $stylereadonly id=\"linetotal\">$linetotal €</td>";
+                }
 
-                $field .= "<td $style></td>";
                 $field .= "<td><button onclick =\"editLine$rand($idline)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"fas fa-pen\"></i></button></td>";
                 $field .= "<td><button onclick =\"removeLine$rand($idline)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"fas fa-trash\"></i></button></td>";
                 $field .= "</tr>";
                 $idline++;
 
-                $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['freetables'][$idline] = $l;
             }
         }
 
         $existLine = __('You can\'t create a new line when there is an existing one', 'metademands');
-        $style_td = "";
+
+        $orderfollowup_is_active = 0;
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $orderfollowup_is_active = 1;
+        }
 
         $field .= "<script>
                 function getNextIndex() {
                     const nb = localStorage.getItem('nextnb');
                     return nb ? parseInt(nb) : 0;
                 }
+                var orderfollowup_is_active = $orderfollowup_is_active;
+                
                 function addLine$rand() {
-                    
+                    var orderfollowup_is_active = $orderfollowup_is_active;
                     var fields = $encoded_fields;
                     var mandatory_fields = $mandatory_encoded_fields;
                     var type_fields = $types_encoded_fields;
@@ -223,8 +248,8 @@ class PluginMetademandsFreetable extends CommonDBTM
                             
                            $.each(fields,function(index, valuej){
                                if (type_fields[index] == 1) {
-                                   tabfields.push('<td><input id = \"' + index +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" ></td>');
-                               } else {
+                                   tabfields.push('<td><input id = \"' + index +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" ></td>');
+                               } else if (type_fields[index] == 2) {
                                    var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -237,6 +262,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
+                               } else if (type_fields[index] == 3) {
+                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" ></td>');
+                               } else if (type_fields[index] == 4  && orderfollowup_is_active) {
+                                   tabfields.push('<td></td>');
                                }
                                
                            });
@@ -259,8 +288,8 @@ class PluginMetademandsFreetable extends CommonDBTM
                             
                             $.each(fields,function(index, valuej){
                                if (type_fields[index] == 1) {
-                                   tabfields.push('<td><input id = \"' + index +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" ></td>');
-                               } else {
+                                   tabfields.push('<td><input id = \"' + index +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" ></td>');
+                               } else if (type_fields[index] == 2) {
                                    var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -273,6 +302,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
+                               } else if (type_fields[index] == 3) {
+                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" ></td>');
+                               } else if (type_fields[index] == 4  && orderfollowup_is_active) {
+                                   tabfields.push('<td></td>');
                                }
                            });
                              var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
@@ -296,6 +329,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                 
                 function confirmLine$rand (node) {
                     
+                    var orderfollowup_is_active = $orderfollowup_is_active;
                     var fields = $encoded_fields;
                     var type_fields = $types_encoded_fields;
                     var dropdown_values_fields = $dropdown_values_encoded_fields;
@@ -311,11 +345,21 @@ class PluginMetademandsFreetable extends CommonDBTM
                     $.each(fields,function(index, valuej){
                         if (type_fields[index] == 1) {
                             l[index] = elem_parent.find('input[name='+ index +']').val();
-                        } else {
+                        } else if (type_fields[index] == 2) {
                             l[index] = elem_parent.find('select[name='+ index +']').val();
+                        } else if (type_fields[index] == 3) {
+                            l[index] = elem_parent.find('input[name='+ index +']').val();
                         }
                     });
-
+                    var unit_price = elem_parent.find('input[name=unitprice]').val();
+                    var quantity = elem_parent.find('input[name=quantity]').val();
+                    //orderfollowup
+                    if (orderfollowup_is_active) {
+                        var total = quantity * unit_price;
+                        l[4] = total;
+                    }
+                    
+                    
                     let type = 'add';
 
                     $.each(data.lines, function (key, datas) {
@@ -345,7 +389,6 @@ class PluginMetademandsFreetable extends CommonDBTM
                     $.each(fields,function(index, valuej){
 
                         if (mandatory_fields.includes(index)) {
-                        
                             if (type_fields[index] == 1) {
                                 if (elem_parent.find('input[name='+ index +']').val() === '') {
                                     elem_parent.find('input[name=' + index +']').css('border-color', 'red');
@@ -353,7 +396,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                                 } else {
                                     elem_parent.find('input[name=' + index +']').css('border-color', '');
                                 }
-                            } else {
+                            } else if (type_fields[index] == 2) {
                                 var select = document.getElementById(index);
                                 if(select.selectedIndex != undefined) {
                                     var text = select.options[select.selectedIndex].text;
@@ -364,10 +407,21 @@ class PluginMetademandsFreetable extends CommonDBTM
                                         select.style.borderColor = '';
                                     }
                                 }
+                            } else if (type_fields[index] == 3) {
+                                if (elem_parent.find('input[name='+ index +']').val() == 0) {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
+                                    ko = 1;
+                                } else {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
+                                }
                             }
                         }
                         
                     });
+                    //orderfollowup
+                    if (orderfollowup_is_active) {
+                        total = Math.round((total + Number.EPSILON) * 100)/100;
+                    }
                     if (ko == 0) {
                         if ($('[id^=line_' + $rand + '_]').length == 0) {
                             
@@ -376,8 +430,8 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $.each(fields,function(index, valuej){
                                
                                if (type_fields[index] == 1) {
-                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else {
+                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               } else if (type_fields[index] == 2) {
                                    var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -390,6 +444,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
+                               } else if (type_fields[index] == 3) {
+                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" disabled ></td>');
+                               } else if (type_fields[index] == 4 && orderfollowup_is_active) {
+                                   //orderfollowup
+                                   tabfields.push('<td $stylereadonly id=\"linetotal\">' + total.toFixed(2) +' €</td>');
                                }
                                
                             });
@@ -408,9 +467,12 @@ class PluginMetademandsFreetable extends CommonDBTM
                                 if (type_fields[index] == 1) {
                                     $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
                                     elem_parent.find('input[name='+ index + ']').val('');
-                                } else {
+                                } else if (type_fields[index] == 2) {
                                     $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
                                     elem_parent.find('select[name='+ index + ']').val('');
+                                } else if (type_fields[index] == 3) {
+                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                    elem_parent.find('input[name='+ index + ']').val(0);
                                 }
                             });
 
@@ -421,8 +483,8 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $.each(fields,function(index, valuej){
                                
                                if (type_fields[index] == 1) {
-                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else {
+                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               } else if (type_fields[index] == 2) {
                                    var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -435,6 +497,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
+                               } else if (type_fields[index] == 3) {
+                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" disabled ></td>');
+                               } else if (type_fields[index] == 4 && orderfollowup_is_active) {
+                                   //orderfollowup
+                                   tabfields.push('<td $stylereadonly id=\"linetotal\">' + total.toFixed(2) +' €</td>');
                                }
                                
                             });
@@ -453,10 +520,12 @@ class PluginMetademandsFreetable extends CommonDBTM
                                     if (type_fields[index] == 1) {
                                         $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
                                         elem_parent.find('input[name='+ index + ']').val('');
-                                    } else {
+                                    } else if (type_fields[index] == 2) {
                                         $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
                                         elem_parent.find('select[name='+ index + ']').val('');
-                                    
+                                    } else if (type_fields[index] == 3) {
+                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                        elem_parent.find('input[name='+ index + ']').val(0);
                                     }
                                 });
 
@@ -467,8 +536,8 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $.each(fields,function(index, valuej){
 
                                if (type_fields[index] == 1) {
-                                   tabfields.push('<td $style><input id = \"' + index +'_' + ind +'\" type = \"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else {
+                                   tabfields.push('<td $style><input id = \"' + index +'_' + ind +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
+                               } else if (type_fields[index] == 2) {
                                    var select_open = '<td $style><select id = \"' + index +'_' + ind +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -481,6 +550,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
+                               } else if (type_fields[index] == 3) {
+                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 10em;\" disabled ></td>');
+                               } else if (type_fields[index] == 4 && orderfollowup_is_active) {
+                                   //orderfollowup
+                                   tabfields.push('<td $stylereadonly id=\"linetotal\">' + total.toFixed(2) +' €</td>');
                                }
                             });
                             tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + ind +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
@@ -496,8 +570,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $.each(fields,function(index, valuej){
                                 if (type_fields[index] == 1) {
                                     $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
-                                } else {
+                                } else if (type_fields[index] == 2) {
                                     $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('select[name='+ index +']').val());
+                                } else if (type_fields[index] == 3) {
+                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
                                 }
                             });
                           
@@ -508,33 +584,33 @@ class PluginMetademandsFreetable extends CommonDBTM
                            localStorage.setItem('nextnb', nb);
                            i++;
                        }
+                       //orderfollowup
+                       if (orderfollowup_is_active) {
+                           showConfirmButton();
+                       }
+                       
                     }
-//                    if (ko == 0) {
-//                        showConfirmButton$rand();
-//                    }
-                    
-                   
                 }
-                
-//                function showConfirmButton$rand() {
-//                    
-//                    var tabdatas =  $('[id^=line_' + $rand + '_]');
-//                    
-//                    if (tabdatas.length == 0) {
-//                         $('#add_freetables$rand').css('display', 'none');
-//                         $('#div_save_draft').css('display', 'none');
-//                         if ($('#button_save_mydraft')) {
-//                            $('#button_save_mydraft').css('display', 'none');
-//                         }
-//                         
-//                    } else {
-//                         $('#add_freetables$rand').css('display', 'inline-block');
-//                         $('#div_save_draft').css('display', 'inline-block');
-//                         if ($('#button_save_mydraft')) {
-//                            $('#button_save_mydraft').css('display', 'inline-block');
-//                         }
-//                    }
-//                }
+                //orderfollowup
+                function showConfirmButton(){
+                    var tabdatas =  $('[id^=line_]');
+                    $('#nextBtn').hide();
+                    
+                    if(tabdatas.length == 0){
+                         $('#add_freeinputs').css('display', 'none');
+                         $('#div_save_draft').css('display', 'none');
+                         if($('#button_save_mydraft')){
+                            $('#button_save_mydraft').css('display', 'none');
+                         }
+                         
+                    } else {
+                         $('#add_freeinputs').css('display', 'inline-block');
+                         $('#div_save_draft').css('display', 'inline-block');
+                         if($('#button_save_mydraft')){
+                            $('#button_save_mydraft').css('display', 'inline-block');
+                         }
+                    }
+                }
 
                 function removeLine$rand (l) {
                     $('#line_' + $rand + '_'+ l).remove();
@@ -601,42 +677,68 @@ class PluginMetademandsFreetable extends CommonDBTM
                     td.appendChild(button);
                     line.appendChild(td);
                 }
-//                $(document).ready(function() {
-//                    showConfirmButton$rand();
-//                });
+                //orderfollowup
+                if (orderfollowup_is_active) {
+                    $(document).ready(function() {
+                        showConfirmButton();
+                    });
+                }
+                
                 var data = {
                           lines$rand:[]
                         };
                 var i = 0;
                 </script>";
-//validate list why ? for other plugin - let's in place
-//        $msg = __('List validated', 'metademands');
-//        $colspan = $colspan + $colspanfields;
-//        $field .= "<script>
-//                    function saveInput$rand() {
-//                        i = 0;
-//                        $('[id^=line_' + $rand + '_]').each(function (){
-//                             i++;
-//                        });
-//                        $('[id^=line_' + $rand + '_]').css('background-color', '#eeeeee');
-//                        if (!document.querySelector('#tr_valid$rand')) {
-//                           $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last').after('<tr id=\"tr_valid$rand\" $style><th style=\"text-align: center;\" colspan=\"$colspan\">$msg</th></tr>');
-//                        }
-////                        $('#nextBtn').show();
-//                    }
-//
-//               </script>";
-
-
-//        $field .= "<tr>";
-//        $field .= "<td colspan='$colspan' style ='text-align:center;'>";
-//        $field .= "<button onclick='saveInput$rand()' type = 'button' id='add_freetables$rand' class='btn btn-success' style='display: none;'>";
-//        $field .= "<span>" . __('Validate the list', 'metademands') . "</span>";
-//        $field .= "</button>";
-//        $field .= "</td>";
-//        $field .= "</tr>";
 
         $field .= "</table>";
+
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $conf = new PluginOrderfollowupConfig();
+            $conf->getFromDB(1);
+            $tva = $conf->fields['use_tva'] ?? "20";
+            $tva_calc = $tva / 100;
+            $grandtotal = __('Grand total (TTC)', 'orderfollowup');
+            $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
+            $field .= "<script>
+                    function saveInput() {
+                        var grandtotal = 0;
+                        var tva = $tva_calc;
+                        i = 0;
+                        $('[id^=line_]').each(function (){
+                             i++;
+                             grandtotal += $(this).find('[id^=unitprice_]').val() * $(this).find('[id^=quantity_]').val();
+                             grandtotalht = grandtotal / (1 + tva);
+                        });
+
+                        $('[id^=line_]').css('background-color', '#eeeeee');
+                        let tr_grantotal = document.getElementById('grandtotal');
+                        if (tr_grantotal == null) {
+                            grandtotalht = grandtotal / (1 + tva);
+                             $('#freetable_table$rand tr[id^=line_]:last').after('<tr $style id=\"grandtotal\">' +
+                         '<th colspan=\"6\" $style > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
+                          '<tr $style id=\"grandtotalht\">' +
+                         '<th colspan=\"6\" $style > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
+                        } else {
+
+                           $('#amount_grandtotal').text(grandtotal.toFixed(2) +' €');
+                           $('#amount_grandtotalht').text(grandtotalht.toFixed(2)+' €');
+                        }
+                        $('#nextBtn').show();
+                    }
+               </script>";
+
+            $field .= "<table class='tab_cadre' width='100%' style='overflow: auto;width:100%;$background_color'>";
+            $field .= "<tr class='tab_bg_1'>";
+            $field .= "<td colspan='8' style ='text-align:center;'>";
+            $field .= "<button onclick='saveInput()' type = 'button' id='add_freeinputs' class='btn btn-primary' style='display: none;'>";
+            $field .= "<span>" . __('Validate the basket', 'orderfollowup') . "</span>";
+            $field .= "</button>";
+            $field .= "</td>";
+            $field .= "</tr>";
+            $field .= "</table>";
+        }
+
+
 
         echo $field;
     }
@@ -706,7 +808,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                     echo "</span>";
                     echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
                     echo "</td>";
-                } else {
+                } else if ($value['type'] == PluginMetademandsFreetablefield::TYPE_SELECT) {
                     echo "<td class='rowhandler control left'>";
                     echo "<span id='dropdown_values$key'>";
                     echo " " . __('Dropdown values', 'metademands') . " ";
@@ -723,6 +825,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                     ]);
                     echo "</span>";
                     echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
+                    echo "</td>";
+                } else if ($value['type'] == PluginMetademandsFreetablefield::TYPE_NUMBER) {
+                    echo "<td class='rowhandler control left'>";
+                    echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
+                    echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
                     echo "</td>";
                 }
 
@@ -853,6 +960,13 @@ class PluginMetademandsFreetable extends CommonDBTM
                                 )] = $value;
                             }
                         }
+                        //TODO
+//                        if (Plugin::isPluginActive('orderfollowup')) {
+//                            $total = $item['unitprice'] * $item['quantity'];
+//                            $values[$id][Toolbox::decodeFromUtf8(
+//                                __('Total (TTC)', 'orderfollowup')
+//                            )] = Html::formatNumber($total, false, 2);
+//                        }
                     }
                 }
             }
@@ -918,7 +1032,9 @@ class PluginMetademandsFreetable extends CommonDBTM
         if ($nb == 6) {
             $colspan = 2;
         }
-
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $total = 0;
+        }
         if (isset($_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['freetables'][$field['id']])) {
             $freetables = $_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['freetables'][$field['id']];
 
@@ -936,6 +1052,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                     $content .= "<tr>";
                     foreach ($addfields as $k => $addfield) {
                         $content .= "<th $style_td colspan='$colspan'>" . $addfield . "</th>";
+                    }
+                    if (Plugin::isPluginActive('orderfollowup')) {
+                        $content .= "<th $style_td>" . __('Total (TTC)', 'orderfollowup') . "</th>";
                     }
                     $content .= "</tr>";
                 }
@@ -960,14 +1079,41 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $content .= "</td>";
                         }
                     }
+                    if (Plugin::isPluginActive('orderfollowup')) {
+                        if ($formatAsTable) {
+                            $content .= "<td $style_td>";
+                        }
+                        $totalrow = floatval($fi['quantity']) * floatval($fi['unitprice']);
+                        $content .= Html::formatNumber($totalrow, false, 2) . " €";
+                        if ($formatAsTable) {
+                            $content .= "</td>";
+                        }
+                        $total += $totalrow;
+                    }
                     if ($formatAsTable) {
                         $content .= "</tr>";
                     }
                 }
             }
-            $result[$field['rank']]['content'] .= $content;
+
         }
 
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $grandtotal = __('Grand total (TTC)', 'orderfollowup');
+            $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
+            $content .= "<tr>";
+            $content .= "<th $style_td colspan='10'>" . $grandtotal . "</th>";
+            $content .= "<td $style_td>" . Html::formatNumber($total, false, 2) . " €</td></tr>";
+            $content .= "<tr>";
+            $content .= "<th $style_td colspan='10'>" . $grandtotalHT . "</th>";
+            $conf = new PluginOrderfollowupConfig();
+            $conf->getFromDB(1);
+            $tva = $conf->fields['use_tva'] ?? "20";
+            $totalHT = $total / (1 + ($tva / 100));
+            $content .= "<td $style_td>" . Html::formatNumber($totalHT, false, 2) . " €</td></tr>";
+        }
+
+        $result[$field['rank']]['content'] .= $content;
 
         return $content;
     }

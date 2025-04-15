@@ -2126,6 +2126,8 @@ JAVASCRIPT
         $ticket_exists_array = [];
         $config = PluginMetademandsConfig::getInstance();
 
+        unset($values['freetables']);
+
         $itilcategory = 0;
         if (isset($values['field_plugin_servicecatalog_itilcategories_id'])) {
             $itilcategory = $values['field_plugin_servicecatalog_itilcategories_id'];

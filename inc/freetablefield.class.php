@@ -44,6 +44,8 @@ class PluginMetademandsFreetablefield extends CommonDBChild
 
     const TYPE_TEXT                 = 1;
     const TYPE_SELECT               = 2;
+    const TYPE_NUMBER               = 3;
+    const TYPE_READONLY              = 4;
 
     static function getTypeName($nb = 0)
     {
@@ -126,6 +128,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         }
         $types[self::TYPE_TEXT] = __('Text', 'metademands');
         $types[self::TYPE_SELECT] = __('Dropdown', 'metademands');
+        $types[self::TYPE_NUMBER] = __('Number', 'metademands');
         return $types;
     }
 
@@ -359,7 +362,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
             for (var j = 0; j < span_text.length; j++) {
                 span_text[j].style.display = 'initial';
             }
-        } else {
+        } else if (type == 2) {
             var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
             for (var h = 0; h < span_dropdowns.length; h++) {
                 span_dropdowns[h].style.display = 'initial';
@@ -367,9 +370,14 @@ class PluginMetademandsFreetablefield extends CommonDBChild
             var span_text = document.getElementsByClassName('newcomment$rank');
             for (var m = 0; m < span_text.length; m++) {
                 span_text[m].style.display = 'none';
-            }        
-        
-        }";
+            }
+        } else if (type == 3) {
+            var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
+            for (var i = 0; i < span_dropdowns.length; i++) {
+                span_dropdowns[i].style.display = 'none';
+            }
+        }
+        ";
         echo "};";
         echo "</script>";
         echo "</span>";

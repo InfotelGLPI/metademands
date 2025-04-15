@@ -1180,7 +1180,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             break;
 
-                        case 'free_input':
+                        case 'freetable' :
                             if (Plugin::isPluginActive('orderfollowup')) {
                                 $ordermaterialmeta = new PluginOrderfollowupMetademand();
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
@@ -1196,30 +1196,30 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                         $this->BasicTableFreeInputs($header,$data, '');
                                     }
                                 }
-                            }
-                            break;
-                        case 'freetable' :
-                            $items = PluginMetademandsFreetable::displayFieldPDF($elt,$fields, $label);
-                            $data = [];
+                            } else {
+                                $items = PluginMetademandsFreetable::displayFieldPDF($elt,$fields, $label);
+                                $data = [];
 
-                            if (count($items)) {
-                                foreach ($items as $field_id => $values) {
-                                    if ($field_id == $elt['id']) {
-                                        foreach ($values as $id => $table) {
-                                            foreach ($table as $title => $value) {
-                                                $header[$field_id][] = $title;
-                                                $data[$id][] = $value;
+                                if (count($items)) {
+                                    foreach ($items as $field_id => $values) {
+                                        if ($field_id == $elt['id']) {
+                                            foreach ($values as $id => $table) {
+                                                foreach ($table as $title => $value) {
+                                                    $header[$field_id][] = $title;
+                                                    $data[$id][] = $value;
+                                                }
                                             }
                                         }
                                     }
+
+                                    $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, "", 'LRBT', 'L', '', 0, '', 'black');
+                                    $header = end($header);
+                                    $header = array_unique($header);
+
+                                    $this->BasicTableFreeTable($header,$data, $label);
                                 }
-
-                                $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, "", 'LRBT', 'L', '', 0, '', 'black');
-                                $header = end($header);
-                                $header = array_unique($header);
-
-                                $this->BasicTableFreeTable($header,$data, $label);
                             }
+
                             break;
                         default:
                             if (isset($PLUGIN_HOOKS['metademands'])) {
