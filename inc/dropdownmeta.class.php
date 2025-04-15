@@ -185,8 +185,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                             if (Plugin::isPluginActive($plug)) {
-                                $field .= self::getPluginDropdownItilcategory($plug, $opt);
-                                $pass = false;
+                                if ($field .= self::getPluginDropdownItilcategory($plug, $opt)) {
+                                    $pass = false;
+                                }
                             }
                         }
                     }

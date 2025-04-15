@@ -201,7 +201,7 @@ class PluginMetademandsFreetable extends CommonDBTM
 
                         if (Plugin::isPluginActive('orderfollowup')) {
                             $quantity = $l['quantity'];
-                            $unit_price = $l['unitprice'];
+                            $unit_price = $l['unit_price'];
                         }
                     }
                 }
@@ -351,7 +351,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                             l[index] = elem_parent.find('input[name='+ index +']').val();
                         }
                     });
-                    var unit_price = elem_parent.find('input[name=unitprice]').val();
+                    var unit_price = elem_parent.find('input[name=unit_price]').val();
                     var quantity = elem_parent.find('input[name=quantity]').val();
                     //orderfollowup
                     if (orderfollowup_is_active) {
