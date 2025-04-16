@@ -382,22 +382,22 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
 
                 $onchange .= "$.each( tohide, function( key, value ) {
-                        if (value == true) {
-                            var id = '#metademands_wizard_red'+ key;
-                            $(id).html('');
-                            sessionStorage.setItem('hiddenlink$name', key);
-                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                            $('[name =\"field['+key+']\"]').removeAttr('required');
-                        } else {
-                             var id = '#metademands_wizard_red'+ key;
-                             var fieldid = 'field'+ key;
-                             $(id).html('*');
-                             $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                             //Special case Upload field
-                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
-                        }
-                    });";
+                                if (value == true) {
+                                    var id = '#metademands_wizard_red'+ key;
+                                    $(id).html('');
+                                    sessionStorage.setItem('hiddenlink$name', key);
+                                    " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                    $('[name =\"field['+key+']\"]').removeAttr('required');
+                                } else {
+                                     var id = '#metademands_wizard_red'+ key;
+                                     var fieldid = 'field'+ key;
+                                     $(id).html('*');
+                                     $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                     //Special case Upload field
+                                          sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                         " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
+                                }
+                            });";
             }
 
             if (count($display) > 0) {
@@ -740,7 +740,6 @@ class PluginMetademandsRadio extends CommonDBTM
                         tohide[$hidden_block] = false;
                     }";
 
-
                     $onchange .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
                          var id = 'ablock'+ key;
@@ -749,33 +748,33 @@ class PluginMetademandsRadio extends CommonDBTM
                          $('[bloc-id =\"bloc'+ key +'\"]').hide();
                          $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                          sessionStorage.setItem('hiddenbloc$name', key);
+
                         " . PluginMetademandsFieldoption::setEmptyBlockFields($name) . "";
-                    $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
-                    $onchange .= "$hidden";
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                document.getElementById('ablock" . $childs . "').style.display = 'none';
-                                $('[bloc-id =\"bloc" . $childs . "\"]').hide();";
+                        $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
+                        $onchange .= "$hidden";
+                        if (is_array($childs_by_checkvalue)) {
+                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                if ($idc == $k) {
+                                    foreach ($childs_blocks as $childs) {
+                                        $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                    document.getElementById('ablock" . $childs . "').style.display = 'none';
+                                    $('[bloc-id =\"bloc" . $childs . "\"]').hide();";
+                                    }
                                 }
                             }
                         }
-                    }
-                    $onchange .= "} else {
-                        var id = 'ablock'+ key;
-                         if (document.getElementById(id))
-                         document.getElementById(id).style.display = 'block';
-                         $('[bloc-id =\"bloc'+ key +'\"]').show();
-                         $('[bloc-id =\"subbloc'+ key +'\"]').show();
-                        ";
+                        $onchange .= "} else {
+                            var id = 'ablock'+ key;
+                             if (document.getElementById(id))
+                             document.getElementById(id).style.display = 'block';
+                             $('[bloc-id =\"bloc'+ key +'\"]').show();
+                             $('[bloc-id =\"subbloc'+ key +'\"]').show();
+                            ";
 
-                    $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                    $onchange .= "$hidden";
-                    $onchange .= "}
-                });
+                        $onchange .= "}
+                    });
           ";
 
                     if (isset($data['value']) && is_array($data['value'])) {

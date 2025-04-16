@@ -8275,6 +8275,9 @@ JAVASCRIPT
         $temp = new PluginMetademandsMetademandTask();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
+        $temp = new PluginMetademandsTask();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
         $temp = new PluginMetademandsField();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
@@ -8290,6 +8293,9 @@ JAVASCRIPT
         $temp = new PluginMetademandsGroup();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
+        $temp = new PluginMetademandsGroupConfig();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
         $temp = new PluginMetademandsMetademand_Resource();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
@@ -8299,11 +8305,27 @@ JAVASCRIPT
         $temp = new PluginMetademandsMetademandValidation();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
+        $temp = new PluginMetademandsDraft();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsPluginfields();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
         $temp = new PluginMetademandsForm();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
-        $temp = new PluginMetademandsDraft();
+        $temp = new PluginMetademandsStepform();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsStep();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsConfigstep();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsCondition();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
     }
 
     /**

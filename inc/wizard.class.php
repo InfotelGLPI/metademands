@@ -1651,7 +1651,8 @@ class PluginMetademandsWizard extends CommonDBTM
             }
 
             $displayBlocksAsTab = 0;
-            if ($stepConfig->fields['see_blocks_as_tab'] == 1) {
+            if (isset($stepConfig->fields['see_blocks_as_tab'])
+                && $stepConfig->fields['see_blocks_as_tab'] == 1) {
                 $displayBlocksAsTab = 1;
             }
             //Prepare subblocks
@@ -2293,7 +2294,8 @@ class PluginMetademandsWizard extends CommonDBTM
         $displayBlocksAsTab = 0;
         $stepConfig = new PluginMetademandsConfigstep();
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands->getID()]);
-        if ($stepConfig->fields['see_blocks_as_tab'] == 1) {
+        if (isset($stepConfig->fields['see_blocks_as_tab'])
+            && $stepConfig->fields['see_blocks_as_tab'] == 1) {
             $displayBlocksAsTab = 1;
         }
 //        if ($displayBlocksAsTab == 1) {
@@ -2826,8 +2828,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                             if (document.getElementById('nextBtn').innerHTML == submittitle) {
                                                document.getElementById('nextBtn').style.display = 'none';
                                             }
+                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
+                                                document.getElementById('nextBtn').style.display = 'none';
+                                            }
                                           } else {
                                             if (document.getElementById('nextBtn').innerHTML == submittitle){
+                                                document.getElementById('nextBtn').style.display = 'inline';
+                                            }
+                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
                                           }
@@ -2836,8 +2844,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                             if (document.getElementById('nextBtn').innerHTML == submittitle) {
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
+                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
+                                                document.getElementById('nextBtn').style.display = 'inline';
+                                            }
                                          } else {
                                             if (document.getElementById('nextBtn').innerHTML == submittitle) {
+                                                document.getElementById('nextBtn').style.display = 'none';
+                                            }
+                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
                                                 document.getElementById('nextBtn').style.display = 'none';
                                             }
                                          }

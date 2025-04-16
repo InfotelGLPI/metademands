@@ -2002,7 +2002,16 @@ class PluginMetademandsFieldOption extends CommonDBChild
     public static function resetMandatoryBlockFields($name)
     {
         return "var blocid = sessionStorage.getItem('hiddenbloc$name');
-        $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
+                                     $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
+                                     switch(this.type) {
+                                            case 'checkbox':
+                                            case 'radio':
+                                                var checkname = this.name;
+                                                $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                        }
+                                        jQuery(this).removeAttr('required');
+                                    });
+                                    $('div[bloc-id=\"subbloc' + blocid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'checkbox':
                                             case 'radio':
@@ -2018,7 +2027,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     public static function setEmptyBlockFields($name)
     {
         return "var blocid = sessionStorage.getItem('hiddenbloc$name');
-        $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
+                                $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -2037,7 +2046,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 break;
                                             case 'select-one':
                                             case 'select-multiple':
-                                                //jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0').trigger('change');
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
@@ -2052,8 +2061,42 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                            $('#'+found[0]+'_leftAll').click();
                                         }
                                     });
-                                    fixButtonIndicator();
-                                    ";
+                                    $('div[bloc-id=\"subbloc' + blocid + '\"]').find(':input').each(function() {
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'range':
+                                            case 'tel':
+                                            case 'email':
+                                            case 'url':
+                                                jQuery(this).val('');
+                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                    tinymce.get(this.id).setContent('');
+                                                }
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                 this.checked = false;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
+                                fixButtonIndicator();
+                            ";
     }
 
 
@@ -2096,7 +2139,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     {
 
         return "var fieldid = sessionStorage.getItem('hiddenlink$name');
-        $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
+                            $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -2132,7 +2175,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                            found = totest.match(regex);
                                            $('#'+found[0]+'_leftAll').click();
                                         }
-                                    });";
+                            });";
     }
 
     public static function checkMandatoryFile($fields_link, $name)
