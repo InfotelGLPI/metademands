@@ -823,8 +823,8 @@ class PluginMetademandsField extends CommonDBChild
                 'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 'change_type' => 1
             ];
-            if ($randItem) {
-                $paramsType['rand'] = $randItem;
+            if ($randType) {
+                $paramsType['rand'] = $randType;
             }
             Ajax::updateItemOnSelectEvent(
                 'dropdown_type' . $randType,
@@ -859,8 +859,8 @@ class PluginMetademandsField extends CommonDBChild
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                     'change_type' => 1
                 ];
-                if ($randItem) {
-                    $paramsType['rand'] = $randItem;
+                if ($randType) {
+                    $paramsType['rand'] = $randType;
                 }
                 Ajax::updateItemOnSelectEvent(
                     'dropdown_type' . $randType,
@@ -890,8 +890,8 @@ class PluginMetademandsField extends CommonDBChild
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                         'change_type' => 1
                     ];
-                    if ($randItem) {
-                        $paramsType['rand'] = $randItem;
+                    if ($randType) {
+                        $paramsType['rand'] = $randType;
                     }
                     Ajax::updateItemOnSelectEvent(
                         'dropdown_type' . $randType,
