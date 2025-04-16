@@ -122,8 +122,8 @@ if (isset($_POST["add"])) {
         $_POST["item"] = 'radio';
     }
 
-    if (($_POST["type"] == 'dropdown_meta')
-    && ($_POST["item"] = 'radio' || $_POST["item"] == 'checkbox')) {
+    if (($_POST["type"] == 'dropdown_meta' || $_POST["type"] == 'dropdown_multiple')
+    && ($_POST["item"] == 'radio' || $_POST["item"] == 'checkbox')) {
         $_POST["item"] = 'other';
     }
 
@@ -134,7 +134,7 @@ if (isset($_POST["add"])) {
     //convert radio | checkbox to dropdown_meta - other
     if (isset($_POST["type"]) && isset($_POST['item'])
         && $_POST["type"] == $_POST["item"]
-        && ($_POST["item"] == "dropdown_meta")) {
+        && ($_POST["item"] == "dropdown_meta" || $_POST["item"] == "dropdown_multiple")) {
         $_POST['item'] = "other";
     }
 

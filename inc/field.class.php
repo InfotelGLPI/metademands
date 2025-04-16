@@ -734,6 +734,7 @@ class PluginMetademandsField extends CommonDBChild
                 if (in_array($this->fields["item"], PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
                     echo self::getFieldTypesName($this->fields['type']);
                     echo Html::hidden('type', ['value' => $this->fields['type']]);
+                    $randType = mt_rand();
                 } else {
                     $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
                         'value' => $this->fields["type"],
@@ -859,7 +860,7 @@ class PluginMetademandsField extends CommonDBChild
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                     'change_type' => 1
                 ];
-                if ($randType) {
+                if (isset($randType)) {
                     $paramsType['rand'] = $randType;
                 }
                 Ajax::updateItemOnSelectEvent(
@@ -872,6 +873,7 @@ class PluginMetademandsField extends CommonDBChild
 
                 echo "<span id='show_item_title' style='display:none'>";
             } elseif ($this->fields["type"] == "dropdown_multiple") {
+                $randType = mt_rand();
                 if ($this->fields["type"] == "dropdown_multiple" && $this->fields["item"] == "other") {
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                     echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
@@ -890,7 +892,7 @@ class PluginMetademandsField extends CommonDBChild
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                         'change_type' => 1
                     ];
-                    if ($randType) {
+                    if (isset($randType)) {
                         $paramsType['rand'] = $randType;
                     }
                     Ajax::updateItemOnSelectEvent(
