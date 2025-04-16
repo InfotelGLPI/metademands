@@ -2894,7 +2894,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      //... and run a function that will display the correct step indicator:
                      if (use_as_step == 1) {
                         fixStepIndicator(n);
-                        fixButtonIndicator(n);
+                        fixButtonIndicator();
                      }
                   }
                   function findFirstTab(block_id) {
