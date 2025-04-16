@@ -353,8 +353,11 @@ class PluginMetademandsRadio extends CommonDBTM
 
             //Si la valeur est en session
             //specific
-            if (isset($data['value'])) {
-                $pre_onchange .= "$('[id=\"field[" . $id . "][" . $data['value'] . "]\"]').prop('checked', true).trigger('change');";
+            if (isset($data['value']) && is_array($data['value'])) {
+                $values = $data['value'];
+                foreach ($values as $value) {
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                }
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
@@ -706,17 +709,6 @@ class PluginMetademandsRadio extends CommonDBTM
             if (!isset($data['value'])) {
                 $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
             }
-
-
-            //Si la valeur est en session
-            //specific
-            if (isset($data['value'])) {
-                if (isset($check_values[$data['value']]['hidden_block'])) {
-                    $pre_onchange .= "$('[bloc-id =\"bloc" . $check_values[$data['value']]['hidden_block'] . "\"]').show();
-                                        $('[bloc-id =\"subbloc" . $check_values[$data['value']]['hidden_block'] . "\"]').show();";
-                }
-            }
-
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 

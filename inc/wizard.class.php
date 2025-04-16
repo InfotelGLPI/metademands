@@ -1616,15 +1616,17 @@ class PluginMetademandsWizard extends CommonDBTM
                         if (use_as_step == 1) {
 
                             const asArray = Array.from(x);
-                            const displayed = asArray.find(e => e.style.display != 'none');
+                            const displayed = asArray.find(e => e.style.display == 'block');
+                            
                             let nextTab = asArray.indexOf(displayed) + 1;
 
                             while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                                 nextTab = nextTab + 1;
                             }
-                    
+                     
                             if (x[nextTab] != undefined) {
                                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+                               
                                 let id_bloc = parseInt(bloc.replace('bloc', ''));
                                 
                                 if (typeof metademands !== 'undefined') {
@@ -1634,7 +1636,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
                             }
                             if (typeof metademands !== 'undefined') {
-
                                 if (nextTab >= x.length) {
                                     document.getElementById('nextBtn').innerHTML = metademands.submittitle;
                                 } else {
@@ -2893,7 +2894,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      //... and run a function that will display the correct step indicator:
                      if (use_as_step == 1) {
                         fixStepIndicator(n);
-                        fixButtonIndicator();
+                        fixButtonIndicator(n);
                      }
                   }
                   function findFirstTab(block_id) {

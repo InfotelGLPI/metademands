@@ -259,8 +259,12 @@ class PluginMetademandsYesno extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
-                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+            //specific
+            if (isset($data['value']) && is_array($data['value'])) {
+                $values = $data['value'];
+                foreach ($values as $value) {
+                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                }
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;"._sx('button', 'Save & Post', 'metademands');
