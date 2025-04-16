@@ -360,7 +360,7 @@ class PluginMetademandsRadio extends CommonDBTM
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $onchange .= "var tohide = {};";
-            $display = 0;
+            $display = [];
             foreach ($check_values as $idc => $check_value) {
                 $fields_link = $check_value['fields_link'];
 
@@ -372,8 +372,13 @@ class PluginMetademandsRadio extends CommonDBTM
                             tohide[$fields_link] = false;
                         }";
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $fields_link;
+                if (isset($data['value']) && is_array($data['value'])) {
+                    $values = $data['value'];
+                    foreach ($values as $value) {
+                        if ($idc == $value) {
+                            $display[] = $fields_link;
+                        }
+                    }
                 }
 
                 $onchange .= "$.each( tohide, function( key, value ) {
@@ -395,8 +400,10 @@ class PluginMetademandsRadio extends CommonDBTM
                     });";
             }
 
-            if ($display > 0) {
-                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+            if (count($display) > 0) {
+                foreach ($display as $see) {
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
+                }
             }
 
             $onchange .= "});";
@@ -426,8 +433,11 @@ class PluginMetademandsRadio extends CommonDBTM
 
             //Si la valeur est en session
             //specific
-            if (isset($data['value'])) {
-                $script2 .= "$('[id=\"field[" . $id . "][".$data['value']."]\"]').prop('checked', true);";
+            if (isset($data['value']) && is_array($data['value'])) {
+                $values = $data['value'];
+                foreach ($values as $value) {
+                    $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
+                }
             }
 
 
@@ -556,14 +566,17 @@ class PluginMetademandsRadio extends CommonDBTM
 
             //Si la valeur est en session
             //specific
-            if (isset($data['value'])) {
-                $pre_onchange .= "$('[id=\"field[" . $id . "][" . $data['value'] . "]\"]').prop('checked', true).trigger('change');";
+            if (isset($data['value']) && is_array($data['value'])) {
+                $values = $data['value'];
+                foreach ($values as $value) {
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                }
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $onchange .= "var tohide = {};";
-            $display = 0;
+            $display = [];
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
 
@@ -575,8 +588,13 @@ class PluginMetademandsRadio extends CommonDBTM
                             tohide[$hidden_link] = false;
                         }";
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_link;
+                if (isset($data['value']) && is_array($data['value'])) {
+                    $values = $data['value'];
+                    foreach ($values as $value) {
+                        if ($idc == $value) {
+                            $display[] = $hidden_link;
+                        }
+                    }
                 }
 
                 $onchange .= "$.each( tohide, function( key, value ) {
@@ -591,9 +609,11 @@ class PluginMetademandsRadio extends CommonDBTM
                     });";
             }
 
-            if ($display > 0) {
-                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+            if (count($display) > 0) {
+                foreach ($display as $see) {
+                    $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
+                }
             }
 
             $onchange .= "});";
@@ -702,7 +722,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
             $onchange .= "var tohide = {};";
 
-            $display = 0;
+            $display = [];
             foreach ($check_values as $idc => $check_value) {
                 $blocks_idc = [];
                 $hidden_block = $check_value['hidden_block'];
@@ -758,8 +778,13 @@ class PluginMetademandsRadio extends CommonDBTM
                 });
           ";
 
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_block;
+                    if (isset($data['value']) && is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            if ($idc == $value) {
+                                $display[] = $hidden_block;
+                            }
+                        }
                     }
 
                     if ($data["item"] == "ITILCategory_Metademands") {
@@ -773,20 +798,18 @@ class PluginMetademandsRadio extends CommonDBTM
                     }
                 }
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_block;
-                }
-
 
                 $onchange .= " }";
 
             }
 
-            if ($display > 0) {
-                $pre_onchange .= "if (document.getElementById('ablock" . $display . "'))
-                                document.getElementById('ablock" . $display . "').style.display = 'block';
-                                $('[bloc-id =\"bloc" . $display . "\"]').show();
-                                $('[bloc-id =\"subbloc" . $display . "\"]').show();";
+            if (count($display) > 0) {
+                foreach ($display as $see) {
+                    $pre_onchange .= "if (document.getElementById('ablock" . $see . "'))
+                    document.getElementById('ablock" . $see . "').style.display = 'block';
+                    $('[bloc-id =\"bloc" . $see . "\"]').show();
+                    $('[bloc-id =\"subbloc" . $see . "\"]').show();";
+                }
             }
 
             $onchange .= "fixButtonIndicator();
