@@ -671,3 +671,15 @@ textarea.invalid,
     background: #ffffff;
     border-bottom-color: transparent;
 }
+
+.info-alert-info {
+    color: #80abe4;
+}
+
+.info-alert-warning {
+    color: #f76707;
+}
+
+.info-alert-danger {
+    color: #d63939;
+}

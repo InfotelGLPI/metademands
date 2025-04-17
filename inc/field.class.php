@@ -2459,9 +2459,9 @@ border-style: none !important; border-color: initial !important;border-image: in
             && $data['type'] != 'title') {
             if (isset($data['row_display'])
                 && $data['row_display'] == 1) {
-                $bottomclass = "col-md-12 md-bottom";
+                $bottomclass = "col-md-12";
             } else {
-                $bottomclass = "col-md-6 md-bottom";
+                $bottomclass = "col-md-6";
             }
         }
         if (isset($data['row_display'])
@@ -2606,7 +2606,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             }
 
             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                echo "</div><div class=\"form-group col-md-6 md-bottom\">";
+                echo "</div><div class=\"form-group col-md-6\">";
             }
             if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));

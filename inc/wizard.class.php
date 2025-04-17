@@ -2398,7 +2398,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($subfields as $checkvalue => $subfield) {
                         $subs = $subblocks_data[$subfield] ?? [];
                         if (count($subs) > 0) {
-                            echo "<div class='col-md-12 md-bottom form-group row' bloc-id='subbloc" . $subfield . "'>";
+                            echo "<div class='col-md-12 form-group row' bloc-id='subbloc" . $subfield . "'>";
 
                             foreach ($subs as $k => $sub) {
                                 self::displayBlockFields(

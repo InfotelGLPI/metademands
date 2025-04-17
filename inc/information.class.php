@@ -58,13 +58,15 @@ class PluginMetademandsInformation extends CommonDBTM
     {
 
         $field = '';
-
+        $iconcolor = "info-alert-info";
         $display = "alert-info";
         if ($data["display_type"] == 2) {
             $display = "alert-warning";
+            $iconcolor = "info-alert-warning";
         }
         if ($data["display_type"] == 3) {
             $display = "alert-danger";
+            $iconcolor = "info-alert-danger";
         }
         $class = "class='alert $display alert-dismissible fade show informations'";
         $field .= "<div $class style='display:flex;align-items: center;'>";
@@ -96,7 +98,7 @@ class PluginMetademandsInformation extends CommonDBTM
             $icon = $data['icon'];
             $color = $data['color'];
             if ($icon) {
-                $field .= "<div style='margin-right: 20px;'><i class='fas fa-2x $icon' style='color: $color;vertical-align: top;'></i></div>";
+                $field .= "<div style='margin-right: 20px;'><i class='fas fa-2x $icon $iconcolor' style='vertical-align: top;'></i></div>";
             }
             $field .= "<div style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</div>";
         }
