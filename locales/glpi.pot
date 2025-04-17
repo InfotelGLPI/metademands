@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 08:31+0000\n"
+"POT-Creation-Date: 2025-04-17 09:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1208,7 +1208,7 @@ msgid "Internal name"
 msgstr ""
 
 #: inc/freetable.class.php:808 inc/freetablefield.class.php:349
-#: inc/information.class.php:162
+#: inc/information.class.php:164
 msgid "Type"
 msgstr ""
 
@@ -1294,15 +1294,15 @@ msgstr ""
 msgid "Informations"
 msgstr ""
 
-#: inc/information.class.php:166
+#: inc/information.class.php:168
 msgid "Information"
 msgstr ""
 
-#: inc/information.class.php:167
+#: inc/information.class.php:169
 msgid "Warning"
 msgstr ""
 
-#: inc/information.class.php:168
+#: inc/information.class.php:170
 msgid "Alert"
 msgstr ""
 
