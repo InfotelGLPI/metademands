@@ -1193,7 +1193,7 @@ class PluginMetademandsField extends CommonDBChild
             echo "<div class='tabs-container'>";
             echo "<button class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
             echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
-            echo "<ul class='nav nav-tabs flex-nowrap' role='tablist' id='fieldslist'>";
+            echo "<ul class='nav nav-tabs flex-nowrap' style='border-bottom:unset' role='tablist' id='fieldslist'>";
 
             foreach ($blocks as $idblock => $block) {
                 $nameblock = $block;
@@ -2459,9 +2459,9 @@ border-style: none !important; border-color: initial !important;border-image: in
             && $data['type'] != 'title') {
             if (isset($data['row_display'])
                 && $data['row_display'] == 1) {
-                $bottomclass = "col-md-12";
+                $bottomclass = "col-md-12 md-bottom";
             } else {
-                $bottomclass = "col-md-6";
+                $bottomclass = "col-md-6 md-bottom";
             }
         }
         if (isset($data['row_display'])
@@ -2606,7 +2606,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             }
 
             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                echo "</div><div class=\"form-group col-md-6\">";
+                echo "</div><div class=\"form-group col-md-6 md-bottom\">";
             }
             if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));

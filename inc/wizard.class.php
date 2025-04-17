@@ -1770,8 +1770,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (count($blocks) > 0) {
                     echo "<div class='tabs-container'>";
                     echo "<button form='' class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
-                    echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
-                    echo "<ul class='nav nav-tabs flex-nowrap' role='tablist' id='fieldslist'>";
+                    echo "<div class='d-flex flex-nowrap scrollable-tabs'>";
+                    echo "<ul class='nav nav-tabs flex-nowrap' style='border-bottom:unset' role='tablist' id='fieldslist'>";
                     $hiddenblocks = [];
                     foreach ($blocks as $idblock => $block) {
                         $nameblock = $block;
@@ -2398,7 +2398,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($subfields as $checkvalue => $subfield) {
                         $subs = $subblocks_data[$subfield] ?? [];
                         if (count($subs) > 0) {
-                            echo "<div class='col-md-12 form-group row' bloc-id='subbloc" . $subfield . "'>";
+                            echo "<div class='col-md-12 md-bottom form-group row' bloc-id='subbloc" . $subfield . "'>";
 
                             foreach ($subs as $k => $sub) {
                                 self::displayBlockFields(

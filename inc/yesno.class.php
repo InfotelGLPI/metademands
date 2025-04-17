@@ -346,7 +346,6 @@ class PluginMetademandsYesno extends CommonDBTM
 
     static function fieldsHiddenScript($data)
     {
-
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
         $name = "field[" . $data["id"] . "]";
@@ -358,6 +357,25 @@ class PluginMetademandsYesno extends CommonDBTM
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
             $onchange = "console.log('fieldsHiddenScript-yesno $id');";
+        }
+
+        //add childs by idc
+        $childs_by_checkvalue = [];
+        foreach ($check_values as $idc => $check_value) {
+            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
+                $childs_blocks = json_decode($check_value['childs_blocks'], true);
+                if (isset($childs_blocks)
+                    && is_array($childs_blocks)
+                    && count($childs_blocks) > 0) {
+                    foreach ($childs_blocks as $childs) {
+                        if (is_array($childs)) {
+                            foreach ($childs as $child) {
+                                $childs_by_checkvalue[$idc][] = $child;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if (count($check_values) > 0) {
@@ -390,11 +408,25 @@ class PluginMetademandsYesno extends CommonDBTM
                 $val = Toolbox::addslashes_deep($idc);
                 $onchange .= "if ($(this).val() == $val) {
                              $('[id-field =\"field" . $hidden_link . "\"]').show();
+                             
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                           }";
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name);
+
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                                            $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
+                                            if (document.getElementById('ablock" . $childs . "'))
+                                            document.getElementById('ablock" . $childs . "').style.display = 'none';";
+                                        }
+                                    }
+                                }
+                            }
+                            $onchange .= "}";
 
                 if (isset($data['value']) && $idc == $data['value']) {
                     $display = $hidden_link;
