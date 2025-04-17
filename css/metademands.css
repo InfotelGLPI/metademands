@@ -669,7 +669,7 @@ textarea.invalid,
 
 .nav-tabs .nav-link.active {
     background: #ffffff;
-    border-bottom-color: transparent;
+    border-bottom: unset !important;
 }
 
 .info-alert-info {
