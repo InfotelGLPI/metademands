@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-16 16:39+0000\n"
+"POT-Creation-Date: 2025-04-17 08:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgid ""
 msgstr ""
 
 #: ajax/reloaditem.php:40 inc/field.class.php:803 inc/field.class.php:811
-#: inc/field.class.php:1339 inc/field.class.php:3221 inc/field.class.php:4574
+#: inc/field.class.php:1339 inc/field.class.php:3220 inc/field.class.php:4573
 msgid "Object"
 msgstr ""
 
@@ -565,7 +565,7 @@ msgid "Field"
 msgstr ""
 
 #: inc/condition.class.php:349 inc/condition.class.php:916
-#: inc/field.class.php:4565
+#: inc/field.class.php:4564
 msgid "Field type"
 msgstr ""
 
@@ -855,7 +855,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:772 inc/field.class.php:1187
-#: inc/field.class.php:3286 inc/field.class.php:4555 inc/step.class.php:384
+#: inc/field.class.php:3285 inc/field.class.php:4554 inc/step.class.php:384
 #: inc/step.class.php:469 inc/step.class.php:611 inc/wizard.class.php:1765
 msgid "Block"
 msgstr ""
@@ -868,7 +868,7 @@ msgstr ""
 msgid "Please add a type category field"
 msgstr ""
 
-#: inc/field.class.php:539 inc/field.class.php:3219 inc/field.class.php:3304
+#: inc/field.class.php:539 inc/field.class.php:3218 inc/field.class.php:3303
 msgid "Additional label"
 msgstr ""
 
@@ -952,24 +952,24 @@ msgstr ""
 msgid "Category of the metademand"
 msgstr ""
 
-#: inc/field.class.php:2500
+#: inc/field.class.php:2499
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:3295
+#: inc/field.class.php:3294
 msgid "Order"
 msgstr ""
 
-#: inc/field.class.php:3403
+#: inc/field.class.php:3402
 msgid "Modify icon"
 msgstr ""
 
-#: inc/field.class.php:3404
+#: inc/field.class.php:3403
 msgid "Modify color"
 msgstr ""
 
-#: inc/field.class.php:3431 inc/field.class.php:3452
+#: inc/field.class.php:3430 inc/field.class.php:3451
 msgid "You cannot do this for this field"
 msgstr ""
 
@@ -1208,7 +1208,7 @@ msgid "Internal name"
 msgstr ""
 
 #: inc/freetable.class.php:808 inc/freetablefield.class.php:349
-#: inc/information.class.php:161
+#: inc/information.class.php:162
 msgid "Type"
 msgstr ""
 
@@ -1294,15 +1294,15 @@ msgstr ""
 msgid "Informations"
 msgstr ""
 
-#: inc/information.class.php:165
+#: inc/information.class.php:166
 msgid "Information"
 msgstr ""
 
-#: inc/information.class.php:166
+#: inc/information.class.php:167
 msgid "Warning"
 msgstr ""
 
-#: inc/information.class.php:167
+#: inc/information.class.php:168
 msgid "Alert"
 msgstr ""
 
