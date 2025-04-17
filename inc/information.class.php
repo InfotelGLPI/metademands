@@ -67,7 +67,7 @@ class PluginMetademandsInformation extends CommonDBTM
             $display = "alert-danger";
         }
         $class = "class='alert $display alert-dismissible fade show informations'";
-        $field .= "<div $class>";
+        $field .= "<div $class style='display:flex;align-items: center;'>";
 
         $todisplay = "";
         if ($data['hide_title'] == 0) {
@@ -96,9 +96,9 @@ class PluginMetademandsInformation extends CommonDBTM
             $icon = $data['icon'];
             $color = $data['color'];
             if ($icon) {
-                $field .= "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
+                $field .= "<div style='margin-right: 20px;'><i class='fas fa-2x $icon' style='color: $color;vertical-align: top;'></i></div>";
             }
-            $field .= "<label style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</label>";
+            $field .= "<div style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</div>";
         }
         if ($preview) {
             $field .= $config_link;
@@ -152,6 +152,7 @@ class PluginMetademandsInformation extends CommonDBTM
          );
 JAVASCRIPT
         );
+        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
 

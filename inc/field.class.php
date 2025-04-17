@@ -2455,8 +2455,7 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         $bottomclass = "";
 
-        if ($data['type'] != 'informations'
-            && $data['type'] != 'title-block'
+        if ($data['type'] != 'title-block'
             && $data['type'] != 'title') {
             if (isset($data['row_display'])
                 && $data['row_display'] == 1) {
