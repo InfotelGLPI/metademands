@@ -269,12 +269,13 @@ class PluginMetademandsText extends CommonDBTM
 
 
         foreach ($check_values as $idc => $check_value) {
-            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
-            if ($tasks_id) {
-                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                    $script .= "});";
+            foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                if ($tasks_id) {
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "});";
+                    }
                 }
             }
         }
@@ -282,9 +283,8 @@ class PluginMetademandsText extends CommonDBTM
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
-            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
-
-            $script .= "if ($(this).val().trim().length < 1) {
+            foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                $script .= "if ($(this).val().trim().length < 1) {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
                                      data: { tasks_id: $tasks_id,
@@ -301,7 +301,7 @@ class PluginMetademandsText extends CommonDBTM
 //                                 }
                                  ";
 
-            $script .= "      } else {
+                $script .= "      } else {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
                                      data: { tasks_id: $tasks_id,
@@ -314,8 +314,8 @@ class PluginMetademandsText extends CommonDBTM
                                 });
                                  
                                  ";
-            $script .= "}";
-
+                $script .= "}";
+            }
         }
         $script .= "});";
 
@@ -340,8 +340,9 @@ class PluginMetademandsText extends CommonDBTM
 
         //default hide of all hidden links
         foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
-            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            foreach ($check_value['hidden_link'] as $hidden_link) {
+                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            }
         }
 
         //if reload form on loading
@@ -359,10 +360,9 @@ class PluginMetademandsText extends CommonDBTM
         $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
-
-            if (isset($idc) && $idc == 1) {
-                $onchange .= "if ($(this).val().trim().length < 1) {
+            foreach ($check_value['hidden_link'] as $hidden_link) {
+                if (isset($idc) && $idc == 1) {
+                    $onchange .= "if ($(this).val().trim().length < 1) {
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                   " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                               } else {
@@ -370,32 +370,33 @@ class PluginMetademandsText extends CommonDBTM
                               }
                             ";
 
-                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if (is_array($session_value)) {
-                        foreach ($session_value as $k => $fieldSession) {
-                            if ($fieldSession != "" && $hidden_link > 0) {
-                                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                        if (is_array($session_value)) {
+                            foreach ($session_value as $k => $fieldSession) {
+                                if ($fieldSession != "" && $hidden_link > 0) {
+                                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                                }
                             }
                         }
                     }
-                }
-            } else {
-                $onchange .= "if ($(this).val().trim().length < 1) {
+                } else {
+                    $onchange .= "if ($(this).val().trim().length < 1) {
                                 $('[id-field =\"field" . $hidden_link . "\"]').show();
                              } else {
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                  " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                              }";
 
-                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
-                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if (is_array($session_value)) {
-                        foreach ($session_value as $k => $fieldSession) {
-                            if ($fieldSession == "" && $hidden_link > 0) {
-                                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                        if (is_array($session_value)) {
+                            foreach ($session_value as $k => $fieldSession) {
+                                if ($fieldSession == "" && $hidden_link > 0) {
+                                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                                }
                             }
                         }
                     }

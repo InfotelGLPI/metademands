@@ -1050,7 +1050,7 @@ class PluginMetademandsTask extends CommonDBChild {
      * @throws \GlpitestSQLError
      * @throws \GlpitestSQLError
      */
-    public static function showAllTasksDropdown($metademands_id, $selected_value, $display = true)
+    public static function showAllTasksDropdown($metademands_id, $selected_value, $display = true, $used_values = [])
     {
         $tasks      = new self();
         $tasks_data = $tasks->getTasks($metademands_id);
@@ -1060,7 +1060,7 @@ class PluginMetademandsTask extends CommonDBChild {
             if ($value['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
                 $value['name'] = Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']);
                 $data[$id]     = $value['name'];
-            } else {
+            } elseif (!in_array($id, $used_values) || $id == $selected_value) {
                 $value['name'] = $value['tickettasks_name'];
                 $data[$id]     = $value['name'];
             }
