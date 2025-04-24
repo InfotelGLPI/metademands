@@ -1074,9 +1074,9 @@ class PluginMetademandsField extends CommonDBChild
             $cond,
             ['rank', 'order']
         );
-        if (count($data) > 0) {
+//        if (count($data) > 0) {
             self::searchForm($item, $cond);
-        }
+//        }
 
         if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
             || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
