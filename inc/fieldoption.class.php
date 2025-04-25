@@ -1010,7 +1010,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 ) . '</span>';
             echo '</td><td>';
             $tasksusedarray = [];
-            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id']]) as $tasksused) {
+            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'], 'check_value' => $params['check_value']]) as $tasksused) {
                 if ($tasksused['plugin_metademands_tasks_id'] > 0) {
                     $tasksusedarray[] = $tasksused['plugin_metademands_tasks_id'];
                 }
