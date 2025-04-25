@@ -54,6 +54,10 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         'dropdown_object',
     ];
 
+    public static $blacklisted_custom_items = [
+        'ITILCategory_Metademands',
+    ];
+
     public static $allowed_customvalues_types = [
         'checkbox',
         'radio',
@@ -102,11 +106,13 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         $allowed_custom_types = self::$allowed_custom_types;
         $allowed_customvalues_items = self::$allowed_customvalues_items;
         $blacklisted_custom_types = self::$blacklisted_custom_types;
+        $blacklisted_custom_items = self::$blacklisted_custom_items;
         if (isset($item->fields['type'])
-            && in_array($item->fields['type'], $allowed_customvalues_types)
+            && (in_array($item->fields['type'], $allowed_customvalues_types)
             || in_array($item->fields['type'], $allowed_custom_types)
-            || in_array($item->fields['item'], $allowed_customvalues_items)
-        && !in_array($item->fields['type'], $blacklisted_custom_types)) {
+            || in_array($item->fields['item'], $allowed_customvalues_items))
+        && !in_array($item->fields['type'], $blacklisted_custom_types)
+            && !in_array($item->fields['item'], $blacklisted_custom_items)) {
             $nb = self::getNumberOfCustomValuesForItem($item);
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
         }
