@@ -1896,6 +1896,7 @@ JAVASCRIPT
                                 $fields_data[$id]["options"][$check_value]['checkbox_id'] = $fieldopt->fields['checkbox_id'] ?? 0;
                                 $fields_data[$id]["options"][$check_value]['parent_field_id'] = $fieldopt->fields['parent_field_id'] ?? 0;
                             }
+//                            $fields_data[$id]["options"][$opt["check_value"]][] = $opt;
                         }
                     }
                 }
@@ -8382,13 +8383,28 @@ JAVASCRIPT
         $metafieldparameter = new PluginMetademandsFieldParameter();
         $metafieldcustom = new PluginMetademandsFieldCustomvalue();
         $metafieldfreetablefield = new PluginMetademandsFreetablefield();
+        $stepconfig = new PluginMetademandsConfigstep();
+        $step = new PluginMetademandsStep();
         $condition = new PluginMetademandsCondition();
-        $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
+        $fields['stepconfig'] = [];
+        $fields['step'] = [];
         $fields['metafieldparameters'] = [];
         $fields['metafieldoptions'] = [];
         $fields['metafieldcustoms'] = [];
         $fields['metafieldfreetablefields'] = [];
+
+        $stepconfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
+        $fields['stepconfig'] = $stepconfig->fields;
+
+        $steps = $step->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        foreach ($steps as $id => $ste) {
+            $fields['step'][$id] = $ste;
+        }
+
+        //TODO GroupConfig
+
+        $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
 
@@ -8556,10 +8572,24 @@ JAVASCRIPT
         $mapTableCheckValue = [];
 
         $fields = [];
+        $stepconfig = [];
+        $steps = [];
 
         $version = 0;
         if (isset($datas['version'])) {
             $version = $datas['version'];
+        }
+
+        if (isset($datas['metafields'])) {
+            $fields = $datas['metafields'];
+        }
+
+        if (isset($datas['stepconfig'])) {
+            $stepconfig = $datas['stepconfig'];
+        }
+
+        if (isset($datas['step'])) {
+            $steps = $datas['step'];
         }
 
         if (isset($datas['metafields'])) {
@@ -8585,7 +8615,6 @@ JAVASCRIPT
         if (isset($datas['metafieldfreetablefields'])) {
             $fieldfreetablefields = $datas['metafieldfreetablefields'];
         }
-
 
         $tasks = [];
         if (isset($datas['tasks'])) {
@@ -9075,6 +9104,24 @@ JAVASCRIPT
             $resource_meta->add($resource);
         }
 
+        if (!empty($stepconfig)) {
+            $stepconfig['plugin_metademands_metademands_id'] = $newIDMeta;
+            $stepconfig_meta = new PluginMetademandsConfigstep();
+            $stepconfig_meta->add($stepconfig);
+        }
+
+        if (!empty($steps)) {
+            foreach ($steps as $key => $ste) {
+                $meta_step = new PluginMetademandsStep();
+                $metas['block_id'] = $ste['block_id'];
+                $metas['groups_id'] = $ste['groups_id'];
+                $metas['only_by_supervisor'] = $ste['only_by_supervisor'];
+                $metas['reminder_delay'] = $ste['reminder_delay'];
+                $metas['message'] = $ste['message'];
+                $metas['plugin_metademands_metademands_id'] = $newIDMeta;
+                $meta_step->add($metas);
+            }
+        }
 
         if (!empty($metatasks)) {
             foreach ($metatasks as $key => $metatask) {
