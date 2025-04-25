@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-24 10:40+0000\n"
+"POT-Creation-Date: 2025-04-25 13:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgid ""
 msgstr ""
 
 #: ajax/reloaditem.php:40 inc/field.class.php:803 inc/field.class.php:811
-#: inc/field.class.php:1339 inc/field.class.php:3220 inc/field.class.php:4573
+#: inc/field.class.php:1339 inc/field.class.php:3220 inc/field.class.php:4580
 msgid "Object"
 msgstr ""
 
@@ -565,7 +565,7 @@ msgid "Field"
 msgstr ""
 
 #: inc/condition.class.php:349 inc/condition.class.php:916
-#: inc/field.class.php:4564
+#: inc/field.class.php:4571
 msgid "Field type"
 msgstr ""
 
@@ -855,7 +855,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:772 inc/field.class.php:1187
-#: inc/field.class.php:3285 inc/field.class.php:4554 inc/step.class.php:384
+#: inc/field.class.php:3285 inc/field.class.php:4561 inc/step.class.php:384
 #: inc/step.class.php:469 inc/step.class.php:611 inc/wizard.class.php:1765
 msgid "Block"
 msgstr ""
