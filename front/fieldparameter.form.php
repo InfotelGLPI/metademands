@@ -144,7 +144,7 @@ if (isset($_POST["add"])) {
     if (!isset($field->fields['item'])) {
         $field->fields['item'] = "";
     }
-    if (isset($field->fields['type']) && $field->fields['type'] == 'dropdown_multiple'
+    if (isset($field->fields['type']) && ($field->fields['type'] == 'dropdown_multiple' || $field->fields['type'] == 'dropdown_object')
         && isset($field->fields['item']) && $field->fields['item'] == 'User') {
         if (isset($_POST['user_group'])) {
             $custom_values['user_group'] = $_POST['user_group'];

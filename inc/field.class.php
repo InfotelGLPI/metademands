@@ -4367,6 +4367,13 @@ JAVASCRIPT
                 // Direct Connection
                 $types = ['Monitor', 'Peripheral', 'Phone', 'Printer'];
                 foreach ($types as $itemtype) {
+
+                    if (count($limit) > 0) {
+                        if (!in_array($itemtype, $limit)) {
+                            continue;
+                        }
+                    }
+
                     if (in_array($itemtype, $_SESSION["glpiactiveprofile"]["helpdesk_item_type"])
                         && ($item = getItemForItemtype($itemtype))) {
                         $itemtable = getTableForItemType($itemtype);
