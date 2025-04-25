@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.26.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.27.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -697,17 +697,17 @@ function plugin_metademands_install() {
     }
 
     if (!$DB->tableExists("glpi_plugin_metademands_freetablefields", false)) {
-        //version 3.3.9
+        //version 3.3.20
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.20.sql");
     }
 
     //version 3.3.23
-    if (!$DB->fieldExists("glpi_plugin_metademands_configsteps", "see_blocks_as_tab", false)) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_configsteps", "see_blocks_as_tab")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.23.sql");
     }
 
     //version 3.3.24
-    if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "hidden_block_same_block", false)) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "hidden_block_same_block")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.24.sql");
     }
 
