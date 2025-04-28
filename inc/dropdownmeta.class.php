@@ -1520,7 +1520,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         } else {
                             tohide[$fields_link] = true;
                         }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                             tohide[$fields_link] = false;
                         }";
 
@@ -1613,7 +1613,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         } else {
                             tohide[$tasks_id] = true;
                         }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                             tohide[$tasks_id] = false;
                         }";
 
@@ -1767,7 +1767,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         } else {
                             tohide[$hidden_link] = true;
                         }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                             tohide[$hidden_link] = false;
                         }";
 
@@ -1909,7 +1909,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                       } else {
                         tohide[$hidden_block] = true;
                       }
-                    if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                    if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                         tohide[$hidden_block] = false;
                     }";
 
