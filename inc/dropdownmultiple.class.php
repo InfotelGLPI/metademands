@@ -329,6 +329,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                    </div>";
 
         $div .= "<div class='zone'>";
+        if (isset($value) && is_array($value) && count($value) > 0) {
+            $required = "";
+        }
         $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect" . $id . "_to\" size='8' multiple='multiple'>";
         if (is_array($value) && count($value) > 0) {
 

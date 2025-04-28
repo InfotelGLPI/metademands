@@ -82,8 +82,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 foreach ($custom_values as $key => $label) {
                     $field .= "<div class='custom-control custom-checkbox $inline'>";
                     $checked = "";
-                    if (isset($value[$key])) {
-                        $checked = (isset($label['is_default']) && $label['is_default'] == 1) ? 'checked' : '';
+                    if (isset($value[$key]) && $value[$key] == $key) {
+                        $checked = 'checked';
                     } elseif (isset($label['is_default']) && $on_order == false) {
                         $checked = ($label['is_default'] == 1) ? 'checked' : '';
                     }
