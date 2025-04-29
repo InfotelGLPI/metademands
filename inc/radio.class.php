@@ -795,7 +795,7 @@ class PluginMetademandsRadio extends CommonDBTM
                             ";
 
                             $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
-
+                        $onchange .= "$hidden";
                         $onchange .= "}
                     });
           ";
