@@ -1413,6 +1413,194 @@ class PluginMetademandsWizard extends CommonDBTM
         echo "</div>";
     }
 
+
+    public static function getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated) {
+
+
+        //used for display mandatory fields on popup & nexttab
+        $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+        $title = _sx('button', 'Save & Post', 'metademands');
+
+        $see_summary = 0;
+        if ($metademands->fields['is_basket'] == 1) {
+            $title = _sx('button', 'See basket summary & send it', 'metademands');
+            echo Html::hidden('see_basket_summary', ['value' => 1]);
+            $see_summary = 1;
+        }
+        $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
+        if (count($childs_meta) > 0) {
+            $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        }
+        $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+        $submitmsg = "";
+        $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        $title = _sx('button', 'Save & send to another user / group', 'metademands');
+
+
+        $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+        $submitstepmsg = "";
+
+        $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
+
+        $modal = true;
+
+        $hidden_blocks = [];
+
+        $name = Toolbox::addslashes_deep(
+                $metademands->fields['name']
+            ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+
+        $json_hidden_blocks = json_encode($hidden_blocks);
+        $alert = __('Thanks to fill mandatory fields', 'metademands');
+        $alert_regex = __("These fields don\'t respect regex", 'metademands');
+
+
+        $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 99999999;
+
+        $updateStepform = 0;
+        if (!isset($stepConfig->fields['supervisor_validation'])
+            && !isset($stepConfig->fields['link_user_block'])
+            && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
+            $modal = false;
+        } else if ($block_current_id_stepform != 99999999) {
+            $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
+                $metademands->fields['id'],
+                $block_current_id_stepform + 1
+            );
+            if (!$canSeeNextBlock) {
+                $modal = true;
+                $updateStepform = 1;
+            }
+        }
+
+        $listStepBlocks = [];
+
+        $use_as_step = 0;
+        $stepConfig = new PluginMetademandsConfigstep();
+        $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+
+        if ($metademands->fields['step_by_step_mode'] == 1) {
+            if (isset($stepConfig->fields['step_by_step_interface'])) {
+                switch ($stepConfig->fields['step_by_step_interface']) {
+                    case PluginMetademandsConfigstep::BOTH_INTERFACE:
+                        $use_as_step = 1;
+                        break;
+                    case PluginMetademandsConfigstep::ONLY_HELPDESK_INTERFACE:
+                        if (Session::getCurrentInterface() == 'helpdesk') {
+                            $use_as_step = 1;
+                        }
+                        break;
+                    case PluginMetademandsConfigstep::ONLY_CENTRAL_INTERFACE:
+                        if (Session::getCurrentInterface() == 'central') {
+                            $use_as_step = 1;
+                        }
+                        break;
+                }
+            }
+        }
+        if ($preview || $seeform) {
+            $use_as_step = 0;
+        }
+
+        if ($use_as_step == 1) {
+            $listStepBlocks = PluginMetademandsStep::defineStepblocks($metademands->fields['id']);
+        }
+
+        $fields = new PluginMetademandsField();
+        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+        $all_meta_fields = [];
+        if (is_array($fields_data) && count($fields_data) > 0) {
+            foreach ($fields_data as $data) {
+                $label = "";
+                if (isset($data['name'])) {
+                    $label = Toolbox::stripslashes_deep($data['name']);
+                }
+                $metademand_params = new PluginMetademandsFieldParameter();
+                $metademand_params->getFromDBByCrit(
+                    ["plugin_metademands_fields_id" => $data["id"]]
+                );
+                $all_meta_fields[$data['id']] = (isset($metademand_params->fields['hide_title'])
+                    && $metademand_params->fields['hide_title'] == 1) ? PluginMetademandsField::getFieldTypesName(
+                    $data['type']
+                ) : $label;
+            }
+        }
+        $json_all_meta_fields = json_encode($all_meta_fields);
+        $use_condition = false;
+        $show_rule = $metademands->fields['show_rule'];
+        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
+            $condition = new PluginMetademandsCondition();
+            $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+            if (count($conditions) > 0) {
+                $use_condition = true;
+            }
+        }
+
+        $paramUrl = "";
+        if ($current_ticket > 0 && !$meta_validated) {
+            $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+        }
+
+        $stepConfig = new PluginMetademandsConfigstep();
+        $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands->getID()]);
+        if ($metademands->fields['step_by_step_mode'] == 1
+            && $stepConfig->fields['see_blocks_as_tab'] == 1  && !$preview) {
+            $block_id = 0;
+            if (isset($_REQUEST['block_id'])) {
+                $block_id = $_REQUEST['block_id'];
+            }
+        }
+
+        $metaparams['nexttitle'] = $nexttitle;
+        $metaparams['submittitle'] = $submittitle;
+        $metaparams['submitmsg'] = $submitmsg;
+
+        $metaparams['nextsteptitle'] = $nextsteptitle;
+        $metaparams['submitsteptitle'] = $submitsteptitle;
+        $metaparams['submitstepmsg'] = $submitstepmsg;
+
+        $metaparams['use_as_step'] = $use_as_step;
+        $metaparams['see_summary'] = $see_summary;
+        $metaparams['json_hidden_blocks'] = $json_hidden_blocks;
+        $metaparams['alert'] = $alert;
+        $metaparams['alert_regex'] = $alert_regex;
+        $metaparams['json_all_meta_fields'] = $json_all_meta_fields;
+        $metaparams['use_condition'] = $use_condition;
+        $metaparams['show_rule'] = $show_rule;
+        $metaparams['block_id'] = $block_id;
+        $metaparams['modal'] = $modal;
+
+        $metaparams['ID'] = $metademands->fields['id'];
+
+        $metaparams['name'] = $name;
+        $metaparams['paramUrl'] = $paramUrl;
+        $metaparams['listStepBlocks'] = $listStepBlocks;
+        $metaparams['updateStepform'] = $updateStepform;
+        $metaparams['use_richtext'] = 0;
+        $richtext_id = [];
+        if (countElementsInTable(
+                "glpi_plugin_metademands_fields",
+                ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea']
+            ) > 0) {
+            $metaparams['use_richtext'] = 1;
+            $richtext_fields = getAllDataFromTable(
+                "glpi_plugin_metademands_fields",
+                ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea']
+            );
+            foreach ($richtext_fields as $f) {
+                $fieldparameter = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
+                    if ($fieldparameter->fields['use_richtext'] == 1) {
+                        $richtext_id[] = $f['id'];
+                    }
+                }
+            }
+        }
+        $metaparams['richtext_id'] = json_encode($richtext_id);
+
+        return $metaparams;
+    }
     /**
      * Display a metademand's content
      * @param $metademands_id int PluginMetademandsMetademand id, metademand to display
@@ -1462,11 +1650,6 @@ class PluginMetademandsWizard extends CommonDBTM
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-
-        $paramUrl = "";
-        if ($current_ticket > 0 && !$meta_validated) {
-            $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
-        }
 
         $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands_id]['block_id'] ?? 99999999;
         if ($block_current_id_stepform != 99999999) {
@@ -1587,6 +1770,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 });'
             );
 
+            $metaparams = self::getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated);
+
             if ($metademands->fields['is_order'] == 0
                 && !$preview
                 && (!$seeform
@@ -1599,60 +1784,51 @@ class PluginMetademandsWizard extends CommonDBTM
                                 && $metademands->fields['can_clone'] == true))
                         && Session::haveRight('plugin_metademands_updatemeta', READ)))
             ) {
-                echo "<script>
-                    /**
-                    *  set the content of the nextBtn element
-                    */
-                    function fixButtonIndicator() {
-                        const use_as_step = '$use_as_step';
-
-                        if (use_as_step) {
-                            x = document.getElementsByClassName('tab-step');
-                        } else {
-                            x = document.getElementsByClassName('tab-nostep');
-                        }
-                    
-                        let create = false;
-                        if (use_as_step == 1) {
-
-                            const asArray = Array.from(x);
-                            const displayed = asArray.find(e => e.style.display == 'block');
-                            
-                            let nextTab = asArray.indexOf(displayed) + 1;
-
-                            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                                nextTab = nextTab + 1;
-                            }
-                     
-                            if (x[nextTab] != undefined) {
-                                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
-                               
-                                let id_bloc = parseInt(bloc.replace('bloc', ''));
-                                
-                                if (typeof metademands !== 'undefined') {
-                                    if (!metademands.listStepBlock.includes(id_bloc)) {
-                                        create = true;
-                                    }
-                                }
-                            }
-                            if (typeof metademands !== 'undefined') {
-                                if (nextTab >= x.length) {
-                                    document.getElementById('nextBtn').innerHTML = metademands.submittitle;
-                                } else {
-                                    if (create) {
-                                        document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
-                                    } else {
-                                        document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
-                                    }
-                                }
-                            }
-                        }
+                foreach ($metaparams as $key => $val) {
+                    if (isset($metaparams[$key])) {
+                        $$key = $metaparams[$key];
                     }
-                </script>";
+                }
+
+                $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+                $token = Session::getNewCSRFToken();
+
+                echo Html::scriptBlock(
+                    "
+                    $(document).ready(function () {
+                        window.metademandparams = {};
+                        metademandparams.nexttitle = '$nexttitle';
+                        metademandparams.submittitle = '$submittitle';
+                        metademandparams.submitmsg = '$submitmsg'; 
+                        metademandparams.use_as_step = '$use_as_step';
+                        metademandparams.submitsteptitle = '$submitsteptitle';
+                        metademandparams.nextsteptitle = '$nextsteptitle';
+                        metademandparams.seesummary = '$see_summary';
+                        metademandparams.msg = '$alert';
+                        metademandparams.msg_regex = '$alert_regex';
+                        metademandparams.all_meta_fields = {$json_all_meta_fields};
+                        metademandparams.firstnumTab = 0;
+                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
+                        metademandparams.use_condition = '$use_condition';
+                        metademandparams.show_button = 1;
+                        metademandparams.show_rule = '$show_rule';
+                        metademandparams.use_richtext = '$use_richtext';
+                        metademandparams.richtext_ids = {$richtext_id};
+                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
+                        metademandparams.root_doc = '$root_doc';
+                        metademandparams.paramUrl = '$paramUrl';
+                        metademandparams.token = '$token';
+                        metademandparams.id = '$ID';
+                        metademandparams.block_id = '$block_id';
+                        
+                        fixButtonIndicator(metademandparams);
+                    });"
+                );
             }
 
             $displayBlocksAsTab = 0;
-            if (isset($stepConfig->fields['see_blocks_as_tab'])
+            if ($metademands->fields['step_by_step_mode'] == 1
+                && isset($stepConfig->fields['see_blocks_as_tab'])
                 && $stepConfig->fields['see_blocks_as_tab'] == 1) {
                 $displayBlocksAsTab = 1;
             }
@@ -1665,19 +1841,56 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
 
+
+
+
+
+            echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+            echo "</div>";
+
             if ($metademands->fields['step_by_step_mode'] == 1
                 && $displayBlocksAsTab == 1  && !$preview) {
-                $blocks = [];
 
-                $block_id = 0;
-                if (isset($_REQUEST['block_id'])) {
-                    $block_id = $_REQUEST['block_id'];
+                foreach ($metaparams as $key => $val) {
+                    if (isset($metaparams[$key])) {
+                        $$key = $metaparams[$key];
+                    }
                 }
+
+                $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+                $token = Session::getNewCSRFToken();
                 echo Html::scriptBlock(
                     "$(document).ready(function () {
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem('loadedblock');
                         var block_id = $block_id;
+                        
+                        window.metademandparams = {};
+                        metademandparams.nexttitle = '$nexttitle';
+                        metademandparams.submittitle = '$submittitle';
+                        metademandparams.submitmsg = '$submitmsg'; 
+                        metademandparams.use_as_step = '$use_as_step';
+                        metademandparams.submitsteptitle = '$submitsteptitle';
+                        metademandparams.nextsteptitle = '$nextsteptitle';
+                        metademandparams.seesummary = '$see_summary';
+                        metademandparams.msg = '$alert';
+                        metademandparams.msg_regex = '$alert_regex';
+                        metademandparams.all_meta_fields = {$json_all_meta_fields};
+                        metademandparams.firstnumTab = 0;
+                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
+                        metademandparams.use_condition = '$use_condition';
+                        metademandparams.show_button = 1;
+                        metademandparams.show_rule = '$show_rule';
+                        metademandparams.use_richtext = '$use_richtext';
+                        metademandparams.richtext_ids = {$richtext_id};
+                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
+                        metademandparams.root_doc = '$root_doc';
+                        metademandparams.paramUrl = '$paramUrl';
+                        metademandparams.token = '$token';
+                        metademandparams.id = '$ID';
+                        metademandparams.block_id = '$block_id';
+                        
+                        metademandparams.firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
 
                         function updateActiveTab(rank) {
                             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
@@ -1706,30 +1919,25 @@ class PluginMetademandsWizard extends CommonDBTM
                             window.location.hash = '#block' + block_id;
                         }
 
-
-                     function validateFields() {
-                            var isValid = true;
-                            $('input[required], textarea[required], select[required]').each(function() {
-                                if ($(this).is(':visible') && !$(this).val()) {
-                                    isValid = false;
-                                }
-                            });
-                            return isValid;
-                        }
-
                     $('#fieldslist a').click(function (e) {
                         e.preventDefault();
 
                          var tabId = $(this).attr('href').replace('#block', '');
                          var loadedId = sessionStorage.getItem('loadedblock').replace('block', '');
-
+                         var currentTab = loadedId - 1;
+                  
+//                         console.log(parseInt(tabId.replace('block', '')));
+//                         console.log(parseInt(loadedId));
+//    
 //                         if (parseInt(tabId.replace('block', '')) > parseInt(loadedId)) {
-//                                if (!validateFields()) return false;
+//                            if (!plugin_metademands_wizard_validateForm(metademandparams)) {
+//                                return false;
+//                            } else {
 //                                $('#nextBtn').click();
 //                                sessionStorage.setItem('loadedblock', tabId);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
-//
+//                            }
 //                        } else if (parseInt(tabId.replace('block', '')) < parseInt(loadedId)) {
 //                                $('#prevBtn').click();
 //                                sessionStorage.setItem('loadedblock', tabId);
@@ -1866,26 +2074,21 @@ class PluginMetademandsWizard extends CommonDBTM
                         && Session::haveRight('plugin_metademands_updatemeta', READ)))
             )
             {
-                $see_summary = 0;
-                if ($metademands->fields['is_basket'] == 1) {
-                    $see_summary = 1;
-                }
-//                if ($see_summary == 0) {
-//                    echo "<br>";
-//                }
+
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
 
                 echo "<div style='overflow:auto;'>";
 
                 $config = PluginMetademandsConfig::getInstance();
-                if ($use_as_step == 0 && $config['use_draft'] && $draft_id == 0) {
+                if ($config['use_draft']
+                    && $draft_id == 0) {
                     //button create draft
                     echo PluginMetademandsDraft::createDraftInput(PluginMetademandsDraft::DEFAULT_MODE);
                 }
 
                 if ($use_as_step == 1) {
-                    echo "<br><div id='nextMsg' class='alert alert-info center'>";
+                    echo "<div id='nextMsg' class='alert alert-info center'>";
                     echo "</div>";
                 }
 
@@ -1919,7 +2122,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
 
-                if ($see_summary == 0 && $displayBlocksAsTab == 0) {
+                if ($see_summary == 0
+                    && $displayBlocksAsTab == 0) {
                     //Circles which indicates the steps of the form:
                     echo "<div class='step_wizard_div center'>";
 
@@ -1932,49 +2136,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
 
                     echo "</div>";
-                }
-
-                $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
-                $title = _sx('button', 'Save & Post', 'metademands');
-
-                $ID = $metademands->fields['id'];
-
-                if ($metademands->fields['is_basket'] == 1) {
-                    $title = _sx('button', 'See basket summary & send it', 'metademands');
-                    echo Html::hidden('see_basket_summary', ['value' => 1]);
-                    $see_summary = 1;
-                }
-                $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($ID);
-                if (count($childs_meta) > 0) {
-                    $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                }
-                $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-                $submitmsg = "";
-                $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                $title = _sx('button', 'Save & send to another user / group', 'metademands');
-
-
-                $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-                $submitstepmsg = "";
-
-
-                echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-                echo "</div>";
-
-
-                $name = Toolbox::addslashes_deep(
-                        $metademands->fields['name']
-                    ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-
-                $json_hidden_blocks = json_encode($hidden_blocks);
-                $alert = __('Thanks to fill mandatory fields', 'metademands');
-                $alert_regex = __("These fields don\'t respect regex", 'metademands');
-
-
-                $listStepBlocks = [];
-                if ($use_as_step == 1) {
-                    $listStepBlocks = PluginMetademandsStep::defineStepblocks($ID);
                 }
 
                 if (!empty($data_form)) {
@@ -2037,107 +2198,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     );
                 }
 
-                $block_id = $_SESSION['plugin_metademands'][$ID]['block_id'] ?? 0;
-
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
 
-                $modal = true;
-                $updateStepform = 0;
-                if (!isset($stepConfig->fields['supervisor_validation'])
-                    && !isset($stepConfig->fields['link_user_block'])
-                    && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
-                    $modal = false;
-                } else if ($block_current_id_stepform != 99999999) {
-                    $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
-                        $metademands_id,
-                        $block_current_id_stepform + 1
-                    );
-                    if (!$canSeeNextBlock) {
-                        $modal = true;
-                        $updateStepform = 1;
-                    }
-                }
-
-                //used for display mandatory fields on popup
-                $fields = new PluginMetademandsField();
-                $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                $all_meta_fields = [];
-                if (is_array($fields_data) && count($fields_data) > 0) {
-                    foreach ($fields_data as $data) {
-                        $label = "";
-                        if (isset($data['name'])) {
-                            $label = Toolbox::stripslashes_deep($data['name']);
-                        }
-                        $metademand_params = new PluginMetademandsFieldParameter();
-                        $metademand_params->getFromDBByCrit(
-                            ["plugin_metademands_fields_id" => $data["id"]]
-                        );
-                        $all_meta_fields[$data['id']] = (isset($metademand_params->fields['hide_title']) && $metademand_params->fields['hide_title'] == 1) ? PluginMetademandsField::getFieldTypesName(
-                            $data['type']
-                        ) : $label;
-                    }
-                }
-                $json_all_meta_fields = json_encode($all_meta_fields);
-                $use_condition = false;
-                $show_rule = $metademands->fields['show_rule'];
-                if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
-                    $condition = new PluginMetademandsCondition();
-                    $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                    if (count($conditions) > 0) {
-                        $use_condition = true;
-                    }
-                }
-
-                $params['nexttitle'] = $nexttitle;
-                $params['submittitle'] = $submittitle;
-                $params['submitmsg'] = $submitmsg;
-
-                $params['nextsteptitle'] = $nextsteptitle;
-                $params['submitsteptitle'] = $submitsteptitle;
-                $params['submitstepmsg'] = $submitstepmsg;
-
-                $params['use_as_step'] = $use_as_step;
-                $params['see_summary'] = $see_summary;
-                $params['json_hidden_blocks'] = $json_hidden_blocks;
-                $params['alert'] = $alert;
-                $params['alert_regex'] = $alert_regex;
-                $params['json_all_meta_fields'] = $json_all_meta_fields;
-                $params['use_condition'] = $use_condition;
-                $params['show_rule'] = $show_rule;
-                $params['block_id'] = $block_id;
-                $params['modal'] = $modal;
-
-                $params['ID'] = $ID;
-                $params['nexthref'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $params['ID'] . "&step=" . PluginMetademandsMetademand::STEP_CREATE;
-
-
-                $params['name'] = $name;
-                $params['paramUrl'] = $paramUrl;
-                $params['listStepBlocks'] = $listStepBlocks;
-                $params['updateStepform'] = $updateStepform;
-                $params['use_richtext'] = 0;
-                $richtext_id = [];
-                if (countElementsInTable(
-                        "glpi_plugin_metademands_fields",
-                        ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']
-                    ) > 0) {
-                    $params['use_richtext'] = 1;
-                    $richtext_fields = $dbu->getAllDataFromTable(
-                        "glpi_plugin_metademands_fields",
-                        ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']
-                    );
-                    foreach ($richtext_fields as $f) {
-                        $fieldparameter = new PluginMetademandsFieldParameter();
-                        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
-                            if ($fieldparameter->fields['use_richtext'] == 1) {
-                                $richtext_id[] = $f['id'];
-                            }
-                        }
-                    }
-                }
-                $params['richtext_id'] = json_encode($richtext_id);
-                self::validateScript($params);
+                self::validateScript($metaparams);
             }
             else {
                 echo "<script>function fixButtonIndicator() {}
@@ -2295,7 +2359,8 @@ class PluginMetademandsWizard extends CommonDBTM
         $displayBlocksAsTab = 0;
         $stepConfig = new PluginMetademandsConfigstep();
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands->getID()]);
-        if (isset($stepConfig->fields['see_blocks_as_tab'])
+        if ($metademands->fields['step_by_step_mode'] == 1
+            && isset($stepConfig->fields['see_blocks_as_tab'])
             && $stepConfig->fields['see_blocks_as_tab'] == 1) {
             $displayBlocksAsTab = 1;
         }
@@ -2705,889 +2770,95 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     static function validateScript($params)
     {
-        global $CFG_GLPI;
 
         foreach ($params as $key => $val) {
             if (isset($params[$key])) {
                 $$key = $params[$key];
             }
         }
+        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+        $token = Session::getNewCSRFToken();
         echo "<script>
                   $(document).ready(function (){
+
+                    window.metademandparams = {};
+                    metademandparams.nexttitle = '$nexttitle';
+                    metademandparams.submittitle = '$submittitle';
+                    metademandparams.submitmsg = '$submitmsg'; 
+                    metademandparams.use_as_step = '$use_as_step';
+                    metademandparams.submitsteptitle = '$submitsteptitle';
+                    metademandparams.nextsteptitle = '$nextsteptitle';
+                    metademandparams.seesummary = '$see_summary';
+                    metademandparams.msg = '$alert';
+                    metademandparams.msg_regex = '$alert_regex';
+                    metademandparams.all_meta_fields = {$json_all_meta_fields};
+                    metademandparams.firstnumTab = 0;
+                    metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
+                    metademandparams.use_condition = '$use_condition';
+                    metademandparams.show_button = 1;
+                    metademandparams.show_rule = '$show_rule';
+                    metademandparams.use_richtext = '$use_richtext';
+                    metademandparams.richtext_ids = {$richtext_id};
+                    metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
+                    metademandparams.root_doc = '$root_doc';
+                    metademandparams.paramUrl = '$paramUrl';
+                    metademandparams.token = '$token';
+                    metademandparams.id = '$ID';
+                    metademandparams.block_id = '$block_id';
+                    
+                    metademandparams.firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
+                
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
-                    prevBtn.addEventListener('click', () => nextPrev(-1));
-                    nextBtn.addEventListener('click', () => nextPrev(1));
+                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(-1, metademandparams));
+                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(1, metademandparams));
                     
-                    nextBtn.addEventListener('click', function () {
-                       if(document.querySelector('#button_save_draft')){
-                           document.querySelector('#button_save_draft').remove();
-                       } 
-                       
-                       if(document.querySelector('.boutons_draft')){
-                           document.querySelector('.boutons_draft').remove();
-                       }
-                       
-                    });
-                    
-                    window.metademands = {};
-                    metademands.nexttitle = '$nexttitle';
-                    metademands.submittitle = '$submittitle';
-                    metademands.submitmsg = '$submitmsg'; 
-                    metademands.use_as_step = '$use_as_step';
-                    metademands.submitsteptitle = '$submitsteptitle';
-                    metademands.nextsteptitle = '$nextsteptitle';
-                    metademands.seesummary = '$see_summary';
-                    metademands.msg = '$alert';
-                    metademands.msg_regex = '$alert_regex';
-                    metademands.all_meta_fields = {$json_all_meta_fields};
-                    metademands.firstnumTab = 0;
-                    metademands.currentTab = 0; // Current tab is set to be the first tab (0)
-                    metademands.use_condition = '$use_condition';
-                    metademands.show_button = 1;
-                    metademands.show_rule = '$show_rule';
-                    metademands.nexthref = '$nexthref';
-                    metademands.use_richtext = '$use_richtext';
-                    metademands.richtext_ids = {$richtext_id};
-                    metademands.listStepBlock = [" . implode(",", $listStepBlocks) . "];
-                    
-                    var nexttitle = '$nexttitle';
-                    var submittitle = '$submittitle';
-                    var submitmsg = '$submitmsg'; 
-                    var use_as_step = '$use_as_step';
-                    var nextsteptitle = '$nextsteptitle';
-                    var seesummary = '$see_summary';
-                    var msg = '$alert';
-                    var msg_regex = '$alert_regex';
-                    var all_meta_fields = {$json_all_meta_fields};
-                    var firstnumTab = 0;
-                    var currentTab = 0; // Current tab is set to be the first tab (0)
-                    var use_condition = '$use_condition';
-                    var show_button = 1;
-                    var show_rule = '$show_rule';
-                    var nexthref = '$nexthref';
-                    var use_richtext = '$use_richtext';
-                    var richtext_ids = {$richtext_id};
-                    findFirstTab($block_id);
-                
+//                    nextBtn.addEventListener('click', function () {
+//                       if(document.querySelector('#button_save_draft')){
+//                           document.querySelector('#button_save_draft').remove();
+//                       } 
+//                       
+//                       if(document.querySelector('.boutons_draft')){
+//                           document.querySelector('.boutons_draft').remove();
+//                       }
+//                    });
 
-                   if(use_condition == true) {
-                      $('document').ready(checkConditions);
-                      if (show_rule == 2) {
+                    if(metademandparams.use_condition == true) {
+                      $('document').ready(
+                          plugin_metademands_wizard_checkConditions(metademandparams, metademandparams.show_button)
+                          );
+                      if (metademandparams.show_rule == 2) {
                          show_button = 0;
-                         if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                         if(document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
                             document.getElementById('nextBtn').style.display = 'none';
                          }
-                      } else if (show_rule == 3) { 
+                      } else if (metademandparams.show_rule == 3) { 
                             show_button = 1;
                       }
-                      if (document.getElementById('nextBtn').innerHTML == nexttitle) {
-                         $('#nextBtn').on('click', checkConditions);
+                      if (document.getElementById('nextBtn').innerHTML == metademandparams.nexttitle) {
+                         $('#nextBtn').on('click', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
                       }
-                      $('#wizard_form input[type=\"checkbox\"]').on('change', checkConditions);
-                      $('#wizard_form input[type=\"radio\"]').on('change', checkConditions);
-                      $('#wizard_form input').on('change, keyup', checkConditions);
-                      $('#wizard_form select').on('change', checkConditions);
-                      $('#wizard_form textarea').on('change, keyup', checkConditions);
-                      if(use_richtext){
-                          for( let i = 0; i < richtext_ids.length; i++ ){
-                             let field = 'field' + richtext_ids[i];
-                             tinyMCE.get(field).on('keyup', checkConditions);
+                      $('#wizard_form input[type=\"checkbox\"]').on('change', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
+                      $('#wizard_form input[type=\"radio\"]').on('change', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
+                      $('#wizard_form input').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
+                      $('#wizard_form select').on('change', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
+                      $('#wizard_form textarea').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
+                      
+                      if (metademandparams.use_richtext) {
+                          for( let i = 0; i < metademandparams.richtext_ids.length; i++ ){
+                             let field = 'field' + metademandparams.richtext_ids[i];
+                             tinyMCE.get(field).on('keyup', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
                          } 
                       }
                       $('#prevBtn').on('click', function(){
-                         if(document.getElementById('nextBtn').innerHTML == nexttitle) {
+                         if(document.getElementById('nextBtn').innerHTML == metademandparams.nexttitle) {
                              document.getElementById('nextBtn').style.display = 'inline';
                          }
                       });
                    }
-                  
-                    function checkConditions() {
-                        var formDatas;
-                        formDatas = $('#wizard_form').serializeArray();
-                        if(use_richtext){
-                           for(let i = 0; i < richtext_ids.length; i++ ){
-                                   let field = 'field' + richtext_ids[i];
-                                   let content = tinyMCE.get(field).getContent();
-                                   let name = 'field[' + richtext_ids[i] + ']';
-                                   formDatas.push({
-                                        name: name,
-                                        value: content
-                                   });
-                               }
-                           }
-                        $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/condition.php',
-                                   type: 'POST',
-                                   datatype: 'JSON',
-                                   data: formDatas,
-                                   success: function (response) {
 
-                                      eval('valid_condition=' + response );
-                                      if (valid_condition) {
-                                          if (show_button == 1) {
-                                            if (document.getElementById('nextBtn').innerHTML == submittitle) {
-                                               document.getElementById('nextBtn').style.display = 'none';
-                                            }
-                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
-                                                document.getElementById('nextBtn').style.display = 'none';
-                                            }
-                                          } else {
-                                            if (document.getElementById('nextBtn').innerHTML == submittitle){
-                                                document.getElementById('nextBtn').style.display = 'inline';
-                                            }
-                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
-                                                document.getElementById('nextBtn').style.display = 'inline';
-                                            }
-                                          }
-                                      } else {
-                                         if (show_button == 1) {
-                                            if (document.getElementById('nextBtn').innerHTML == submittitle) {
-                                                document.getElementById('nextBtn').style.display = 'inline';
-                                            }
-                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
-                                                document.getElementById('nextBtn').style.display = 'inline';
-                                            }
-                                         } else {
-                                            if (document.getElementById('nextBtn').innerHTML == submittitle) {
-                                                document.getElementById('nextBtn').style.display = 'none';
-                                            }
-                                            if (document.getElementById('nextBtn').innerHTML == nextsteptitle) {
-                                                document.getElementById('nextBtn').style.display = 'none';
-                                            }
-                                         }
-                                      }
-                                   },
-                                   error: function (xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                   }
-                                });
-                  }
+                  plugin_metademands_wizard_showTab(metademandparams, false); // Display the current tab
 
-                  showTab(currentTab, nexttitle, submittitle); // Display the current tab
-                 
-                  
-                  function showTab(n,create = false, submittitle) {
-                     // This function will display the specified tab of the form...
-                     //document.getElementById('nextMsg').style.display = 'none';
-                     if (use_as_step == 1) {
-                        var x = document.getElementsByClassName('tab-step');
-                     } else {
-                        var x = document.getElementsByClassName('tab-nostep');
-                     }
-                   
-                     x[n].style.display = 'block';
-                     //... and fix the Previous/Next buttons:
-                     if (n == firstnumTab) {
-                        document.getElementById('prevBtn').style.display = 'none';
-                     } else {
-                        document.getElementById('prevBtn').style.display = 'inline';
-                     }
-
-                     document.getElementById('nextBtn').innerHTML = nexttitle;
-                     if (n == (x.length - 1) || create == true) {
-                        document.getElementById('nextBtn').innerHTML = submittitle;
-                     }
-                     
-                     //... and run a function that will display the correct step indicator:
-                     if (use_as_step == 1) {
-                        fixStepIndicator(n);
-                        fixButtonIndicator();
-                     }
-                  }
-                  function findFirstTab(block_id) {
-                      if (use_as_step == 1) {
-                        var x = document.getElementsByClassName('tab-step');
-                     } else {
-                        var x = document.getElementsByClassName('tab-nostep');
-                     }
-                    
-                      if(block_id > 0) {
-                          bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-                          id_bloc = parseInt(bloc.replace('bloc',''));
-                          while (block_id != id_bloc) {
-                             currentTab = currentTab+1;
-                             bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-                             id_bloc = parseInt(bloc.replace('bloc',''));
-                          }
-                          firstnumTab = currentTab;
-                      }
-                  }
-                  function nextPrev(n) {
-                      var modal = '$modal';
-                     // This function will figure out which tab to display
-                     if (use_as_step == 1) {
-                        var x = document.getElementsByClassName('tab-step');
-                     } else {
-                        var x = document.getElementsByClassName('tab-nostep');
-                     }
-                     
-                     // Exit the function if any field in the current tab is invalid:
-                     if (n == 1 && !validateForm()) return false;
-                  
-                     // Increase or decrease the current tab by 1:
-                     nextTab = currentTab + n;
-                     // Hide the current tab:
-                     if(x[currentTab] !== undefined) {
-                         x[currentTab].style.display = 'none';
-                     }
-                     
-                  
-                     // Increase or decrease the current tab by 1:
-                     currentTab = currentTab + n;
-                     
-                    
-                     create = false;
-                     createNow = false;
-
-                     if (use_as_step == 1) {
-                       
-                         var finded = false;
-                        
-                         while (finded == false) {
-
-                            if(true) {
-                               
-                                if(x[currentTab] == undefined || x[currentTab].firstChild == undefined) {
-                                     createNow = true;
-                                     finded = true;
-                                } else {
-                                    if(x[currentTab].firstChild.style.display != 'none' ) {
-                                         finded = true;
-                                         nextTab = currentTab + n;
-                                         while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                                             nextTab = nextTab + n;
-                                         }
-                                         if(nextTab >= x.length) {
-                                             create = true;
-                                         }
-                                     } else {
-                                         currentTab = currentTab + n;
-                                     }
-                                }
-                            } else {
-                                 finded = true;
-                            }
-                         }
-                     }
-                     // if you have reached the end of the form...
-                     if (currentTab >= x.length || createNow) {
-                  
-                        document.getElementById('nextBtn').style.display = 'none';
-                        // ... the form gets submitted:
-                        var meta_id = {$ID};
-                        if (typeof tinyMCE !== 'undefined') {
-                           tinyMCE.triggerSave();
-                        }
-                        jQuery('.resume_builder_input').trigger('change');
-                        $('select[id$=\"_to\"] option').each(function () {
-                           $(this).prop('selected', true);
-                        });
-                        $('#ajax_loader').show();
-                        arrayDatas = $('#wizard_form').serializeArray();
-                        arrayDatas.push({name: 'save_form', value: true});
-                        arrayDatas.push({name: 'step', value: 2});
-                        arrayDatas.push({name: 'form_name', value: '$name'});
-                        
-                        if (seesummary == 1) {
-                            $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2',
-                                   type: 'POST',
-                                   datatype: 'html',
-                                   data: $('#wizard_form').serializeArray(),
-                                   success: function (response) {
-                                      $('#ajax_loader').hide();
-                                      $('.md-wizard').append(response);
-                                   },
-                                   error: function (xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                   }
-                                });
-                        } else {
-                                $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                   type: 'POST',
-                                   datatype: 'html',
-                                   data: arrayDatas,
-                                   success: function (response) {
-                                      if(response != 1){
-                                          $.ajax({
-                                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?" . $paramUrl . "',
-                                                type: 'POST',
-                                                data: arrayDatas,
-                                                success: function (response) {
-                                                   if(response != 1){
-                                                        window.location.href = nexthref;
-                                                   } else {
-                                                        location.reload();
-                                                   }
-                                                },
-                                                error: function (xhr, status, error) {
-                                                   console.log(xhr);
-                                                   console.log(status);
-                                                   console.log(error);
-                                                }
-                                             });
-                                      } else {
-                                           location.reload();
-                                       }
-                                   },
-                                   error: function (xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                   }
-                                });
-                        }
-                  
-                        return false;
-                     }
-
-                     bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-                     id_bloc = parseInt(bloc.replace('bloc',''));
-                     
-                     document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
-                     document.getElementById('ablock' + id_bloc)?.classList.add('active');
-                     if (n == -1) {
-                         if(document.querySelector('.scrollable-tabs')){
-                            document.querySelector('.scrollable-tabs').scrollBy({ left: -150, behavior: 'smooth' });
-                         }
-                     } else {
-                         if(document.querySelector('.scrollable-tabs')){
-                            document.querySelector('.scrollable-tabs').scrollBy({ left: 150, behavior: 'smooth' });
-                         }
-                     }
-                     
-                     if (typeof metademands !== 'undefined') {
-                     
-                         if(!metademands.listStepBlock.includes(id_bloc)) {
-                            if (typeof tinyMCE !== 'undefined') {
-                               tinyMCE.triggerSave();
-                            }
-                            var updatestepform = '$updateStepform';
-                            jQuery('.resume_builder_input').trigger('change');
-                            $('select[id$=\"_to\"] option').each(function () {
-                               $(this).prop('selected', true);
-                            });
-                            arrayDatas = $('#wizard_form').serializeArray();
-                            arrayDatas.push({name: 'block_id', value: id_bloc});
-                            arrayDatas.push({name: 'action', value: 'nextUser'});
-                            arrayDatas.push({name: 'form_name', value: '$name'});
-                            arrayDatas.push({name: 'update_stepform', value: updatestepform});
-                            if(modal == true) {
-                                showStep(arrayDatas);
-                            } else {
-                                nextUser(arrayDatas);
-                            }
-    
-                         } else {
-                            showTab(currentTab,create, submittitle, submitmsg);
-                         }
-                     }
-                     
-                     // Otherwise, display the correct tab:
-                  }
-                  
-                  function nextUser(arrayDatas) {
-                     $.ajax(
-                            {
-                                type: 'POST',
-                                url: '" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/nextUser.php" . "',
-                                data: arrayDatas,
-                                dataType: 'JSON',
-                                success: function(ret) {
-                                
-                                    if(ret == 0) {
-                                        location.href = '" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php" . "';
-                                    } else {
-                                        window.location.reload();
-                                    }
-                                },
-                                error: function (xhr, status, error) {
-                                       console.log(xhr);
-                                       console.log(status);
-                                       console.log(error);
-                                    }
-                            }
-                        );
-                  }
-                  
-                  function showStep(arrayDatas) {
-                        $.ajax(
-                            {
-                                type : 'POST',
-                                url :'" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/showStep.php',
-                                data : arrayDatas,
-                                dataType : 'JSON',
-                                success: function(response) {
-                                try {
-
-                                        // For modern browsers except IE:
-                                        var event = new Event('show.bs.modal');
-                                        
-                                        } catch(err) {
-                                        
-                                        // If IE 11 (or 10 or 9...?) do it this way:
-                                        
-                                        // Create the event.
-                                        var event = document.createEvent('Event');
-                                        
-                                }
-//                                console.log(response);
-//                                $('#modalgroupspan').html(response.html);
-                                $('#modalgroupspan').html(response);
-                                $.globalEval(response.js);
-                                $('#modalgroup').modal('show');
-                                document.dispatchEvent(event);
-                                },
-                                error : function (xhr, status, error) {
-                                       console.log(xhr);
-                                       console.log(status);
-                                       console.log(error);
-                                    }
-                                
-                            });
-                                         
-                  }
-                 
-                  
-                  function validateForm() {
-                     // This function deals with validation of the form fields
-                     var x, y, i, valid = true, ko = 0, kop = 0, radioexists = 0, lengthr = 0;
-                  
-                     if (use_as_step == 1) {
-                        var x = document.getElementsByClassName('tab-step');
-                     } else {
-                        var x = document.getElementsByClassName('tab-nostep');
-                     }
-                     y = x[currentTab].getElementsByTagName('input');
-                     z = x[currentTab].getElementsByTagName('select');
-                     w = x[currentTab].getElementsByTagName('textarea');
-                     var mandatory = [];
-
-                     var mandatory_regex = [];
-
-                     //check mandatory signature
-                     let keys = Object.keys(sessionStorage);
-                     for(let key of keys) {
-                         if (key == 'mandatory_sign') {
-                             mandatory.push(sessionStorage.getItem(key));
-                             ko++;
-                         } 
-                     }
-                        
-                     // A loop that checks every input field in the current tab:
-                     for (i = 0; i < y.length; i++) {
-    
-                        // If a field is empty...
-                        fieldid = y[i].id;
-                        fieldname = y[i].name;
-                        fieldtype = y[i].type;
-
-                        if ((fieldtype == 'email' || fieldtype == 'tel'  || fieldtype == 'url') 
-                        && document.getElementById(fieldid) != null
-                        && !document.getElementById(fieldid).checkValidity()){
-                            document.getElementById(fieldid).reportValidity();
-                            return false;
-                        }
-    
-                        fieldmandatory = y[i].required;
-                        if (fieldname != '_uploader_filename[]'
-                           && fieldname != '_uploader_content[]'
-                           && fieldtype != 'file'
-                            && fieldtype != 'informations'
-                           //                                    && fieldtype != 'hidden'
-                            && fieldmandatory == true) {
-
-                           var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-
-                           if (res != 'none') {
-                               //ignore for hidden inputs below file inputs  
-                               if(!y[i].parentElement.querySelector('input[type=\"file\"]')) {
-                                    if (y[i].value == '') {
-                                      $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                      $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-        //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                                      //hack for date
-                                      $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
-                                      $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
-                                      var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                      if (newfieldname) {
-                                         mandatory.push(newfieldname[1]);
-                                      }
-                                      ko++;
-                                   } else {
-                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                        $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                                        if (y[i].type === 'text') {
-                                            if (y[i].pattern) {
-                                                let regex = new RegExp(y[i].pattern);
-                                                if (!regex.test(y[i].value)) {
-                                                    $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                                    $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                                    var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                                     if (newfieldname) {
-                                                        mandatory_regex.push(newfieldname[1]);
-                                                     }
-                                                     kop++;
-                                                }
-                                            }
-                                        }
-                                        //hack for date
-                                        $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
-                                        $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
-                                      
-        //                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                                   }
-                               }
-                            } else {
-                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                                hack for date
-                                $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
-                                $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
-                            }
-                        }
-                        if (y[i].type == 'file' && fieldname == '_uploader_filename[]' && fieldname.indexOf('_uploader_field') == -1 && y[i].required) {
-                            var inputPieceJointe = document.getElementById(fieldid);
-                            let fileIndicator = inputPieceJointe.parentElement.getElementsByClassName('fileupload_info')[0];
-                            
-                            if (fileIndicator.getElementsByTagName('p').length > 0) {
-                               $('#'+y[i].id).removeClass('invalid');
-                               $('#'+y[i].id).removeAttr('required');
-//                         $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                            } else {
-                               $('#'+y[i].id).addClass('invalid');
-                               $('#'+y[i].id).attr('required', 'required');
-//                         $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                               var newfieldname = fileIndicator.id.match(/\d+$/);
-                               if (newfieldname) {
-                                  mandatory.push(newfieldname[0]);
-                               }
-                               ko++;
-                            }
-                        }
-                        
-                        
-                        if (y[i].type == 'radio' && fieldmandatory == true) {
-                            
-                            var boutonsRadio = document.querySelectorAll('input[name=\"' + fieldname + '\"]');
-                            var check = false;
-                            for (var b = 0; b < boutonsRadio.length; b++) {
-                              if (boutonsRadio[b].checked) {
-                                check = true;
-                                break;
-                              }
-                            }
-                            // Vérifier le résultat
-                            if (check) {
-                              $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                            } else {
-                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                               var newfieldname = fieldid.match(/\[(.*?)\]/);
-                               if (newfieldname) {
-                                   mandatory.push(newfieldname[1]);
-                               }
-                              ko++;
-                            }
-
-                        }
-                        if (y[i].type == 'checkbox' && fieldmandatory == true) {
-                          var newfieldname = fieldname.match(/^(.*?)\[\w+\]/)[0];
-                          var casesACocher = document.querySelectorAll('input[name*=\"' + newfieldname + '\"]');
-
-                            // Parcourir les cases à cocher pour vérifier s'il y en a au moins une de cochée
-                            var check = false;
-                            for (var c = 0; c < casesACocher.length; c++) {
-                                if (casesACocher[c].checked) {
-                                check = true;
-                                break;
-                                }
-                            }
-                           if (check) {
-                              $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
-                              $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
-//                              $('[for*=\"' + newfieldname + '\"]').css('color', 'unset');
-                            } else {
-                               $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
-                               $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
-//                              $('[for*=\"' + newfieldname + '\"]').css('color', 'red');
-                               var mandfieldname = fieldid.match(/\[(.*?)\]/);
-                               if (mandfieldname) {
-                                   mandatory.push(mandfieldname[1]);
-                               }
-                               ko++;
-                            }
-                        }
-
-                         if (y[i].type == 'range' && fieldmandatory == true) {
-                               minimal_mandatory = y[i].getAttribute('minimal_mandatory');
-                              var fieldname = y[i].name;
-                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                              if (res != 'none' && parseInt(y[i].value) < parseInt(minimal_mandatory) ) {
-                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                 var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                 if (newfieldname) {
-                                    mandatory.push(newfieldname[1]);
-                                 }
-                                 ko++;
-                              } else {
-                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                              }
-                  
-                           }
-                     }
-                     
-                  
-                     //for textarea
-                     if (w.length > 0) {
-                        for (var y = 0; y < w.length; y++) {
-                            fieldmandatory = w[y].required;
-                            var fieldname = w[y].name;
-                            var fieldid = w[y].id;
-                            
-                            var textarea = w[y];
-                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                            //hack for tinymce
-
-                            if (document.querySelector('div[id-field=\"' + fieldid +'\"] > .tox-tinymce') !== null) {
-                               if(document.querySelector('div[id-field=\"' + fieldid + '\"] > .tox-tinymce').classList.contains('required')) {
-                                  fieldmandatory = true;
-                               }
-                            }
-                            const richtextarea = document.querySelector('textarea[id=\"' + fieldid +'\"]');
-                            const nextDiv = richtextarea.nextElementSibling;
-                            
-                            if (nextDiv && nextDiv.tagName.toLowerCase() === 'div') {
-                                if(nextDiv.classList.contains('required')) {
-                                  fieldmandatory = true;
-                               }
-                            }
-                            if (res != 'none' && fieldmandatory == true) {
-                                if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
-                                    var contenu = tinymce.get(textarea.id).getContent();
-                                    // Vérifier si le contenu est vide
-                                    if (contenu.trim().length) {
-                                       $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                    } else {
-                                        $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                        $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                        $('[name=\"' + fieldname + '\"]').next().css('border','solid 1px red');
-                                        var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                        
-                                        if (newfieldname) {
-                                            mandatory.push(newfieldname[1]);
-                                        }
-                                        ko++;
-                                    }
-                                } else {
-                                    var contenu = textarea.value.trim();
-                                    // Vérifier si le contenu est vide
-                                    if (contenu.length) {
-                                       $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                    } else {
-                                       $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                       $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                       var newfieldname = fieldid.match(/\[(.*?)\]/);
-                                       if (newfieldname) {
-                                           mandatory.push(newfieldname[1]);
-                                       }
-                                       ko++;
-                                    }
-                                }
-                            }
-                        }
-                     }
-                     //for select
-                     if (z.length > 0) {
-                        for (i = 0; i < z.length; i++) {
-                           fieldmandatory = z[i].required;
-                           // If a field is empty...
-                           isnumber = z[i].getAttribute('isnumber');
-                           ismultiplenumber = z[i].getAttribute('ismultiplenumber');
-                           minimal_mandatory = z[i].getAttribute('minimal_mandatory');
-                           var fieldname = z[i].name;
-                           var idfield = fieldname.replace(/[\[\]]/g,'')
-                           var visible = $('[id-field=\"'+idfield+'\"]').css('display');
-
-                           if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true && visible != 'none') {
-                              // add an 'invalid' class to the field:
-                              var fieldname = z[i].name;
-                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                              if (res != 'none') {
-                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
-
-                                 var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                 if (newfieldname) {
-                                    mandatory.push(newfieldname[1]);
-                                 }
-                                 ko++;
-                              } else {
-                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                              }
-                  
-                           } else if (isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
-                              // add an 'invalid' class to the field:
-                              var fieldname = z[i].name;
-                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                              if (res != 'none' && parseInt(z[i].value) < parseInt(minimal_mandatory) ) {
-                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                 var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                 if (newfieldname) {
-                                    mandatory.push(newfieldname[1]);
-                                 }
-                                 ko++;
-                              } else {
-                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                              }
-                  
-                           } else if (z[i].value == 0 && ismultiplenumber == 'ismultiplenumber' && fieldmandatory == true) {
-                              // add an 'invalid' class to the field:
-                              var fieldname = z[i].name;
-                              var newfieldname = fieldname.match(/^(.*?)\[\w+\]/)[0];
-                              
-                              var numbers = document.querySelectorAll('[name*=\"' + newfieldname + '\"]');
-                               var check = false;
-                                for (var n = 0; n < numbers.length; n++) {
-//                                console.log(numbers[n].name);
-                                    var myval = $('[name*=\"' + numbers[n].name + '\"]').children('option:selected').val();
-                                    if (myval > 0) {
-                                        check = true;
-                                        break;
-                                    }
-                                }
-
-                                if (check) {
-                                    $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
-                                    $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
-                                    //                              $('[for*=\"' + fieldname + '\"]').css('color', 'unset');
-                                } else {
-                                    $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
-                                    $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
-                                    //                              $('[for*=\"' + fieldname + '\"]').css('color', 'red');
-                                    var mandfieldname = fieldname.match(/\[(.*?)\]/);
-                                    if (mandfieldname) {
-                                        mandatory.push(mandfieldname[1]);
-                                    }
-                                    ko++;
-                                }
-                  
-                           } else {
-                              z[i].classList.remove('invalid');
-                           }
-                        }
-                     }
-
-                     if (ko > 0) {
-
-                        valid = false;
-                        
-                        const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);
-                        const fields_mandatory_unique = fields_mandatory.filter((element, index) => fields_mandatory.indexOf(element) === index);
-                        fields_mandatory_unique.sort((a, b) => a - b);
-                        //all_meta_fields
-                        var alert_mandatory_fields = [];
-                        $.each( fields_mandatory_unique, function( k, v ) {
-                            $.each( all_meta_fields, function( key, value ) {
-                                if (v == key) {
-                                   alert_mandatory_fields.push(value);
-                                }
-                            });
-                        });
-                        alert_mandatory_fields_list = alert_mandatory_fields.join('<br> ');
-                        alert_msg = msg + ' : <br><br>' + alert_mandatory_fields_list;
-                        alert(alert_msg);
-                     }
-                     
-                     if (kop > 0) {
-//                        console.log(mandatory);
-                        valid = false;
-                        
-                        const fields_mandatory_regex = mandatory_regex.filter(element => element !== '' && element !== null && element !== undefined);
-                        const fields_mandatory_unique_regex = fields_mandatory_regex.filter((element, index) => fields_mandatory_regex.indexOf(element) === index);
-                        fields_mandatory_unique_regex.sort((a, b) => a - b);
-                        //all_meta_fields
-                        var alert_regex_fields = [];
-                        $.each( fields_mandatory_unique_regex, function( k, v ) {
-                            $.each( all_meta_fields, function( key, value ) {
-                                if (v == key) {
-                                   alert_regex_fields.push(value);
-                                }
-                            });
-                        });
-                        alert_regex_fields_list = alert_regex_fields.join('<br> ');
-                        alert_msg = msg_regex + ' : <br><br>' + alert_regex_fields_list;
-                        alert(alert_msg);
-                     }
-                  
-                     return valid; // return the valid status
-                  }
-                  
-                  function fixStepIndicator(n) {
-                     // This function removes the 'active' class of all steps...
-                     var i, x = document.getElementsByClassName('step_wizard');
-                     for (i = 0; i < x.length; i++) {
-                        x[i].className = x[i].className.replace(' active', '');
-                     }
-                     //... and adds the 'active' class on the current step:
-
-                     if (x[n] != undefined && x[n].className) {
-                        x[n].className += ' active';
-                     }
-
-                     if (use_as_step == 1) {
-                        var tabx = document.getElementsByClassName('tab-step');
-                     } else {
-                        var tabx = document.getElementsByClassName('tab-nostep');
-                     }
-
-                     bloc = tabx[n].firstChild.getAttribute('bloc-id');
-                     id_bloc = parseInt(bloc.replace('bloc',''));
-//                     console.log(id_bloc);
-                     $(document).ready(function () {
-                       $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/getNextMessage.php',
-                                type: 'POST',
-                                data:
-                                  {
-                                    '_glpi_csrf_token':'" . Session::getNewCSRFToken() . "',
-                                    plugin_metademands_metademands_id: $ID,
-                                    block_id: id_bloc
-                                  },
-                                success: function(response){
-                                  if (response.length == 0) {
-                                      document.getElementById('nextMsg').style.display = 'none';
-                                  } else {
-
-                                      document.getElementById('nextMsg').style.display = 'block';
-                                      document.getElementById('nextMsg').innerHTML = response;
-                                      sessionStorage.setItem('currentStep', id_bloc);
-                                  }
-                                 },
-                                error: function(xhr, status, error) {
-                                   console.log(xhr);
-                                   console.log(status);
-                                   console.log(error);
-                                 } 
-                             });
-                     });
-                  }
                   });
                </script>";
     }

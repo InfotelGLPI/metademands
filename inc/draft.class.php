@@ -567,7 +567,7 @@ class PluginMetademandsDraft extends CommonDBTM
 
         $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
 
-        $content = "<div id='div_save_draft'  style='{$style}'>
+        $content = "<br><div id='div_save_draft'  style='{$style}'>
                         <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>" . $input_name . "
                         </button>
                         <script>
