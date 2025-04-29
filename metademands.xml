@@ -378,6 +378,13 @@
         </en>
     </tags>
     <screenshots>
-      <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/basket.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Form.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc1.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc2.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc3.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc4.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc5.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc6.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc7.png</screenshot>
    </screenshots>
 </root>
