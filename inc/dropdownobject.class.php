@@ -310,11 +310,13 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit([
                             'plugin_metademands_fields_id' => $fieldUser->fields['id']
                         ])) {
-                        $opt['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
-                            && $fieldparameter->fields['default_use_id_requester'] == 0) ?
-                            0 : Session::getLoginUserID();
+                        if (empty($opt['value']) || $opt['value'] == 0) {
+                            $opt['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
+                                && $fieldparameter->fields['default_use_id_requester'] == 1) ?
+                                Session::getLoginUserID() : 0;
+                        }
 
-                        if (empty($opt['value'])) {
+                        if (empty($opt['value']) || $opt['value'] == 0) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
                             $opt['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);

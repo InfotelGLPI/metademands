@@ -877,7 +877,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                 $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                 $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
-                                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show()";
+                                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
                             }
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {

@@ -35,6 +35,7 @@ if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
 }
 
 Session::checkLoginUser();
+
 $fieldUser = new PluginMetademandsField();
 $readonly = 0;
 $default_use_id_requester_supervisor  = 0;
