@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-29 14:37+0000\n"
+"POT-Creation-Date: 2025-04-29 15:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -153,8 +153,8 @@ msgid "Example"
 msgstr ""
 
 #: ajax/viewtypefields.php:55 inc/dropdown.class.php:246
-#: inc/dropdownmeta.class.php:1259 inc/dropdownobject.class.php:570
-#: inc/dropdownobject.class.php:662 inc/tel.class.php:120
+#: inc/dropdownmeta.class.php:1259 inc/dropdownobject.class.php:572
+#: inc/dropdownobject.class.php:664 inc/tel.class.php:120
 #: inc/text.class.php:117
 msgid "Link this to a user field"
 msgstr ""
@@ -350,7 +350,7 @@ msgstr ""
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
 #: inc/dropdown.class.php:271 inc/dropdownmeta.class.php:1304
-#: inc/dropdownmultiple.class.php:724 inc/dropdownobject.class.php:739
+#: inc/dropdownmultiple.class.php:724 inc/dropdownobject.class.php:741
 #: inc/field.class.php:1341 inc/fieldoption.class.php:343
 #: inc/radio.class.php:268 inc/yesno.class.php:129
 msgid "Value to check"
@@ -360,10 +360,10 @@ msgstr ""
 #: inc/checkbox.class.php:303 inc/dropdown.class.php:305
 #: inc/dropdown.class.php:341 inc/dropdownmeta.class.php:1374
 #: inc/dropdownmeta.class.php:1384 inc/dropdownmeta.class.php:1405
-#: inc/dropdownmultiple.class.php:845 inc/dropdownobject.class.php:803
-#: inc/dropdownobject.class.php:806 inc/dropdownobject.class.php:816
-#: inc/dropdownobject.class.php:838 inc/dropdownobject.class.php:854
-#: inc/dropdownobject.class.php:865 inc/radio.class.php:288
+#: inc/dropdownmultiple.class.php:845 inc/dropdownobject.class.php:805
+#: inc/dropdownobject.class.php:808 inc/dropdownobject.class.php:818
+#: inc/dropdownobject.class.php:840 inc/dropdownobject.class.php:856
+#: inc/dropdownobject.class.php:867 inc/radio.class.php:288
 #: inc/radio.class.php:301
 msgid "Not null value"
 msgstr ""
@@ -371,7 +371,7 @@ msgstr ""
 #: inc/basket.class.php:759 inc/checkbox.class.php:507
 #: inc/dropdown.class.php:509 inc/dropdownmeta.class.php:1583
 #: inc/dropdownmultiple.class.php:1092 inc/dropdownmultiple.class.php:1226
-#: inc/dropdownobject.class.php:1016 inc/email.class.php:325
+#: inc/dropdownobject.class.php:1018 inc/email.class.php:325
 #: inc/radio.class.php:447 inc/tel.class.php:327 inc/text.class.php:325
 #: inc/textarea.class.php:278 inc/url.class.php:325 inc/wizard.class.php:1939
 #: inc/yesno.class.php:270
@@ -382,7 +382,7 @@ msgstr ""
 #: inc/basket.class.php:761 inc/checkbox.class.php:508
 #: inc/dropdown.class.php:510 inc/dropdownmeta.class.php:1585
 #: inc/dropdownmultiple.class.php:1094 inc/dropdownmultiple.class.php:1228
-#: inc/dropdownobject.class.php:1017 inc/email.class.php:327
+#: inc/dropdownobject.class.php:1019 inc/email.class.php:327
 #: inc/radio.class.php:448 inc/tel.class.php:329 inc/text.class.php:326
 #: inc/textarea.class.php:280 inc/url.class.php:327 inc/wizard.class.php:1193
 #: inc/wizard.class.php:1914 inc/wizard.class.php:1937
@@ -720,8 +720,8 @@ msgid "Date"
 msgstr ""
 
 #: inc/date.class.php:100 inc/datetime.class.php:100 inc/dropdown.class.php:233
-#: inc/dropdownmeta.class.php:1233 inc/dropdownobject.class.php:599
-#: inc/dropdownobject.class.php:681
+#: inc/dropdownmeta.class.php:1233 inc/dropdownobject.class.php:601
+#: inc/dropdownobject.class.php:683
 msgid "Use this field for child ticket field"
 msgstr ""
 
@@ -796,7 +796,7 @@ msgstr ""
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:1283 inc/dropdownobject.class.php:630
+#: inc/dropdownmeta.class.php:1283 inc/dropdownobject.class.php:632
 msgid "Read-Only"
 msgstr ""
 
@@ -824,19 +824,19 @@ msgstr ""
 msgid "Double column display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:669 inc/dropdownobject.class.php:591
+#: inc/dropdownmultiple.class.php:669 inc/dropdownobject.class.php:593
 msgid "Only users of my groups"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:679 inc/dropdownobject.class.php:611
+#: inc/dropdownmultiple.class.php:679 inc/dropdownobject.class.php:613
 msgid "Use id of requester by default"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:686 inc/dropdownobject.class.php:618
+#: inc/dropdownmultiple.class.php:686 inc/dropdownobject.class.php:620
 msgid "Use id of supervisor requester by default"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:698 inc/dropdownobject.class.php:637
+#: inc/dropdownmultiple.class.php:698 inc/dropdownobject.class.php:639
 #: inc/fieldparameter.class.php:816
 msgid "Informations to display in ticket and PDF"
 msgstr ""
