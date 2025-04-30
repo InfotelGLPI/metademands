@@ -4542,6 +4542,10 @@ JAVASCRIPT
         echo "<div class='center'><table class='tab_cadrehov'>";
         echo "<tr class='tab_bg_2'>";
 
+        echo "<td class='center'><b>";
+        echo __('Filter', 'glpi')."&nbsp;";
+        echo "</b></td>";
+
         echo "<td class='center'>";
         $iterator = $DB->request([
             'SELECT'    => ['MAX' => 'rank AS maxrank'],
@@ -4599,7 +4603,7 @@ JAVASCRIPT
 
         echo "<td>";
         echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
-        echo Html::submit(_sx('button', 'Post'), ['name' => 'search', 'class' => 'btn btn-primary']);
+        echo Html::submit(_sx('button', 'Search'), ['name' => 'search', 'class' => 'btn btn-primary']);
         echo "</td>";
         echo "</tr>";
 
