@@ -601,34 +601,14 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
         let create = false;
         if (metademandparams.use_as_step == 1) {
 
-            // console.log(metademandparams.currentTab);
-            // if (typeof metademandparams.currentTab !== 'undefined') {
-            //
-            //     tabx = document.getElementsByClassName('tab-step');
-            //     bloc = tabx[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            //     id_bloc = parseInt(bloc.replace('bloc', ''));
-            //     //hide others blocks
-            //     $('div[bloc-id^=\"bloc\"]').hide();
-            //
-            //     tabx[metademandparams.currentTab].style.display = 'block';
-            //     var blocx = 'bloc' + id_bloc;
-            //     blocdiv = 'div[bloc-id=\"'+ blocx + '\"]';
-            //     $(blocdiv).css("display", "block");
-            // }
-
             const asArray = Array.from(x);
             const displayed = asArray.find(e => e.style.display == 'block');
-
-            // console.log(displayed);
-
+            
             let nextTab = asArray.indexOf(displayed) + 1;
 
             while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                 nextTab = nextTab + 1;
             }
-            nextTab = 2;
-            // console.log(nextTab);
-            // console.log(x.length);
 
             if (x[nextTab] != undefined) {
                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
@@ -781,6 +761,7 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
 
 function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandconditionsparams) {
 
+    var firstnumTab = 0;
     // This function will figure out which tab to display
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
