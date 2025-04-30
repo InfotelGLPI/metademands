@@ -1424,38 +1424,16 @@ class PluginMetademandsWizard extends CommonDBTM
         if (count($childs_meta) > 0) {
             $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         }
-        $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-
-        $title = _sx('button', 'Save & send to another user / group', 'metademands');
-        $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-
         $see_summary = 0;
         if ($metademands->fields['is_basket'] == 1) {
             $title = _sx('button', 'See basket summary & send it', 'metademands');
             $see_summary = 1;
         }
+        $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
 
         $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
 
-        $modal = true;
-
         $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 99999999;
-
-        $updateStepform = 0;
-        if (!isset($stepConfig->fields['supervisor_validation'])
-            && !isset($stepConfig->fields['link_user_block'])
-            && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
-            $modal = false;
-        } else if ($block_current_id_stepform != 99999999) {
-            $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
-                $metademands->fields['id'],
-                $block_current_id_stepform + 1
-            );
-            if (!$canSeeNextBlock) {
-                $modal = true;
-                $updateStepform = 1;
-            }
-        }
 
         $listStepBlocks = [];
 
@@ -1488,6 +1466,23 @@ class PluginMetademandsWizard extends CommonDBTM
 
         if ($use_as_step == 1) {
             $listStepBlocks = PluginMetademandsStep::defineStepblocks($metademands->fields['id']);
+        }
+
+        $updatestepform = 0;
+        $havenextuser = true;
+        if (!isset($stepConfig->fields['supervisor_validation'])
+            && !isset($stepConfig->fields['link_user_block'])
+            && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
+            $havenextuser = false;
+        } else if ($block_current_id_stepform != 99999999) {
+            $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
+                $metademands->fields['id'],
+                $block_current_id_stepform + 1
+            );
+            if (!$canSeeNextBlock) {
+                $havenextuser = true;
+                $updatestepform = 1;
+            }
         }
 
         $fields = new PluginMetademandsField();
@@ -1534,8 +1529,6 @@ class PluginMetademandsWizard extends CommonDBTM
         //MSG
         $metaparams['nexttitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         $metaparams['submittitle'] = $submittitle;
-        $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-        $metaparams['submitsteptitle'] = $submitsteptitle;
         $metaparams['alert'] = __('Thanks to fill mandatory fields', 'metademands');
         $metaparams['alert_regex'] = __("These fields don\'t respect regex", 'metademands');
         //End MSG
@@ -1543,6 +1536,13 @@ class PluginMetademandsWizard extends CommonDBTM
         //Use as step parameters
         $metaparams['use_as_step'] = $use_as_step;
         $metaparams['listStepBlocks'] = $listStepBlocks;
+        $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        $metaparams['submitsteptitle'] = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & send to another user / group', 'metademands');
+        //For multi User forms
+        $metaparams['havenextuser'] = $havenextuser;
+        $metaparams['updatestepform'] = $updatestepform;
+        //End For multi User forms
+
         //End Use as step parameters
 
         //Basket parameters
@@ -1552,10 +1552,7 @@ class PluginMetademandsWizard extends CommonDBTM
         //For alert for validate script
         $metaparams['json_all_meta_fields'] = $json_all_meta_fields;
 
-        //For multi User forms
-        $metaparams['modal'] = $modal;
-        $metaparams['updateStepform'] = $updateStepform;
-        //End For multi User forms
+
 
         //For block as tab ?
         $metaparams['block_id'] = $block_id;
@@ -1844,7 +1841,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                        metademandparams.id = '$ID';
 //                        metademandparams.block_id = '$block_id';
 //
-//                        fixButtonIndicator(metademandparams);
+//                        plugin_metademands_wizard_fixStepButton(metademandparams);
 //                    });"
 //                );
 //            }
@@ -1889,28 +1886,36 @@ class PluginMetademandsWizard extends CommonDBTM
                         var block_id = $block_id;
                         
                         window.metademandparams = {};
-                        metademandparams.nexttitle = '$nexttitle';
-                        metademandparams.submittitle = '$submittitle';
-                        metademandparams.submitsteptitle = '$submitsteptitle';
-                        metademandparams.nextsteptitle = '$nextsteptitle';
-                        metademandparams.msg = '$alert';
-                        metademandparams.msg_regex = '$alert_regex';
                         
-                        metademandparams.use_as_step = '$use_as_step';
-                        metademandparams.seesummary = '$see_summary';
-                        metademandparams.json_all_meta_fields = {$json_all_meta_fields};
-                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                        metademandparams.use_condition = '$use_condition';
-                         metademandparams.show_rule = '$show_rule';
-                        metademandparams.show_button = '$show_button';
-                        metademandparams.use_richtext = '$use_richtext';
-                        metademandparams.richtext_ids = {$richtext_id};
-                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                         metademandparams.root_doc = '$root_doc';
                         metademandparams.paramUrl = '$paramUrl';
                         metademandparams.token = '$token';
                         metademandparams.id = '$ID';
                         metademandparams.block_id = '$block_id';
+                        
+                        metademandparams.nexttitle = '$nexttitle';
+                        metademandparams.submittitle = '$submittitle';
+                        metademandparams.msg = '$alert';
+                        metademandparams.msg_regex = '$alert_regex';
+                        
+                        metademandparams.seesummary = '$see_summary';
+                        
+                        metademandparams.json_all_meta_fields = {$json_all_meta_fields};
+                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
+                       
+                        metademandparams.use_condition = '$use_condition';
+                        metademandparams.show_rule = '$show_rule';
+                        metademandparams.show_button = '$show_button';
+                        metademandparams.use_richtext = '$use_richtext';
+                        metademandparams.richtext_ids = {$richtext_id};
+                        
+                        metademandparams.use_as_step = '$use_as_step';
+                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
+                        metademandparams.havenextuser = '$havenextuser';
+                        metademandparams.updatestepform = '$updatestepform';
+                        metademandparams.submitsteptitle = '$submitsteptitle';
+                        metademandparams.nextsteptitle = '$nextsteptitle';
+                       
 
                         function updateActiveTab(rank) {
                             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
@@ -2100,16 +2105,16 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<div style='overflow:auto;'>";
 
+                if ($use_as_step == 1) {
+                    echo "<div id='nextMsg' class='alert alert-info center'>";
+                    echo "</div>";
+                }
+
                 $config = PluginMetademandsConfig::getInstance();
                 if ($config['use_draft']
                     && $draft_id == 0) {
                     //button create draft
                     echo PluginMetademandsDraft::createDraftInput(PluginMetademandsDraft::DEFAULT_MODE);
-                }
-
-                if ($use_as_step == 1) {
-                    echo "<div id='nextMsg' class='alert alert-info center'>";
-                    echo "</div>";
                 }
 
                 if (Session::haveRight("plugin_metademands_cancelform", READ)
@@ -2804,23 +2809,31 @@ class PluginMetademandsWizard extends CommonDBTM
                   $(document).ready(function (){
 
                     window.metademandparams = {};
-                    metademandparams.nexttitle = '$nexttitle';
-                    metademandparams.submittitle = '$submittitle';
-                    metademandparams.submitsteptitle = '$submitsteptitle';
-                    metademandparams.nextsteptitle = '$nextsteptitle';
-                    metademandparams.msg = '$alert';
-                    metademandparams.msg_regex = '$alert_regex';
                     
-                    metademandparams.use_as_step = '$use_as_step';
-                    metademandparams.seesummary = '$see_summary';
-                    metademandparams.json_all_meta_fields = {$json_all_meta_fields};
-                    metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                    metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
                     metademandparams.token = '$token';
                     metademandparams.id = '$ID';
                     metademandparams.block_id = '$block_id';
+                    
+                    metademandparams.nexttitle = '$nexttitle';
+                    metademandparams.submittitle = '$submittitle';
+                   
+                    metademandparams.msg = '$alert';
+                    metademandparams.msg_regex = '$alert_regex';
+                    
+                    
+                    metademandparams.seesummary = '$see_summary';
+                    
+                    metademandparams.json_all_meta_fields = {$json_all_meta_fields};
+                    metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
+                    
+                    metademandparams.use_as_step = '$use_as_step';
+                    metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
+                    metademandparams.havenextuser = '$havenextuser';
+                    metademandparams.updatestepform = '$updatestepform';
+                    metademandparams.submitsteptitle = '$submitsteptitle';
+                    metademandparams.nextsteptitle = '$nextsteptitle';
                     
                     window.metademandconditionsparams = {};
                     metademandconditionsparams.root_doc = '$root_doc';

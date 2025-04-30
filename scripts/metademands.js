@@ -597,56 +597,57 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
 
     //... and run a function that will display the correct step indicator:
     if (metademandparams.use_as_step == 1) {
-        plugin_metademands_wizard_fixStepIndicator(metademandparams);
-        // fixButtonIndicator(metademandparams);
+        plugin_metademands_wizard_displayStepMsg(metademandparams);
+        plugin_metademands_wizard_displayStepButton(metademandparams);
     }
 }
 
-function fixButtonIndicator(metademandparams) {
+function plugin_metademands_wizard_displayStepButton(metademandparams) {
 
+    //for next user button change
     if (typeof metademandparams !== 'undefined') {
 
-        // use_as_step = 1;
-        // if (metademandparams.use_as_step) {
-        //     x = document.getElementsByClassName('tab-step');
-        // } else {
-        //     x = document.getElementsByClassName('tab-nostep');
-        // }
-        //
-        // let create = false;
-        // if (metademandparams.use_as_step == 1) {
-        //
-        //     const asArray = Array.from(x);
-        //     const displayed = asArray.find(e => e.style.display == 'block');
-        //
-        //     let nextTab = asArray.indexOf(displayed) + 1;
-        //
-        //     while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-        //         nextTab = nextTab + 1;
-        //     }
-        //
-        //     if (x[nextTab] != undefined) {
-        //         let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
-        //
-        //         let id_bloc = parseInt(bloc.replace('bloc', ''));
-        //
-        //         if (typeof metademandparams !== 'undefined') {
-        //             if (!metademandparams.listStepBlock.includes(id_bloc)) {
-        //                 create = true;
-        //             }
-        //         }
-        //     }
-        //
-        //     if (nextTab >= x.length) {
-        //         document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
-        //     } else {
-        //         if (create) {
-        //             document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
-        //         } else {
-        //             document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
-        //         }
-        //     }
-        // }
+        use_as_step = 1;
+        if (metademandparams.use_as_step) {
+            x = document.getElementsByClassName('tab-step');
+        } else {
+            x = document.getElementsByClassName('tab-nostep');
+        }
+
+        let create = false;
+        if (metademandparams.use_as_step == 1) {
+
+            const asArray = Array.from(x);
+            const displayed = asArray.find(e => e.style.display == 'block');
+
+            let nextTab = asArray.indexOf(displayed) + 1;
+
+            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                nextTab = nextTab + 1;
+            }
+
+            if (x[nextTab] != undefined) {
+                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+
+                let id_bloc = parseInt(bloc.replace('bloc', ''));
+
+                if (typeof metademandparams !== 'undefined') {
+                    if (!metademandparams.listStepBlock.includes(id_bloc)) {
+                        create = true;
+                    }
+                }
+            }
+
+            if (nextTab >= x.length) {
+                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+            } else {
+                if (create) {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                } else {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                }
+            }
+        }
     }
 }
 function plugin_metademands_wizard_fixcheckConditions(metademandparams) {
@@ -656,7 +657,7 @@ function plugin_metademands_wizard_fixcheckConditions(metademandparams) {
     }
 }
 
-function plugin_metademands_wizard_fixStepIndicator(metademandparams) {
+function plugin_metademands_wizard_displayStepMsg(metademandparams) {
     // This function removes the 'active' class of all steps...
     var i, x = document.getElementsByClassName('step_wizard');
     for (i = 0; i < x.length; i++) {
@@ -676,7 +677,7 @@ function plugin_metademands_wizard_fixStepIndicator(metademandparams) {
 
     bloc = tabx[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
     id_bloc = parseInt(bloc.replace('bloc', ''));
-//                     console.log(id_bloc);
+
     $(document).ready(function () {
         $.ajax({
             url: metademandparams.root_doc + '/ajax/getNextMessage.php',
@@ -846,7 +847,7 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
         arrayDatas = $('#wizard_form').serializeArray();
         arrayDatas.push({name: 'save_form', value: true});
         arrayDatas.push({name: 'step', value: 2});
-        arrayDatas.push({name: 'form_name', value: '$name'});
+        arrayDatas.push({name: 'form_name', value: metademandparams.name});
 
         if (metademandparams.seesummary == 1) {
             $.ajax({
@@ -903,6 +904,7 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
 
         return false;
     }
+
     if (typeof metademandparams !== 'undefined') {
 
         if (x[metademandparams.currentTab] !== undefined) {
@@ -932,9 +934,9 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
                 arrayDatas = $('#wizard_form').serializeArray();
                 arrayDatas.push({name: 'block_id', value: id_bloc});
                 arrayDatas.push({name: 'action', value: 'nextUser'});
-                arrayDatas.push({name: 'form_name', value: '$name'});
+                arrayDatas.push({name: 'form_name', value: metademandparams.name});
                 arrayDatas.push({name: 'update_stepform', value: metademandparams.updatestepform});
-                if (metademandparams.modal == true) {
+                if (metademandparams.havenextuser == true) {
                     plugin_metademands_wizard_showStep(metademandparams.root_doc, arrayDatas);
                 } else {
                     plugin_metademands_wizard_nextUser(metademandparams.root_doc, arrayDatas);
