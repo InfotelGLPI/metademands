@@ -2241,7 +2241,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
-
+                echo "<a id='backtotop'></a>";
                 self::validateScript($metaparams, $metaconditionsparams);
             }
 
