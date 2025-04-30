@@ -1416,45 +1416,28 @@ class PluginMetademandsWizard extends CommonDBTM
 
     public static function getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated) {
 
-
-        //used for display mandatory fields on popup & nexttab
-        $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+        $token = Session::getNewCSRFToken();
 
         $title = _sx('button', 'Save & Post', 'metademands');
-
-        $see_summary = 0;
-        if ($metademands->fields['is_basket'] == 1) {
-            $title = _sx('button', 'See basket summary & send it', 'metademands');
-            echo Html::hidden('see_basket_summary', ['value' => 1]);
-            $see_summary = 1;
-        }
         $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
         if (count($childs_meta) > 0) {
             $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         }
         $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-        $submitmsg = "";
-        $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
         $title = _sx('button', 'Save & send to another user / group', 'metademands');
-
-
         $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-        $submitstepmsg = "";
+
+        $see_summary = 0;
+        if ($metademands->fields['is_basket'] == 1) {
+            $title = _sx('button', 'See basket summary & send it', 'metademands');
+            $see_summary = 1;
+        }
 
         $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
 
         $modal = true;
-
-        $hidden_blocks = [];
-
-        $name = Toolbox::addslashes_deep(
-                $metademands->fields['name']
-            ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-
-        $json_hidden_blocks = json_encode($hidden_blocks);
-        $alert = __('Thanks to fill mandatory fields', 'metademands');
-        $alert_regex = __("These fields don\'t respect regex", 'metademands');
-
 
         $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 99999999;
 
@@ -1527,15 +1510,6 @@ class PluginMetademandsWizard extends CommonDBTM
             }
         }
         $json_all_meta_fields = json_encode($all_meta_fields);
-        $use_condition = false;
-        $show_rule = $metademands->fields['show_rule'];
-        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
-            $condition = new PluginMetademandsCondition();
-            $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
-            if (count($conditions) > 0) {
-                $use_condition = true;
-            }
-        }
 
         $paramUrl = "";
         if ($current_ticket > 0 && !$meta_validated) {
@@ -1552,55 +1526,103 @@ class PluginMetademandsWizard extends CommonDBTM
             }
         }
 
-        $metaparams['nexttitle'] = $nexttitle;
+        $metaparams['root_doc'] = $root_doc;
+        $metaparams['token'] = $token;
+        $metaparams['ID'] = $metademands->fields['id'];
+        $metaparams['paramUrl'] = $paramUrl;
+
+        //MSG
+        $metaparams['nexttitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         $metaparams['submittitle'] = $submittitle;
-        $metaparams['submitmsg'] = $submitmsg;
-
-        $metaparams['nextsteptitle'] = $nextsteptitle;
+        $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         $metaparams['submitsteptitle'] = $submitsteptitle;
-        $metaparams['submitstepmsg'] = $submitstepmsg;
+        $metaparams['alert'] = __('Thanks to fill mandatory fields', 'metademands');
+        $metaparams['alert_regex'] = __("These fields don\'t respect regex", 'metademands');
+        //End MSG
 
+        //Use as step parameters
         $metaparams['use_as_step'] = $use_as_step;
+        $metaparams['listStepBlocks'] = $listStepBlocks;
+        //End Use as step parameters
+
+        //Basket parameters
         $metaparams['see_summary'] = $see_summary;
-        $metaparams['json_hidden_blocks'] = $json_hidden_blocks;
-        $metaparams['alert'] = $alert;
-        $metaparams['alert_regex'] = $alert_regex;
+        //End Basket parameters
+
+        //For alert for validate script
         $metaparams['json_all_meta_fields'] = $json_all_meta_fields;
+
+        //For multi User forms
+        $metaparams['modal'] = $modal;
+        $metaparams['updateStepform'] = $updateStepform;
+        //End For multi User forms
+
+        //For block as tab ?
+        $metaparams['block_id'] = $block_id;
+
+        return $metaparams;
+    }
+
+    public static function getConditionsParams($metademands) {
+
+        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+        $metaparams['root_doc'] = $root_doc;
+
+        $title = _sx('button', 'Save & Post', 'metademands');
+
+        $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
+        if (count($childs_meta) > 0) {
+            $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        }
+        $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+
+
+        $metaparams['submittitle'] = $submittitle;
+        $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+        $use_condition = false;
+
+        $show_rule = $metademands->fields['show_rule'];
+
+        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
+            $condition = new PluginMetademandsCondition();
+            $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+            if (count($conditions) > 0) {
+                $use_condition = true;
+            }
+        }
+
+        //Condition params
         $metaparams['use_condition'] = $use_condition;
         $metaparams['show_rule'] = $show_rule;
-        $metaparams['block_id'] = $block_id;
-        $metaparams['modal'] = $modal;
 
-        $metaparams['ID'] = $metademands->fields['id'];
-
-        $metaparams['name'] = $name;
-        $metaparams['paramUrl'] = $paramUrl;
-        $metaparams['listStepBlocks'] = $listStepBlocks;
-        $metaparams['updateStepform'] = $updateStepform;
+        $metaparams['show_button'] = 1;
+        if ($show_rule == PluginMetademandsCondition::SHOW_RULE_HIDDEN) {
+            $metaparams['show_button'] = 0;
+        }
         $metaparams['use_richtext'] = 0;
         $richtext_id = [];
-        if (countElementsInTable(
-                "glpi_plugin_metademands_fields",
-                ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea']
-            ) > 0) {
-            $metaparams['use_richtext'] = 1;
-            $richtext_fields = getAllDataFromTable(
-                "glpi_plugin_metademands_fields",
-                ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea']
-            );
-            foreach ($richtext_fields as $f) {
-                $fieldparameter = new PluginMetademandsFieldParameter();
-                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
-                    if ($fieldparameter->fields['use_richtext'] == 1) {
-                        $richtext_id[] = $f['id'];
-                    }
+
+        $richtext_fields = getAllDataFromTable(
+            "glpi_plugin_metademands_fields",
+            ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea']
+        );
+        foreach ($richtext_fields as $f) {
+            $fieldparameter = new PluginMetademandsFieldParameter();
+            if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
+                if ($fieldparameter->fields['use_richtext'] == 1) {
+                    $metaparams['use_richtext'] = 1;
+                    $richtext_id[] = $f['id'];
                 }
             }
         }
         $metaparams['richtext_id'] = json_encode($richtext_id);
 
+        //End Condition params
         return $metaparams;
     }
+
+
     /**
      * Display a metademand's content
      * @param $metademands_id int PluginMetademandsMetademand id, metademand to display
@@ -1625,7 +1647,6 @@ class PluginMetademandsWizard extends CommonDBTM
         global $CFG_GLPI;
 
         $metademands = new PluginMetademandsMetademand();
-        $dbu = new DbUtils();
         $metademands->getFromDB($metademands_id);
 
         //Redirected after end user Step
@@ -1772,59 +1793,61 @@ class PluginMetademandsWizard extends CommonDBTM
 
             $metaparams = self::getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated);
 
-            if ($metademands->fields['is_order'] == 0
-                && !$preview
-                && (!$seeform
-                    || (isset($options['resources_id'])
-                        && $options['resources_id'] > 0)
-                    || ($current_ticket > 0
-                        && ((!$meta_validated
-                                && $metademands->fields['can_update'] == true) ||
-                            ($meta_validated
-                                && $metademands->fields['can_clone'] == true))
-                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
-            ) {
-                foreach ($metaparams as $key => $val) {
-                    if (isset($metaparams[$key])) {
-                        $$key = $metaparams[$key];
-                    }
-                }
+            $metaconditionsparams = self::getConditionsParams($metademands);
 
-                $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-                $token = Session::getNewCSRFToken();
-
-                echo Html::scriptBlock(
-                    "
-                    $(document).ready(function () {
-                        window.metademandparams = {};
-                        metademandparams.nexttitle = '$nexttitle';
-                        metademandparams.submittitle = '$submittitle';
-                        metademandparams.submitmsg = '$submitmsg'; 
-                        metademandparams.use_as_step = '$use_as_step';
-                        metademandparams.submitsteptitle = '$submitsteptitle';
-                        metademandparams.nextsteptitle = '$nextsteptitle';
-                        metademandparams.seesummary = '$see_summary';
-                        metademandparams.msg = '$alert';
-                        metademandparams.msg_regex = '$alert_regex';
-                        metademandparams.all_meta_fields = {$json_all_meta_fields};
-                        metademandparams.firstnumTab = 0;
-                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                        metademandparams.use_condition = '$use_condition';
-                        metademandparams.show_button = 1;
-                        metademandparams.show_rule = '$show_rule';
-                        metademandparams.use_richtext = '$use_richtext';
-                        metademandparams.richtext_ids = {$richtext_id};
-                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
-                        metademandparams.root_doc = '$root_doc';
-                        metademandparams.paramUrl = '$paramUrl';
-                        metademandparams.token = '$token';
-                        metademandparams.id = '$ID';
-                        metademandparams.block_id = '$block_id';
-                        
-                        fixButtonIndicator(metademandparams);
-                    });"
-                );
+            if ($metademands->fields['is_basket'] == 1) {
+                echo Html::hidden('see_basket_summary', ['value' => 1]);
             }
+
+//            if ($metademands->fields['is_order'] == 0
+//                && !$preview
+//                && (!$seeform
+//                    || (isset($options['resources_id'])
+//                        && $options['resources_id'] > 0)
+//                    || ($current_ticket > 0
+//                        && ((!$meta_validated
+//                                && $metademands->fields['can_update'] == true) ||
+//                            ($meta_validated
+//                                && $metademands->fields['can_clone'] == true))
+//                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
+//            ) {
+//                foreach ($metaparams as $key => $val) {
+//                    if (isset($metaparams[$key])) {
+//                        $$key = $metaparams[$key];
+//                    }
+//                }
+//
+//                echo Html::scriptBlock(
+//                    "
+//                    $(document).ready(function () {
+//                        window.metademandparams = {};
+//                        metademandparams.nexttitle = '$nexttitle';
+//                        metademandparams.submittitle = '$submittitle';
+//                        metademandparams.submitsteptitle = '$submitsteptitle';
+//                        metademandparams.nextsteptitle = '$nextsteptitle';
+//                        metademandparams.msg = '$alert';
+//                        metademandparams.msg_regex = '$alert_regex';
+//
+//                        metademandparams.use_as_step = '$use_as_step';
+//                        metademandparams.seesummary = '$see_summary';
+//                        metademandparams.json_all_meta_fields = {$json_all_meta_fields};
+//                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
+//                        metademandparams.use_condition = '$use_condition';
+//                        metademandparams.show_rule = '$show_rule';
+//                        metademandparams.show_button = '$show_button';
+//                        metademandparams.use_richtext = '$use_richtext';
+//                        metademandparams.richtext_ids = {$richtext_id};
+//                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
+//                        metademandparams.root_doc = '$root_doc';
+//                        metademandparams.paramUrl = '$paramUrl';
+//                        metademandparams.token = '$token';
+//                        metademandparams.id = '$ID';
+//                        metademandparams.block_id = '$block_id';
+//
+//                        fixButtonIndicator(metademandparams);
+//                    });"
+//                );
+//            }
 
             $displayBlocksAsTab = 0;
             if ($metademands->fields['step_by_step_mode'] == 1
@@ -1841,10 +1864,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
 
-
-
-
-
             echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
             echo "</div>";
 
@@ -1857,8 +1876,12 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
 
-                $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-                $token = Session::getNewCSRFToken();
+                foreach ($metaconditionsparams as $key => $val) {
+                    if (isset($metaconditionsparams[$key])) {
+                        $$key = $metaconditionsparams[$key];
+                    }
+                }
+
                 echo Html::scriptBlock(
                     "$(document).ready(function () {
                         var hash = window.location.hash;
@@ -1868,19 +1891,18 @@ class PluginMetademandsWizard extends CommonDBTM
                         window.metademandparams = {};
                         metademandparams.nexttitle = '$nexttitle';
                         metademandparams.submittitle = '$submittitle';
-                        metademandparams.submitmsg = '$submitmsg'; 
-                        metademandparams.use_as_step = '$use_as_step';
                         metademandparams.submitsteptitle = '$submitsteptitle';
                         metademandparams.nextsteptitle = '$nextsteptitle';
-                        metademandparams.seesummary = '$see_summary';
                         metademandparams.msg = '$alert';
                         metademandparams.msg_regex = '$alert_regex';
-                        metademandparams.all_meta_fields = {$json_all_meta_fields};
-                        metademandparams.firstnumTab = 0;
+                        
+                        metademandparams.use_as_step = '$use_as_step';
+                        metademandparams.seesummary = '$see_summary';
+                        metademandparams.json_all_meta_fields = {$json_all_meta_fields};
                         metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
                         metademandparams.use_condition = '$use_condition';
-                        metademandparams.show_button = 1;
-                        metademandparams.show_rule = '$show_rule';
+                         metademandparams.show_rule = '$show_rule';
+                        metademandparams.show_button = '$show_button';
                         metademandparams.use_richtext = '$use_richtext';
                         metademandparams.richtext_ids = {$richtext_id};
                         metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
@@ -1889,8 +1911,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         metademandparams.token = '$token';
                         metademandparams.id = '$ID';
                         metademandparams.block_id = '$block_id';
-                        
-                        metademandparams.firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
 
                         function updateActiveTab(rank) {
                             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
@@ -2201,11 +2221,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
 
-                self::validateScript($metaparams);
-            }
-            else {
-                echo "<script>function fixButtonIndicator() {}
-                </script>";
+                self::validateScript($metaparams, $metaconditionsparams);
             }
 
             if ($draft_id != 0) {
@@ -2761,6 +2777,8 @@ class PluginMetademandsWizard extends CommonDBTM
         PluginMetademandsFieldOption::blocksHiddenScript($data);
 
         PluginMetademandsFieldOption::checkboxScript($data);
+
+        PluginMetademandsFieldOption::fixcheckConditions($data);
     }
 
 
@@ -2768,37 +2786,35 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param $params
      * @return void
      */
-    static function validateScript($params)
+    static function validateScript($metaparams, $metaconditionsparams)
     {
 
-        foreach ($params as $key => $val) {
-            if (isset($params[$key])) {
-                $$key = $params[$key];
+        foreach ($metaparams as $key => $val) {
+            if (isset($metaparams[$key])) {
+                $$key = $metaparams[$key];
             }
         }
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $token = Session::getNewCSRFToken();
+
+        foreach ($metaconditionsparams as $key => $val) {
+            if (isset($metaconditionsparams[$key])) {
+                $$key = $metaconditionsparams[$key];
+            }
+        }
         echo "<script>
                   $(document).ready(function (){
 
                     window.metademandparams = {};
                     metademandparams.nexttitle = '$nexttitle';
                     metademandparams.submittitle = '$submittitle';
-                    metademandparams.submitmsg = '$submitmsg'; 
-                    metademandparams.use_as_step = '$use_as_step';
                     metademandparams.submitsteptitle = '$submitsteptitle';
                     metademandparams.nextsteptitle = '$nextsteptitle';
-                    metademandparams.seesummary = '$see_summary';
                     metademandparams.msg = '$alert';
                     metademandparams.msg_regex = '$alert_regex';
-                    metademandparams.all_meta_fields = {$json_all_meta_fields};
-                    metademandparams.firstnumTab = 0;
+                    
+                    metademandparams.use_as_step = '$use_as_step';
+                    metademandparams.seesummary = '$see_summary';
+                    metademandparams.json_all_meta_fields = {$json_all_meta_fields};
                     metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                    metademandparams.use_condition = '$use_condition';
-                    metademandparams.show_button = 1;
-                    metademandparams.show_rule = '$show_rule';
-                    metademandparams.use_richtext = '$use_richtext';
-                    metademandparams.richtext_ids = {$richtext_id};
                     metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
@@ -2806,58 +2822,23 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandparams.id = '$ID';
                     metademandparams.block_id = '$block_id';
                     
-                    metademandparams.firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
-                
+                    window.metademandconditionsparams = {};
+                    metademandconditionsparams.root_doc = '$root_doc';
+                    metademandconditionsparams.submittitle = '$submittitle';
+                    metademandconditionsparams.nextsteptitle = '$nextsteptitle';
+                    metademandconditionsparams.use_condition = '$use_condition';
+                    metademandconditionsparams.show_rule = '$show_rule';
+                    metademandconditionsparams.show_button = '$show_button';
+                    metademandconditionsparams.use_richtext = '$use_richtext';
+                    metademandconditionsparams.richtext_ids = {$richtext_id};
+                    
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
-                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(-1, metademandparams));
-                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(1, metademandparams));
-                    
-//                    nextBtn.addEventListener('click', function () {
-//                       if(document.querySelector('#button_save_draft')){
-//                           document.querySelector('#button_save_draft').remove();
-//                       } 
-//                       
-//                       if(document.querySelector('.boutons_draft')){
-//                           document.querySelector('.boutons_draft').remove();
-//                       }
-//                    });
+                
+                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(-1, metademandparams, metademandconditionsparams));
+                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(1, metademandparams, metademandconditionsparams));
 
-                    if(metademandparams.use_condition == true) {
-                      $('document').ready(
-                          plugin_metademands_wizard_checkConditions(metademandparams, metademandparams.show_button)
-                          );
-                      if (metademandparams.show_rule == 2) {
-                         show_button = 0;
-                         if(document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
-                            document.getElementById('nextBtn').style.display = 'none';
-                         }
-                      } else if (metademandparams.show_rule == 3) { 
-                            show_button = 1;
-                      }
-                      if (document.getElementById('nextBtn').innerHTML == metademandparams.nexttitle) {
-                         $('#nextBtn').on('click', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                      }
-                      $('#wizard_form input[type=\"checkbox\"]').on('change', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                      $('#wizard_form input[type=\"radio\"]').on('change', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                      $('#wizard_form input').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                      $('#wizard_form select').on('change', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                      $('#wizard_form textarea').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                      
-                      if (metademandparams.use_richtext) {
-                          for( let i = 0; i < metademandparams.richtext_ids.length; i++ ){
-                             let field = 'field' + metademandparams.richtext_ids[i];
-                             tinyMCE.get(field).on('keyup', plugin_metademands_wizard_checkConditions(metademandparams, show_button));
-                         } 
-                      }
-                      $('#prevBtn').on('click', function(){
-                         if(document.getElementById('nextBtn').innerHTML == metademandparams.nexttitle) {
-                             document.getElementById('nextBtn').style.display = 'inline';
-                         }
-                      });
-                   }
-
-                  plugin_metademands_wizard_showTab(metademandparams, false); // Display the current tab
+                    plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false); // Display the current tab
 
                   });
                </script>";

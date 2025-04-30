@@ -1971,12 +1971,44 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         $('[bloc-id =\"subbloc" . $display . "\"]').show();";
             }
 
-            $onchange .= "fixButtonIndicator();});";
+            $onchange .= "});";
 
             echo Html::scriptBlock(
                 '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
             );
         }
+    }
+
+    public static function fixcheckConditions($data, $metaparams)
+    {
+
+        foreach ($metaparams as $key => $val) {
+            if (isset($metaparams[$key])) {
+                $$key = $metaparams[$key];
+            }
+        }
+
+        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+        $onchange = "window.metademandparams = {};
+                        metademandparams.submittitle = '$submittitle';
+                        metademandparams.nextsteptitle = '$nextsteptitle';
+                        metademandparams.use_condition = '$use_condition';
+                        metademandparams.show_rule = '$show_rule';
+                        metademandparams.show_button = '$show_button';
+                        metademandparams.use_richtext = '$use_richtext';
+                        metademandparams.richtext_ids = {$richtext_id};
+                        metademandparams.root_doc = '$root_doc';";
+        $name = "field[" . $data["id"] . "]";
+        if ($data["item"] == "ITILCategory_Metademands") {
+            $name = "field_plugin_servicecatalog_itilcategories_id";
+        }
+        $onchange .= "$('[name=\"$name\"]').change(function() {";
+        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandparams);";
+        $onchange .= "});";
+
+        echo Html::scriptBlock(
+            '$(document).ready(function() {' . $onchange . '});'
+        );
     }
 
 

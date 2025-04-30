@@ -115,21 +115,21 @@ btn.on('click', function (e) {
     $('html, body').animate({scrollTop: 0}, '300');
 });
 
-function plugin_metademands_wizard_validateForm(metademands) {
+function plugin_metademands_wizard_validateForm(metademandparams) {
 
     // This function deals with validation of the form fields
     var x, y = 0, w = 0, z = 0, i, valid = true, ko = 0, kop = 0, radioexists = 0, lengthr = 0;
 
-    if (metademands.use_as_step == 1) {
+    if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
 
-    if (typeof x[metademands.currentTab] !== 'undefined') {
-        y = x[metademands.currentTab].getElementsByTagName('input');
-        z = x[metademands.currentTab].getElementsByTagName('select');
-        w = x[metademands.currentTab].getElementsByTagName('textarea');
+    if (typeof x[metademandparams.currentTab] !== 'undefined') {
+        y = x[metademandparams.currentTab].getElementsByTagName('input');
+        z = x[metademandparams.currentTab].getElementsByTagName('select');
+        w = x[metademandparams.currentTab].getElementsByTagName('textarea');
     }
 
     var mandatory = [];
@@ -483,17 +483,17 @@ function plugin_metademands_wizard_validateForm(metademands) {
         const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);
         const fields_mandatory_unique = fields_mandatory.filter((element, index) => fields_mandatory.indexOf(element) === index);
         fields_mandatory_unique.sort((a, b) => a - b);
-        //all_meta_fields
+        //json_all_meta_fields
         var alert_mandatory_fields = [];
         $.each(fields_mandatory_unique, function (k, v) {
-            $.each(metademands.all_meta_fields, function (key, value) {
+            $.each(metademandparams.json_all_meta_fields, function (key, value) {
                 if (v == key) {
                     alert_mandatory_fields.push(value);
                 }
             });
         });
         alert_mandatory_fields_list = alert_mandatory_fields.join('<br> ');
-        alert_msg = metademands.msg + ' : <br><br>' + alert_mandatory_fields_list;
+        alert_msg = metademandparams.msg + ' : <br><br>' + alert_mandatory_fields_list;
         alert(alert_msg);
 
 
@@ -501,86 +501,162 @@ function plugin_metademands_wizard_validateForm(metademands) {
     return valid;
 }
 
-function plugin_metademands_wizard_showTab(metademands, create) {
-    // This function will display the specified tab of the form...
-    //document.getElementById('nextMsg').style.display = 'none';
-    if (metademands.use_as_step == 1) {
+
+function plugin_metademands_wizard_findFirstTab(metademandparams) {
+
+    if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
 
-    x[metademands.currentTab].style.display = 'block';
-    //... and fix the Previous/Next buttons:
-    if (metademands.currentTab == metademands.firstnumTab) {
+    firstnumTab = 0;
+    if (metademandparams.block_id > 0) {
+        bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+        id_bloc = parseInt(bloc.replace('bloc', ''));
+
+        while (metademandparams.block_id != id_bloc) {
+            currentTab = currentTab + 1;
+            bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+            id_bloc = parseInt(bloc.replace('bloc', ''));
+        }
+
+        firstnumTab = currentTab;
+    }
+    return firstnumTab;
+}
+
+function plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, create) {
+    // This function will display the specified tab of the form...
+    //document.getElementById('nextMsg').style.display = 'none';
+
+    if (metademandconditionsparams.use_condition == true) {
+        if (metademandconditionsparams.show_rule == 2) {
+            if(document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
+
+        $('document').ready(
+            plugin_metademands_wizard_checkConditions(metademandconditionsparams)
+        );
+
+        if (document.getElementById('nextBtn').innerHTML == metademandparams.nexttitle) {
+            $('#nextBtn').on('click', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+        }
+        $('#wizard_form input[type=\"checkbox\"]').on('change', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+        $('#wizard_form input[type=\"radio\"]').on('change', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+        $('#wizard_form input').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+        $('#wizard_form select').on('change', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+        $('#wizard_form textarea').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+
+        if (metademandconditionsparams.use_richtext) {
+            for( let i = 0; i < metademandconditionsparams.richtext_ids.length; i++ ){
+                let field = 'field' + metademandconditionsparams.richtext_ids[i];
+                tinyMCE.get(field).on('keyup', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
+            }
+        }
+        $('#prevBtn').on('click', function(){
+            if(document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nexttitle) {
+                document.getElementById('nextBtn').style.display = 'inline';
+            }
+        });
+    }
+
+    //First loading of first tab
+    if (metademandparams.currentTab == 0) {
         document.getElementById('prevBtn').style.display = 'none';
     } else {
         document.getElementById('prevBtn').style.display = 'inline';
+
     }
 
-    document.getElementById('nextBtn').innerHTML = metademands.nexttitle;
-    if (metademands.currentTab == (x.length - 1) || create == true) {
-        document.getElementById('nextBtn').innerHTML = metademands.submittitle;
+    if (metademandparams.use_as_step == 1) {
+        var x = document.getElementsByClassName('tab-step');
+    } else {
+        var x = document.getElementsByClassName('tab-nostep');
+    }
+
+    x[metademandparams.currentTab].style.display = 'block';
+    //... and fix the Previous/Next buttons:
+
+    firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
+
+    if (typeof metademandparams.firstnumTab !== 'undefined') {
+        if (metademandparams.currentTab == metademandparams.firstnumTab) {
+            document.getElementById('prevBtn').style.display = 'none';
+        } else {
+            document.getElementById('prevBtn').style.display = 'inline';
+        }
+    }
+
+    document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
+    if (metademandparams.currentTab == (x.length - 1) || create == true) {
+        document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
     }
 
     //... and run a function that will display the correct step indicator:
-    if (metademands.use_as_step == 1) {
-        plugin_metademands_wizard_fixStepIndicator(metademands);
-        fixButtonIndicator(metademands);
+    if (metademandparams.use_as_step == 1) {
+        plugin_metademands_wizard_fixStepIndicator(metademandparams);
+        // fixButtonIndicator(metademandparams);
     }
 }
 
-/**
- *  set the content of the nextBtn element
- */
-function fixButtonIndicator(metademands) {
+function fixButtonIndicator(metademandparams) {
 
-    if (typeof metademands !== 'undefined') {
-        use_as_step = 1;
-        if (metademands.use_as_step) {
-            x = document.getElementsByClassName('tab-step');
-        } else {
-            x = document.getElementsByClassName('tab-nostep');
-        }
+    if (typeof metademandparams !== 'undefined') {
 
-        let create = false;
-        if (metademands.use_as_step == 1) {
+        // use_as_step = 1;
+        // if (metademandparams.use_as_step) {
+        //     x = document.getElementsByClassName('tab-step');
+        // } else {
+        //     x = document.getElementsByClassName('tab-nostep');
+        // }
+        //
+        // let create = false;
+        // if (metademandparams.use_as_step == 1) {
+        //
+        //     const asArray = Array.from(x);
+        //     const displayed = asArray.find(e => e.style.display == 'block');
+        //
+        //     let nextTab = asArray.indexOf(displayed) + 1;
+        //
+        //     while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+        //         nextTab = nextTab + 1;
+        //     }
+        //
+        //     if (x[nextTab] != undefined) {
+        //         let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+        //
+        //         let id_bloc = parseInt(bloc.replace('bloc', ''));
+        //
+        //         if (typeof metademandparams !== 'undefined') {
+        //             if (!metademandparams.listStepBlock.includes(id_bloc)) {
+        //                 create = true;
+        //             }
+        //         }
+        //     }
+        //
+        //     if (nextTab >= x.length) {
+        //         document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+        //     } else {
+        //         if (create) {
+        //             document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+        //         } else {
+        //             document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+        //         }
+        //     }
+        // }
+    }
+}
+function plugin_metademands_wizard_fixcheckConditions(metademandparams) {
 
-            const asArray = Array.from(x);
-            const displayed = asArray.find(e => e.style.display == 'block');
-
-            let nextTab = asArray.indexOf(displayed) + 1;
-
-            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                nextTab = nextTab + 1;
-            }
-
-            if (x[nextTab] != undefined) {
-                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
-
-                let id_bloc = parseInt(bloc.replace('bloc', ''));
-
-                if (typeof metademands !== 'undefined') {
-                    if (!metademands.listStepBlock.includes(id_bloc)) {
-                        create = true;
-                    }
-                }
-            }
-
-            if (nextTab >= x.length) {
-                document.getElementById('nextBtn').innerHTML = metademands.submittitle;
-            } else {
-                if (create) {
-                    document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
-                } else {
-                    document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
-                }
-            }
-        }
+    if (typeof metademandparams !== 'undefined') {
+        plugin_metademands_wizard_checkConditions(metademandparams);
     }
 }
 
-function plugin_metademands_wizard_fixStepIndicator(metademands) {
+function plugin_metademands_wizard_fixStepIndicator(metademandparams) {
     // This function removes the 'active' class of all steps...
     var i, x = document.getElementsByClassName('step_wizard');
     for (i = 0; i < x.length; i++) {
@@ -588,27 +664,27 @@ function plugin_metademands_wizard_fixStepIndicator(metademands) {
     }
     //... and adds the 'active' class on the current step:
 
-    if (x[metademands.currentTab] != undefined && x[metademands.currentTab].className) {
-        x[metademands.currentTab].className += ' active';
+    if (x[metademandparams.currentTab] != undefined && x[metademandparams.currentTab].className) {
+        x[metademandparams.currentTab].className += ' active';
     }
 
-    if (metademands.use_as_step == 1) {
+    if (metademandparams.use_as_step == 1) {
         var tabx = document.getElementsByClassName('tab-step');
     } else {
         var tabx = document.getElementsByClassName('tab-nostep');
     }
 
-    bloc = tabx[metademands.currentTab].firstChild.getAttribute('bloc-id');
+    bloc = tabx[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
     id_bloc = parseInt(bloc.replace('bloc', ''));
 //                     console.log(id_bloc);
     $(document).ready(function () {
         $.ajax({
-            url: metademands.root_doc + '/ajax/getNextMessage.php',
+            url: metademandparams.root_doc + '/ajax/getNextMessage.php',
             type: 'POST',
             data:
                 {
-                    '_glpi_csrf_token': metademands.token,
-                    plugin_metademands_metademands_id: metademands.id,
+                    '_glpi_csrf_token': metademandparams.token,
+                    plugin_metademands_metademands_id: metademandparams.id,
                     block_id: id_bloc
                 },
             success: function (response) {
@@ -630,22 +706,25 @@ function plugin_metademands_wizard_fixStepIndicator(metademands) {
     });
 }
 
-function plugin_metademands_wizard_checkConditions(metademands, show_button) {
+function plugin_metademands_wizard_checkConditions(metademandparams) {
+
+
     var formDatas;
     formDatas = $('#wizard_form').serializeArray();
-    if (typeof tinymce !== 'undefined' && metademands.use_richtext) {
-        for (let i = 0; i < metademands.richtext_ids.length; i++) {
-            let field = 'field' + metademands.richtext_ids[i];
+    if (typeof tinymce !== 'undefined' && metademandparams.use_richtext) {
+        for (let i = 0; i < metademandparams.richtext_ids.length; i++) {
+            let field = 'field' + metademandparams.richtext_ids[i];
             let content = tinyMCE.get(field).getContent();
-            let name = 'field[' + metademands.richtext_ids[i] + ']';
+            let name = 'field[' + metademandparams.richtext_ids[i] + ']';
             formDatas.push({
                 name: name,
                 value: content
             });
         }
     }
+
     $.ajax({
-        url: metademands.root_doc + '/ajax/condition.php',
+        url: metademandparams.root_doc + '/ajax/condition.php',
         type: 'POST',
         datatype: 'JSON',
         data: formDatas,
@@ -653,34 +732,34 @@ function plugin_metademands_wizard_checkConditions(metademands, show_button) {
 
             eval('valid_condition=' + response);
             if (valid_condition) {
-                if (show_button == 1) {
-                    if (document.getElementById('nextBtn').innerHTML == metademands.submittitle) {
+                if (metademandparams.show_button == 1) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
                         document.getElementById('nextBtn').style.display = 'none';
                     }
-                    if (document.getElementById('nextBtn').innerHTML == metademands.nextsteptitle) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
                         document.getElementById('nextBtn').style.display = 'none';
                     }
                 } else {
-                    if (document.getElementById('nextBtn').innerHTML == metademands.submittitle) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
                         document.getElementById('nextBtn').style.display = 'inline';
                     }
-                    if (document.getElementById('nextBtn').innerHTML == metademands.nextsteptitle) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
                         document.getElementById('nextBtn').style.display = 'inline';
                     }
                 }
             } else {
-                if (show_button == 1) {
-                    if (document.getElementById('nextBtn').innerHTML == metademands.submittitle) {
+                if (metademandparams.show_button == 1) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
                         document.getElementById('nextBtn').style.display = 'inline';
                     }
-                    if (document.getElementById('nextBtn').innerHTML == metademands.nextsteptitle) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
                         document.getElementById('nextBtn').style.display = 'inline';
                     }
                 } else {
-                    if (document.getElementById('nextBtn').innerHTML == metademands.submittitle) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
                         document.getElementById('nextBtn').style.display = 'none';
                     }
-                    if (document.getElementById('nextBtn').innerHTML == metademands.nextsteptitle) {
+                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
                         document.getElementById('nextBtn').style.display = 'none';
                     }
                 }
@@ -694,71 +773,55 @@ function plugin_metademands_wizard_checkConditions(metademands, show_button) {
     });
 }
 
-function plugin_metademands_wizard_findFirstTab(metademands) {
-    if (metademands.use_as_step == 1) {
-        var x = document.getElementsByClassName('tab-step');
-    } else {
-        var x = document.getElementsByClassName('tab-nostep');
-    }
 
-    if (metademands.block_id > 0) {
-        bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc', ''));
-        while (metademands.block_id != id_bloc) {
-            currentTab = currentTab + 1;
-            bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
-        }
-        firstnumTab = currentTab;
-    }
-}
-
-function plugin_metademands_wizard_nextPrev(n, metademands) {
+function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandconditionsparams) {
 
     // This function will figure out which tab to display
-    if (metademands.use_as_step == 1) {
+    if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
     // Exit the function if any field in the current tab is invalid:
-    if (n == 1 && !plugin_metademands_wizard_validateForm(metademands)) return false;
+    if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) return false;
 
     // Increase or decrease the current tab by 1:
-    nextTab = metademands.currentTab + n;
+    nextTab = metademandparams.currentTab + n;
     // Hide the current tab:
-    if (x[metademands.currentTab] !== undefined) {
-        x[metademands.currentTab].style.display = 'none';
+    if (x[metademandparams.currentTab] !== undefined) {
+        x[metademandparams.currentTab].style.display = 'none';
     }
 
     // Increase or decrease the current tab by 1:
-    metademands.currentTab = metademands.currentTab + n;
+    metademandparams.currentTab = metademandparams.currentTab + n;
 
     create = false;
     createNow = false;
 
-    if (metademands.use_as_step == 1) {
+    firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
+
+    if (metademandparams.use_as_step == 1) {
 
         var finded = false;
 
         while (finded == false) {
 
             if (true) {
-                if (x[metademands.currentTab] == undefined || x[metademands.currentTab].firstChild == undefined) {
+                if (x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
                     createNow = true;
                     finded = true;
                 } else {
-                    if (x[metademands.currentTab].firstChild.style.display != 'none') {
+                    if (x[metademandparams.currentTab].firstChild.style.display != 'none') {
                         finded = true;
-                        nextTab = metademands.currentTab + n;
-                        while (nextTab >= metademands.firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                        nextTab = metademandparams.currentTab + n;
+                        while (nextTab >= metademandparams.firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                             nextTab = nextTab + n;
                         }
                         if (nextTab >= x.length) {
                             create = true;
                         }
                     } else {
-                        metademands.currentTab = metademands.currentTab + n;
+                        metademandparams.currentTab = metademandparams.currentTab + n;
                     }
                 }
             } else {
@@ -768,7 +831,7 @@ function plugin_metademands_wizard_nextPrev(n, metademands) {
     }
 
     // if you have reached the end of the form...
-    if (metademands.currentTab >= x.length || createNow) {
+    if (metademandparams.currentTab >= x.length || createNow) {
 
         document.getElementById('nextBtn').style.display = 'none';
         // ... the form gets submitted:
@@ -785,9 +848,9 @@ function plugin_metademands_wizard_nextPrev(n, metademands) {
         arrayDatas.push({name: 'step', value: 2});
         arrayDatas.push({name: 'form_name', value: '$name'});
 
-        if (metademands.seesummary == 1) {
+        if (metademandparams.seesummary == 1) {
             $.ajax({
-                url: metademands.root_doc + '/ajax/createmetademands.php?metademands_id=' + metademands.id + '&step=2' + metademands.paramUrl,
+                url: metademandparams.root_doc + '/ajax/createmetademands.php?metademands_id=' + metademandparams.id + '&step=2' + metademandparams.paramUrl,
                 type: 'POST',
                 datatype: 'html',
                 data: $('#wizard_form').serializeArray(),
@@ -803,19 +866,19 @@ function plugin_metademands_wizard_nextPrev(n, metademands) {
             });
         } else {
             $.ajax({
-                url: metademands.root_doc + '/ajax/addform.php',
+                url: metademandparams.root_doc + '/ajax/addform.php',
                 type: 'POST',
                 datatype: 'html',
                 data: arrayDatas,
                 success: function (response) {
                     if (response != 1) {
                         $.ajax({
-                            url: metademands.root_doc + '/ajax/createmetademands.php?' + metademands.paramUrl,
+                            url: metademandparams.root_doc + '/ajax/createmetademands.php?' + metademandparams.paramUrl,
                             type: 'POST',
                             data: arrayDatas,
                             success: function (response) {
                                 if (response != 1) {
-                                    window.location.href = metademands.root_doc + '/front/wizard.form.php?metademands_id=' + metademands.id + '&step=create_metademands';
+                                    window.location.href = metademandparams.root_doc + '/front/wizard.form.php?metademands_id=' + metademandparams.id + '&step=create_metademands';
                                 } else {
                                     location.reload();
                                 }
@@ -840,15 +903,15 @@ function plugin_metademands_wizard_nextPrev(n, metademands) {
 
         return false;
     }
-    if (typeof metademands !== 'undefined') {
+    if (typeof metademandparams !== 'undefined') {
 
-        if (x[metademands.currentTab] !== undefined) {
-            bloc = x[metademands.currentTab].firstChild.getAttribute('bloc-id');
+        if (x[metademandparams.currentTab] !== undefined) {
+            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
             id_bloc = parseInt(bloc.replace('bloc', ''));
 
             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
             document.getElementById('ablock' + id_bloc)?.classList.add('active');
-            if (metademands.currentTab == -1) {
+            if (metademandparams.currentTab == -1) {
                 if (document.querySelector('.scrollable-tabs')) {
                     document.querySelector('.scrollable-tabs').scrollBy({left: -150, behavior: 'smooth'});
                 }
@@ -858,11 +921,10 @@ function plugin_metademands_wizard_nextPrev(n, metademands) {
                 }
             }
 
-            if (!metademands.listStepBlock.includes(id_bloc)) {
+            if (!metademandparams.listStepBlock.includes(id_bloc)) {
                 if (typeof tinyMCE !== 'undefined') {
                     tinyMCE.triggerSave();
                 }
-                var updatestepform = '$updateStepform';
                 jQuery('.resume_builder_input').trigger('change');
                 $('select[id$=\"_to\"] option').each(function () {
                     $(this).prop('selected', true);
@@ -871,18 +933,18 @@ function plugin_metademands_wizard_nextPrev(n, metademands) {
                 arrayDatas.push({name: 'block_id', value: id_bloc});
                 arrayDatas.push({name: 'action', value: 'nextUser'});
                 arrayDatas.push({name: 'form_name', value: '$name'});
-                arrayDatas.push({name: 'update_stepform', value: updatestepform});
-                if (metademands.modal == true) {
-                    plugin_metademands_wizard_showStep(metademands.root_doc, arrayDatas);
+                arrayDatas.push({name: 'update_stepform', value: metademandparams.updatestepform});
+                if (metademandparams.modal == true) {
+                    plugin_metademands_wizard_showStep(metademandparams.root_doc, arrayDatas);
                 } else {
-                    plugin_metademands_wizard_nextUser(metademands.root_doc, arrayDatas);
+                    plugin_metademands_wizard_nextUser(metademandparams.root_doc, arrayDatas);
                 }
 
             } else {
-                plugin_metademands_wizard_showTab(metademands, false);
+                plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false);
             }
         } else {
-            location.href = metademands.root_doc + '/front/wizard.form.php';
+            location.href = metademandparams.root_doc + '/front/wizard.form.php';
         }
     }
 }

@@ -1753,6 +1753,88 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
+    public static function fixcheckConditions($data)
+    {
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $metademands = new PluginMetademandsMetademand();
+        $metademands->getFromDB($metaid);
+
+        $metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
+
+        switch ($data['type']) {
+            case 'title':
+                break;
+            case 'title-block':
+                break;
+            case 'informations':
+                break;
+            case 'text':
+                PluginMetademandsText::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'tel':
+                PluginMetademandsTel::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'email':
+                PluginMetademandsEmail::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'url':
+                PluginMetademandsUrl::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'textarea':
+                PluginMetademandsTextarea::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'dropdown_meta':
+                PluginMetademandsDropdownmeta::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'dropdown':
+                PluginMetademandsDropdown::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'dropdown_multiple':
+                PluginMetademandsDropdownmultiple::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'checkbox':
+                PluginMetademandsCheckbox::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'radio':
+                PluginMetademandsRadio::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'yesno':
+                PluginMetademandsYesno::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'number':
+                break;
+            case 'range':
+                break;
+            case 'freetable':
+                break;
+            case 'date':
+                break;
+            case 'time':
+                break;
+            case 'date_interval':
+                break;
+            case 'datetime':
+                break;
+            case 'datetime_interval':
+                break;
+            case 'upload':
+                break;
+            case 'link':
+                break;
+            case 'basket':
+                PluginMetademandsBasket::fixcheckConditions($data, $metaconditionsparams);
+                break;
+            case 'parent_field':
+                break;
+            default:
+                //plugin case
+                break;
+        }
+    }
+
     public static function hideAllblockbyDefault($data = [])
     {
         $metaid = $data['plugin_metademands_metademands_id'] ?? 0;
@@ -1991,8 +2073,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         }
                     }
                 }
-
-                $script .= "fixButtonIndicator();";
             }
         }
 
@@ -2020,7 +2100,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         }
                                         jQuery(this).removeAttr('required');
                                     });
-                                    fixButtonIndicator();
                                     ";
     }
 
@@ -2095,7 +2174,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                            $('#'+found[0]+'_leftAll').click();
                                         }
                                     });
-                                fixButtonIndicator();
                             ";
     }
 
@@ -2129,7 +2207,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 }
 
             }
-            $script .= "fixButtonIndicator();";
         }
         return $script;
     }

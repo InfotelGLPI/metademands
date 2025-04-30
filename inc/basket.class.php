@@ -1134,7 +1134,7 @@ class PluginMetademandsBasket extends CommonDBTM
                             }
 
                          });";
-                $script .= "fixButtonIndicator();console.log('hidden-checkbox1');";
+                $script .= "console.log('hidden-checkbox1');";
 
                 if ($withquantity == false) {
                     $script .= " } else { ";
@@ -1151,7 +1151,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                 }";
                     $script .= " });
                         }
-                        fixButtonIndicator();console.log('hidden-checkbox2');";
+                        console.log('hidden-checkbox2');";
                     $script .= " }";
                 }
                 if (isset($data['value']) && $idc == $data['value']) {
@@ -1201,7 +1201,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                 $('[bloc-id =\"subbloc'+key+'\"]').show();
                             }
                         });
-                        fixButtonIndicator();console.log('hidden-checkbox3');
+                        console.log('hidden-checkbox3');
                         ";
             }
             $script .= "});";
@@ -1755,6 +1755,46 @@ class PluginMetademandsBasket extends CommonDBTM
             $content .= "</table>";
         }
         return $content;
+    }
+
+    public static function fixcheckConditions($data, $metaparams)
+    {
+
+        foreach ($metaparams as $key => $val) {
+            if (isset($metaparams[$key])) {
+                $$key = $metaparams[$key];
+            }
+        }
+        $withquantity = false;
+        $custom_values = isset($data['custom_values']) ? PluginMetademandsFieldParameter::_unserialize($data['custom_values']) : [];
+        if (isset($custom_values[0]) && $custom_values[0] == 1) {
+            $withquantity = true;
+        }
+
+        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+        $onchange = "window.metademandparams = {};
+                        metademandparams.submittitle = '$submittitle';
+                        metademandparams.nextsteptitle = '$nextsteptitle';
+                        metademandparams.use_condition = '$use_condition';
+                        metademandparams.show_rule = '$show_rule';
+                        metademandparams.show_button = '$show_button';
+                        metademandparams.use_richtext = '$use_richtext';
+                        metademandparams.richtext_ids = {$richtext_id};
+                        metademandparams.root_doc = '$root_doc';";
+
+        if ($withquantity == false) {
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        } else {
+            $name = "quantity[" . $data["id"] . "]";
+
+            $onchange .= "$('[name^=\"$name\"]').change(function() {";
+        }
+        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandparams);";
+        $onchange .= "});";
+
+        echo Html::scriptBlock(
+            '$(document).ready(function() {' . $onchange . '});'
+        );
     }
 
     public
