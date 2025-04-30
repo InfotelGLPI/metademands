@@ -1526,6 +1526,9 @@ class PluginMetademandsWizard extends CommonDBTM
         $metaparams['root_doc'] = $root_doc;
         $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
+        $metaparams['nameform'] = Toolbox::addslashes_deep(
+                $metademands->fields['name']
+            ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
 
         //MSG
@@ -1904,6 +1907,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         metademandparams.paramUrl = '$paramUrl';
                         metademandparams.token = '$token';
                         metademandparams.id = '$ID';
+                        metademandparams.nameform = '$nameform';
                         metademandparams.block_id = '$block_id';
                         
                         metademandparams.nexttitle = '$nexttitle';
@@ -2826,6 +2830,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandparams.paramUrl = '$paramUrl';
                     metademandparams.token = '$token';
                     metademandparams.id = '$ID';
+                    metademandparams.nameform = '$nameform';
                     metademandparams.block_id = '$block_id';
                     
                     metademandparams.nexttitle = '$nexttitle';

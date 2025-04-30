@@ -603,7 +603,7 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
 
             const asArray = Array.from(x);
             const displayed = asArray.find(e => e.style.display == 'block');
-            
+
             let nextTab = asArray.indexOf(displayed) + 1;
 
             while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
@@ -846,7 +846,7 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
         arrayDatas = $('#wizard_form').serializeArray();
         arrayDatas.push({name: 'save_form', value: true});
         arrayDatas.push({name: 'step', value: 2});
-        arrayDatas.push({name: 'form_name', value: metademandparams.name});
+        arrayDatas.push({name: 'form_name', value: metademandparams.nameform});
 
         if (metademandparams.seesummary == 1) {
             $.ajax({
@@ -933,7 +933,7 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
                 arrayDatas = $('#wizard_form').serializeArray();
                 arrayDatas.push({name: 'block_id', value: id_bloc});
                 arrayDatas.push({name: 'action', value: 'nextUser'});
-                arrayDatas.push({name: 'form_name', value: metademandparams.name});
+                arrayDatas.push({name: 'form_name', value: metademandparams.nameform});
                 arrayDatas.push({name: 'update_stepform', value: metademandparams.updatestepform});
                 if (metademandparams.havenextuser == true) {
                     plugin_metademands_wizard_showStep(metademandparams.root_doc, arrayDatas);
