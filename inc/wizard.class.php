@@ -1392,7 +1392,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         </script>";
                 }
             }
-            if (!$preview && $metademands->fields['step_by_step_mode']  == 0 && $see_summary == 0 ) {
+            if (!$preview
+                && $metademands->fields['step_by_step_mode']  == 0
+                && $see_summary == 0 ) {
                 echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                 echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
                 echo "</a>";
@@ -1751,6 +1753,10 @@ class PluginMetademandsWizard extends CommonDBTM
             $use_as_step = 0;
         }
 
+        $see_summary = 0;
+        if ($metademands->fields['is_basket'] == 1) {
+            $see_summary = 1;
+        }
 
         $hidden_blocks = [];
         $all_hidden_blocks = [];
@@ -1814,6 +1820,12 @@ class PluginMetademandsWizard extends CommonDBTM
 //                    }
 //                }
 //
+//                foreach ($metaconditionsparams as $key => $val) {
+//                    if (isset($metaconditionsparams[$key])) {
+//                        $$key = $metaconditionsparams[$key];
+//                    }
+//                }
+//
 //                echo Html::scriptBlock(
 //                    "
 //                    $(document).ready(function () {
@@ -1841,7 +1853,8 @@ class PluginMetademandsWizard extends CommonDBTM
 //                        metademandparams.id = '$ID';
 //                        metademandparams.block_id = '$block_id';
 //
-//                        plugin_metademands_wizard_fixStepButton(metademandparams);
+//                        plugin_metademands_wizard_displayStepButton(metademandparams);
+//                        plugin_metademands_wizard_displayStepMsg(metademandparams);
 //                    });"
 //                );
 //            }
@@ -2085,7 +2098,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
             }
 
-
             if ($metademands->fields['is_order'] == 0
                 && !$preview
                 && (!$seeform
@@ -2124,7 +2136,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID(
                     )]['plugin_metademands_stepforms_id'];
-                    echo "<br><span style='color:darkred;font-size: 14px !important;margin-right: 8px'>";
+                    echo "<span style='color:darkred;font-size: 14px !important;margin-right: 8px'>";
                     Html::showSimpleForm(
                         $target,
                         'delete_form_from_list',
@@ -2172,7 +2184,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         []
                     );
                     $form = new PluginMetademandsStepform();
-                    if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])
+                    if (isset($_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id'])
                         && $form->getFromDBByCrit(
                             ['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']]
                         )) {
@@ -2200,9 +2212,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 });"
                         );
 
-                        if (isset($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
-                            if (is_array($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
-                                $hidden_blocks = $_SESSION['plugin_metademands'][$ID]['hidden_blocks'];
+                        if (isset($_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'])) {
+                            if (is_array($_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'])) {
+                                $hidden_blocks = $_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'];
                                 $script = "";
                                 foreach ($hidden_blocks as $hidden_b) {
                                     foreach ($hidden_b as $hidden_) {
@@ -2216,10 +2228,10 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
 
-                if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])) {
+                if (isset($_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id'])) {
                     echo Html::hidden(
                         'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id']]
+                        ['value' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']]
                     );
                 }
 

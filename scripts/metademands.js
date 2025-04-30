@@ -447,7 +447,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
                 var numbers = document.querySelectorAll('[name*=\"' + newfieldname + '\"]');
                 var check = false;
                 for (var n = 0; n < numbers.length; n++) {
-//                                console.log(numbers[n].name);
                     var myval = $('[name*=\"' + numbers[n].name + '\"]').children('option:selected').val();
                     if (myval > 0) {
                         check = true;
@@ -501,31 +500,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
     return valid;
 }
 
-
-function plugin_metademands_wizard_findFirstTab(metademandparams) {
-
-    if (metademandparams.use_as_step == 1) {
-        var x = document.getElementsByClassName('tab-step');
-    } else {
-        var x = document.getElementsByClassName('tab-nostep');
-    }
-
-    firstnumTab = 0;
-    if (metademandparams.block_id > 0) {
-        bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc', ''));
-
-        while (metademandparams.block_id != id_bloc) {
-            currentTab = currentTab + 1;
-            bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
-        }
-
-        firstnumTab = currentTab;
-    }
-    return firstnumTab;
-}
-
 function plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, create) {
     // This function will display the specified tab of the form...
     //document.getElementById('nextMsg').style.display = 'none';
@@ -563,6 +537,23 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         });
     }
 
+    if (metademandparams.use_as_step == 1) {
+        var x = document.getElementsByClassName('tab-step');
+    } else {
+        var x = document.getElementsByClassName('tab-nostep');
+    }
+
+    if(metademandparams.block_id > 0) {
+        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+        id_bloc = parseInt(bloc.replace('bloc',''));
+        while (metademandparams.block_id != id_bloc) {
+            metademandparams.currentTab = metademandparams.currentTab + 1;
+            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            id_bloc = parseInt(bloc.replace('bloc',''));
+        }
+        firstnumTab = metademandparams.currentTab;
+    }
+
     //First loading of first tab
     if (metademandparams.currentTab == 0) {
         document.getElementById('prevBtn').style.display = 'none';
@@ -571,19 +562,12 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
 
     }
 
-    if (metademandparams.use_as_step == 1) {
-        var x = document.getElementsByClassName('tab-step');
-    } else {
-        var x = document.getElementsByClassName('tab-nostep');
-    }
-
     x[metademandparams.currentTab].style.display = 'block';
     //... and fix the Previous/Next buttons:
 
-    firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
 
-    if (typeof metademandparams.firstnumTab !== 'undefined') {
-        if (metademandparams.currentTab == metademandparams.firstnumTab) {
+    if (typeof firstnumTab !== 'undefined') {
+        if (metademandparams.currentTab == firstnumTab) {
             document.getElementById('prevBtn').style.display = 'none';
         } else {
             document.getElementById('prevBtn').style.display = 'inline';
@@ -597,8 +581,8 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
 
     //... and run a function that will display the correct step indicator:
     if (metademandparams.use_as_step == 1) {
-        plugin_metademands_wizard_displayStepMsg(metademandparams);
         plugin_metademands_wizard_displayStepButton(metademandparams);
+        plugin_metademands_wizard_displayStepMsg(metademandparams);
     }
 }
 
@@ -617,14 +601,34 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
         let create = false;
         if (metademandparams.use_as_step == 1) {
 
+            // console.log(metademandparams.currentTab);
+            // if (typeof metademandparams.currentTab !== 'undefined') {
+            //
+            //     tabx = document.getElementsByClassName('tab-step');
+            //     bloc = tabx[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            //     id_bloc = parseInt(bloc.replace('bloc', ''));
+            //     //hide others blocks
+            //     $('div[bloc-id^=\"bloc\"]').hide();
+            //
+            //     tabx[metademandparams.currentTab].style.display = 'block';
+            //     var blocx = 'bloc' + id_bloc;
+            //     blocdiv = 'div[bloc-id=\"'+ blocx + '\"]';
+            //     $(blocdiv).css("display", "block");
+            // }
+
             const asArray = Array.from(x);
             const displayed = asArray.find(e => e.style.display == 'block');
+
+            // console.log(displayed);
 
             let nextTab = asArray.indexOf(displayed) + 1;
 
             while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                 nextTab = nextTab + 1;
             }
+            nextTab = 2;
+            // console.log(nextTab);
+            // console.log(x.length);
 
             if (x[nextTab] != undefined) {
                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
@@ -650,10 +654,10 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
         }
     }
 }
-function plugin_metademands_wizard_fixcheckConditions(metademandparams) {
+function plugin_metademands_wizard_fixcheckConditions(metademandconditionsparams) {
 
-    if (typeof metademandparams !== 'undefined') {
-        plugin_metademands_wizard_checkConditions(metademandparams);
+    if (typeof metademandconditionsparams !== 'undefined') {
+        plugin_metademands_wizard_checkConditions(metademandconditionsparams);
     }
 }
 
@@ -695,7 +699,6 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams) {
 
                     document.getElementById('nextMsg').style.display = 'block';
                     document.getElementById('nextMsg').innerHTML = response;
-                    sessionStorage.setItem('currentStep', id_bloc);
                 }
             },
             error: function (xhr, status, error) {
@@ -707,16 +710,16 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams) {
     });
 }
 
-function plugin_metademands_wizard_checkConditions(metademandparams) {
-
+function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
 
     var formDatas;
     formDatas = $('#wizard_form').serializeArray();
-    if (typeof tinymce !== 'undefined' && metademandparams.use_richtext) {
-        for (let i = 0; i < metademandparams.richtext_ids.length; i++) {
-            let field = 'field' + metademandparams.richtext_ids[i];
+
+    if (typeof tinymce !== 'undefined' && metademandconditionsparams.use_richtext) {
+        for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
+            let field = 'field' + metademandconditionsparams.richtext_ids[i];
             let content = tinyMCE.get(field).getContent();
-            let name = 'field[' + metademandparams.richtext_ids[i] + ']';
+            let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
             formDatas.push({
                 name: name,
                 value: content
@@ -725,51 +728,52 @@ function plugin_metademands_wizard_checkConditions(metademandparams) {
     }
 
     $.ajax({
-        url: metademandparams.root_doc + '/ajax/condition.php',
+        url: metademandconditionsparams.root_doc + '/ajax/condition.php',
         type: 'POST',
         datatype: 'JSON',
         data: formDatas,
         success: function (response) {
-
-            eval('valid_condition=' + response);
-            if (valid_condition) {
-                if (metademandparams.show_button == 1) {
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
-                        document.getElementById('nextBtn').style.display = 'none';
-                    }
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
-                        document.getElementById('nextBtn').style.display = 'none';
-                    }
-                } else {
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
-                        document.getElementById('nextBtn').style.display = 'inline';
-                    }
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
-                        document.getElementById('nextBtn').style.display = 'inline';
-                    }
-                }
-            } else {
-                if (metademandparams.show_button == 1) {
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
-                        document.getElementById('nextBtn').style.display = 'inline';
-                    }
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
-                        document.getElementById('nextBtn').style.display = 'inline';
+            if (response) {
+                eval('valid_condition=' + response);
+                if (valid_condition) {
+                    if (metademandconditionsparams.show_button == 1) {
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                            document.getElementById('nextBtn').style.display = 'none';
+                        }
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                            document.getElementById('nextBtn').style.display = 'none';
+                        }
+                    } else {
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                            document.getElementById('nextBtn').style.display = 'inline';
+                        }
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                            document.getElementById('nextBtn').style.display = 'inline';
+                        }
                     }
                 } else {
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.submittitle) {
-                        document.getElementById('nextBtn').style.display = 'none';
-                    }
-                    if (document.getElementById('nextBtn').innerHTML == metademandparams.nextsteptitle) {
-                        document.getElementById('nextBtn').style.display = 'none';
+                    if (metademandconditionsparams.show_button == 1) {
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                            document.getElementById('nextBtn').style.display = 'inline';
+                        }
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                            document.getElementById('nextBtn').style.display = 'inline';
+                        }
+                    } else {
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                            document.getElementById('nextBtn').style.display = 'none';
+                        }
+                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                            document.getElementById('nextBtn').style.display = 'none';
+                        }
                     }
                 }
             }
         },
         error: function (xhr, status, error) {
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
+            // console.log(xhr);
+            // console.log(status);
+            // console.log(error);
         }
     });
 }
@@ -782,6 +786,19 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
         var x = document.getElementsByClassName('tab-step');
     } else {
         var x = document.getElementsByClassName('tab-nostep');
+    }
+    if(metademandparams.block_id > 0) {
+        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+        id_bloc = parseInt(bloc.replace('bloc',''));
+        while (metademandparams.block_id != id_bloc) {
+            metademandparams.currentTab = metademandparams.currentTab + 1;
+            // if (typeof x[metademandparams.currentTab] !== 'undefined') {
+            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            id_bloc = parseInt(bloc.replace('bloc',''));
+            // }
+
+        }
+        firstnumTab = metademandparams.currentTab;
     }
     // Exit the function if any field in the current tab is invalid:
     if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) return false;
@@ -799,7 +816,7 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
     create = false;
     createNow = false;
 
-    firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams);
+
 
     if (metademandparams.use_as_step == 1) {
 
@@ -807,18 +824,19 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
 
         while (finded == false) {
 
-            if (true) {
-                if (x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
+            if(true) {
+
+                if(x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
                     createNow = true;
                     finded = true;
                 } else {
-                    if (x[metademandparams.currentTab].firstChild.style.display != 'none') {
+                    if(x[metademandparams.currentTab].firstChild.style.display != 'none' ) {
                         finded = true;
                         nextTab = metademandparams.currentTab + n;
-                        while (nextTab >= metademandparams.firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                        while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                             nextTab = nextTab + n;
                         }
-                        if (nextTab >= x.length) {
+                        if(nextTab >= x.length) {
                             create = true;
                         }
                     } else {
@@ -860,9 +878,9 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
                     $('.md-wizard').append(response);
                 },
                 error: function (xhr, status, error) {
-                    console.log(xhr);
-                    console.log(status);
-                    console.log(error);
+                    // console.log(xhr);
+                    // console.log(status);
+                    // console.log(error);
                 }
             });
         } else {
@@ -885,9 +903,9 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
                                 }
                             },
                             error: function (xhr, status, error) {
-                                console.log(xhr);
-                                console.log(status);
-                                console.log(error);
+                                // console.log(xhr);
+                                // console.log(status);
+                                // console.log(error);
                             }
                         });
                     } else {
@@ -895,9 +913,9 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.log(xhr);
-                    console.log(status);
-                    console.log(error);
+                    // console.log(xhr);
+                    // console.log(status);
+                    // console.log(error);
                 }
             });
         }
@@ -967,9 +985,9 @@ function plugin_metademands_wizard_nextUser(root_doc, arrayDatas) {
                 }
             },
             error: function (xhr, status, error) {
-                console.log(xhr);
-                console.log(status);
-                console.log(error);
+                // console.log(xhr);
+                // console.log(status);
+                // console.log(error);
             }
         }
     );
@@ -996,17 +1014,15 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas) {
                     var event = document.createEvent('Event');
 
                 }
-//                                console.log(response);
-//                                $('#modalgroupspan').html(response.html);
                 $('#modalgroupspan').html(response);
                 $.globalEval(response.js);
                 $('#modalgroup').modal('show');
                 document.dispatchEvent(event);
             },
             error: function (xhr, status, error) {
-                console.log(xhr);
-                console.log(status);
-                console.log(error);
+                // console.log(xhr);
+                // console.log(status);
+                // console.log(error);
             }
 
         });

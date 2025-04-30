@@ -617,18 +617,18 @@ class PluginMetademandsYesno extends CommonDBTM
         }
 
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $onchange = "window.metademandparams = {};
-                        metademandparams.submittitle = '$submittitle';
-                        metademandparams.nextsteptitle = '$nextsteptitle';
-                        metademandparams.use_condition = '$use_condition';
-                        metademandparams.show_rule = '$show_rule';
-                        metademandparams.show_button = '$show_button';
-                        metademandparams.use_richtext = '$use_richtext';
-                        metademandparams.richtext_ids = {$richtext_id};
-                        metademandparams.root_doc = '$root_doc';";
+        $onchange = "window.metademandconditionsparams = {};
+                        metademandconditionsparams.submittitle = '$submittitle';
+                        metademandconditionsparams.nextsteptitle = '$nextsteptitle';
+                        metademandconditionsparams.use_condition = '$use_condition';
+                        metademandconditionsparams.show_rule = '$show_rule';
+                        metademandconditionsparams.show_button = '$show_button';
+                        metademandconditionsparams.use_richtext = '$use_richtext';
+                        metademandconditionsparams.richtext_ids = {$richtext_id};
+                        metademandconditionsparams.root_doc = '$root_doc';";
         $name = "field[" . $data["id"] . "]";
         $onchange .= "$('[name=\"$name\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandparams);";
+        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandconditionsparams);";
         $onchange .= "});";
 
         echo Html::scriptBlock(

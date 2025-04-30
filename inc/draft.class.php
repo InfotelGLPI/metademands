@@ -416,7 +416,8 @@ class PluginMetademandsDraft extends CommonDBTM
             PluginMetademandsDraft_Value::loadDraftValues($metademand_id, $id_draft);
             $draft_name = $draft->getField('name');
 
-            $_SESSION['plugin_metademands'][$metademand_id]['fields']['_users_id_requester'] = Session::getLoginUserID();
+            $_SESSION['plugin_metademands'][$metademand_id]['fields']['_users_id_requester'] = Session::getLoginUserID(
+            );
 
             $_SESSION['plugin_metademands'][$metademand_id]['plugin_metademands_drafts_id'] = $id_draft;
             $_SESSION['plugin_metademands'][$metademand_id]['plugin_metademands_id'] = $metademand_id;
@@ -556,9 +557,9 @@ class PluginMetademandsDraft extends CommonDBTM
 
         //correct css with condition
         if ($type == 1) {
-            if($freetable == 'freetable'){
+            if ($freetable == 'freetable') {
                 $style = "display:inline-block;margin: 10px;display:none";
-            }else{
+            } else {
                 $style = "display:inline-block;margin: 10px;";
             }
         } else {

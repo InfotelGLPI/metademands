@@ -849,6 +849,14 @@ class PluginMetademandsMetademand extends CommonDBTM
         ];
 
         $tab[] = [
+            'id' => '20',
+            'table' => $this->getTable(),
+            'field' => 'step_by_step_mode',
+            'name' => __('Step-by-step mode', 'metademands'),
+            'datatype' => 'bool',
+        ];
+
+        $tab[] = [
             'id' => '92',
             'table' => $this->getTable(),
             'field' => 'itilcategories_id',

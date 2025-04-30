@@ -57,18 +57,20 @@ $result = '';
 $predicate = '';
 $actual_group = 0;
 
-foreach ($tab as $key => $condition) {
-    $result = (int)PluginMetademandsCondition::verifyCondition($condition);
-    if (!empty($predicate) && $actual_group == $condition['order']) {
-        $predicate .= ' ' . PluginMetademandsCondition::showPhpLogic($condition['show_logic']);
-    } elseif (empty($predicate)) {
-        $predicate = '(';
-    } elseif ($actual_group != $condition['order']) {
-        $predicate .= ") " . PluginMetademandsCondition::showPhpLogic($condition['show_logic']) . "( ";
+if (count($tab) > 0) {
+    foreach ($tab as $key => $condition) {
+        $result = (int)PluginMetademandsCondition::verifyCondition($condition);
+        if (!empty($predicate) && $actual_group == $condition['order']) {
+            $predicate .= ' ' . PluginMetademandsCondition::showPhpLogic($condition['show_logic']);
+        } elseif (empty($predicate)) {
+            $predicate = '(';
+        } elseif ($actual_group != $condition['order']) {
+            $predicate .= ") " . PluginMetademandsCondition::showPhpLogic($condition['show_logic']) . "( ";
+        }
+        $actual_group = $condition['order'];
+        $predicate .= " $result ";
     }
-    $actual_group = $condition['order'];
-    $predicate .= " $result ";
+    $predicate .= ")";
 }
-$predicate .= ")";
 
 echo json_encode($predicate);
