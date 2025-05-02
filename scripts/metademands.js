@@ -118,10 +118,15 @@ btn.on('click', function (e) {
 function plugin_metademands_wizard_validateForm(metademandparams) {
 
     // This function deals with validation of the form fields
-    var x, y = 0, w = 0, z = 0, i, valid = true, ko = 0, kop = 0, radioexists = 0, lengthr = 0;
+    var x, y = 0, w = 0, z = 0, i, valid = true, ko = 0, kop = 0;
 
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
+        // var x = {};
+        //
+        // for (var i = 0; i < tabs.length; i++) {
+        //     x[i + 1] = tabs[i];
+        // }
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
@@ -539,6 +544,11 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
 
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
+        // var x = {};
+        //
+        // for (var i = 0; i < tabs.length; i++) {
+        //     x[i + 1] = tabs[i];
+        // }
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
@@ -565,13 +575,15 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
     x[metademandparams.currentTab].style.display = 'block';
     //... and fix the Previous/Next buttons:
 
-
     if (typeof firstnumTab !== 'undefined') {
         if (metademandparams.currentTab == firstnumTab) {
             document.getElementById('prevBtn').style.display = 'none';
         } else {
             document.getElementById('prevBtn').style.display = 'inline';
         }
+    }
+    if (metademandparams.currentTab == 0) {
+        document.getElementById('prevBtn').style.display = 'none';
     }
 
     document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
@@ -591,45 +603,42 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
     //for next user button change
     if (typeof metademandparams !== 'undefined') {
 
-        use_as_step = 1;
-        if (metademandparams.use_as_step) {
-            x = document.getElementsByClassName('tab-step');
-        } else {
-            x = document.getElementsByClassName('tab-nostep');
-        }
+        var x = document.getElementsByClassName('tab-step');
+        // var x = {};
+        //
+        // for (var i = 0; i < tabs.length; i++) {
+        //     x[i + 1] = tabs[i];
+        // }
 
         let create = false;
-        if (metademandparams.use_as_step == 1) {
+        const asArray = Array.from(x);
+        const displayed = asArray.find(e => e.style.display == 'block');
 
-            const asArray = Array.from(x);
-            const displayed = asArray.find(e => e.style.display == 'block');
+        let nextTab = asArray.indexOf(displayed) + 1;
 
-            let nextTab = asArray.indexOf(displayed) + 1;
+        while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+            nextTab = nextTab + 1;
+        }
 
-            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                nextTab = nextTab + 1;
-            }
+        if (x[nextTab] != undefined) {
+            let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
 
-            if (x[nextTab] != undefined) {
-                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+            let id_bloc = parseInt(bloc.replace('bloc', ''));
 
-                let id_bloc = parseInt(bloc.replace('bloc', ''));
-
-                if (typeof metademandparams !== 'undefined') {
-                    if (!metademandparams.listStepBlock.includes(id_bloc)) {
-                        create = true;
-                    }
+            if (typeof metademandparams !== 'undefined') {
+                if (!metademandparams.listStepBlock.includes(id_bloc)) {
+                    create = true;
                 }
             }
+        }
 
-            if (nextTab >= x.length) {
-                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+        if (nextTab >= x.length) {
+            document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+        } else {
+            if (create) {
+                document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
             } else {
-                if (create) {
-                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
-                } else {
-                    document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
-                }
+                document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
             }
         }
     }
@@ -653,13 +662,14 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams) {
         x[metademandparams.currentTab].className += ' active';
     }
 
-    if (metademandparams.use_as_step == 1) {
-        var tabx = document.getElementsByClassName('tab-step');
-    } else {
-        var tabx = document.getElementsByClassName('tab-nostep');
-    }
+    var x = document.getElementsByClassName('tab-step');
+    // var x = {};
+    //
+    // for (var i = 0; i < tabs.length; i++) {
+    //     x[i + 1] = tabs[i];
+    // }
 
-    bloc = tabx[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+    bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
     id_bloc = parseInt(bloc.replace('bloc', ''));
 
     $(document).ready(function () {
@@ -682,9 +692,9 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams) {
                 }
             },
             error: function (xhr, status, error) {
-                console.log(xhr);
-                console.log(status);
-                console.log(error);
+                // console.log(xhr);
+                // console.log(status);
+                // console.log(error);
             }
         });
     });
@@ -759,12 +769,17 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
 }
 
 
-function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandconditionsparams) {
+function plugin_metademands_wizard_next(n, metademandparams, metademandconditionsparams) {
 
     var firstnumTab = 0;
     // This function will figure out which tab to display
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
+        // var x = {};
+        //
+        // for (var i = 0; i < tabs.length; i++) {
+        //     x[i + 1] = tabs[i];
+        // }
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
@@ -792,12 +807,11 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
     }
 
     // Increase or decrease the current tab by 1:
+
     metademandparams.currentTab = metademandparams.currentTab + n;
 
     create = false;
     createNow = false;
-
-
 
     if (metademandparams.use_as_step == 1) {
 
@@ -912,14 +926,8 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
 
             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
             document.getElementById('ablock' + id_bloc)?.classList.add('active');
-            if (metademandparams.currentTab == -1) {
-                if (document.querySelector('.scrollable-tabs')) {
-                    document.querySelector('.scrollable-tabs').scrollBy({left: -150, behavior: 'smooth'});
-                }
-            } else {
-                if (document.querySelector('.scrollable-tabs')) {
-                    document.querySelector('.scrollable-tabs').scrollBy({left: 150, behavior: 'smooth'});
-                }
+            if (document.querySelector('.scrollable-tabs')) {
+                document.querySelector('.scrollable-tabs').scrollBy({left: 150, behavior: 'smooth'});
             }
 
             if (!metademandparams.listStepBlock.includes(id_bloc)) {
@@ -944,6 +952,91 @@ function plugin_metademands_wizard_nextPrev(n, metademandparams, metademandcondi
             } else {
                 plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false);
             }
+        } else {
+            location.href = metademandparams.root_doc + '/front/wizard.form.php';
+        }
+    }
+}
+
+function plugin_metademands_wizard_prev(n, metademandparams, metademandconditionsparams) {
+
+    var firstnumTab = 1;
+    // This function will figure out which tab to display
+    if (metademandparams.use_as_step == 1) {
+        var x = document.getElementsByClassName('tab-step');
+        // var x = {};
+        //
+        // for (var i = 0; i < tabs.length; i++) {
+        //     x[i + 1] = tabs[i];
+        // }
+    } else {
+        var x = document.getElementsByClassName('tab-nostep');
+    }
+    if(metademandparams.block_id > 0) {
+        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+        id_bloc = parseInt(bloc.replace('bloc',''));
+        while (metademandparams.block_id != id_bloc) {
+            metademandparams.currentTab = metademandparams.currentTab + 1;
+            // if (typeof x[metademandparams.currentTab] !== 'undefined') {
+            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            id_bloc = parseInt(bloc.replace('bloc',''));
+            // }
+
+        }
+        firstnumTab = metademandparams.currentTab;
+    }
+
+    // Increase or decrease the current tab by 1:
+    nextTab = metademandparams.currentTab + n;
+    // Hide the current tab:
+    if (x[metademandparams.currentTab] !== undefined) {
+        x[metademandparams.currentTab].style.display = 'none';
+    }
+
+    // Increase or decrease the current tab by 1:
+
+    metademandparams.currentTab = metademandparams.currentTab + n;
+
+    if (metademandparams.use_as_step == 1) {
+
+        var finded = false;
+
+        while (finded == false) {
+
+            if(true) {
+
+                if(x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
+                    finded = true;
+                } else {
+                    if(x[metademandparams.currentTab].firstChild.style.display != 'none' ) {
+                        finded = true;
+                        nextTab = metademandparams.currentTab + n;
+                        while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                            nextTab = nextTab + n;
+                        }
+                    } else {
+                        metademandparams.currentTab = metademandparams.currentTab + n;
+                    }
+                }
+            } else {
+                finded = true;
+            }
+        }
+    }
+
+    if (typeof metademandparams !== 'undefined') {
+
+        if (x[metademandparams.currentTab] !== undefined) {
+            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            id_bloc = parseInt(bloc.replace('bloc', ''));
+
+            document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
+            document.getElementById('ablock' + id_bloc)?.classList.add('active');
+            if (document.querySelector('.scrollable-tabs')) {
+                document.querySelector('.scrollable-tabs').scrollBy({left: -150, behavior: 'smooth'});
+            }
+
+            plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false);
         } else {
             location.href = metademandparams.root_doc + '/front/wizard.form.php';
         }
@@ -1008,4 +1101,15 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas) {
 
         });
 
+}
+
+function updateActiveTab(rank) {
+    document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
+
+    document.getElementById('ablock' + rank)?.classList.add('active');
+    $('div[id^=\"block\"]').hide();
+    $('#block' + rank).show();
+
+    document.getElementById('ablock' + rank)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 }

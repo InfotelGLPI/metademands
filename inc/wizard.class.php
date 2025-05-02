@@ -1932,19 +1932,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         metademandparams.updatestepform = '$updatestepform';
                         metademandparams.submitsteptitle = '$submitsteptitle';
                         metademandparams.nextsteptitle = '$nextsteptitle';
-                       
-
-                        function updateActiveTab(rank) {
-                            document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
-                            document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
-
-                            document.getElementById('ablock' + rank)?.classList.add('active');
-                            $('div[id^=\"block\"]').hide();
-                            $('#block' + rank).show();
-
-                            document.getElementById('ablock' + rank)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-                        }
-
 
                         if (fieldid && document.getElementById(fieldid)) {
                             updateActiveTab(fieldid.replace('block', ''));
@@ -1961,33 +1948,32 @@ class PluginMetademandsWizard extends CommonDBTM
                             window.location.hash = '#block' + block_id;
                         }
 
-                    $('#fieldslist a').click(function (e) {
-                        e.preventDefault();
-
-                         var tabId = $(this).attr('href').replace('#block', '');
-                         var loadedId = sessionStorage.getItem('loadedblock').replace('block', '');
-                         var currentTab = loadedId - 1;
-                  
-//                         console.log(parseInt(tabId.replace('block', '')));
-//                         console.log(parseInt(loadedId));
-//    
-//                         if (parseInt(tabId.replace('block', '')) > parseInt(loadedId)) {
-//                            if (!plugin_metademands_wizard_validateForm(metademandparams)) {
-//                                return false;
-//                            } else {
-//                                $('#nextBtn').click();
-//                                sessionStorage.setItem('loadedblock', tabId);
+//                    $('#fieldslist a').click(function (e) {
+//                        e.preventDefault();
+//
+//                         var tabId = $(this).attr('href').replace('#block', '');
+//                         var loadedId = sessionStorage.getItem('loadedblock').replace('block', '');
+//
+//                         var clicbloc = parseInt(tabId.replace('block', ''));
+////                         console.log(clicbloc);
+////                         console.log(parseInt(loadedId));
+//                         
+//                         if (clicbloc > parseInt(loadedId)) {
+//                         
+//                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
-//                            }
-//                        } else if (parseInt(tabId.replace('block', '')) < parseInt(loadedId)) {
-//                                $('#prevBtn').click();
-//                                sessionStorage.setItem('loadedblock', tabId);
+//                                plugin_metademands_wizard_next(1, metademandparams, metademandconditionsparams);
+//                                
+//                        } else if (clicbloc <= parseInt(loadedId)) {
+//                                
+//                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
+//                                plugin_metademands_wizard_prev(clicbloc, metademandparams, metademandconditionsparams);
 //                        }
-
-                    });
+//
+//                    });
 
                     $('ul.nav-tabs > li > a').on('shown.bs.tab', function (e) {
                         var id = $(e.target).attr('href').substr(1);
@@ -2865,8 +2851,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
                 
-                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(-1, metademandparams, metademandconditionsparams));
-                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_nextPrev(1, metademandparams, metademandconditionsparams));
+                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_prev(-1, metademandparams, metademandconditionsparams));
+                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_next(1, metademandparams, metademandconditionsparams));
 
                     plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false); // Display the current tab
 
