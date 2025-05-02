@@ -570,7 +570,7 @@ class PluginMetademandsTextarea extends CommonDBTM
         }
     }
 
-    public static function fixcheckConditions($data, $metaparams)
+    public static function checkConditions($data, $metaparams)
     {
 
         foreach ($metaparams as $key => $val) {
@@ -590,9 +590,24 @@ class PluginMetademandsTextarea extends CommonDBTM
                         metademandconditionsparams.richtext_ids = {$richtext_id};
                         metademandconditionsparams.root_doc = '$root_doc';";
 
-        $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandconditionsparams);";
-        $onchange .= "});";
+        if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
+            $onchange .= "if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
+                            for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
+                                let field = 'field' + metademandconditionsparams.richtext_ids[i];
+                                let editor = tinyMCE.get(field);
+                        
+                                if (editor) {
+                                    editor.on('keyup', function () {
+                                        plugin_metademands_wizard_checkConditions(metademandconditionsparams);
+                                    });
+                                }
+                            }
+                        }";
+        } else {
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
+            $onchange .= "});";
+        }
 
         echo Html::scriptBlock(
             '$(document).ready(function() {' . $onchange . '});'

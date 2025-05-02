@@ -505,41 +505,23 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
     return valid;
 }
 
-function plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, create) {
+function plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams) {
     // This function will display the specified tab of the form...
-    //document.getElementById('nextMsg').style.display = 'none';
 
     if (metademandconditionsparams.use_condition == true) {
         if (metademandconditionsparams.show_rule == 2) {
-            if(document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
                 document.getElementById('nextBtn').style.display = 'none';
             }
         }
 
-        $('document').ready(
-            plugin_metademands_wizard_checkConditions(metademandconditionsparams)
-        );
-
-        if (document.getElementById('nextBtn').innerHTML == metademandparams.nexttitle) {
-            $('#nextBtn').on('click', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-        }
-        $('#wizard_form input[type=\"checkbox\"]').on('change', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-        $('#wizard_form input[type=\"radio\"]').on('change', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-        $('#wizard_form input').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-        $('#wizard_form select').on('change', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-        $('#wizard_form textarea').on('change, keyup', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-
-        if (metademandconditionsparams.use_richtext) {
-            for( let i = 0; i < metademandconditionsparams.richtext_ids.length; i++ ){
-                let field = 'field' + metademandconditionsparams.richtext_ids[i];
-                tinyMCE.get(field).on('keyup', plugin_metademands_wizard_checkConditions(metademandconditionsparams));
-            }
-        }
-        $('#prevBtn').on('click', function(){
-            if(document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nexttitle) {
+        $('#prevBtn').on('click', function () {
+            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nexttitle) {
                 document.getElementById('nextBtn').style.display = 'inline';
             }
         });
+        plugin_metademands_wizard_checkConditions(metademandconditionsparams);
+
     }
 
     if (metademandparams.use_as_step == 1) {
@@ -553,13 +535,13 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         var x = document.getElementsByClassName('tab-nostep');
     }
 
-    if(metademandparams.block_id > 0) {
+    if (metademandparams.block_id > 0) {
         bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc',''));
+        id_bloc = parseInt(bloc.replace('bloc', ''));
         while (metademandparams.block_id != id_bloc) {
             metademandparams.currentTab = metademandparams.currentTab + 1;
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc',''));
+            id_bloc = parseInt(bloc.replace('bloc', ''));
         }
         firstnumTab = metademandparams.currentTab;
     }
@@ -587,7 +569,7 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
     }
 
     document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
-    if (metademandparams.currentTab == (x.length - 1) || create == true) {
+    if (metademandparams.currentTab == (x.length - 1)) {
         document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
     }
 
@@ -641,12 +623,6 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
                 document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
             }
         }
-    }
-}
-function plugin_metademands_wizard_fixcheckConditions(metademandconditionsparams) {
-
-    if (typeof metademandconditionsparams !== 'undefined') {
-        plugin_metademands_wizard_checkConditions(metademandconditionsparams);
     }
 }
 
@@ -705,7 +681,7 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
     var formDatas;
     formDatas = $('#wizard_form').serializeArray();
 
-    if (typeof tinymce !== 'undefined' && metademandconditionsparams.use_richtext) {
+    if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
         for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
             let field = 'field' + metademandconditionsparams.richtext_ids[i];
             let content = tinyMCE.get(field).getContent();
@@ -761,15 +737,15 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
             }
         },
         error: function (xhr, status, error) {
-            // console.log(xhr);
-            // console.log(status);
-            // console.log(error);
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
         }
     });
 }
 
 
-function plugin_metademands_wizard_next(n, metademandparams, metademandconditionsparams) {
+function plugin_metademands_wizard_nextBtn(n, metademandparams, metademandconditionsparams) {
 
     var firstnumTab = 0;
     // This function will figure out which tab to display
@@ -783,14 +759,14 @@ function plugin_metademands_wizard_next(n, metademandparams, metademandcondition
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
-    if(metademandparams.block_id > 0) {
+    if (metademandparams.block_id > 0) {
         bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc',''));
+        id_bloc = parseInt(bloc.replace('bloc', ''));
         while (metademandparams.block_id != id_bloc) {
             metademandparams.currentTab = metademandparams.currentTab + 1;
             // if (typeof x[metademandparams.currentTab] !== 'undefined') {
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc',''));
+            id_bloc = parseInt(bloc.replace('bloc', ''));
             // }
 
         }
@@ -819,19 +795,19 @@ function plugin_metademands_wizard_next(n, metademandparams, metademandcondition
 
         while (finded == false) {
 
-            if(true) {
+            if (true) {
 
-                if(x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
+                if (x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
                     createNow = true;
                     finded = true;
                 } else {
-                    if(x[metademandparams.currentTab].firstChild.style.display != 'none' ) {
+                    if (x[metademandparams.currentTab].firstChild.style.display != 'none') {
                         finded = true;
                         nextTab = metademandparams.currentTab + n;
                         while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                             nextTab = nextTab + n;
                         }
-                        if(nextTab >= x.length) {
+                        if (nextTab >= x.length) {
                             create = true;
                         }
                     } else {
@@ -918,7 +894,8 @@ function plugin_metademands_wizard_next(n, metademandparams, metademandcondition
         return false;
     }
 
-    if (typeof metademandparams !== 'undefined') {
+    if (metademandparams.use_as_step == 1
+        && typeof metademandparams !== 'undefined') {
 
         if (x[metademandparams.currentTab] !== undefined) {
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
@@ -950,7 +927,7 @@ function plugin_metademands_wizard_next(n, metademandparams, metademandcondition
                 }
 
             } else {
-                plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false);
+                plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
             }
         } else {
             location.href = metademandparams.root_doc + '/front/wizard.form.php';
@@ -958,9 +935,9 @@ function plugin_metademands_wizard_next(n, metademandparams, metademandcondition
     }
 }
 
-function plugin_metademands_wizard_prev(n, metademandparams, metademandconditionsparams) {
+function plugin_metademands_wizard_prevBtn(n, metademandparams, metademandconditionsparams) {
 
-    var firstnumTab = 1;
+    var firstnumTab = 0;
     // This function will figure out which tab to display
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
@@ -972,14 +949,14 @@ function plugin_metademands_wizard_prev(n, metademandparams, metademandcondition
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
-    if(metademandparams.block_id > 0) {
+    if (metademandparams.block_id > 0) {
         bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc',''));
+        id_bloc = parseInt(bloc.replace('bloc', ''));
         while (metademandparams.block_id != id_bloc) {
             metademandparams.currentTab = metademandparams.currentTab + 1;
             // if (typeof x[metademandparams.currentTab] !== 'undefined') {
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc',''));
+            id_bloc = parseInt(bloc.replace('bloc', ''));
             // }
 
         }
@@ -994,37 +971,37 @@ function plugin_metademands_wizard_prev(n, metademandparams, metademandcondition
     }
 
     // Increase or decrease the current tab by 1:
-
-    metademandparams.currentTab = metademandparams.currentTab + n;
+    if (metademandparams.currentTab >= 1) {
+        metademandparams.currentTab = metademandparams.currentTab + n;
+    }
 
     if (metademandparams.use_as_step == 1) {
 
-        var finded = false;
+        if (metademandparams.currentTab >= 1) {
+            var finded = false;
+            while (finded == false) {
 
-        while (finded == false) {
+                if (true) {
 
-            if(true) {
-
-                if(x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
-                    finded = true;
-                } else {
-                    if(x[metademandparams.currentTab].firstChild.style.display != 'none' ) {
+                    if (x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
                         finded = true;
-                        nextTab = metademandparams.currentTab + n;
-                        while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                            nextTab = nextTab + n;
-                        }
                     } else {
-                        metademandparams.currentTab = metademandparams.currentTab + n;
+                        if (x[metademandparams.currentTab].firstChild.style.display != 'none') {
+                            finded = true;
+                            nextTab = metademandparams.currentTab + n;
+                            while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                                nextTab = nextTab + n;
+                            }
+                        } else {
+                            metademandparams.currentTab = metademandparams.currentTab + n;
+                        }
                     }
+                } else {
+                    finded = true;
                 }
-            } else {
-                finded = true;
             }
         }
-    }
 
-    if (typeof metademandparams !== 'undefined') {
 
         if (x[metademandparams.currentTab] !== undefined) {
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
@@ -1036,7 +1013,7 @@ function plugin_metademands_wizard_prev(n, metademandparams, metademandcondition
                 document.querySelector('.scrollable-tabs').scrollBy({left: -150, behavior: 'smooth'});
             }
 
-            plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false);
+            plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
         } else {
             location.href = metademandparams.root_doc + '/front/wizard.form.php';
         }
@@ -1111,5 +1088,5 @@ function updateActiveTab(rank) {
     $('div[id^=\"block\"]').hide();
     $('#block' + rank).show();
 
-    document.getElementById('ablock' + rank)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    document.getElementById('ablock' + rank)?.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
 }

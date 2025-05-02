@@ -1979,7 +1979,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
     }
 
-    public static function fixcheckConditions($data, $metaparams)
+    public static function checkConditions($data, $metaparams)
     {
 
         foreach ($metaparams as $key => $val) {
@@ -2003,7 +2003,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
         $onchange .= "$('[name=\"$name\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandconditionsparams);";
+        $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
         $onchange .= "});";
 
         echo Html::scriptBlock(

@@ -1805,63 +1805,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo Html::hidden('see_basket_summary', ['value' => 1]);
             }
 
-//            if ($metademands->fields['is_order'] == 0
-//                && !$preview
-//                && (!$seeform
-//                    || (isset($options['resources_id'])
-//                        && $options['resources_id'] > 0)
-//                    || ($current_ticket > 0
-//                        && ((!$meta_validated
-//                                && $metademands->fields['can_update'] == true) ||
-//                            ($meta_validated
-//                                && $metademands->fields['can_clone'] == true))
-//                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
-//            ) {
-//                foreach ($metaparams as $key => $val) {
-//                    if (isset($metaparams[$key])) {
-//                        $$key = $metaparams[$key];
-//                    }
-//                }
-//
-//                foreach ($metaconditionsparams as $key => $val) {
-//                    if (isset($metaconditionsparams[$key])) {
-//                        $$key = $metaconditionsparams[$key];
-//                    }
-//                }
-//
-//                echo Html::scriptBlock(
-//                    "
-//                    $(document).ready(function () {
-//                        window.metademandparams = {};
-//                        metademandparams.nexttitle = '$nexttitle';
-//                        metademandparams.submittitle = '$submittitle';
-//                        metademandparams.submitsteptitle = '$submitsteptitle';
-//                        metademandparams.nextsteptitle = '$nextsteptitle';
-//                        metademandparams.msg = '$alert';
-//                        metademandparams.msg_regex = '$alert_regex';
-//
-//                        metademandparams.use_as_step = '$use_as_step';
-//                        metademandparams.seesummary = '$see_summary';
-//                        metademandparams.json_all_meta_fields = {$json_all_meta_fields};
-//                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-//                        metademandparams.use_condition = '$use_condition';
-//                        metademandparams.show_rule = '$show_rule';
-//                        metademandparams.show_button = '$show_button';
-//                        metademandparams.use_richtext = '$use_richtext';
-//                        metademandparams.richtext_ids = {$richtext_id};
-//                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
-//                        metademandparams.root_doc = '$root_doc';
-//                        metademandparams.paramUrl = '$paramUrl';
-//                        metademandparams.token = '$token';
-//                        metademandparams.id = '$ID';
-//                        metademandparams.block_id = '$block_id';
-//
-//                        plugin_metademands_wizard_displayStepButton(metademandparams);
-//                        plugin_metademands_wizard_displayStepMsg(metademandparams);
-//                    });"
-//                );
-//            }
-
             $displayBlocksAsTab = 0;
             if ($metademands->fields['step_by_step_mode'] == 1
                 && isset($stepConfig->fields['see_blocks_as_tab'])
@@ -1963,14 +1906,14 @@ class PluginMetademandsWizard extends CommonDBTM
 //                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
-//                                plugin_metademands_wizard_next(1, metademandparams, metademandconditionsparams);
+//                                plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams);
 //                                
 //                        } else if (clicbloc <= parseInt(loadedId)) {
 //                                
 //                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
-//                                plugin_metademands_wizard_prev(clicbloc, metademandparams, metademandconditionsparams);
+//                                plugin_metademands_wizard_prevBtn(clicbloc, metademandparams, metademandconditionsparams);
 //                        }
 //
 //                    });
@@ -2785,7 +2728,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
         PluginMetademandsFieldOption::checkboxScript($data);
 
-        PluginMetademandsFieldOption::fixcheckConditions($data);
+        PluginMetademandsFieldOption::checkConditions($data);
     }
 
 
@@ -2824,8 +2767,7 @@ class PluginMetademandsWizard extends CommonDBTM
                    
                     metademandparams.msg = '$alert';
                     metademandparams.msg_regex = '$alert_regex';
-                    
-                    
+
                     metademandparams.seesummary = '$see_summary';
                     
                     metademandparams.json_all_meta_fields = {$json_all_meta_fields};
@@ -2851,10 +2793,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
                 
-                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_prev(-1, metademandparams, metademandconditionsparams));
-                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_next(1, metademandparams, metademandconditionsparams));
-
-                    plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams, false); // Display the current tab
+                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_prevBtn(-1, metademandparams, metademandconditionsparams));
+                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams));
+    
+                    plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams); // Display the current tab
 
                   });
                </script>";

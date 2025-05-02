@@ -1753,7 +1753,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function fixcheckConditions($data)
+    public static function checkConditions($data)
     {
         $metaid = $data['plugin_metademands_metademands_id'];
         $metademands = new PluginMetademandsMetademand();
@@ -1769,40 +1769,40 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'informations':
                 break;
             case 'text':
-                PluginMetademandsText::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsText::checkConditions($data, $metaconditionsparams);
                 break;
             case 'tel':
-                PluginMetademandsTel::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsTel::checkConditions($data, $metaconditionsparams);
                 break;
             case 'email':
-                PluginMetademandsEmail::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsEmail::checkConditions($data, $metaconditionsparams);
                 break;
             case 'url':
-                PluginMetademandsUrl::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsUrl::checkConditions($data, $metaconditionsparams);
                 break;
             case 'textarea':
-                PluginMetademandsTextarea::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsTextarea::checkConditions($data, $metaconditionsparams);
                 break;
             case 'dropdown_meta':
-                PluginMetademandsDropdownmeta::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsDropdownmeta::checkConditions($data, $metaconditionsparams);
                 break;
             case 'dropdown_object':
-                PluginMetademandsDropdownobject::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsDropdownobject::checkConditions($data, $metaconditionsparams);
                 break;
             case 'dropdown':
-                PluginMetademandsDropdown::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsDropdown::checkConditions($data, $metaconditionsparams);
                 break;
             case 'dropdown_multiple':
-                PluginMetademandsDropdownmultiple::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsDropdownmultiple::checkConditions($data, $metaconditionsparams);
                 break;
             case 'checkbox':
-                PluginMetademandsCheckbox::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsCheckbox::checkConditions($data, $metaconditionsparams);
                 break;
             case 'radio':
-                PluginMetademandsRadio::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsRadio::checkConditions($data, $metaconditionsparams);
                 break;
             case 'yesno':
-                PluginMetademandsYesno::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsYesno::checkConditions($data, $metaconditionsparams);
                 break;
             case 'number':
                 break;
@@ -1825,7 +1825,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'link':
                 break;
             case 'basket':
-                PluginMetademandsBasket::fixcheckConditions($data, $metaconditionsparams);
+                PluginMetademandsBasket::checkConditions($data, $metaconditionsparams);
                 break;
             case 'parent_field':
                 break;

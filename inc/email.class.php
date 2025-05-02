@@ -607,7 +607,7 @@ class PluginMetademandsEmail extends CommonDBTM
         }
     }
 
-    public static function fixcheckConditions($data, $metaparams)
+    public static function checkConditions($data, $metaparams)
     {
 
         foreach ($metaparams as $key => $val) {
@@ -628,7 +628,7 @@ class PluginMetademandsEmail extends CommonDBTM
                         metademandconditionsparams.root_doc = '$root_doc';";
 
         $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_fixcheckConditions(metademandconditionsparams);";
+        $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
         $onchange .= "});";
 
         echo Html::scriptBlock(
