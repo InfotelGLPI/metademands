@@ -107,7 +107,7 @@ msgid "Delete form"
 msgstr ""
 
 #: ajax/deleteform.php:71 inc/form.class.php:224 inc/stepform.class.php:596
-#: inc/wizard.class.php:761 inc/wizard.class.php:959
+#: inc/wizard.class.php:761 inc/wizard.class.php:959 inc/stepformread.class.php:120 inc/stepformread.class.php:215
 msgid "No existing forms founded"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr ""
 msgid "Used blocks are mandatory"
 msgstr ""
 
-#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:81
+#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:81 front/stepformread.php:38 front/stepformread.php:40
 msgid "Continue metademand"
 msgstr ""
 
@@ -2013,7 +2013,7 @@ msgstr[1] ""
 msgid "Edit by"
 msgstr ""
 
-#: inc/stepform.class.php:574
+#: inc/stepform.class.php:574 inc/stepformread.class.php:83 inc/stepformread.class.php:177
 msgid "Step"
 msgstr ""
 
@@ -2349,4 +2349,34 @@ msgstr ""
 
 #: inc/yesno.class.php:51
 msgid "Yes / No"
+msgstr ""
+
+#: inc/menu.class.php:87
+msgid "View progress of current forms"
+msgstr ""
+
+#: inc/stepformread.class.php:82
+msgid "Name"
+msgstr ""
+
+#: inc/stepformread.class.php:84
+msgid "Creation date"
+msgstr ""
+
+#: inc/stepformread.class.php:85 inc/stepformread.class.php:182
+msgid "Recipient group"
+msgstr ""
+
+#: inc/stepformread.class.php:86 inc/stepformread.class.php:189
+msgid "Recipient user"
+msgstr ""
+
+#: inc/stepformread.class.php:143
+msgid "Your current form"
+msgid_plural "Your current forms"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/stepformread.class.php:171
+msgid "Edit on"
 msgstr ""
