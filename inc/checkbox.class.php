@@ -730,8 +730,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             }
                          });";
                 $onchange .= "}";
-                }
             }
+        }
 
             if (count($display) > 0) {
                 foreach ($display as $see) {

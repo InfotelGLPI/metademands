@@ -283,33 +283,33 @@ class PluginMetademandsYesno extends CommonDBTM
             if (isset($data['value']) && is_array($data['value'])) {
                 $values = $data['value'];
                 foreach ($values as $value) {
-                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 }
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;"._sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;".__('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                if ($tasks_id) {
-                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                        $script .= "});";
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                    if ($tasks_id) {
+                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                            $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                            $script .= "});";
+                        }
                     }
                 }
             }
-        }
 
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                $val = Toolbox::addslashes_deep($idc);
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                    $val = Toolbox::addslashes_deep($idc);
 
-                $script .= "if ($(this).val() == $val) {
+                    $script .= "if ($(this).val() == $val) {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
                                      data: { tasks_id: $tasks_id,
@@ -322,7 +322,7 @@ class PluginMetademandsYesno extends CommonDBTM
                                 });
                                  ";
 
-                $script .= "      } else {
+                    $script .= "      } else {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
                                      data: { tasks_id: $tasks_id,
@@ -334,7 +334,7 @@ class PluginMetademandsYesno extends CommonDBTM
                                     },
                                 });
                                  ";
-                $script .= "}";
+                    $script .= "}";
 
 //            if ($idc == $data["custom_values"]) {
 //                $script2 .= "console.log('custom $tasks_id ');";
@@ -366,33 +366,33 @@ class PluginMetademandsYesno extends CommonDBTM
 ////                    }
 ////                }
 //            }
+                }
             }
-        }
-        $script .= "});";
+            $script .= "});";
 
-        //Initialize id default value
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
+            //Initialize id default value
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
                     if (isset($data['custom'])) {
                         $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
 
-                    if ($idc == $custom_values) {
-                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
-                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                            $script .= "});";
-                        }
-                    } else {
-                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                            $script .= "});";
+                        if ($idc == $custom_values) {
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                $script .= "});";
+                            }
+                        } else {
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                $script .= "});";
+                            }
                         }
                     }
                 }
             }
-        }
-        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         }
     }
 

@@ -382,7 +382,7 @@ class PluginMetademandsRadio extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
 
-                $onchange .= "if ($fields_link in tohide) {
+                    $onchange .= "if ($fields_link in tohide) {
                         } else {
                             tohide[$fields_link] = true;
                         }
@@ -390,16 +390,16 @@ class PluginMetademandsRadio extends CommonDBTM
                             tohide[$fields_link] = false;
                         }";
 
-                if (isset($data['value']) && is_array($data['value'])) {
-                    $values = $data['value'];
-                    foreach ($values as $value) {
-                        if ($idc == $value) {
-                            $display[] = $fields_link;
+                    if (isset($data['value']) && is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            if ($idc == $value) {
+                                $display[] = $fields_link;
+                            }
                         }
                     }
-                }
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                                 if (value == true) {
                                     var id = '#metademands_wizard_red'+ key;
                                     $(id).html('');

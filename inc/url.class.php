@@ -510,8 +510,8 @@ class PluginMetademandsUrl extends CommonDBTM
                         $display = $hidden_link;
                     }
                 }
-                }
             }
+        }
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";

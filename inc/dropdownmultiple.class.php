@@ -1536,7 +1536,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
                 }
 
-            //default hide of all hidden links
+                //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";

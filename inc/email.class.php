@@ -455,57 +455,57 @@ class PluginMetademandsEmail extends CommonDBTM
         $display = 0;
         foreach ($check_values as $idc => $check_value) {
             foreach ($check_value['hidden_link'] as $hidden_link) {
-                    if (isset($idc) && $idc == 1) {
-                        $onchange .= "if ($(this).val().trim().length < 1) {
+                if (isset($idc) && $idc == 1) {
+                    $onchange .= "if ($(this).val().trim().length < 1) {
                                      $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                      sessionStorage.setItem('hiddenlink$name', $hidden_link);
                                       " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name);
 
-                        if (is_array($childs_by_checkvalue)) {
-                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                                if ($idc == $k) {
-                                    foreach ($childs_blocks as $childs) {
-                                        $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
                                                 $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
                                                 if (document.getElementById('ablock" . $childs . "'))
                                                 document.getElementById('ablock" . $childs . "').style.display = 'none';";
-                                    }
                                 }
                             }
                         }
-                        $onchange .= "} else {
+                    }
+                    $onchange .= "} else {
                                      $('[id-field =\"field" . $hidden_link . "\"]').show();
                                   }
                                 ";
 
-                        if (isset($data['value']) && $idc == $data['value']) {
-                            $display = $hidden_link;
-                        }
-                    } else {
-                        $onchange .= "if ($(this).val().trim().length < 1) {
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_link;
+                    }
+                } else {
+                    $onchange .= "if ($(this).val().trim().length < 1) {
                                     $('[id-field =\"field" . $hidden_link . "\"]').show();
                                  } else {
                                     $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                     sessionStorage.setItem('hiddenlink$name', $hidden_link);
                                      " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name);
 
-                        if (is_array($childs_by_checkvalue)) {
-                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                                if ($idc == $k) {
-                                    foreach ($childs_blocks as $childs) {
-                                        $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
                                                 $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
                                                 if (document.getElementById('ablock" . $childs . "'))
                                                 document.getElementById('ablock" . $childs . "').style.display = 'none';";
-                                    }
                                 }
                             }
                         }
-                        $onchange .= "}";
+                    }
+                    $onchange .= "}";
 
-                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
-                        if (isset($data['value']) && $idc == $data['value']) {
+                    if (isset($data['value']) && $idc == $data['value']) {
                             $display = $hidden_link;
                         }
                     }

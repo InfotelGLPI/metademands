@@ -497,7 +497,7 @@ class PluginMetademandsDropdown extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
             );
         }
     }
@@ -659,7 +659,7 @@ class PluginMetademandsDropdown extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
             $onchange .= "$('[name=\"$name\"]').change(function() {";
