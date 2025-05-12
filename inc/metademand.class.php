@@ -1891,18 +1891,16 @@ JAVASCRIPT
                     if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
                         foreach ($opts as $opt) {
                             $check_value = $opt["check_value"];
-                            if ($id > 0 && $fieldopt->getFromDBByCrit(
-                                    ["plugin_metademands_fields_id" => $id, "check_value" => $check_value]
-                                )) {
-                                $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['hidden_block'] = $fieldopt->fields['hidden_block'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['users_id_validate'] = $fieldopt->fields['users_id_validate'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['childs_blocks'] = $fieldopt->fields['childs_blocks'];
-                                $fields_data[$id]["options"][$check_value]['checkbox_value'] = $fieldopt->fields['checkbox_value'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['checkbox_id'] = $fieldopt->fields['checkbox_id'] ?? 0;
-                                $fields_data[$id]["options"][$check_value]['parent_field_id'] = $fieldopt->fields['parent_field_id'] ?? 0;
+                            if ($id > 0) {
+                                $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'][] = $opt['plugin_metademands_tasks_id'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['fields_link'][] = $opt['fields_link'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['hidden_link'][] = $opt['hidden_link'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['hidden_block'] = isset($opt['hidden_block']) && $opt['hidden_block'] > 0 ? $opt['hidden_block'] : ($fields_data[$id]["options"][$check_value]['hidden_block'] ?? 0);
+                                $fields_data[$id]["options"][$check_value]['users_id_validate'] = isset($opt['users_id_validate']) && $opt['users_id_validate'] > 0 ? $opt['users_id_validate'] : ($fields_data[$id]["options"][$check_value]['users_id_validate'] ?? 0);
+                                $fields_data[$id]["options"][$check_value]['childs_blocks'] = isset($opt['childs_blocks']) && $opt['childs_blocks'] != '[]' ? $opt['childs_blocks'] : (isset($fields_data[$id]["options"][$check_value]['childs_blocks']) && $fields_data[$id]["options"][$check_value]['childs_blocks'] != '[]' ?$fields_data[$id]["options"][$check_value]['childs_blocks'] : $opt['childs_blocks']);
+                                $fields_data[$id]["options"][$check_value]['checkbox_value'] = isset($opt['checkbox_value']) && $opt['checkbox_value'] > 0 ? $opt['checkbox_value'] : ($fields_data[$id]["options"][$check_value]['checkbox_value'] ?? 0);
+                                $fields_data[$id]["options"][$check_value]['checkbox_id'] = isset($opt['checkbox_id']) && $opt['checkbox_id'] > 0 ? $opt['checkbox_id'] : ($fields_data[$id]["options"][$check_value]['checkbox_id'] ?? 0);
+                                $fields_data[$id]["options"][$check_value]['parent_field_id'] = isset($opt['parent_field_id']) && $opt['parent_field_id'] > 0 ? $opt['parent_field_id'] : ($fields_data[$id]["options"][$check_value]['parent_field_id'] ?? 0);
                             }
 //                            $fields_data[$id]["options"][$opt["check_value"]][] = $opt;
                         }

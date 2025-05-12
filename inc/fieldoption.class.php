@@ -312,6 +312,29 @@ class PluginMetademandsFieldOption extends CommonDBChild
             );
             echo "};";
             echo "</script>\n";
+
+            echo "<script type = \"text/javascript\">
+                
+                function reloadviewOption(value) {
+                    
+                    $('#viewoption" . $item->getType() . $item->getID() . $rand ."')
+                        .load('". $CFG_GLPI["root_doc"]."/ajax/viewsubitem.php',{
+                        type:\"".  __CLASS__ . "\",
+                        parenttype:\"" . get_class($item) . "\"," .
+                        $item->getForeignKeyField() . ":" . $item->getID() . ",
+                        id:value[0],
+                        check_value : value[1],
+                        plugin_metademands_tasks_id : value[2],
+                        fields_link : value[3],
+                        hidden_link : value[4],
+                        hidden_block : value[5],
+                        childs_blocks : value[6],
+                        users_id_validate : value[7],
+                        checkbox_id : value[8],
+                        }
+                    );";
+
+            echo       "}</script>";
             echo "<div class='center'>" .
                 "<a class='submit btn btn-primary' href='javascript:addOption" .
                 $item->getType() . $item->getID() . "$rand();'>" . __('Add a new option', 'metademands') .
@@ -645,6 +668,36 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
 
         echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
+        $params['ID'] = $ID;
+
+        if (isset($_POST['check_value'])) {
+            $params['check_value'] = $_POST['check_value'];
+
+            if ($ID == -1) {
+                if (isset($_POST['plugin_metademands_tasks_id']) && empty($params['plugin_metademands_tasks_id'])) {
+                    $params['plugin_metademands_tasks_id'] = $_POST['plugin_metademands_tasks_id'];
+                }
+                if (isset($_POST['fields_link']) && empty($params['fields_link'])) {
+                    $params['fields_link'] = $_POST['fields_link'];
+                }
+                if (isset($_POST['hidden_link']) && empty($params['hidden_link'])) {
+                    $params['hidden_link'] = $_POST['hidden_link'];
+                }
+                if (isset($_POST['hidden_block']) && empty($params['hidden_block'])) {
+                    $params['hidden_block'] = $_POST['hidden_block'];
+                }
+                if (isset($_POST['childs_blocks']) && empty($params['childs_blocks'])) {
+                    $params['childs_blocks'] = json_decode($_POST['childs_blocks']);
+                }
+                if (isset($_POST['users_id_validate']) && empty($params['users_id_validate'])) {
+                    $params['users_id_validate'] = $_POST['users_id_validate'];
+                }
+                if (isset($_POST['checkbox_id']) && empty($params['checkbox_id'])) {
+                    $params['checkbox_id'] = $_POST['checkbox_id'];
+                }
+            }
+        }
+
 
 
         switch ($params['type']) {
@@ -1048,6 +1101,16 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $field_class = new PluginMetademandsField();
         $field_class->getFromDB($field_id);
+        $fieldoptions = new self;
+
+        $hasdifference = false;
+        if (isset($params['ID'])) {
+            foreach ($fieldoptions->find(['id' => $params['ID']]) as $option) {
+                if (!$hasdifference && $option['check_value'] != $params['check_value']) {
+                    $hasdifference = true;
+                }
+            }
+        }
 
         // Show task link
         if ($task) {
@@ -1058,7 +1121,13 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     'metademands'
                 ) . '</span>';
             echo '</td><td>';
-            PluginMetademandsTask::showAllTasksDropdown($metademands_id, $params['plugin_metademands_tasks_id']);
+            $tasksusedarray = [];
+            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'], 'check_value' => $params['check_value']]) as $tasksused) {
+                if ($tasksused['plugin_metademands_tasks_id'] > 0) {
+                    $tasksusedarray[] = $tasksused['plugin_metademands_tasks_id'];
+                }
+            }
+            PluginMetademandsTask::showAllTasksDropdown($metademands_id, $params['plugin_metademands_tasks_id'], true, $tasksusedarray);
             echo "</td></tr>";
         }
         // Show field link
@@ -1077,9 +1146,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
             unset($fields_data[$id]);
 
             $data = [Dropdown::EMPTY_VALUE];
+            $fieldslinkusedarray = [];
+            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id']]) as $fieldslinkused) {
+                if ($fieldslinkused['fields_link'] > 0) {
+                    $fieldslinkusedarray[] = $fieldslinkused['fields_link'];
+                }
+            }
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
-                    && $value['item'] != "informations") {
+                    && $value['item'] != "informations" && (!in_array($id, $fieldslinkusedarray) || $id == $params['fields_link'])) {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                             html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                         );
@@ -1103,8 +1178,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
 //            unset($fields_data[$id]);
             $data = [Dropdown::EMPTY_VALUE];
+            $hiddenlinkusedarray = [];
+            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id']]) as $hiddenlinkused) {
+                if ($hiddenlinkused['hidden_link'] > 0) {
+                    $hiddenlinkusedarray[] = $hiddenlinkused['hidden_link'];
+                }
+            }
             foreach ($fields_data as $id => $value) {
-                if ($value['item'] != "ITILCategory_Metademands") {
+                if ($value['item'] != "ITILCategory_Metademands" &&
+                    (!in_array($id, $hiddenlinkusedarray) || $id == $params['hidden_link'])) {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                             html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                         );
@@ -1113,49 +1195,64 @@ class PluginMetademandsFieldOption extends CommonDBChild
             Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link']]);
             echo "</td></tr>";
 
-            echo "<tr>";
-            echo "<td>";
-            echo __('Display this hidden block', 'metademands');
-            echo '</br><span class="metademands_wizard_comments">' . __(
-                    'If the value selected equals the value to check, the block becomes visible',
-                    'metademands'
-                ) . '</span>';
-            echo "</td>";
-            echo "<td>";
-
-            if (empty($params['hidden_block'])) {
-                $params['hidden_block'] = 0;
-            }
-            if (!empty($params['hidden_block'])) {
-                $field = new PluginMetademandsField();
-                $fields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                $hidden_blocks = [];
-                foreach ($fields as $field) {
-                    $fieldoptions = new self();
-                    $fieldscheck = $fieldoptions->find(
-                        ['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']]
-                    );
-                    foreach ($fieldscheck as $fieldschec) {
-                        $hidden_blocks[] = $field['id'];
+            $hiddenblockarray = [];
+            if ($params['check_value'] != "") {
+                foreach ($fieldoptions->find([
+                    'plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'],
+                    'check_value' => $params['check_value']
+                ]) as $hiddenblock) {
+                    if ($hiddenblock['hidden_block'] > 0) {
+                        $hiddenblockarray[] = $hiddenblock['hidden_block'];
                     }
                 }
-                if (count($hidden_blocks) > 1) {
-                    echo "<span class='alert alert-warning d-flex'>";
-                    echo __(
-                        'This block is already used by another field. You can have some problems if the save value to check is used',
-                        'metademands'
-                    );
-                    echo "</span>";
-                }
             }
 
-            Dropdown::showNumber('hidden_block', [
-                'value' => $params['hidden_block'],
-                'used' => [$field_class->getField('rank')],
-                'min' => 1,
-                'max' => PluginMetademandsField::MAX_FIELDS,
-                'toadd' => [0 => Dropdown::EMPTY_VALUE]
-            ]);
+            if ($params['check_value'] == "" || count($hiddenblockarray) == 0 ||
+                (!empty($params['hidden_block']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0)) {
+                echo "<tr>";
+                echo "<td>";
+                echo __('Display this hidden block', 'metademands');
+                echo '</br><span class="metademands_wizard_comments">' . __(
+                        'If the value selected equals the value to check, the block becomes visible',
+                        'metademands'
+                    ) . '</span>';
+                echo "</td>";
+                echo "<td>";
+
+                if (empty($params['hidden_block'])) {
+                    $params['hidden_block'] = 0;
+                }
+                $hidden_blocks = [];
+                if (!empty($params['hidden_block'])) {
+                    $field = new PluginMetademandsField();
+                    $fields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                    $hidden_blocks = [];
+                    foreach ($fields as $field) {
+                        $fieldoptions = new self();
+                        $fieldscheck = $fieldoptions->find(
+                            ['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']]
+                        );
+                        foreach ($fieldscheck as $fieldschec) {
+                            $hidden_blocks[] = $field['id'];
+                        }
+                    }
+                    if (count($hidden_blocks) > 1) {
+                        echo "<span class='alert alert-warning d-flex'>";
+                        echo __(
+                            'This block is already used by another field. You can have some problems if the save value to check is used',
+                            'metademands'
+                        );
+                        echo "</span>";
+                    }
+                }
+
+                Dropdown::showNumber('hidden_block', [
+                    'value' => $params['hidden_block'],
+                    'used' => [$field_class->getField('rank')],
+                    'min' => 1,
+                    'max' => PluginMetademandsField::MAX_FIELDS,
+                    'toadd' => [0 => Dropdown::EMPTY_VALUE]
+                ]);
 
             echo "</td></tr>";
 
@@ -1175,8 +1272,22 @@ class PluginMetademandsFieldOption extends CommonDBChild
             Dropdown::showYesNo('hidden_block_same_block', $params['hidden_block_same_block']);
 
             echo "</td></tr>";
+            } else {
+                echo Html::hidden('hidden_block', ['value' => 0]);
+            }
 
-            if ($field_class->getField("type") == "checkbox"
+            $childsblockarray = [];
+            if ($params['check_value'] != "") {
+                foreach ($fieldoptions->find([
+                    'plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'],
+                    'check_value' => $params['plugin_metademands_fields_id']
+                ]) as $childsblock) {
+                    if ($childsblock['childs_blocks'] != "[]") {
+                        $childsblockarray[] = $childsblock['childs_blocks'];
+                    }
+                }
+            }
+            if (($field_class->getField("type") == "checkbox"
                 || $field_class->getField("type") == "radio"
                 || $field_class->getField("type") == "text"
                 || $field_class->getField("type") == "textarea"
@@ -1184,7 +1295,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 || $field_class->getField("type") == "dropdown"
                 || $field_class->getField("type") == "dropdown_object"
                 || $field_class->getField("type") == "dropdown_meta"
-                || $field_class->getField("type") == "yesno") {
+                || $field_class->getField("type") == "yesno" ) &&
+                ($params['check_value'] == "" || count($childsblockarray) == 0 ||
+                    (!empty($params['childs_blocks']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))
+            ) {
                 echo "<tr><td>";
                 echo __('Childs blocks', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
@@ -1196,38 +1310,72 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo self::showChildsBlocksDropdown($metademands_id, $params['hidden_block'], $params['childs_blocks']);
                 echo "</td></tr>";
             }
-            if ($field_class->getField("type") == "checkbox"
-            || $field_class->getField("type") == "radio"
-                || $field_class->getField("type") == "dropdown_meta"
-            || ($field_class->getField("type") == "dropdown_multiple"
-                    &&  $field_class->getField("item") == "Group")) {
-                echo "<tr><td>";
-                echo __('Launch a validation', 'metademands');
-                echo '</br><span class="metademands_wizard_comments">' . __(
-                        'If the value selected equals the value to check, the validation is sent to the user',
-                        'metademands'
-                    ) . '</span>';
-                echo "</td>";
-                echo "<td>";
-                $right = '';
-                $metademand = new PluginMetademandsMetademand();
-                $metademand->getFromDB($metademands_id);
-                if ($metademand->getField('type') == Ticket::INCIDENT_TYPE) {
-                    $right = 'validate_incident';
-                } elseif ($metademand->getField('type') == Ticket::DEMAND_TYPE) {
-                    $right = 'validate_request';
+
+            $uservalidatearray = [];
+            if ($params['check_value'] != "") {
+                foreach ($fieldoptions->find([
+                    'plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'],
+                    'check_value' => $params['plugin_metademands_fields_id']
+                ]) as $uservalidate) {
+                    if ($uservalidate['users_id_validate'] > 0) {
+                        $uservalidatearray[] = $uservalidate['users_id_validate'];
+                    }
                 }
-                User::dropdown([
-                    'name' => 'users_id_validate',
-                    'value' => $params['users_id_validate'],
-                    'right' => $right
-                ]);
-                echo "</td></tr>";
+            }
+            if ($params['check_value'] == "" || count($uservalidatearray) == 0 ||
+                (!empty($params['users_id_validate']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))
+            {
+                if ($field_class->getField("type") == "checkbox"
+                || $field_class->getField("type") == "radio"
+                    || $field_class->getField("type") == "dropdown_meta"
+                || ($field_class->getField("type") == "dropdown_multiple"
+                        &&  $field_class->getField("item") == "Group")) {
+                    echo "<tr><td>";
+                    echo __('Link a validation', 'metademands');
+                    echo '</br><span class="metademands_wizard_comments">' . __(
+                            'If the value selected equals the value to check, the validation is sent to the user',
+                            'metademands'
+                        ) . '</span>';
+                    echo "</td>";
+                    echo "<td>";
+                    $right = '';
+                    $metademand = new PluginMetademandsMetademand();
+                    $metademand->getFromDB($metademands_id);
+                    if ($metademand->getField('type') == Ticket::INCIDENT_TYPE) {
+                        $right = 'validate_incident';
+                    } elseif ($metademand->getField('type') == Ticket::DEMAND_TYPE) {
+                        $right = 'validate_request';
+                    }
+                    User::dropdown([
+                        'name' => 'users_id_validate',
+                        'value' => $params['users_id_validate'],
+                        'right' => $right
+                    ]);
+                    echo "</td></tr>";
+                } else {
+                    echo Html::hidden('users_id_validate', ['value' => 0]);
+                }
             } else {
                 echo Html::hidden('users_id_validate', ['value' => 0]);
             }
+
+
+            $checkboxarray = [];
+            if ($params['check_value'] != "") {
+                foreach ($fieldoptions->find([
+                    'plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'],
+                    'check_value' => $params['plugin_metademands_fields_id']
+                ]) as $checkbox) {
+                    if ($checkbox['checkbox_id'] > 0) {
+                        $checkboxarray[] = $checkbox['checkbox_id'];
+                    }
+                }
+            }
             if ($field_class->getField("type") == "dropdown_multiple"
-            &&  $field_class->getField("item") == "Appliance") {
+            &&  $field_class->getField("item") == "Appliance" &&
+                ($params['check_value'] == "" || count($checkboxarray) == 0 ||
+                    (!empty($params['checkbox_id']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0)))
+            {
                 echo "<tr><td>";
                 echo __('Bind to the value of this checkbox', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
@@ -1387,6 +1535,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     public static function taskScript($data)
     {
         global $PLUGIN_HOOKS;
+
 
         switch ($data['type']) {
             case 'title':
