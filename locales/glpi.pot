@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-13 09:44+0000\n"
+"POT-Creation-Date: 2025-05-13 10:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,13 +100,13 @@ msgctxt "button"
 msgid "Load form"
 msgstr ""
 
-#: ajax/deleteform.php:65 inc/form.class.php:212 inc/stepform.class.php:414
-#: inc/stepform.class.php:584 inc/stepformread.class.php:201
+#: ajax/deleteform.php:65 inc/form.class.php:212 inc/stepform.class.php:418
+#: inc/stepform.class.php:588 inc/stepformread.class.php:201
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
-#: ajax/deleteform.php:71 inc/form.class.php:224 inc/stepform.class.php:596
+#: ajax/deleteform.php:71 inc/form.class.php:224 inc/stepform.class.php:600
 #: inc/stepformread.class.php:120 inc/stepformread.class.php:213
 #: inc/wizard.class.php:761 inc/wizard.class.php:959
 msgid "No existing forms founded"
@@ -199,7 +199,7 @@ msgid "Draft name"
 msgstr ""
 
 #: front/draftcreation.php:61 inc/draft.class.php:116 inc/profile.class.php:159
-#: inc/stepform.class.php:499
+#: inc/stepform.class.php:503
 msgid "form"
 msgid_plural "forms"
 msgstr[0] ""
@@ -1767,11 +1767,11 @@ msgstr ""
 msgid "A form has been cancelled"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:66
+#: inc/notificationtargetstepform.class.php:66 inc/stepform.class.php:388
 msgid "Next group in charge of demand"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:67 inc/stepform.class.php:388
+#: inc/notificationtargetstepform.class.php:67 inc/stepform.class.php:389
 msgid "Next user in charge of demand"
 msgstr ""
 
@@ -1999,34 +1999,34 @@ msgid_plural "Forms in progress"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:498
+#: inc/stepform.class.php:502
 #, php-format
 msgid "You have %s"
 msgstr ""
 
-#: inc/stepform.class.php:500
+#: inc/stepform.class.php:504
 msgid "to complete"
 msgstr ""
 
-#: inc/stepform.class.php:508
+#: inc/stepform.class.php:512
 msgid "Do you want to see him ?"
 msgstr ""
 
-#: inc/stepform.class.php:510
+#: inc/stepform.class.php:514
 msgid "Do you want to see them ?"
 msgstr ""
 
-#: inc/stepform.class.php:534
+#: inc/stepform.class.php:538
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:564
+#: inc/stepform.class.php:568
 msgid "Edit by"
 msgstr ""
 
-#: inc/stepform.class.php:574 inc/stepformread.class.php:83
+#: inc/stepform.class.php:578 inc/stepformread.class.php:83
 #: inc/stepformread.class.php:174
 msgid "Step"
 msgstr ""
