@@ -69,7 +69,7 @@ class PluginMetademandsStepformread extends CommonDBTM
         return "ti ti-eye";
     }
 
-    public function showWaintingFormStandardViewReadOnly()
+    public function showWaitingFormStandardViewReadOnly()
     {
         $meta = new PluginMetademandsMetademand();
         $stepforms = self::getWaitingFormsByMaker();
@@ -79,11 +79,11 @@ class PluginMetademandsStepformread extends CommonDBTM
         if (!empty($stepforms)) {
             echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
             echo "<th>" . __("ID") . "</th>";
-            echo "<th>" . __('Name', 'metademands') . "</th>";
+            echo "<th>" . __('Name') . "</th>";
             echo "<th>" . __('Step', 'metademands') . "</th>";
-            echo "<th>" . __('Creation date', 'metademands') . "</th>";
-            echo "<th>" . __('Recipient group', 'metademands') . "</th>";
-            echo "<th>" . __('Recipient user', 'metademands') . "</th>";
+            echo "<th>" . __('Creation date') . "</th>";
+            echo "<th>" . __('Group in charge of the next step', 'metademands') . "</th>";
+            echo "<th>" . __('User in charge of the next step', 'metademands') . "</th>";
             echo "</tr>";
 
 
@@ -107,7 +107,7 @@ class PluginMetademandsStepformread extends CommonDBTM
                 echo $data['groups_id_dest'] > 0 ? Group::getFriendlyNameById($data['groups_id_dest']) : '';
                 echo "</td>";
                 echo "<td>";
-                echo $data['users_id_dest'] > 0 ? User::getFriendlyNameById($data['users_id_dest']) : '';
+                echo $data['users_id_dest'] > 0 ? getUserName($data['users_id_dest'], 1) : '';
                 echo "</td>";
 
 
@@ -126,7 +126,6 @@ class PluginMetademandsStepformread extends CommonDBTM
     public function showWaitingFormReadOnly()
     {
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
-        $rand         = mt_rand();
 
         $stepforms = self::getWaitingFormsByMaker();
 
@@ -140,7 +139,7 @@ class PluginMetademandsStepformread extends CommonDBTM
             }
             $cnt = count($stepforms);
             echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-            echo _n('Your current form', 'Your current forms', $cnt, 'metademands');
+            echo _n('Form in progress', 'Forms in progress', $cnt, 'metademands');
             echo "</div></h4></div></div>";
 
             echo "<div id='listmeta'>";
@@ -150,7 +149,7 @@ class PluginMetademandsStepformread extends CommonDBTM
                 if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
                     $metaID = $name['plugin_metademands_metademands_id'];
                     $block_id = $name['block_id'];
-                    echo '<div class="btnsc-normal" style="min-height: 260px" >';
+                    echo '<div class="btnsc-normal" style="min-height: 300px" >';
                     $fasize = "fa-4x";
                     echo "<div class='center'>";
                     $icon = "fa-share-alt";
@@ -166,11 +165,9 @@ class PluginMetademandsStepformread extends CommonDBTM
                     } else {
                         echo $n;
                     }
-                    //                    if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
+
                     echo "</span><br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                    echo __('Edit on', 'metademands');
-                    echo "&nbsp;";
-                    echo Html::convDateTime($name['date']);
+                    printf(__('Created on %s'), Html::convDate($name['date']));
                     echo "</span></em>";
 
                     echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
@@ -179,15 +176,16 @@ class PluginMetademandsStepformread extends CommonDBTM
                     echo "</span></em>";
                     if ($name['groups_id_dest'] > 0) {
                         echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo __('Recipient group', 'metademands');
+                        echo __('Group in charge of the next step', 'metademands');
                         echo "<br>";
                         echo Group::getFriendlyNameById($name['groups_id_dest']);
                         echo "</span></em>";
                     }
                     if ($name['users_id_dest'] > 0) {
                         echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo __('Recipient user', 'metademands');
-                        echo User::getFriendlyNameById($name['users_id_dest']);
+                        echo __('User in charge of the next step', 'metademands');
+                        echo "<br>";
+                        echo getUserName($name['users_id_dest']);
                         echo "</span></em>";
                     }
 

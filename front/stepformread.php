@@ -46,7 +46,7 @@ $stepformread = new PluginMetademandsStepformread();
 
 if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
     if (isset($_GET['standard'])) {
-        $stepformread->showWaintingFormStandardViewReadOnly();
+        $stepformread->showWaitingFormStandardViewReadOnly();
     } else {
         $stepformread->showWaitingFormReadOnly();
     }
