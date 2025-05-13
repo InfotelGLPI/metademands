@@ -82,6 +82,12 @@ class PluginMetademandsMenu extends CommonDBTM
             $menu['links'][$image] = PluginMetademandsStepform::getSearchURL(false);
         }
 
+        if ((Session::haveRight("plugin_metademands", READ)
+            || Session::haveRight("plugin_metademands_fillform", READ))) {
+            $image                 = "<i class='" . PluginMetademandsStepformread::getIcon() . "' title='" . __('View progress of current forms', 'metademands') . "'></i>&nbsp;" . __('View progress of current forms', 'metademands');
+            $menu['links'][$image] = PluginMetademandsStepformread::getSearchURL(false) . "?standard=1";
+        }
+
         $menu['icon'] = self::getIcon();
 
         return $menu;
