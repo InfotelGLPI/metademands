@@ -385,6 +385,7 @@ class PluginMetademandsStepform extends CommonDBTM
             echo "<tr>";
             echo "<th>" . __('ID') . "</th>";
             echo "<th>" . __('Publisher', 'metademands') . "</th>";
+            echo "<th>" . __('Next group in charge of demand', 'metademands') . "</th>";
             echo "<th>" . __('Next user in charge of demand', 'metademands') . "</th>";
             echo "<th>" . __('Date') . "</th>";
             echo "<th></th>";
@@ -397,6 +398,9 @@ class PluginMetademandsStepform extends CommonDBTM
                 echo "</td>";
                 echo "<td>";
                 echo getUserName($form['users_id'], 0, true);
+                echo "</td>";
+                echo "<td>";
+                echo Dropdown::getDropdownName('glpi_groups', $form['groups_id_dest']);
                 echo "</td>";
                 echo "<td>";
                 echo getUserName($form['users_id_dest'], 0, true);
