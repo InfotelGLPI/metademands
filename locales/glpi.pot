@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-13 09:27+0000\n"
+"POT-Creation-Date: 2025-05-13 09:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,13 +101,13 @@ msgid "Load form"
 msgstr ""
 
 #: ajax/deleteform.php:65 inc/form.class.php:212 inc/stepform.class.php:414
-#: inc/stepform.class.php:584 inc/stepformread.class.php:203
+#: inc/stepform.class.php:584 inc/stepformread.class.php:201
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
 #: ajax/deleteform.php:71 inc/form.class.php:224 inc/stepform.class.php:596
-#: inc/stepformread.class.php:120 inc/stepformread.class.php:215
+#: inc/stepformread.class.php:120 inc/stepformread.class.php:213
 #: inc/wizard.class.php:761 inc/wizard.class.php:959
 msgid "No existing forms founded"
 msgstr ""
@@ -1783,11 +1783,13 @@ msgstr ""
 msgid "Publisher"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:165
+#: inc/notificationtargetstepform.class.php:165 inc/stepformread.class.php:85
+#: inc/stepformread.class.php:179
 msgid "Group in charge of the next step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:166
+#: inc/notificationtargetstepform.class.php:166 inc/stepformread.class.php:86
+#: inc/stepformread.class.php:186
 msgid "User in charge of the next step"
 msgstr ""
 
@@ -1991,7 +1993,7 @@ msgid_plural "Steps a metademands form"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:334
+#: inc/stepform.class.php:334 inc/stepformread.class.php:142
 msgid "Form in progress"
 msgid_plural "Forms in progress"
 msgstr[0] ""
@@ -2025,34 +2027,8 @@ msgid "Edit by"
 msgstr ""
 
 #: inc/stepform.class.php:574 inc/stepformread.class.php:83
-#: inc/stepformread.class.php:177
+#: inc/stepformread.class.php:174
 msgid "Step"
-msgstr ""
-
-#: inc/stepformread.class.php:82
-msgid "Name"
-msgstr ""
-
-#: inc/stepformread.class.php:84
-msgid "Creation date"
-msgstr ""
-
-#: inc/stepformread.class.php:85 inc/stepformread.class.php:182
-msgid "Recipient group"
-msgstr ""
-
-#: inc/stepformread.class.php:86 inc/stepformread.class.php:189
-msgid "Recipient user"
-msgstr ""
-
-#: inc/stepformread.class.php:143
-msgid "Your current form"
-msgid_plural "Your current forms"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/stepformread.class.php:171
-msgid "Edit on"
 msgstr ""
 
 #: inc/task.class.php:226
