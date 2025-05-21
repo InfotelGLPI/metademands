@@ -1207,52 +1207,53 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 }
             }
 
-            if ($params['check_value'] == "" || count($hiddenblockarray) == 0 ||
-                (!empty($params['hidden_block']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0)) {
-                echo "<tr>";
-                echo "<td>";
-                echo __('Display this hidden block', 'metademands');
-                echo '</br><span class="metademands_wizard_comments">' . __(
-                        'If the value selected equals the value to check, the block becomes visible',
-                        'metademands'
-                    ) . '</span>';
-                echo "</td>";
-                echo "<td>";
+            echo "<tr>";
+            echo "<td>";
+            echo __('Display this hidden block', 'metademands');
+            echo '</br><span class="metademands_wizard_comments">' . __(
+                    'If the value selected equals the value to check, the block becomes visible',
+                    'metademands'
+                ) . '</span>';
+            echo "</td>";
+            echo "<td>";
 
-                if (empty($params['hidden_block'])) {
-                    $params['hidden_block'] = 0;
-                }
+            if (empty($params['hidden_block'])) {
+                $params['hidden_block'] = 0;
+            }
+            $hidden_blocks = [];
+            if (!empty($params['hidden_block'])) {
+                $field = new PluginMetademandsField();
+                $fields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
                 $hidden_blocks = [];
-                if (!empty($params['hidden_block'])) {
-                    $field = new PluginMetademandsField();
-                    $fields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                    $hidden_blocks = [];
-                    foreach ($fields as $field) {
-                        $fieldoptions = new self();
-                        $fieldscheck = $fieldoptions->find(
-                            ['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']]
-                        );
-                        foreach ($fieldscheck as $fieldschec) {
-                            $hidden_blocks[] = $field['id'];
-                        }
-                    }
-                    if (count($hidden_blocks) > 1) {
-                        echo "<span class='alert alert-warning d-flex'>";
-                        echo __(
-                            'This block is already used by another field. You can have some problems if the save value to check is used',
-                            'metademands'
-                        );
-                        echo "</span>";
+                foreach ($fields as $field) {
+                    $fieldoptions = new self();
+                    $fieldscheck = $fieldoptions->find(
+                        ['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']]
+                    );
+                    foreach ($fieldscheck as $fieldschec) {
+                        $hidden_blocks[] = $field['id'];
                     }
                 }
+                if (count($hidden_blocks) > 1) {
+                    echo "<span class='alert alert-warning d-flex'>";
+                    echo __(
+                        'This block is already used by another field. You can have some problems if the save value to check is used',
+                        'metademands'
+                    );
+                    echo "</span>";
+                }
+            }
 
-                Dropdown::showNumber('hidden_block', [
-                    'value' => $params['hidden_block'],
-                    'used' => [$field_class->getField('rank')],
-                    'min' => 1,
-                    'max' => PluginMetademandsField::MAX_FIELDS,
-                    'toadd' => [0 => Dropdown::EMPTY_VALUE]
-                ]);
+//            Dropdown::showFromArray('hidden_block', $data, ['value' => $params['hidden_link']]);
+            $hiddenblockarray[] = $field_class->getField('rank');
+
+            Dropdown::showNumber('hidden_block', [
+                'value' => $params['hidden_block'],
+                'used' => $hiddenblockarray,
+                'min' => 1,
+                'max' => PluginMetademandsField::MAX_FIELDS,
+                'toadd' => [0 => Dropdown::EMPTY_VALUE]
+            ]);
 
             echo "</td></tr>";
 
@@ -1272,9 +1273,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             Dropdown::showYesNo('hidden_block_same_block', $params['hidden_block_same_block']);
 
             echo "</td></tr>";
-            } else {
-                echo Html::hidden('hidden_block', ['value' => 0]);
-            }
+
 
             $childsblockarray = [];
             if ($params['check_value'] != "") {
@@ -1996,9 +1995,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $childs_blocks = [];
 
         foreach ($check_values as $idc => $check_value) {
-            if ($check_value['hidden_block'] > 0) {
-                $hidden_blocks[] = $check_value['hidden_block'];
+            foreach ($check_value['hidden_block'] as $hidden_block) {
+                if ($hidden_block > 0) {
+                    $hidden_blocks[] = $hidden_block;
+                }
             }
+
             $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
         }
 
@@ -2121,9 +2123,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $childs = [];
         $childs_blocks = [];
         foreach ($check_values as $idc => $check_value) {
-            if ($check_value['hidden_block'] > 0) {
-                $hidden_blocks[] = $check_value['hidden_block'];
+            foreach ($check_value['hidden_block'] as $hidden_block) {
+                if ($hidden_block > 0) {
+                    $hidden_blocks[] = $hidden_block;
+                }
             }
+
             $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
         }
 

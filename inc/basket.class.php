@@ -1100,16 +1100,16 @@ class PluginMetademandsBasket extends CommonDBTM
             $script .= "var tohide = {};";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                $hidden_block = $check_value['hidden_block'];
+                foreach ($check_value['hidden_block'] as $hidden_block) {
 
-                if ($withquantity == false) {
-                    $script .= " if (this.checked){ ";
+                    if ($withquantity == false) {
+                        $script .= " if (this.checked){ ";
 
-                    $script .= "if($(this).val() == $idc || $idc == -1 ){ ";
-                } else {
-                    $script .= "if($(this).val() > 0 ){ ";
-                }
-                $script .= " if ($hidden_block in tohide) {
+                        $script .= "if($(this).val() == $idc || $idc == -1 ){ ";
+                    } else {
+                        $script .= "if($(this).val() > 0 ){ ";
+                    }
+                    $script .= " if ($hidden_block in tohide) {
                              } else {
                                 tohide[$hidden_block] = true;
                              }
@@ -1117,15 +1117,15 @@ class PluginMetademandsBasket extends CommonDBTM
                           }";
 
 
-                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                    $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
                 $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
                 $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();";
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_block;
-                }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_block;
+                    }
 
-                $script .= "$.each( tohide, function( key, value ) {
+                    $script .= "$.each( tohide, function( key, value ) {
                             if(value == true){
                              $('[bloc-id =\"bloc'+key+'\"]').hide();
                              $('[bloc-id =\"subbloc'+key+'\"]').hide();
@@ -1166,31 +1166,31 @@ class PluginMetademandsBasket extends CommonDBTM
                             }
 
                          });";
-                $script .= "console.log('hidden-checkbox1');";
+                    $script .= "console.log('hidden-checkbox1');";
 
-                if ($withquantity == false) {
-                    $script .= " } else { ";
-                    //                                        foreach ($hidden_block as $key => $fields) {
-                    $script .= "if ($(this).val() == $idc) {
+                    if ($withquantity == false) {
+                        $script .= " } else { ";
+                        //                                        foreach ($hidden_block as $key => $fields) {
+                        $script .= "if ($(this).val() == $idc) {
                                  if ($hidden_block in tohide) {
 
                                  } else {
                                     tohide[$hidden_block] = true;
                                  }
                                  $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
-                    $script .= "if ($(value).val() == $idc || $idc == -1 ) {
+                        $script .= "if ($(value).val() == $idc || $idc == -1 ) {
                                    tohide[$hidden_block] = false;
                                 }";
-                    $script .= " });
+                        $script .= " });
                         }
                         console.log('hidden-checkbox2');";
-                    $script .= " }";
-                }
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_block;
-                }
+                        $script .= " }";
+                    }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_block;
+                    }
 
-                $script .= "$.each( tohide, function( key, value ) {
+                    $script .= "$.each( tohide, function( key, value ) {
                             if(value == true){
                                  var id = 'ablock'+ key;
                                 if (document.getElementById(id))
@@ -1235,6 +1235,7 @@ class PluginMetademandsBasket extends CommonDBTM
                         });
                         console.log('hidden-checkbox3');
                         ";
+                }
             }
             $script .= "});";
 

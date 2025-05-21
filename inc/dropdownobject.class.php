@@ -1317,56 +1317,56 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
 
             foreach ($check_values as $idc => $check_value) {
-                $blocks_idc = [];
-                $hidden_block = $check_value['hidden_block'];
+                foreach ($check_value['hidden_block'] as $hidden_block) {
+                    $blocks_idc = [];
 
-                $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
+                    $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
-                //specific for radio / dropdowns - one value
-                $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                    //specific for radio / dropdowns - one value
+                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                    $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                 $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                 $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
-                $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                if (is_array($childs_by_checkvalue)) {
-                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                        if ($idc == $k) {
-                            foreach ($childs_blocks as $childs) {
-                                $script .= "if (document.getElementById('ablock" . $childs . "'))
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
                                              document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                        $metaid,
-                                        $childs
-                                    );
+                                            $metaid,
+                                            $childs
+                                        );
+                                }
                             }
                         }
                     }
-                }
 
-                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if (is_array($session_value)) {
-                        foreach ($session_value as $k => $fieldSession) {
-                            if ($fieldSession == $idc && $hidden_block > 0) {
-                                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                        if (is_array($session_value)) {
+                            foreach ($session_value as $k => $fieldSession) {
+                                if ($fieldSession == $idc && $hidden_block > 0) {
+                                    $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                                             document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                                             $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
+                                }
                             }
-                        }
-                    } else {
-                        if ($session_value == $idc && $hidden_block > 0) {
-                            $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                        } else {
+                            if ($session_value == $idc && $hidden_block > 0) {
+                                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                         $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
+                            }
                         }
                     }
-                }
 
 //            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
 //                && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
@@ -1374,33 +1374,34 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 //                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
 //            }
 
-                else {
-                    if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                        if (Session::getLoginUserID() == $idc) {
-                            $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                    else {
+                        if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
+                            if (Session::getLoginUserID() == $idc) {
+                                $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
                                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                         $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();";
+                            }
                         }
                     }
-                }
 
-                $script .= " }";
+                    $script .= " }";
 
-                $script .= "if ($(this).val() != $idc) {";
-                if (is_array($blocks_idc) && count($blocks_idc) > 0) {
-                    foreach ($blocks_idc as $k => $block_idc) {
-                        $script .= "if (document.getElementById('ablock" . $block_idc . "'))
+                    $script .= "if ($(this).val() != $idc) {";
+                    if (is_array($blocks_idc) && count($blocks_idc) > 0) {
+                        foreach ($blocks_idc as $k => $block_idc) {
+                            $script .= "if (document.getElementById('ablock" . $block_idc . "'))
                                     document.getElementById('ablock" . $block_idc . "').style.display = 'none';
                                     $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();
                                     $('[bloc-id =\"subbloc" . $block_idc . "\"]').hide();";
+                        }
                     }
-                }
-                $script .= " }";
+                    $script .= " }";
 
-                $script .= "if ($(this).val() == 0 ) {";
-                $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-                $script .= " }";
+                    $script .= "if ($(this).val() == 0 ) {";
+                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                    $script .= " }";
+                }
             }
 
             $script .= "});";

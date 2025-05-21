@@ -1920,9 +1920,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $onchange .= "var tohide = {};";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                $hidden_block = $check_value['hidden_block'];
+                foreach ($check_value['hidden_block'] as $hidden_block) {
 
-                $onchange .= "if ($hidden_block in tohide) {
+                    $onchange .= "if ($hidden_block in tohide) {
                       } else {
                         tohide[$hidden_block] = true;
                       }
@@ -1931,7 +1931,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     }";
 
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
                        var id = 'ablock'+ key;
                         if (document.getElementById(id))
@@ -1940,21 +1940,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                         sessionStorage.setItem('hiddenbloc$name', key);
                         " . PluginMetademandsFieldoption::setEmptyBlockFields($name) . "";
-                $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
-                $onchange .= "$hidden";
-                if (is_array($childs_by_checkvalue)) {
-                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                        if ($idc == $k) {
-                            foreach ($childs_blocks as $childs) {
-                                $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                    $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
+                    $onchange .= "$hidden";
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'none';
                                 $('[bloc-id =\"bloc" . $childs . "\"]').hide();
                                 $('[bloc-id =\"subbloc" . $childs . "\"]').hide();";
+                                }
                             }
                         }
                     }
-                }
-                $onchange .= "} else {
+                    $onchange .= "} else {
                         var id = 'ablock'+ key;
                         if (document.getElementById(id))
                         document.getElementById(id).style.display = 'block';
@@ -1962,22 +1962,23 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         $('[bloc-id =\"subbloc'+ key +'\"]').show();
                         ";
 
-                $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                $onchange .= "$hidden";
-                $onchange .= "}
+                    $onchange .= "$hidden";
+                    $onchange .= "}
                 });
           ";
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_block;
-                }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_block;
+                    }
 
-                if ($data["item"] == "ITILCategory_Metademands") {
-                    if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
-                        $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                    if ($data["item"] == "ITILCategory_Metademands") {
+                        if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                            $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                           " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        }
                     }
                 }
             }

@@ -687,8 +687,10 @@ class PluginMetademandsRadio extends CommonDBTM
         //hidden_blocks by idc
         $hiddenblocks_by_checkvalue = [];
         foreach ($check_values as $idc => $check_value) {
-            if (isset($check_value['hidden_block'])) {
-                $hiddenblocks_by_checkvalue[$idc] = $check_value['hidden_block'];
+            foreach ($check_value['hidden_block'] as $hidden_block) {
+                if (isset($hidden_block)) {
+                    $hiddenblocks_by_checkvalue[$idc] = $hidden_block;
+                }
             }
         }
 
@@ -769,12 +771,12 @@ class PluginMetademandsRadio extends CommonDBTM
                 $blocks_idc = [];
                 $hidden_block = $check_value['hidden_block'];
 
-                $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
+//                $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
                 foreach ($check_values as $idc => $check_value) {
-                    $hidden_block = $check_value['hidden_block'];
+                    foreach ($check_value['hidden_block'] as $hidden_block) {
 
-                    $onchange .= "if ($hidden_block in tohide) {
+                        $onchange .= "if ($hidden_block in tohide) {
                       } else {
                         tohide[$hidden_block] = true;
                       }
@@ -782,7 +784,7 @@ class PluginMetademandsRadio extends CommonDBTM
                         tohide[$hidden_block] = false;
                     }";
 
-                    $onchange .= "$.each( tohide, function( key, value ) {
+                        $onchange .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
                          var id = 'ablock'+ key;
                          if (document.getElementById(id))
@@ -813,34 +815,35 @@ class PluginMetademandsRadio extends CommonDBTM
                              $('[bloc-id =\"subbloc'+ key +'\"]').show();
                             ";
 
-                            $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                         $onchange .= "$hidden";
                         $onchange .= "}
                     });
           ";
 
-                    if (isset($data['value']) && is_array($data['value'])) {
-                        $values = $data['value'];
-                        foreach ($values as $value) {
-                            if ($idc == $value) {
-                                $display[] = $hidden_block;
+                        if (isset($data['value']) && is_array($data['value'])) {
+                            $values = $data['value'];
+                            foreach ($values as $value) {
+                                if ($idc == $value) {
+                                    $display[] = $hidden_block;
+                                }
                             }
                         }
-                    }
 
-                    if ($data["item"] == "ITILCategory_Metademands") {
-                        if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
-                            $pre_onchange .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                        if ($data["item"] == "ITILCategory_Metademands") {
+                            if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                                $pre_onchange .= "if (document.getElementById('ablock" . $hidden_block . "'))
                                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                 $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                                 $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                           " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            }
                         }
                     }
                 }
 
 
-                $onchange .= " }";
+//                $onchange .= " }";
 
             }
 

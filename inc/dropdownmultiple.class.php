@@ -1730,14 +1730,15 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 //multiple value at each time
                 $display = [];
                 foreach ($check_values as $idc => $check_value) {
-                    $hidden_block = $check_value['hidden_block'];
-                    $script .= "if ($hidden_block in tohide) {
+                    foreach ($check_value['hidden_block'] as $hidden_block) {
+
+                        $script .= "if ($hidden_block in tohide) {
                         } else {
                             tohide[$hidden_block] = true;
                         }";
 
 //                    $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
-                    $script .= "$.each($(this).val(), function( keys, values ) {
+                        $script .= "$.each($(this).val(), function( keys, values ) {
                         if ($hidden_block in tohide) {
                         } else {
                             tohide[$hidden_block] = true;
@@ -1746,8 +1747,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             tohide[$hidden_block] = false;
                         }";
 
-                    $script .= "});";
-                    $script .= "$.each( tohide, function( key, value ) {
+                        $script .= "});";
+                        $script .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
                        var id = 'ablock'+ key;
                         if (document.getElementById(id))
@@ -1756,21 +1757,21 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                         sessionStorage.setItem('hiddenbloc$name', key);
                         " . PluginMetademandsFieldoption::setEmptyBlockFields($name) . "";
-                    $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
-                    $script .= "$hidden";
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
+                        $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
+                        $script .= "$hidden";
+                        if (is_array($childs_by_checkvalue)) {
+                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                if ($idc == $k) {
+                                    foreach ($childs_blocks as $childs) {
+                                        $script .= "if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'none';
                                 $('[bloc-id =\"bloc" . $childs . "\"]').hide();
                                 $('[bloc-id =\"subbloc" . $childs . "\"]').hide();";
+                                    }
                                 }
                             }
                         }
-                    }
-                    $script .= "} else {
+                        $script .= "} else {
                         var id = 'ablock'+ key;
                         if (document.getElementById(id))
                         document.getElementById(id).style.display = 'block';
@@ -1778,17 +1779,18 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         $('[bloc-id =\"subbloc'+ key +'\"]').show();
                         ";
 
-                    $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                    $script .= "$hidden";
-                    $script .= "}
+                        $script .= "$hidden";
+                        $script .= "}
                 });";
 
-                    if (isset($data['value']) && is_array($data['value'])) {
-                        $values = $data['value'];
-                        foreach ($values as $value) {
-                            if ($idc == $value) {
-                                $display[] = $hidden_block;
+                        if (isset($data['value']) && is_array($data['value'])) {
+                            $values = $data['value'];
+                            foreach ($values as $value) {
+                                if ($idc == $value) {
+                                    $display[] = $hidden_block;
+                                }
                             }
                         }
                     }
@@ -1830,7 +1832,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $display = [];
                 foreach ($check_values as $idc => $check_value) {
 
-                    $hidden_block = $check_value['hidden_block'];
+                    foreach ($check_value['hidden_block'] as $hidden_block) {
 
 
 //                    $script .= "if ($(this).val() == $idc || $idc == -1) {
@@ -1879,7 +1881,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 //                    $script .= "}
 //                });";
 
-                    $script .=  "$('.centralCol').on('click', 'button', function () {
+                        $script .= "$('.centralCol').on('click', 'button', function () {
                     const index = $(this).index();
                     setTimeout(() => {
                         if (index === 1) {
@@ -1902,7 +1904,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }, 50);
                 });";
 
-                    $script .=  "$('#multiselect" . $data["id"] . " option').on('dblclick', function() {
+                        $script .= "$('#multiselect" . $data["id"] . " option').on('dblclick', function() {
                             id = $('#multiselect" . $data['id'] . "').val();
                             setTimeout(() => {
                                 if (id == $idc) {
@@ -1915,7 +1917,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }, 50);
                             });";
 
-                    $script .=  "$('#multiselect" . $data["id"] . "_to option').on('dblclick', function() {
+                        $script .= "$('#multiselect" . $data["id"] . "_to option').on('dblclick', function() {
                             id = $('#multiselect" . $data['id'] . "_to').val();
                             setTimeout(() => {
                                 if (id == $idc) {
@@ -1926,11 +1928,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }, 50);
                             });";
 
-                    if (isset($data['value']) && is_array($data['value'])) {
-                        $values = $data['value'];
-                        foreach ($values as $value) {
-                            if ($idc == $value) {
-                                $display[] = $hidden_block;
+                        if (isset($data['value']) && is_array($data['value'])) {
+                            $values = $data['value'];
+                            foreach ($values as $value) {
+                                if ($idc == $value) {
+                                    $display[] = $hidden_block;
+                                }
                             }
                         }
                     }

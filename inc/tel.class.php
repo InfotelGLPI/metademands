@@ -572,41 +572,41 @@ class PluginMetademandsTel extends CommonDBTM
             }
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                $blocks_idc = [];
-                $hidden_block = $check_value['hidden_block'];
+                foreach ($check_value['hidden_block'] as $hidden_block) {
+                    $blocks_idc = [];
 
-                if (isset($idc) && $idc == 1) {
-                    $script .= "if ($(this).val().trim().length > 0) {";
-                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                    if (isset($idc) && $idc == 1) {
+                        $script .= "if ($(this).val().trim().length > 0) {";
+                        $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                    $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                        $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                         $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                         $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
-                    $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
+                        if (is_array($childs_by_checkvalue)) {
+                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                if ($idc == $k) {
+                                    foreach ($childs_blocks as $childs) {
+                                        $script .= "if (document.getElementById('ablock" . $childs . "'))
                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                                     $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                            $metaid,
-                                            $childs
-                                        );
+                                                $metaid,
+                                                $childs
+                                            );
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    $script .= " } else {";
+                        $script .= " } else {";
 
-                    //specific - one value
-                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                        //specific - one value
+                        $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                    $script .= " }";
+                        $script .= " }";
 //                $script .= " }";
 //
 //                $script .= "if ($(this).val() != $idc) {";
@@ -616,6 +616,7 @@ class PluginMetademandsTel extends CommonDBTM
 //                    }
 //                }
 //                $script .= " }";
+                    }
                 }
             }
             if ($display > 0) {
