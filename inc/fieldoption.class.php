@@ -1648,6 +1648,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
 //        if (isset($data['options'])) {
 //            $check_values = $data['options'];
+
         switch ($data['type']) {
             case 'title':
                 break;

@@ -1870,15 +1870,15 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
-                                    foreach ($childs_blocks as $childs) {
-                                        $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                        document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                         " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
-                                    }
+//                                    foreach ($childs_blocks as $childs) {
+//                                        $post_onchange .= "if (document.getElementById('ablock" . $childs . "') && )
+//                                        document.getElementById('ablock" . $childs . "').style.display = 'block';
+//                                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
+//                                                         " . PluginMetademandsFieldoption::setMandatoryBlockFields(
+//                                                $metaid,
+//                                                $childs
+//                                            );
+//                                    }
                                 }
                             }
                         }
@@ -1903,54 +1903,56 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $onchange .= "var tohide = {};";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
+                $blocks_idc = [];
                 $hidden_block = $check_value['hidden_block'];
 
-                $onchange .= "if ($hidden_block in tohide) {
-                      } else {
-                        tohide[$hidden_block] = true;
-                      }
-                    if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
-                        tohide[$hidden_block] = false;
-                    }";
+                $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
+                //specific for radio / dropdowns - one value
+                $onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                $onchange .= "$.each( tohide, function( key, value ) {
-                    if (value == true) {
-                       var id = 'ablock'+ key;
-                        if (document.getElementById(id))
-                        document.getElementById(id).style.display = 'none';
-                        $('[bloc-id =\"bloc'+ key +'\"]').hide();
-                        $('[bloc-id =\"subbloc'+ key +'\"]').hide();
-                        sessionStorage.setItem('hiddenbloc$name', key);
-                        " . PluginMetademandsFieldoption::setEmptyBlockFields($name) . "";
-                $hidden = PluginMetademandsFieldoption::resetMandatoryBlockFields($name);
-                $onchange .= "$hidden";
+                $onchange .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
+                $onchange .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
                 if (is_array($childs_by_checkvalue)) {
                     foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                         if ($idc == $k) {
                             foreach ($childs_blocks as $childs) {
                                 $onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                document.getElementById('ablock" . $childs . "').style.display = 'none';
-                                $('[bloc-id =\"bloc" . $childs . "\"]').hide();
-                                $('[bloc-id =\"subbloc" . $childs . "\"]').hide();";
+                                            document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields(
+                                        $metaid,
+                                        $childs
+                                    );
                             }
                         }
                     }
                 }
-                $onchange .= "} else {
-                        var id = 'ablock'+ key;
-                        if (document.getElementById(id))
-                        document.getElementById(id).style.display = 'block';
-                        $('[bloc-id =\"bloc'+ key +'\"]').show();
-                        $('[bloc-id =\"subbloc'+ key +'\"]').show();
-                        ";
 
-                $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                if (isset($data['value']) && $idc == $data['value']) {
+                    $display = $hidden_block;
+                }
 
-                $onchange .= "$hidden";
-                $onchange .= "}
-                });
-          ";
+                $onchange .= " }";
+
+                $onchange .= "if ($(this).val() != $idc) {";
+                if (is_array($blocks_idc) && count($blocks_idc) > 0) {
+                    foreach ($blocks_idc as $k => $block_idc) {
+                        $onchange .= "if (document.getElementById('ablock" . $block_idc . "'))
+                                    document.getElementById('ablock" . $block_idc . "').style.display = 'none';
+                                    $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();
+                                    $('[bloc-id =\"subbloc" . $block_idc . "\"]').hide();";
+                    }
+                }
+                $onchange .= " }";
+
+                $onchange .= "if ($(this).val() == 0 ) {";
+                $onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                $onchange .= " }";
 
                 if (isset($data['value']) && $idc == $data['value']) {
                     $display = $hidden_block;
