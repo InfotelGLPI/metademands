@@ -973,7 +973,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                              $(id).html('*');
                              $('[name =\"field[' + key + ']\"]').attr('required', 'required');
                              //Special case Upload field
-                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                  sessionStorage.setItem('mandatoryfile$name', key);
                                  " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });";
