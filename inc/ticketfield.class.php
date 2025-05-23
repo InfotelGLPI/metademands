@@ -841,80 +841,82 @@ class PluginMetademandsTicketField extends CommonDBChild
         $ticketField = new self();
         $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
-        $ticket = new $obj();
-        $tt = $ticket->getITILTemplateToUse(0, $type, $categid, $entity);
+        if ($item = getItemForItemtype($obj)) {
+            $ticket = new $obj();
+            $tt = $ticket->getITILTemplateToUse(0, $type, $categid, $entity);
 
-        $fieldnames = $tt->getAllowedFields(true);
+            $fieldnames = $tt->getAllowedFields(true);
 
-        $fieldnames = array_flip($fieldnames);
+            $fieldnames = array_flip($fieldnames);
 
-        // Get template type to add
-        $templateToAdd = $tt->mandatory;
-        switch ($templatetype) {
-            case 'predefined':
-                $templateToAdd = $tt->predefined;
-                break;
-        }
+            // Get template type to add
+            $templateToAdd = $tt->mandatory;
+            switch ($templatetype) {
+                case 'predefined':
+                    $templateToAdd = $tt->predefined;
+                    break;
+            }
 
-        if (count($templateToAdd)) {
-            foreach ($templateToAdd as $key => $val) {
-                if (isset($fieldnames[$key])) {
-                    $num = $fieldnames[$key];
-                    if (!in_array($key, self::$used_fields) && $num != -2) {
-                        $used = false;
-                        foreach ($fields_data as $fields_value) {
-                            if ($fields_value['num'] == $num) {
-                                $used = $fields_value['id'];
-                                break;
-                            }
-                        }
-                        $exception = false;
-                        switch ($key) {
-                            case 'status':
-                                $default_value = Ticket::INCOMING;
-                                break;
-                            case 'priority':
-                                $default_value = 3;
-                                break;
-                            case '_tasktemplates_id' :
-                                $exception = true;
-                            default:
-                                $default_value = 0;
-                                break;
-                        }
-
-                        if (isset($tt->predefined[$key])) {
-                            $default_value = $tt->predefined[$key];
-                        }
-                        //               $default_value = json_encode($default_value);
-                        if (!$exception) {
-                            if (!$used) {
-                                $ticketField->add([
-                                    'value' => $default_value,
-                                    'num' => $num,
-                                    'is_deletable' => 0,
-                                    'is_mandatory' => 1,
-                                    'entities_id' => $entity,
-                                    'plugin_metademands_metademands_id' => $metademands_id
-                                ]);
-                            } else {
-                                if (!empty($default_value)) {
-                                    $ticketField->update(['id' => $used, 'value' => $default_value]);
+            if (count($templateToAdd)) {
+                foreach ($templateToAdd as $key => $val) {
+                    if (isset($fieldnames[$key])) {
+                        $num = $fieldnames[$key];
+                        if (!in_array($key, self::$used_fields) && $num != -2) {
+                            $used = false;
+                            foreach ($fields_data as $fields_value) {
+                                if ($fields_value['num'] == $num) {
+                                    $used = $fields_value['id'];
+                                    break;
                                 }
                             }
-                        } else {
-                            $ticketField->deleteByCriteria(
-                                ['num' => $num, 'plugin_metademands_metademands_id' => $metademands_id]
-                            );
-                            foreach ($tt->predefined[$key] as $key => $val) {
-                                $ticketField->add([
-                                    'value' => $val,
-                                    'num' => $num,
-                                    'is_deletable' => 0,
-                                    'is_mandatory' => 1,
-                                    'entities_id' => $entity,
-                                    'plugin_metademands_metademands_id' => $metademands_id
-                                ]);
+                            $exception = false;
+                            switch ($key) {
+                                case 'status':
+                                    $default_value = Ticket::INCOMING;
+                                    break;
+                                case 'priority':
+                                    $default_value = 3;
+                                    break;
+                                case '_tasktemplates_id' :
+                                    $exception = true;
+                                default:
+                                    $default_value = 0;
+                                    break;
+                            }
+
+                            if (isset($tt->predefined[$key])) {
+                                $default_value = $tt->predefined[$key];
+                            }
+                            //               $default_value = json_encode($default_value);
+                            if (!$exception) {
+                                if (!$used) {
+                                    $ticketField->add([
+                                        'value' => $default_value,
+                                        'num' => $num,
+                                        'is_deletable' => 0,
+                                        'is_mandatory' => 1,
+                                        'entities_id' => $entity,
+                                        'plugin_metademands_metademands_id' => $metademands_id
+                                    ]);
+                                } else {
+                                    if (!empty($default_value)) {
+                                        $ticketField->update(['id' => $used, 'value' => $default_value]);
+                                    }
+                                }
+                            } else {
+                                $ticketField->deleteByCriteria(
+                                    ['num' => $num, 'plugin_metademands_metademands_id' => $metademands_id]
+                                );
+                                foreach ($tt->predefined[$key] as $key => $val) {
+                                    $ticketField->add([
+                                        'value' => $val,
+                                        'num' => $num,
+                                        'is_deletable' => 0,
+                                        'is_mandatory' => 1,
+                                        'entities_id' => $entity,
+                                        'plugin_metademands_metademands_id' => $metademands_id
+                                    ]);
+                                }
                             }
                         }
                     }
