@@ -714,18 +714,19 @@ class PluginMetademandsRadio extends CommonDBTM
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc && $custom_value['is_default'] == 1) {
                             $post_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
-                        }
-                        if (is_array($childs_by_checkvalue)) {
-                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                                if ($idc == $k) {
-                                    foreach ($childs_blocks as $childs) {
-                                        $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                                            document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                         " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                                                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                             " . PluginMetademandsFieldoption::setMandatoryBlockFields(
+                                                    $metaid,
+                                                    $childs
+                                                );
+                                        }
                                     }
                                 }
                             }
@@ -733,7 +734,6 @@ class PluginMetademandsRadio extends CommonDBTM
                     }
                 }
             }
-
 
             //by default - hide all
             $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
