@@ -927,6 +927,12 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         if (count($data) > 0) {
+            if (count($data) == 1) {
+                foreach ($data as $type => $typename) {
+                    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=1&meta_type=$type");
+                }
+            }
+
             foreach ($data as $type => $typename) {
                 echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . PluginMetademandsMetademand::STEP_LIST . "&meta_type=$type'>";
                 echo '<div class="btnsc-normal-type" >';
