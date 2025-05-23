@@ -828,7 +828,18 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                 $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
                 $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
-
+                if (is_array($childs_by_checkvalue)) {
+                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                        if ($idc == $k) {
+                            foreach ($childs_blocks as $childs) {
+                                $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                            }
+                        }
+                    }
+                }
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
                     foreach ($values as $value) {
