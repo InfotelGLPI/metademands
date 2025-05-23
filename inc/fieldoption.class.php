@@ -2259,8 +2259,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     {
         $field = new PluginMetademandsField();
         if ($field->getFromDB($fields_link)) {
-            if ($field->fields['type'] == 'file'
-            || $field->fields['type'] == 'checkbox') {
+            if ($field->fields['type'] == 'file') {
                 return "
                 var field = sessionStorage.getItem('mandatoryfile$name');
                 var fieldid = 'field'+ field;
