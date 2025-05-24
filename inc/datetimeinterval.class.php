@@ -106,12 +106,7 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
         echo __('Day greater or equal to now', 'metademands');
         echo "</td>";
         echo "<td>";
-        $use_future_date = $params['use_future_date'];
-        $checked = '';
-        if (isset($use_future_date) && !empty($use_future_date)) {
-            $checked = 'checked';
-        }
-        echo "<input type='checkbox' name='use_future_date' value='1' $checked>";
+        Dropdown::showYesNo('use_future_date', $params['use_future_date']);
         echo "</td>";
 
         echo "<td>";
