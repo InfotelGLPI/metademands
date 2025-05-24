@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 15:03+0000\n"
+"POT-Creation-Date: 2025-05-24 15:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1064,7 +1064,7 @@ msgstr ""
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:373
+#: inc/fieldoption.class.php:373 inc/fieldoption.class.php:1333
 msgid "Launch a validation"
 msgstr ""
 
@@ -1107,10 +1107,6 @@ msgstr ""
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
-msgstr ""
-
-#: inc/fieldoption.class.php:1333
-msgid "Link a validation"
 msgstr ""
 
 #: inc/fieldoption.class.php:1335
