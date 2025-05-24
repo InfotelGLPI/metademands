@@ -271,9 +271,29 @@ class PluginMetademandsDropdown extends CommonDBTM
         echo __('Value to check', 'metademands');
 //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
-        echo "<td>";
+        echo "<td class = 'dropdown-valuetocheck'>";
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
+
+        echo "<script type = \"text/javascript\">
+                 $('td.dropdown-valuetocheck select').on('change', function() {
+                 let formOption = [
+                     " . $params['ID'] .",
+                         $(this).val(),
+                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
+                         $('select[name=\"fields_link\"]').val(),
+                         $('select[name=\"hidden_link\"]').val(),
+                         $('select[name=\"hidden_block\"]').val(),
+                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
+                         $('select[name=\"users_id_validate\"]').val(),
+                         $('select[name=\"checkbox_id\"]').val()
+                  ];
+                     
+                     reloadviewOption(formOption);
+                 });";
+
+
+        echo " </script>";
 
         echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
@@ -283,11 +303,6 @@ class PluginMetademandsDropdown extends CommonDBTM
         $field = new PluginMetademandsFieldOption();
         $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
         $already_used = [];
-        if ($item->getID() == 0) {
-            foreach ($existing_options as $existing_option) {
-                $already_used[$existing_option["check_value"]] = $existing_option["check_value"];
-            }
-        }
         switch ($params["item"]) {
             default:
                 $dbu = new DbUtils();
@@ -439,19 +454,21 @@ class PluginMetademandsDropdown extends CommonDBTM
 
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                $fields_link = $check_value['fields_link'];
-                $onchange .= "if ($fields_link in tohide) {
-                        } else {
-                            tohide[$fields_link] = true;
-                        }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
-                            tohide[$fields_link] = false;
-                        }";
+                foreach ($check_value['fields_link'] as $fields_link) {
+
+                    $onchange .= "if ($fields_link in tohide) {
+                            } else {
+                                tohide[$fields_link] = true;
+                            }
+                            if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                                tohide[$fields_link] = false;
+                            }";
 
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $fields_link;
-                }
+
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $fields_link;
+                    }
 
                 $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
@@ -471,6 +488,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }
                     });
               ";
+
             }
 
             if ($display > 0) {
@@ -480,7 +498,7 @@ class PluginMetademandsDropdown extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
             );
         }
     }
@@ -510,8 +528,8 @@ class PluginMetademandsDropdown extends CommonDBTM
             $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
-            foreach ($check_values as $idc => $check_value) {
-                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+        foreach ($check_values as $idc => $check_value) {
+            foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
                 if ($tasks_id) {
                     if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
@@ -520,16 +538,13 @@ class PluginMetademandsDropdown extends CommonDBTM
                     }
                 }
             }
+        }
 
-            $name = "field[" . $data["id"] . "]";
-
-
-            $script .= "$('[name=\"$name\"]').change(function() {";
-            $script .= "var tohide = {};";
-            foreach ($check_values as $idc => $check_value) {
-                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
-
-
+        $name = "field[" . $data["id"] . "]";
+        $script .= "$('[name=\"$name\"]').change(function() {";
+        $script .= "var tohide = {};";
+        foreach ($check_values as $idc => $check_value) {
+            foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
                 $script .= "if ($tasks_id in tohide) {
                         } else {
                             tohide[$tasks_id] = true;
@@ -566,10 +581,11 @@ class PluginMetademandsDropdown extends CommonDBTM
                     });
               ";
             }
-            $script .= "});";
+        }
+        $script .= "});";
 
-            foreach ($check_values as $idc => $check_value) {
-                $tasks_id = $check_value['plugin_metademands_tasks_id'];
+        foreach ($check_values as $idc => $check_value) {
+            foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
                 if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default']))) {
                     $default_values = PluginMetademandsFieldParameter::_unserialize($data['default']);
 
@@ -592,6 +608,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                     }
                 }
             }
+        }
 
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         }
@@ -635,21 +652,22 @@ class PluginMetademandsDropdown extends CommonDBTM
         if (count($check_values) > 0) {
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
-                $hidden_link = $check_value['hidden_link'];
-                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                }
             }
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
             $onchange .= "$('[name=\"$name\"]').change(function() {";
 
-            $onchange .= "var tohide = {};";
-            $display = 0;
-            foreach ($check_values as $idc => $check_value) {
-                $hidden_link = $check_value['hidden_link'];
+        $onchange .= "var tohide = {};";
+         $display = 0;
+        foreach ($check_values as $idc => $check_value) {
+            foreach ($check_value['hidden_link'] as $hidden_link) {
                 $onchange .= "if ($hidden_link in tohide) {
                         } else {
                             tohide[$hidden_link] = true;
@@ -662,7 +680,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                     $display = $hidden_link;
                 }
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                $onchange .= "$.each( tohide, function( key, value ) {           
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
@@ -687,13 +705,13 @@ class PluginMetademandsDropdown extends CommonDBTM
                     });
               ";
             }
+        }
 
-            if ($display > 0) {
-                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
-            }
-
-            $onchange .= "});";
+        if ($display > 0) {
+            $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+            $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+        }
+        $onchange .= "});";
 
             echo Html::scriptBlock('$(document).ready(function() {' . $pre_onchange . " " . $onchange. " " . $post_onchange . '});');
         }
@@ -754,56 +772,57 @@ class PluginMetademandsDropdown extends CommonDBTM
 
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                $blocks_idc = [];
-                $hidden_block = $check_value['hidden_block'];
+                foreach ($check_value['hidden_block'] as $hidden_block) {
+                    $blocks_idc = [];
 
-                $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
+                    $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
-                //specific for radio / dropdowns - one value
-                $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                    //specific for radio / dropdowns - one value
+                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
-                $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                    $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                 $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                 $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
-                $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                if (is_array($childs_by_checkvalue)) {
-                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                        if ($idc == $k) {
-                            foreach ($childs_blocks as $childs) {
-                                $script .= "if (document.getElementById('ablock" . $childs . "'))
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                        $metaid,
-                                        $childs
-                                    );
+                                            $metaid,
+                                            $childs
+                                        );
+                                }
                             }
                         }
                     }
-                }
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $hidden_block;
-                }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $hidden_block;
+                    }
 
-                $script .= " }";
+                    $script .= " }";
 
-                $script .= "if ($(this).val() != $idc) {";
-                if (is_array($blocks_idc) && count($blocks_idc) > 0) {
-                    foreach ($blocks_idc as $k => $block_idc) {
-                        $script .= "if (document.getElementById('ablock" . $block_idc . "'))
+                    $script .= "if ($(this).val() != $idc) {";
+                    if (is_array($blocks_idc) && count($blocks_idc) > 0) {
+                        foreach ($blocks_idc as $k => $block_idc) {
+                            $script .= "if (document.getElementById('ablock" . $block_idc . "'))
                                     document.getElementById('ablock" . $block_idc . "').style.display = 'none';
                                     $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();
                                     $('[bloc-id =\"subbloc" . $block_idc . "\"]').hide();";
+                        }
                     }
-                }
-                $script .= " }";
+                    $script .= " }";
 
-                $script .= "if ($(this).val() == 0 ) {";
-                $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-                $script .= " }";
+                    $script .= "if ($(this).val() == 0 ) {";
+                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+                    $script .= " }";
+                }
             }
 
             if ($display > 0) {
