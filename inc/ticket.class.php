@@ -158,7 +158,8 @@ class PluginMetademandsTicket extends CommonDBTM
             if ($ticket->getField('status') != Ticket::SOLVED
             && $ticket->getField('status') != Ticket::CLOSED
             && $ticket_metademand->getField('status') == PluginMetademandsTicket_Metademand::CLOSED) {
-                $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+                $ticket_metademand->update(['id' => $ticket_metademand->getID(),
+                    'status' => PluginMetademandsTicket_Metademand::RUNNING]);
             }
         }
     }
@@ -225,22 +226,22 @@ class PluginMetademandsTicket extends CommonDBTM
             }
         }
 
-        $config_data = PluginMetademandsConfig::getInstance();
+//        $config_data = PluginMetademandsConfig::getInstance();
 
-        if (isset($ticket->input['itilcategories_id']) && $config_data['simpleticket_to_metademand']) {
-            $dbu = new DbUtils();
-            if (!empty($ticket->input["itilcategories_id"])) {
-                $data = $dbu->getAllDataFromTable(
-                    'glpi_plugin_metademands_tickets_metademands',
-                    ["`tickets_id`" => $ticket->input["id"]]
-                );
-                if (!empty($data) && $ticket->input['itilcategories_id'] != $ticket->fields['itilcategories_id']) {
-                    $data       = reset($data);
-                    $metademand = new PluginMetademandsMetademand();
-                    $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
-                }
-            }
-        }
+//        if (isset($ticket->input['itilcategories_id']) && $config_data['simpleticket_to_metademand']) {
+//            $dbu = new DbUtils();
+//            if (!empty($ticket->input["itilcategories_id"])) {
+//                $data = $dbu->getAllDataFromTable(
+//                    'glpi_plugin_metademands_tickets_metademands',
+//                    ["`tickets_id`" => $ticket->input["id"]]
+//                );
+//                if (!empty($data) && $ticket->input['itilcategories_id'] != $ticket->fields['itilcategories_id']) {
+//                    $data       = reset($data);
+//                    $metademand = new PluginMetademandsMetademand();
+//                    $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
+//                }
+//            }
+//        }
 
         return $ticket;
     }

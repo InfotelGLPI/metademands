@@ -24,6 +24,11 @@
     </authors>
     <versions>
         <version>
+            <num>3.3.28</num>
+            <compatibility>~10.0</compatibility>
+            <download_url>https://github.com/InfotelGLPI/metademands/releases/download/3.3.28/glpi-metademands-3.3.28.tar.bz2</download_url>
+        </version>
+        <version>
             <num>3.3.27</num>
             <compatibility>~10.0</compatibility>
             <download_url>https://github.com/InfotelGLPI/metademands/releases/download/3.3.27/glpi-metademands-3.3.27.tar.bz2</download_url>

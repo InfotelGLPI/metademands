@@ -1557,7 +1557,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                              $(id).html('*');
                              $('[name =\"field[' + key + ']\"]').attr('required', 'required');
                              //Special case Upload field
-                                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                  sessionStorage.setItem('mandatoryfile$name', key);
                                  " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });
@@ -1883,18 +1883,19 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc && $custom_value['is_default'] == 1) {
                             $post_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
-                        }
-                        if (is_array($childs_by_checkvalue)) {
-                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                                if ($idc == $k) {
-                                    foreach ($childs_blocks as $childs) {
-                                        $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                        document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                         " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                            document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                             " . PluginMetademandsFieldoption::setMandatoryBlockFields(
+                                                    $metaid,
+                                                    $childs
+                                                );
+                                        }
                                     }
                                 }
                             }
@@ -1964,8 +1965,20 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
                     $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                    $onchange .= "$hidden";
-                    $onchange .= "}
+                $onchange .= "$hidden";
+                if (is_array($childs_by_checkvalue)) {
+                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                        if ($idc == $k) {
+                            foreach ($childs_blocks as $childs) {
+                                $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                            }
+                        }
+                    }
+                }
+                $onchange .= "}
                 });
           ";
 

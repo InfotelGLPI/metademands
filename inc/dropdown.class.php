@@ -465,29 +465,30 @@ class PluginMetademandsDropdown extends CommonDBTM
                             }";
 
 
+
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $fields_link;
                     }
 
-                    $onchange .= "$.each( tohide, function( key, value ) {
-                            if (value == true) {
-                                var id = '#metademands_wizard_red'+ key;
-                                $(id).html('');
-                                sessionStorage.setItem('hiddenlink$name', key);
-                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                                $('[name =\"field['+ key +']\"]').removeAttr('required');
-                            } else {
-                                 var id = '#metademands_wizard_red'+ key;
-                                 var fieldid = 'field'+ key;
-                                 $(id).html('*');
-                                 $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                 //Special case Upload field
-                                      sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
-                            }
-                        });
-                  ";
-                }
+                $onchange .= "$.each( tohide, function( key, value ) {
+                        if (value == true) {
+                            var id = '#metademands_wizard_red'+ key;
+                            $(id).html('');
+                            sessionStorage.setItem('hiddenlink$name', key);
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                            $('[name =\"field['+ key +']\"]').removeAttr('required');
+                        } else {
+                             var id = '#metademands_wizard_red'+ key;
+                             var fieldid = 'field'+ key;
+                             $(id).html('*');
+                             $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                             //Special case Upload field
+                                  sessionStorage.setItem('mandatoryfile$name', key);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
+                        }
+                    });
+              ";
+
             }
 
             if ($display > 0) {

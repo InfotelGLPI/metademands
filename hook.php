@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.27.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.28.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -205,10 +205,6 @@ function plugin_metademands_install() {
         include(PLUGIN_METADEMANDS_DIR . "/install/migrateExistingMetaWithNewStatus.php");
         migrateAllExistingMetademandsWithNewStatus();
     }
-
-    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-    PluginMetademandsProfile::initProfile();
-    $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
 
     //version 2.7.5 ++
     if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters", false)
@@ -728,6 +724,10 @@ function plugin_metademands_install() {
                            VALUES ('PluginMetademandsDraft','$num','$rank','0');");
         }
     }
+    PluginMetademandsProfile::initProfile();
+    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+
+    $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {

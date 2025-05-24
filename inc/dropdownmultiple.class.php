@@ -970,23 +970,23 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                         $onchange .= "});";
 
-                        $onchange .= "$.each( tohide, function( key, value ) {
-                            if (value == true) {
-                                var id = '#metademands_wizard_red'+ key;
-                                $(id).html('');
-                                sessionStorage.setItem('hiddenlink$name', key);
-                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                                $('[name =\"field['+key+']\"]').removeAttr('required');
-                            } else {
-                                 var id = '#metademands_wizard_red'+ key;
-                                 var fieldid = 'field'+ key;
-                                 $(id).html('*');
-                                 $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                 //Special case Upload field
-                                      sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
-                            }
-                        });";
+                    $onchange .= "$.each( tohide, function( key, value ) {
+                        if (value == true) {
+                            var id = '#metademands_wizard_red'+ key;
+                            $(id).html('');
+                            sessionStorage.setItem('hiddenlink$name', key);
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                            $('[name =\"field['+key+']\"]').removeAttr('required');
+                        } else {
+                             var id = '#metademands_wizard_red'+ key;
+                             var fieldid = 'field'+ key;
+                             $(id).html('*');
+                             $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                             //Special case Upload field
+                                  sessionStorage.setItem('mandatoryfile$name', key);
+                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
+                        }
+                    });";
 
                     }
                 }
@@ -1781,8 +1781,21 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                         $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-                        $script .= "$hidden";
-                        $script .= "}
+                    $script .= "$hidden";
+
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                                }
+                            }
+                        }
+                    }
+                    $script .= "}
                 });";
 
                         if (isset($data['value']) && is_array($data['value'])) {

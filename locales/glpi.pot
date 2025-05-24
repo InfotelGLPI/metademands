@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-02 13:59+0000\n"
+"POT-Creation-Date: 2025-05-24 14:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,14 +100,15 @@ msgctxt "button"
 msgid "Load form"
 msgstr ""
 
-#: ajax/deleteform.php:65 inc/form.class.php:212 inc/stepform.class.php:414
-#: inc/stepform.class.php:584
+#: ajax/deleteform.php:65 inc/form.class.php:212 inc/stepform.class.php:418
+#: inc/stepform.class.php:588 inc/stepformread.class.php:201
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
-#: ajax/deleteform.php:71 inc/form.class.php:224 inc/stepform.class.php:596
-#: inc/wizard.class.php:761 inc/wizard.class.php:959
+#: ajax/deleteform.php:71 inc/form.class.php:224 inc/stepform.class.php:600
+#: inc/stepformread.class.php:120 inc/stepformread.class.php:213
+#: inc/wizard.class.php:761 inc/wizard.class.php:965
 msgid "No existing forms founded"
 msgstr ""
 
@@ -198,7 +199,7 @@ msgid "Draft name"
 msgstr ""
 
 #: front/draftcreation.php:61 inc/draft.class.php:116 inc/profile.class.php:159
-#: inc/stepform.class.php:499
+#: inc/stepform.class.php:503
 msgid "form"
 msgid_plural "forms"
 msgstr[0] ""
@@ -240,7 +241,8 @@ msgstr ""
 msgid "Used blocks are mandatory"
 msgstr ""
 
-#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:81
+#: front/stepform.php:38 front/stepform.php:40 front/stepformread.php:38
+#: front/stepformread.php:40 inc/menu.class.php:81
 msgid "Continue metademand"
 msgstr ""
 
@@ -373,8 +375,8 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:1092 inc/dropdownmultiple.class.php:1226
 #: inc/dropdownobject.class.php:1018 inc/email.class.php:325
 #: inc/radio.class.php:447 inc/tel.class.php:327 inc/text.class.php:325
-#: inc/textarea.class.php:278 inc/url.class.php:325 inc/wizard.class.php:1424
-#: inc/wizard.class.php:1573 inc/yesno.class.php:270
+#: inc/textarea.class.php:278 inc/url.class.php:325 inc/wizard.class.php:1430
+#: inc/wizard.class.php:1579 inc/yesno.class.php:270
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
@@ -384,10 +386,10 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:1094 inc/dropdownmultiple.class.php:1228
 #: inc/dropdownobject.class.php:1019 inc/email.class.php:327
 #: inc/radio.class.php:448 inc/tel.class.php:329 inc/text.class.php:326
-#: inc/textarea.class.php:280 inc/url.class.php:327 inc/wizard.class.php:1193
-#: inc/wizard.class.php:1427 inc/wizard.class.php:1535
-#: inc/wizard.class.php:1544 inc/wizard.class.php:1577
-#: inc/wizard.class.php:1583 inc/wizard.class.php:2087 inc/yesno.class.php:271
+#: inc/textarea.class.php:280 inc/url.class.php:327 inc/wizard.class.php:1199
+#: inc/wizard.class.php:1433 inc/wizard.class.php:1541
+#: inc/wizard.class.php:1550 inc/wizard.class.php:1583
+#: inc/wizard.class.php:1589 inc/wizard.class.php:2093 inc/yesno.class.php:271
 msgid "Next"
 msgstr ""
 
@@ -731,13 +733,13 @@ msgstr ""
 msgid "Day greater or equal to now"
 msgstr ""
 
-#: inc/date.class.php:121 inc/dateinterval.class.php:122
-#: inc/datetime.class.php:121 inc/datetimeinterval.class.php:118
+#: inc/date.class.php:116 inc/dateinterval.class.php:117
+#: inc/datetime.class.php:116 inc/datetimeinterval.class.php:113
 msgid "Define the default date"
 msgstr ""
 
-#: inc/date.class.php:127 inc/dateinterval.class.php:132
-#: inc/datetime.class.php:127 inc/datetimeinterval.class.php:128
+#: inc/date.class.php:122 inc/dateinterval.class.php:127
+#: inc/datetime.class.php:122 inc/datetimeinterval.class.php:123
 msgid "Additional number day to the default date"
 msgstr ""
 
@@ -768,7 +770,7 @@ msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:569 inc/wizard.class.php:2190
+#: inc/draft.class.php:569 inc/wizard.class.php:2196
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -857,7 +859,7 @@ msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:772 inc/field.class.php:1187
 #: inc/field.class.php:3285 inc/field.class.php:4565 inc/step.class.php:384
-#: inc/step.class.php:469 inc/step.class.php:611 inc/wizard.class.php:1944
+#: inc/step.class.php:469 inc/step.class.php:611 inc/wizard.class.php:1950
 msgid "Block"
 msgstr ""
 
@@ -1375,6 +1377,10 @@ msgstr ""
 msgid "Import metademands"
 msgstr ""
 
+#: inc/menu.class.php:87
+msgid "View progress of current forms"
+msgstr ""
+
 #: inc/metademand.class.php:151
 msgid "Child ticket"
 msgid_plural "Child tickets"
@@ -1614,7 +1620,7 @@ msgstr ""
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:9414 inc/wizard.class.php:1087
+#: inc/metademand.class.php:9414 inc/wizard.class.php:1093
 msgid "Find a form"
 msgstr ""
 
@@ -1761,11 +1767,11 @@ msgstr ""
 msgid "A form has been cancelled"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:66
+#: inc/notificationtargetstepform.class.php:66 inc/stepform.class.php:388
 msgid "Next group in charge of demand"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:67 inc/stepform.class.php:388
+#: inc/notificationtargetstepform.class.php:67 inc/stepform.class.php:389
 msgid "Next user in charge of demand"
 msgstr ""
 
@@ -1777,11 +1783,13 @@ msgstr ""
 msgid "Publisher"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:165
+#: inc/notificationtargetstepform.class.php:165 inc/stepformread.class.php:85
+#: inc/stepformread.class.php:179
 msgid "Group in charge of the next step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:166
+#: inc/notificationtargetstepform.class.php:166 inc/stepformread.class.php:86
+#: inc/stepformread.class.php:186
 msgid "User in charge of the next step"
 msgstr ""
 
@@ -1979,46 +1987,47 @@ msgstr ""
 msgid "Error assigning to next group"
 msgstr ""
 
-#: inc/stepform.class.php:47
+#: inc/stepform.class.php:47 inc/stepformread.class.php:47
 msgid "Step a metademands form"
 msgid_plural "Steps a metademands form"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:334
+#: inc/stepform.class.php:334 inc/stepformread.class.php:142
 msgid "Form in progress"
 msgid_plural "Forms in progress"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:498
+#: inc/stepform.class.php:502
 #, php-format
 msgid "You have %s"
 msgstr ""
 
-#: inc/stepform.class.php:500
+#: inc/stepform.class.php:504
 msgid "to complete"
 msgstr ""
 
-#: inc/stepform.class.php:508
+#: inc/stepform.class.php:512
 msgid "Do you want to see him ?"
 msgstr ""
 
-#: inc/stepform.class.php:510
+#: inc/stepform.class.php:514
 msgid "Do you want to see them ?"
 msgstr ""
 
-#: inc/stepform.class.php:534
+#: inc/stepform.class.php:538
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:564
+#: inc/stepform.class.php:568
 msgid "Edit by"
 msgstr ""
 
-#: inc/stepform.class.php:574
+#: inc/stepform.class.php:578 inc/stepformread.class.php:83
+#: inc/stepformread.class.php:174
 msgid "Step"
 msgstr ""
 
@@ -2091,7 +2100,7 @@ msgstr ""
 msgid "Linked ticket"
 msgstr ""
 
-#: inc/ticket.class.php:294
+#: inc/ticket.class.php:295
 msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -2272,82 +2281,82 @@ msgstr ""
 msgid "Make a change request"
 msgstr ""
 
-#: inc/wizard.class.php:1159
+#: inc/wizard.class.php:1165
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/wizard.class.php:1288 inc/wizard.class.php:1348
+#: inc/wizard.class.php:1294 inc/wizard.class.php:1354
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:1358
+#: inc/wizard.class.php:1364
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1431
+#: inc/wizard.class.php:1437
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1537
+#: inc/wizard.class.php:1543
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1538
+#: inc/wizard.class.php:1544
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: inc/wizard.class.php:1545
+#: inc/wizard.class.php:1551
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1681
+#: inc/wizard.class.php:1687
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1777
+#: inc/wizard.class.php:1783
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2076
+#: inc/wizard.class.php:2082
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: inc/wizard.class.php:2084
+#: inc/wizard.class.php:2090
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:2126
+#: inc/wizard.class.php:2132
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:2136
+#: inc/wizard.class.php:2142
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3413
+#: inc/wizard.class.php:3419
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3424
+#: inc/wizard.class.php:3430
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3466
+#: inc/wizard.class.php:3472
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3478
+#: inc/wizard.class.php:3484
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""

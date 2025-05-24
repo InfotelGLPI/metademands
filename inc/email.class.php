@@ -377,7 +377,7 @@ class PluginMetademandsEmail extends CommonDBTM
                                 });
 //                                if (typeof document.getElementById('nextBtn') !== 'undefined'
 //                                && document.getElementById('nextBtn').value){
-                                    document.getElementById('nextBtn').innerHTML = '$title'
+                                    if(document.getElementById('nextBtn') != null) {document.getElementById('nextBtn').innerHTML = '$title'};
 //                                 }
                                  ";
 

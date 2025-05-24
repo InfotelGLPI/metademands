@@ -79,11 +79,14 @@ $(function() {
                 case "Enter":
                     // find url, if one selected, go for it, else try to find first element
                     var url = $("#mt-fuzzysearch .results .active a").attr('href');
-                    if (url == undefined) {
+                    if (typeof url === 'undefined' || url === null) {
                         url = $("#mt-fuzzysearch .results li:first a").attr('href');
                     }
-                    if (url != undefined) {
-                        document.location = url;
+
+                    if (typeof url === 'undefined' || url === null) {
+                        window.location = root_mt_doc + '/front/wizard.form.php';
+                    } else {
+                        window.location = url;
                     }
                     break;
             }
