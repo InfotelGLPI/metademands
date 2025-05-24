@@ -1330,7 +1330,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 || ($field_class->getField("type") == "dropdown_multiple"
                         &&  $field_class->getField("item") == "Group")) {
                     echo "<tr><td>";
-                    echo __('Link a validation', 'metademands');
+                    echo __('Launch a validation', 'metademands');
                     echo '</br><span class="metademands_wizard_comments">' . __(
                             'If the value selected equals the value to check, the validation is sent to the user',
                             'metademands'
