@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 15:01+0000\n"
+"POT-Creation-Date: 2025-05-24 15:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -370,7 +370,7 @@ msgstr ""
 msgid "Not null value"
 msgstr ""
 
-#: inc/basket.class.php:779 inc/checkbox.class.php:530
+#: inc/basket.class.php:779 inc/checkbox.class.php:528
 #: inc/dropdown.class.php:524 inc/dropdownmeta.class.php:1600
 #: inc/dropdownmultiple.class.php:1103 inc/dropdownmultiple.class.php:1238
 #: inc/dropdownobject.class.php:1032 inc/email.class.php:344
@@ -381,7 +381,7 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/basket.class.php:781 inc/checkbox.class.php:531
+#: inc/basket.class.php:781 inc/checkbox.class.php:529
 #: inc/dropdown.class.php:525 inc/dropdownmeta.class.php:1602
 #: inc/dropdownmultiple.class.php:1105 inc/dropdownmultiple.class.php:1240
 #: inc/dropdownobject.class.php:1033 inc/email.class.php:346
