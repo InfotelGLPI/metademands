@@ -1973,66 +1973,66 @@ JAVASCRIPT
      *
      * @throws \GlpitestSQLError
      */
-    public function convertMetademandToTicket($ticket, $metademands_id)
-    {
-        $tickets_id = $ticket->input["id"];
-        $oldlanguage = $_SESSION['glpilanguage'];
-        $ticket_task = new PluginMetademandsTicket_Task();
-        $ticket_metademand = new PluginMetademandsTicket_Metademand();
-        $ticket_field = new PluginMetademandsTicket_Field();
-        $ticket_ticket = new Ticket_Ticket();
-
-
-        // Try to convert name
-        $ticket->input["name"] = addslashes(
-            str_replace(
-                self::$PARENT_PREFIX .
-                Dropdown::getDropdownName($this->getTable(), $metademands_id) . '&nbsp;:&nbsp;',
-                '',
-                $ticket->fields["name"]
-            )
-        );
-        if ($ticket->input["name"] == $ticket->fields["name"]) {
-            $ticket->input["name"] = addslashes(str_replace(self::$PARENT_PREFIX, '', $ticket->fields["name"]));
-        }
-
-        // Delete metademand linked to the ticket
-        $ticket_metademand->deleteByCriteria(['tickets_id' => $tickets_id]);
-        $ticket_field->deleteByCriteria(['tickets_id' => $tickets_id]);
-        $ticket_ticket->deleteByCriteria(['tickets_id_1' => $tickets_id]);
-
-        // For each sons tickets linked to metademand
-        $tickets_found = PluginMetademandsTicket::getSonTickets($tickets_id, $metademands_id, [], true);
-        foreach ($tickets_found as $value) {
-            // If son is a metademand : recursive call
-            if (isset($value['metademands_id'])) {
-                $son_metademands_ticket = new Ticket();
-                $son_metademands_ticket->getFromDB($value['tickets_id']);
-                //TODO To translate ?
-                $son_metademands_ticket->input = $son_metademands_ticket->fields;
-                $this->convertMetademandToTicket($son_metademands_ticket, $value['metademands_id']);
-                $son_metademands_ticket->fields["name"] = addslashes(
-                    str_replace(self::$PARENT_PREFIX, '', $ticket->input["name"])
-                );
-                $son_metademands_ticket->updateInDB(['name']);
-            } elseif (!empty($value['tickets_id'])) {
-                // Try to convert name
-                $son_ticket = new Ticket();
-                $son_ticket->getFromDB($value['tickets_id']);
-                //TODO To translate ?
-                $son_ticket->fields["name"] = addslashes(
-                    str_replace(self::$SON_PREFIX, '', $son_ticket->fields["name"])
-                );
-                $son_ticket->updateInDB(['name']);
-
-                // Delete links
-                $ticket_task->deleteByCriteria(['tickets_id' => $value['tickets_id']]);
-                $ticket_metademand->deleteByCriteria(['tickets_id' => $value['tickets_id']]);
-                $ticket_field->deleteByCriteria(['tickets_id' => $value['tickets_id']]);
-                $ticket_ticket->deleteByCriteria(['tickets_id_1' => $value['tickets_id']]);
-            }
-        }
-    }
+//    public function convertMetademandToTicket($ticket, $metademands_id)
+//    {
+//        $tickets_id = $ticket->input["id"];
+//        $oldlanguage = $_SESSION['glpilanguage'];
+//        $ticket_task = new PluginMetademandsTicket_Task();
+//        $ticket_metademand = new PluginMetademandsTicket_Metademand();
+//        $ticket_field = new PluginMetademandsTicket_Field();
+//        $ticket_ticket = new Ticket_Ticket();
+//
+//
+//        // Try to convert name
+//        $ticket->input["name"] = addslashes(
+//            str_replace(
+//                self::$PARENT_PREFIX .
+//                Dropdown::getDropdownName($this->getTable(), $metademands_id) . '&nbsp;:&nbsp;',
+//                '',
+//                $ticket->fields["name"]
+//            )
+//        );
+//        if ($ticket->input["name"] == $ticket->fields["name"]) {
+//            $ticket->input["name"] = addslashes(str_replace(self::$PARENT_PREFIX, '', $ticket->fields["name"]));
+//        }
+//
+//        // Delete metademand linked to the ticket
+//        $ticket_metademand->deleteByCriteria(['tickets_id' => $tickets_id]);
+//        $ticket_field->deleteByCriteria(['tickets_id' => $tickets_id]);
+//        $ticket_ticket->deleteByCriteria(['tickets_id_1' => $tickets_id]);
+//
+//        // For each sons tickets linked to metademand
+//        $tickets_found = PluginMetademandsTicket::getSonTickets($tickets_id, $metademands_id, [], true);
+//        foreach ($tickets_found as $value) {
+//            // If son is a metademand : recursive call
+//            if (isset($value['metademands_id'])) {
+//                $son_metademands_ticket = new Ticket();
+//                $son_metademands_ticket->getFromDB($value['tickets_id']);
+//                //TODO To translate ?
+//                $son_metademands_ticket->input = $son_metademands_ticket->fields;
+//                $this->convertMetademandToTicket($son_metademands_ticket, $value['metademands_id']);
+//                $son_metademands_ticket->fields["name"] = addslashes(
+//                    str_replace(self::$PARENT_PREFIX, '', $ticket->input["name"])
+//                );
+//                $son_metademands_ticket->updateInDB(['name']);
+//            } elseif (!empty($value['tickets_id'])) {
+//                // Try to convert name
+//                $son_ticket = new Ticket();
+//                $son_ticket->getFromDB($value['tickets_id']);
+//                //TODO To translate ?
+//                $son_ticket->fields["name"] = addslashes(
+//                    str_replace(self::$SON_PREFIX, '', $son_ticket->fields["name"])
+//                );
+//                $son_ticket->updateInDB(['name']);
+//
+//                // Delete links
+//                $ticket_task->deleteByCriteria(['tickets_id' => $value['tickets_id']]);
+//                $ticket_metademand->deleteByCriteria(['tickets_id' => $value['tickets_id']]);
+//                $ticket_field->deleteByCriteria(['tickets_id' => $value['tickets_id']]);
+//                $ticket_ticket->deleteByCriteria(['tickets_id_1' => $value['tickets_id']]);
+//            }
+//        }
+//    }
 
     /**
      * @param       $metademands_id

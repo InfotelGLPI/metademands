@@ -206,10 +206,6 @@ function plugin_metademands_install() {
         migrateAllExistingMetademandsWithNewStatus();
     }
 
-    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-    PluginMetademandsProfile::initProfile();
-    $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
-
     //version 2.7.5 ++
     if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters", false)
         && !$DB->fieldExists("glpi_plugin_metademands_fields", "link_to_user", false)) {
@@ -728,6 +724,10 @@ function plugin_metademands_install() {
                            VALUES ('PluginMetademandsDraft','$num','$rank','0');");
         }
     }
+    PluginMetademandsProfile::initProfile();
+    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+
+    $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
