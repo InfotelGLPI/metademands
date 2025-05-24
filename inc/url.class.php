@@ -576,8 +576,6 @@ class PluginMetademandsUrl extends CommonDBTM
 
                     if (isset($idc) && $idc == 1) {
                         $script .= "if ($(this).val().trim().length > 0) {";
-                        $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-
                         $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                         $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();

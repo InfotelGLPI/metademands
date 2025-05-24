@@ -570,11 +570,8 @@ class PluginMetademandsText extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_block'] as $hidden_block) {
                     $blocks_idc = [];
-
                     if (isset($idc) && $idc == 1) {
                         $script .= "if ($(this).val().trim().length > 0) {";
-                        $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-
                         $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                     $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();
                     if (document.getElementById('ablock" . $hidden_block . "'))
