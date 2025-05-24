@@ -958,7 +958,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
-
                     $onchange .= "if ($fields_link in tohide) {
                             } else {
                                 tohide[$fields_link] = true;
@@ -971,7 +970,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $display = $fields_link;
                     }
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             var id = '#metademands_wizard_red'+ key;
                             $(id).html('');
@@ -989,14 +988,14 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         }
                     });
               ";
+                }
+
+                if ($display > 0) {
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+                }
+
+                $onchange .= "});";
             }
-
-            if ($display > 0) {
-                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
-            }
-
-            $onchange .= "});";
-
             echo Html::scriptBlock(
                 '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
             );

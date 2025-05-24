@@ -421,8 +421,8 @@ class PluginMetademandsDropdown extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
-
+    static function fieldsMandatoryScript($data)
+    {
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
 
@@ -441,7 +441,6 @@ class PluginMetademandsDropdown extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
-
             //Si la valeur est en session
             if (isset($data['value'])) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
@@ -455,7 +454,6 @@ class PluginMetademandsDropdown extends CommonDBTM
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
-
                     $onchange .= "if ($fields_link in tohide) {
                             } else {
                                 tohide[$fields_link] = true;
@@ -465,12 +463,11 @@ class PluginMetademandsDropdown extends CommonDBTM
                             }";
 
 
-
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $fields_link;
                     }
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             var id = '#metademands_wizard_red'+ key;
                             $(id).html('');
@@ -488,20 +485,20 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }
                     });
               ";
+                }
 
+                if ($display > 0) {
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+                }
+
+                $onchange .= "});";
             }
-
-            if ($display > 0) {
-                $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
-            }
-
-            $onchange .= "});";
-
             echo Html::scriptBlock(
-            '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
             );
         }
     }
+
 
     static function taskScript($data)
     {
