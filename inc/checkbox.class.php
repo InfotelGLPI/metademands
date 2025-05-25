@@ -846,33 +846,33 @@ class PluginMetademandsCheckbox extends CommonDBTM
                     $script .= " if (this.checked) {";
 
                     $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
-                    $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
-                $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
+                            $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
+                        document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
+                        $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+                        $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
 
-                    $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $script .= "if (document.getElementById('ablock" . $childs . "'))
-                                document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                            $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                        document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                        $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                        $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    if (isset($data['value']) && is_array($data['value'])) {
-                        $values = $data['value'];
-                        foreach ($values as $value) {
-                            if ($idc == $value) {
-                                $display[] = $hidden_block;
+                            if (isset($data['value']) && is_array($data['value'])) {
+                                $values = $data['value'];
+                                foreach ($values as $value) {
+                                    if ($idc == $value) {
+                                        $display[] = $hidden_block;
+                                    }
+                                }
                             }
-                        }
-
-                        $script .= " }";
+                            $script .= " }";
 
                         $script .= " } else { ";
 
@@ -935,20 +935,19 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         $script .= "}";
 
                         $script .= " }";
-                    }
-                }
-                if (count($display) > 0) {
-                    foreach ($display as $see) {
-                        $script2 .= "if (document.getElementById('ablock" . $see . "'))
+
+                    if (count($display) > 0) {
+                        foreach ($display as $see) {
+                            $script2 .= "if (document.getElementById('ablock" . $see . "'))
                     document.getElementById('ablock" . $see . "').style.display = 'block';
                     $('[bloc-id =\"bloc" . $see . "\"]').show();
                     $('[bloc-id =\"subbloc" . $see . "\"]').show();";
+                        }
                     }
                 }
-
-                $script .= "
-        });";
             }
+                $script .= "});";
+
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         }
     }
