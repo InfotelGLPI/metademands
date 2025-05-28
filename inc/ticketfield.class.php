@@ -193,7 +193,6 @@ class PluginMetademandsTicketField extends CommonDBChild
         $fields = $metafield->find(['plugin_metademands_metademands_id' => $id]);
         $res = [];
         foreach ($fields as $field) {
-
             if ($field['type'] == 'title'
                 || $field['type'] == 'title-block'
                 || $field['type'] == 'informations'
@@ -712,78 +711,79 @@ class PluginMetademandsTicketField extends CommonDBChild
         foreach ($metademands_data as $id => $value) {
             // Search for the metademand template
             $obj = $value['object_to_create'];
+            if ($item = getItemForItemtype($obj)) {
+                $ticket = new $obj();
+                if (is_array($value['itilcategories_id'])
+                    && count($value['itilcategories_id']) != 1) {
+                    continue;
+                }
+                $meta_tt = $ticket->getITILTemplateToUse(
+                    0,
+                    $value['type'],
+                    $value['itilcategories_id'],
+                    $value['entities_id']
+                );
+                $fieldsname = $meta_tt->getAllowedFields(true);
 
-            $ticket = new $obj();
-            if (is_array($value['itilcategories_id'])
-                && count($value['itilcategories_id']) != 1) {
-                continue;
-            }
-            $meta_tt = $ticket->getITILTemplateToUse(
-                0,
-                $value['type'],
-                $value['itilcategories_id'],
-                $value['entities_id']
-            );
-            $fieldsname = $meta_tt->getAllowedFields(true);
-
-            // Template of metademand found
-            if ($meta_tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
-                if (!in_array($fieldsname[$ttp->fields['num']], self::$used_fields)
-                    && $ttp->fields['num'] != -2) {
-                    $used = false;
-                    $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $id]);
-                    foreach ($fields_data as $fields_value) {
-                        if ($fields_value['num'] == $ttp->fields['num']) {
-                            $used = $fields_value['id'];
-                            break;
+                // Template of metademand found
+                if ($meta_tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
+                    if (!in_array($fieldsname[$ttp->fields['num']], self::$used_fields)
+                        && $ttp->fields['num'] != -2) {
+                        $used = false;
+                        $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $id]);
+                        foreach ($fields_data as $fields_value) {
+                            if ($fields_value['num'] == $ttp->fields['num']) {
+                                $used = $fields_value['id'];
+                                break;
+                            }
                         }
-                    }
 
-                    $exception = false;
+                        $exception = false;
 
-                    switch ($fieldsname[$ttp->fields['num']]) {
-                        case 'status':
-                            $default_value = Ticket::INCOMING;
-                            break;
-                        case 'priority':
-                        case 'urgency':
-                        case 'impact':
-                            $default_value = 3;
-                            break;
-                        case '_tasktemplates_id' :
-                            $exception = true;
-                        default:
-                            $default_value = 0;
-                            break;
-                    }
+                        switch ($fieldsname[$ttp->fields['num']]) {
+                            case 'status':
+                                $default_value = Ticket::INCOMING;
+                                break;
+                            case 'priority':
+                            case 'urgency':
+                            case 'impact':
+                                $default_value = 3;
+                                break;
+                            case '_tasktemplates_id' :
+                                $exception = true;
+                            default:
+                                $default_value = 0;
+                                break;
+                        }
 
-                    if (isset($meta_tt->predefined[$fieldsname[$ttp->fields['num']]])) {
-                        $default_value = $meta_tt->predefined[$fieldsname[$ttp->fields['num']]];
-                    }
-                    if (!$exception) {
-                        if (!$used) {
+                        if (isset($meta_tt->predefined[$fieldsname[$ttp->fields['num']]])) {
+                            $default_value = $meta_tt->predefined[$fieldsname[$ttp->fields['num']]];
+                        }
+                        if (!$exception) {
+                            if (!$used) {
+                                $ticketField->add([
+                                    'num' => $ttp->fields['num'],
+                                    'value' => $default_value,
+                                    'is_deletable' => 0,
+                                    'type' => $value['type'],
+                                    'is_mandatory' => 1,
+                                    'entities_id' => $value['entities_id'],
+                                    'plugin_metademands_metademands_id' => $id
+                                ]);
+                            } else {
+                                $ticketField->update(['id' => $used, 'value' => $default_value]);
+                            }
+                        } else {
                             $ticketField->add([
+                                'value' => $ttp->fields['value'],
                                 'num' => $ttp->fields['num'],
-                                'value' => $default_value,
                                 'is_deletable' => 0,
-                                'type' => $value['type'],
                                 'is_mandatory' => 1,
+                                'type' => $value['type'],
                                 'entities_id' => $value['entities_id'],
                                 'plugin_metademands_metademands_id' => $id
                             ]);
-                        } else {
-                            $ticketField->update(['id' => $used, 'value' => $default_value]);
                         }
-                    } else {
-                        $ticketField->add([
-                            'value' => $ttp->fields['value'],
-                            'num' => $ttp->fields['num'],
-                            'is_deletable' => 0,
-                            'is_mandatory' => 1,
-                            'type' => $value['type'],
-                            'entities_id' => $value['entities_id'],
-                            'plugin_metademands_metademands_id' => $id
-                        ]);
                     }
                 }
             }
