@@ -73,7 +73,7 @@ class PluginMetademandsMenu extends CommonDBTM
         if (PluginMetademandsMetademand::canCreate()) {
             $menu['links']['template'] = PLUGIN_METADEMANDS_WEBDIR_NOFULL.'/front/setup.templates.php?add=0';
             $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;" . __('Import metademands', 'metademands');
-            $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
+            $menu['links'][$image] = PluginMetademandsExport::getFormURL(false) . "?import_form=1";
         }
 
         if ((Session::haveRight("plugin_metademands", READ)

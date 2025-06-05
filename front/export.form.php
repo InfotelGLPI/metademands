@@ -29,13 +29,11 @@
 
 include('../../../inc/includes.php');
 
-if (Session::haveRight("plugin_metademands", UPDATE)) {
+if (Session::haveRight("plugin_metademands", CREATE)) {
 
-    $form = new PluginMetademandsFormcreator();
+    if (isset($_POST["exportFormcreatorXML"])) {
 
-    if (isset($_POST["exportXML"])) {
-
-        $file = PluginMetademandsFormcreator::exportAsXMLForMetademands($_POST["plugin_formcreator_forms_id"]);
+        $file = PluginMetademandsExport::exportAsXMLFromFormcreator($_POST["plugin_formcreator_forms_id"]);
 
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
@@ -47,9 +45,44 @@ if (Session::haveRight("plugin_metademands", UPDATE)) {
         if ($send && file_exists($send)) {
             Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
             unlink($send);
-//        Html::back();
         } else {
             Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+        }
+
+    } else if (isset($_POST["exportMetademandsXML"])) {
+
+        $file = PluginMetademandsExport::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
+        $splitter = explode("/", $file, 2);
+        $expires_headers = false;
+
+        if ($splitter[0] == "_plugins") {
+            $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
+        }
+
+        if ($send && file_exists($send)) {
+            Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
+            unlink($send);
+
+        } else {
+            Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+        }
+    } else if (isset($_POST["exportMetademandsJSON"])) {
+
+        PluginMetademandsExport::exportAsJSONForFormcreator($_POST["plugin_metademands_metademands_id"]);
+
+    }  elseif (isset($_GET["import_form"])) {
+
+        Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+        PluginMetademandsExport::showImportForm();
+        Html::footer();
+
+    } elseif (isset($_POST["import_file"])) {
+        $id = PluginMetademandsExport::importXml();
+        if ($id) {
+            $meta = new PluginMetademandsMetademand();
+            Html::redirect($meta->getFormURL() . "?id=" . $id);
+        } else {
+            Html::back();
         }
     }
 } else {

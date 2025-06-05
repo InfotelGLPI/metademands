@@ -78,44 +78,6 @@ if (isset($_POST["add"])) {
     $meta->check($_POST['id'], UPDATE);
     $meta->update($_POST);
     Html::back();
-} elseif (isset($_POST["exportXML"])) {
-    $metademands = new PluginMetademandsMetademand();
-    $metademands->getFromDB($_POST["id"]);
-
-    $file = $metademands->exportAsXML();
-    $splitter = explode("/", $file, 2);
-    $expires_headers = false;
-
-    if ($splitter[0] == "_plugins") {
-        $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-    }
-
-    if ($send && file_exists($send)) {
-        Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
-        unlink($send);
-//        Html::back();
-    } else {
-        Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
-    }
-} elseif (isset($_POST["exportJSON"])) {
-
-    $metademands = new PluginMetademandsMetademand();
-    $metademands->getFromDB($_POST["id"]);
-    PluginMetademandsFormcreator::exportAsJSONForFormcreator($metademands);
-
-} elseif (isset($_GET["import_form"])) {
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-
-    $meta->showImportForm();
-
-    Html::footer();
-} elseif (isset($_POST["import_file"])) {
-    $id = $meta->importXml();
-    if ($id) {
-        Html::redirect($meta->getFormURL() . "?id=" . $id);
-    } else {
-        Html::back();
-    }
 } else {
     $meta->checkGlobal(READ);
 

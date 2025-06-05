@@ -28,17 +28,16 @@
 
 include('../../../inc/includes.php');
 
-if (isset($_POST["metademands"]) && is_array($_POST["metademands"])) {
+if (isset($_POST["metademands"])
+    && is_array($_POST["metademands"])
+    && Session::haveRight("plugin_metademands", CREATE)) {
     $old_memory = ini_set("memory_limit", "-1");
     $old_execution = ini_set("max_execution_time", "0");
 
-    $metademand = new PluginMetademandsMetademand();
     $files = [];
-    foreach($_POST["metademands"] as $id) {
-        $metademand->getFromDB($id);
-
-        $file            = $metademand->exportAsXML();
-        $splitter        = explode("/", $file, 2);
+    foreach ($_POST["metademands"] as $id) {
+        $file = PluginMetademandsExport::exportAsXMLForMetademands($id);
+        $splitter = explode("/", $file, 2);
 
         if ($splitter[0] == "_plugins") {
             $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
@@ -57,12 +56,12 @@ if (isset($_POST["metademands"]) && is_array($_POST["metademands"])) {
     $filename = '/metademands/export_' . date('Y-m-d') . '.zip';
     $fullZip = GLPI_PLUGIN_DOC_DIR . $filename;
     if ($zip->open($fullZip, ZipArchive::CREATE)) {
-        foreach($files as $file) {
+        foreach ($files as $file) {
             $zip->addFile($file, basename($file));
         }
         $zip->close();
 
-        foreach($files as $file) {
+        foreach ($files as $file) {
             unlink($file);
         }
 
@@ -90,4 +89,6 @@ if (isset($_POST["metademands"]) && is_array($_POST["metademands"])) {
         ini_set("max_execution_time", $old_execution);
         Html::back();
     }
+} else {
+    Html::displayRightError();
 }
