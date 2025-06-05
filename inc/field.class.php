@@ -2341,6 +2341,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'comment' => $field->fields['comment'],
             'label2' => $field->fields['label2'],
             'rank' => $field->fields['rank'],
+            'order' => $field->fields['order'],
             'plugin_metademands_metademands_id' => $field->fields["plugin_metademands_metademands_id"],
             'plugin_metademands_fields_id' => $field->getID(),
             'item' => $field->fields['item'],

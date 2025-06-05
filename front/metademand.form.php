@@ -30,15 +30,15 @@
 include('../../../inc/includes.php');
 
 if (!isset($_GET["id"])) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 if (!isset($_GET["withtemplate"])) {
-   $_GET["withtemplate"] = "";
+    $_GET["withtemplate"] = "";
 }
 
-$meta      = new PluginMetademandsMetademand();
+$meta = new PluginMetademandsMetademand();
 
-if(isset($_POST['apply_rule'])){
+if (isset($_POST['apply_rule'])) {
     $meta->check($_POST['id'], UPDATE);
     $meta->update($_POST);
     Html::back();
@@ -56,83 +56,72 @@ if (!isset($_POST['itilcategories_id'])) {
 }
 
 if (isset($_POST["add"])) {
+    $meta->check(-1, CREATE, $_POST);
+    $newID = $meta->add($_POST);
+    if ($_SESSION['glpibackcreated']) {
+        Html::redirect($meta->getFormURL() . "?id=" . $newID);
+    }
+    Html::back();
+} elseif (isset($_POST["delete"])) {
+    $meta->check($_POST['id'], DELETE);
+    $meta->delete($_POST);
+    $meta->redirectToList();
+} elseif (isset($_POST["restore"])) {
+    $meta->check($_POST['id'], PURGE);
+    $meta->restore($_POST);
+    $meta->redirectToList();
+} elseif (isset($_POST["purge"])) {
+    $meta->check($_POST['id'], PURGE);
+    $meta->delete($_POST, 1);
+    $meta->redirectToList();
+} elseif (isset($_POST["update"])) {
+    $meta->check($_POST['id'], UPDATE);
+    $meta->update($_POST);
+    Html::back();
+} elseif (isset($_POST["exportXML"])) {
+    $metademands = new PluginMetademandsMetademand();
+    $metademands->getFromDB($_POST["id"]);
 
-   $meta->check(-1, CREATE, $_POST);
-   $newID = $meta->add($_POST);
-   if ($_SESSION['glpibackcreated']) {
-      Html::redirect($meta->getFormURL() . "?id=" . $newID);
-   }
-   Html::back();
+    $file = $metademands->exportAsXML();
+    $splitter = explode("/", $file, 2);
+    $expires_headers = false;
 
-} else if (isset($_POST["delete"])) {
+    if ($splitter[0] == "_plugins") {
+        $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
+    }
 
-   $meta->check($_POST['id'], DELETE);
-   $meta->delete($_POST);
-   $meta->redirectToList();
+    if ($send && file_exists($send)) {
+        Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
+        unlink($send);
+//        Html::back();
+    } else {
+        Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+    }
+} elseif (isset($_POST["exportJSON"])) {
 
-} else if (isset($_POST["restore"])) {
+    $metademands = new PluginMetademandsMetademand();
+    $metademands->getFromDB($_POST["id"]);
+    PluginMetademandsFormcreator::exportAsJSONForFormcreator($metademands);
 
-   $meta->check($_POST['id'], PURGE);
-   $meta->restore($_POST);
-   $meta->redirectToList();
+} elseif (isset($_GET["import_form"])) {
+    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
-} else if (isset($_POST["purge"])) {
+    $meta->showImportForm();
 
-   $meta->check($_POST['id'], PURGE);
-   $meta->delete($_POST, 1);
-   $meta->redirectToList();
-
-} else if (isset($_POST["update"])) {
-
-   $meta->check($_POST['id'], UPDATE);
-   $meta->update($_POST);
-   Html::back();
-} else if (isset($_POST["export"])) {
-
-   $metademands = new PluginMetademandsMetademand();
-   $metademands->getFromDB($_POST["id"]);
-
-
-   $file            = $metademands->exportAsXML();
-   $splitter        = explode("/", $file, 2);
-   $expires_headers = false;
-
-   if ($splitter[0] == "_plugins") {
-      $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-   }
-
-   if ($send && file_exists($send)) {
-      Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
-      unlink($send);
-   } else {
-      Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
-   }
-   //   Html::redirect($meta->getFormURL() . "?id=" . $_POST["id"]);
-
-} else if (isset($_GET["import_form"])) {
-
-   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-
-   $meta->showImportForm();
-
-   Html::footer();
-} else if (isset($_POST["import_file"])) {
-
-
-   $id = $meta->importXml();
-   if($id){
-      Html::redirect($meta->getFormURL() . "?id=" . $id);
-   } else {
-      Html::back();
-   }
-
+    Html::footer();
+} elseif (isset($_POST["import_file"])) {
+    $id = $meta->importXml();
+    if ($id) {
+        Html::redirect($meta->getFormURL() . "?id=" . $id);
+    } else {
+        Html::back();
+    }
 } else {
+    $meta->checkGlobal(READ);
 
-   $meta->checkGlobal(READ);
+    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
-   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    $meta->display(['id' => $_GET["id"], 'withtemplate' => $_GET["withtemplate"]]);
 
-   $meta->display(['id' => $_GET["id"], 'withtemplate' => $_GET["withtemplate"]]);
-
-   Html::footer();
+    Html::footer();
 }

@@ -200,6 +200,10 @@ function plugin_init_metademands()
         }
 
         $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_basketobjects';
+
+        if (Plugin::isPluginActive("formcreator")) {
+            Plugin::registerClass('PluginMetademandsFormcreator', ['addtabon' => 'PluginFormcreatorForm']);
+        }
     }
 
     // Import webservice

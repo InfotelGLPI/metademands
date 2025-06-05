@@ -1360,7 +1360,7 @@ JAVASCRIPT
         echo "</tr>";
 
 
-        $options['addbuttons'] = ['export' => __('Export', 'metademands')];
+        $options['addbuttons'] = ['exportXML' => __('Export XML', 'metademands'), 'exportJSON' => __('Export JSON', 'metademands')];
 
         $this->showFormButtons($options);
 
@@ -3638,7 +3638,6 @@ JAVASCRIPT
                                                     $find = false;
                                                     $val_to_replace = "";
                                                     foreach ($explodeVal as $str) {
-                                                        Toolbox::logInfo('ici1');
                                                         $explodeTitle = explode("#", $str);
                                                         foreach ($explodeTitle as $title) {
                                                             if (isset($values['fields'][$title])) {
@@ -7746,7 +7745,8 @@ JAVASCRIPT
         $actions = parent::getSpecificMassiveActions($checkitem);
         if ($isadmin) {
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'duplicate'] = _sx('button', 'Duplicate');
-            $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'export'] = __('Export', 'metademands');
+            $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportXML'] = __('Export XML', 'metademands');
+            //$actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __('Export JSON', 'metademands');
         }
 
         return $actions;
@@ -7768,7 +7768,7 @@ JAVASCRIPT
                 echo "&nbsp;" .
                     Html::submit(__('Validate'), ['name' => 'massiveaction']);
                 return true;
-            case 'export':
+            case 'exportXML':
                 if (extension_loaded('zip')) {
                     $items = $_POST['items'][__CLASS__];
                     $url = PLUGIN_METADEMANDS_WEBDIR . "/ajax/export_metademand.php";
@@ -8880,7 +8880,7 @@ JAVASCRIPT
                 $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
                 $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
                 $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
-                $toUpdate["informations_to_display"] = $old["informations_to_display"];
+                $toUpdate["informations_to_display"] = isset($old["informations_to_display"]) ? PluginMetademandsFieldParameter::_serialize($old["informations_to_display"]) : PluginMetademandsFieldParameter::_serialize(['full_name']);
                 $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
                 $toUpdate["icon"] = $old["icon"] ?? "";
                 $toUpdate["readonly"] = $old["readonly"] ?? 0;
@@ -8889,11 +8889,6 @@ JAVASCRIPT
                 if ($plugin_metademands_fields_id != 0
                     && isset($mapTableField[$plugin_metademands_fields_id])) {
                     $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
-                }
-                $fielddata = new PluginMetademandsField();
-                if ($fielddata->getFromDB($toUpdate['plugin_metademands_fields_id'])) {
-                    $toUpdate["type"] = $fielddata->fields["type"];
-                    $toUpdate["item"] = $fielddata->fields["item"];
                 }
 
                 $fieldMetaparam->add($toUpdate);

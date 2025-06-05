@@ -181,7 +181,7 @@ if (isset($_POST["add"])) {
     $field->check(-1, UPDATE, $_POST);
     $field->delete($_POST, 1);
     PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
-    $field->redirectToList();
+    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $_POST['plugin_metademands_metademands_id']);
 } else {
     $field->checkGlobal(READ);
     Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
