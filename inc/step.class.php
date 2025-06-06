@@ -860,7 +860,7 @@ class PluginMetademandsStep extends CommonDBChild
                 echo "<div class='alert alert-warning d-flex'>";
                 echo "<i class='fas fa-check-circle' style='color: orange'></i>&nbsp;";
                 echo "&nbsp;" . __(
-                        'Your ticket will be validated by your supervisor',
+                        'Your form will be validated by your supervisor',
                         'metademands'
                     ) . "&nbsp;";
                 echo getUserName($users_id_supervisor);
@@ -991,7 +991,7 @@ class PluginMetademandsStep extends CommonDBChild
                 if ($users_id_supervisor) {
                     echo "<div class='alert alert-warning d-flex'>";
                     echo "<i class='fas fa-check-circle' style='color: orange'></i>";
-                    echo "&nbsp;" . __('Your ticket will be validated by your supervisor', 'metademands') . "&nbsp;";
+                    echo "&nbsp;" . __('Your form will be validated by your supervisor', 'metademands') . "&nbsp;";
                     echo getUserName($users_id_supervisor);
                     echo Html::hidden('next_users_id', ['value' => $users_id_supervisor]);
 

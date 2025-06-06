@@ -344,7 +344,6 @@ class PluginMetademandsExport extends CommonDBTM
         //TODOXML Use target for object_to_create & type & category (PluginFormcreatorTargetTicket..)
         //TODOXML groups
         //TODOXML Traductions ?
-        //TODOXML Massive export ?
         //TODOXML child tickets ?
 
         $fields['type'] = 2;
@@ -1031,7 +1030,6 @@ class PluginMetademandsExport extends CommonDBTM
             }
         }
 
-
         ksort($sections);
         $form['_sections'] = array_values($sections);
 
@@ -1052,7 +1050,7 @@ class PluginMetademandsExport extends CommonDBTM
 
     public static function showImportForm()
     {
-        echo "<div align='center'>";
+        echo "<div class='center'>";
         echo "<form name='import_file_form' id='import_file_form' method='post'
             action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
         echo "<table class='tab_cadre' width='30%' cellpadding='5'>";

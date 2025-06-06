@@ -656,90 +656,91 @@ class PluginMetademandsBasket extends CommonDBTM
             $onchange .= "var tohide = {};";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                $fields_link = $check_value['fields_link'];
+                foreach ($check_value['fields_link'] as $fields_link) {
 
-                if ($withquantity == false) {
-                    $onchange .= " if (this.checked){";
-                    //                                        foreach ($hidden_link as $key => $fields) {
-                    $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
-                } else {
-                    $onchange .= "if ($(this).val() > 0 ) { ";
-                }
-                $onchange .= "if ($fields_link in tohide) {
-                         } else {
-                            tohide[$fields_link] = true;
-                         }
-                         tohide[$fields_link] = false;
-                      ";
+                    if ($withquantity == false) {
+                        $onchange .= " if (this.checked){";
+                        //                                        foreach ($hidden_link as $key => $fields) {
+                        $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
+                    } else {
+                        $onchange .= "if ($(this).val() > 0 ) { ";
+                    }
+                    $onchange .= "if ($fields_link in tohide) {
+                             } else {
+                                tohide[$fields_link] = true;
+                             }
+                             tohide[$fields_link] = false;
+                          ";
 
-                if (isset($data['value']) && $idc == $data['value']) {
-                    $display = $fields_link;
-                }
+                    if (isset($data['value']) && $idc == $data['value']) {
+                        $display = $fields_link;
+                    }
 
-                $onchange .= "$.each(tohide, function( key, value ) {
-                            if (value == true) {
-                               var id = '#metademands_wizard_red'+ key;
-                               $(id).html('');
-                               sessionStorage.setItem('hiddenlink$name', key);
-                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                                $('[name =\"field['+key+']\"]').removeAttr('required');
-                            } else {
-                                 var id = '#metademands_wizard_red'+ key;
-                                 var fieldid = 'field'+ key;
-                                 $(id).html('*');
-                                 $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                //Special case Upload field
-                                  sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
-                            }
-                        });";
+                    $onchange .= "$.each(tohide, function( key, value ) {
+                                if (value == true) {
+                                   var id = '#metademands_wizard_red'+ key;
+                                   $(id).html('');
+                                   sessionStorage.setItem('hiddenlink$name', key);
+                                    " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                    $('[name =\"field['+key+']\"]').removeAttr('required');
+                                } else {
+                                     var id = '#metademands_wizard_red'+ key;
+                                     var fieldid = 'field'+ key;
+                                     $(id).html('*');
+                                     $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                    //Special case Upload field
+                                      sessionStorage.setItem('mandatoryfile$name', key);
+                                     " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
+                                }
+                            });";
 
-                if ($withquantity == false) {
-                    $onchange .= "} else {";
+                    if ($withquantity == false) {
+                        $onchange .= "} else {";
 
-                    $onchange .= "if($(this).val() == $idc){
-                            if($fields_link in tohide){
+                        $onchange .= "if($(this).val() == $idc){
+                                if($fields_link in tohide){
+    
+                                }else{
+                                   tohide[$fields_link] = true;
+                                }
+                                $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
+                        $onchange .= "if($(value).val() == $idc || $idc == -1 ){
+                                       tohide[$fields_link] = false;
+                                    }";
+                        $onchange .= "});";
 
-                            }else{
-                               tohide[$fields_link] = true;
-                            }
-                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
-                    $onchange .= "if($(value).val() == $idc || $idc == -1 ){
-                                   tohide[$fields_link] = false;
-                                }";
-                    $onchange .= "});";
+                        $onchange .= "}";
 
-                    $onchange .= "}";
+                        $onchange .= "$.each( tohide, function( key, value ) {
+                                if (value == true) {
+                                   var id = '#metademands_wizard_red'+ key;
+                                   $(id).html('');
+                                   sessionStorage.setItem('hiddenlink$name', key);
+                                   " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                   $('[name =\"field['+key+']\"]').removeAttr('required');
+                                } else {
+                                    var id = '#metademands_wizard_red'+ key;
+                                    var fieldid = 'field'+ key;
+                                    $(id).html('*');
+                                    $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                    //Special case Upload field
+                                      sessionStorage.setItem('mandatoryfile$name', key);
+                                     " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
+                                }
+                             });";
+                        $onchange .= "}
+                        }";
+                    } else {
+                        $onchange .= "} else {";
 
-                    $onchange .= "$.each( tohide, function( key, value ) {
-                            if (value == true) {
-                               var id = '#metademands_wizard_red'+ key;
-                               $(id).html('');
-                               sessionStorage.setItem('hiddenlink$name', key);
-                               " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                               $('[name =\"field['+key+']\"]').removeAttr('required');
-                            } else {
-                                var id = '#metademands_wizard_red'+ key;
-                                var fieldid = 'field'+ key;
-                                $(id).html('*');
-                                $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                //Special case Upload field
-                                  sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
-                            }
-                         });";
-                    $onchange .= "}
-                    }";
-                } else {
-                    $onchange .= "} else {";
+                        $onchange .= "var id = '#metademands_wizard_red'+ key;
+                                      $(id).html('');
+                                      sessionStorage.setItem('hiddenlink$name', key);
+                                      " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                      $('[id-field =\"field" . $fields_link . "\"]').removeAttr('required');";
 
-                    $onchange .= "var id = '#metademands_wizard_red'+ key;
-                                  $(id).html('');
-                                  sessionStorage.setItem('hiddenlink$name', key);
-                                  " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                                  $('[id-field =\"field" . $fields_link . "\"]').removeAttr('required');";
-
-                    $onchange .= "}";
+                        $onchange .= "}";
+                    }
                 }
             }
 
