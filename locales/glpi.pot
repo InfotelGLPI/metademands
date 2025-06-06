@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 06:30+0000\n"
+"POT-Creation-Date: 2025-06-06 06:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1574 inc/metademand.class.php:8033
+#: hook.php:1574 inc/metademand.class.php:8038
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1592 inc/metademand.class.php:8156
+#: hook.php:1592 inc/metademand.class.php:8161
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1609 inc/metademand.class.php:8213
+#: hook.php:1609 inc/metademand.class.php:8218
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1626 inc/metademand.class.php:8085
+#: hook.php:1626 inc/metademand.class.php:8090
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -867,34 +867,34 @@ msgid "Export XML"
 msgstr ""
 
 #: inc/export.class.php:158
-msgid "Export the metademand to XML format for use on another server"
+msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
 #: inc/export.class.php:167
 msgid "Export the metademand to JSON format for use with formcreator plugin"
 msgstr ""
 
-#: inc/export.class.php:170 inc/metademand.class.php:7748
+#: inc/export.class.php:171 inc/metademand.class.php:7750
 msgid "Export JSON"
 msgstr ""
 
-#: inc/export.class.php:994
+#: inc/export.class.php:989
 msgid "No link"
 msgstr ""
 
-#: inc/export.class.php:1079
+#: inc/export.class.php:1061
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/export.class.php:1088
+#: inc/export.class.php:1070
 msgid "Import"
 msgstr ""
 
-#: inc/export.class.php:1117
+#: inc/export.class.php:1099
 msgid "No file specified"
 msgstr ""
 
-#: inc/export.class.php:1132
+#: inc/export.class.php:1114
 msgid "The file is not an XML file"
 msgstr ""
 
@@ -1611,41 +1611,41 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:7780
+#: inc/metademand.class.php:7785
 msgid "Start the download"
 msgstr ""
 
-#: inc/metademand.class.php:7784
+#: inc/metademand.class.php:7789
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: inc/metademand.class.php:7833
+#: inc/metademand.class.php:7838
 msgid "This action requires PHP extension zip"
 msgstr ""
 
-#: inc/metademand.class.php:7892
+#: inc/metademand.class.php:7897
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:8517
+#: inc/metademand.class.php:8522
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:8566
+#: inc/metademand.class.php:8571
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:8568
+#: inc/metademand.class.php:8573
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:8581
+#: inc/metademand.class.php:8586
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:8609 inc/wizard.class.php:1093
+#: inc/metademand.class.php:8614 inc/wizard.class.php:1093
 msgid "Find a form"
 msgstr ""
 

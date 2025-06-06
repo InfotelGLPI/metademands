@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 06:30+0000\n"
+"POT-Creation-Date: 2025-06-06 06:58+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -43,19 +43,19 @@ msgstr "Lié à une métademande"
 msgid "Technician child ticket"
 msgstr "Techniciens des tickets enfants"
 
-#: hook.php:1574 inc/metademand.class.php:8033
+#: hook.php:1574 inc/metademand.class.php:8038
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: hook.php:1592 inc/metademand.class.php:8156
+#: hook.php:1592 inc/metademand.class.php:8161
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: hook.php:1609 inc/metademand.class.php:8213
+#: hook.php:1609 inc/metademand.class.php:8218
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: hook.php:1626 inc/metademand.class.php:8085
+#: hook.php:1626 inc/metademand.class.php:8090
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
@@ -894,35 +894,35 @@ msgid "Export XML"
 msgstr "Export XML"
 
 #: inc/export.class.php:158
-msgid "Export the metademand to XML format for use on another server"
-msgstr "Exporter la métademande en XML pour l'utiliser sur un autre serveur"
+msgid "Export the metademand to XML format for use on another GLPI"
+msgstr "Exporter la métademande en XML pour l'utiliser sur un autre GLPI"
 
 #: inc/export.class.php:167
 msgid "Export the metademand to JSON format for use with formcreator plugin"
 msgstr ""
 "Exporter la métademande en JSON pour l'utiliser avec le plugin formcreator"
 
-#: inc/export.class.php:170 inc/metademand.class.php:7748
+#: inc/export.class.php:171 inc/metademand.class.php:7750
 msgid "Export JSON"
 msgstr "Export JSON"
 
-#: inc/export.class.php:994
+#: inc/export.class.php:989
 msgid "No link"
 msgstr "Pas de lien"
 
-#: inc/export.class.php:1079
+#: inc/export.class.php:1061
 msgid "Metademand file to import"
 msgstr "Fichier Métademande à importer"
 
-#: inc/export.class.php:1088
+#: inc/export.class.php:1070
 msgid "Import"
 msgstr "Importer"
 
-#: inc/export.class.php:1117
+#: inc/export.class.php:1099
 msgid "No file specified"
 msgstr "Pas de fichier fourni"
 
-#: inc/export.class.php:1132
+#: inc/export.class.php:1114
 msgid "The file is not an XML file"
 msgstr "Ce fichier n'est pas un XML"
 
@@ -1685,11 +1685,11 @@ msgstr "A venir"
 msgid "There is no childs tickets"
 msgstr "Il n'y a pas de tickets enfants"
 
-#: inc/metademand.class.php:7780
+#: inc/metademand.class.php:7785
 msgid "Start the download"
 msgstr "Commencer le téléchargement"
 
-#: inc/metademand.class.php:7784
+#: inc/metademand.class.php:7789
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
@@ -1697,31 +1697,31 @@ msgstr ""
 "Cette action peut prendre un certain temps en fonction du nombre de "
 "métademandes sélectionnées"
 
-#: inc/metademand.class.php:7833
+#: inc/metademand.class.php:7838
 msgid "This action requires PHP extension zip"
 msgstr "Cette action nécessite l'extension PHP zip"
 
-#: inc/metademand.class.php:7892
+#: inc/metademand.class.php:7897
 msgid "Configure demands"
 msgstr "Configurer les demandes"
 
-#: inc/metademand.class.php:8517
+#: inc/metademand.class.php:8522
 msgid "Progression of your demand"
 msgstr "Progression de votre demande"
 
-#: inc/metademand.class.php:8566
+#: inc/metademand.class.php:8571
 msgid "Done on"
 msgstr "Fait le"
 
-#: inc/metademand.class.php:8568
+#: inc/metademand.class.php:8573
 msgid "In progress"
 msgstr "En cours"
 
-#: inc/metademand.class.php:8581
+#: inc/metademand.class.php:8586
 msgid "Not yet completed"
 msgstr "Non finalisé"
 
-#: inc/metademand.class.php:8609 inc/wizard.class.php:1093
+#: inc/metademand.class.php:8614 inc/wizard.class.php:1093
 msgid "Find a form"
 msgstr "Trouver un formulaire"
 
