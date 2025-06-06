@@ -155,21 +155,24 @@ class PluginMetademandsExport extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
 
         echo "<td class='left'>";
-        echo __('Export the metademand to XML format for use on another server', 'metademands');
+        echo __('Export the metademand to XML format for use on another GLPI', 'metademands');
         echo "</td>";
         echo "<td class='center'>";
         echo Html::submit(__('Export XML', 'metademands'), ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary']);
         echo "</td>";
         echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td class='left'>";
-        echo __('Export the metademand to JSON format for use with formcreator plugin', 'metademands');
-        echo "</td>";
-        echo "<td class='center'>";
-        echo Html::submit(__('Export JSON', 'metademands'), ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary']);
-        echo "</td>";
-
+        if (Plugin::isPluginActive("formcreator")) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td class='left'>";
+            echo __('Export the metademand to JSON format for use with formcreator plugin', 'metademands');
+            echo "</td>";
+            echo "<td class='center'>";
+            echo Html::submit(
+                __('Export JSON', 'metademands'),
+                ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary']
+            );
+            echo "</td>";
+        }
         echo "</tr>";
         echo "</table></div>";
         Html::closeForm();
@@ -826,7 +829,6 @@ class PluginMetademandsExport extends CommonDBTM
     {
         //TODOJSON case not null value -> add regex
         //TODOJSON cible
-        //TODO test link case
         //TODOJSON rights
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
@@ -978,25 +980,15 @@ class PluginMetademandsExport extends CommonDBTM
                 "_conditions" => [],
                 "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix)
             ];
+
             if ($params['type'] === 'link') {
-
-                if ($params['custom']) {
-                    $decodedData = json_decode($params['custom'], true);
-
-                    if (isset($decodedData['1'])) {
-                        $decodedUrl = $decodedData['1'];
-
-                        $decodedUrl = urldecode($decodedUrl);
-                        $question['description'] = "<a href=\"$decodedUrl\" target=\"_blank\">$decodedUrl</a>";
-
-                    } else {
-
-                        $question['description'] = __('No link', 'metademands');
-                    }
+                if (isset($params['custom_values'][1])) {
+                    $decodedUrl = urldecode($params['custom_values'][1]);
+                    $question['description'] = "<a href=\"$decodedUrl\" target=\"_blank\">$decodedUrl</a>";
+                } else {
+                    $question['description'] = __('No link', 'metademands');
                 }
-
             } else {
-
                 $question['description'] = $params['label2'] . $params['comment'];
             }
             // Check if options are associated with this field
@@ -1006,26 +998,16 @@ class PluginMetademandsExport extends CommonDBTM
                 $question['_conditions'] = $options;
             }
 
-
-            if ($params['type'] === 'dropdown_multiple' && $params['item'] === 'User') {
-                //TODOJSON ??
-//                $users = getUsers($pdo);
-                $users = [];
-                $question['values'] = json_encode($users);
-            } else {
-
-//                Toolbox::logInfo($params['custom_values']);
-                if (is_array($params['custom_values'])) {
-                    $custom_values= [];
-                    foreach ($params['custom_values'] as $k => $customs) {
-                        if (isset($customs['name'])) {
-                            $custom_values[] = $customs['name'];
-                        }
+            if (is_array($params['custom_values'])) {
+                $custom_values= [];
+                foreach ($params['custom_values'] as $k => $customs) {
+                    if (isset($customs['name'])) {
+                        $custom_values[] = $customs['name'];
                     }
-                    $question['values'] = json_encode($custom_values);
                 }
-
+                $question['values'] = json_encode($custom_values);
             }
+
             if ($params['type'] === 'yesno') {
                 $question['values'] = json_encode(["oui", "non"]);
                 $question['itemtype'] = "other";

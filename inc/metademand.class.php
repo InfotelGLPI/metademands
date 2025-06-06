@@ -7745,7 +7745,12 @@ JAVASCRIPT
         if ($isadmin) {
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'duplicate'] = _sx('button', 'Duplicate');
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportXML'] = __('Export XML', 'metademands');
-            $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __('Export JSON', 'metademands');
+            if (Plugin::isPluginActive("formcreator")) {
+                $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __(
+                    'Export JSON',
+                    'metademands'
+                );
+            }
         }
 
         return $actions;
