@@ -68,7 +68,21 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
         }
     } else if (isset($_POST["exportMetademandsJSON"])) {
 
-        PluginMetademandsExport::exportAsJSONForFormcreator($_POST["plugin_metademands_metademands_id"]);
+        $file = PluginMetademandsExport::exportAsJSONForFormcreator($_POST["plugin_metademands_metademands_id"]);
+        $splitter = explode("/", $file, 2);
+        $expires_headers = false;
+
+        if ($splitter[0] == "_plugins") {
+            $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
+        }
+
+        if ($send && file_exists($send)) {
+            Toolbox::sendFile($send, $splitter[1], 'json', $expires_headers);
+            unlink($send);
+
+        } else {
+            Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+        }
 
     }  elseif (isset($_GET["import_form"])) {
 

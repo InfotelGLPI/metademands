@@ -829,7 +829,6 @@ class PluginMetademandsExport extends CommonDBTM
         //TODO test link case
         //TODOJSON rights
         //TODOJSON Traductions ?
-        //TODOJSON Massive export ?
         //TODOJSON child tickets ?
         $metademands = new PluginMetademandsMetademand();
         $metademands->getFromDB($id);
@@ -1053,18 +1052,19 @@ class PluginMetademandsExport extends CommonDBTM
 
         ksort($sections);
         $form['_sections'] = array_values($sections);
-        $filename = 'metademand_' . date('Ymd_His') . '.json';
+
         $json['forms'][] = $form;
         $jsonOutput = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-        // Force download in browser
-        header('Content-Type: application/json');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($jsonOutput));
-        header('Pragma: no-cache');
-        header('Expires: 0');
+        $safeName = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $metademands->getField('name'));
+        $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
+        $name = "/metademands/" . $safeName . ".json";
 
-        echo $jsonOutput;
+        $file = fopen(GLPI_PLUGIN_DOC_DIR .$name,'w+') or die("File not found");
+        fwrite($file, $jsonOutput);
+        fclose($file);
+
+        return "_plugins" . $name;
 
     }
 

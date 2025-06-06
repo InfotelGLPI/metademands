@@ -71,7 +71,7 @@ function plugin_init_metademands()
         Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Problem', 'Change', 'User']]);
         Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
         Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
-        Plugin::registerClass('PluginMetademandsCondition', ['addtabon' => ['PluginMetademandsMetademand']]);
+
         Plugin::registerClass(
             'PluginMetademandsBasketobjectTranslation',
             ['addtabon' => ['PluginMetademandsBasketobject']]

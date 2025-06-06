@@ -28,7 +28,8 @@
 
 include('../../../inc/includes.php');
 
-if (isset($_POST["metademands"])
+if (isset($_POST["action"])
+    && isset($_POST["metademands"])
     && is_array($_POST["metademands"])
     && Session::haveRight("plugin_metademands", CREATE)) {
     $old_memory = ini_set("memory_limit", "-1");
@@ -36,7 +37,13 @@ if (isset($_POST["metademands"])
 
     $files = [];
     foreach ($_POST["metademands"] as $id) {
-        $file = PluginMetademandsExport::exportAsXMLForMetademands($id);
+
+        if ($_POST["action"] == "exportXML") {
+            $file = PluginMetademandsExport::exportAsXMLForMetademands($id);
+        } else {
+            $file = PluginMetademandsExport::exportAsJSONForFormcreator($id);
+        }
+
         $splitter = explode("/", $file, 2);
 
         if ($splitter[0] == "_plugins") {

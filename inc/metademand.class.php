@@ -273,6 +273,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
             }
         }
+        $this->addStandardTab('PluginMetademandsCondition', $ong, $options);
         $this->addStandardTab('PluginMetademandsExport', $ong, $options);
         return $ong;
     }
@@ -7744,7 +7745,7 @@ JAVASCRIPT
         if ($isadmin) {
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'duplicate'] = _sx('button', 'Duplicate');
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportXML'] = __('Export XML', 'metademands');
-            //$actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __('Export JSON', 'metademands');
+            $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __('Export JSON', 'metademands');
         }
 
         return $actions;
@@ -7767,10 +7768,13 @@ JAVASCRIPT
                     Html::submit(__('Validate'), ['name' => 'massiveaction']);
                 return true;
             case 'exportXML':
+            case 'exportJSON':
                 if (extension_loaded('zip')) {
                     $items = $_POST['items'][__CLASS__];
+
                     $url = PLUGIN_METADEMANDS_WEBDIR . "/ajax/export_metademand.php";
                     $data = json_encode($items);
+                    $action = $ma->getAction();
                     echo "&nbsp;";
                     echo "<button id='export_metademand' class='btn'>" . __(
                             'Start the download',
@@ -7793,7 +7797,7 @@ JAVASCRIPT
                                 $.ajax({
                                     url: '$url',
                                     type: 'POST',
-                                    data: { metademands : $data },
+                                    data: { metademands : $data, action : '$action' },
                                     xhrFields: {
                                         responseType: 'blob'
                                     },
