@@ -698,7 +698,10 @@ class PluginMetademandsExport extends CommonDBTM
             } else if ($fieldorigin->fields['type'] === 'text') {
                 $showCondition = 2;
 
-            } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
+            } else if ((int)$option['check_value'] === -1) {
+                $showCondition = 2;
+            }
+            else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
                 $showValue = $fieldcustomvalues->fields['name'] ?? "";
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
@@ -759,6 +762,9 @@ class PluginMetademandsExport extends CommonDBTM
                         $showValue = 'oui';
                     }
                 } else if ($fieldorigin->fields['type'] === 'text') {
+                    $showCondition = 2;
+
+                } else if ((int)$option['check_value'] === -1) {
                     $showCondition = 2;
 
                 } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
@@ -826,7 +832,7 @@ class PluginMetademandsExport extends CommonDBTM
 
     public static function exportAsJSONForFormcreator($id)
     {
-        //TODOJSON case not null value -> add regex
+
         //TODOJSON cible
         //TODOJSON rights
         //TODOJSON Traductions ?
