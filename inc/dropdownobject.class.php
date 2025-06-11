@@ -93,6 +93,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     $paramsloc
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
+                        'display_type' => $data['display_type'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
                     $toupdate[] = ['value_fieldname'

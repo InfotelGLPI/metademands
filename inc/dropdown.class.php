@@ -38,6 +38,8 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsDropdown extends CommonDBTM
 {
 
+    const CLASSIC_DISPLAY = 0;
+    const SPLITTED_DISPLAY = 1;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -50,6 +52,131 @@ class PluginMetademandsDropdown extends CommonDBTM
     {
         return __('Dropdown');
     }
+
+    public static function getLocations(
+        $entities_id = 0,
+    ) {
+        /** @var DBmysql $DB */
+        global $DB;
+
+        // Build entity restriction
+        $entity_criteria = getEntitiesRestrictCriteria(
+            'glpi_locations',
+            '',
+            $entities_id,
+            true
+        );
+
+        $locations = [];
+        $locations[] = [
+            'id' => 0,
+            'name' => Dropdown::EMPTY_VALUE,
+            'locations_id' => 0
+        ];
+        foreach (
+            /** @phpstan-ignore-next-line */
+            $DB->request(Location::getTable(), [
+                'WHERE' => $entity_criteria
+            ]) as $location
+        ) {
+            if (DropdownTranslation::isDropdownTranslationActive()) {
+                $location['name'] = DropdownTranslation::getTranslatedValue(
+                    $location['id'],
+                    Location::class,
+                    'name',
+                    $_SESSION['glpilanguage']
+                ) ?: $location['name'];
+            }
+            $location['name'] = Html::entity_decode_deep($location['name']);
+            $locations[$location['id']] = $location;
+        }
+        uasort($locations, function ($a, $b) {
+            return $a['name'] <=> $b['name'];
+        });
+
+        $locs = self::buildLocationTree($locations);
+
+        return $locs;
+    }
+
+    static function buildLocationTree(array $locations) {
+        // Indexer par ID
+        $indexed = [];
+        foreach ($locations as $loc) {
+            $indexed[$loc['id']] = $loc + ['children' => []];
+        }
+
+        // Lier les enfants aux parents
+        foreach ($indexed as &$loc) {
+            if ($loc['locations_id'] && isset($indexed[$loc['locations_id']])) {
+                $indexed[$loc['locations_id']]['children'][] = &$loc;
+            }
+        }
+
+        // Trouver les racines
+        $roots = array_filter($indexed, fn($loc) => $loc['locations_id'] == 0);
+        $result = [];
+
+        foreach ($roots as $root) {
+            $result[$root['name']] = self::transformNode($root);
+        }
+
+        return $result;
+    }
+
+    static function transformNode($node) {
+        if (empty($node['children'])) {
+            // C’est une feuille
+            return [$node['id'] => $node['name']];
+        }
+
+        $result = [];
+
+        foreach ($node['children'] as $child) {
+            if (empty($child['children'])) {
+                // Si c’est une feuille, clé = ID
+                $result[$child['id']] = $child['name'];
+            } else {
+                // Si a des enfants, clé = nom, valeur = récursif
+                $result[$child['name']] = self::transformNode($child);
+            }
+        }
+        return $result;
+    }
+
+    static function locationDropdown($opt) {
+
+        echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/cascading-dropdowns/jquery.chained.selects.js");
+
+        $locations = self::getLocations($_SESSION['glpiactiveentities']);
+        $locations_json = json_encode($locations);
+        $name = $opt['name'];
+        $id = $opt['fields_id'];
+        $value = $opt['value'];
+        $required = $opt['required'];
+
+        echo "<select name=\"$name-dropdown\" id=\"$id-dropdown\" $required class='chained-select'></select>";
+        echo Html::scriptBlock("function loadSplittedLocations() {
+
+                            $(\"#$id-dropdown\").chainedSelects({
+                                placeholder: '',
+                                data: $locations_json,
+                                loggingEnabled: false,
+                                selectedKey: '$value',
+                                autoSelectSingleOptions: true,
+                                onSelectedCallback: function (id) {
+                                    document.getElementById('$id').value = id;
+                                },
+                            });
+                        }
+    
+                        $(document).ready(function () {
+                            loadSplittedLocations();
+                        });
+                     ");
+        echo Html::hidden($name, ['id' => $id]);
+    }
+
 
     static function showWizardField($data, $namefield, $value,  $on_order, $itilcategories_id) {
 
@@ -87,7 +214,9 @@ class PluginMetademandsDropdown extends CommonDBTM
                         'item' => User::getType()]);
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
-                    if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+                    if (isset($fieldUser->fields['id'])
+                        && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+
                         $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
@@ -100,6 +229,7 @@ class PluginMetademandsDropdown extends CommonDBTM
 
                     $_POST['id_fielduser'] = $data['link_to_user'];
                     $_POST['fields_id']    = $data['id'];
+                    $_POST['display_type']    = $data['display_type'];
                     $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
                     if ($data['is_mandatory'] == 1) {
                         $_POST['is_mandatory'] = 1;
@@ -115,7 +245,16 @@ class PluginMetademandsDropdown extends CommonDBTM
                     }
                     //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']]
                     $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
-                    $field            .= Location::dropdown($options);
+
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $field            .= Location::dropdown($options);
+                    } else {
+                        $opt['fields_id'] = $data['id'];
+                        $opt['value'] = $value;
+                        $opt['fields_id'] = $_POST['fields_id'];
+                        $opt['required'] = ($data['is_mandatory'] == 1 ? "required" : "");
+                        $field .= PluginMetademandsDropdown::locationDropdown($opt);
+                    }
                 }
                 break;
 
@@ -262,6 +401,22 @@ class PluginMetademandsDropdown extends CommonDBTM
         }
 
         echo "</tr>";
+
+        if ($params["item"] == "Location") {
+            $disp = [];
+            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
+            $disp[self::SPLITTED_DISPLAY] = __("Spitted display", "metademands");
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Display type of the field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+
+            echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'], 'display' => false]
+            );
+            echo "</td>";
+            echo "</tr>";
+        }
     }
 
     static function getParamsValueToCheck($fieldoption, $item, $params)

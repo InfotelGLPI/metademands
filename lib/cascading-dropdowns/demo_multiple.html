@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>jQuery Chained Selects Demo</title>
+    <style type="text/css">
+        .container {
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        form {
+            margin: 10px;
+        }
+
+        select {
+            width: 100%;
+            font-size: 1.5em;
+            padding: 10px;
+            margin: 4px 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 500px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Form Example</h2>
+    <form method="post" action="https://httpbin.org/post">
+		<div id="firstChain" style="border: 3px solid black; margin-bottom: 2rem; background-color: grey;">
+			<h3>First Chain</h3>
+		</div>
+		<div id="secondChain" style="border: 3px solid black; margin-bottom: 2rem; background-color: lightblue;">
+			<h3>Second Chain</h3>
+		</div>
+        <button type="submit">Submit</button>
+    </form>
+    <h2>Test your JSON Data</h2>
+    <textarea id="json">{
+	"A": {
+		"AA": {
+			"1": "AAA"
+		},
+		"AB": {
+			"2": "ABA"
+		}
+	},
+	"B": {
+		"BA": {
+			"BAA": {
+				"3": "BAAA"
+			}
+		}
+	},
+	"C": {
+		"CA": {
+			"4": "CAA"
+		},
+		"CB": {
+			"5": "CBA"
+		},
+		"CC": {
+			"CCA": {
+				"6": "CCAA",
+				"7": "CCAB"
+			}
+		}
+	}
+}</textarea>
+    <button id="load_json">Load JSON</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="jquery.chained.selects.js"></script>
+<script type="text/javascript">
+    var chainedData1 = {};
+	var chainedData2 = {};
+
+    function loadJson() {
+        $("form select").remove();
+
+		$("#firstChain").append($("<select name=\"example1\" id=\"example1\"></select>"));
+		$("#secondChain").append($("<select name=\"example2\" id=\"example2\"></select>"));
+
+        chainedData1 = JSON.parse($("#json").val());
+		chainedData2 = JSON.parse($("#json").val());
+
+		$('#example1').chainedSelects({
+			data: chainedData1,
+			loggingEnabled: true,
+			'onSelectedCallback': function (id) { if(console !== undefined) { console.log("chain1 selected option", id); } },
+		});
+
+		$('#example2').chainedSelects({
+			data: chainedData2,
+			loggingEnabled: true,
+			'onSelectedCallback': function (id) { if(console !== undefined) { console.log("chain2 selected option", id); } },
+		});
+
+    }
+
+    $(document).ready(function () {
+        $("#load_json").click(loadJson);
+        loadJson();
+    });
+</script>
+</body>
+</html>
+

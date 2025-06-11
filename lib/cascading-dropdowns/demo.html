@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>jQuery Chained Selects Demo</title>
+    <style type="text/css">
+        .container {
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        form {
+            margin: 10px;
+        }
+
+        select {
+            width: 100%;
+            font-size: 1.5em;
+            padding: 10px;
+            margin: 4px 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 500px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Form Example</h2>
+    <form method="post" action="https://httpbin.org/post">
+        <button type="submit">Submit</button>
+		<strong id="selected">current</strong>
+    </form>
+    <h2>Test your JSON Data</h2>
+    <textarea id="json">{
+	"A": {
+		"AA": {
+			"1": "AAA"
+		},
+		"AB": {
+			"2": "ABA"
+		}
+	},
+	"B": {
+		"BA": {
+			"BAA": {
+				"3": "BAAA"
+			}
+		}
+	},
+	"C": {
+		"CA": {
+			"4": "CAA"
+		},
+		"CB": {
+			"5": "CBA"
+		},
+		"CC": {
+			"CCA": {
+				"6": "CCAA",
+				"7": "CCAB"
+			}
+		}
+	}
+}</textarea>
+    <button id="load_json">Load JSON</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="jquery.chained.selects.js"></script>
+<script type="text/javascript">
+    var chainedData = {};
+
+    function loadJson() {
+        $("form select").remove();
+        $("<select name=\"example_select\" id=\"example-select\"></select>").insertBefore("form button");
+        chainedData = JSON.parse($("#json").val());
+        $('#example-select').chainedSelects({
+            data: chainedData,
+            loggingEnabled: true,
+            onSelectedCallback: function (id) {
+                if (console !== undefined) {
+                    console.log("selected option", id);
+                }
+                $("#selected").text("selected option: " + id);
+            },
+        });
+    }
+
+    $(document).ready(function () {
+        $("#load_json").click(loadJson);
+        loadJson();
+    });
+</script>
+</body>
+</html>
+

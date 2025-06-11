@@ -1,0 +1,17 @@
+{
+    "name": "smarek/jquery-chained-selects",
+    "description": "jQuery plugin to create chained selects from hierarchical JSON data",
+    "keywords": ["jquery", "plugin", "jquery-plugin", "chained", "select", "selects"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marek Sebera",
+            "email": "marek.sebera@gmail.com"
+        }
+    ],
+    "require": {},
+    "suggest": {
+        "components/jquery": "Composer jQuery distribution, optional if you install by other means"
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "jquery-chained-selects",
+  "version": "2.1.1",
+  "description": "jQuery plugin to create chained selects from JSON data",
+  "main": "jquery.chained.selects.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smarek/jquery-chained-selects.git"
+  },
+  "keywords": [
+    "jquery-plugin",
+    "ecosystem:jquery",
+    "json"
+  ],
+  "author": "Marek Sebera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smarek/jquery-chained-selects/issues"
+  },
+  "homepage": "https://smarek.github.io/jquery-chained-selects/"
+}

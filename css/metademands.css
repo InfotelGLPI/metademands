@@ -683,3 +683,9 @@ textarea.invalid,
 .info-alert-danger {
     color: #d63939;
 }
+
+select.chained-select {
+    width: 85%;
+    /*padding: 10px;*/
+    margin: 2px 0;
+}
