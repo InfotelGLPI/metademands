@@ -896,6 +896,22 @@ class PluginMetademandsExport extends CommonDBTM
             "_translations" => []
         ];
 
+        if ($metademands->fields['object_to_create'] === "Ticket") {
+            $form["_targets"]["PluginFormcreatorTargetTicket"][] = [
+                "name" => "Ticket from metademand",
+                "target_name" => "Ticket from metademand",
+                "source_rule" => 1,
+                "source_question" => 7,
+                "type_rule" => 1,
+                "type_question" => $metademands->fields['type'],
+                "content" => "",
+                "due_date_rule" => 1,
+                "due_date_question" => 0,
+                "due_date_value" => null,
+                "due_date_period" => 0,
+            ];
+        }
+
         $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
             ['plugin_metademands_metademands_id' => $metademands_id]);
 
