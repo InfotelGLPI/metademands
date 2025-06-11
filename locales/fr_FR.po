@@ -805,7 +805,7 @@ msgstr "Affichage classique"
 
 #: inc/dropdown.class.php:408
 msgid "Spitted display"
-msgstr "Vue splittée"
+msgstr "Affichage divisé"
 
 #: inc/dropdown.class.php:411 inc/dropdownmeta.class.php:1246
 #: inc/dropdownmultiple.class.php:655
