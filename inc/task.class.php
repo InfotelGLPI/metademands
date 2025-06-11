@@ -358,7 +358,7 @@ class PluginMetademandsTask extends CommonDBChild {
 //
 //            echo "<td class='tab_bg_2 center' colspan='6'>";
             echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
-            echo Html::hidden('entities_id', ['value' => $item->fields['entities_id']]);
+//            echo Html::hidden('entities_id', ['value' => $item->fields['entities_id']]);
 //            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
 //            echo "</td>";
 //            echo "</tr>";
@@ -539,6 +539,7 @@ class PluginMetademandsTask extends CommonDBChild {
 //            echo "<th class='center b'>#</th>";
             echo "<th class='center b' width='6%'>" . __('ID') . "</th>";
             echo "<th class='center b'>" . __('Name') . "</th>";
+            echo "<th class='center b'>" . __('Entity') . "</th>";
             echo "<th class='center b'>" . __('Type') . "</th>";
             echo "<th class='center b'>" . __('Category') . "</th>";
             echo "<th class='center b'>" . __('Assigned to') . "</th>";
@@ -649,7 +650,6 @@ class PluginMetademandsTask extends CommonDBChild {
 //                }
 
                 // Name
-
                 if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
 
 //                    $width = 0;
@@ -675,6 +675,9 @@ class PluginMetademandsTask extends CommonDBChild {
                     echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
                         "?id=" . $value['link_metademands_id'] . "'>" . Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
                 }
+
+                // Entity
+                echo "<td $onhover $color_class>" . Dropdown::getDropdownName("glpi_entities", $value['entities_id']) . "</td>";
 
                 // Type
                 echo "<td $onhover $color_class>" . self::getTaskTypeName($value['type']) . "</td>";

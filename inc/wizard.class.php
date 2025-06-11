@@ -2057,7 +2057,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div style='overflow:auto;'>";
 
                 if ($use_as_step == 1) {
-                    echo "<div id='nextMsg' class='alert alert-info center'>";
+                    echo "<br><div id='nextMsg' class='alert alert-info center'>";
                     echo "</div>";
                 }
 

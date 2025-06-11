@@ -6164,8 +6164,6 @@ JAVASCRIPT
                     //                $son_ticket_data['_disablenotif']      = true;
                     $son_ticket_data['name'] = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
                     $son_ticket_data['type'] = $parent_fields['type'];
-                    $son_ticket_data['entities_id'] = $parent_fields['entities_id'];
-
 
                     $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
                     $son_ticket_data['_auto_import'] = 1;
@@ -7089,10 +7087,11 @@ JAVASCRIPT
                 if (count($tickets_list)) {
                     echo "<div align='center'><table class='tab_cadre_fixe'>";
                     echo "<tr class='center'>";
-                    echo "<td colspan='6'><h3>" . __('Existent tickets', 'metademands') . "</h3></td></tr>";
+                    echo "<td colspan='7'><h3>" . __('Existing tickets', 'metademands') . "</h3></td></tr>";
 
                     echo "<tr>";
                     echo "<th>" . __('Ticket') . "</th>";
+                    echo "<th>" . __('Entity') . "</th>";
                     echo "<th>" . __('Opening date') . "</th>";
                     if (Session::getCurrentInterface() == 'central') {
                         echo "<th>" . __('Assigned to') . "</th>";
@@ -7149,6 +7148,11 @@ JAVASCRIPT
                             echo self::$SON_PREFIX . $values['tasks_name'];
                         }
 
+                        echo "</td>";
+
+                        // Entity
+                        echo "<td>";
+                        echo Dropdown::getDropdownName("glpi_entities", $childticket->fields['entities_id']);
                         echo "</td>";
 
                         //date
