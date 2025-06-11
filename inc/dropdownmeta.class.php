@@ -206,7 +206,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $field = "";
 
                 if ($on_order == false) {
-                    if ($data["display_type"] == self::ICON_DISPLAY) {
+                    if (isset($data["display_type"])
+                        && $data["display_type"] == self::ICON_DISPLAY) {
                         // My items
                         //TODO : used_by_ticket -> link with item's ticket
                         $field = "";

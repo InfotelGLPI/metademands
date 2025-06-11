@@ -1168,7 +1168,7 @@ class PluginMetademandsBasket extends CommonDBTM
                             }
 
                          });";
-                    $script .= "console.log('hidden-checkbox1');";
+                    $script .= "console.log('hidden-basket1');";
 
                     if ($withquantity == false) {
                         $script .= " } else { ";
@@ -1185,7 +1185,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                 }";
                         $script .= " });
                         }
-                        console.log('hidden-checkbox2');";
+                        console.log('hidden-basket2');";
                         $script .= " }";
                     }
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -1235,7 +1235,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                 $('[bloc-id =\"subbloc'+key+'\"]').show();
                             }
                         });
-                        console.log('hidden-checkbox3');
+                        console.log('hidden-basket3');
                         ";
                 }
             }

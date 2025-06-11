@@ -684,12 +684,15 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
     if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
         for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
             let field = 'field' + metademandconditionsparams.richtext_ids[i];
-            let content = tinyMCE.get(field).getContent();
-            let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
-            formDatas.push({
-                name: name,
-                value: content
-            });
+
+            if (typeof tinyMCE.get(field) !== 'undefined') {
+                let content = tinyMCE.get(field).getContent();
+                let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
+                formDatas.push({
+                    name: name,
+                    value: content
+                });
+            }
         }
     }
 
