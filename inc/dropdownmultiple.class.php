@@ -1018,9 +1018,10 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
 
                 foreach ($check_values as $idc => $check_value) {
-                    $fields_link = $check_value['fields_link'];
+                    foreach ($check_value['fields_link'] as $fields_link) {
+                        $fields_link = $check_value['fields_link'];
 
-                    $onchange .=  "$('.centralCol').on('click', 'button', function () {
+                        $onchange .= "$('.centralCol').on('click', 'button', function () {
                     const index = $(this).index();
                     setTimeout(() => {
                         if (index === 1) {
@@ -1043,7 +1044,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }, 50);
                 });";
 
-                    $onchange .=  "$('#multiselect" . $data["id"] . " option').on('dblclick', function() {
+                        $onchange .= "$('#multiselect" . $data["id"] . " option').on('dblclick', function() {
                             id = $('#multiselect" . $data['id'] . "').val();
                             setTimeout(() => {
                                 if (id == $idc) {
@@ -1056,7 +1057,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }, 50);
                             });";
 
-                    $onchange .=  "$('#multiselect" . $data["id"] . "_to option').on('dblclick', function() {
+                        $onchange .= "$('#multiselect" . $data["id"] . "_to option').on('dblclick', function() {
                             id = $('#multiselect" . $data['id'] . "_to').val();
                             setTimeout(() => {
                                 if (id == $idc) {
@@ -1066,6 +1067,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                 }
                             }, 50);
                             });";
+                    }
                 }
 
                 echo Html::scriptBlock(
