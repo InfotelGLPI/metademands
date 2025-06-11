@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 07:24+0000\n"
+"POT-Creation-Date: 2025-06-11 07:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -372,7 +372,7 @@ msgstr ""
 
 #: inc/basket.class.php:780 inc/checkbox.class.php:528
 #: inc/dropdown.class.php:524 inc/dropdownmeta.class.php:1600
-#: inc/dropdownmultiple.class.php:1103 inc/dropdownmultiple.class.php:1238
+#: inc/dropdownmultiple.class.php:1105 inc/dropdownmultiple.class.php:1240
 #: inc/dropdownobject.class.php:1032 inc/email.class.php:344
 #: inc/radio.class.php:467 inc/tel.class.php:347 inc/text.class.php:345
 #: inc/textarea.class.php:300 inc/url.class.php:345 inc/wizard.class.php:1430
@@ -383,7 +383,7 @@ msgstr ""
 
 #: inc/basket.class.php:782 inc/checkbox.class.php:529
 #: inc/dropdown.class.php:525 inc/dropdownmeta.class.php:1602
-#: inc/dropdownmultiple.class.php:1105 inc/dropdownmultiple.class.php:1240
+#: inc/dropdownmultiple.class.php:1107 inc/dropdownmultiple.class.php:1242
 #: inc/dropdownobject.class.php:1033 inc/email.class.php:346
 #: inc/radio.class.php:469 inc/tel.class.php:349 inc/text.class.php:346
 #: inc/textarea.class.php:302 inc/url.class.php:347 inc/wizard.class.php:1199
