@@ -733,9 +733,10 @@ class PluginMetademandsBasket extends CommonDBTM
                     } else {
                         $onchange .= "} else {";
 
-                        $onchange .= "var id = '#metademands_wizard_red'+ key;
-                                      $(id).html('');
-                                      sessionStorage.setItem('hiddenlink$name', key);
+                        $onchange .= "
+//                                      var id = '#metademands_wizard_red'+ key;
+//                                      $(id).html('');
+//                                      sessionStorage.setItem('hiddenlink$name', key);
                                       " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                                       $('[id-field =\"field" . $fields_link . "\"]').removeAttr('required');";
 
