@@ -827,7 +827,7 @@ class PluginMetademandsExport extends CommonDBTM
     public static function exportAsJSONForFormcreator($id)
     {
         //TODOJSON case not null value -> add regex
-        //TODOJSON cible
+        //TODOJSON target PluginFormcreatorTargetTicket
         //TODOJSON rights
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
@@ -1438,7 +1438,16 @@ class PluginMetademandsExport extends CommonDBTM
                 $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
                 $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
                 $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
-                $toUpdate["informations_to_display"] = isset($old["informations_to_display"]) ? PluginMetademandsFieldParameter::_serialize($old["informations_to_display"]) : PluginMetademandsFieldParameter::_serialize(['full_name']);
+
+                if (isset($old["informations_to_display"]) && $old["informations_to_display"] != NULL) {
+                    if (PluginMetademandsFieldParameter::_serialize($old["informations_to_display"]) != NULL) {
+                        $toUpdate["informations_to_display"] = PluginMetademandsFieldParameter::_serialize(
+                            $old["informations_to_display"]
+                        );
+                    }
+                } else {
+                    $toUpdate["informations_to_display"] =PluginMetademandsFieldParameter::_serialize(['full_name']);
+                }
                 $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
                 $toUpdate["icon"] = $old["icon"] ?? "";
                 $toUpdate["readonly"] = $old["readonly"] ?? 0;
