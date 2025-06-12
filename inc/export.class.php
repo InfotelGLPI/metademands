@@ -897,7 +897,7 @@ class PluginMetademandsExport extends CommonDBTM
         ];
 
         if ($metademands->fields['object_to_create'] === "Ticket") {
-            $form["_targets"]["PluginFormcreatorTargetTicket"][] = [
+            $newTicket = [
                 "name" => "Ticket from metademand",
                 "target_name" => "Ticket from metademand",
                 "source_rule" => 1,
@@ -909,7 +909,24 @@ class PluginMetademandsExport extends CommonDBTM
                 "due_date_question" => 0,
                 "due_date_value" => null,
                 "due_date_period" => 0,
+                "urgency_question" => 0,
+                "validation_followup" => 1,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_question" => 0,
+                "associate_rule" => 1,
             ];
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (empty($itilcategories_id)) {
+                $newTicket["category_rule"] = 1;
+            } else {
+                $newTicket["category_rule"] = 2;
+            }
+
+            $form["_targets"]["PluginFormcreatorTargetTicket"][] = $newTicket;
         }
 
         $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
