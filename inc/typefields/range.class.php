@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsRange extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,14 +45,13 @@ class PluginMetademandsRange extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Range', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/range.css");
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
@@ -82,7 +80,7 @@ class PluginMetademandsRange extends CommonDBTM
                 $opt['specific_tags'] = [
                     'required' => 'required',
                     'isnumber' => 'isnumber',
-                    'minimal_mandatory' => $minimal_mandatory
+                    'minimal_mandatory' => $minimal_mandatory,
                 ];
             }
         } else {
@@ -108,14 +106,14 @@ class PluginMetademandsRange extends CommonDBTM
         if (!isset($opt['value']) || empty($opt['value'])) {
             $opt['value'] = 0;
         }
-        $field .= "<input type='range' id='range' $required $mandatory isnumber='isnumber' name='$name' value='".$opt['value']."' min='".$opt['min']."' max='".$opt['max']."' step='".$opt['step']."'>";
+        $field .= "<input type='range' id='range' $required $mandatory isnumber='isnumber' name='$name' value='" . $opt['value'] . "' min='" . $opt['min'] . "' max='" . $opt['max'] . "' step='" . $opt['step'] . "'>";
         $field .= "<div class='sliderticks'>";
 
-        $min  = $opt['min'];
+        $min = $opt['min'];
         $max = $opt['max'];
         $step = $opt['step'];
         for ($i = $min; $i <= $max; $i += $step) {
-            $field .= "<span>".$i."</span>";
+            $field .= "<span>" . $i . "</span>";
         }
         $field .= "</div>";
         $field .= "</div>";
@@ -136,21 +134,20 @@ class PluginMetademandsRange extends CommonDBTM
                                          
                                           sliderEl.style.background = `linear-gradient(to right, #f50 ${progress}%, #ccc ${progress}%)`;
                                         })';
-        echo Html::scriptBlock('$(document).ready(function() {'.$js.'});');
+        echo Html::scriptBlock('$(document).ready(function() {' . $js . '});');
 
         echo Html::scriptBlock('');
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params)
     {
-
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         $min = 0;
-        $max  = 0;
-        $step  = 0;
-        $minimal  = 0;
+        $max = 0;
+        $step = 0;
+        $minimal = 0;
 
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
             $min = $params['custom_values'][0] ?? "";
@@ -159,37 +156,38 @@ class PluginMetademandsRange extends CommonDBTM
             $minimal = $params['custom_values'][3] ?? "";
         }
         echo '<label>' . __("Minimal count") . '</label>&nbsp;';
-        $opt                   = ['value'         => $min];
+        $opt = ['value' => $min];
         Dropdown::showNumber("custom[0]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Maximal count") . '</label>&nbsp;';
-        $opt                   = ['value'         => $max, 'max' => 9999];
+        $opt = ['value' => $max, 'max' => 9999];
         Dropdown::showNumber("custom[1]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
-        $opt                   = ['value'         => $step, 'min' => 1, 'max' => 9999];
+        $opt = ['value' => $step, 'min' => 1, 'max' => 9999];
         Dropdown::showNumber("custom[2]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
-        $opt                   = ['value'         => $minimal];
+        $opt = ['value' => $minimal];
         Dropdown::showNumber("custom[3]", $opt);
         echo "</td>";
         echo "</tr>";
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo Html::submit("", ['name'  => 'update',
+        echo Html::submit("", [
+            'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon'  => 'fas fa-save']);
+            'icon' => 'fas fa-save',
+        ]);
         echo "</td>";
         echo "</tr>";
-
     }
 
     /**
@@ -199,7 +197,6 @@ class PluginMetademandsRange extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-
         $msg = "";
         $checkKo = 0;
         // Check fields empty
@@ -212,27 +209,27 @@ class PluginMetademandsRange extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
         return $field['value'];
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {

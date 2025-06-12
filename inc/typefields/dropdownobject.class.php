@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsDropdownobject extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,12 +45,13 @@ class PluginMetademandsDropdownobject extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Glpi Object', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value,  $on_order, $itilcategories_id) {
+    public static function showWizardField($data, $namefield, $value, $on_order, $itilcategories_id)
+    {
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
@@ -68,8 +68,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 if ($on_order == false) {
                     $paramstooltip
                         = ['value'          => '__VALUE__',
-                        'id_fielduser'   => $data['id'],
-                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+                            'id_fielduser'   => $data['id'],
+                            'metademands_id' => $data['plugin_metademands_metademands_id']];
 
                     $toupdate[] = ['value_fieldname'
                     => 'value',
@@ -89,109 +89,109 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     );
                     echo "});</script>";
                 }
-//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
-                    $paramsloc
-                        = ['value' => '__VALUE__',
+                //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                $paramsloc
+                    = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
                         'display_type' => $data['display_type'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
-                        'id_fielduser' => $data['id'],
-                        'to_update' => "location_user" . $data['id'],
-                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                        'moreparams' => $paramsloc];
+                $toupdate[] = ['value_fieldname'
+                => 'value',
+                    'id_fielduser' => $data['id'],
+                    'to_update' => "location_user" . $data['id'],
+                    'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
+                    'moreparams' => $paramsloc];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "location_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                        $paramsloc,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
-//                }
-//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
-                    $paramstit
-                        = ['value' => '__VALUE__',
-                        'id_fielduser' => $data['id'],
-                        'metademands_id' => $data['plugin_metademands_metademands_id']];
-
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
-                        'id_fielduser' => $data['id'],
-                        'to_update' => "title_user" . $data['id'],
-                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
-                        'moreparams' => $paramstit];
-
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "title_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
-                        $paramstit,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
-//                }
-//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
-                    $paramscat
-                        = ['value' => '__VALUE__',
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
+                Ajax::updateItemJsCode(
+                    "location_user" . $data['id'],
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
+                    $paramsloc,
+                    $namefield . "[" . $data['id'] . "]",
+                    false
+                );
+                echo "});</script>";
+                //                }
+                //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                $paramstit
+                    = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
-                        'id_fielduser' => $data['id'],
-                        'to_update' => "category_user" . $data['id'],
-                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
-                        'moreparams' => $paramscat];
+                $toupdate[] = ['value_fieldname'
+                => 'value',
+                    'id_fielduser' => $data['id'],
+                    'to_update' => "title_user" . $data['id'],
+                    'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
+                    'moreparams' => $paramstit];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "category_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
-                        $paramscat,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
-//                }
-//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
-                    $paramsgroup
-                        = ['value' => '__VALUE__',
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
+                Ajax::updateItemJsCode(
+                    "title_user" . $data['id'],
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
+                    $paramstit,
+                    $namefield . "[" . $data['id'] . "]",
+                    false
+                );
+                echo "});</script>";
+                //                }
+                //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                $paramscat
+                    = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
+                $toupdate[] = ['value_fieldname'
+                => 'value',
+                    'id_fielduser' => $data['id'],
+                    'to_update' => "category_user" . $data['id'],
+                    'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
+                    'moreparams' => $paramscat];
+
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
+                Ajax::updateItemJsCode(
+                    "category_user" . $data['id'],
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
+                    $paramscat,
+                    $namefield . "[" . $data['id'] . "]",
+                    false
+                );
+                echo "});</script>";
+                //                }
+                //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                $paramsgroup
+                    = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
-                        'to_update' => "group_user" . $data['id'],
-                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                        'moreparams' => $paramsgroup];
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "group_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                        $paramsgroup,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
+                $toupdate[] = ['value_fieldname'
+                => 'value',
+                    'id_fielduser' => $data['id'],
+                    'to_update' => "group_user" . $data['id'],
+                    'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
+                    'moreparams' => $paramsgroup];
 
-//                }
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
+                Ajax::updateItemJsCode(
+                    "group_user" . $data['id'],
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
+                    $paramsgroup,
+                    $namefield . "[" . $data['id'] . "]",
+                    false
+                );
+                echo "});</script>";
+
+                //                }
                 $paramsentity
                     = ['value'          => '__VALUE__',
-                    'id_fielduser'   => $data['id'],
-                    'readonly' => $data['readonly'],
-                    'metademands_id' => $data['plugin_metademands_metademands_id']];
+                        'id_fielduser'   => $data['id'],
+                        'readonly' => $data['readonly'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
 
                 $toupdate[] = ['value_fieldname'
                 => 'value',
@@ -211,54 +211,54 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 );
                 echo "});</script>";
 
-//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
-                    $paramsdev
-                        = ['value' => '__VALUE__',
+                //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                $paramsdev
+                    = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
-                        'id_fielduser' => $data['id'],
-                        'to_update' => "mydevices_user" . $data['id'],
-                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                        'moreparams' => $paramsdev];
+                $toupdate[] = ['value_fieldname'
+                => 'value',
+                    'id_fielduser' => $data['id'],
+                    'to_update' => "mydevices_user" . $data['id'],
+                    'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
+                    'moreparams' => $paramsdev];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "mydevices_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                        $paramsdev,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
-//                }
-//                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
-                    $paramsman
-                        = ['value' => '__VALUE__',
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
+                Ajax::updateItemJsCode(
+                    "mydevices_user" . $data['id'],
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
+                    $paramsdev,
+                    $namefield . "[" . $data['id'] . "]",
+                    false
+                );
+                echo "});</script>";
+                //                }
+                //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                $paramsman
+                    = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
-                        'id_fielduser' => $data['id'],
-                        'to_update' => "manager_user" . $data['id'],
-                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
-                        'moreparams' => $paramsman];
+                $toupdate[] = ['value_fieldname'
+                => 'value',
+                    'id_fielduser' => $data['id'],
+                    'to_update' => "manager_user" . $data['id'],
+                    'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
+                    'moreparams' => $paramsman];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "manager_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
-                        $paramsman,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
-//                }
+                echo "<script type='text/javascript'>";
+                echo "$(function() {";
+                Ajax::updateItemJsCode(
+                    "manager_user" . $data['id'],
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
+                    $paramsman,
+                    $namefield . "[" . $data['id'] . "]",
+                    false
+                );
+                echo "});</script>";
+                //                }
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                 }
@@ -309,8 +309,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
                     if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit([
-                            'plugin_metademands_fields_id' => $fieldUser->fields['id']
-                        ])) {
+                        'plugin_metademands_fields_id' => $fieldUser->fields['id'],
+                    ])) {
                         if (empty($opt['value']) || $opt['value'] == 0) {
                             $opt['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
                                 && $fieldparameter->fields['default_use_id_requester'] == 1) ?
@@ -402,10 +402,10 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
                     echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
                     $_POST['groups_id'] = $value;
-//                    $fieldUser          = new PluginMetademandsField();
-//                    $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
-//                        'type' => "dropdown_object",
-//                        'item' => User::getType()]);
+                    //                    $fieldUser          = new PluginMetademandsField();
+                    //                    $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                    //                        'type' => "dropdown_object",
+                    //                        'item' => User::getType()]);
 
                     $_POST['id_fielduser'] = $data['link_to_user'];
                     $_POST['fields_id']    = $data['id'];
@@ -416,32 +416,32 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 } else {
                     $name = $namefield . "[" . $data['id'] . "]";
 
-//                    if (!empty($data['custom_values'])) {
-//                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-//                            && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-//
-//                        if ($_POST['value'] > 0) {
-//                            $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
-//                            $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
-//
-//                            $requester_groups = [];
-//                            foreach ($group_user_data as $groups) {
-//                                $requester_groups[] = $groups['id'];
-//                            }
-//                            $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
-//
-//                            foreach ($options as $type_group => $values) {
-//                                if ($type_group != 'user_group') {
-//                                    $cond[$type_group] = $values;
-//                                } else {
-//                                    if (count($requester_groups) > 0) {
-//                                        $cond["glpi_groups.id"] = $requester_groups;
-//                                    }
-//                                }
-//                            }
-//                            unset($cond['user_group']);
-//                        }
-//                    }
+                    //                    if (!empty($data['custom_values'])) {
+                    //                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
+                    //                            && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                    //
+                    //                        if ($_POST['value'] > 0) {
+                    //                            $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+                    //                            $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
+                    //
+                    //                            $requester_groups = [];
+                    //                            foreach ($group_user_data as $groups) {
+                    //                                $requester_groups[] = $groups['id'];
+                    //                            }
+                    //                            $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+                    //
+                    //                            foreach ($options as $type_group => $values) {
+                    //                                if ($type_group != 'user_group') {
+                    //                                    $cond[$type_group] = $values;
+                    //                                } else {
+                    //                                    if (count($requester_groups) > 0) {
+                    //                                        $cond["glpi_groups.id"] = $requester_groups;
+                    //                                    }
+                    //                                }
+                    //                            }
+                    //                            unset($cond['user_group']);
+                    //                        }
+                    //                    }
                     $val_group = (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])
                         && !is_array($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) ? $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] : 0;
 
@@ -527,23 +527,23 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         $opt['showHabilitations'] = true;
                     }
 
-//                    $container_class = new $data['item']();
-//                    $crit = ["entities_id" => $_SESSION['glpiactiveentities']];
-//
-//                    if ($container_class->maybeDeleted()) {
-//                        $crit['is_deleted'] = 0;
-//                    }
-//                    if ($container_class->maybeTemplate()) {
-//                        $crit['is_template'] = 0;
-//                    }
-//                    $crit['is_helpdesk_visible'] = 0;
-//
-//                    $objets = $container_class->find($crit);
-//                    $used = [];
-//                    foreach ($objets as $obj) {
-//                        $used[] = $obj['id'];
-//                    }
-//                    $opt['used'] = $used;
+                    //                    $container_class = new $data['item']();
+                    //                    $crit = ["entities_id" => $_SESSION['glpiactiveentities']];
+                    //
+                    //                    if ($container_class->maybeDeleted()) {
+                    //                        $crit['is_deleted'] = 0;
+                    //                    }
+                    //                    if ($container_class->maybeTemplate()) {
+                    //                        $crit['is_template'] = 0;
+                    //                    }
+                    //                    $crit['is_helpdesk_visible'] = 0;
+                    //
+                    //                    $objets = $container_class->find($crit);
+                    //                    $used = [];
+                    //                    foreach ($objets as $obj) {
+                    //                        $used[] = $obj['id'];
+                    //                    }
+                    //                    $opt['used'] = $used;
 
                     $container_class = new $data['item']();
                     $field           = "";
@@ -555,11 +555,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($values) {
+    public static function showFieldCustomValues($values) {}
 
-    }
-
-    static function showFieldParameters($params)
+    public static function showFieldParameters($params)
     {
 
         if ($params['item'] == 'User') {
@@ -579,7 +577,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             $fields = $field->find([
                 "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
                 'type' => "dropdown_object",
-                "item" => User::getType()
+                "item" => User::getType(),
             ]);
             foreach ($fields as $f) {
                 $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
@@ -654,11 +652,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             echo Dropdown::showFromArray('informations_to_display', $informations, [
                 'values'   => $values,
                 'display'  => false,
-                'multiple' => true
+                'multiple' => true,
             ]);
             echo "</tr>";
 
-        } else if ($params["item"] == "Group") {
+        } elseif ($params["item"] == "Group") {
 
             echo "<tr class='tab_bg_1'>";
             echo "<td>";
@@ -671,7 +669,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             $fields = $field->find([
                 "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
                 'type' => "dropdown_object",
-                "item" => User::getType()
+                "item" => User::getType(),
             ]);
             foreach ($fields as $f) {
                 $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
@@ -735,12 +733,12 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
     }
 
-    static function getParamsValueToCheck($fieldoption, $item, $params)
+    public static function getParamsValueToCheck($fieldoption, $item, $params)
     {
         echo "<tr>";
         echo "<td>";
         echo __('Value to check', 'metademands');
-//        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+        //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         echo "<td class = 'dropdown-valuetocheck'>";
         self::showValueToCheck($fieldoption, $params);
@@ -749,7 +747,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         echo "<script type = \"text/javascript\">
                  $('td.dropdown-valuetocheck select').on('change', function() {
                  let formOption = [
-                     " . $params['ID'] .",
+                     " . $params['ID'] . ",
                          $(this).val(),
                          $('select[name=\"plugin_metademands_tasks_id\"]').val(),
                          $('select[name=\"fields_link\"]').val(),
@@ -769,7 +767,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
 
-    static function showValueToCheck($item, $params)
+    public static function showValueToCheck($item, $params)
     {
         $field = new PluginMetademandsFieldOption();
         $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
@@ -784,7 +782,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     'rand' => $userrand,
                     'value' => $params['check_value'],
                     'display' => true,
-                    'used' => $already_used
+                    'used' => $already_used,
                 ]);
                 break;
             case 'Group':
@@ -802,7 +800,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     //                                            'readonly'  => true,
                     'condition' => $cond,
                     'display' => true,
-                    'used' => $already_used
+                    'used' => $already_used,
                 ]);
                 break;
             default:
@@ -816,8 +814,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
 
                     $params['item']::Dropdown(["name" => $name,
-                                            "value" => $params['check_value'],
-                                            'used' => $already_used,
+                        "value" => $params['check_value'],
+                        'used' => $already_used,
                         'toadd' => ['-1' => __('Not null value', 'metademands')]]);
                 } else {
                     if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
@@ -850,7 +848,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
     }
 
 
-    static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params)
     {
         if ($params['check_value'] == -1 || $params['check_value'] == 0) {
             echo __('Not null value', 'metademands');
@@ -895,11 +893,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         }
     }
 
-    static function isCheckValueOK($value, $check_value)
+    public static function isCheckValueOK($value, $check_value)
     {
         if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
             return false;
-        } else if ($check_value != $value
+        } elseif ($check_value != $value
             && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
             return false;
         }
@@ -925,7 +923,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data)
+    {
 
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
@@ -1003,7 +1002,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         }
     }
 
-    static function taskScript($data)
+    public static function taskScript($data)
     {
 
         $check_values = $data['options'] ?? [];
@@ -1053,7 +1052,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
 
 
-                $script .= "if ($tasks_id in tohide) {
+                    $script .= "if ($tasks_id in tohide) {
                         } else {
                             tohide[$tasks_id] = true;
                         }
@@ -1061,20 +1060,20 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                             tohide[$tasks_id] = false;
                         }";
 
-//            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
-//
-//            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-//                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-//                if (is_array($session_value)) {
-//                    foreach ($session_value as $k => $fieldSession) {
-//                        if ($fieldSession == $idc && $tasks_id > 0) {
-//                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
-//                        }
-//                    }
-//                }
-//            }
+                    //            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
+                    //
+                    //            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                    //                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                    //                if (is_array($session_value)) {
+                    //                    foreach ($session_value as $k => $fieldSession) {
+                    //                        if ($fieldSession == $idc && $tasks_id > 0) {
+                    //                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
+                    //                        }
+                    //                    }
+                    //                }
+                    //            }
 
-                $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {           
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -1102,41 +1101,42 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         }
                     });
               ";
+                }
             }
-        }
-        $script .= "});";
+            $script .= "});";
 
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
-                if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default']))) {
-                    $default_values = PluginMetademandsFieldParameter::_unserialize($data['default']);
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
+                    if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default']))) {
+                        $default_values = PluginMetademandsFieldParameter::_unserialize($data['default']);
 
-                    foreach ($default_values as $k => $v) {
-                        if ($v == 1) {
-                            if ($idc == $k) {
-                                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
-                                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                    $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                                    $script .= "});";
-                                }
-                            } else {
-                                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                                    $script .= "});";
+                        foreach ($default_values as $k => $v) {
+                            if ($v == 1) {
+                                if ($idc == $k) {
+                                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                        $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                        $script .= "});";
+                                    }
+                                } else {
+                                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                        $script .= "});";
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         }
     }
 
-    static function fieldsHiddenScript($data) {
+    public static function fieldsHiddenScript($data)
+    {
 
 
         $check_values = $data['options'] ?? [];
@@ -1175,42 +1175,42 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             //Initialize default value - force change after onchange fonction
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                if (isset($data['default_values'])
-                    && is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-                    $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
+                    if (isset($data['default_values'])
+                        && is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                        $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
-                    foreach ($default_values as $k => $v) {
-                        if ($v == 1) {
-                            if ($idc == $k) {
-                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                        foreach ($default_values as $k => $v) {
+                            if ($v == 1) {
+                                if ($idc == $k) {
+                                    $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        //default hide of all hidden links
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['hidden_link'] as $hidden_link) {
-                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+            //default hide of all hidden links
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                }
             }
-        }
 
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('".$data['value']."').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
             if (count($check_values) > 0) {
                 $onchange .= "$('[name=\"$name\"]').change(function() {";
 
-        $onchange .= "var tohide = {};";
-        $display = 0;
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['hidden_link'] as $hidden_link) {
-                $onchange .= "if ($hidden_link in tohide) {
+                $onchange .= "var tohide = {};";
+                $display = 0;
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['hidden_link'] as $hidden_link) {
+                        $onchange .= "if ($hidden_link in tohide) {
                         } else {
                             tohide[$hidden_link] = true;
                         }
@@ -1218,50 +1218,50 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                             tohide[$hidden_link] = false;
                         }";
 
-                    //if reload form
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_link;
-                    }
-                    //Obsolete ?
-//                    if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-//                        if (Session::getLoginUserID() == $idc) {
-//                            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-//                        }
-//                    }
+                        //if reload form
+                        if (isset($data['value']) && $idc == $data['value']) {
+                            $display = $hidden_link;
+                        }
+                        //Obsolete ?
+                        //                    if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
+                        //                        if (Session::getLoginUserID() == $idc) {
+                        //                            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                        //                        }
+                        //                    }
 
-                $onchange .= "$.each( tohide, function( key, value ) {           
+                        $onchange .= "$.each( tohide, function( key, value ) {           
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name);
 
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                        if (is_array($childs_by_checkvalue)) {
+                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                if ($idc == $k) {
+                                    foreach ($childs_blocks as $childs) {
+                                        $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
                                             $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
                                             if (document.getElementById('ablock" . $childs . "'))
                                             document.getElementById('ablock" . $childs . "').style.display = 'none';";
+                                    }
                                 }
                             }
                         }
-                    }
-                    $onchange .= "} else {
+                        $onchange .= "} else {
                             $('[id-field =\"field'+key+'\"]').show();
                         }
                     });
               ";
-            }
-        }
+                    }
+                }
 
-        if ($display > 0) {
-            $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-            $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
-        }
+                if ($display > 0) {
+                    $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
+                    $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
+                }
 
-        $onchange .= "});";
+                $onchange .= "});";
 
                 echo Html::scriptBlock(
                     '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
@@ -1337,9 +1337,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                                              document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                            $metaid,
-                                            $childs
-                                        );
+                                        $metaid,
+                                        $childs
+                                    );
                                 }
                             }
                         }
@@ -1366,11 +1366,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         }
                     }
 
-//            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-//                && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
-//                    || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
-//                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-//            }
+                    //            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
+                    //                && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
+                    //                    || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
+                    //                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                    //            }
 
                     else {
                         if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {

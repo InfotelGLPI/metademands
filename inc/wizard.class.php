@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,7 +28,6 @@
  --------------------------------------------------------------------------
  */
 
-use Glpi\RichText\RichText;
 
 /**
  * Class PluginMetademandsWizard
@@ -43,7 +43,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public function __construct()
     {
-//        $this->table = "glpi_plugin_metademands_metademands";
+        //        $this->table = "glpi_plugin_metademands_metademands";
     }
 
     /**
@@ -179,7 +179,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $options = [
             'step' => PluginMetademandsMetademand::STEP_SHOW,
             'metademands_id' => $item->getID(),
-            'preview' => true
+            'preview' => true,
         ];
         $wizard->showWizard($options);
         echo "</td></tr>";
@@ -221,7 +221,8 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param $parameters
      * @return void
      */
-    public function showMetademandTitle($meta, $parameters) {
+    public function showMetademandTitle($meta, $parameters)
+    {
 
         echo "<div class=\"row\">";
         echo "<div class=\"col-md-12 md-title\">";
@@ -289,9 +290,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
                     echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                            'More informations',
-                            'servicecatalog'
-                        ) . "\"> ";
+                        'More informations',
+                        'servicecatalog'
+                    ) . "\"> ";
                     //                            echo __('More informations of this category ? click here', 'servicecatalog');
                     echo "</i>";
                     //                            echo "</div>";
@@ -302,7 +303,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             'title' => __('More informations', 'servicecatalog'),
                             'display' => false,
                             'width' => 1050,
-                            'height' => 500
+                            'height' => 500,
                         ]
                     );
                 }
@@ -313,8 +314,8 @@ class PluginMetademandsWizard extends CommonDBTM
             && Session::haveRight('plugin_metademands', UPDATE)
             && !$parameters['seeform']) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                    'PluginMetademandsMetademand'
-                ) . "?id=" . $parameters['metademands_id'] . "'>
+                'PluginMetademandsMetademand'
+            ) . "?id=" . $parameters['metademands_id'] . "'>
                             <i class='fas fa-wrench'></i></a>";
         }
         echo "</h2>";
@@ -326,8 +327,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 $comment = $meta->fields['comment'];
             }
             echo "<div class='center' style='background: #fbf9f9;padding: 10px;'><i>" . nl2br(
-                    $comment
-                ) . "</i></div>";
+                $comment
+            ) . "</i></div>";
         } else {
             echo "<span style='margin-bottom: 10px'>&nbsp;";
             echo "</span>";
@@ -349,10 +350,10 @@ class PluginMetademandsWizard extends CommonDBTM
         if (!$parameters['preview'] && !$parameters['seeform']) {
             echo "<div class='$class'>";
             echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx(
-                    'button',
-                    'Your forms',
-                    'metademands'
-                ) . "'
+                'button',
+                'Your forms',
+                'metademands'
+            ) . "'
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
             echo "</span>";
             echo "</div>";
@@ -442,7 +443,7 @@ class PluginMetademandsWizard extends CommonDBTM
             'ancestor_tickets_id' => 0,
             'meta_type' => '',
             'block_id' => 0,
-            'itilcategories_id' => 0
+            'itilcategories_id' => 0,
         ];
 
         // if given parameters, override defaults
@@ -453,9 +454,9 @@ class PluginMetademandsWizard extends CommonDBTM
         }
         $_SESSION['servicecatalog']['sc_itilcategories_id'] = $parameters['itilcategories_id'];
         // Retrieve session values
-//        if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'])) {
-//            $parameters['tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'];
-//        }
+        //        if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'])) {
+        //            $parameters['tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'];
+        //        }
         if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_id'])) {
             $parameters['resources_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_id'];
         }
@@ -548,8 +549,8 @@ class PluginMetademandsWizard extends CommonDBTM
                             echo "<div class='alert alert-danger' role='alert'>";
                             echo "<i class='fas fa-exclamation-circle fa-2x'></i>";
                             echo "&nbsp;" . nl2br(
-                                    PluginServicecatalogCategory::displayField($helpdesk_category, 'display_warning')
-                                );
+                                PluginServicecatalogCategory::displayField($helpdesk_category, 'display_warning')
+                            );
                             echo "</div>";
                             echo "</h5>";
                         }
@@ -744,7 +745,7 @@ class PluginMetademandsWizard extends CommonDBTM
             );
         }
         if ($step === PluginMetademandsMetademand::STEP_CREATE) {
-            $values = isset($_SESSION['plugin_metademands'][$metademands_id]) ? $_SESSION['plugin_metademands'][$metademands_id] : [];
+            $values = $_SESSION['plugin_metademands'][$metademands_id] ?? [];
             if (count($values) > 0) {
                 self::createMetademands($metademands_id, $values, $options);
             }
@@ -893,12 +894,12 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $metademands_incidents = self::selectMetademands(false, "", Ticket::INCIDENT_TYPE);
         if (count($metademands_incidents) > 0) {
-            $data[Ticket::INCIDENT_TYPE] = self::getMetademandTypeName('Ticket',Ticket::INCIDENT_TYPE);
+            $data[Ticket::INCIDENT_TYPE] = self::getMetademandTypeName('Ticket', Ticket::INCIDENT_TYPE);
         }
 
         $metademands_requests = self::selectMetademands(false, "", Ticket::DEMAND_TYPE);
         if (count($metademands_requests) > 0) {
-            $data[Ticket::DEMAND_TYPE] = self::getMetademandTypeName('Ticket',Ticket::DEMAND_TYPE);
+            $data[Ticket::DEMAND_TYPE] = self::getMetademandTypeName('Ticket', Ticket::DEMAND_TYPE);
         }
 
         $metademands_problems = self::selectMetademands(false, "", "Problem");
@@ -977,7 +978,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $crit = [
                     'glpi_itilcategories.is_incident' => 1,
                     'glpi_itilcategories.entities_id' => $_SESSION["glpiactive_entity"],
-                    'glpi_tickets.type' => $type
+                    'glpi_tickets.type' => $type,
                 ];
 
                 break;
@@ -985,7 +986,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $crit = [
                     'glpi_itilcategories.is_request' => 1,
                     'glpi_itilcategories.entities_id' => $_SESSION["glpiactive_entity"],
-                    'glpi_tickets.type' => $type
+                    'glpi_tickets.type' => $type,
                 ];
                 break;
             default:
@@ -999,28 +1000,28 @@ class PluginMetademandsWizard extends CommonDBTM
             'SELECT' => [
                 'glpi_plugin_metademands_metademands.name',
                 'glpi_plugin_metademands_metademands.id as plugin_metademands_metademands_id',
-                'COUNT' => 'glpi_tickets.id AS count'
+                'COUNT' => 'glpi_tickets.id AS count',
             ],
             'FROM' => 'glpi_tickets',
             'LEFT JOIN'       => [
                 'glpi_itilcategories' => [
                     'ON' => [
                         'glpi_itilcategories' => 'id',
-                        'glpi_tickets'          => 'itilcategories_id'
-                    ]
+                        'glpi_tickets'          => 'itilcategories_id',
+                    ],
                 ],
                 'glpi_plugin_metademands_tickets_metademands' => [
                     'ON' => [
                         'glpi_plugin_metademands_tickets_metademands' => 'tickets_id',
-                        'glpi_tickets'          => 'id'
-                    ]
+                        'glpi_tickets'          => 'id',
+                    ],
                 ],
                 'glpi_plugin_metademands_metademands' => [
                     'ON' => [
                         'glpi_plugin_metademands_tickets_metademands' => 'plugin_metademands_metademands_id',
-                        'glpi_plugin_metademands_metademands'          => 'id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_metademands'          => 'id',
+                    ],
+                ],
             ],
             'WHERE'     => [
                 'glpi_tickets.is_deleted'  => 0,
@@ -1039,8 +1040,8 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_tickets'
-            );
+            'glpi_tickets'
+        );
 
         $iterator = $DB->request($criteria);
 
@@ -1059,7 +1060,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div style='margin-right: 5px;'>";
                 echo "<h6>";
                 echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;'>";
-                echo "<i class='fas ".$icon." fa-1x'></i>";
+                echo "<i class='fas " . $icon . " fa-1x'></i>";
                 echo "&nbsp;";
                 echo  $row['name'];
                 echo "</div>";
@@ -1114,12 +1115,15 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                         $comment_meta = '';
                         if (empty($comm = PluginMetademandsMetademand::displayField(
-                                $meta->getID(),
-                                'comment')) && !empty($meta->fields['comment'])) {
+                            $meta->getID(),
+                            'comment'
+                        )) && !empty($meta->fields['comment'])) {
                             $comment_meta = $meta->fields['comment'];
                         } elseif (!empty(
-                        $comm = PluginMetademandsMetademand::displayField(
-                            $meta->getID(),'comment'))) {
+                            $comm = PluginMetademandsMetademand::displayField(
+                                $meta->getID(),
+                                'comment'
+                            ))) {
                             $comment_meta = $comm;
                         }
 
@@ -1139,7 +1143,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $icon = $meta->fields['icon'];
                         }
 
-                        echo "<a class='bt-buttons' title=\"".Glpi\RichText\RichText::getTextFromHtml($comment_meta)."\" href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . PluginMetademandsMetademand::STEP_SHOW . "'>";
+                        echo "<a class='bt-buttons' title=\"" . Glpi\RichText\RichText::getTextFromHtml($comment_meta) . "\" href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . PluginMetademandsMetademand::STEP_SHOW . "'>";
                         echo '<div class="btnsc-normal" >';
                         $fasize = "fa-3x";
                         echo "<div class='center'>";
@@ -1285,7 +1289,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     "glpi_plugin_metademands_basketlines",
                                     [
                                         "plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                        "users_id" => Session::getLoginUserID()
+                                        "users_id" => Session::getLoginUserID(),
                                     ]
                                 )
                             ) {
@@ -1295,7 +1299,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 echo Html::submit($title, [
                                     'name' => 'add_to_basket',
                                     'id' => 'add_to_basket',
-                                    'class' => 'btn btn-primary'
+                                    'class' => 'btn btn-primary',
                                 ]);
 
                                 echo "</div>";
@@ -1347,7 +1351,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     "glpi_plugin_metademands_basketlines",
                     [
                         "plugin_metademands_metademands_id" => $metademands->fields['id'],
-                        "users_id" => Session::getLoginUserID()
+                        "users_id" => Session::getLoginUserID(),
                     ]
                 )) {
                     $title = "<i class='fas fa-plus'></i>&nbsp;";
@@ -1355,7 +1359,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo Html::submit($title, [
                         'name' => 'add_to_basket',
                         'id' => 'add_to_basket',
-                        'class' => 'metademand_next_button btn btn-primary'
+                        'class' => 'metademand_next_button btn btn-primary',
                     ]);
                 } else {
                     echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
@@ -1367,7 +1371,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         'name' => 'next_button',
                         'form' => '',
                         'id' => 'submitjob',
-                        'class' => 'metademand_next_button btn btn-success'
+                        'class' => 'metademand_next_button btn btn-success',
                     ]);
                     $ID = $metademands->fields['id'];
                     echo "<script>
@@ -1400,7 +1404,7 @@ class PluginMetademandsWizard extends CommonDBTM
             }
             if (!$preview
                 && $metademands->fields['step_by_step_mode']  == 0
-                && $see_summary == 0 ) {
+                && $see_summary == 0) {
                 echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                 echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
                 echo "</a>";
@@ -1422,7 +1426,8 @@ class PluginMetademandsWizard extends CommonDBTM
     }
 
 
-    public static function getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated) {
+    public static function getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated)
+    {
 
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
         $token = Session::getNewCSRFToken();
@@ -1482,7 +1487,7 @@ class PluginMetademandsWizard extends CommonDBTM
             && !isset($stepConfig->fields['link_user_block'])
             && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
             $havenextuser = false;
-        } else if ($block_current_id_stepform != 99999999) {
+        } elseif ($block_current_id_stepform != 99999999) {
             $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
                 $metademands->fields['id'],
                 $block_current_id_stepform + 1
@@ -1508,8 +1513,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 );
                 $all_meta_fields[$data['id']] = (isset($metademand_params->fields['hide_title'])
                     && $metademand_params->fields['hide_title'] == 1) ? PluginMetademandsField::getFieldTypesName(
-                    $data['type']
-                ) : $label;
+                        $data['type']
+                    ) : $label;
             }
         }
         $json_all_meta_fields = json_encode($all_meta_fields);
@@ -1533,8 +1538,8 @@ class PluginMetademandsWizard extends CommonDBTM
         $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
         $metaparams['nameform'] = Toolbox::addslashes_deep(
-                $metademands->fields['name']
-            ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+            $metademands->fields['name']
+        ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
 
         //MSG
@@ -1571,7 +1576,8 @@ class PluginMetademandsWizard extends CommonDBTM
         return $metaparams;
     }
 
-    public static function getConditionsParams($metademands) {
+    public static function getConditionsParams($metademands)
+    {
 
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
         $metaparams['root_doc'] = $root_doc;
@@ -1670,7 +1676,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if ($type > 0) {
                         $url = PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1";
                     } else {
-                        $url =PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php";
+                        $url = PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php";
                     }
                 }
             }
@@ -1718,7 +1724,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if ($opts = $fieldopt->find(
                     [
                         "plugin_metademands_fields_id" => $value['id'],
-                        "hidden_block_same_block" => 1
+                        "hidden_block_same_block" => 1,
                     ]
                 )) {
                     foreach ($opts as $opt) {
@@ -1777,7 +1783,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $basketline = new PluginMetademandsBasketline();
         if ($basketlinesFind = $basketline->find([
             'plugin_metademands_metademands_id' => $metademands_id,
-            'users_id' => Session::getLoginUserID()
+            'users_id' => Session::getLoginUserID(),
         ])) {
             echo "<div class='alert alert-warning d-flex'>";
             echo "<b>" . __('You have items on your basket', 'metademands') . "</b></div>";
@@ -1961,9 +1967,9 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($blocks as $idblock => $block) {
                         $nameblock = $block;
 
-                        $display ='display:block';
+                        $display = 'display:block';
                         if ($idblock == 1) {
-                            $display ='display:block';
+                            $display = 'display:block';
                         }
                         $field = new PluginMetademandsField();
 
@@ -1973,7 +1979,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             if ($opts = $fieldopt->find(
                                 [
                                     "plugin_metademands_fields_id" => $fieldmeta['id'],
-                                    "hidden_block" => $idblock
+                                    "hidden_block" => $idblock,
                                 ]
                             )) {
                                 foreach ($opts as $opt) {
@@ -1982,7 +1988,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
                         }
                         if (in_array($idblock, $hiddenblocks)) {
-                            $display ='display:none';
+                            $display = 'display:none';
                         }
 
                         echo "<li class='nav-item'>";
@@ -2048,8 +2054,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             ($meta_validated
                                 && $metademands->fields['can_clone'] == true))
                         && Session::haveRight('plugin_metademands_updatemeta', READ)))
-            )
-            {
+            ) {
 
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
@@ -2081,7 +2086,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         'delete_form_from_list',
                         _sx('button', 'Cancel form', 'metademands'),
                         ['plugin_metademands_stepforms_id' => $plugin_metademands_stepforms_id],
-//                        'fa-trash-alt fa-2x'
+                        //                        'fa-trash-alt fa-2x'
                     );
                     echo "</span>";
                 }
@@ -2093,7 +2098,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 
-//                echo "</span>";
+                //                echo "</span>";
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
@@ -2287,7 +2292,8 @@ class PluginMetademandsWizard extends CommonDBTM
     }
 
 
-    static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id) {
+    public static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id)
+    {
 
 
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -2304,7 +2310,7 @@ class PluginMetademandsWizard extends CommonDBTM
                       border-top :3px solid #" . $color . ";
                       border-left :3px solid #" . $color . ";
                       border-bottom :3px solid #" . $color . ";
-                      border-right :3px solid #" . $color. ";";
+                      border-right :3px solid #" . $color . ";";
             echo '<style type="text/css">
                        .preview-md-';
             echo $block;
@@ -2336,13 +2342,13 @@ class PluginMetademandsWizard extends CommonDBTM
             && $stepConfig->fields['see_blocks_as_tab'] == 1) {
             $displayBlocksAsTab = 1;
         }
-//        if ($displayBlocksAsTab == 1) {
-//            if ($metademands->fields['hide_title'] == 0) {
-//                $styleasTab = "overflow: hidden;height: 550px;max-height: 550px;overflow-y: scroll;";
-//            } else {
-//                $styleasTab = "overflow: hidden;height: 650px;max-height: 650px;overflow-y: scroll;";
-//            }
-//        }
+        //        if ($displayBlocksAsTab == 1) {
+        //            if ($metademands->fields['hide_title'] == 0) {
+        //                $styleasTab = "overflow: hidden;height: 550px;max-height: 550px;overflow-y: scroll;";
+        //            } else {
+        //                $styleasTab = "overflow: hidden;height: 650px;max-height: 650px;overflow-y: scroll;";
+        //            }
+        //        }
 
         echo "<div bloc-id='bloc" . $block . "' style='$styleasTab $style' class='card tab-sc-child-" . $block . "'>";
 
@@ -2351,7 +2357,8 @@ class PluginMetademandsWizard extends CommonDBTM
 
             $data = $line[$keys[0]];
             $fieldparameter = new PluginMetademandsFieldParameter();
-            if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $line[$keys[0]]['id']]
+            if ($fieldparameter->getFromDBByCrit(
+                ['plugin_metademands_fields_id' => $line[$keys[0]]['id']]
             )) {
                 unset($fieldparameter->fields['plugin_metademands_fields_id']);
                 unset($fieldparameter->fields['id']);
@@ -2417,7 +2424,7 @@ class PluginMetademandsWizard extends CommonDBTM
             if ($opts = $fieldopt->find(
                 [
                     "plugin_metademands_fields_id" => $data['id'],
-                    "hidden_block_same_block" => 1
+                    "hidden_block_same_block" => 1,
                 ]
             )) {
                 foreach ($opts as $opt) {
@@ -2466,7 +2473,8 @@ class PluginMetademandsWizard extends CommonDBTM
     }
 
 
-    static function displayBlockFields($metademands, $metademands_data, $preview, $keys, $line, $key, $data, $block, $itilcategories_id) {
+    public static function displayBlockFields($metademands, $metademands_data, $preview, $keys, $line, $key, $data, $block, $itilcategories_id)
+    {
 
         $count = 0;
         $columns = 2;
@@ -2479,8 +2487,8 @@ class PluginMetademandsWizard extends CommonDBTM
         $config_link = "";
         if (Session::getCurrentInterface() == 'central' && $preview) {
             $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                    'PluginMetademandsField'
-                ) . "?id=" . $data['id'] . "'>";
+                'PluginMetademandsField'
+            ) . "?id=" . $data['id'] . "'>";
             $config_link .= "<i class='fas fa-wrench'></i></a>";
         }
 
@@ -2569,7 +2577,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo $label;
 
                 if ($debug) {
-                    echo " (ID:". $data['id'].")";
+                    echo " (ID:" . $data['id'] . ")";
                 }
                 echo $config_link;
                 if (isset($data['label2']) && !empty($data['label2'])) {
@@ -2742,7 +2750,7 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param $params
      * @return void
      */
-    static function validateScript($metaparams, $metaconditionsparams)
+    public static function validateScript($metaparams, $metaconditionsparams)
     {
 
         foreach ($metaparams as $key => $val) {
@@ -2856,7 +2864,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 'plugin_metademands_fields_id' => $key,
                                 'line' => $line,
                                 'users_id' => Session::getLoginUserID(),
-                                'name' => "upload"
+                                'name' => "upload",
                             ]);
                             if ($check) {
                                 if (!empty($val)) {
@@ -2883,7 +2891,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                     $basketclass->deleteByCriteria([
                         'plugin_metademands_metademands_id' => $metademands_id,
-                        'users_id' => Session::getLoginUserID()
+                        'users_id' => Session::getLoginUserID(),
                     ]);
                 } else {
                     //create one ticket for all basket
@@ -2907,7 +2915,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 'plugin_metademands_fields_id' => $key,
                                 'line' => $line,
                                 'users_id' => Session::getLoginUserID(),
-                                'name' => "upload"
+                                'name' => "upload",
                             ]);
                             if ($check) {
                                 if (!empty($val)) {
@@ -2927,7 +2935,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     $basketclass->deleteByCriteria([
                         'plugin_metademands_metademands_id' => $metademands_id,
-                        'users_id' => Session::getLoginUserID()
+                        'users_id' => Session::getLoginUserID(),
                     ]);
 
                     $result = PluginMetademandsMetademand::addObjects($metademands_id, $values, $options);
@@ -2963,9 +2971,9 @@ class PluginMetademandsWizard extends CommonDBTM
                     $type = $metademands->fields['type'];
                     if ($type > 0) {
                         Html::back();
-//                        Html::redirect(
-//                            PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1"
-//                        );
+                        //                        Html::redirect(
+                        //                            PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1"
+                        //                        );
                     } else {
                         Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                     }
@@ -3041,7 +3049,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $value,
                 [
                     'id' => $id,
-                    'value' => $post[$fieldname][$id]
+                    'value' => $post[$fieldname][$id],
                 ],
                 $post
             )) {
@@ -3061,7 +3069,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $value,
                 [
                     'id' => $id,
-                    'value' => $post[$fieldname][$id]
+                    'value' => $post[$fieldname][$id],
                 ],
                 $post
             )) {
@@ -3118,13 +3126,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 $KO = true;
             } else {
                 //not in basket mode
-//                if (isset($post['_filename'])) {
-//                    foreach ($post['_filename'] as $key => $filename) {
-//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $post['_prefix_filename'][$key];
-//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_tag_filename'][] = $post['_tag_filename'][$key];
-//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_filename'][] = $post['_filename'][$key];
-//                    }
-//                }
+                //                if (isset($post['_filename'])) {
+                //                    foreach ($post['_filename'] as $key => $filename) {
+                //                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $post['_prefix_filename'][$key];
+                //                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_tag_filename'][] = $post['_tag_filename'][$key];
+                //                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_filename'][] = $post['_filename'][$key];
+                //                    }
+                //                }
             }
         } elseif ($value['is_mandatory'] == 1
             && $value['type'] == 'dropdown_multiple') {
@@ -3134,7 +3142,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $value,
                     [
                         'id' => $id,
-                        'value' => []
+                        'value' => [],
                     ],
                     $post
                 )) {
@@ -3503,20 +3511,20 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param $id
      * @param $value
      */
-//    public function checkValueOk($check_value, $plugin_metademands_tasks_id, $metademandtasks_tasks_id, $id, $value, $post)
-//    {
-//        if (isset($post[$id])
-//            && $check_value != null
-//            && in_array($plugin_metademands_tasks_id, $metademandtasks_tasks_id)) {
-//
-//            if (!PluginMetademandsTicket_Field::isCheckValueOK($post[$id], $check_value, $value['type'])) {
-//
-//                $metademandToHide = array_keys($metademandtasks_tasks_id, $plugin_metademands_tasks_id);
-//                $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
-//                unset($_SESSION['son_meta'][$metademandToHide[0]]);
-//            }
-//        }
-//    }
+    //    public function checkValueOk($check_value, $plugin_metademands_tasks_id, $metademandtasks_tasks_id, $id, $value, $post)
+    //    {
+    //        if (isset($post[$id])
+    //            && $check_value != null
+    //            && in_array($plugin_metademands_tasks_id, $metademandtasks_tasks_id)) {
+    //
+    //            if (!PluginMetademandsTicket_Field::isCheckValueOK($post[$id], $check_value, $value['type'])) {
+    //
+    //                $metademandToHide = array_keys($metademandtasks_tasks_id, $plugin_metademands_tasks_id);
+    //                $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
+    //                unset($_SESSION['son_meta'][$metademandToHide[0]]);
+    //            }
+    //        }
+    //    }
 
 
     //* Function to convert Hex colors to RGBA
@@ -3536,9 +3544,9 @@ class PluginMetademandsWizard extends CommonDBTM
 
         // Check if color has 6 or 3 characters, get values
         if (strlen($color) == 6) {
-            $hex = array($color[0] . $color[1], $color[2] . $color[3], $color[4] . $color[5]);
+            $hex = [$color[0] . $color[1], $color[2] . $color[3], $color[4] . $color[5]];
         } elseif (strlen($color) == 3) {
-            $hex = array($color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]);
+            $hex = [$color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]];
         } else {
             return $defaultColor;
         }

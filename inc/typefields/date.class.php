@@ -35,9 +35,8 @@ if (!defined('GLPI_ROOT')) {
  * PluginMetademandsDate Class
  *
  **/
-class PluginMetademandsTime extends CommonDBTM
+class PluginMetademandsDate extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,37 +45,86 @@ class PluginMetademandsTime extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
-        return __('Time', 'metademands');
+        return __('Date', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
 
+        $opt = [
+            'value' => $value,
+            'display' => false,
+            'required' => (bool) $data['is_mandatory'],
+            'size' => 40,
+        ];
+
+        $use_future_date = $data['use_future_date'];
+        if (isset($use_future_date) && !empty($use_future_date)) {
+            $opt['min'] = $_SESSION["glpi_currenttime"];
+        }
+
+        if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
+            $date = date("Y-m-d");
+            $addDays = $data['additional_number_day'];
+            $value = date('Y-m-d', strtotime($date . " + $addDays days"));
+            $opt['value'] = $value;
+            $use_future_date = $data['use_future_date'];
+            if (isset($use_future_date) && !empty($use_future_date)) {
+                $opt['min'] = $value;
+            }
+        }
+
         $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-        $field .= Html::showTimeField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
-            'display'  => false,
-            'required' => (bool)$data['is_mandatory'],
-            'size'     => 40
-        ]);
+        $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", $opt);
         $field .= "</span>";
 
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params) {}
+
+    public static function showFieldParameters($params)
     {
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Use this field for child ticket field', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showYesNo('used_by_child', $params['used_by_child']);
+        echo "</td>";
 
-    }
+        echo "<td>";
+        echo __('Day greater or equal to now', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showYesNo('use_future_date', $params['use_future_date']);
+        echo "</td>";
+        echo "</tr>";
 
-    static function showFieldParameters($params)
-    {
-
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Define the default date', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showYesNo('use_date_now', $params['use_date_now']);
+        echo "</td>";
+        echo "<td>";
+        echo __('Additional number day to the default date', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        $optionNumber = [
+            'value' => $params['additional_number_day'],
+            'min' => 0,
+            'max' => 500,
+        ];
+        Dropdown::showNumber('additional_number_day', $optionNumber);
+        echo "</td>";
+        echo "</tr>";
     }
 
     /**
@@ -86,7 +134,6 @@ class PluginMetademandsTime extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-
         $msg = "";
         $checkKo = 0;
         // Check fields empty
@@ -99,27 +146,27 @@ class PluginMetademandsTime extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
-        return $field['value'];
+        return Html::convDate($field['value']);
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {

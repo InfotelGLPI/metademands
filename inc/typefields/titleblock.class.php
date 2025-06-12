@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsTitleblock extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,15 +45,15 @@ class PluginMetademandsTitleblock extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Block title', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
+    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        $debug = isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         $color = PluginMetademandsWizard::hex2rgba($data['color'], "0.03");
         $rank = $data['rank'];
         $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
@@ -76,7 +75,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
 
         echo $label;
         if ($debug) {
-            echo " (ID:". $data['id'].")";
+            echo " (ID:" . $data['id'] . ")";
         }
         echo $config_link;
         if (isset($data['label2']) && !empty($data['label2'])) {
@@ -91,7 +90,8 @@ class PluginMetademandsTitleblock extends CommonDBTM
         }
         echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
         $rand = mt_rand();
-        echo Html::scriptBlock("
+        echo Html::scriptBlock(
+            "
                      var myelement$rand = '#up" . $rank . "';
                      var bloc$rand = 'bloc" . $rank . "';
                      $(myelement$rand).click(function() {     
@@ -102,7 +102,8 @@ class PluginMetademandsTitleblock extends CommonDBTM
                              $('[bloc-hideid =' + bloc$rand + ']').show();
                              $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
                          }
-                     });");
+                     });"
+        );
         echo "</span></h2>";
         echo "</div>";
         if (!empty($data['comment'])) {
@@ -114,14 +115,12 @@ class PluginMetademandsTitleblock extends CommonDBTM
         }
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params)
     {
-
     }
 
-    static function showFieldParameters($params)
+    public static function showFieldParameters($params)
     {
-
         echo "<tr class='tab_bg_1'>";
 
         echo "<td>";
@@ -143,7 +142,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
             [
                 'id' => $icon_selector_id,
                 'selected' => $params['icon'],
-                'style' => 'width:175px;'
+                'style' => 'width:175px;',
             ]
         );
 
@@ -163,22 +162,28 @@ JAVASCRIPT
         echo "</tr>";
     }
 
-    static function fieldsMandatoryScript($data) {
-
+    public static function fieldsMandatoryScript($data)
+    {
     }
 
-    static function fieldsHiddenScript($data)
+    public static function fieldsHiddenScript($data)
     {
-
     }
 
     public static function blocksHiddenScript($data)
     {
-        
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         //to true automatickly if another field on the block is loaded
         $result[$field['rank']]['display'] = false;
         if ($formatAsTable) {
@@ -189,8 +194,7 @@ JAVASCRIPT
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</th>";
         }
-        
+
         return $result;
     }
-
 }

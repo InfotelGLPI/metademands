@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsTitle extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,12 +45,12 @@ class PluginMetademandsTitle extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Title');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
+    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
@@ -75,7 +74,7 @@ class PluginMetademandsTitle extends CommonDBTM
 
             echo $label;
             if ($debug) {
-                echo " (ID:". $data['id'].")";
+                echo " (ID:" . $data['id'] . ")";
             }
 
             if (isset($data['label2']) && !empty($data['label2'])) {
@@ -103,12 +102,9 @@ class PluginMetademandsTitle extends CommonDBTM
         }
     }
 
-    static function showFieldCustomValues($params)
-    {
+    public static function showFieldCustomValues($params) {}
 
-    }
-
-    static function showFieldParameters($params)
+    public static function showFieldParameters($params)
     {
 
         echo "<tr class='tab_bg_1'>";
@@ -132,7 +128,7 @@ class PluginMetademandsTitle extends CommonDBTM
             [
                 'id' => $icon_selector_id,
                 'selected' => $params['icon'],
-                'style' => 'width:175px;'
+                'style' => 'width:175px;',
             ]
         );
 
@@ -153,24 +149,16 @@ JAVASCRIPT
     }
 
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
         //to true automatickly if another field on the block is loaded
-//        $result[$field['rank']]['display'] = false;
+        //        $result[$field['rank']]['display'] = false;
 
         if ($formatAsTable) {
             $colspan = $is_order ? 12 : 2;

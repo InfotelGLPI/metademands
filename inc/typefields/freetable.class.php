@@ -37,8 +37,8 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsFreetable extends CommonDBTM
 {
+    public static $rightname = 'plugin_metademands';
 
-    static $rightname = 'plugin_metademands';
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -47,14 +47,13 @@ class PluginMetademandsFreetable extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Free table', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         $field = "";
 
         $plugin_metademands_metademands_id = $data['plugin_metademands_metademands_id'];
@@ -62,8 +61,8 @@ class PluginMetademandsFreetable extends CommonDBTM
         $meta->getFromDB($plugin_metademands_metademands_id);
         $background_color = "";
         if (isset($meta->fields['background_color'])
-        && $meta->fields['background_color'] != "") {
-            $background_color = "background-color:".$meta->fields['background_color'].";";
+            && $meta->fields['background_color'] != "") {
+            $background_color = "background-color:" . $meta->fields['background_color'] . ";";
         }
         $plugin_metademands_fields_id = $data['id'];
 
@@ -85,7 +84,7 @@ class PluginMetademandsFreetable extends CommonDBTM
         $colspan = '4';
 
         $style_th = "style='text-align: left;$background_color'";
-        $field .= Html::hidden('is_freetable_mandatory['.$data['id'].']', ['value' => $data['is_mandatory']]);
+        $field .= Html::hidden('is_freetable_mandatory[' . $data['id'] . ']', ['value' => $data['is_mandatory']]);
         $colspanfields = 0;
         $addfields = [];
         $commentfields = [];
@@ -128,7 +127,7 @@ class PluginMetademandsFreetable extends CommonDBTM
         }
 
         if (Plugin::isPluginActive('orderfollowup')) {
-            $addfields['total'] =  __('Total (TTC)', 'orderfollowup');
+            $addfields['total'] = __('Total (TTC)', 'orderfollowup');
             $commentfields['total'] = '';
             $types['total'] = PluginMetademandsFreetablefield::TYPE_READONLY;
             $size = 17;
@@ -181,10 +180,10 @@ class PluginMetademandsFreetable extends CommonDBTM
                 foreach ($addfields as $k => $addfield) {
                     if (isset($l[$k])) {
                         if ($types[$k] == PluginMetademandsFreetablefield::TYPE_TEXT) {
-                            $id = $k.'_'.$idline;
+                            $id = $k . '_' . $idline;
                             $field .= "<td $style><input id=\"$id\" name=\"$k\" type=\"text\" value=\"$l[$k]\" size=\"$size\" disabled></td>";
-                        } else if ($types[$k] == PluginMetademandsFreetablefield::TYPE_SELECT) {
-                            $id = $k.'_'.$idline;
+                        } elseif ($types[$k] == PluginMetademandsFreetablefield::TYPE_SELECT) {
+                            $id = $k . '_' . $idline;
                             $field .= "<td $style><select id=\"$id\" name=\"$k\">";
 
                             foreach ($dropdown_values[$k] as $dropdown_value) {
@@ -195,9 +194,15 @@ class PluginMetademandsFreetable extends CommonDBTM
                                 $field .= "<option $selected value=\"$dropdown_value\">" . $dropdown_value . "</option>";
                             }
                             $field .= "</select></td>";
-                        } else if ($types[$k] == PluginMetademandsFreetablefield::TYPE_NUMBER) {
-                            $id = $k.'_'.$idline;
+                        } elseif ($types[$k] == PluginMetademandsFreetablefield::TYPE_NUMBER) {
+                            $id = $k . '_' . $idline;
                             $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"number\" min=\"0\" value=\"$l[$k]\" style=\"width: 7em;\" disabled></td>";
+                        } elseif ($types[$k] == PluginMetademandsFreetablefield::TYPE_DATE) {
+                            $id = $k . '_' . $idline;
+                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"date\" value=\"$l[$k]\" disabled></td>";
+                        } elseif ($types[$k] == PluginMetademandsFreetablefield::TYPE_TIME) {
+                            $id = $k . '_' . $idline;
+                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"time\" value=\"$l[$k]\" disabled></td>";
                         }
 
                         if (Plugin::isPluginActive('orderfollowup')) {
@@ -207,7 +212,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                     }
                 }
                 if (Plugin::isPluginActive('orderfollowup')) {
-                    $linetotal = number_format($quantity*$unit_price,2,'.', ' ');
+                    $linetotal = number_format($quantity * $unit_price, 2, '.', ' ');
                     $field .= "<td $style id=\"linetotal\">$linetotal €</td>";
                 }
 
@@ -215,7 +220,6 @@ class PluginMetademandsFreetable extends CommonDBTM
                 $field .= "<td><button onclick =\"removeLine$rand($idline)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"fas fa-trash\"></i></button></td>";
                 $field .= "</tr>";
                 $idline++;
-
             }
         }
 
@@ -248,9 +252,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                             tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + $rand + '_' + i + '\">';
                             
                            $.each(fields,function(index, valuej){
-                               if (type_fields[index] == 1) {
+                               if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                    tabfields.push('<td><input id = \"' + index +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" ></td>');
-                               } else if (type_fields[index] == 2) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                    var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -263,10 +267,14 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
-                               } else if (type_fields[index] == 3) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
                                    tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" ></td>');
-                               } else if (type_fields[index] == 4  && orderfollowup_is_active) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_READONLY . "  && orderfollowup_is_active) {
                                    tabfields.push('<td></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"date\" name=\"' + index +'\" ></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
+                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"time\" name=\"' + index +'\" ></td>');
                                }
                                
                            });
@@ -288,9 +296,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                             tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + $rand + '_' + i + '\">';
                             
                             $.each(fields,function(index, valuej){
-                               if (type_fields[index] == 1) {
+                               if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                    tabfields.push('<td><input id = \"' + index +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" ></td>');
-                               } else if (type_fields[index] == 2) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                    var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -303,10 +311,14 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
-                               } else if (type_fields[index] == 3) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
                                    tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" ></td>');
-                               } else if (type_fields[index] == 4  && orderfollowup_is_active) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
                                    tabfields.push('<td></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"date\" name=\"' + index +'\" ></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
+                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"time\" name=\"' + index +'\" ></td>');
                                }
                            });
                              var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
@@ -344,13 +356,18 @@ class PluginMetademandsFreetable extends CommonDBTM
                         'id':nb,
                     };
                     $.each(fields,function(index, valuej){
-                        if (type_fields[index] == 1) {
+                        if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                             l[index] = elem_parent.find('input[name='+ index +']').val();
-                        } else if (type_fields[index] == 2) {
+                        } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                             l[index] = elem_parent.find('select[name='+ index +']').val();
-                        } else if (type_fields[index] == 3) {
+                        } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
+                            l[index] = elem_parent.find('input[name='+ index +']').val();
+                        } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                            l[index] = elem_parent.find('input[name='+ index +']').val();
+                        } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
                             l[index] = elem_parent.find('input[name='+ index +']').val();
                         }
+                        l['type'] = type_fields[index];
                     });
                     var unit_price = elem_parent.find('input[name=unit_price]').val();
                     var quantity = elem_parent.find('input[name=quantity]').val();
@@ -363,16 +380,16 @@ class PluginMetademandsFreetable extends CommonDBTM
                     
                     let type = 'add';
 
-                    $.each(data.lines, function (key, datas) {
-                        $.each(datas, function (key_data, data_lines) {
-                            if(key_data == 'id'){
-                                if(data_lines == ind){
-                                   data['lines$rand'][key] = l;
-                                   type = 'modif';
-                                }
-                            }
-                        });
-                    });
+//                    $.each(data.lines$rand, function (key, datas) {
+//                        $.each(datas, function (key_data, data_lines) {
+//                            if(key_data == 'id'){
+//                                if(data_lines == ind){
+//                                   data['lines$rand'][key] = l;
+//                                   type = 'modif';
+//                                }
+//                            }
+//                        });
+//                    });
                     
                     if(type == 'add') {
                         data['lines$rand'] = { ind : l };
@@ -390,14 +407,14 @@ class PluginMetademandsFreetable extends CommonDBTM
                     $.each(fields,function(index, valuej){
 
                         if (mandatory_fields.includes(index)) {
-                            if (type_fields[index] == 1) {
+                            if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                 if (elem_parent.find('input[name='+ index +']').val() === '') {
                                     elem_parent.find('input[name=' + index +']').css('border-color', 'red');
                                     ko = 1;
                                 } else {
                                     elem_parent.find('input[name=' + index +']').css('border-color', '');
                                 }
-                            } else if (type_fields[index] == 2) {
+                            } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                 var select = document.getElementById(index);
                                 if(select.selectedIndex != undefined) {
                                     var text = select.options[select.selectedIndex].text;
@@ -408,7 +425,21 @@ class PluginMetademandsFreetable extends CommonDBTM
                                         select.style.borderColor = '';
                                     }
                                 }
-                            } else if (type_fields[index] == 3) {
+                            } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
+                                if (elem_parent.find('input[name='+ index +']').val() == 0) {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
+                                    ko = 1;
+                                } else {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
+                                }
+                            } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                if (elem_parent.find('input[name='+ index +']').val() == 0) {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
+                                    ko = 1;
+                                } else {
+                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
+                                }
+                            } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
                                 if (elem_parent.find('input[name='+ index +']').val() == 0) {
                                     elem_parent.find('input[name=' + index +']').css('border-color', 'red');
                                     ko = 1;
@@ -430,9 +461,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                             
                             $.each(fields,function(index, valuej){
                                
-                               if (type_fields[index] == 1) {
+                               if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                    tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else if (type_fields[index] == 2) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                    var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -445,11 +476,15 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
-                               } else if (type_fields[index] == 3) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
                                     tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
-                               } else if (type_fields[index] == 4 && orderfollowup_is_active) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
                                    //orderfollowup
                                    tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"date\" name=\"' + index +'\" disabled ></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
+                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"time\" name=\"' + index +'\" disabled ></td>');
                                }
                                
                             });
@@ -465,13 +500,19 @@ class PluginMetademandsFreetable extends CommonDBTM
                             
                             elem_parent.find('input[name=name$rand]').val('');
                             $.each(fields,function(index, valuej){
-                                if (type_fields[index] == 1) {
+                                if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                     $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
                                     elem_parent.find('input[name='+ index + ']').val('');
-                                } else if (type_fields[index] == 2) {
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                     $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
                                     elem_parent.find('select[name='+ index + ']').val('');
-                                } else if (type_fields[index] == 3) {
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
+                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                    elem_parent.find('input[name='+ index + ']').val(0);
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                    elem_parent.find('input[name='+ index + ']').val(0);
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
                                     $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
                                     elem_parent.find('input[name='+ index + ']').val(0);
                                 }
@@ -483,9 +524,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                             
                             $.each(fields,function(index, valuej){
                                
-                               if (type_fields[index] == 1) {
+                               if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                    tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else if (type_fields[index] == 2) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                    var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -498,11 +539,15 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
-                               } else if (type_fields[index] == 3) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
                                     tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
-                               } else if (type_fields[index] == 4 && orderfollowup_is_active) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
                                    //orderfollowup
                                    tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"date\" name=\"' + index +'\" disabled ></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
+                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"time\" name=\"' + index +'\" disabled ></td>');
                                }
                                
                             });
@@ -518,13 +563,19 @@ class PluginMetademandsFreetable extends CommonDBTM
                                elem_parent.find('input[name=name$rand]').val('');
                                
                                $.each(fields,function(index, valuej){
-                                    if (type_fields[index] == 1) {
+                                    if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                         $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
                                         elem_parent.find('input[name='+ index + ']').val('');
-                                    } else if (type_fields[index] == 2) {
+                                    } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                         $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
                                         elem_parent.find('select[name='+ index + ']').val('');
-                                    } else if (type_fields[index] == 3) {
+                                    } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
+                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                        elem_parent.find('input[name='+ index + ']').val(0);
+                                    } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
+                                        elem_parent.find('input[name='+ index + ']').val(0);
+                                    } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
                                         $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
                                         elem_parent.find('input[name='+ index + ']').val(0);
                                     }
@@ -536,9 +587,9 @@ class PluginMetademandsFreetable extends CommonDBTM
                             
                             $.each(fields,function(index, valuej){
 
-                               if (type_fields[index] == 1) {
+                               if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                    tabfields.push('<td $style><input id = \"' + index +'_' + ind +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else if (type_fields[index] == 2) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                    var select_open = '<td $style><select id = \"' + index +'_' + ind +'\" name=\"' + index +'\">';
                                    var select_options = '';
                                    $.each(dropdown_values_fields,function(indexv, values){
@@ -551,11 +602,15 @@ class PluginMetademandsFreetable extends CommonDBTM
                                    var select_close = '</select></td>';
                                    var select = [select_open, select_options, select_close].join(' ');
                                    tabfields.push(select);
-                               } else if (type_fields[index] == 3) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
                                     tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
-                               } else if (type_fields[index] == 4 && orderfollowup_is_active) {
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
                                    //orderfollowup
                                    tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"date\" name=\"' + index +'\"  disabled ></td>');
+                               } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
+                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"time\" name=\"' + index +'\"  disabled ></td>');
                                }
                             });
                             tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + ind +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
@@ -569,11 +624,15 @@ class PluginMetademandsFreetable extends CommonDBTM
                            
                             $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #name_' + ind).val(name);
                             $.each(fields,function(index, valuej){
-                                if (type_fields[index] == 1) {
+                                if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TEXT . ") {
                                     $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
-                                } else if (type_fields[index] == 2) {
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_SELECT . ") {
                                     $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('select[name='+ index +']').val());
-                                } else if (type_fields[index] == 3) {
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_NUMBER . ") {
+                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_DATE . ") {
+                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
+                                } else if (type_fields[index] == " . PluginMetademandsFreetablefield::TYPE_TIME . ") {
                                     $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
                                 }
                             });
@@ -756,11 +815,10 @@ class PluginMetademandsFreetable extends CommonDBTM
         }
 
 
-
         echo $field;
     }
 
-    static function showFreetableFields($params)
+    public static function showFreetableFields($params)
     {
         $custom_values = $params['custom_values'];
 
@@ -770,8 +828,10 @@ class PluginMetademandsFreetable extends CommonDBTM
 
         $nbfields = 0;
         $field_custom = new PluginMetademandsFreetablefield();
-        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $params['plugin_metademands_fields_id']],
-            "rank")) {
+        if ($customs = $field_custom->find(
+            ["plugin_metademands_fields_id" => $params['plugin_metademands_fields_id']],
+            "rank"
+        )) {
             if (count($customs) > 0) {
                 $nbfields = count($customs);
             }
@@ -792,7 +852,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                         'fields_id',
                         ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
                     );
-                    echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
+                    echo Html::hidden('type_object', ['value' => $params["type"], 'id' => 'type_object']);
                 }
                 echo "</td>";
 
@@ -806,7 +866,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                 echo "<td class='rowhandler control left'>";
                 echo "<span id='type_values$key'>";
                 echo " " . __('Type', 'metademands') . "<br>";
-                Dropdown::showFromArray('type[' . $key . ']', PluginMetademandsFreetablefield::getTypeFields(), ['value' => $value['type'], 'size' => 20]);
+                Dropdown::showFromArray(
+                    'type[' . $key . ']',
+                    PluginMetademandsFreetablefield::getTypeFields(),
+                    ['value' => $value['type'], 'size' => 20]
+                );
                 echo "</span>";
                 echo "</td>";
 
@@ -825,11 +889,11 @@ class PluginMetademandsFreetable extends CommonDBTM
                     echo "</span>";
                     echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
                     echo "</td>";
-                } else if ($value['type'] == PluginMetademandsFreetablefield::TYPE_SELECT) {
+                } elseif ($value['type'] == PluginMetademandsFreetablefield::TYPE_SELECT) {
                     echo "<td class='rowhandler control left'>";
                     echo "<span id='dropdown_values$key'>";
                     echo " " . __('Dropdown values', 'metademands') . " ";
-                    $label =  __('One value by line, separated by comma', 'metademands');
+                    $label = __('One value by line, separated by comma', 'metademands');
                     Html::showToolTip(
                         Glpi\RichText\RichText::getSafeHtml($label),
                         ['awesome-class' => 'fa-info-circle']
@@ -838,12 +902,14 @@ class PluginMetademandsFreetable extends CommonDBTM
                         'name' => 'dropdown_values[' . $key . ']',
                         'value' => $value['dropdown_values'],
                         'rows' => 3,
-                        'cols' => 5
+                        'cols' => 5,
                     ]);
                     echo "</span>";
                     echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
                     echo "</td>";
-                } else if ($value['type'] == PluginMetademandsFreetablefield::TYPE_NUMBER) {
+                } elseif ($value['type'] == PluginMetademandsFreetablefield::TYPE_NUMBER
+                    || $value['type'] == PluginMetademandsFreetablefield::TYPE_DATE
+                    || $value['type'] == PluginMetademandsFreetablefield::TYPE_TIME) {
                     echo "<td class='rowhandler control left'>";
                     echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
                     echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
@@ -868,7 +934,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
-                    'icon' => 'fas fa-save'
+                    'icon' => 'fas fa-save',
                 ]);
                 echo "</td>";
 
@@ -895,7 +961,7 @@ class PluginMetademandsFreetable extends CommonDBTM
             echo "</table>";
             Html::closeForm();
             echo "</div>";
-            echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
+            echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_freetableredipsInit()});');
 
             if ($nbfields < 6) {
                 echo "<tr class='tab_bg_1'>";
@@ -930,46 +996,43 @@ class PluginMetademandsFreetable extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-//        $msg = "";
-//        $checkKo = 0;
-//        // Check fields empty
-//        if ($value['is_mandatory']
-//            && $fields['value'] == null) {
-//            $msg = $value['name'];
-//            $checkKo = 1;
-//        }
-//
-//        return ['checkKo' => $checkKo, 'msg' => $msg];
+        //        $msg = "";
+        //        $checkKo = 0;
+        //        // Check fields empty
+        //        if ($value['is_mandatory']
+        //            && $fields['value'] == null) {
+        //            $msg = $value['name'];
+        //            $checkKo = 1;
+        //        }
+        //
+        //        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
-    }
+    public static function fieldsMandatoryScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    public static function blocksHiddenScript($data)
-    {
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
         return $field['value'];
     }
 
-    static function displayFieldPDF($elt, $fields, $label)
+    public static function displayFieldPDF($elt, $fields, $label)
     {
         $values = [];
 
-        $values_elt = isset($fields[$elt['id']]) ? $fields[$elt['id']] : [];
+        $values_elt = $fields[$elt['id']] ?? [];
 
         if (is_array($values_elt) && count($values_elt) > 0) {
             foreach ($values_elt as $k => $value_elt) {
                 foreach ($value_elt as $internal_name => $value) {
                     $field_custom = new PluginMetademandsFreetablefield();
-                    if ($customs = $field_custom->find(["internal_name" => $internal_name,
-                        "plugin_metademands_fields_id" => $elt['id']])) {
+                    if ($customs = $field_custom->find([
+                        "internal_name" => $internal_name,
+                        "plugin_metademands_fields_id" => $elt['id'],
+                    ])) {
                         if (count($customs) > 0) {
                             foreach ($customs as $id => $custom) {
                                 $values[$elt['id']][$k][Toolbox::decodeFromUtf8(
@@ -978,12 +1041,12 @@ class PluginMetademandsFreetable extends CommonDBTM
                             }
                         }
                         //TODO
-//                        if (Plugin::isPluginActive('orderfollowup')) {
-//                            $total = $item['unitprice'] * $item['quantity'];
-//                            $values[$id][Toolbox::decodeFromUtf8(
-//                                __('Total (TTC)', 'orderfollowup')
-//                            )] = Html::formatNumber($total, false, 2);
-//                        }
+                        //                        if (Plugin::isPluginActive('orderfollowup')) {
+                        //                            $total = $item['unitprice'] * $item['quantity'];
+                        //                            $values[$id][Toolbox::decodeFromUtf8(
+                        //                                __('Total (TTC)', 'orderfollowup')
+                        //                            )] = Html::formatNumber($total, false, 2);
+                        //                        }
                     }
                 }
             }
@@ -1002,19 +1065,19 @@ class PluginMetademandsFreetable extends CommonDBTM
         $lang,
         $is_order = false
     ) {
-//        if (isset($_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['quantities'])) {
-//            $quantities = $_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['quantities'];
-//        }
+        //        if (isset($_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['quantities'])) {
+        //            $quantities = $_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['quantities'];
+        //        }
         $style_td = "style = \'border: 1px solid #CCC; \'";
 
         $materials = $field["value"];
 
-//        if (is_object($materials)) {
-//            $materials = json_decode(json_encode($materials), true);
-//        }
+        //        if (is_object($materials)) {
+        //            $materials = json_decode(json_encode($materials), true);
+        //        }
         $content = "";
         $result[$field['rank']]['display'] = true;
-//        $total = 0;
+        //        $total = 0;
         $addfields = [];
         $dropdown_values = [];
         $colspan_title = $is_order ? 12 : 2;
@@ -1086,8 +1149,15 @@ class PluginMetademandsFreetable extends CommonDBTM
                             $content .= "<td $style_td colspan='$colspan'>";
                         }
 
-                        if (isset($dropdown_values[$fi[$k]])) {
-                            $content .= $dropdown_values[$fi[$k]];
+                        if ($fi['type'] == PluginMetademandsFreetablefield::TYPE_SELECT) {
+                            if (isset($dropdown_values[$fi[$k]])) {
+                                $content .= $dropdown_values[$fi[$k]];
+                            }
+                        }
+                        if ($fi['type'] == PluginMetademandsFreetablefield::TYPE_DATE) {
+                            $content .= Html::convDate($fi[$k]);
+                        } elseif ($fi['type'] == PluginMetademandsFreetablefield::TYPE_TIME) {
+                            $content .= $fi[$k];
                         } else {
                             $content .= $fi[$k];
                         }
@@ -1112,7 +1182,6 @@ class PluginMetademandsFreetable extends CommonDBTM
                     }
                 }
             }
-
         }
 
         if (Plugin::isPluginActive('orderfollowup')) {

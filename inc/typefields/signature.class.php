@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsSignature extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,14 +45,13 @@ class PluginMetademandsSignature extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Signature', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         $name = $namefield . "[" . $data['id'] . "]";
 
         $required = 0;
@@ -64,20 +62,35 @@ class PluginMetademandsSignature extends CommonDBTM
         $metademands_id = $data['plugin_metademands_metademands_id'];
         $id = $data['id'];
 
-        $msg_add = "<i class=\"fas fa-check-circle fa-1x\" style=\"color:forestgreen\"></i> ".__('Your signature has been uploaded', 'metademands');
-        $msg_remove = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> ".__('Your signature has been deleted', 'metademands');
-        $msg_failadd = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> ".__('There was a problem on upload your signature', 'metademands');
-        $msg_failremove = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> ".__('There was a problem on delete your signature', 'metademands');
-        $msg_mandatory = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> ".__('This field is mandatory', 'metademands');
+        $msg_add = "<i class=\"fas fa-check-circle fa-1x\" style=\"color:forestgreen\"></i> " . __(
+            'Your signature has been uploaded',
+            'metademands'
+        );
+        $msg_remove = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
+            'Your signature has been deleted',
+            'metademands'
+        );
+        $msg_failadd = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
+            'There was a problem on upload your signature',
+            'metademands'
+        );
+        $msg_failremove = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
+            'There was a problem on delete your signature',
+            'metademands'
+        );
+        $msg_mandatory = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
+            'This field is mandatory',
+            'metademands'
+        );
 
         $field = "<div class='wrapper'>";
         $field .= "<canvas id='signature-pad' class='signature-pad' width=400 height=100></canvas>";
         $field .= "</div>";
         $field .= "<br><div>";
         $field .= "<button id='savesign' form='' class='btn btn-primary'>" . __(
-                'Add your signature',
-                'metademands'
-            ) . "</button> ";
+            'Add your signature',
+            'metademands'
+        ) . "</button> ";
         $field .= "<button id='clearsign' form='' class='btn btn-primary'>" . __('Clear', 'metademands') . "</button>";
         $field .= "</div>";
 
@@ -165,26 +178,13 @@ class PluginMetademandsSignature extends CommonDBTM
     }
 
 
-    static function showFieldCustomValues($params)
-    {
+    public static function showFieldCustomValues($params) {}
 
-    }
+    public static function showFieldParameters($params) {}
 
-    static function showFieldParameters($params)
-    {
+    public static function getParamsValueToCheck($fieldoption, $item, $params) {}
 
-
-    }
-
-    static function getParamsValueToCheck($fieldoption, $item, $params)
-    {
-
-    }
-
-    static function showValueToCheck($item, $params)
-    {
-
-    }
+    public static function showValueToCheck($item, $params) {}
 
 
     /**
@@ -192,42 +192,19 @@ class PluginMetademandsSignature extends CommonDBTM
      * @param array $fields
      * @return bool
      */
-    public static function checkMandatoryFields($value = [], $fields = [])
-    {
+    public static function checkMandatoryFields($value = [], $fields = []) {}
 
-    }
+    public static function isCheckValueOK($value, $check_value) {}
 
-    static function isCheckValueOK($value, $check_value)
-    {
+    public static function showParamsValueToCheck($params) {}
 
-    }
+    public static function fieldsMandatoryScript($data) {}
 
-    static function showParamsValueToCheck($params)
-    {
+    public static function taskScript($data) {}
 
+    public static function fieldsHiddenScript($data) {}
 
-    }
-
-    static function fieldsMandatoryScript($data) {
-
-    }
-
-    static function taskScript($data)
-    {
-
-
-    }
-
-    static function fieldsHiddenScript($data)
-    {
-
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
@@ -236,8 +213,16 @@ class PluginMetademandsSignature extends CommonDBTM
         return "<img src='$picture_url'>";
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {

@@ -37,8 +37,8 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsUpload extends CommonDBTM
 {
-
     private $uploads = [];
+
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -47,12 +47,12 @@ class PluginMetademandsUpload extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Add attachment', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order, $idline)
+    public static function showWizardField($data, $namefield, $value, $on_order, $idline)
     {
         Html::requireJs('tinymce');
 
@@ -62,14 +62,14 @@ class PluginMetademandsUpload extends CommonDBTM
         if (is_array($value)) {
             $value = "";
         }
-        $randupload             = mt_rand();
+        $randupload = mt_rand();
         $namedrop = 'dropdoc' . $randupload;
 
         $arrayFiles = json_decode($value, true);
 
-        $field      = "";
-        $nb         = 0;
-        $container = 'fileupload_info_ticket'.$namefield . $data['id'];
+        $field = "";
+        $nb = 0;
+        $container = 'fileupload_info_ticket' . $namefield . $data['id'];
         if (is_array($arrayFiles)) {
             if (count($arrayFiles) > 0) {
                 foreach ($arrayFiles as $k => $file) {
@@ -81,10 +81,11 @@ class PluginMetademandsUpload extends CommonDBTM
                         $wiz->getFormURL(),
                         'delete_basket_file',
                         _x('button', 'Delete permanently'),
-                        ['id' => $k,
+                        [
+                            'id' => $k,
                             'metademands_id' => $data['plugin_metademands_metademands_id'],
                             'plugin_metademands_fields_id' => $data['id'],
-                            'idline' => $idline
+                            'idline' => $idline,
                         ],
                         'fa-times-circle'
                     );
@@ -98,10 +99,11 @@ class PluginMetademandsUpload extends CommonDBTM
                             'editor_id' => $namefield . $data['id'],
                             'showtitle' => false,
                             'multiple' => true,
-                            'display'  => false,
+                            'display' => false,
                             'dropZone' => 'dropdoc' . $randupload,
                             'required' => ($data['is_mandatory'] ? true : false),
-                            'uploads' => $self->uploads]);
+                            'uploads' => $self->uploads,
+                        ]);
                     } else {
                         $field .= Html::file([
                             'filecontainer' => $container,
@@ -110,7 +112,7 @@ class PluginMetademandsUpload extends CommonDBTM
                             'display' => false,
                             'dropZone' => 'dropdoc' . $randupload,
                             'required' => ($data['is_mandatory'] ? true : false),
-                            'uploads' => $self->uploads
+                            'uploads' => $self->uploads,
                         ]);
                     }
                 }
@@ -118,22 +120,23 @@ class PluginMetademandsUpload extends CommonDBTM
                 if ($data["max_upload"] > 1) {
                     $field .= Html::file([
                         'filecontainer' => $container,
-                        'editor_id'     => $namefield . $data['id'],
-                        'showtitle'     => false,
-                        'multiple'      => true,
-                        'display'       => false,
+                        'editor_id' => $namefield . $data['id'],
+                        'showtitle' => false,
+                        'multiple' => true,
+                        'display' => false,
                         'dropZone' => 'dropdoc' . $randupload,
                         'required' => ($data['is_mandatory'] ? true : false),
-                        'uploads' => $self->uploads]);
+                        'uploads' => $self->uploads,
+                    ]);
                 } else {
                     $field .= Html::file([
                         'filecontainer' => $container,
-                        'editor_id'     => $namefield . $data['id'],
-                        'showtitle'     => false,
-                        'display'       => false,
+                        'editor_id' => $namefield . $data['id'],
+                        'showtitle' => false,
+                        'display' => false,
                         'dropZone' => 'dropdoc' . $randupload,
                         'required' => ($data['is_mandatory'] ? true : false),
-                        'uploads' => $self->uploads
+                        'uploads' => $self->uploads,
                     ]);
                 }
             }
@@ -141,38 +144,35 @@ class PluginMetademandsUpload extends CommonDBTM
             if ($data["max_upload"] > 1) {
                 $field .= Html::file([
                     'filecontainer' => $container,
-                    'editor_id'     => $namefield . $data['id'],
-                    'showtitle'     => false,
-                    'multiple'      => true,
-                    'display'       => false,
+                    'editor_id' => $namefield . $data['id'],
+                    'showtitle' => false,
+                    'multiple' => true,
+                    'display' => false,
                     'dropZone' => 'dropdoc' . $randupload,
                     'required' => ($data['is_mandatory'] ? true : false),
-                    'uploads' => $self->uploads]);
+                    'uploads' => $self->uploads,
+                ]);
             } else {
                 $field .= Html::file([
                     'filecontainer' => $container,
-                    'editor_id'     => $namefield . $data['id'],
-                    'showtitle'     => false,
-                    'display'       => false,
+                    'editor_id' => $namefield . $data['id'],
+                    'showtitle' => false,
+                    'display' => false,
                     'dropZone' => 'dropdoc' . $randupload,
                     'required' => ($data['is_mandatory'] ? true : false),
-                    'uploads' => $self->uploads
+                    'uploads' => $self->uploads,
                 ]);
             }
         }
-//        $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
+        //        $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
         $field .= Html::scriptBlock("$('#$namedrop').show();");
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params) {}
+
+    public static function showFieldParameters($params)
     {
-
-    }
-
-    static function showFieldParameters($params)
-    {
-
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Number of documents allowed', 'metademands');
@@ -185,7 +185,6 @@ class PluginMetademandsUpload extends CommonDBTM
         echo Dropdown::showFromArray("max_upload", $data, ['value' => $params['max_upload'], 'display' => false]);
         echo "</td>";
         echo "</tr>";
-
     }
 
 
@@ -196,7 +195,6 @@ class PluginMetademandsUpload extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $post = [])
     {
-
         $msg = "";
         $checkKo = 0;
         // Check fields empty
@@ -215,18 +213,10 @@ class PluginMetademandsUpload extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-
-    }
+    public static function blocksHiddenScript($data) {}
 
 }

@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsNumber extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,14 +45,13 @@ class PluginMetademandsNumber extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Number', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
@@ -80,7 +78,7 @@ class PluginMetademandsNumber extends CommonDBTM
                 $opt['specific_tags'] = [
                     'required' => 'required',
                     'isnumber' => 'isnumber',
-                    'minimal_mandatory' => $minimal_mandatory
+                    'minimal_mandatory' => $minimal_mandatory,
                 ];
             }
         }
@@ -90,14 +88,14 @@ class PluginMetademandsNumber extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params)
     {
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         $min = 0;
-        $max  = 0;
-        $step  = 0;
-        $minimal  = 0;
+        $max = 0;
+        $step = 0;
+        $minimal = 0;
 
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
             $min = $params['custom_values'][0] ?? "";
@@ -106,34 +104,36 @@ class PluginMetademandsNumber extends CommonDBTM
             $minimal = $params['custom_values'][3] ?? "";
         }
         echo '<label>' . __("Minimal count") . '</label>&nbsp;';
-        $opt                   = ['value'         => $min];
+        $opt = ['value' => $min];
         Dropdown::showNumber("custom[0]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Maximal count") . '</label>&nbsp;';
-        $opt                   = ['value'         => $max, 'max' => 9999];
+        $opt = ['value' => $max, 'max' => 9999];
         Dropdown::showNumber("custom[1]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
-        $opt                   = ['value'         => $step, 'min' => 1];
+        $opt = ['value' => $step, 'min' => 1];
         Dropdown::showNumber("custom[2]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
-        $opt                   = ['value'         => $minimal];
+        $opt = ['value' => $minimal];
         Dropdown::showNumber("custom[3]", $opt);
         echo "</td>";
         echo "</tr>";
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo Html::submit("", ['name'  => 'update',
+        echo Html::submit("", [
+            'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon'  => 'fas fa-save']);
+            'icon' => 'fas fa-save',
+        ]);
         echo "</td>";
         echo "</tr>";
     }
@@ -145,7 +145,6 @@ class PluginMetademandsNumber extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-
         $msg = "";
         $checkKo = 0;
         // Check fields empty
@@ -158,27 +157,27 @@ class PluginMetademandsNumber extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
         return $field['value'];
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($formatAsTable) {

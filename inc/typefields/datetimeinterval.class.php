@@ -32,12 +32,11 @@ if (!defined('GLPI_ROOT')) {
 
 
 /**
- * PluginMetademandsDateinterval Class
+ * PluginMetademandsDatetimeinterval Class
  *
  **/
-class PluginMetademandsDateinterval extends CommonDBTM
+class PluginMetademandsDatetimeinterval extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,65 +45,57 @@ class PluginMetademandsDateinterval extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
-        return __('Date interval', 'metademands');
+        return __('Date & Hour interval', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $end)
+    public static function showWizardField($data, $namefield, $value, $end)
     {
-
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
 
-        $opt = ['value'    => $value,
-            'display'  => false,
-            'required' => (bool)$data['is_mandatory'],
-            'size'     => 40
+        $opt = [
+            'value' => $value,
+            'display' => false,
+            'required' => (bool) $data['is_mandatory'],
+            'size' => 40,
         ];
 
         $use_future_date = $data['use_future_date'];
-        $date = date("Y-m-d");
-
-        if (isset($use_future_date) && !empty($use_future_date)) {
-            $opt['min'] = $date;
+        if ($value == null && isset($use_future_date) && !empty($use_future_date)) {
+            $opt['mindate'] = date("Y-m-d");
         }
 
         if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
             $addDays = $data['additional_number_day'];
-            $value = date('Y-m-d', strtotime($date . " + $addDays days"));
+            $startDate = time();
+            $opt['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
+            $mindate = date('Y-m-d', strtotime("+$addDays day", $startDate));
             $use_future_date = $data['use_future_date'];
-            $opt['value'] = $value;
-            if (isset($use_future_date) && !empty($use_future_date)) {
-                $opt['min'] = $value;
+            if ($value == null && isset($use_future_date) && !empty($use_future_date)) {
+                $opt['mindate'] = $mindate;
             }
         }
 
         if ($end == true) {
             $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-            $field .= Html::showDateField($namefield, $opt);
+            $field .= Html::showDateTimeField($namefield, $opt);
             $field .= "</span>";
         } else {
             $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-            $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", $opt);
+            $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", $opt);
             $field .= "</span>";
         }
-
-
 
         echo $field;
     }
 
+    public static function showFieldCustomValues($params) {}
 
-    static function showFieldCustomValues($params)
+    public static function showFieldParameters($params)
     {
-
-    }
-
-    static function showFieldParameters($params)
-    {
-
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Day greater or equal to now', 'metademands');
@@ -129,19 +120,17 @@ class PluginMetademandsDateinterval extends CommonDBTM
         echo "<td>";
         $optionNumber = [
             'value' => $params['additional_number_day'],
-            'min'   => 0,
-            'max'   => 500,
+            'min' => 0,
+            'max' => 500,
         ];
         Dropdown::showNumber('additional_number_day', $optionNumber);
         echo "</td>";
         echo "<td colspan='2'></td>";
         echo "</tr>";
-
     }
 
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-
         $msg = "";
         $checkKo = 0;
         // Check fields empty
@@ -154,32 +143,31 @@ class PluginMetademandsDateinterval extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data)
-    {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
-        return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
+        return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 3 : 1;
         if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
             $label2 = Toolbox::stripslashes_deep($field['label2']);
-            if ($field['label2'] != NULL) {
+            if ($field['label2'] != null) {
                 $label2 = Glpi\RichText\RichText::getTextFromHtml($field['label2']);
             }
         }
@@ -192,7 +180,7 @@ class PluginMetademandsDateinterval extends CommonDBTM
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
         }
-        $result[$field['rank']]['content'] .= Html::convDate($field['value']);
+        $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td></tr>";
             $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title colspan='$colspan'>";
@@ -201,12 +189,11 @@ class PluginMetademandsDateinterval extends CommonDBTM
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
         }
-        $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
+        $result[$field['rank']]['content'] .= Html::convDateTime($field['value2']);
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td>";
         }
 
         return $result;
     }
-
 }

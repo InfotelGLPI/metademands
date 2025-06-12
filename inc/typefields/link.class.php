@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsLink extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,14 +45,13 @@ class PluginMetademandsLink extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Link');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
@@ -77,7 +75,9 @@ class PluginMetademandsLink extends CommonDBTM
                         $btnLabel = $label2;
                     }
 
-                    $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags($btnLabel) . "' 
+                    $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags(
+                        $btnLabel
+                    ) . "' 
                      target='_blank' onclick=\"window.open('" . $custom_values[1] . "','_blank');return false\">";
 
                     break;
@@ -92,18 +92,17 @@ class PluginMetademandsLink extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params)
     {
-
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         $linkType = 0;
-        $linkVal  = '';
+        $linkVal = '';
         if (isset($params['custom_values'])
             && !empty($params['custom_values'])) {
             $custom_values = $params['custom_values'];
-            $linkType                = $custom_values[0] ?? "";
-            $linkVal                 = $custom_values[1] ?? "";
+            $linkType = $custom_values[0] ?? "";
+            $linkVal = $custom_values[1] ?? "";
         }
         echo '<label>' . __("Link") . '</label>';
         echo Html::input('custom[1]', ['value' => $linkVal, 'size' => 30]);
@@ -115,7 +114,7 @@ class PluginMetademandsLink extends CommonDBTM
             "custom[0]",
             [
                 'button' => __('button', "metademands"),
-                'link_a' => __('Web link')
+                'link_a' => __('Web link'),
             ],
             ['value' => $linkType]
         );
@@ -124,34 +123,27 @@ class PluginMetademandsLink extends CommonDBTM
         echo "</tr>";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo Html::submit("", ['name'  => 'update',
+        echo Html::submit("", [
+            'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon'  => 'fas fa-save']);
+            'icon' => 'fas fa-save',
+        ]);
         echo "</td>";
         echo "</tr>";
-
     }
 
-    static function isCheckValueOK($value, $check_value)
+    public static function isCheckValueOK($value, $check_value)
     {
         if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
             return false;
         }
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
@@ -161,8 +153,16 @@ class PluginMetademandsLink extends CommonDBTM
         return $field['value'];
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
@@ -177,8 +177,8 @@ class PluginMetademandsLink extends CommonDBTM
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . self::getFieldValue(
-                    $field
-                ) . '</a>';
+                $field
+            ) . '</a>';
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= '</td>';
             }

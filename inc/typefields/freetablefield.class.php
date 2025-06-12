@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -40,20 +41,23 @@ class PluginMetademandsFreetablefield extends CommonDBChild
     public static $items_id = 'plugin_metademands_fields_id';
     public $dohistory = true;
 
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
-    const TYPE_TEXT                 = 1;
-    const TYPE_SELECT               = 2;
-    const TYPE_NUMBER               = 3;
-    const TYPE_READONLY              = 4;
+    public const TYPE_TEXT = 1;
+    public const TYPE_SELECT = 2;
+    public const TYPE_NUMBER = 3;
+    public const TYPE_READONLY = 4;
+    public const TYPE_DATE = 5;
+    public const TYPE_TIME = 6;
 
-    static function getTypeName($nb = 0)
+
+    public static function getTypeName($nb = 0)
     {
         return _n('Free table field', 'Free table fields', $nb, 'metademands');
     }
 
 
-    static function getIcon()
+    public static function getIcon()
     {
         return PluginMetademandsMetademand::getIcon();
     }
@@ -61,21 +65,19 @@ class PluginMetademandsFreetablefield extends CommonDBChild
 
     /**
      * @param CommonGLPI $item
-     * @param int        $withtemplate
+     * @param int $withtemplate
      *
      * @return string
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-
         if (isset($item->fields['type'])
-        && $item->fields['type'] == "freetable") {
+            && $item->fields['type'] == "freetable") {
             $nb = self::getNumberOfFieldsForItem($item);
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
         }
         return '';
     }
-
 
 
     /**
@@ -85,7 +87,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
      *
      * @return int number of parameters for this item
      */
-    static function getNumberOfFieldsForItem($item)
+    public static function getNumberOfFieldsForItem($item)
     {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
@@ -129,6 +131,8 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         $types[self::TYPE_TEXT] = __('Text', 'metademands');
         $types[self::TYPE_SELECT] = __('Dropdown', 'metademands');
         $types[self::TYPE_NUMBER] = __('Number', 'metademands');
+        $types[self::TYPE_DATE] = __('Date', 'metademands');
+        $types[self::TYPE_TIME] = _n('Hour', 'Hours', 1);
         return $types;
     }
 
@@ -216,15 +220,14 @@ class PluginMetademandsFreetablefield extends CommonDBChild
      * @param array $params
      * @return void
      */
-    static public function showFreetableFields($params = [])
+    public static function showFreetableFields($params = [])
     {
-
         if ($params['type'] == "freetable") {
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1'>";
             echo "<th colspan='5'>";
             echo _n('Free table field', 'Free table fields', 2, 'metademands');
-            $label =  __('(6 fields maximum)', 'metademands');
+            $label = __('(6 fields maximum)', 'metademands');
             echo "&nbsp;";
             Html::showToolTip(
                 Glpi\RichText\RichText::getSafeHtml($label),
@@ -245,12 +248,11 @@ class PluginMetademandsFreetablefield extends CommonDBChild
      */
     public function reorder(array $params)
     {
-
         if (isset($params['old_order'])
             && isset($params['new_order'])) {
             $crit = [
                 'plugin_metademands_fields_id' => $params['field_id'],
-                'rank' => $params['old_order']
+                'rank' => $params['old_order'],
             ];
 
             $itemMove = new self();
@@ -261,33 +263,33 @@ class PluginMetademandsFreetablefield extends CommonDBChild
                 if ($params['old_order'] < $params['new_order']) {
                     $toUpdateList = $this->find([
                         '`rank`' => ['>', $params['old_order']],
-                        'rank'   => ['<=', $params['new_order']]
+                        'rank' => ['<=', $params['new_order']],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
                         $this->update([
-                            'id'      => $toUpdate['id'],
-                            'rank' => $toUpdate['rank'] - 1
+                            'id' => $toUpdate['id'],
+                            'rank' => $toUpdate['rank'] - 1,
                         ]);
                     }
                 } else {
                     $toUpdateList = $this->find([
                         '`rank`' => ['<', $params['old_order']],
-                        'rank'   => ['>=', $params['new_order']]
+                        'rank' => ['>=', $params['new_order']],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
                         $this->update([
-                            'id'      => $toUpdate['id'],
-                            'rank' => $toUpdate['rank'] + 1
+                            'id' => $toUpdate['id'],
+                            'rank' => $toUpdate['rank'] + 1,
                         ]);
                     }
                 }
 
                 if (isset($itemMove->fields["id"]) && $itemMove->fields['id'] > 0) {
                     $this->update([
-                        'id'      => $itemMove->fields['id'],
-                        'rank' => $params['new_order']
+                        'id' => $itemMove->fields['id'],
+                        'rank' => $params['new_order'],
                     ]);
                 }
             }
@@ -304,8 +306,8 @@ class PluginMetademandsFreetablefield extends CommonDBChild
     {
         Html::requireJs("metademands");
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-                ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
-            ) . ");";
+            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
+        ) . ");";
 
         echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => true]);
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
@@ -314,7 +316,6 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer;'
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
-
     }
 
 
@@ -334,7 +335,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         echo '<span id=\'internal_name_values' . $rank . '\'>';
         echo __('Rank', 'metademands') . ' ' . $rank . '<br>';
         echo " " . __('Internal name', 'metademands') . " ";
-        $label =  __('No spaces, no special characters', 'metademands');
+        $label = __('No spaces, no special characters', 'metademands');
         Html::showToolTip(
             Glpi\RichText\RichText::getSafeHtml($label),
             ['awesome-class' => 'fa-info-circle']
@@ -394,15 +395,17 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         echo "<td id='show_custom_fields'>";
         echo "<span class='newdropdownvalue$rank' id='dropdown_values$rank'  style='display:none'>";
         echo "<br>" . __('Dropdown values', 'metademands') . " ";
-        $label =  __('One value by line, separated by comma', 'metademands');
+        $label = __('One value by line, separated by comma', 'metademands');
         Html::showToolTip(
             Glpi\RichText\RichText::getSafeHtml($label),
             ['awesome-class' => 'fa-info-circle']
         );
         $name = "dropdown_values[$rank]";
-        Html::textarea(['name' => $name,
+        Html::textarea([
+            'name' => $name,
             'rows' => 3,
-            'cols' => 5]);
+            'cols' => 5,
+        ]);
         echo "</span>";
         echo "</td>";
 
@@ -429,9 +432,11 @@ class PluginMetademandsFreetablefield extends CommonDBChild
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo Html::submit("", ['name'  => 'add',
+        echo Html::submit("", [
+            'name' => 'add',
             'class' => 'btn btn-primary',
-            'icon'  => 'fas fa-save']);
+            'icon' => 'fas fa-save',
+        ]);
         echo "</td>";
         echo "</tr>";
         echo "</table>";

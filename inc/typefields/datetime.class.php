@@ -37,7 +37,6 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsDatetime extends CommonDBTM
 {
-
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -46,22 +45,22 @@ class PluginMetademandsDatetime extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Date & Hour', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    public static function showWizardField($data, $namefield, $value, $on_order)
     {
-
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
 
-        $opt = ['value'    => $value,
-            'display'  => false,
-            'required' => (bool)$data['is_mandatory'],
-            'size'     => 40
+        $opt = [
+            'value' => $value,
+            'display' => false,
+            'required' => (bool) $data['is_mandatory'],
+            'size' => 40,
         ];
 
         $use_future_date = $data['use_future_date'];
@@ -87,14 +86,10 @@ class PluginMetademandsDatetime extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params) {}
+
+    public static function showFieldParameters($params)
     {
-
-    }
-
-    static function showFieldParameters($params)
-    {
-
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Use this field for child ticket field', 'metademands');
@@ -124,18 +119,16 @@ class PluginMetademandsDatetime extends CommonDBTM
         echo "<td>";
         $optionNumber = [
             'value' => $params['additional_number_day'],
-            'min'   => 0,
-            'max'   => 500,
+            'min' => 0,
+            'max' => 500,
         ];
         Dropdown::showNumber('additional_number_day', $optionNumber);
         echo "</td>";
         echo "</tr>";
-
     }
 
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-
         $msg = "";
         $checkKo = 0;
         // Check fields empty
@@ -148,28 +141,27 @@ class PluginMetademandsDatetime extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    static function fieldsMandatoryScript($data)
-    {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-        
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function getFieldValue($field)
     {
         return Html::convDateTime($field['value']);
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
-    {
+    public static function displayFieldItems(
+        &$result,
+        $formatAsTable,
+        $style_title,
+        $label,
+        $field,
+        $return_value,
+        $lang,
+        $is_order = false
+    ) {
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
