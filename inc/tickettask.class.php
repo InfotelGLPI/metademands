@@ -148,18 +148,11 @@ class PluginMetademandsTicketTask extends CommonDBChild
 
             echo "<th>" . sprintf(__('%1$s'), __('Use block', 'metademands')) . "</th>";
             echo "<td>";
-
             Dropdown::showYesNo('useBlock', $values['useBlock']);
-
             echo "</td>";
-            echo "<td colspan='4'></td>";
-
-            echo "</tr>";
-            echo "<tr class='tab_bg_1'>";
 
             echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
             echo "<td>";
-
             $field = new PluginMetademandsField();
             $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
             $blocks = [];
@@ -180,32 +173,98 @@ class PluginMetademandsTicketTask extends CommonDBChild
                     'multiple' => true,
                     'entity' => $_SESSION['glpiactiveentities']]
             );
-
             echo "</td>";
-            echo "<td colspan='4'></td>";
-
             echo "</tr>";
+
             echo "<tr class='tab_bg_1'>";
 
             echo "<th>" . sprintf(__('%1$s'), __('Format the description of the childs ticket as a table', 'metademands')) . "</th>";
             echo "<td>";
             Dropdown::showYesNo('formatastable', $values['formatastable']);
             echo "</td>";
-            echo "<td colspan='4'></td>";
-
-            echo "</tr>";
 
             echo "<th>" . sprintf(__('%1$s'), __('Block parent ticket resolution', 'metademands')) . "</th>";
             echo "<td>";
-
             Dropdown::showYesNo('block_parent_ticket_resolution', $values['block_parent_ticket_resolution']);
-
             echo "</td>";
-            echo "<td colspan='4'></td>";
 
             echo "</tr>";
 
+            if ($canchangeorder) {
+                echo "<tr class='tab_bg_1'>";
+                echo "<th>" . __('Create after the task', 'metademands') . "</th>";
+                echo "<td >";
+                Dropdown::show(
+                    'PluginMetademandsTask',
+                    ['name' => 'parent_tasks_id',
+                        'value' => $values['parent_tasks_id'],
+                        'entity' => $metademands->fields["entities_id"],
+                        'condition' => ['type' => PluginMetademandsTask::TICKET_TYPE,
+                            'plugin_metademands_metademands_id' => $metademands->fields["id"],
+                            'id' => ['<>', $values['plugin_metademands_tasks_id']]]]
+                );
+                echo "</td>";
+                echo "<td colspan='2'></td>";
+                echo "</tr>";
+            }
+
             echo "<tr class='tab_bg_1'>";
+
+            echo "<th>" . __('Entity') . "</th>";
+            echo "<td>";
+//            Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"]]);
+
+            $rand = Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"], 'on_change' => 'entity_cat()']);
+            echo "<script type='text/javascript'>";
+            echo "function entity_cat(){";
+            $params = ['action' => 'showcategories',
+                'entities_id' => '__VALUE__',
+                'type' => $values['type'],
+                'itilcategories_id' => $values['itilcategories_id'] ?? 0];
+            Ajax::updateItemJsCode('ticket_category', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+
+            $params = ['action' => 'users_id_requester',
+                'entities_id' => '__VALUE__',
+                'type' => $values['type'],
+                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
+                'users_id_requester' => $values['users_id_requester'] ?? 0];
+            Ajax::updateItemJsCode('ticket_users_id_requester', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+
+            $params = ['action' => 'users_id_observer',
+                'entities_id' => '__VALUE__',
+                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
+                'users_id_observer' => $values['users_id_observer'] ?? 0];
+            Ajax::updateItemJsCode('ticket_users_id_observer', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+
+            $params = ['action' => 'users_id_assign',
+                'entities_id' => '__VALUE__',
+                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
+                'users_id_assign' => $values['users_id_assign'] ?? 0];
+            Ajax::updateItemJsCode('ticket_users_id_assign', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+
+            $params = ['action' => 'groups_id_requester',
+                'entities_id' => '__VALUE__',
+                'condition' => ['is_requester' => 1],
+                'groups_id_requester' => $values['groups_id_requester'] ?? 0];
+            Ajax::updateItemJsCode('ticket_groups_id_requester', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+
+            $params = ['action' => 'groups_id_observer',
+                'entities_id' => '__VALUE__',
+                'condition' => ['is_watcher' => 1],
+                'groups_id_observer' => $values['groups_id_observer'] ?? 0];
+            Ajax::updateItemJsCode('ticket_groups_id_observer', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+
+            $params = ['action' => 'groups_id_assign',
+                'entities_id' => '__VALUE__',
+                'condition' => ['is_assign' => 1],
+                'groups_id_assign' => $values['groups_id_assign'] ?? 0];
+            Ajax::updateItemJsCode('ticket_groups_id_assign', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            echo "}";
+            echo "</script>";
+            echo "</td>";
+            echo "</tr>";
+
+            echo "</td>";
 
             echo "<th>" . sprintf(
                     __('%1$s%2$s'),
@@ -213,6 +272,8 @@ class PluginMetademandsTicketTask extends CommonDBChild
                     $tt->getMandatoryMark('itilcategories_id')
                 ) . "</th>";
             echo "<td>";
+
+            echo "<span id='ticket_category'>";
 
             $condition = [];
             switch ($values['type']) {
@@ -232,27 +293,10 @@ class PluginMetademandsTicketTask extends CommonDBChild
             }
 
             ITILCategory::dropdown($opt);
+
+            echo "</span>";
             echo "</td>";
-            echo "<td colspan='4'></td>";
 
-            echo "</tr>";
-
-            if ($canchangeorder) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<th>" . __('Create after the task', 'metademands') . "</th>";
-                echo "<td colspan='2'>";
-                Dropdown::show(
-                    'PluginMetademandsTask',
-                    ['name' => 'parent_tasks_id',
-                        'value' => $values['parent_tasks_id'],
-                        'entity' => $metademands->fields["entities_id"],
-                        'condition' => ['type' => PluginMetademandsTask::TICKET_TYPE,
-                            'plugin_metademands_metademands_id' => $metademands->fields["id"],
-                            'id' => ['<>', $values['plugin_metademands_tasks_id']]]]
-                );
-                echo "<td>";
-                echo "</tr>";
-            }
             echo "</table>";
         }
         echo "<table class='tab_cadre_fixe'>";
@@ -279,14 +323,15 @@ class PluginMetademandsTicketTask extends CommonDBChild
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
             if ($tt->isMandatoryField('_users_id_requester')) {
                 echo "<td>";
-                $ticket = new Ticket();
                 // Requester user
                 //         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
+                echo "<span id='ticket_users_id_requester'>";
                 echo $tt->getMandatoryMark('_users_id_requester');
                 User::dropdown(['name' => 'users_id_requester',
                     'value' => isset($values['users_id_requester']) ? $values['users_id_requester'] : 0,
                     'entity' => $metademands->fields["entities_id"],
                     'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
+                echo "</span>";
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -294,14 +339,15 @@ class PluginMetademandsTicketTask extends CommonDBChild
             }
             if ($tt->isMandatoryField('_users_id_observer')) {
                 echo "<td>";
-                $ticket = new Ticket();
                 // Observer user
                 //         echo CommonITILObject::getActorIcon('user', CommonITILActor::OBSERVER) . '&nbsp;';
+                echo "<span id='ticket_users_id_observer'>";
                 echo $tt->getMandatoryMark('_users_id_observer');
                 User::dropdown(['name' => 'users_id_observer',
                     'value' => isset($values['users_id_observer']) ? $values['users_id_observer'] : 0,
                     'entity' => $metademands->fields["entities_id"],
                     'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)]);
+                echo "</span>";
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -314,10 +360,12 @@ class PluginMetademandsTicketTask extends CommonDBChild
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
             echo $tt->getMandatoryMark('_users_id_assign');
         }
+        echo "<span id='ticket_users_id_assign'>";
         User::dropdown(['name' => 'users_id_assign',
             'value' => isset($values['users_id_assign']) ? $values['users_id_assign'] : 0,
             'entity' => $metademands->fields["entities_id"],
             'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)]);
+        echo "</span>";
         echo "</td>";
         echo "</tr>";
 
@@ -327,11 +375,13 @@ class PluginMetademandsTicketTask extends CommonDBChild
                 echo "<td>";
                 // Requester Group
                 //         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
+                echo "<span id='ticket_groups_id_requester'>";
                 echo $tt->getMandatoryMark('_groups_id_requester');
                 Dropdown::show('Group', ['name' => 'groups_id_requester',
                     'value' => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
                     'entity' => $metademands->fields["entities_id"],
                     'condition' => ['is_requester' => 1]]);
+                echo "</span>";
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -342,12 +392,15 @@ class PluginMetademandsTicketTask extends CommonDBChild
                 echo "<td>";
                 // Observer Group
                 //         echo CommonITILObject::getActorIcon('group', CommonITILActor::OBSERVER) . '&nbsp;';
+                echo "<span id='ticket_groups_id_observer'>";
                 echo $tt->getMandatoryMark('_groups_id_observer');
                 Dropdown::show('Group', ['name' => 'groups_id_observer',
                     'value' => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
                     'entity' => $metademands->fields["entities_id"],
                     'condition' => ['is_watcher' => 1]]);
+                echo "</span>";
                 echo "</td>";
+
             } else {
                 echo "<td>";
                 echo "</td>";
@@ -356,6 +409,7 @@ class PluginMetademandsTicketTask extends CommonDBChild
         echo "<td>";
         // Assign Group
         //      echo CommonITILObject::getActorIcon('group', CommonITILActor::ASSIGN) . '&nbsp;';
+        echo "<span id='ticket_groups_id_assign'>";
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
             echo $tt->getMandatoryMark('_groups_id_assign');
         }
@@ -363,6 +417,7 @@ class PluginMetademandsTicketTask extends CommonDBChild
             'value' => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
             'entity' => $metademands->fields["entities_id"],
             'condition' => ['is_assign' => 1]]);
+        echo "</span>";
         echo "</td>";
         echo "</tr>";
         echo "</table>";
@@ -540,7 +595,7 @@ class PluginMetademandsTicketTask extends CommonDBChild
         $tt = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
         echo "<form name='form_ticket' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?_in_modal=1&id=$ID' enctype=\"multipart/form-data\">";
-        PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $tasks->fields['type'], $input);
+        self::showTicketTaskForm($metademands->fields['id'], $solved, $tasks->fields['type'], $input);
 
         echo Html::hidden('plugin_metademands_tasks_id', ['value' => $this->fields['plugin_metademands_tasks_id']]);
         if (isset($tt->fields['id'])) {

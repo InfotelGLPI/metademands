@@ -37,6 +37,8 @@ if (strpos($_SERVER['PHP_SELF'], "ulocationUpdate.php")) {
 Session::checkLoginUser();
 $fieldUser = new PluginMetademandsField();
 
+$display_type = $_POST['display_type'] ?? PluginMetademandsDropdown::CLASSIC_DISPLAY;
+
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
       if ($fields = $fieldUser->find(['type'         => "dropdown",
@@ -49,6 +51,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                       'link_to_user' => $_POST['id_fielduser']]
               )) {
                   $_POST["field"] = "field[" . $f['id'] . "]";
+                  $_POST['fields_id'] = $f['id'];
+                  $display_type = $fieldparameter->fields["display_type"];
               }
           }
       }
@@ -73,6 +77,7 @@ if (isset($_POST['fields_id'])
    $locations_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
+
 $opt = ['name'  => $_POST["field"],
         'value' => $locations_id,
     'width' => '200px'];
@@ -85,7 +90,13 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
    $opt['specific_tags'] = ['required' => 'required'];
 }
 
-Location::dropdown($opt);
+if ($display_type == PluginMetademandsDropdown::CLASSIC_DISPLAY) {
+    Location::dropdown($opt);
+} else {
+    $opt['fields_id'] = $_POST['fields_id'];
+    $opt['required'] = (isset($fieldparameter->fields["is_mandatory"]) && $fieldparameter->fields['is_mandatory'] == 1 ? "required" : "");
+    PluginMetademandsDropdown::locationDropdown($opt);
+}
 
 $_POST['name'] = "location_user";
 $_POST['rand'] = "";

@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.3.28');
+define('PLUGIN_METADEMANDS_VERSION', '3.4.0');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -42,6 +42,10 @@ include_once PLUGIN_METADEMANDS_DIR . "/vendor/autoload.php";
 function plugin_init_metademands()
 {
     global $PLUGIN_HOOKS, $CFG_GLPI;
+
+    include_once(PLUGIN_METADEMANDS_DIR . "/inc/autoload.php");
+    $autoloader = new PluginMetademandsAutoloader();
+    $autoloader->register();
 
     $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
     $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
