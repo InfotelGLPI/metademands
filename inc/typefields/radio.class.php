@@ -430,7 +430,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
             }
 
-            if (count($display) > 0) {
+            if (is_array($display) && count($display) > 0) {
                 foreach ($display as $see) {
                     $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
                 }
@@ -674,7 +674,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
             }
 
-            if (count($display) > 0) {
+            if (is_array($display) && count($display) > 0) {
                 foreach ($display as $see) {
                     $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
                     $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
@@ -862,7 +862,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
             }
 
-            if (count($display) > 0) {
+            if (is_array($display) && count($display) > 0) {
                 foreach ($display as $see) {
                     $pre_onchange .= "if (document.getElementById('ablock" . $see . "'))
                     document.getElementById('ablock" . $see . "').style.display = 'block';
