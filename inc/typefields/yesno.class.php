@@ -576,13 +576,17 @@ class PluginMetademandsYesno extends CommonDBTM
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                     if ($idc == $k) {
                                         foreach ($childs_blocks as $childs) {
-                                            $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                            $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]);
+                                            if (count($options) == 0) {
+                                                $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
                                         if (document.getElementById('ablock" . $childs . "'))
                                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                  " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+                                                        $metaid,
+                                                        $childs
+                                                    );
+                                            }
                                         }
                                     }
                                 }
@@ -606,13 +610,17 @@ class PluginMetademandsYesno extends CommonDBTM
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                    $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
+                                        ['hidden_block' => $childs]);
+                                    if (count($options) == 0) {
+                                        $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
                                 if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                        $metaid,
-                                        $childs
-                                    );
+                                                $metaid,
+                                                $childs
+                                            );
+                                    }
                                 }
                             }
                         }

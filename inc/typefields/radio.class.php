@@ -750,13 +750,17 @@ class PluginMetademandsRadio extends CommonDBTM
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                     if ($idc == $k) {
                                         foreach ($childs_blocks as $childs) {
-                                            $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                            $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]);
+                                            if (count($options) == 0) {
+                                                $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                                 $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+                                                        $metaid,
+                                                        $childs
+                                                    );
+                                            }
                                         }
                                     }
                                 }
@@ -826,10 +830,16 @@ class PluginMetademandsRadio extends CommonDBTM
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                    $options = getAllDataFromTable(
+                                        'glpi_plugin_metademands_fieldoptions',
+                                        ['hidden_block' => $childs]
+                                    );
+                                    if (count($options) == 0) {
+                                        $onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                 $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                 $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                                    }
                                 }
                             }
                         }

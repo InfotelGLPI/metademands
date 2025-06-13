@@ -572,13 +572,17 @@ class PluginMetademandsUrl extends CommonDBTM
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
-                                        $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                        $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
+                                            ['hidden_block' => $childs]);
+                                        if (count($options) == 0) {
+                                            $script .= "if (document.getElementById('ablock" . $childs . "'))
                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                         $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                            $metaid,
-                                            $childs
-                                        );
+                                                    $metaid,
+                                                    $childs
+                                                );
+                                        }
                                     }
                                 }
                             }
