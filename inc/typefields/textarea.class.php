@@ -663,19 +663,19 @@ class PluginMetademandsTextarea extends CommonDBTM
         $lang,
         $is_order = false
     ) {
-        $colspan = $is_order ? 6 : 1;
+        $colspan = $is_order ? 12 : 2;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
+                $result[$field['rank']]['content'] .= "<tr><th $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
+                $result[$field['rank']]['content'] .= "</th></tr><tr><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field);
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
+                $result[$field['rank']]['content'] .= "</td><tr>";
             }
         }
 
