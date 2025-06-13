@@ -2388,12 +2388,12 @@ class PluginMetademandsBasket extends CommonDBTM
         } else {
             foreach ($materials as $id => $mat_id) {
                 $material = new PluginMetademandsBasketobject();
-                $material->getFromDB($mat_id);
+                $material->getFromDB($id);
 
                 $value .= $material->getName();
                 $quantity = 0;
-                if (isset($quantities[$elt['id']][$mat_id])) {
-                    $quantity = $quantities[$elt['id']][$mat_id];
+                if (isset($quantities[$elt['id']][$id])) {
+                    $quantity = $quantities[$elt['id']][$id];
                     if ($quantity > 0) {
                         $value .= " - " . __('Quantity', 'metademands') . " : " . $quantity;
                     }
