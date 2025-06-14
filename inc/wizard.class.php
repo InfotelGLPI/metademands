@@ -3233,157 +3233,51 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($value['type'] != 'parent_field') {
             // Check fields empty
 
+            $class = PluginMetademandsField::getClassFromType($value['type']);
+
             switch ($value['type']) {
                 case 'title':
-                    break;
                 case 'title-block':
-                    break;
                 case 'informations':
-                    break;
-                case 'text':
-                    $result = PluginMetademandsText::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'tel':
-                    $result = PluginMetademandsTel::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'email':
-                    $result = PluginMetademandsEmail::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'url':
-                    $result = PluginMetademandsUrl::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'textarea':
-                    $result = PluginMetademandsTextarea::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'dropdown_meta':
-                    $result = PluginMetademandsDropdownmeta::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'dropdown_object':
-                    $result = PluginMetademandsDropdownobject::checkMandatoryFields($value, $fields);
-                    $checkKo[] = $result['checkKo'];
-                    $msg[] = $result['msg'];
-                    break;
-                case 'dropdown':
-                    $result = PluginMetademandsDropdown::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'dropdown_multiple':
-                    $result = PluginMetademandsDropdownmultiple::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'radio':
-                    $result = PluginMetademandsRadio::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'checkbox':
-                    $result = PluginMetademandsCheckbox::checkMandatoryFields($value, $fields);
-                    $checkKo[] = $result['checkKo'];
-                    $msg[] = $result['msg'];
-                    break;
-                case 'yesno':
-                    $result = PluginMetademandsYesno::checkMandatoryFields($value, $fields);
-                    $checkKo[] = $result['checkKo'];
-                    $msg[] = $result['msg'];
-                    break;
-                case 'number':
-                    $result = PluginMetademandsNumber::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'range':
-                    $result = PluginMetademandsRange::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'freetable':
-                    $result = PluginMetademandsFreetable::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'date':
-                    $result = PluginMetademandsDate::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'time':
-                    $result = PluginMetademandsTime::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'datetime':
-                    $result = PluginMetademandsDatetime::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
-                    break;
-                case 'date_interval':
-                    $result = PluginMetademandsDateinterval::checkMandatoryFields($value, $fields);
-                    if ($result['checkKo'] == 1) {
-                        $checkKo[] = $result['checkKo'];
-                        $msg[] = $result['msg'];
-                    }
+                case 'link':
+                case 'basket':
                     break;
                 case 'datetime_interval':
-                    $result = PluginMetademandsDatetimeinterval::checkMandatoryFields($value, $fields);
+                case 'date_interval':
+                case 'datetime':
+                case 'time':
+                case 'date':
+                case 'freetable':
+                case 'range':
+                case 'number':
+                case 'radio':
+                case 'dropdown_multiple':
+                case 'dropdown':
+                case 'dropdown_meta':
+                case 'textarea':
+                case 'url':
+                case 'email':
+                case 'tel':
+                case 'text':
+                    $result = $class::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];
                     }
+                    break;
+                case 'yesno':
+                case 'checkbox':
+                case 'dropdown_object':
+                    $result = $class::checkMandatoryFields($value, $fields);
+                    $checkKo[] = $result['checkKo'];
+                    $msg[] = $result['msg'];
                     break;
                 case 'upload':
-                    $result = PluginMetademandsUpload::checkMandatoryFields($value, $post);
+                    $result = $class::checkMandatoryFields($value, $post);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];
                     }
-                    break;
-                case 'link':
-                    break;
-                case 'basket':
                     break;
                 default:
                     break;

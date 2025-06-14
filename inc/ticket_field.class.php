@@ -208,72 +208,38 @@ class PluginMetademandsTicket_Field extends CommonDBTM
     static function isCheckValueOK($value, $check_value, $type)
     {
 
+        $class = PluginMetademandsField::getClassFromType($type);
+
         if (isset($check_value)) {
             switch ($type) {
+                case 'informations':
+                case 'title-block':
+                case 'basket':
+                case 'upload':
+                case 'datetime_interval':
+                case 'date_interval':
+                case 'datetime':
+                case 'time':
+                case 'date':
+                case 'freetable':
+                case 'range':
+                case 'number':
                 case 'title':
                     break;
-                case 'title-block':
-                    break;
-                case 'informations':
-                    break;
-                case 'text':
-                    PluginMetademandsText::isCheckValueOK($value, $check_value);
-                    break;
-                case 'tel':
-                    PluginMetademandsTel::isCheckValueOK($value, $check_value);
-                    break;
-                case 'email':
-                    PluginMetademandsEmail::isCheckValueOK($value, $check_value);
-                    break;
-                case 'url':
-                    PluginMetademandsUrl::isCheckValueOK($value, $check_value);
-                    break;
-                case 'textarea':
-                    PluginMetademandsTextarea::isCheckValueOK($value, $check_value);
-                    break;
-                case 'dropdown_meta':
-                    PluginMetademandsDropdownmeta::isCheckValueOK($value, $check_value);
-                    break;
-                case 'dropdown_object':
-                    PluginMetademandsDropdownobject::isCheckValueOK($value, $check_value);
-                    break;
-                case 'dropdown':
-                    PluginMetademandsDropdown::isCheckValueOK($value, $check_value);
-                    break;
-                case 'dropdown_multiple':
-                    PluginMetademandsDropdownmultiple::isCheckValueOK($value, $check_value);
-                    break;
-                case 'radio':
-                    PluginMetademandsRadio::isCheckValueOK($value, $check_value);
-                    break;
-                case 'checkbox':
-                    PluginMetademandsCheckbox::isCheckValueOK($value, $check_value);
-                    break;
-                case 'yesno':
-                    PluginMetademandsYesno::isCheckValueOK($value, $check_value);
-                    break;
-                case 'number':
-                    break;
-                case 'range':
-                    break;
-                case 'freetable':
-                    break;
-                case 'date':
-                    break;
-                case 'time':
-                    break;
-                case 'datetime':
-                    break;
-                case 'date_interval':
-                    break;
-                case 'datetime_interval':
-                    break;
-                case 'upload':
-                    break;
                 case 'link':
-                    PluginMetademandsLink::isCheckValueOK($value, $check_value);
-                    break;
-                case 'basket':
+                case 'yesno':
+                case 'checkbox':
+                case 'tel':
+                case 'email':
+                case 'url':
+                case 'textarea':
+                case 'dropdown_object':
+                case 'dropdown_meta':
+                case 'dropdown_multiple':
+                case 'dropdown':
+                case 'radio':
+                case 'text':
+                    $class::isCheckValueOK($value, $check_value);
                     break;
                 default:
                     if ($check_value == PluginMetademandsField::$not_null && empty($value)) {

@@ -5083,21 +5083,13 @@ JAVASCRIPT
             || $field['type'] == 'basket'
             || $field['type'] == 'freetable'
             || in_array($field['type'], $types)) {
+
+            $class = PluginMetademandsField::getClassFromType($field['type']);
+
             switch ($field['type']) {
-                case 'title-block':
-                    PluginMetademandsTitleblock::displayFieldItems(
-                        $result,
-                        $formatAsTable,
-                        $style_title,
-                        $label,
-                        $field,
-                        $return_value,
-                        $lang,
-                        $is_order
-                    );
-                    break;
                 case 'title':
-                    PluginMetademandsTitle::displayFieldItems(
+                case 'title-block':
+                    $class::displayFieldItems(
                         $result,
                         $formatAsTable,
                         $style_title,
@@ -5108,12 +5100,13 @@ JAVASCRIPT
                         $is_order
                     );
                     break;
+                case 'dropdown_object':
                 case 'dropdown':
                     if ($field['value'] != 0) {
                         if ($return_value == true) {
-                            return PluginMetademandsDropdown::getFieldValue($field);
+                            return $class::getFieldValue($field);
                         } else {
-                            PluginMetademandsDropdown::displayFieldItems(
+                            $class::displayFieldItems(
                                 $result,
                                 $formatAsTable,
                                 $style_title,
@@ -5124,160 +5117,15 @@ JAVASCRIPT
                                 $is_order
                             );
                         }
-                    }
-                    break;
-                case 'dropdown_object':
-                    if ($field['value'] != 0) {
-                        if ($return_value == true) {
-                            return PluginMetademandsDropdownobject::getFieldValue($field);
-                        } else {
-                            PluginMetademandsDropdownobject::displayFieldItems(
-                                $result,
-                                $formatAsTable,
-                                $style_title,
-                                $label,
-                                $field,
-                                $return_value,
-                                $lang,
-                                $is_order
-                            );
-                        }
-                    }
-                    break;
-                case 'dropdown_meta':
-                    if ($return_value == true) {
-                        return PluginMetademandsDropdownmeta::getFieldValue($field, $lang);
-                    } else {
-                        PluginMetademandsDropdownmeta::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
                     }
                     break;
                 case 'dropdown_multiple':
-                    if ($return_value == true) {
-                        return PluginMetademandsDropdownmultiple::getFieldValue($field, $lang);
-                    } else {
-                        PluginMetademandsDropdownmultiple::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
-                case 'link':
-                    if ($return_value == true) {
-                        return PluginMetademandsLink::getFieldValue($field);
-                    } else {
-                        PluginMetademandsLink::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-
-                    break;
-                case 'textarea':
-                    if ($return_value == true) {
-                        return PluginMetademandsTextarea::getFieldValue($field);
-                    } else {
-                        PluginMetademandsTextarea::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
-                case 'text':
-                    if ($return_value == true) {
-                        return PluginMetademandsText::getFieldValue($field);
-                    } else {
-                        PluginMetademandsText::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
-                case 'tel':
-                    if ($return_value == true) {
-                        return PluginMetademandsTel::getFieldValue($field);
-                    } else {
-                        PluginMetademandsTel::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
-                case 'email':
-                    if ($return_value == true) {
-                        return PluginMetademandsEmail::getFieldValue($field);
-                    } else {
-                        PluginMetademandsEmail::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
-                case 'url':
-                    if ($return_value == true) {
-                        return PluginMetademandsUrl::getFieldValue($field);
-                    } else {
-                        PluginMetademandsUrl::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'checkbox':
+                case 'dropdown_meta':
                     if ($return_value == true) {
-                        return PluginMetademandsCheckbox::getFieldValue($field, $lang);
+                        return $class::getFieldValue($field, $lang);
                     } else {
-                        PluginMetademandsCheckbox::displayFieldItems(
+                        $class::displayFieldItems(
                             $result,
                             $formatAsTable,
                             $style_title,
@@ -5288,13 +5136,12 @@ JAVASCRIPT
                             $is_order
                         );
                     }
-
                     break;
                 case 'radio':
                     if ($return_value == true) {
-                        return PluginMetademandsRadio::getFieldValue($field, $label, $lang);
+                        return $class::getFieldValue($field, $label, $lang);
                     } else {
-                        PluginMetademandsRadio::displayFieldItems(
+                        $class::displayFieldItems(
                             $result,
                             $formatAsTable,
                             $style_title,
@@ -5306,171 +5153,27 @@ JAVASCRIPT
                         );
                     }
                     break;
+                case 'textarea':
+                case 'text':
+                case 'tel':
+                case 'email':
+                case 'url':
                 case 'date':
-                    if ($return_value == true) {
-                        return PluginMetademandsDate::getFieldValue($field);
-                    } else {
-                        PluginMetademandsDate::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'time':
-                    if ($return_value == true) {
-                        return PluginMetademandsTime::getFieldValue($field);
-                    } else {
-                        PluginMetademandsTime::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'datetime':
-                    if ($return_value == true) {
-                        return PluginMetademandsDatetime::getFieldValue($field);
-                    } else {
-                        PluginMetademandsDatetime::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'date_interval':
-                    if ($return_value == true) {
-                        return PluginMetademandsDateinterval::getFieldValue($field);
-                    } else {
-                        PluginMetademandsDateinterval::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'datetime_interval':
-                    if ($return_value == true) {
-                        return PluginMetademandsDatetimeinterval::getFieldValue($field);
-                    } else {
-                        PluginMetademandsDatetimeinterval::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'number':
-                    if ($return_value == true) {
-                        return PluginMetademandsNumber::getFieldValue($field);
-                    } else {
-                        PluginMetademandsNumber::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'range':
-                    if ($return_value == true) {
-                        return PluginMetademandsRange::getFieldValue($field);
-                    } else {
-                        PluginMetademandsRange::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'freetable':
-                    if ($return_value == true) {
-                        return PluginMetademandsFreetable::getFieldValue($field);
-                    } else {
-                        PluginMetademandsFreetable::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'yesno':
-                    if ($return_value == true) {
-                        return PluginMetademandsYesno::getFieldValue($field);
-                    } else {
-                        PluginMetademandsYesno::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'basket':
-                    if ($return_value == true) {
-                        return PluginMetademandsBasket::getFieldValue($field);
-                    } else {
-                        PluginMetademandsBasket::displayFieldItems(
-                            $result,
-                            $formatAsTable,
-                            $style_title,
-                            $label,
-                            $field,
-                            $return_value,
-                            $lang,
-                            $is_order
-                        );
-                    }
-                    break;
                 case 'signature':
+                case 'link':
                     if ($return_value == true) {
-                        return PluginMetademandsSignature::getFieldValue($field);
+                        return $class::getFieldValue($field);
                     } else {
-                        PluginMetademandsSignature::displayFieldItems(
+                        $class::displayFieldItems(
                             $result,
                             $formatAsTable,
                             $style_title,
@@ -5481,6 +5184,7 @@ JAVASCRIPT
                             $is_order
                         );
                     }
+
                     break;
                 case 'parent_field':
                     $metademand_field = new PluginMetademandsField();
