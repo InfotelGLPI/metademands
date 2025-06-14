@@ -1019,7 +1019,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
-                        $fields_link = $check_value['fields_link'];
 
                         $onchange .= "$('.centralCol').on('click', 'button', function () {
                     const index = $(this).index();
@@ -1103,7 +1102,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
 
                 $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+                $nextsteptitle = __(
                     'Next',
                     'metademands'
                 ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -1238,7 +1237,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
 
                 $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+                $nextsteptitle = __(
                     'Next',
                     'metademands'
                 ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
