@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 14:34+0000\n"
+"POT-Creation-Date: 2025-06-15 14:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,16 +144,20 @@ msgid "Not empty"
 msgstr ""
 
 #: ajax/viewfieldinfos.php:43 inc/fieldcustomvalue.class.php:235
-#: inc/fieldparameter.class.php:205
+#: inc/fieldparameter.class.php:205 inc/typefields/freetablefield.class.php:193
 msgid "Field informations"
 msgstr ""
 
 #: ajax/viewfieldinfos.php:54 inc/fieldcustomvalue.class.php:246
-#: inc/fieldparameter.class.php:216
+#: inc/fieldparameter.class.php:216 inc/typefields/freetablefield.class.php:204
 msgid "Example"
 msgstr ""
 
-#: ajax/viewtypefields.php:55
+#: ajax/viewtypefields.php:55 inc/typefields/dropdown.class.php:386
+#: inc/typefields/dropdownmeta.class.php:1258
+#: inc/typefields/dropdownobject.class.php:571
+#: inc/typefields/dropdownobject.class.php:663 inc/typefields/tel.class.php:115
+#: inc/typefields/text.class.php:112
 msgid "Link this to a user field"
 msgstr ""
 
@@ -272,7 +276,7 @@ msgctxt "button"
 msgid "Clear the basket"
 msgstr ""
 
-#: inc/basketline.class.php:94
+#: inc/basketline.class.php:94 inc/typefields/basket.class.php:1809
 msgctxt "button"
 msgid "Send order"
 msgstr ""
@@ -312,10 +316,14 @@ msgid "The object type is mandatory"
 msgstr ""
 
 #: inc/basketobject.class.php:99 inc/basketobject.class.php:197
+#: inc/typefields/basket.class.php:137 inc/typefields/basket.class.php:1482
+#: inc/typefields/basket.class.php:1998 inc/typefields/basket.class.php:2349
 msgid "Designation"
 msgstr ""
 
 #: inc/basketobject.class.php:116 inc/basketobject.class.php:221
+#: inc/typefields/basket.class.php:135 inc/typefields/basket.class.php:1481
+#: inc/typefields/basket.class.php:1996 inc/typefields/basket.class.php:2347
 msgid "Reference"
 msgstr ""
 
@@ -408,6 +416,12 @@ msgstr ""
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
 #: inc/field.class.php:1341 inc/fieldoption.class.php:365
+#: inc/typefields/basket.class.php:544 inc/typefields/checkbox.class.php:442
+#: inc/typefields/dropdown.class.php:430
+#: inc/typefields/dropdownmeta.class.php:1303
+#: inc/typefields/dropdownmultiple.class.php:723
+#: inc/typefields/dropdownobject.class.php:740
+#: inc/typefields/radio.class.php:434 inc/typefields/yesno.class.php:208
 msgid "Value to check"
 msgstr ""
 
@@ -673,7 +687,8 @@ msgstr ""
 msgid "Warning : there are fields without custom values, please check"
 msgstr ""
 
-#: inc/field.class.php:1340
+#: inc/field.class.php:1340 inc/typefields/freetable.class.php:921
+#: inc/typefields/freetablefield.class.php:422
 msgid "Mandatory"
 msgstr ""
 
@@ -778,11 +793,20 @@ msgid ""
 "sorted by display order"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:547
+#: inc/fieldcustomvalue.class.php:547 inc/typefields/checkbox.class.php:258
+#: inc/typefields/dropdownmeta.class.php:1043
+#: inc/typefields/dropdownmultiple.class.php:550
+#: inc/typefields/freetable.class.php:849
+#: inc/typefields/freetablefield.class.php:336
+#: inc/typefields/radio.class.php:251
 msgid "Rank"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:566
+#: inc/fieldcustomvalue.class.php:566 inc/typefields/checkbox.class.php:283
+#: inc/typefields/dropdownmeta.class.php:1068
+#: inc/typefields/dropdownmultiple.class.php:487
+#: inc/typefields/dropdownmultiple.class.php:575
+#: inc/typefields/radio.class.php:276 inc/typefields/yesno.class.php:152
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
@@ -902,7 +926,16 @@ msgid "Block %s"
 msgstr ""
 
 #: inc/fieldoption.class.php:1944 inc/wizard.class.php:1442
-#: inc/wizard.class.php:1592
+#: inc/wizard.class.php:1592 inc/typefields/basket.class.php:813
+#: inc/typefields/checkbox.class.php:691 inc/typefields/dropdown.class.php:683
+#: inc/typefields/dropdownmeta.class.php:1600
+#: inc/typefields/dropdownmultiple.class.php:1104
+#: inc/typefields/dropdownmultiple.class.php:1239
+#: inc/typefields/dropdownobject.class.php:1032
+#: inc/typefields/email.class.php:332 inc/typefields/radio.class.php:623
+#: inc/typefields/tel.class.php:334 inc/typefields/text.class.php:332
+#: inc/typefields/textarea.class.php:288 inc/typefields/url.class.php:333
+#: inc/typefields/yesno.class.php:371
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
@@ -911,6 +944,16 @@ msgstr ""
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1553
 #: inc/wizard.class.php:1562 inc/wizard.class.php:1596
 #: inc/wizard.class.php:1602 inc/wizard.class.php:2105
+#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:693
+#: inc/typefields/dropdown.class.php:684
+#: inc/typefields/dropdownmeta.class.php:1602
+#: inc/typefields/dropdownmultiple.class.php:1106
+#: inc/typefields/dropdownmultiple.class.php:1241
+#: inc/typefields/dropdownobject.class.php:1033
+#: inc/typefields/email.class.php:334 inc/typefields/radio.class.php:625
+#: inc/typefields/tel.class.php:336 inc/typefields/text.class.php:334
+#: inc/typefields/textarea.class.php:290 inc/typefields/url.class.php:335
+#: inc/typefields/yesno.class.php:373
 msgid "Next"
 msgstr ""
 
@@ -933,6 +976,8 @@ msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
 #: inc/fieldparameter.class.php:774
+#: inc/typefields/dropdownmultiple.class.php:697
+#: inc/typefields/dropdownobject.class.php:638
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -1014,7 +1059,8 @@ msgstr ""
 msgid "Informations"
 msgstr ""
 
-#: inc/information.class.php:164
+#: inc/information.class.php:164 inc/typefields/freetable.class.php:868
+#: inc/typefields/freetablefield.class.php:350
 msgid "Type"
 msgstr ""
 
@@ -1356,14 +1402,19 @@ msgid "Created on"
 msgstr ""
 
 #: inc/metademandpdf.class.php:413 inc/metademandpdf.class.php:507
+#: inc/typefields/basket.class.php:1788 inc/typefields/basket.class.php:2274
+#: inc/typefields/freetable.class.php:777
+#: inc/typefields/freetable.class.php:1189
 msgid "Grand total (HT)"
 msgstr ""
 
-#: inc/metademandpdf.class.php:498
+#: inc/metademandpdf.class.php:498 inc/typefields/freetable.class.php:776
+#: inc/typefields/freetable.class.php:1188
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: inc/metademandpdf.class.php:507
+#: inc/metademandpdf.class.php:507 inc/typefields/freetable.class.php:777
+#: inc/typefields/freetable.class.php:1189
 msgid "(if VAT 20%)"
 msgstr ""
 
@@ -1968,4 +2019,432 @@ msgstr ""
 #: inc/wizard.class.php:3393
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
+msgstr ""
+
+#: inc/typefields/basket.class.php:50
+msgid "Basket"
+msgstr ""
+
+#: inc/typefields/basket.class.php:146 inc/typefields/basket.class.php:1513
+#: inc/typefields/basket.class.php:2025
+msgid "Estimated unit price"
+msgstr ""
+
+#: inc/typefields/basket.class.php:155 inc/typefields/basket.class.php:1523
+#: inc/typefields/basket.class.php:2015 inc/typefields/basket.class.php:2361
+msgid "Unit"
+msgstr ""
+
+#: inc/typefields/basket.class.php:158 inc/typefields/basket.class.php:1526
+#: inc/typefields/basket.class.php:2037 inc/typefields/basket.class.php:2373
+msgid "Unit price (HT)"
+msgstr ""
+
+#: inc/typefields/basket.class.php:164 inc/typefields/basket.class.php:1533
+#: inc/typefields/basket.class.php:2019 inc/typefields/basket.class.php:2355
+#: inc/typefields/basket.class.php:2398
+msgid "Quantity"
+msgstr ""
+
+#: inc/typefields/basket.class.php:167
+msgid "Select"
+msgstr ""
+
+#: inc/typefields/basket.class.php:177 inc/typefields/basket.class.php:1542
+#: inc/typefields/basket.class.php:2048 inc/typefields/basket.class.php:2377
+msgid "Total (HT)"
+msgstr ""
+
+#: inc/typefields/basket.class.php:183 inc/typefields/basket.class.php:190
+#: inc/typefields/basket.class.php:195 inc/typefields/basket.class.php:1547
+#: inc/typefields/basket.class.php:1553 inc/typefields/basket.class.php:1559
+#: inc/typefields/basket.class.php:2279 inc/typefields/basket.class.php:2286
+msgid "Total"
+msgstr ""
+
+#: inc/typefields/basket.class.php:207
+msgid "Search.."
+msgstr ""
+
+#: inc/typefields/basket.class.php:213
+msgid "Search for names.."
+msgstr ""
+
+#: inc/typefields/basket.class.php:219
+msgid "Search for description.."
+msgstr ""
+
+#: inc/typefields/basket.class.php:258 inc/typefields/basket.class.php:414
+#: inc/typefields/basket.class.php:511 inc/typefields/basket.class.php:1631
+#: inc/typefields/basket.class.php:1724 inc/typefields/basket.class.php:2123
+msgid "On quotation"
+msgstr ""
+
+#: inc/typefields/basket.class.php:484
+msgid "With quantity"
+msgstr ""
+
+#: inc/typefields/basket.class.php:496
+msgid "With unit price (HT)"
+msgstr ""
+
+#: inc/typefields/basket.class.php:520
+msgid "Accessory"
+msgstr ""
+
+#: inc/typefields/basket.class.php:545 inc/typefields/checkbox.class.php:477
+#: inc/typefields/checkbox.class.php:490 inc/typefields/dropdown.class.php:479
+#: inc/typefields/dropdown.class.php:515
+#: inc/typefields/dropdownmeta.class.php:1388
+#: inc/typefields/dropdownmeta.class.php:1398
+#: inc/typefields/dropdownmeta.class.php:1419
+#: inc/typefields/dropdownmultiple.class.php:854
+#: inc/typefields/dropdownobject.class.php:819
+#: inc/typefields/dropdownobject.class.php:822
+#: inc/typefields/dropdownobject.class.php:832
+#: inc/typefields/dropdownobject.class.php:854
+#: inc/typefields/dropdownobject.class.php:870
+#: inc/typefields/dropdownobject.class.php:881
+#: inc/typefields/radio.class.php:469 inc/typefields/radio.class.php:482
+msgid "Not null value"
+msgstr ""
+
+#: inc/typefields/basket.class.php:1472
+msgid "Basket summary"
+msgstr ""
+
+#: inc/typefields/basket.class.php:1763
+msgid "Grand total"
+msgstr ""
+
+#: inc/typefields/basket.class.php:1775
+msgid "* The prices are estimates and do not act as an estimate"
+msgstr ""
+
+#: inc/typefields/basket.class.php:1884
+msgid "No items on basket"
+msgstr ""
+
+#: inc/typefields/basket.class.php:2006
+msgid "Order type"
+msgstr ""
+
+#: inc/typefields/basket.class.php:2131
+msgid "On catalog"
+msgstr ""
+
+#: inc/typefields/checkbox.class.php:53
+msgid "Checkbox"
+msgstr ""
+
+#: inc/typefields/checkbox.class.php:391 inc/typefields/dropdown.class.php:408
+#: inc/typefields/dropdownmeta.class.php:1240
+#: inc/typefields/dropdownmultiple.class.php:650
+#: inc/typefields/radio.class.php:383 inc/typefields/yesno.class.php:183
+msgid "Classic display"
+msgstr ""
+
+#: inc/typefields/checkbox.class.php:392 inc/typefields/radio.class.php:384
+msgid "Block display"
+msgstr ""
+
+#: inc/typefields/checkbox.class.php:395 inc/typefields/dropdown.class.php:412
+#: inc/typefields/dropdownmeta.class.php:1244
+#: inc/typefields/dropdownmultiple.class.php:654
+#: inc/typefields/radio.class.php:387 inc/typefields/yesno.class.php:187
+msgid "Display type of the field"
+msgstr ""
+
+#: inc/typefields/date.class.php:50 inc/typefields/freetablefield.class.php:134
+msgid "Date"
+msgstr ""
+
+#: inc/typefields/date.class.php:95 inc/typefields/datetime.class.php:95
+#: inc/typefields/dropdown.class.php:373
+#: inc/typefields/dropdownmeta.class.php:1232
+#: inc/typefields/dropdownobject.class.php:600
+#: inc/typefields/dropdownobject.class.php:682
+msgid "Use this field for child ticket field"
+msgstr ""
+
+#: inc/typefields/date.class.php:102 inc/typefields/dateinterval.class.php:104
+#: inc/typefields/datetime.class.php:102
+#: inc/typefields/datetimeinterval.class.php:101
+msgid "Day greater or equal to now"
+msgstr ""
+
+#: inc/typefields/date.class.php:111 inc/typefields/dateinterval.class.php:111
+#: inc/typefields/datetime.class.php:111
+#: inc/typefields/datetimeinterval.class.php:108
+msgid "Define the default date"
+msgstr ""
+
+#: inc/typefields/date.class.php:117 inc/typefields/dateinterval.class.php:121
+#: inc/typefields/datetime.class.php:117
+#: inc/typefields/datetimeinterval.class.php:118
+msgid "Additional number day to the default date"
+msgstr ""
+
+#: inc/typefields/dateinterval.class.php:50
+msgid "Date interval"
+msgstr ""
+
+#: inc/typefields/datetime.class.php:50
+msgid "Date & Hour"
+msgstr ""
+
+#: inc/typefields/datetimeinterval.class.php:50
+msgid "Date & Hour interval"
+msgstr ""
+
+#: inc/typefields/dropdown.class.php:409
+msgid "Splitted display"
+msgstr ""
+
+#: inc/typefields/dropdownmeta.class.php:63
+#: inc/typefields/freetablefield.class.php:132
+msgid "Dropdown"
+msgstr ""
+
+#: inc/typefields/dropdownmeta.class.php:258
+msgid "This field is mandatory, please select your equipment"
+msgstr ""
+
+#: inc/typefields/dropdownmeta.class.php:762
+msgid "No equipment founded"
+msgstr ""
+
+#: inc/typefields/dropdownmeta.class.php:1241
+msgid "Icon display"
+msgstr ""
+
+#: inc/typefields/dropdownmeta.class.php:1282
+#: inc/typefields/dropdownobject.class.php:631
+msgid "Read-Only"
+msgstr ""
+
+#: inc/typefields/dropdownmeta.class.php:1289
+msgid "Hidden field"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:56
+msgid "Dropdown multiple"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:491
+msgid "Display value in the dropdown"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:492
+msgid "Select all"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:493
+msgid "Unselect all"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:651
+msgid "Double column display"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:668
+#: inc/typefields/dropdownobject.class.php:592
+msgid "Only users of my groups"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:678
+#: inc/typefields/dropdownobject.class.php:612
+msgid "Use id of requester by default"
+msgstr ""
+
+#: inc/typefields/dropdownmultiple.class.php:685
+#: inc/typefields/dropdownobject.class.php:619
+msgid "Use id of supervisor requester by default"
+msgstr ""
+
+#: inc/typefields/dropdownobject.class.php:50
+msgid "Glpi Object"
+msgstr ""
+
+#: inc/typefields/email.class.php:166 inc/typefields/tel.class.php:168
+#: inc/typefields/text.class.php:166 inc/typefields/textarea.class.php:130
+#: inc/typefields/url.class.php:166
+msgid "If field empty"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:52
+msgid "Free table"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:130
+#: inc/typefields/freetable.class.php:1137
+msgid "Total (TTC)"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:226
+msgid "You can't create a new line when there is an existing one"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:810
+msgid "Validate the basket"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:861
+#: inc/typefields/freetablefield.class.php:337
+msgid "Internal name"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:879
+#: inc/typefields/freetablefield.class.php:389
+msgid "Display name"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:895
+#: inc/typefields/freetablefield.class.php:397
+msgid "Dropdown values"
+msgstr ""
+
+#: inc/typefields/freetable.class.php:896
+#: inc/typefields/freetablefield.class.php:398
+msgid "One value by line, separated by comma"
+msgstr ""
+
+#: inc/typefields/freetablefield.class.php:56
+#: inc/typefields/freetablefield.class.php:229
+msgid "Free table field"
+msgid_plural "Free table fields"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/typefields/freetablefield.class.php:131 inc/typefields/text.class.php:50
+msgid "Text"
+msgstr ""
+
+#: inc/typefields/freetablefield.class.php:133
+#: inc/typefields/number.class.php:50
+msgid "Number"
+msgstr ""
+
+#: inc/typefields/freetablefield.class.php:230
+msgid "(6 fields maximum)"
+msgstr ""
+
+#: inc/typefields/freetablefield.class.php:338
+msgid "No spaces, no special characters"
+msgstr ""
+
+#: inc/typefields/freetablefield.class.php:457
+msgid "You can't add a field without name"
+msgstr ""
+
+#: inc/typefields/freetablefield.class.php:466
+msgid "You can't add a field without type"
+msgstr ""
+
+#: inc/typefields/link.class.php:112
+msgid "Button Type"
+msgstr ""
+
+#: inc/typefields/link.class.php:116
+msgid "button"
+msgstr ""
+
+#: inc/typefields/link.class.php:121
+msgid "*use field \"Additional label\" for the button title"
+msgstr ""
+
+#: inc/typefields/number.class.php:118 inc/typefields/range.class.php:170
+msgid "Step for number"
+msgstr ""
+
+#: inc/typefields/number.class.php:124 inc/typefields/range.class.php:176
+msgid "Minimal mandatory"
+msgstr ""
+
+#: inc/typefields/radio.class.php:53
+msgid "Radio button"
+msgstr ""
+
+#: inc/typefields/range.class.php:50
+msgid "Range"
+msgstr ""
+
+#: inc/typefields/signature.class.php:50
+msgid "Signature"
+msgstr ""
+
+#: inc/typefields/signature.class.php:66
+msgid "Your signature has been uploaded"
+msgstr ""
+
+#: inc/typefields/signature.class.php:70
+msgid "Your signature has been deleted"
+msgstr ""
+
+#: inc/typefields/signature.class.php:74
+msgid "There was a problem on upload your signature"
+msgstr ""
+
+#: inc/typefields/signature.class.php:78
+msgid "There was a problem on delete your signature"
+msgstr ""
+
+#: inc/typefields/signature.class.php:82
+msgid "This field is mandatory"
+msgstr ""
+
+#: inc/typefields/signature.class.php:91
+msgid "Add your signature"
+msgstr ""
+
+#: inc/typefields/signature.class.php:94
+msgid "Clear"
+msgstr ""
+
+#: inc/typefields/tel.class.php:134 inc/typefields/text.class.php:131
+msgid "User information to get"
+msgstr ""
+
+#: inc/typefields/tel.class.php:154 inc/typefields/text.class.php:152
+msgid "Regex to respect"
+msgstr ""
+
+#: inc/typefields/textarea.class.php:53
+msgid "Textarea"
+msgstr ""
+
+#: inc/typefields/textarea.class.php:117
+msgid "Use richt text"
+msgstr ""
+
+#: inc/typefields/textarea.class.php:136
+msgid "Not available with Rich text option"
+msgstr ""
+
+#: inc/typefields/textarea.class.php:841
+msgid "The description field is mandatory"
+msgstr ""
+
+#: inc/typefields/time.class.php:50
+msgid "Time"
+msgstr ""
+
+#: inc/typefields/titleblock.class.php:50
+msgid "Block title"
+msgstr ""
+
+#: inc/typefields/upload.class.php:52
+msgid "Add attachment"
+msgstr ""
+
+#: inc/typefields/upload.class.php:178
+msgid "Number of documents allowed"
+msgstr ""
+
+#: inc/typefields/yesno.class.php:52
+msgid "Yes / No"
+msgstr ""
+
+#: inc/typefields/yesno.class.php:184
+msgid "Switch display"
 msgstr ""
