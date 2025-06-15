@@ -2326,6 +2326,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'item' => $field->fields['item'],
             'type' => $field->fields['type'],
             'row_display' => $metademand_params->fields['row_display'] ?? 0,
+            'display_type' => $metademand_params->fields['display_type'] ?? 0,
             'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
             'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
             'color' => $metademand_params->fields['color'] ?? "",
