@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -59,6 +60,12 @@ if (isset($_POST["add"])) {
             $params[$rank]['is_default'] = $default_value;
         }
     }
+    if (isset($_POST["icon"])) {
+        $icon_values = $_POST["icon"];
+        foreach ($icon_values as $rank => $icon_value) {
+            $params[$rank]['icon'] = $icon_value;
+        }
+    }
 
     foreach ($params as $rank => $value) {
         $input['rank'] = $rank;
@@ -68,6 +75,7 @@ if (isset($_POST["add"])) {
         }
         $input['comment'] = $value['comment'];
         $input['is_default'] = $value['is_default'];
+        $input['icon'] = $value['icon'];
         $input['plugin_metademands_fields_id'] = $_POST['fields_id'];
         // Check update rights for fields
         $fieldcustom->check(-1, CREATE, $input);
@@ -111,9 +119,12 @@ if (isset($_POST["add"])) {
             $fieldparam->update($input);
         }
     } else {
+
         $names = $_POST['name'];
         $is_defaults = $_POST['is_default'];
         $comments = $_POST['comment'] ?? "";
+        $icons = $_POST['icon'] ?? "";
+        $blanks = $_POST['_blank_picture'] ?? "";
         $ids = $_POST['id'];
         $inputs = [];
         if (is_array($ids) && count($ids) > 0) {
@@ -128,6 +139,12 @@ if (isset($_POST["add"])) {
                 if (isset($comments[$id])) {
                     $inputs[$id]['comment'] = $comments[$id];
                 }
+                if (isset($icons[$id])) {
+                    $inputs[$id]['icon'] = $icons[$id];
+                }
+                if (isset($blanks[$id])) {
+                    $inputs[$id]['_blank_picture'] = $blanks[$id];
+                }
             }
         }
 
@@ -140,7 +157,7 @@ if (isset($_POST["add"])) {
     }
 
     Html::back();
-} else if (isset($_POST["delete"])) {
+} elseif (isset($_POST["delete"])) {
     $input['id'] = $_POST['customvalues_id'];
     $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
     //TODO update ranks
@@ -151,7 +168,7 @@ if (isset($_POST["add"])) {
         foreach ($updateRank as $update) {
             $fieldcustom->update([
                 'id' => $update['id'],
-                'rank' => $update['rank'] - 1
+                'rank' => $update['rank'] - 1,
             ]);
         }
     }
@@ -159,7 +176,7 @@ if (isset($_POST["add"])) {
     $fieldcustom->delete($input, 1);
 
     Html::back();
-} else if (isset($_POST["fixranks"])) {
+} elseif (isset($_POST["fixranks"])) {
 
     $field = new PluginMetademandsField();
     if ($field->getFromDB($_POST["plugin_metademands_fields_id"])) {

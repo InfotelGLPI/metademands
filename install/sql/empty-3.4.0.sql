@@ -167,6 +167,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldcustomvalues`
     `is_default`                   int          NOT NULL           DEFAULT '0',
     `comment`                      text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `rank`                         int          NOT NULL           DEFAULT '0',
+    `icon`                         VARCHAR(255)                    DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB

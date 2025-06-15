@@ -37,6 +37,9 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsRadio extends CommonDBTM
 {
+    public const CLASSIC_DISPLAY = 0;
+    public const BLOCK_DISPLAY = 1;
+
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -76,9 +79,13 @@ class PluginMetademandsRadio extends CommonDBTM
                 $inline = 'custom-control-inline';
             }
 
+            if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                $field .= "<div class='row flex-row'>";
+            }
+
             if (count($custom_values) > 0) {
                 foreach ($custom_values as $key => $label) {
-                    $field .= "<div class='custom-control custom-radio $inline'>";
+
                     $checked = "";
 
                     if (empty($value) && isset($label['is_default']) && $on_order == false) {
@@ -91,67 +98,132 @@ class PluginMetademandsRadio extends CommonDBTM
                     if ($data['is_mandatory'] == 1) {
                         $required = "required=required";
                     }
-                    $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
 
-                    if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
-                        $name = $label['name'];
-                    }
-                    $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name . "</label>";
-                    if (isset($label['comment']) && !empty($label['comment'])) {
-                        $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                        if (empty(
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $field .= "<div class='custom-control custom-radio $inline'>";
+
+                        $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+
+                        if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
+                            $name = $label['name'];
+                        }
+                        $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name . "</label>";
+                        if (isset($label['comment']) && !empty($label['comment'])) {
+                            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
+                            if (empty(
                             $comment = PluginMetademandsField::displayCustomvaluesField(
                                 $data['id'],
                                 $key,
                                 "comment"
                             )
-                        )) {
-                            $comment = $label['comment'];
-                        }
-                        $field .= Html::showToolTip(
-                            Glpi\RichText\RichText::getSafeHtml($comment),
-                            [
-                                'awesome-class' => 'fa-info-circle',
-                                'display' => false,
-                            ]
-                        );
-                        $field .= "</span>";
-                    }
-                    $field .= "</div>";
-
-                    $childs_blocks = [];
-                    $fieldopt = new PluginMetademandsFieldOption();
-                    if ($opts = $fieldopt->find(
-                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key]
-                    )) {
-                        foreach ($opts as $opt) {
-                            if (!empty($opt['childs_blocks'])) {
-                                $childs_blocks[] = json_decode($opt['childs_blocks'], true);
+                            )) {
+                                $comment = $label['comment'];
                             }
+                            $field .= Html::showToolTip(
+                                Glpi\RichText\RichText::getSafeHtml($comment),
+                                [
+                                    'awesome-class' => 'fa-info-circle',
+                                    'display' => false,
+                                ]
+                            );
+                            $field .= "</span>";
                         }
-                    }
-                    if (isset($childs_blocks[$key])) {
-                        $id = $data['id'];
-                        $script = "<script type='text/javascript'>";
-                        $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
-                        $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
+                        $field .= "</div>";
+                    } else {
+                        $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
+                        $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
 
-                        foreach ($childs_blocks as $customvalue => $childs) {
-                            if ($customvalue != $key) {
-                                foreach ($childs as $k => $v) {
-                                    $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
-                                    $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($namefield);
-                                    $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
-                                }
+//                        $field .= '
+//<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
+//data-capacity-checkbox="1"  data-is-used="0" checked="">';
+
+                        $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
+
+                        $icon = $label['icon'];
+                        if (empty($label['icon'])) {
+                            $icon = $data['icon'];
+                        }
+
+                        if (!empty($icon)) {
+                            $field .= "<span class='me-2 mt-1'>";
+                            $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                            $field .= "</span>";
+                        }
+
+
+                        $field .= "<div class='text-start'>";
+                        $field .= "<div class='d-flex align-items-center'>";
+//                        $field .= "<div class='fw-bold'>";
+
+                        if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
+                            $name = $label['name'];
+                        }
+                        $field .= $name;
+//                        $field .= "</div>";
+                        $field .= "</div>";
+                        $field .= "<small class='form-hint'>";
+                        if (isset($label['comment']) && !empty($label['comment'])) {
+                            if (empty(
+                            $comment = PluginMetademandsField::displayCustomvaluesField(
+                                $data['id'],
+                                $key,
+                                "comment"
+                            )
+                            )) {
+                                $comment = $label['comment'];
                             }
+                            $field .= $comment;
                         }
-                        $script .= "}";
-                        $script .= "})";
-                        $script .= "</script>";
+                        $field .= "</small>";
 
-                        $field .= $script;
+                        $field .= "</div>";
+
+                        $field .= "<div class='me-2 ms-auto'>";
+
+                        $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                        $field .= "</div>";
+
+                        $field .= "</div>";
+                        $field .= "</label>";
+                        $field .= "</div>";
                     }
                 }
+
+                $childs_blocks = [];
+                $fieldopt = new PluginMetademandsFieldOption();
+                if ($opts = $fieldopt->find(
+                    ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key]
+                )) {
+                    foreach ($opts as $opt) {
+                        if (!empty($opt['childs_blocks'])) {
+                            $childs_blocks[] = json_decode($opt['childs_blocks'], true);
+                        }
+                    }
+                }
+                if (isset($childs_blocks[$key])) {
+                    $id = $data['id'];
+                    $script = "<script type='text/javascript'>";
+                    $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
+                    $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
+
+                    foreach ($childs_blocks as $customvalue => $childs) {
+                        if ($customvalue != $key) {
+                            foreach ($childs as $k => $v) {
+                                $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
+                                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($namefield);
+                                $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                            }
+                        }
+                    }
+                    $script .= "}";
+                    $script .= "})";
+                    $script .= "</script>";
+
+                    $field .= $script;
+                }
+            }
+            if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                $field .= "</div>";
             }
         }
 
@@ -204,6 +276,35 @@ class PluginMetademandsRadio extends CommonDBTM
                 echo _n('Default value', 'Default values', 1, 'metademands') . " ";
                 Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
                 echo "</span>";
+                echo "</td>";
+
+                echo "<td class='rowhandler control center'>";
+                echo "<span id='icon$key'>";
+                $icon_selector_id = 'icon_' . mt_rand();
+
+                echo Html::select(
+                    'icon[' . $key . ']',
+                    [$value['icon'] => $value['icon']],
+                    [
+                        'id' => $icon_selector_id,
+                        'selected' => $value['icon'],
+                        'style' => 'width:175px;',
+                    ]
+                );
+
+                echo Html::script('js/Forms/FaIconSelector.js');
+                echo Html::scriptBlock(
+                    <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+                );
+                $blank = "_blank_picture[$key]";
+                echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
@@ -272,6 +373,56 @@ class PluginMetademandsRadio extends CommonDBTM
             Html::closeForm();
             PluginMetademandsFieldCustomvalue::importCustomValue($params);
         }
+        echo "</td>";
+        echo "</tr>";
+    }
+
+    public static function showFieldParameters($params)
+    {
+        $disp = [];
+        $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
+        $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Display type of the field', 'metademands');
+        echo "</td>";
+        echo "<td>";
+
+        echo Dropdown::showFromArray(
+            "display_type",
+            $disp,
+            ['value' => $params['display_type'], 'display' => false]
+        );
+        echo "</td>";
+
+        echo "<td>";
+        echo __('Icon') . "&nbsp;";
+        echo "</td>";
+        echo "<td>";
+        $icon_selector_id = 'icon_' . mt_rand();
+
+        echo Html::select(
+            'icon',
+            [$params['icon'] => $params['icon']],
+            [
+                'id' => $icon_selector_id,
+                'selected' => $params['icon'],
+                'style' => 'width:175px;',
+            ]
+        );
+
+        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::scriptBlock(
+            <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+        );
+        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
     }
@@ -471,9 +622,9 @@ class PluginMetademandsRadio extends CommonDBTM
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
-                'Next',
-                'metademands'
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                    'Next',
+                    'metademands'
+                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -750,8 +901,10 @@ class PluginMetademandsRadio extends CommonDBTM
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                     if ($idc == $k) {
                                         foreach ($childs_blocks as $childs) {
-                                            $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs]);
+                                            $options = getAllDataFromTable(
+                                                'glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]
+                                            );
                                             if (count($options) == 0) {
                                                 $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
@@ -821,6 +974,7 @@ class PluginMetademandsRadio extends CommonDBTM
                         document.getElementById(id).style.display = 'block';
                         $('[bloc-id =\"bloc'+ key +'\"]').show();
                         $('[bloc-id =\"subbloc'+ key +'\"]').show();
+                         sessionStorage.setItem('showbloc$name', key);
                         ";
 
                     $hidden = PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);

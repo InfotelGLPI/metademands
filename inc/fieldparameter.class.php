@@ -307,24 +307,16 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 case 'datetime_interval':
                 case 'upload':
                 case 'signature':
+                case 'yesno':
+                case 'radio':
+                case 'checkbox':
                     echo $class::showFieldParameters($params);
                     break;
-                case 'checkbox':
-                    break;
-                case 'radio':
-                    break;
-                case 'yesno':
-                    break;
                 case 'number':
-                    break;
                 case 'range':
-                    break;
                 case 'freetable':
-                    break;
                 case 'basket':
-                    break;
                 case 'link':
-                    break;
                 case 'parent_field':
                     break;
                 default:

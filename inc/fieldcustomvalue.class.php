@@ -163,6 +163,21 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
 
 
     /**
+     * @param array $input
+     *
+     * @return array|bool
+     */
+    public function prepareInputForUpdate($input)
+    {
+
+        if (isset($input["_blank_picture"])) {
+            $input['icon'] = 'NULL';
+        }
+
+        return $input;
+    }
+
+    /**
      * @param       $ID
      * @param array $options
      *
