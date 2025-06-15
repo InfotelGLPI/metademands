@@ -406,7 +406,7 @@ class PluginMetademandsDropdown extends CommonDBTM
         if ($params["item"] == "Location") {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
-            $disp[self::SPLITTED_DISPLAY] = __("Spitted display", "metademands");
+            $disp[self::SPLITTED_DISPLAY] = __("Splitted display", "metademands");
             echo "<tr class='tab_bg_1'>";
             echo "<td>";
             echo __('Display type of the field', 'metademands');

@@ -881,14 +881,10 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
     }
-    /**
-     * @throws \GlpitestSQLError
-     */
-    public static function listMetademandTypes()
+
+    public static function countMetademandTypes()
     {
         global $PLUGIN_HOOKS;
-
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
 
         $data = [];
 
@@ -926,6 +922,17 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
         }
+        return $data;
+    }
+    /**
+     * @throws \GlpitestSQLError
+     */
+    public static function listMetademandTypes()
+    {
+
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
+
+        $data = self::countMetademandTypes();
 
         if (count($data) > 0) {
             if (count($data) == 1) {
