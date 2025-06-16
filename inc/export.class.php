@@ -833,7 +833,6 @@ class PluginMetademandsExport extends CommonDBTM
     public static function exportAsJSONForFormcreator($id)
     {
         //TODOJSON case not null value -> add regex
-        //TODOJSON target PluginFormcreatorTargetTicket
         //TODOJSON rights
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
@@ -918,6 +917,37 @@ class PluginMetademandsExport extends CommonDBTM
                 "tag_specifics" => "",
                 "category_question" => 0,
                 "associate_rule" => 1,
+                "associate_question" => 0,
+                "location_rule" => 1,
+                "location_question" => 0,
+                "commonitil_validation_rule" => 1,
+                "commonitil_validation_question" => 0,
+                "show_rule" => 1,
+                "sla_rule" => 1,
+                "sla_question_tto" => 0,
+                "ola_question_ttr" => 0,
+                "uuid" => $prefix . $metademands_id . "target",
+                "_tickettemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => "f304dcbd-1885f3fc-684fc5eb15a578.54810731"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => "f304dcbd-1885f3fc-684fc5eb18fdc4.49167764"
+                    ]
+                ],
+                "_ticket_relations" => [],
+                "_conditions" => [],
             ];
             $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
             if (empty($itilcategories_id)) {
