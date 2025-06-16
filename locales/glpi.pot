@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-16 13:31+0000\n"
+"POT-Creation-Date: 2025-06-16 13:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -849,23 +849,23 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: inc/fieldoption.class.php:369 inc/fieldoption.class.php:1112
+#: inc/fieldoption.class.php:369 inc/fieldoption.class.php:1111
 msgid "Display this hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:370 inc/fieldoption.class.php:1162
+#: inc/fieldoption.class.php:370 inc/fieldoption.class.php:1161
 msgid "Display this hidden block in the same block"
 msgstr ""
 
-#: inc/fieldoption.class.php:371 inc/fieldoption.class.php:1202
+#: inc/fieldoption.class.php:371 inc/fieldoption.class.php:1201
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:372 inc/fieldoption.class.php:1232
+#: inc/fieldoption.class.php:372 inc/fieldoption.class.php:1231
 msgid "Launch a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:373 inc/fieldoption.class.php:1277
+#: inc/fieldoption.class.php:373 inc/fieldoption.class.php:1276
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
@@ -883,49 +883,49 @@ msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:1114
+#: inc/fieldoption.class.php:1113
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:1140
+#: inc/fieldoption.class.php:1139
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
 msgstr ""
 
-#: inc/fieldoption.class.php:1164
+#: inc/fieldoption.class.php:1163
 msgid ""
 "If the value selected equals the value to check, the block becomes visible "
 "on the same block"
 msgstr ""
 
-#: inc/fieldoption.class.php:1204
+#: inc/fieldoption.class.php:1203
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:1234
+#: inc/fieldoption.class.php:1233
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:1279
+#: inc/fieldoption.class.php:1278
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1398 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1397 inc/mailtask.class.php:150
 #: inc/step.class.php:345 inc/step.class.php:623 inc/step.class.php:637
 #: inc/task.class.php:768 inc/task.class.php:1165 inc/tickettask.class.php:161
 #, php-format
 msgid "Block %s"
 msgstr ""
 
-#: inc/fieldoption.class.php:1944 inc/wizard.class.php:1442
+#: inc/fieldoption.class.php:1943 inc/wizard.class.php:1442
 #: inc/wizard.class.php:1592 inc/typefields/basket.class.php:813
 #: inc/typefields/checkbox.class.php:681 inc/typefields/dropdown.class.php:683
 #: inc/typefields/dropdownmeta.class.php:1752
@@ -940,7 +940,7 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/fieldoption.class.php:1946 inc/wizard.class.php:1210
+#: inc/fieldoption.class.php:1945 inc/wizard.class.php:1210
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1553
 #: inc/wizard.class.php:1562 inc/wizard.class.php:1596
 #: inc/wizard.class.php:1602 inc/wizard.class.php:2105
