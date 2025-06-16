@@ -1317,7 +1317,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
             $use_as_step = 0;
-            if ($preview || $seeform) {
+            if ($preview) {
                 $use_as_step = 0;
             }
             if (!$preview && (!$seeform
@@ -1480,7 +1480,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
         }
-        if ($preview || $seeform) {
+        if ($preview) {
             $use_as_step = 0;
         }
 
@@ -1771,7 +1771,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
         }
-        if ($preview || $seeform) {
+        if ($preview) {
             $use_as_step = 0;
         }
 

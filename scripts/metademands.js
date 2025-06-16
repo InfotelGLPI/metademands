@@ -556,8 +556,9 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         document.getElementById('prevBtn').style.display = 'inline';
 
     }
-
-    x[metademandparams.currentTab].style.display = 'block';
+    if (typeof x[metademandparams.currentTab] !== 'undefined') {
+        x[metademandparams.currentTab].style.display = 'block';
+    }
     //... and fix the Previous/Next buttons:
 
     if (typeof firstnumTab !== 'undefined') {

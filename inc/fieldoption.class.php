@@ -1943,9 +1943,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
         $nextsteptitle =  __(
-                'Next',
-                'metademands'
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            'Next',
+            'metademands'
+        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
         if ($blockid > 0) {
             $fields = new PluginMetademandsField();
