@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-16 12:02+0000\n"
+"POT-Creation-Date: 2025-06-16 13:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -154,7 +154,7 @@ msgid "Example"
 msgstr ""
 
 #: ajax/viewtypefields.php:55 inc/typefields/dropdown.class.php:386
-#: inc/typefields/dropdownmeta.class.php:1258
+#: inc/typefields/dropdownmeta.class.php:1351
 #: inc/typefields/dropdownobject.class.php:571
 #: inc/typefields/dropdownobject.class.php:663 inc/typefields/tel.class.php:115
 #: inc/typefields/text.class.php:112
@@ -416,9 +416,9 @@ msgstr ""
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
 #: inc/field.class.php:1341 inc/fieldoption.class.php:365
-#: inc/typefields/basket.class.php:544 inc/typefields/checkbox.class.php:437
+#: inc/typefields/basket.class.php:544 inc/typefields/checkbox.class.php:432
 #: inc/typefields/dropdown.class.php:430
-#: inc/typefields/dropdownmeta.class.php:1303
+#: inc/typefields/dropdownmeta.class.php:1446
 #: inc/typefields/dropdownmultiple.class.php:723
 #: inc/typefields/dropdownobject.class.php:740
 #: inc/typefields/radio.class.php:433 inc/typefields/yesno.class.php:211
@@ -793,8 +793,8 @@ msgid ""
 "sorted by display order"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:547 inc/typefields/checkbox.class.php:253
-#: inc/typefields/dropdownmeta.class.php:1043
+#: inc/fieldcustomvalue.class.php:547 inc/typefields/checkbox.class.php:248
+#: inc/typefields/dropdownmeta.class.php:1105
 #: inc/typefields/dropdownmultiple.class.php:550
 #: inc/typefields/freetable.class.php:849
 #: inc/typefields/freetablefield.class.php:336
@@ -802,8 +802,8 @@ msgstr ""
 msgid "Rank"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:566 inc/typefields/checkbox.class.php:278
-#: inc/typefields/dropdownmeta.class.php:1068
+#: inc/fieldcustomvalue.class.php:566 inc/typefields/checkbox.class.php:273
+#: inc/typefields/dropdownmeta.class.php:1161
 #: inc/typefields/dropdownmultiple.class.php:487
 #: inc/typefields/dropdownmultiple.class.php:575
 #: inc/typefields/radio.class.php:275 inc/typefields/yesno.class.php:155
@@ -927,8 +927,8 @@ msgstr ""
 
 #: inc/fieldoption.class.php:1944 inc/wizard.class.php:1442
 #: inc/wizard.class.php:1592 inc/typefields/basket.class.php:813
-#: inc/typefields/checkbox.class.php:686 inc/typefields/dropdown.class.php:683
-#: inc/typefields/dropdownmeta.class.php:1600
+#: inc/typefields/checkbox.class.php:681 inc/typefields/dropdown.class.php:683
+#: inc/typefields/dropdownmeta.class.php:1752
 #: inc/typefields/dropdownmultiple.class.php:1104
 #: inc/typefields/dropdownmultiple.class.php:1239
 #: inc/typefields/dropdownobject.class.php:1032
@@ -944,9 +944,9 @@ msgstr ""
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1553
 #: inc/wizard.class.php:1562 inc/wizard.class.php:1596
 #: inc/wizard.class.php:1602 inc/wizard.class.php:2105
-#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:688
+#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:683
 #: inc/typefields/dropdown.class.php:684
-#: inc/typefields/dropdownmeta.class.php:1602
+#: inc/typefields/dropdownmeta.class.php:1754
 #: inc/typefields/dropdownmultiple.class.php:1106
 #: inc/typefields/dropdownmultiple.class.php:1241
 #: inc/typefields/dropdownobject.class.php:1033
@@ -2092,12 +2092,12 @@ msgstr ""
 msgid "Accessory"
 msgstr ""
 
-#: inc/typefields/basket.class.php:545 inc/typefields/checkbox.class.php:472
-#: inc/typefields/checkbox.class.php:485 inc/typefields/dropdown.class.php:479
+#: inc/typefields/basket.class.php:545 inc/typefields/checkbox.class.php:467
+#: inc/typefields/checkbox.class.php:480 inc/typefields/dropdown.class.php:479
 #: inc/typefields/dropdown.class.php:515
-#: inc/typefields/dropdownmeta.class.php:1388
-#: inc/typefields/dropdownmeta.class.php:1398
-#: inc/typefields/dropdownmeta.class.php:1419
+#: inc/typefields/dropdownmeta.class.php:1531
+#: inc/typefields/dropdownmeta.class.php:1541
+#: inc/typefields/dropdownmeta.class.php:1562
 #: inc/typefields/dropdownmultiple.class.php:854
 #: inc/typefields/dropdownobject.class.php:819
 #: inc/typefields/dropdownobject.class.php:822
@@ -2137,19 +2137,23 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: inc/typefields/checkbox.class.php:386 inc/typefields/dropdown.class.php:408
-#: inc/typefields/dropdownmeta.class.php:1240
+#: inc/typefields/checkbox.class.php:381 inc/typefields/dropdown.class.php:408
+#: inc/typefields/dropdownmeta.class.php:1333
+#: inc/typefields/dropdownmeta.class.php:1394
 #: inc/typefields/dropdownmultiple.class.php:650
 #: inc/typefields/radio.class.php:382 inc/typefields/yesno.class.php:186
 msgid "Classic display"
 msgstr ""
 
-#: inc/typefields/checkbox.class.php:387 inc/typefields/radio.class.php:383
+#: inc/typefields/checkbox.class.php:382
+#: inc/typefields/dropdownmeta.class.php:1395
+#: inc/typefields/radio.class.php:383
 msgid "Block display"
 msgstr ""
 
-#: inc/typefields/checkbox.class.php:390 inc/typefields/dropdown.class.php:412
-#: inc/typefields/dropdownmeta.class.php:1244
+#: inc/typefields/checkbox.class.php:385 inc/typefields/dropdown.class.php:412
+#: inc/typefields/dropdownmeta.class.php:1337
+#: inc/typefields/dropdownmeta.class.php:1398
 #: inc/typefields/dropdownmultiple.class.php:654
 #: inc/typefields/radio.class.php:386 inc/typefields/yesno.class.php:190
 msgid "Display type of the field"
@@ -2161,7 +2165,7 @@ msgstr ""
 
 #: inc/typefields/date.class.php:95 inc/typefields/datetime.class.php:95
 #: inc/typefields/dropdown.class.php:373
-#: inc/typefields/dropdownmeta.class.php:1232
+#: inc/typefields/dropdownmeta.class.php:1325
 #: inc/typefields/dropdownobject.class.php:600
 #: inc/typefields/dropdownobject.class.php:682
 msgid "Use this field for child ticket field"
@@ -2201,29 +2205,29 @@ msgstr ""
 msgid "Splitted display"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:63
+#: inc/typefields/dropdownmeta.class.php:64
 #: inc/typefields/freetablefield.class.php:132
 msgid "Dropdown"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:258
+#: inc/typefields/dropdownmeta.class.php:320
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:762
+#: inc/typefields/dropdownmeta.class.php:824
 msgid "No equipment founded"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:1241
+#: inc/typefields/dropdownmeta.class.php:1334
 msgid "Icon display"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:1282
+#: inc/typefields/dropdownmeta.class.php:1375
 #: inc/typefields/dropdownobject.class.php:631
 msgid "Read-Only"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:1289
+#: inc/typefields/dropdownmeta.class.php:1382
 msgid "Hidden field"
 msgstr ""
 
