@@ -285,80 +285,38 @@ class PluginMetademandsFieldParameter extends CommonDBChild
 //            echo "<div id='show_type_fields'>";
 //            echo "<table width='100%' class='metademands_show_values'>";
 
+            $class = PluginMetademandsField::getClassFromType($params['type']);
+
             switch ($params["type"]) {
                 case 'title':
-                    echo PluginMetademandsTitle::showFieldParameters($params);
-                    break;
                 case 'title-block':
-                    echo PluginMetademandsTitleblock::showFieldParameters($params);
-                    break;
                 case 'informations':
-                    echo PluginMetademandsInformation::showFieldParameters($params);
-                    break;
                 case 'text':
-                    echo PluginMetademandsText::showFieldParameters($params);
-                    break;
                 case 'tel':
-                    echo PluginMetademandsTel::showFieldParameters($params);
-                    break;
                 case 'email':
-                    echo PluginMetademandsEmail::showFieldParameters($params);
-                    break;
                 case 'url':
-                    echo PluginMetademandsUrl::showFieldParameters($params);
-                    break;
                 case 'textarea':
-                    echo PluginMetademandsTextarea::showFieldParameters($params);
-                    break;
                 case 'dropdown_meta':
-                    echo PluginMetademandsDropdownmeta::showFieldParameters($params);
-                    break;
                 case 'dropdown_object':
-                    echo PluginMetademandsDropdownobject::showFieldParameters($params);
-                    break;
                 case 'dropdown':
-                    echo PluginMetademandsDropdown::showFieldParameters($params);
-                    break;
                 case 'dropdown_multiple':
-                    echo PluginMetademandsDropdownmultiple::showFieldParameters($params);
-                    break;
-                case 'checkbox':
-                    break;
-                case 'radio':
-                    break;
+                case 'date':
+                case 'time':
+                case 'datetime':
+                case 'date_interval':
+                case 'datetime_interval':
+                case 'upload':
+                case 'signature':
                 case 'yesno':
+                case 'radio':
+                case 'checkbox':
+                    echo $class::showFieldParameters($params);
                     break;
                 case 'number':
-                    break;
                 case 'range':
-                    break;
                 case 'freetable':
-                    break;
                 case 'basket':
-                    break;
-                case 'date':
-                    echo PluginMetademandsDate::showFieldParameters($params);
-                    break;
-                case 'time':
-                    echo PluginMetademandsTime::showFieldParameters($params);
-                    break;
-                case 'datetime':
-                    echo PluginMetademandsDatetime::showFieldParameters($params);
-                    break;
-                case 'date_interval':
-                    echo PluginMetademandsDateinterval::showFieldParameters($params);
-                    break;
-                case 'datetime_interval':
-                    echo PluginMetademandsDatetimeInterval::showFieldParameters($params);
-                    break;
-                case 'upload':
-                    echo PluginMetademandsUpload::showFieldParameters($params);
-                    break;
                 case 'link':
-                    break;
-                case 'signature':
-                    echo PluginMetademandsSignature::showFieldParameters($params);
-                    break;
                 case 'parent_field':
                     break;
                 default:

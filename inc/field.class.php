@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -36,6 +37,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsField extends CommonDBChild
 {
+    use Glpi\Features\Clonable;
     public static $rightname = 'plugin_metademands';
 
     public static $itemtype = 'PluginMetademandsMetademand';
@@ -43,9 +45,7 @@ class PluginMetademandsField extends CommonDBChild
 
     public $dohistory = true;
     // Request type
-    const MAX_FIELDS = 40;
-
-    use Glpi\Features\Clonable;
+    public const MAX_FIELDS = 40;
 
     public static $field_types = [
         '',
@@ -76,7 +76,7 @@ class PluginMetademandsField extends CommonDBChild
         'upload',
         'link',
         'signature',
-        'parent_field'
+        'parent_field',
     ];
 
     public static $field_title_types = [
@@ -202,12 +202,12 @@ class PluginMetademandsField extends CommonDBChild
         $criteria = [
             'SELECT' => [
                 static::getIndexName(),
-                'plugin_metademands_metademands_id AS items_id'
+                'plugin_metademands_metademands_id AS items_id',
             ],
             'FROM' => $table,
             'WHERE' => [
-                $table . '.' . 'plugin_metademands_metademands_id' => $items_id
-            ]
+                $table . '.' . 'plugin_metademands_metademands_id' => $items_id,
+            ],
         ];
 
         // Check item 1 type
@@ -361,7 +361,7 @@ class PluginMetademandsField extends CommonDBChild
         );
         $paramsType = [
             'value' => '__VALUE__',
-            'step' => 'listfieldbytype'
+            'step' => 'listfieldbytype',
         ];
         Ajax::updateItemOnSelectEvent(
             'dropdown_type' . $randType,
@@ -391,14 +391,14 @@ class PluginMetademandsField extends CommonDBChild
         $randRank = Dropdown::showNumber('rank', [
             'value' => $this->fields["rank"],
             'min' => 1,
-            'max' => self::MAX_FIELDS
+            'max' => self::MAX_FIELDS,
         ]);
         $paramsRank = [
             'rank' => '__VALUE__',
             'step' => 'order',
             'fields_id' => $this->fields['id'],
             'metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-            'previous_fields_id' => $this->fields['plugin_metademands_fields_id']
+            'previous_fields_id' => $this->fields['plugin_metademands_fields_id'],
         ];
         Ajax::updateItemOnSelectEvent(
             'dropdown_rank' . $randRank,
@@ -486,7 +486,7 @@ class PluginMetademandsField extends CommonDBChild
         $metademand_fields = new self();
         $metademand_fields->getFromDBByCrit([
             'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-            'item' => 'ITILCategory_Metademands'
+            'item' => 'ITILCategory_Metademands',
         ]);
         $categories = [];
         if (isset($metademand->fields['itilcategories_id'])) {
@@ -503,9 +503,9 @@ class PluginMetademandsField extends CommonDBChild
         if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
             echo "<i class='fas fa-exclamation-triangle fa-3x'></i>&nbsp;" . __(
-                    'Please add a type category field',
-                    'metademands'
-                );
+                'Please add a type category field',
+                'metademands'
+            );
             echo "</div>";
         }
 
@@ -556,7 +556,7 @@ class PluginMetademandsField extends CommonDBChild
             'enable_fileupload' => false,
             'enable_images' => true,
             'cols' => 50,
-            'rows' => 3
+            'rows' => 3,
         ]);
         echo "</td>";
 
@@ -571,7 +571,7 @@ class PluginMetademandsField extends CommonDBChild
             'enable_fileupload' => false,
             'enable_images' => false,
             'cols' => 50,
-            'rows' => 3
+            'rows' => 3,
         ]);
 
         echo "</td>";
@@ -585,7 +585,7 @@ class PluginMetademandsField extends CommonDBChild
         if ($ID < 1) {
             $randType = self::dropdownFieldTypes(self::$field_types, [
                 'value' => $this->fields["type"],
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
             ]);
 
             $paramsType = [
@@ -593,7 +593,7 @@ class PluginMetademandsField extends CommonDBChild
                 'type' => '__VALUE__',
                 'item' => $this->fields['item'],
                 'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'change_type' => 1
+                'change_type' => 1,
             ];
             Ajax::updateItemOnSelectEvent(
                 'dropdown_type' . $randType,
@@ -606,7 +606,7 @@ class PluginMetademandsField extends CommonDBChild
             if (in_array($this->fields["type"], self::$field_title_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_title_types, [
                     'value' => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
 
                 $paramsType = [
@@ -614,7 +614,7 @@ class PluginMetademandsField extends CommonDBChild
                     'type' => '__VALUE__',
                     'item' => $this->fields['item'],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1
+                    'change_type' => 1,
                 ];
                 Ajax::updateItemOnSelectEvent(
                     'dropdown_type' . $randType,
@@ -627,7 +627,7 @@ class PluginMetademandsField extends CommonDBChild
                 if (in_array($this->fields["item"], PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
                     $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
                         'value' => $this->fields["type"],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                     ]);
 
                     $paramsType = [
@@ -635,7 +635,7 @@ class PluginMetademandsField extends CommonDBChild
                         'type' => '__VALUE__',
                         'item' => $this->fields['item'],
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1
+                        'change_type' => 1,
                     ];
                     Ajax::updateItemOnSelectEvent(
                         'dropdown_type' . $randType,
@@ -648,7 +648,7 @@ class PluginMetademandsField extends CommonDBChild
                     if ($this->fields["item"] == "other" || $this->fields["type"] == "radio" || $this->fields["type"] == "checkbox") {
                         $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
                             'value' => $this->fields["type"],
-                            'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                            'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                         ]);
 
                         $paramsType = [
@@ -656,7 +656,7 @@ class PluginMetademandsField extends CommonDBChild
                             'type' => '__VALUE__',
                             'item' => $this->fields['item'],
                             'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                            'change_type' => 1
+                            'change_type' => 1,
                         ];
                         Ajax::updateItemOnSelectEvent(
                             'dropdown_type' . $randType,
@@ -673,7 +673,7 @@ class PluginMetademandsField extends CommonDBChild
             } elseif (in_array($this->fields["type"], self::$field_text_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_text_types, [
                     'value' => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
 
                 $paramsType = [
@@ -681,7 +681,7 @@ class PluginMetademandsField extends CommonDBChild
                     'type' => '__VALUE__',
                     'item' => $this->fields['item'],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1
+                    'change_type' => 1,
                 ];
                 Ajax::updateItemOnSelectEvent(
                     'dropdown_type' . $randType,
@@ -693,7 +693,7 @@ class PluginMetademandsField extends CommonDBChild
             } elseif (in_array($this->fields["type"], self::$field_date_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_date_types, [
                     'value' => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
 
                 $paramsType = [
@@ -701,7 +701,7 @@ class PluginMetademandsField extends CommonDBChild
                     'type' => '__VALUE__',
                     'item' => $this->fields['item'],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1
+                    'change_type' => 1,
                 ];
                 Ajax::updateItemOnSelectEvent(
                     'dropdown_type' . $randType,
@@ -713,7 +713,7 @@ class PluginMetademandsField extends CommonDBChild
             } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_dropdown_types, [
                     'value' => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
 
                 $paramsType = [
@@ -721,7 +721,7 @@ class PluginMetademandsField extends CommonDBChild
                     'type' => '__VALUE__',
                     'item' => $this->fields['item'],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1
+                    'change_type' => 1,
                 ];
                 Ajax::updateItemOnSelectEvent(
                     'dropdown_type' . $randType,
@@ -738,7 +738,7 @@ class PluginMetademandsField extends CommonDBChild
                 } else {
                     $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
                         'value' => $this->fields["type"],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                     ]);
 
                     $paramsType = [
@@ -746,7 +746,7 @@ class PluginMetademandsField extends CommonDBChild
                         'type' => '__VALUE__',
                         'item' => $this->fields['item'],
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1
+                        'change_type' => 1,
                     ];
                     Ajax::updateItemOnSelectEvent(
                         'dropdown_type' . $randType,
@@ -774,14 +774,14 @@ class PluginMetademandsField extends CommonDBChild
         $randRank = Dropdown::showNumber('rank', [
             'value' => $this->fields["rank"],
             'min' => 1,
-            'max' => self::MAX_FIELDS
+            'max' => self::MAX_FIELDS,
         ]);
         $paramsRank = [
             'rank' => '__VALUE__',
             'step' => 'order',
             'fields_id' => $this->fields['id'],
             'metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-            'previous_fields_id' => $this->fields['plugin_metademands_fields_id']
+            'previous_fields_id' => $this->fields['plugin_metademands_fields_id'],
         ];
         Ajax::updateItemOnSelectEvent(
             'dropdown_rank' . $randRank,
@@ -822,7 +822,7 @@ class PluginMetademandsField extends CommonDBChild
                 'item' => $this->fields['item'],
                 'step' => 'object',
                 'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'change_type' => 1
+                'change_type' => 1,
             ];
             if ($randType) {
                 $paramsType['rand'] = $randType;
@@ -858,7 +858,7 @@ class PluginMetademandsField extends CommonDBChild
                     'item' => $this->fields['item'],
                     'step' => 'object',
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1
+                    'change_type' => 1,
                 ];
                 if (isset($randType)) {
                     $paramsType['rand'] = $randType;
@@ -876,12 +876,12 @@ class PluginMetademandsField extends CommonDBChild
                 $randType = mt_rand();
                 if ($this->fields["type"] == "dropdown_multiple" && $this->fields["item"] == "other") {
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-                    echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
+                    echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
                 } else {
                     echo "<span id='show_item' >";
                     $randItem = self::dropdownFieldItems($this->fields["type"], [
                         'value' => $this->fields["item"],
-                        'criteria' => PluginMetademandsDropdownmultiple::$dropdown_multiple_items
+                        'criteria' => PluginMetademandsDropdownmultiple::$dropdown_multiple_items,
                     ]);
                     echo "</span>";
                     $paramsType = [
@@ -890,7 +890,7 @@ class PluginMetademandsField extends CommonDBChild
                         'item' => $this->fields['item'],
                         'step' => 'object',
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1
+                        'change_type' => 1,
                     ];
                     if (isset($randType)) {
                         $paramsType['rand'] = $randType;
@@ -907,7 +907,7 @@ class PluginMetademandsField extends CommonDBChild
                 }
             } else {
                 echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-                echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
+                echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
             }
         }
 
@@ -944,9 +944,9 @@ class PluginMetademandsField extends CommonDBChild
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
                     echo "<div class='alert alert-important alert-warning d-flex'>";
                     echo "<b>" . __(
-                            'Warning : there is no custom values for this object',
-                            'metademands'
-                        ) . "</b></div>";
+                        'Warning : there is no custom values for this object',
+                        'metademands'
+                    ) . "</b></div>";
                 }
             }
         }
@@ -977,7 +977,7 @@ class PluginMetademandsField extends CommonDBChild
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
                 $item->getForeignKeyField() => $item->getID(),
-                'id' => -1
+                'id' => -1,
             ];
             Ajax::updateItemJsCode(
                 "viewfield" . $item->getType() . $item->getID() . "$rand",
@@ -1003,7 +1003,7 @@ class PluginMetademandsField extends CommonDBChild
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
                 $item->getForeignKeyField() => $item->getID(),
-                'id' => -1
+                'id' => -1,
             ];
             Ajax::updateItemJsCode(
                 "viewexistingfield" . $item->getType() . $item->getID() . "$rand",
@@ -1074,9 +1074,9 @@ class PluginMetademandsField extends CommonDBChild
             $cond,
             ['rank', 'order']
         );
-//        if (count($data) > 0) {
-            self::searchForm($item, $cond);
-//        }
+        //        if (count($data) > 0) {
+        self::searchForm($item, $cond);
+        //        }
 
         if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
             || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
@@ -1177,9 +1177,9 @@ class PluginMetademandsField extends CommonDBChild
                     $i++;
                     if ($i > 0) {
                         $name = $value['name'];
-//                        if ($debug) {
-                            $name .= " #$blockid";
-//                        }
+                        //                        if ($debug) {
+                        $name .= " #$blockid";
+                        //                        }
                         $blocks[$blockid] = $name;
                     }
                 }
@@ -1198,7 +1198,7 @@ class PluginMetademandsField extends CommonDBChild
             foreach ($blocks as $idblock => $block) {
                 $nameblock = $block;
                 echo "<li class='nav-item'>";
-                echo "<a class='nav-link tablinks' id='ablock$idblock' href='#block".$idblock."' data-toggle='tab'>".$nameblock."</a>";
+                echo "<a class='nav-link tablinks' id='ablock$idblock' href='#block" . $idblock . "' data-toggle='tab'>" . $nameblock . "</a>";
                 echo "</li>";
             }
             echo "</ul>";
@@ -1251,9 +1251,9 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<div class='alert alert-warning flex'>";
                 echo "<div class='left'>";
                 echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
-                        'The fields are not ordered correctly, you will not be able to order them!',
-                        'metademands'
-                    );
+                    'The fields are not ordered correctly, you will not be able to order them!',
+                    'metademands'
+                );
                 echo "<br><br>";
                 echo _x('button', 'Do you want to fix them ?', 'metademands');
                 echo "</div>";
@@ -1281,15 +1281,15 @@ class PluginMetademandsField extends CommonDBChild
 
                 if (isset($value['type'])
                     && (in_array(
-                            $value['type'],
-                            $allowed_customvalues_types
-                        ) && ($value['item'] != "ITILCategory_Metademands"
+                        $value['type'],
+                        $allowed_customvalues_types
+                    ) && ($value['item'] != "ITILCategory_Metademands"
                             && !in_array($value["item"], self::$field_specificobjects))
                         && !in_array($value['item'], $new_types))
                     || (in_array(
-                            $value['item'],
-                            $allowed_customvalues_items
-                        ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
+                        $value['item'],
+                        $allowed_customvalues_items
+                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
                     $field_custom = new PluginMetademandsFieldCustomvalue();
                     if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
                         $kocustom++;
@@ -1299,16 +1299,16 @@ class PluginMetademandsField extends CommonDBChild
             if ($koparams > 0) {
                 echo "<div class='alert alert-important alert-warning d-flex'>";
                 echo "<b>" . __(
-                        'Warning : there are fields without parameters, please check',
-                        'metademands'
-                    ) . "</b></div>";
+                    'Warning : there are fields without parameters, please check',
+                    'metademands'
+                ) . "</b></div>";
             }
             if ($kocustom > 0) {
                 echo "<div class='alert alert-important alert-warning d-flex'>";
                 echo "<b>" . __(
-                        'Warning : there are fields without custom values, please check',
-                        'metademands'
-                    ) . "</b></div>";
+                    'Warning : there are fields without custom values, please check',
+                    'metademands'
+                ) . "</b></div>";
             }
 
             $fieldopt = new PluginMetademandsFieldOption();
@@ -1318,15 +1318,15 @@ class PluginMetademandsField extends CommonDBChild
                     Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
                     $massiveactionparams = [
                         'item' => __CLASS__,
-                        'container' => 'mass' . __CLASS__ . $rand
+                        'container' => 'mass' . __CLASS__ . $rand,
                     ];
                     Html::showMassiveActions($massiveactionparams);
                 }
                 echo "<div id='drag$rand'>";
                 echo "<table class='tab_cadre_fixehov'>";
-//                echo "<tr class='tab_bg_2'>";
-//                echo "<th class='center b' colspan='12'>" . __('Form fields', 'metademands') . " ".$blocks[$idblock]."</th>";
-//                echo "</tr>";
+                //                echo "<tr class='tab_bg_2'>";
+                //                echo "<th class='center b' colspan='12'>" . __('Form fields', 'metademands') . " ".$blocks[$idblock]."</th>";
+                //                echo "</tr>";
                 echo "<tr>";
                 if ($canedit) {
                     echo "<th width='10'>";
@@ -1336,7 +1336,7 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<th class='center b'></th>";
                 echo "<th class='center b'>" . __('ID') . "</th>";
                 echo "<th class='center b'>" . __('Label') . "</th>";
-                echo "<th class='center b'>" . __('Type') . " / ".__('Object', 'metademands')."</th>";
+                echo "<th class='center b'>" . __('Type') . " / " . __('Object', 'metademands') . "</th>";
                 echo "<th class='center b'>" . __('Mandatory', 'metademands') . "</th>";
                 echo "<th class='center b'>" . __('Value to check', 'metademands') . "</th>";
                 if ($item->fields['is_order'] == 1) {
@@ -1370,28 +1370,30 @@ class PluginMetademandsField extends CommonDBChild
                     echo "<tr class='tab_bg_1'>";
                     if ($canedit) {
                         echo "<td class='rowhandler control center'>";
-//                        echo "<div class=\"drag\">";
+                        //                        echo "<div class=\"drag\">";
                         Html::showMassiveActionCheckBox(__CLASS__, $value["id"]);
-//                        echo "</div>";
+                        //                        echo "</div>";
                         echo "</td>";
                     }
 
                     echo "<td>";
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]
-                        ) || ((isset($value['type'])
+                    if (!$fieldparameter->find(
+                        ["plugin_metademands_fields_id" => $value['id']]
+                    ) || ((
+                        isset($value['type'])
                                 && (in_array(
-                                        $value['type'],
-                                        $allowed_customvalues_types
-                                    ) && ($value['item'] != "ITILCategory_Metademands"
+                                    $value['type'],
+                                    $allowed_customvalues_types
+                                ) && ($value['item'] != "ITILCategory_Metademands"
                                         && !in_array($value["item"], self::$field_specificobjects))
                                     && !in_array($value['item'], $new_types))
                                 || (in_array(
-                                        $value['item'],
-                                        $allowed_customvalues_items
-                                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
-                            )
+                                    $value['item'],
+                                    $allowed_customvalues_items
+                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
+                    )
                             && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                         echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                     }
@@ -1554,7 +1556,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                                         if ($metatask->getFromDB($task)) {
                                             if ($metatask->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
                                                 $metachildtask = new PluginMetademandsMetademandTask();
-                                                if ($metachildtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $task]
+                                                if ($metachildtask->getFromDBByCrit(
+                                                    ["plugin_metademands_tasks_id" => $task]
                                                 )) {
                                                     echo Dropdown::getDropdownName(
                                                         'glpi_plugin_metademands_metademands',
@@ -1716,7 +1719,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 foreach ($metademands_parent as $parent_id) {
                     $condition = [
                         'plugin_metademands_metademands_id' => $parent_id,
-                        ['NOT' => ['type' => ['parent_field', 'upload']]]
+                        ['NOT' => ['type' => ['parent_field', 'upload']]],
                     ];
                     $datas_fields = $field->find($condition, ['rank', 'order']);
                     foreach ($datas_fields as $data_field) {
@@ -1751,61 +1754,37 @@ border-style: none !important; border-color: initial !important;border-image: in
     {
         global $PLUGIN_HOOKS;
 
+        $class = self::getClassFromType($value);
+
         switch ($value) {
             case 'title':
-                return PluginMetademandsTitle::getTypeName();
             case 'title-block':
-                return PluginMetademandsTitleblock::getTypeName();
             case 'informations':
-                return PluginMetademandsInformation::getTypeName();
             case 'text':
-                return PluginMetademandsText::getTypeName();
             case 'tel':
-                return PluginMetademandsTel::getTypeName();
             case 'email':
-                return PluginMetademandsEmail::getTypeName();
             case 'url':
-                return PluginMetademandsUrl::getTypeName();
             case 'textarea':
-                return PluginMetademandsTextarea::getTypeName();
             case 'dropdown_meta':
-                return PluginMetademandsDropdownmeta::getTypeName();
             case 'dropdown_object':
-                return PluginMetademandsDropdownobject::getTypeName();
             case 'dropdown':
-                return PluginMetademandsDropdown::getTypeName();
             case 'dropdown_multiple':
-                return PluginMetademandsDropdownmultiple::getTypeName();
             case 'checkbox':
-                return PluginMetademandsCheckbox::getTypeName();
             case 'radio':
-                return PluginMetademandsRadio::getTypeName();
             case 'yesno':
-                return PluginMetademandsYesno::getTypeName();
             case 'number':
-                return PluginMetademandsNumber::getTypeName();
             case 'range':
-                return PluginMetademandsRange::getTypeName();
             case 'freetable':
-                return PluginMetademandsFreetable::getTypeName();
             case 'date':
-                return PluginMetademandsDate::getTypeName();
             case 'time':
-                return PluginMetademandsTime::getTypeName();
             case 'datetime':
-                return PluginMetademandsDatetime::getTypeName();
             case 'date_interval':
-                return PluginMetademandsDateinterval::getTypeName();
             case 'datetime_interval':
-                return PluginMetademandsDatetimeInterval::getTypeName();
             case 'upload':
-                return PluginMetademandsUpload::getTypeName();
             case 'link':
-                return PluginMetademandsLink::getTypeName();
             case 'basket':
-                return PluginMetademandsBasket::getTypeName();
             case 'signature':
-                return PluginMetademandsSignature::getTypeName();
+                return $class::getTypeName();
             case 'parent_field':
                 return __('Father\'s field', 'metademands');
             default:
@@ -2177,7 +2156,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 $options = new PluginMetademandsBasketobjecttype();
                 return $options->Dropdown(["name" => $name, 'value' => $p['value']]);
                 break;
-            default :
+            default:
 
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -2347,6 +2326,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'item' => $field->fields['item'],
             'type' => $field->fields['type'],
             'row_display' => $metademand_params->fields['row_display'] ?? 0,
+            'display_type' => $metademand_params->fields['display_type'] ?? 0,
             'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
             'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
             'color' => $metademand_params->fields['color'] ?? "",
@@ -2480,33 +2460,33 @@ border-style: none !important; border-color: initial !important;border-image: in
         $config_link = "";
         if (Session::getCurrentInterface() == 'central' && $preview) {
             $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                    'PluginMetademandsField'
-                ) . "?id=" . $data['id'] . "'>";
+                'PluginMetademandsField'
+            ) . "?id=" . $data['id'] . "'>";
             $config_link .= "<i class='fas fa-wrench'></i></a>";
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
 
         $required = "";
-//        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
-//            $required = "required=required style='color:red'";
-//        }
+        //        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
+        //            $required = "required=required style='color:red'";
+        //        }
 
         $upload = "";
         if ($data['type'] == "upload") {
             $max = "";
             if ($data["max_upload"] > 0) {
                 $max = "( " . sprintf(
-                        __("Maximum number of documents : %s ", "metademands"),
-                        $data["max_upload"]
-                    ) . ")";
+                    __("Maximum number of documents : %s ", "metademands"),
+                    $data["max_upload"]
+                ) . ")";
             }
 
             $upload = "$max (" . Document::getMaxUploadSize() . ")";
         }
-//        if ($data['is_mandatory'] == 1) {
-//            $required = "style='color:red'";
-//        }
+        //        if ($data['is_mandatory'] == 1) {
+        //            $required = "style='color:red'";
+        //        }
 
         if (empty($label = self::displayField($data['id'], 'name'))) {
             $label = "";
@@ -2529,7 +2509,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo Toolbox::stripslashes_deep($label) . " $upload";
 
                     if ($debug) {
-                        echo " (ID:". $data['id'].")";
+                        echo " (ID:" . $data['id'] . ")";
                     }
                     if ($preview) {
                         echo $config_link;
@@ -2551,7 +2531,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                             echo "&nbsp;";
                             echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), [
                                 'awesome-class' => 'fa-info-circle',
-                                'display' => false
+                                'display' => false,
                             ]);
                         }
                     }
@@ -2624,8 +2604,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "</div>";
                 } else {
                     echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . Glpi\RichText\RichText::getTextFromHtml(
-                            $label2
-                        ) . "<span $required>" . $required_icon . "</span></div>";
+                        $label2
+                    ) . "<span $required>" . $required_icon . "</span></div>";
                 }
             }
             $value2 = '';
@@ -2650,6 +2630,68 @@ border-style: none !important; border-color: initial !important;border-image: in
         echo "</div>";
     }
 
+    public static function getClassFromType($type)
+    {
+
+        switch ($type) {
+            case 'title':
+                return "PluginMetademandsTitle";
+            case 'title-block':
+                return "PluginMetademandsTitleblock";
+            case 'informations':
+                return "PluginMetademandsInformation";
+            case 'text':
+                return "PluginMetademandsText";
+            case 'tel':
+                return "PluginMetademandsTel";
+            case 'email':
+                return "PluginMetademandsEmail";
+            case 'url':
+                return "PluginMetademandsUrl";
+            case 'textarea':
+                return "PluginMetademandsTextarea";
+            case 'dropdown_meta':
+                return "PluginMetademandsDropdownmeta";
+            case 'dropdown_object':
+                return "PluginMetademandsDropdownobject";
+            case 'dropdown':
+                return "PluginMetademandsDropdown";
+            case 'dropdown_multiple':
+                return "PluginMetademandsDropdownmultiple";
+            case 'checkbox':
+                return "PluginMetademandsCheckbox";
+            case 'radio':
+                return "PluginMetademandsRadio";
+            case 'yesno':
+                return "PluginMetademandsYesno";
+            case 'number':
+                return "PluginMetademandsNumber";
+            case 'range':
+                return "PluginMetademandsRange";
+            case 'freetable':
+                return "PluginMetademandsFreetable";
+            case 'date':
+                return "PluginMetademandsDate";
+            case 'time':
+                return "PluginMetademandsTime";
+            case 'datetime':
+                return "PluginMetademandsDatetime";
+            case 'date_interval':
+                return "PluginMetademandsDateinterval";
+            case 'datetime_interval':
+                return "PluginMetademandsDatetimeinterval";
+            case 'upload':
+                return "PluginMetademandsUpload";
+            case 'link':
+                return "PluginMetademandsLink";
+            case 'basket':
+                return "PluginMetademandsBasket";
+            case 'signature':
+                return "PluginMetademandsSignature";
+            default:
+                break;
+        }
+    }
 
     /**
      * Generate the HTML to display a field
@@ -2688,56 +2730,37 @@ border-style: none !important; border-color: initial !important;border-image: in
             $namefield = 'field_basket_' . $idline;
         }
 
+        $class = self::getClassFromType($data['type']);
+
         switch ($data['type']) {
-            case 'title':
-                PluginMetademandsTitle::showWizardField($data, $namefield, $value, $on_order, $preview, $config_link);
-                break;
             case 'title-block':
-                PluginMetademandsTitleblock::showWizardField(
-                    $data,
-                    $namefield,
-                    $value,
-                    $on_order,
-                    $preview,
-                    $config_link
-                );
-                break;
             case 'informations':
-                PluginMetademandsInformation::showWizardField(
-                    $data,
-                    $namefield,
-                    $value,
-                    $on_order,
-                    $preview,
-                    $config_link
-                );
-                break;
-            case 'text':
-                PluginMetademandsText::showWizardField($data, $namefield, $value, $on_order);
+            case 'title':
+                $class::showWizardField($data, $namefield, $value, $on_order, $preview, $config_link);
                 break;
             case 'tel':
-                PluginMetademandsTel::showWizardField($data, $namefield, $value, $on_order);
-                break;
             case 'email':
-                PluginMetademandsEmail::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'url':
-                PluginMetademandsUrl::showWizardField($data, $namefield, $value, $on_order);
-                break;
             case 'textarea':
-                PluginMetademandsTextarea::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'dropdown_meta':
-                PluginMetademandsDropdownmeta::showWizardField(
-                    $data,
-                    $namefield,
-                    $value,
-                    $on_order,
-                    $itilcategories_id
-                );
+            case 'url':
+            case 'dropdown_multiple':
+            case 'checkbox':
+            case 'radio':
+            case 'yesno':
+            case 'range':
+            case 'number':
+            case 'freetable':
+            case 'date':
+            case 'time':
+            case 'datetime':
+            case 'link':
+            case 'signature':
+            case 'text':
+                $class::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'dropdown_object':
-                PluginMetademandsDropdownobject::showWizardField(
+            case 'dropdown':
+            case 'dropdown_meta':
+                $class::showWizardField(
                     $data,
                     $namefield,
                     $value,
@@ -2745,56 +2768,15 @@ border-style: none !important; border-color: initial !important;border-image: in
                     $itilcategories_id
                 );
                 break;
-            case 'dropdown':
-                PluginMetademandsDropdown::showWizardField($data, $namefield, $value, $on_order, $itilcategories_id);
-                break;
-            case 'dropdown_multiple':
-                PluginMetademandsDropdownmultiple::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'checkbox':
-                PluginMetademandsCheckbox::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'radio':
-                PluginMetademandsRadio::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'yesno':
-                PluginMetademandsYesno::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'number':
-                PluginMetademandsNumber::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'range':
-                PluginMetademandsRange::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'freetable':
-                PluginMetademandsFreetable::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'date':
-                PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'time':
-                PluginMetademandsTime::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'datetime':
-                PluginMetademandsDatetime::showWizardField($data, $namefield, $value, $on_order);
-                break;
-            case 'date_interval':
-                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, false);
-                break;
             case 'datetime_interval':
-                PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, false);
+            case 'date_interval':
+                $class::showWizardField($data, $namefield, $value, false);
                 break;
             case 'upload':
-                PluginMetademandsUpload::showWizardField($data, $namefield, $value, $on_order, $idline);
-                break;
-            case 'link':
-                PluginMetademandsLink::showWizardField($data, $namefield, $value, $on_order);
+                $class::showWizardField($data, $namefield, $value, $on_order, $idline);
                 break;
             case 'basket':
-                PluginMetademandsBasket::showWizardField($data, $on_order, $itilcategories_id, $idline);
-                break;
-            case 'signature':
-                PluginMetademandsSignature::showWizardField($data, $namefield, $value, $on_order);
+                $class::showWizardField($data, $on_order, $itilcategories_id, $idline);
                 break;
             case 'parent_field':
                 foreach ($metademands_data as $metademands_data_steps) {
@@ -2865,10 +2847,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     );
                                                     foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
                                                         if (!empty(
-                                                        $ret = self::displayField(
-                                                            $line_data['form'][$parent_field_id]["id"],
-                                                            "custom" . $k
-                                                        )
+                                                            $ret = self::displayField(
+                                                                $line_data['form'][$parent_field_id]["id"],
+                                                                "custom" . $k
+                                                            )
                                                         )) {
                                                             $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
                                                         }
@@ -2895,10 +2877,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     );
                                                     foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
                                                         if (!empty(
-                                                        $ret = self::displayField(
-                                                            $line_data['form'][$parent_field_id]["id"],
-                                                            "custom" . $k
-                                                        )
+                                                            $ret = self::displayField(
+                                                                $line_data['form'][$parent_field_id]["id"],
+                                                                "custom" . $k
+                                                            )
                                                         )) {
                                                             $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
                                                         }
@@ -2941,8 +2923,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     $value2 = 0;
                                                 }
                                                 $value_parent_field .= Html::convDate($value) . " - " . Html::convDate(
-                                                        $value2
-                                                    );
+                                                    $value2
+                                                );
                                                 break;
 
                                             case 'datetime_interval':
@@ -2958,8 +2940,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     $value2 = 0;
                                                 }
                                                 $value_parent_field .= Html::convDateTime(
-                                                        $value
-                                                    ) . " - " . Html::convDateTime($value2);
+                                                    $value
+                                                ) . " - " . Html::convDateTime($value2);
                                                 break;
                                             case 'yesno':
                                                 $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
@@ -2975,7 +2957,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                                     $field .= $value_parent_field;
                                     break;
                                 }
-//                                }
+                                //                                }
                             }
                         }
                     }
@@ -3000,11 +2982,11 @@ border-style: none !important; border-color: initial !important;border-image: in
                 }
                 break;
         }
-//        if ($on_order == false) {
+        //        if ($on_order == false) {
         echo $field;
-//        } else {
-//            return $field;
-//        }
+        //        } else {
+        //            return $field;
+        //        }
     }
 
 
@@ -3034,14 +3016,14 @@ border-style: none !important; border-color: initial !important;border-image: in
                 'glpi_groups' => [
                     'FKEY' => [
                         'glpi_groups' => 'id',
-                        'glpi_groups_users' => 'groups_id'
-                    ]
-                ]
+                        'glpi_groups_users' => 'groups_id',
+                    ],
+                ],
             ],
             'WHERE' => [
-                    'users_id' => $userid,
-                    $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
-                ] + $where
+                'users_id' => $userid,
+                $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
+            ] + $where,
         ];
 
         $rep = [];
@@ -3218,9 +3200,9 @@ border-style: none !important; border-color: initial !important;border-image: in
             'name' => __('Label'),
             'label2' => __('Additional label', 'metademands'),
             'type' => __('Type'),
-            'item' => __('Object', 'metademands')
+            'item' => __('Object', 'metademands'),
         ];
-        $id = isset($input['id']) ? $input['id'] : 0;
+        $id = $input['id'] ?? 0;
         foreach ($input as $key => $value) {
             if (array_key_exists($key, $mandatory_fields)) {
                 if (empty($value)) {
@@ -3259,7 +3241,7 @@ border-style: none !important; border-color: initial !important;border-image: in
 
         $tab[] = [
             'id' => 'common',
-            'name' => self::getTypeName(1)
+            'name' => self::getTypeName(1),
         ];
 
         $tab[] = [
@@ -3268,7 +3250,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'field' => 'name',
             'name' => __('Name'),
             'datatype' => 'itemlink',
-            'itemlink_type' => $this->getType()
+            'itemlink_type' => $this->getType(),
         ];
 
         $tab[] = [
@@ -3276,7 +3258,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'table' => $this->getTable(),
             'field' => 'id',
             'name' => __('ID'),
-            'datatype' => 'number'
+            'datatype' => 'number',
         ];
 
         $tab[] = [
@@ -3285,7 +3267,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'field' => 'rank',
             'name' => __('Block', 'metademands'),
             'datatype' => 'specific',
-            'massiveaction' => true
+            'massiveaction' => true,
         ];
 
         $tab[] = [
@@ -3294,7 +3276,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'field' => 'order',
             'name' => __('Order', 'metademands'),
             'datatype' => 'specific',
-            'massiveaction' => false
+            'massiveaction' => false,
         ];
 
         $tab[] = [
@@ -3302,7 +3284,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'table' => $this->getTable(),
             'field' => 'label2',
             'name' => __('Additional label', 'metademands'),
-            'datatype' => 'text'
+            'datatype' => 'text',
         ];
 
         $tab[] = [
@@ -3310,31 +3292,31 @@ border-style: none !important; border-color: initial !important;border-image: in
             'table' => $this->getTable(),
             'field' => 'comment',
             'name' => __('Comments'),
-            'datatype' => 'text'
+            'datatype' => 'text',
         ];
 
-//        $tab[] = [
-//            'id' => '819',
-//            'table' => $this->getTable(),
-//            'field' => 'is_mandatory',
-//            'name' => __('Mandatory field'),
-//            'datatype' => 'bool'
-//        ];
-//
-//        $tab[] = [
-//            'id' => '820',
-//            'table' => $this->getTable(),
-//            'field' => 'is_basket',
-//            'name' => __('Display into the basket', 'metademands'),
-//            'datatype' => 'bool'
-//        ];
+        //        $tab[] = [
+        //            'id' => '819',
+        //            'table' => $this->getTable(),
+        //            'field' => 'is_mandatory',
+        //            'name' => __('Mandatory field'),
+        //            'datatype' => 'bool'
+        //        ];
+        //
+        //        $tab[] = [
+        //            'id' => '820',
+        //            'table' => $this->getTable(),
+        //            'field' => 'is_basket',
+        //            'name' => __('Display into the basket', 'metademands'),
+        //            'datatype' => 'bool'
+        //        ];
 
         $tab[] = [
             'id' => '880',
             'table' => 'glpi_entities',
             'field' => 'completename',
             'name' => __('Entity'),
-            'datatype' => 'dropdown'
+            'datatype' => 'dropdown',
         ];
 
         $tab[] = [
@@ -3342,7 +3324,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             'table' => $this->getTable(),
             'field' => 'is_recursive',
             'name' => __('Child entities'),
-            'datatype' => 'bool'
+            'datatype' => 'bool',
         ];
 
         return $tab;
@@ -3370,7 +3352,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     [
                         'id' => $icon_selector_id,
                         'display' => false,
-                        'style' => 'width:175px;'
+                        'style' => 'width:175px;',
                     ]
                 );
 
@@ -3554,7 +3536,7 @@ JAVASCRIPT
             $this->find(
                 [
                     'rank' => $input['rank'],
-                    'plugin_metademands_metademands_id' => $input["plugin_metademands_metademands_id"]
+                    'plugin_metademands_metademands_id' => $input["plugin_metademands_metademands_id"],
                 ],
                 ['order']
             ) as $fields_id => $values
@@ -3613,8 +3595,8 @@ JAVASCRIPT
                 'itemtype' => self::getType(),
                 'items_id' => $id,
                 'field' => $field,
-                'language' => $_SESSION['glpilanguage']
-            ]
+                'language' => $_SESSION['glpilanguage'],
+            ],
         ]);
         if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
             $iterator2 = $DB->request([
@@ -3623,8 +3605,8 @@ JAVASCRIPT
                     'itemtype' => self::getType(),
                     'items_id' => $id,
                     'field' => $field,
-                    'language' => $lang
-                ]
+                    'language' => $lang,
+                ],
             ]);
         }
 
@@ -3677,8 +3659,8 @@ JAVASCRIPT
                 'itemtype' => self::getType(),
                 'items_id' => $id,
                 'field' => $field,
-                'language' => $_SESSION['glpilanguage']
-            ]
+                'language' => $_SESSION['glpilanguage'],
+            ],
         ]);
         if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
             $iterator2 = $DB->request([
@@ -3687,8 +3669,8 @@ JAVASCRIPT
                     'itemtype' => self::getType(),
                     'items_id' => $id,
                     'field' => $field,
-                    'language' => $lang
-                ]
+                    'language' => $lang,
+                ],
             ]);
         }
 
@@ -3742,12 +3724,12 @@ JAVASCRIPT
                 CartridgeItem::class => CartridgeItem::getTypeName(2),
                 ConsumableItem::class => ConsumableItem::getTypeName(2),
                 Phone::class => Phone::getTypeName(2),
-                Line::class => Line::getTypeName(2)
+                Line::class => Line::getTypeName(2),
             ],
             __("Assistance") => [
                 Ticket::class => Ticket::getTypeName(2),
                 Problem::class => Problem::getTypeName(2),
-                TicketRecurrent::class => TicketRecurrent::getTypeName(2)
+                TicketRecurrent::class => TicketRecurrent::getTypeName(2),
             ],
             __("Management") => [
                 Budget::class => Budget::getTypeName(2),
@@ -3756,17 +3738,17 @@ JAVASCRIPT
                 Contract::class => Contract::getTypeName(2),
                 Document::class => Document::getTypeName(2),
                 Project::class => Project::getTypeName(2),
-                Appliance::class => Appliance::getTypeName(2)
+                Appliance::class => Appliance::getTypeName(2),
             ],
             __("Tools") => [
                 Reminder::class => __("Notes"),
-                RSSFeed::class => __("RSS feed")
+                RSSFeed::class => __("RSS feed"),
             ],
             __("Administration") => [
                 User::class => User::getTypeName(2),
                 Group::class => Group::getTypeName(2),
                 Entity::class => Entity::getTypeName(2),
-                Profile::class => Profile::getTypeName(2)
+                Profile::class => Profile::getTypeName(2),
             ],
         ];
         if (class_exists(PassiveDCEquipment::class)) {
@@ -3807,9 +3789,9 @@ JAVASCRIPT
                     $criteria = [
                         'FROM' => $itemtable,
                         'WHERE' => [
-                                'users_id' => $userID
-                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
-                        'ORDER' => $item->getNameField()
+                            'users_id' => $userID,
+                        ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
+                        'ORDER' => $item->getNameField(),
                     ];
 
                     if ($item->maybeDeleted()) {
@@ -3859,20 +3841,20 @@ JAVASCRIPT
                 $iterator = $DB->request([
                     'SELECT' => [
                         'glpi_groups_users.groups_id',
-                        'glpi_groups.name'
+                        'glpi_groups.name',
                     ],
                     'FROM' => 'glpi_groups_users',
                     'LEFT JOIN' => [
                         'glpi_groups' => [
                             'ON' => [
                                 'glpi_groups_users' => 'groups_id',
-                                'glpi_groups' => 'id'
-                            ]
-                        ]
+                                'glpi_groups' => 'id',
+                            ],
+                        ],
                     ],
                     'WHERE' => [
-                            'glpi_groups_users.users_id' => $userID
-                        ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true)
+                        'glpi_groups_users.users_id' => $userID,
+                    ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
                 ]);
 
                 $devices = [];
@@ -3891,14 +3873,14 @@ JAVASCRIPT
                             $criteria = [
                                 'FROM' => $itemtable,
                                 'WHERE' => [
-                                        'groups_id' => $groups
-                                    ] + getEntitiesRestrictCriteria(
-                                        $itemtable,
-                                        '',
-                                        $entity_restrict,
-                                        $item->maybeRecursive()
-                                    ),
-                                'ORDER' => 'name'
+                                    'groups_id' => $groups,
+                                ] + getEntitiesRestrictCriteria(
+                                    $itemtable,
+                                    '',
+                                    $entity_restrict,
+                                    $item->maybeRecursive()
+                                ),
+                                'ORDER' => 'name',
                             ];
 
                             if ($item->maybeDeleted()) {
@@ -3955,7 +3937,7 @@ JAVASCRIPT
                             'SELECT' => [
                                 'glpi_softwareversions.name AS version',
                                 'glpi_softwares.name AS name',
-                                'glpi_softwares.id'
+                                'glpi_softwares.id',
                             ],
                             'DISTINCT' => true,
                             'FROM' => 'glpi_items_softwareversions',
@@ -3963,22 +3945,22 @@ JAVASCRIPT
                                 'glpi_softwareversions' => [
                                     'ON' => [
                                         'glpi_items_softwareversions' => 'softwareversions_id',
-                                        'glpi_softwareversions' => 'id'
-                                    ]
+                                        'glpi_softwareversions' => 'id',
+                                    ],
                                 ],
                                 'glpi_softwares' => [
                                     'ON' => [
                                         'glpi_softwareversions' => 'softwares_id',
-                                        'glpi_softwares' => 'id'
-                                    ]
-                                ]
+                                        'glpi_softwares' => 'id',
+                                    ],
+                                ],
                             ],
                             'WHERE' => [
-                                    'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
-                                    'glpi_items_softwareversions.itemtype' => $itemtype,
-                                    'glpi_softwares.is_helpdesk_visible' => 1
-                                ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
-                            'ORDERBY' => 'glpi_softwares.name'
+                                'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
+                                'glpi_items_softwareversions.itemtype' => $itemtype,
+                                'glpi_softwares.is_helpdesk_visible' => 1,
+                            ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
+                            'ORDERBY' => 'glpi_softwares.name',
                         ]);
 
                         $devices = [];
@@ -4036,15 +4018,15 @@ JAVASCRIPT
                                 $itemtable => [
                                     'ON' => [
                                         'glpi_computers_items' => 'items_id',
-                                        $itemtable => 'id'
-                                    ]
-                                ]
+                                        $itemtable => 'id',
+                                    ],
+                                ],
                             ],
                             'WHERE' => [
-                                    'glpi_computers_items.itemtype' => $itemtype,
-                                    'glpi_computers_items.computers_id' => $already_add['Computer']
-                                ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
-                            'ORDERBY' => "$itemtable.name"
+                                'glpi_computers_items.itemtype' => $itemtype,
+                                'glpi_computers_items.computers_id' => $already_add['Computer'],
+                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
+                            'ORDERBY' => "$itemtable.name",
                         ];
 
                         if ($item->maybeDeleted()) {
@@ -4120,7 +4102,7 @@ JAVASCRIPT
             'multiple' => false,
             'name' => 'my_items',
             'value' => 0,
-            'rand' => mt_rand()
+            'rand' => mt_rand(),
         ];
 
         foreach ($options as $key => $val) {
@@ -4152,9 +4134,9 @@ JAVASCRIPT
                     $criteria = [
                         'FROM' => $itemtable,
                         'WHERE' => [
-                                'users_id' => $userID
-                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
-                        'ORDER' => $item->getNameField()
+                            'users_id' => $userID,
+                        ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
+                        'ORDER' => $item->getNameField(),
                     ];
 
                     if ($item->maybeDeleted()) {
@@ -4204,20 +4186,20 @@ JAVASCRIPT
                 $iterator = $DB->request([
                     'SELECT' => [
                         'glpi_groups_users.groups_id',
-                        'glpi_groups.name'
+                        'glpi_groups.name',
                     ],
                     'FROM' => 'glpi_groups_users',
                     'LEFT JOIN' => [
                         'glpi_groups' => [
                             'ON' => [
                                 'glpi_groups_users' => 'groups_id',
-                                'glpi_groups' => 'id'
-                            ]
-                        ]
+                                'glpi_groups' => 'id',
+                            ],
+                        ],
                     ],
                     'WHERE' => [
-                            'glpi_groups_users.users_id' => $userID
-                        ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true)
+                        'glpi_groups_users.users_id' => $userID,
+                    ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
                 ]);
 
                 $devices = [];
@@ -4236,14 +4218,14 @@ JAVASCRIPT
                             $criteria = [
                                 'FROM' => $itemtable,
                                 'WHERE' => [
-                                        'groups_id' => $groups
-                                    ] + getEntitiesRestrictCriteria(
-                                        $itemtable,
-                                        '',
-                                        $entity_restrict,
-                                        $item->maybeRecursive()
-                                    ),
-                                'ORDER' => 'name'
+                                    'groups_id' => $groups,
+                                ] + getEntitiesRestrictCriteria(
+                                    $itemtable,
+                                    '',
+                                    $entity_restrict,
+                                    $item->maybeRecursive()
+                                ),
+                                'ORDER' => 'name',
                             ];
 
                             if ($item->maybeDeleted()) {
@@ -4301,7 +4283,7 @@ JAVASCRIPT
                             'SELECT' => [
                                 'glpi_softwareversions.name AS version',
                                 'glpi_softwares.name AS name',
-                                'glpi_softwares.id'
+                                'glpi_softwares.id',
                             ],
                             'DISTINCT' => true,
                             'FROM' => 'glpi_items_softwareversions',
@@ -4309,22 +4291,22 @@ JAVASCRIPT
                                 'glpi_softwareversions' => [
                                     'ON' => [
                                         'glpi_items_softwareversions' => 'softwareversions_id',
-                                        'glpi_softwareversions' => 'id'
-                                    ]
+                                        'glpi_softwareversions' => 'id',
+                                    ],
                                 ],
                                 'glpi_softwares' => [
                                     'ON' => [
                                         'glpi_softwareversions' => 'softwares_id',
-                                        'glpi_softwares' => 'id'
-                                    ]
-                                ]
+                                        'glpi_softwares' => 'id',
+                                    ],
+                                ],
                             ],
                             'WHERE' => [
-                                    'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
-                                    'glpi_items_softwareversions.itemtype' => $itemtype,
-                                    'glpi_softwares.is_helpdesk_visible' => 1
-                                ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
-                            'ORDERBY' => 'glpi_softwares.name'
+                                'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
+                                'glpi_items_softwareversions.itemtype' => $itemtype,
+                                'glpi_softwares.is_helpdesk_visible' => 1,
+                            ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
+                            'ORDERBY' => 'glpi_softwares.name',
                         ]);
 
                         $devices = [];
@@ -4389,15 +4371,15 @@ JAVASCRIPT
                                 $itemtable => [
                                     'ON' => [
                                         'glpi_computers_items' => 'items_id',
-                                        $itemtable => 'id'
-                                    ]
-                                ]
+                                        $itemtable => 'id',
+                                    ],
+                                ],
                             ],
                             'WHERE' => [
-                                    'glpi_computers_items.itemtype' => $itemtype,
-                                    'glpi_computers_items.computers_id' => $already_add['Computer']
-                                ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
-                            'ORDERBY' => "$itemtable.name"
+                                'glpi_computers_items.itemtype' => $itemtype,
+                                'glpi_computers_items.computers_id' => $already_add['Computer'],
+                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
+                            'ORDERBY' => "$itemtable.name",
                         ];
 
                         if ($item->maybeDeleted()) {
@@ -4462,16 +4444,16 @@ JAVASCRIPT
                 Profile_User::getTable() => [
                     'ON' => [
                         Profile_User::getTable() => 'users_id',
-                        User::getTable() => 'id'
-                    ]
-                ]
+                        User::getTable() => 'id',
+                    ],
+                ],
             ],
             'WHERE' => getEntitiesRestrictCriteria(
                 Profile_User::getTable(),
                 'entities_id',
                 $_SESSION['glpiactiveentities'],
                 true
-            )
+            ),
         ];
     }
 
@@ -4487,7 +4469,7 @@ JAVASCRIPT
         return [
             'FIELDS' => [
                 User::getTable() . '.id AS users_id',
-                User::getTable() . '.language AS language'
+                User::getTable() . '.language AS language',
             ],
             'DISTINCT' => true,
         ];
@@ -4544,7 +4526,7 @@ JAVASCRIPT
         echo "<tr class='tab_bg_2'>";
 
         echo "<td class='center'><b>";
-        echo __('Filter', 'glpi')."&nbsp;";
+        echo __('Filter', 'glpi') . "&nbsp;";
         echo "</b></td>";
 
         echo "<td class='center'>";
@@ -4552,7 +4534,7 @@ JAVASCRIPT
             'SELECT'    => ['MAX' => 'rank AS maxrank'],
             'FROM'      => 'glpi_plugin_metademands_fields',
             'WHERE'     => [
-                'plugin_metademands_metademands_id'  => $item->getID()
+                'plugin_metademands_metademands_id'  => $item->getID(),
             ],
         ]);
 
@@ -4563,26 +4545,27 @@ JAVASCRIPT
             }
         }
 
-        echo __('Block', 'metademands')."&nbsp;";
+        echo __('Block', 'metademands') . "&nbsp;";
         Dropdown::showNumber('block', [
             'value' => $p['rank'],
             'min' => 1,
             'max' => $max,
-            'toadd' => [0 => Dropdown::EMPTY_VALUE]
+            'toadd' => [0 => Dropdown::EMPTY_VALUE],
         ]);
         echo "</td>";
 
         echo "<td class='center'>";
-        echo __('Field type', 'metademands')."&nbsp;";
+        echo __('Field type', 'metademands') . "&nbsp;";
         $mrand = self::dropdownFieldTypes(
-            self::$field_types, ['value' => $p['type'], 'metademands_id' => $item->getID(), 'on_change' => 'plugin_metademands_reloaditem();']
+            self::$field_types,
+            ['value' => $p['type'], 'metademands_id' => $item->getID(), 'on_change' => 'plugin_metademands_reloaditem();']
         );
         echo "</td>";
 
         echo "<td class='center'>";
         echo "<span id='plugin_metademands_item'>";
         if (in_array($p['type'], self::$field_withobjects)) {
-            echo __('Object', 'metademands')."&nbsp;";
+            echo __('Object', 'metademands') . "&nbsp;";
             self::dropdownFieldItems($p['type'], ['value' => $p["item"], 'with_empty_value' => true]);
         }
         echo "</span>";
@@ -4623,7 +4606,7 @@ JAVASCRIPT
             $crit = [
                 'order' => $params['old_order'],
                 'rank' => $params['rank'],
-                'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+                'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id'],
             ];
 
             $itemMove = new self();
@@ -4636,13 +4619,13 @@ JAVASCRIPT
                         '`order`' => ['>', $params['old_order']],
                         'order' => ['<=', $params['new_order']],
                         'rank' => $params['rank'],
-                        'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+                        'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id'],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
                         $this->update([
                             'id' => $toUpdate['id'],
-                            'order' => $toUpdate['order'] - 1
+                            'order' => $toUpdate['order'] - 1,
                         ]);
                     }
                 } else {
@@ -4650,13 +4633,13 @@ JAVASCRIPT
                         '`order`' => ['<', $params['old_order']],
                         'order' => ['>=', $params['new_order']],
                         'rank' => $params['rank'],
-                        'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+                        'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id'],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
                         $this->update([
                             'id' => $toUpdate['id'],
-                            'order' => $toUpdate['order'] + 1
+                            'order' => $toUpdate['order'] + 1,
                         ]);
                     }
                 }
@@ -4665,14 +4648,15 @@ JAVASCRIPT
                     && $itemMove->fields['id'] > 0) {
                     $this->update([
                         'id' => $itemMove->fields['id'],
-                        'order' => $params['new_order']
+                        'order' => $params['new_order'],
                     ]);
                 }
             }
         }
     }
 
-    static function isSequentialFromOne(array $arr) {
+    public static function isSequentialFromOne(array $arr)
+    {
         if (empty($arr) || $arr[0] !== 1) {
             return false; // Vérifie que le tableau n'est pas vide et commence bien par 0
         }
@@ -4685,7 +4669,8 @@ JAVASCRIPT
         return true;
     }
 
-    static function fixOrders(array $data) {
+    public static function fixOrders(array $data)
+    {
         // Extraire les clés du tableau
         $keys = array_keys($data);
 

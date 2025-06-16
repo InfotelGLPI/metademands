@@ -278,30 +278,33 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
         }
         if (y[i].type == 'checkbox'
             && fieldmandatory == true) {
-            var newfieldname = fieldname.match(/^(.*?)\[\w+\]/)[0];
-            var casesACocher = document.querySelectorAll('input[name*=\"' + newfieldname + '\"]');
+            isswitch = y[i].getAttribute('isswitch');
+            if (isswitch == null) {
+                var newfieldname = fieldname.match(/^(.*?)\[\w+\]/)[0];
+                var casesACocher = document.querySelectorAll('input[name*=\"' + newfieldname + '\"]');
 
-            // Parcourir les cases à cocher pour vérifier s'il y en a au moins une de cochée
-            var check = false;
-            for (var c = 0; c < casesACocher.length; c++) {
-                if (casesACocher[c].checked) {
-                    check = true;
-                    break;
+                // Parcourir les cases à cocher pour vérifier s'il y en a au moins une de cochée
+                var check = false;
+                for (var c = 0; c < casesACocher.length; c++) {
+                    if (casesACocher[c].checked) {
+                        check = true;
+                        break;
+                    }
                 }
-            }
-            if (check) {
-                $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
-                $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
+                if (check) {
+                    $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
+                    $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
 //                              $('[for*=\"' + newfieldname + '\"]').css('color', 'unset');
-            } else {
-                $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
-                $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
+                } else {
+                    $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
+                    $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
 //                              $('[for*=\"' + newfieldname + '\"]').css('color', 'red');
-                var mandfieldname = fieldid.match(/\[(.*?)\]/);
-                if (mandfieldname) {
-                    mandatory.push(mandfieldname[1]);
+                    var mandfieldname = fieldid.match(/\[(.*?)\]/);
+                    if (mandfieldname) {
+                        mandatory.push(mandfieldname[1]);
+                    }
+                    ko++;
                 }
-                ko++;
             }
         }
 

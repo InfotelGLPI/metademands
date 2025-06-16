@@ -332,7 +332,7 @@ class PluginMetademandsTel extends CommonDBTM
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+            $nextsteptitle = __(
                 'Next',
                 'metademands'
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -573,13 +573,17 @@ class PluginMetademandsTel extends CommonDBTM
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
-                                        $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                        $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
+                                            ['hidden_block' => $childs]);
+                                        if (count($options) == 0) {
+                                            $script .= "if (document.getElementById('ablock" . $childs . "'))
                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                                     $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                            $metaid,
-                                            $childs
-                                        );
+                                                    $metaid,
+                                                    $childs
+                                                );
+                                        }
                                     }
                                 }
                             }

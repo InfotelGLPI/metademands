@@ -286,7 +286,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                 }
 
                 $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+                $nextsteptitle = __(
                     'Next',
                     'metademands'
                 ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -533,13 +533,17 @@ class PluginMetademandsTextarea extends CommonDBTM
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                     if ($idc == $k) {
                                         foreach ($childs_blocks as $childs) {
-                                            $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                            $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]);
+                                            if (count($options) == 0) {
+                                                $script .= "if (document.getElementById('ablock" . $childs . "'))
                                                     document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                     $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+                                                        $metaid,
+                                                        $childs
+                                                    );
+                                            }
                                         }
                                     }
                                 }
@@ -659,19 +663,19 @@ class PluginMetademandsTextarea extends CommonDBTM
         $lang,
         $is_order = false
     ) {
-        $colspan = $is_order ? 6 : 1;
+        $colspan = $is_order ? 12 : 2;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
+                $result[$field['rank']]['content'] .= "<tr><th $style_title colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
+                $result[$field['rank']]['content'] .= "</th></tr><tr><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field);
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
+                $result[$field['rank']]['content'] .= "</td><tr>";
             }
         }
 

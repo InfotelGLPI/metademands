@@ -37,6 +37,8 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsYesno extends CommonDBTM
 {
+    public const CLASSIC_DISPLAY = 0;
+    public const SWITCH_DISPLAY = 1;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -72,23 +74,74 @@ class PluginMetademandsYesno extends CommonDBTM
             $value = "";
         }
 
-        $field = "";
-        $field .= Dropdown::showFromArray(
-            $namefield . "[" . $data['id'] . "]",
-            $options,
-            [
-                'value' => $value,
-                'display_emptychoice' => true,
-                'class' => '',
-                //                    'noselect2' => true,
-                'width' => '70px',
-                'required' => ($data['is_mandatory'] ? "required" : ""),
-                'id' => $data['id'],
-                'display' => false,
-            ]
-        );
+        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+            $field = "";
+            $field .= Dropdown::showFromArray(
+                $namefield . "[" . $data['id'] . "]",
+                $options,
+                [
+                    'value' => $value,
+                    'display_emptychoice' => true,
+                    'class' => '',
+                    //                    'noselect2' => true,
+                    'width' => '70px',
+                    'required' => ($data['is_mandatory'] ? "required" : ""),
+                    'id' => $data['id'],
+                    'display' => false,
+                ]
+            );
+            echo $field;
+        } else {
+            self::showSwitchField($data,  $namefield, $value);
+        }
 
-        echo $field;
+
+    }
+
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public static function showSwitchField($data, $namefield, $value)
+    {
+
+        $name = $namefield . "[" . $data['id'] . "]";
+        $required = ($data['is_mandatory'] && $value == 0)? "required" : "";
+        $id = $name . "-toggle";
+
+        echo "<label class='ios-switch-sm'>";
+
+        $checked = "";
+        if ($value == 2) {
+            $checked = "checked";
+        }
+        echo "<input type='checkbox' id='$id' name='$name' $checked isswitch='isswitch' >";
+        echo "<span class='slider'>";
+        echo "<span class='checkmark-on'><i class='ti ti-check'></i></span>";
+        echo "<span class='checkmark-off'></span>";
+        echo "<span class='checkmark-empty'></span>";
+        echo "</span>";
+        echo "</label>";
+
+        echo Html::hidden($name, ['id' => $name, 'value' => $value]);
+
+        echo Html::scriptBlock("(function(){
+        const toggle = document.getElementById('$id');
+        const hidden = document.getElementById('$name');
+
+        toggle.addEventListener('change', function () {
+            hidden.value = this.checked ? '2' : '1';
+            if (this.checked) {
+                toggle.setAttribute('checked', 'checked');
+//                toggle.setAttribute('required', '');
+//                toggle.setAttribute('invalid', '');
+            } else {
+                toggle.setAttribute('checked', '');
+            }
+        });
+    })();
+    ");
     }
 
     public static function showFieldCustomValues($params)
@@ -104,7 +157,10 @@ class PluginMetademandsYesno extends CommonDBTM
         }
         $data[1] = __('No');
         $data[2] = __('Yes');
-        $p['display_emptychoice'] = true;
+
+        if ($params["display_type"] == self::CLASSIC_DISPLAY) {
+            $p['display_emptychoice'] = true;
+        }
         Dropdown::showFromArray("custom", $data, $p);
         echo "</td>";
         echo "</tr>";
@@ -116,6 +172,27 @@ class PluginMetademandsYesno extends CommonDBTM
             'class' => 'btn btn-primary',
             'icon' => 'fas fa-save',
         ]);
+        echo "</td>";
+        echo "</tr>";
+    }
+
+    public static function showFieldParameters($params)
+    {
+
+        $disp = [];
+        $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
+        $disp[self::SWITCH_DISPLAY] = __("Switch display", "metademands");
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Display type of the field', 'metademands');
+        echo "</td>";
+        echo "<td>";
+
+        echo Dropdown::showFromArray(
+            "display_type",
+            $disp,
+            ['value' => $params['display_type'], 'display' => false]
+        );
         echo "</td>";
         echo "</tr>";
     }
@@ -233,8 +310,14 @@ class PluginMetademandsYesno extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
                     $val = Toolbox::addslashes_deep($idc);
-                    $onchange .= "if ($(this).val() == $val) {
-                                     $('#metademands_wizard_red" . $fields_link . "').html('*');
+
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $onchange .= "if ($(this).val() == $val) {";
+                    } else {
+                        $onchange .= " if (this.checked) {";
+                    }
+
+                    $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
@@ -286,7 +369,7 @@ class PluginMetademandsYesno extends CommonDBTM
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+            $nextsteptitle = __(
                 'Next',
                 'metademands'
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -310,8 +393,12 @@ class PluginMetademandsYesno extends CommonDBTM
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
                     $val = Toolbox::addslashes_deep($idc);
 
-                    $script .= "if ($(this).val() == $val) {
-                                 $.ajax({
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $script .= "if ($(this).val() == $val) {";
+                    } else {
+                        $script .= " if (this.checked) {";
+                    }
+                    $script .= "$.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
                                      data: { tasks_id: $tasks_id,
                                   used: 1 },
@@ -462,8 +549,12 @@ class PluginMetademandsYesno extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['hidden_link'] as $hidden_link) {
                     $val = Toolbox::addslashes_deep($idc);
-                    $onchange .= "if ($(this).val() == $val) {
-                             $('[id-field =\"field" . $hidden_link . "\"]').show();
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $onchange .= "if ($(this).val() == $val) {";
+                    } else {
+                        $onchange .= " if (this.checked) {";
+                    }
+                    $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();
                              
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
@@ -576,13 +667,19 @@ class PluginMetademandsYesno extends CommonDBTM
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                     if ($idc == $k) {
                                         foreach ($childs_blocks as $childs) {
-                                            $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                            $options = getAllDataFromTable(
+                                                'glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]
+                                            );
+                                            if (count($options) == 0) {
+                                                $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
                                         if (document.getElementById('ablock" . $childs . "'))
                                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                  " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+                                                    $metaid,
+                                                    $childs
+                                                );
+                                            }
                                         }
                                     }
                                 }
@@ -590,8 +687,11 @@ class PluginMetademandsYesno extends CommonDBTM
                         }
                     }
 
-                    $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
-
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $onchange .= "if ($(this).val() == $idc || $idc == -1 ) {";
+                    } else {
+                        $onchange .= " if (this.checked) {";
+                    }
                     //specific for radio / dropdowns - one value
                     //            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
@@ -606,13 +706,19 @@ class PluginMetademandsYesno extends CommonDBTM
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                    $options = getAllDataFromTable(
+                                        'glpi_plugin_metademands_fieldoptions',
+                                        ['hidden_block' => $childs]
+                                    );
+                                    if (count($options) == 0) {
+                                        $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
                                 if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                        $metaid,
-                                        $childs
-                                    );
+                                            $metaid,
+                                            $childs
+                                        );
+                                    }
                                 }
                             }
                         }
