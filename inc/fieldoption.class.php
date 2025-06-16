@@ -1054,7 +1054,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
-                    && $value['item'] != "informations" && (!in_array($id, $fieldslinkusedarray) || $id == $params['fields_link'])) {
+                    && $value['item'] != "informations" ) {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                         html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                     );
@@ -1085,8 +1085,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 }
             }
             foreach ($fields_data as $id => $value) {
-                if ($value['item'] != "ITILCategory_Metademands" &&
-                    (!in_array($id, $hiddenlinkusedarray) || $id == $params['hidden_link'])) {
+                if ($value['item'] != "ITILCategory_Metademands") {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                         html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                     );
