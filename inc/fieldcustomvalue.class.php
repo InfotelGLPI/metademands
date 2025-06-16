@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -40,7 +41,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
     public static $items_id = 'plugin_metademands_fields_id';
     public $dohistory = true;
 
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
     public static $allowed_custom_types = [
         'yesno',
@@ -67,30 +68,30 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
     public static $allowed_customvalues_items = ['other', 'Appliance', 'Group'];
 
 
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return _n('Custom value', 'Custom values', $nb, 'metademands');
     }
 
 
-    static function getIcon()
+    public static function getIcon()
     {
         return PluginMetademandsMetademand::getIcon();
     }
-//
-//
-//    static function canView()
-//    {
-//        return Session::haveRight(self::$rightname, READ);
-//    }
-//
-//    /**
-//     * @return bool
-//     */
-//    static function canCreate()
-//    {
-//        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-//    }
+    //
+    //
+    //    static function canView()
+    //    {
+    //        return Session::haveRight(self::$rightname, READ);
+    //    }
+    //
+    //    /**
+    //     * @return bool
+    //     */
+    //    static function canCreate()
+    //    {
+    //        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    //    }
 
 
 
@@ -128,7 +129,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
      *
      * @return int number of parameters for this item
      */
-    static function getNumberOfCustomValuesForItem($item)
+    public static function getNumberOfCustomValuesForItem($item)
     {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
@@ -160,6 +161,21 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         return true;
     }
 
+
+    /**
+     * @param array $input
+     *
+     * @return array|bool
+     */
+    public function prepareInputForUpdate($input)
+    {
+
+        if (isset($input["_blank_picture"])) {
+            $input['icon'] = 'NULL';
+        }
+
+        return $input;
+    }
 
     /**
      * @param       $ID
@@ -250,19 +266,19 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
      *
      * @return void
      */
-    static public function showFieldCustomValues($params = [])
+    public static function showFieldCustomValues($params = [])
     {
-//        $params['value'] = 0;
-//        $params['item'] = '';
-//        $params['type'] = '';
-//
-//        $values = $options['custom_values'];
-//        $comment = $options['comment_values'];
-//        $default = $options['default_values'];
-//
-//        foreach ($options as $key => $value) {
-//            $params[$key] = $value;
-//        }
+        //        $params['value'] = 0;
+        //        $params['item'] = '';
+        //        $params['type'] = '';
+        //
+        //        $values = $options['custom_values'];
+        //        $comment = $options['comment_values'];
+        //        $default = $options['default_values'];
+        //
+        //        foreach ($options as $key => $value) {
+        //            $params[$key] = $value;
+        //        }
 
         $allowed_customvalues_types = self::$allowed_customvalues_types;
         $allowed_custom_types = self::$allowed_custom_types;
@@ -303,9 +319,9 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                     if ($hasDuplicates == true) {
                         echo "<div class='alert alert-warning d-flex'>";
                         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
-                                'You have duplicates rank!',
-                                'metademands'
-                            );
+                            'You have duplicates rank!',
+                            'metademands'
+                        );
                         echo "</div>";
                     }
 
@@ -313,9 +329,9 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                         echo "<div class='alert alert-warning flex'>";
                         echo "<div class='left'>";
                         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
-                                'The ranks are not ordered correctly, you will not be able to order them!',
-                                'metademands'
-                            );
+                            'The ranks are not ordered correctly, you will not be able to order them!',
+                            'metademands'
+                        );
                         echo "<br><br>";
                         echo _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands');
                         echo "</div>";
@@ -352,66 +368,37 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                 }
             }
 
+            $class = PluginMetademandsField::getClassFromType($params['type']);
+
             switch ($params['type']) {
                 case 'title':
-                    break;
                 case 'title-block':
-                    break;
                 case 'informations':
-                    break;
                 case 'text':
-                    break;
                 case 'tel':
-                    break;
                 case 'email':
-                    break;
                 case 'url':
-                    break;
                 case 'textarea':
-                    break;
                 case 'dropdown_meta':
-                    break;
                 case 'dropdown_object':
-                    break;
+                case 'date':
+                case 'time':
+                case 'date_interval':
+                case 'datetime':
+                case 'upload':
+                case 'datetime_interval':
                 case 'dropdown':
+                case 'parent_field':
                     break;
                 case 'dropdown_multiple':
-                    PluginMetademandsDropdownmultiple::showFieldCustomValues($params);
-                    break;
                 case 'checkbox':
-                    PluginMetademandsCheckbox::showFieldCustomValues($params);
-                    break;
                 case 'radio':
-                    PluginMetademandsRadio::showFieldCustomValues($params);
-                    break;
                 case 'yesno':
-                    PluginMetademandsYesno::showFieldCustomValues($params);
-                    break;
                 case 'number':
-                    PluginMetademandsNumber::showFieldCustomValues($params);
-                    break;
                 case 'range':
-                    PluginMetademandsRange::showFieldCustomValues($params);
-                    break;
-                case 'date':
-                    break;
-                case 'time':
-                    break;
-                case 'date_interval':
-                    break;
-                case 'datetime':
-                    break;
-                case 'datetime_interval':
-                    break;
-                case 'upload':
-                    break;
                 case 'link':
-                    PluginMetademandsLink::showFieldCustomValues($params);
-                    break;
                 case 'basket':
-                    PluginMetademandsBasket::showFieldCustomValues($params);
-                    break;
-                case 'parent_field':
+                    $class::showFieldCustomValues($params);
                     break;
             }
 
@@ -430,7 +417,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
             && isset($params['new_order'])) {
             $crit = [
                 'plugin_metademands_fields_id' => $params['field_id'],
-                'rank' => $params['old_order']
+                'rank' => $params['old_order'],
             ];
 
             $itemMove = new self();
@@ -441,25 +428,25 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                 if ($params['old_order'] < $params['new_order']) {
                     $toUpdateList = $this->find([
                         '`rank`' => ['>', $params['old_order']],
-                        'rank'   => ['<=', $params['new_order']]
+                        'rank'   => ['<=', $params['new_order']],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
                         $this->update([
                             'id'      => $toUpdate['id'],
-                            'rank' => $toUpdate['rank'] - 1
+                            'rank' => $toUpdate['rank'] - 1,
                         ]);
                     }
                 } else {
                     $toUpdateList = $this->find([
                         '`rank`' => ['<', $params['old_order']],
-                        'rank'   => ['>=', $params['new_order']]
+                        'rank'   => ['>=', $params['new_order']],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
                         $this->update([
                             'id'      => $toUpdate['id'],
-                            'rank' => $toUpdate['rank'] + 1
+                            'rank' => $toUpdate['rank'] + 1,
                         ]);
                     }
                 }
@@ -467,7 +454,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                 if (isset($itemMove->fields["id"]) && $itemMove->fields['id'] > 0) {
                     $this->update([
                         'id'      => $itemMove->fields['id'],
-                        'rank' => $params['new_order']
+                        'rank' => $params['new_order'],
                     ]);
                 }
             }
@@ -484,8 +471,8 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
     {
         Html::requireJs("metademands");
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-                ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
-            ) . ");";
+            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
+        ) . ");";
 
         echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => $display_comment]);
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
@@ -510,7 +497,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
 
         echo "<td align='right'>";
         echo "<a href='javascript:void(0);' class='btn btn-success' onclick='formToggle(\"importFrm\");'>";
-        echo __('Reset and import custom values', 'metademands')."</a>";
+        echo __('Reset and import custom values', 'metademands') . "</a>";
         echo "</td>";
 
         echo "<td align='left'  colspan='4'>";
@@ -521,12 +508,13 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         echo Html::submit("", ['name'  => 'importreplacecsv',
             'class' => 'btn btn-success',
             'icon'  => 'fas fa-upload',
-        'confirm' => __('Are you sure ? Custom values will be deleted !', 'metademands')]);
+            'confirm' => __('Are you sure ? Custom values will be deleted !', 'metademands')]);
         $warning = __('Please respect this format : name; display by default(0|1); comment; - sorted by display order', 'metademands');
         Html::showToolTip($warning);
         Html::closeForm();
         echo "</div>";
-        echo Html::scriptBlock(<<<JAVASCRIPT
+        echo Html::scriptBlock(
+            <<<JAVASCRIPT
          function formToggle(ID) {
                 var element = document.getElementById(ID);
                 if (element.style.display === "none") {
@@ -674,7 +662,8 @@ JAVASCRIPT
         return $input;
     }
 
-    static function isSequentialFromZero(array $arr) {
+    public static function isSequentialFromZero(array $arr)
+    {
         if (empty($arr) || $arr[0] !== 0) {
             return false; // Vérifie que le tableau n'est pas vide et commence bien par 0
         }
@@ -687,7 +676,8 @@ JAVASCRIPT
         return true;
     }
 
-    static function fixRanks(array $data) {
+    public static function fixRanks(array $data)
+    {
         // Extraire les clés du tableau
         $keys = array_keys($data);
 

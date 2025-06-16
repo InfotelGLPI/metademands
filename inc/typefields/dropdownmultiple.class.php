@@ -1019,7 +1019,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
-                        $fields_link = $check_value['fields_link'];
 
                         $onchange .= "$('.centralCol').on('click', 'button', function () {
                     const index = $(this).index();
@@ -1103,7 +1102,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
 
                 $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+                $nextsteptitle = __(
                     'Next',
                     'metademands'
                 ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -1238,7 +1237,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
 
                 $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __(
+                $nextsteptitle = __(
                     'Next',
                     'metademands'
                 ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -1480,7 +1479,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
                 }
 
-                if (count($display) > 0) {
+                if (is_array($display) && count($display) > 0) {
                     foreach ($display as $see) {
                         $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
                         $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
@@ -1661,7 +1660,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
 
                 $onchange .= "});";
-                if (count($display) > 0) {
+                if (is_array($display) && count($display) > 0) {
                     foreach ($display as $see) {
                         $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
                         $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $see);
@@ -1789,10 +1788,16 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
-                                        $script .= "if (document.getElementById('ablock" . $childs . "'))
+                                        $options = getAllDataFromTable(
+                                            'glpi_plugin_metademands_fieldoptions',
+                                            ['hidden_block' => $childs]
+                                        );
+                                        if (count($options) == 0) {
+                                            $script .= "if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                 $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                 $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                                        }
                                     }
                                 }
                             }
@@ -1810,7 +1815,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                     }
                 }
-                if (count($display) > 0) {
+                if (is_array($display) && count($display) > 0) {
                     foreach ($display as $see) {
                         $script2 .= "if (document.getElementById('ablock" . $see . "'))
                                 document.getElementById('ablock" . $see . "').style.display = 'none';
@@ -1953,7 +1958,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                     }
                 }
-                if (count($display) > 0) {
+                if (is_array($display) && count($display) > 0) {
                     foreach ($display as $see) {
                         $script2 .= "if (document.getElementById('ablock" . $see . "'))
                                 document.getElementById('ablock" . $see . "').style.display = 'block';
