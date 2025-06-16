@@ -177,11 +177,6 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         $field .= "</div>";
 
                         $field .= "<div class='me-2 ms-auto'>";
-                        if ($data['id'] == 740) {
-                            Toolbox::logInfo($value);
-                            Toolbox::logInfo($key);
-                        }
-
                         $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                         $field .= "</div>";
 
