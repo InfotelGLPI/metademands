@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 14:42+0000\n"
+"POT-Creation-Date: 2025-06-16 12:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -416,12 +416,12 @@ msgstr ""
 #: inc/condition.class.php:351 inc/condition.class.php:490
 #: inc/condition.class.php:592 inc/condition.class.php:918
 #: inc/field.class.php:1341 inc/fieldoption.class.php:365
-#: inc/typefields/basket.class.php:544 inc/typefields/checkbox.class.php:442
+#: inc/typefields/basket.class.php:544 inc/typefields/checkbox.class.php:437
 #: inc/typefields/dropdown.class.php:430
 #: inc/typefields/dropdownmeta.class.php:1303
 #: inc/typefields/dropdownmultiple.class.php:723
 #: inc/typefields/dropdownobject.class.php:740
-#: inc/typefields/radio.class.php:434 inc/typefields/yesno.class.php:208
+#: inc/typefields/radio.class.php:433 inc/typefields/yesno.class.php:211
 msgid "Value to check"
 msgstr ""
 
@@ -793,20 +793,20 @@ msgid ""
 "sorted by display order"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:547 inc/typefields/checkbox.class.php:258
+#: inc/fieldcustomvalue.class.php:547 inc/typefields/checkbox.class.php:253
 #: inc/typefields/dropdownmeta.class.php:1043
 #: inc/typefields/dropdownmultiple.class.php:550
 #: inc/typefields/freetable.class.php:849
 #: inc/typefields/freetablefield.class.php:336
-#: inc/typefields/radio.class.php:251
+#: inc/typefields/radio.class.php:250
 msgid "Rank"
 msgstr ""
 
-#: inc/fieldcustomvalue.class.php:566 inc/typefields/checkbox.class.php:283
+#: inc/fieldcustomvalue.class.php:566 inc/typefields/checkbox.class.php:278
 #: inc/typefields/dropdownmeta.class.php:1068
 #: inc/typefields/dropdownmultiple.class.php:487
 #: inc/typefields/dropdownmultiple.class.php:575
-#: inc/typefields/radio.class.php:276 inc/typefields/yesno.class.php:152
+#: inc/typefields/radio.class.php:275 inc/typefields/yesno.class.php:155
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
@@ -927,15 +927,15 @@ msgstr ""
 
 #: inc/fieldoption.class.php:1944 inc/wizard.class.php:1442
 #: inc/wizard.class.php:1592 inc/typefields/basket.class.php:813
-#: inc/typefields/checkbox.class.php:691 inc/typefields/dropdown.class.php:683
+#: inc/typefields/checkbox.class.php:686 inc/typefields/dropdown.class.php:683
 #: inc/typefields/dropdownmeta.class.php:1600
 #: inc/typefields/dropdownmultiple.class.php:1104
 #: inc/typefields/dropdownmultiple.class.php:1239
 #: inc/typefields/dropdownobject.class.php:1032
-#: inc/typefields/email.class.php:332 inc/typefields/radio.class.php:623
+#: inc/typefields/email.class.php:332 inc/typefields/radio.class.php:646
 #: inc/typefields/tel.class.php:334 inc/typefields/text.class.php:332
 #: inc/typefields/textarea.class.php:288 inc/typefields/url.class.php:333
-#: inc/typefields/yesno.class.php:371
+#: inc/typefields/yesno.class.php:380
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
@@ -944,16 +944,16 @@ msgstr ""
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1553
 #: inc/wizard.class.php:1562 inc/wizard.class.php:1596
 #: inc/wizard.class.php:1602 inc/wizard.class.php:2105
-#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:693
+#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:688
 #: inc/typefields/dropdown.class.php:684
 #: inc/typefields/dropdownmeta.class.php:1602
 #: inc/typefields/dropdownmultiple.class.php:1106
 #: inc/typefields/dropdownmultiple.class.php:1241
 #: inc/typefields/dropdownobject.class.php:1033
-#: inc/typefields/email.class.php:334 inc/typefields/radio.class.php:625
+#: inc/typefields/email.class.php:334 inc/typefields/radio.class.php:648
 #: inc/typefields/tel.class.php:336 inc/typefields/text.class.php:334
 #: inc/typefields/textarea.class.php:290 inc/typefields/url.class.php:335
-#: inc/typefields/yesno.class.php:373
+#: inc/typefields/yesno.class.php:382
 msgid "Next"
 msgstr ""
 
@@ -2092,8 +2092,8 @@ msgstr ""
 msgid "Accessory"
 msgstr ""
 
-#: inc/typefields/basket.class.php:545 inc/typefields/checkbox.class.php:477
-#: inc/typefields/checkbox.class.php:490 inc/typefields/dropdown.class.php:479
+#: inc/typefields/basket.class.php:545 inc/typefields/checkbox.class.php:472
+#: inc/typefields/checkbox.class.php:485 inc/typefields/dropdown.class.php:479
 #: inc/typefields/dropdown.class.php:515
 #: inc/typefields/dropdownmeta.class.php:1388
 #: inc/typefields/dropdownmeta.class.php:1398
@@ -2105,7 +2105,7 @@ msgstr ""
 #: inc/typefields/dropdownobject.class.php:854
 #: inc/typefields/dropdownobject.class.php:870
 #: inc/typefields/dropdownobject.class.php:881
-#: inc/typefields/radio.class.php:469 inc/typefields/radio.class.php:482
+#: inc/typefields/radio.class.php:468 inc/typefields/radio.class.php:481
 msgid "Not null value"
 msgstr ""
 
@@ -2137,21 +2137,21 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: inc/typefields/checkbox.class.php:391 inc/typefields/dropdown.class.php:408
+#: inc/typefields/checkbox.class.php:386 inc/typefields/dropdown.class.php:408
 #: inc/typefields/dropdownmeta.class.php:1240
 #: inc/typefields/dropdownmultiple.class.php:650
-#: inc/typefields/radio.class.php:383 inc/typefields/yesno.class.php:183
+#: inc/typefields/radio.class.php:382 inc/typefields/yesno.class.php:186
 msgid "Classic display"
 msgstr ""
 
-#: inc/typefields/checkbox.class.php:392 inc/typefields/radio.class.php:384
+#: inc/typefields/checkbox.class.php:387 inc/typefields/radio.class.php:383
 msgid "Block display"
 msgstr ""
 
-#: inc/typefields/checkbox.class.php:395 inc/typefields/dropdown.class.php:412
+#: inc/typefields/checkbox.class.php:390 inc/typefields/dropdown.class.php:412
 #: inc/typefields/dropdownmeta.class.php:1244
 #: inc/typefields/dropdownmultiple.class.php:654
-#: inc/typefields/radio.class.php:387 inc/typefields/yesno.class.php:187
+#: inc/typefields/radio.class.php:386 inc/typefields/yesno.class.php:190
 msgid "Display type of the field"
 msgstr ""
 
@@ -2445,6 +2445,6 @@ msgstr ""
 msgid "Yes / No"
 msgstr ""
 
-#: inc/typefields/yesno.class.php:184
+#: inc/typefields/yesno.class.php:187
 msgid "Switch display"
 msgstr ""
