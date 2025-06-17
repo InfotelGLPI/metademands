@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -40,7 +41,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
     public static $items_id = 'plugin_metademands_fields_id';
     public $dohistory = true;
 
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
     public static $allowed_parameters_types = [
         'title',
@@ -73,30 +74,30 @@ class PluginMetademandsFieldParameter extends CommonDBChild
     ];
     public static $allowed_parameters_items = ['User', 'Group'];
 
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return _n('Parameter', 'Parameters', $nb, 'metademands');
     }
 
 
-    static function getIcon()
+    public static function getIcon()
     {
         return PluginMetademandsMetademand::getIcon();
     }
-//
-//
-//    static function canView()
-//    {
-//        return Session::haveRight(self::$rightname, READ);
-//    }
-//
-//    /**
-//     * @return bool
-//     */
-//    static function canCreate()
-//    {
-//        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-//    }
+    //
+    //
+    //    static function canView()
+    //    {
+    //        return Session::haveRight(self::$rightname, READ);
+    //    }
+    //
+    //    /**
+    //     * @return bool
+    //     */
+    //    static function canCreate()
+    //    {
+    //        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    //    }
 
 
     /**
@@ -119,7 +120,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
      *
      * @return int number of parameters for this item
      */
-    static function getNumberOfParametersForItem($item)
+    public static function getNumberOfParametersForItem($item)
     {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
@@ -235,7 +236,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
      * @return void
      * @throws \GlpitestSQLError
      */
-    static public function showFieldParameters($options)
+    public static function showFieldParameters($options)
     {
         global $PLUGIN_HOOKS;
 
@@ -250,15 +251,15 @@ class PluginMetademandsFieldParameter extends CommonDBChild
         $allowed_options_types = PluginMetademandsFieldOption::$allowed_options_types;
         $new_fields = [];
 
-//        if (Plugin::isPluginActive('ldapfields')) {
-//            $ldapfields_containers = new PluginLdapfieldsContainer();
-//            $ldapfields = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
-//            if (count($ldapfields) > 0) {
-//                foreach ($ldapfields as $ldapfield) {
-//                    array_push($allowed_options_types, $ldapfield['name']);
-//                }
-//            }
-//        }
+        //        if (Plugin::isPluginActive('ldapfields')) {
+        //            $ldapfields_containers = new PluginLdapfieldsContainer();
+        //            $ldapfields = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
+        //            if (count($ldapfields) > 0) {
+        //                foreach ($ldapfields as $ldapfield) {
+        //                    array_push($allowed_options_types, $ldapfield['name']);
+        //                }
+        //            }
+        //        }
 
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -273,17 +274,17 @@ class PluginMetademandsFieldParameter extends CommonDBChild
 
         if (in_array($params['type'], $allowed_parameters_types)
             || in_array($params['item'], $allowed_parameters_items)) {
-//            if (is_array($new_fields) && in_array($params['type'], $new_fields)) {
-//                $params['value'] = $params['type'];
-//            }
-//            if ($params["type"] === "dropdown") {
-//                $params['value'] = $params['type'];
-//            }
+            //            if (is_array($new_fields) && in_array($params['type'], $new_fields)) {
+            //                $params['value'] = $params['type'];
+            //            }
+            //            if ($params["type"] === "dropdown") {
+            //                $params['value'] = $params['type'];
+            //            }
 
             self::showGlobalParameters($params);
 
-//            echo "<div id='show_type_fields'>";
-//            echo "<table width='100%' class='metademands_show_values'>";
+            //            echo "<div id='show_type_fields'>";
+            //            echo "<table width='100%' class='metademands_show_values'>";
 
             $class = PluginMetademandsField::getClassFromType($params['type']);
 
@@ -329,13 +330,13 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                     }
                     break;
             }
-//            echo "</table>";
-//            echo "</div>";
+            //            echo "</table>";
+            //            echo "</div>";
         }
     }
 
 
-    static function showGlobalParameters($params)
+    public static function showGlobalParameters($params)
     {
         global $PLUGIN_HOOKS;
         // MANDATORY
@@ -396,7 +397,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
             && $params['type'] != 'tel'
             && $params['type'] != 'email'
             && $params['type'] != 'url'
-            && $params['type'] != 'textarea'
+//            && $params['type'] != 'textarea'
             && $params['type'] != 'checkbox'
             && $params['type'] != 'yesno'
             && $params['type'] != 'radio'
@@ -438,13 +439,13 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 }
             }
 
-//            //TODO ELCH into releases
-//            if ($objectclass == 'PluginReleasesRelease') {
-//                $allowed_fields = $tt->getAllowedFields(true, true);
-//                $allowed_fields[9] = 'date_production';
-//                $allowed_fields[18] = 'date_preproduction';
-//                unset($allowed_fields[-1]);
-//            }
+            //            //TODO ELCH into releases
+            //            if ($objectclass == 'PluginReleasesRelease') {
+            //                $allowed_fields = $tt->getAllowedFields(true, true);
+            //                $allowed_fields[9] = 'date_production';
+            //                $allowed_fields[18] = 'date_preproduction';
+            //                unset($allowed_fields[-1]);
+            //            }
 
             unset($allowed_fields[-2]);
 
@@ -478,7 +479,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 $granted_fields = [
                     4,
                     66,
-                    59
+                    59,
                 ];
             }
             if ($params['type'] == "dropdown_object"
@@ -486,6 +487,23 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 $granted_fields = [
                     71,
                     65,
+                ];
+            }
+
+            if ($objectclass == 'Problem' && $params['type'] == "textarea") {
+                $granted_fields = [
+                    60,
+                    61,
+                    62,
+                ];
+            }
+            if ($objectclass == 'Change' && $params['type'] == "textarea") {
+                $granted_fields = [
+                    60,
+                    61,
+                    62,
+                    63,
+                    67
                 ];
             }
 
@@ -516,21 +534,21 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                     || $params["item"] == "impact"
                     || $params["item"] == "priority")) {
                 $granted_fields = [
-                    $params["item"]
+                    $params["item"],
                 ];
             }
 
             if ($params['type'] == "dropdown_meta"
                 && ($params["item"] == "ITILCategory_Metademands")) {
                 $granted_fields = [
-                    'itilcategories_id'
+                    'itilcategories_id',
                 ];
             }
 
             if ($params['type'] == "date"
                 || $params["type"] == "datetime") {
                 $granted_fields = [
-                    'time_to_resolve'
+                    'time_to_resolve',
                 ];
             }
 
@@ -541,7 +559,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 || ($params['type'] == "dropdown_object"
                     && Ticket::isPossibleToAssignType($params["item"]))) {
                 $granted_fields = [
-                    13
+                    13,
                 ];
             }
 
@@ -555,15 +573,15 @@ class PluginMetademandsFieldParameter extends CommonDBChild
             }
 
             //            TODO ELCH into releases
-//            if ($objectclass == 'PluginReleasesRelease') {
-//                if ($params['type'] == "date"
-//                    || $params["type"] == "datetime") {
-//                    $granted_fields = [
-//                        'date_preproduction',
-//                        'date_production'
-//                    ];
-//                }
-//            }
+            //            if ($objectclass == 'PluginReleasesRelease') {
+            //                if ($params['type'] == "date"
+            //                    || $params["type"] == "datetime") {
+            //                    $granted_fields = [
+            //                        'date_preproduction',
+            //                        'date_production'
+            //                    ];
+            //                }
+            //            }
 
             foreach ($allowed_fields as $id => $value) {
                 if ((isset($searchOption[$id]['linkfield'])
@@ -763,7 +781,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
         $msg = [];
         $checkKo = false;
 
-        $id = isset($input['id']) ? $input['id'] : 0;
+        $id = $input['id'] ?? 0;
         foreach ($input as $key => $value) {
             if ($key === 'informations_to_display'
                 && (isset($input['type'])
@@ -870,38 +888,38 @@ class PluginMetademandsFieldParameter extends CommonDBChild
     }
 
 
-//
-//    public function post_addItem()
-//    {
-//        $pluginField = new PluginMetademandsPluginfields();
-//        $input = [];
-//        if (isset($this->input['plugin_fields_fields_id'])) {
-//            $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
-//            $input['plugin_metademands_fields_id'] = $this->fields['id'];
-//            $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
-//            $pluginField->add($input);
-//        }
-//    }
-//
-//    public function post_updateItem($history = 1)
-//    {
-//        $pluginField = new PluginMetademandsPluginfields();
-//        if (isset($this->input['plugin_fields_fields_id'])) {
-//            if ($pluginField->getFromDBByCrit(['plugin_metademands_fields_id' => $this->fields['id']])) {
-//                $input = [];
-//                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
-//                $input['plugin_metademands_fields_id'] = $this->fields['id'];
-//                $input['id'] = $pluginField->fields['id'];
-//                $pluginField->update($input);
-//            } else {
-//                $input = [];
-//                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
-//                $input['plugin_metademands_fields_id'] = $this->fields['id'];
-//                $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
-//                $pluginField->add($input);
-//            }
-//        }
-//    }
+    //
+    //    public function post_addItem()
+    //    {
+    //        $pluginField = new PluginMetademandsPluginfields();
+    //        $input = [];
+    //        if (isset($this->input['plugin_fields_fields_id'])) {
+    //            $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+    //            $input['plugin_metademands_fields_id'] = $this->fields['id'];
+    //            $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
+    //            $pluginField->add($input);
+    //        }
+    //    }
+    //
+    //    public function post_updateItem($history = 1)
+    //    {
+    //        $pluginField = new PluginMetademandsPluginfields();
+    //        if (isset($this->input['plugin_fields_fields_id'])) {
+    //            if ($pluginField->getFromDBByCrit(['plugin_metademands_fields_id' => $this->fields['id']])) {
+    //                $input = [];
+    //                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+    //                $input['plugin_metademands_fields_id'] = $this->fields['id'];
+    //                $input['id'] = $pluginField->fields['id'];
+    //                $pluginField->update($input);
+    //            } else {
+    //                $input = [];
+    //                $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+    //                $input['plugin_metademands_fields_id'] = $this->fields['id'];
+    //                $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
+    //                $pluginField->add($input);
+    //            }
+    //        }
+    //    }
 
     /**
      * Load fields from plugins

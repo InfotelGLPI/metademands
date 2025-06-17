@@ -2597,6 +2597,9 @@ JAVASCRIPT
                                                             }
                                                         }
                                                     }
+                                                    else {
+                                                        $val_f = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                    }
                                                 }
                                                 if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
                                                     $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
@@ -2728,6 +2731,8 @@ JAVASCRIPT
                                                                         }
                                                                     }
                                                                 }
+                                                            }else {
+                                                                $val_f = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                             }
                                                         }
                                                         $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
