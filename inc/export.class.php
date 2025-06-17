@@ -1419,8 +1419,8 @@ class PluginMetademandsExport extends CommonDBTM
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
                 $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
 
-                $toUpdate["custom"] = $old["custom_values"] ?? $empty_values;
-                $toUpdate["default"] = $old["default_values"] ?? $empty_values;
+                $toUpdate["custom"] = $old["custom"] ?? $empty_values;
+                $toUpdate["default"] = $old["default"] ?? $empty_values;
                 $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
                 $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
                 $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
@@ -1680,9 +1680,18 @@ class PluginMetademandsExport extends CommonDBTM
         }
 
         if (!empty($stepconfig)) {
-            $stepconfig['plugin_metademands_metademands_id'] = $newIDMeta;
             $stepconfig_meta = new PluginMetademandsConfigstep();
-            $stepconfig_meta->add($stepconfig);
+            if($stepconfig_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $newIDMeta])) {
+                $stepconfig['id'] = $stepconfig_meta->fields['id'];
+                $stepconfig['plugin_metademands_metademands_id'] = $newIDMeta;
+                $stepconfig['see_blocks_as_tab'] = $stepconfig['see_blocks_as_tab'] ?? 0;
+                $stepconfig['link_user_block'] = $stepconfig['link_user_block'] ?? 0;
+                $stepconfig['multiple_link_groups_blocks'] = $stepconfig['multiple_link_groups_blocks'] ?? 0;
+                $stepconfig['add_user_as_requester'] = $stepconfig['add_user_as_requester'] ?? 0;
+                $stepconfig['supervisor_validation'] = $stepconfig['supervisor_validation'] ?? 0;
+                $stepconfig['step_by_step_interface'] = $stepconfig['step_by_step_interface'] ?? 0;
+                $stepconfig_meta->update($stepconfig);
+            }
         }
 
         if (!empty($steps)) {

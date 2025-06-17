@@ -66,7 +66,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 
     }
 
-    if (!empty($fieldparameter->fields['custom']) && $_POST["value"]) {
+    if (!empty($fieldparameter->fields['custom']) && isset($_POST["value"])) {
         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
 
