@@ -1419,9 +1419,8 @@ class PluginMetademandsExport extends CommonDBTM
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
                 $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
 
-                $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
-                $toUpdate["default_values"] = $old["default_values"] ?? $empty_values;
-                $toUpdate["comment_values"] = $old["comment_values"] ?? $empty_values;
+                $toUpdate["custom"] = $old["custom_values"] ?? $empty_values;
+                $toUpdate["default"] = $old["default_values"] ?? $empty_values;
                 $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
                 $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
                 $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
@@ -1506,6 +1505,7 @@ class PluginMetademandsExport extends CommonDBTM
                 $name = $old["name"] ?? "";
                 $is_default = $old["is_default"] ?? 0;
                 $comment = $old["comment"] ?? "";
+                $icon = $old["icon"] ?? "";
                 $rank = $old["rank"] ?? 0;
 
                 $toUpdate = [];
@@ -1517,6 +1517,9 @@ class PluginMetademandsExport extends CommonDBTM
                 }
                 if ($comment != "") {
                     $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
+                }
+                if ($icon != "") {
+                    $toUpdate["icon"] = $icon;
                 }
                 if ($rank != 0) {
                     $toUpdate["rank"] = $rank;
@@ -1600,6 +1603,7 @@ class PluginMetademandsExport extends CommonDBTM
             $childs_blocks = $old["childs_blocks"] ?? [];
             $checkbox_value = $old["checkbox_value"] ?? 0;
             $checkbox_id = $old["checkbox_id"] ?? 0;
+            $hidden_block_same_block = $old["hidden_block_same_block"] ?? 0;
 //            $parent_field_id = $old["parent_field_id"]??0;
 //
             $toUpdate = [];
@@ -1641,6 +1645,9 @@ class PluginMetademandsExport extends CommonDBTM
             }
             if ($checkbox_id != 0) {
                 $toUpdate["checkbox_id"] = $checkbox_id;
+            }
+            if ($hidden_block_same_block != 0) {
+                $toUpdate["hidden_block_same_block"] = $hidden_block_same_block;
             }
 //            if ($parent_field_id != 0 && isset($mapTableField[$parent_field_id])) {
 //                $toUpdate["parent_field_id"] = $mapTableField[$parent_field_id];
