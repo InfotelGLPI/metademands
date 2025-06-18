@@ -7796,7 +7796,7 @@ JAVASCRIPT
     //    }
 
 
-    public static function getRunningMetademands(array $params = []): array
+    public static function (array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
@@ -7810,7 +7810,7 @@ JAVASCRIPT
         $get_running_parents_tickets_meta =
             "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " " .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
@@ -7831,6 +7831,12 @@ JAVASCRIPT
                     'searchtype' => 'equals',
                     'value' => PluginMetademandsTicket_Metademand::RUNNING,
                 ],
+                [
+                    'link'       => 'AND',
+                    'field'      => 12, // status
+                    'searchtype' => 'equals',
+                    'value'      => 'notold'
+                ]
             ],
             'reset' => 'reset',
         ];
