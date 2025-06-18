@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 16:52+0000\n"
+"POT-Creation-Date: 2025-06-18 08:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,15 +42,15 @@ msgstr ""
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1597 inc/metademand.class.php:7928
+#: hook.php:1597 inc/metademand.class.php:7934
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1614 inc/metademand.class.php:7985
+#: hook.php:1614 inc/metademand.class.php:7991
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1631 inc/metademand.class.php:7857
+#: hook.php:1631 inc/metademand.class.php:7863
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1335,23 +1335,23 @@ msgstr ""
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:8289
+#: inc/metademand.class.php:8295
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:8338
+#: inc/metademand.class.php:8344
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:8340
+#: inc/metademand.class.php:8346
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:8353
+#: inc/metademand.class.php:8359
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:8381 inc/wizard.class.php:1101
+#: inc/metademand.class.php:8387 inc/wizard.class.php:1101
 msgid "Find a form"
 msgstr ""
 
