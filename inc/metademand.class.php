@@ -7796,7 +7796,7 @@ JAVASCRIPT
     //    }
 
 
-    public static function (array $params = []): array
+    public static function getRunningMetademands (array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
