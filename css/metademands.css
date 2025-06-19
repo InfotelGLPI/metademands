@@ -762,3 +762,16 @@ select.chained-select {
 .ios-switch-sm input:checked + .slider .checkmark-off {
     opacity: 0;
 }
+
+.modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+}
+.modal-box {
+    background: white; padding: 20px; border-radius: 8px; max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-align: center;
+}
+.modal-buttons { margin-top: 15px; }
+.modal-buttons button { margin: 0 10px; padding: 6px 16px; }

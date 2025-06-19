@@ -1363,6 +1363,13 @@ JAVASCRIPT
         echo "</td>";
         echo "</tr>";
 
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Use a confirm popup check for empty values', 'metademands') . "</td><td>";
+        Dropdown::showYesNo("use_confirm", $this->fields['use_confirm']);
+        echo "</td>";
+        echo "<td colspan='2'></td>";
+        echo "</tr>";
+
         $this->showFormButtons($options);
 
         return true;

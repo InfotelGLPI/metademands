@@ -82,7 +82,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 [
                     'value' => $value,
                     'display_emptychoice' => true,
-                    'class' => '',
+                    'class' => 'yesno',
                     //                    'noselect2' => true,
                     'width' => '70px',
                     'required' => ($data['is_mandatory'] ? "required" : ""),
