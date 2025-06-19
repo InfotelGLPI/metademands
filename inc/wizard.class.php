@@ -1545,7 +1545,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
         $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
-        $metaparams['confirmmsg'] = __("You have not entered any values. Is this normal?", 'metademands');
+        $metaparams['confirmmsg'] = Toolbox::addslashes_deep(__("You have not entered any values. Is this normal?", 'metademands'));
         $metaparams['nameform'] = Toolbox::addslashes_deep(
             $metademands->fields['name']
         ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
