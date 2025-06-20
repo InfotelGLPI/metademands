@@ -698,7 +698,10 @@ class PluginMetademandsExport extends CommonDBTM
             } else if ($fieldorigin->fields['type'] === 'text') {
                 $showCondition = 2;
 
-            } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
+            } else if ((int)$option['check_value'] === -1) {
+                $showCondition = 2;
+            }
+            else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
                 $showValue = $fieldcustomvalues->fields['name'] ?? "";
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
@@ -759,6 +762,9 @@ class PluginMetademandsExport extends CommonDBTM
                         $showValue = 'oui';
                     }
                 } else if ($fieldorigin->fields['type'] === 'text') {
+                    $showCondition = 2;
+
+                } else if ((int)$option['check_value'] === -1) {
                     $showCondition = 2;
 
                 } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
@@ -827,7 +833,6 @@ class PluginMetademandsExport extends CommonDBTM
     public static function exportAsJSONForFormcreator($id)
     {
         //TODOJSON case not null value -> add regex
-        //TODOJSON target PluginFormcreatorTargetTicket
         //TODOJSON rights
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
@@ -889,6 +894,70 @@ class PluginMetademandsExport extends CommonDBTM
             "_validators" => [],
             "_translations" => []
         ];
+
+        if ($metademands->fields['object_to_create'] === "Ticket") {
+            $newTicket = [
+                "name" => "Ticket from metademand",
+                "target_name" => "Ticket from metademand",
+                "source_rule" => 1,
+                "source_question" => 7,
+                "type_rule" => 1,
+                "type_question" => $metademands->fields['type'],
+                "content" => "",
+                "due_date_rule" => 1,
+                "due_date_question" => 0,
+                "due_date_value" => null,
+                "due_date_period" => 0,
+                "urgency_question" => 0,
+                "validation_followup" => 1,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_question" => 0,
+                "associate_rule" => 1,
+                "associate_question" => 0,
+                "location_rule" => 1,
+                "location_question" => 0,
+                "commonitil_validation_rule" => 1,
+                "commonitil_validation_question" => 0,
+                "show_rule" => 1,
+                "sla_rule" => 1,
+                "sla_question_tto" => 0,
+                "ola_question_ttr" => 0,
+                "uuid" => $prefix . $metademands_id . "target",
+                "_tickettemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => "f304dcbd-1885f3fc-684fc5eb15a578.54810731"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => "f304dcbd-1885f3fc-684fc5eb18fdc4.49167764"
+                    ]
+                ],
+                "_ticket_relations" => [],
+                "_conditions" => [],
+            ];
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (empty($itilcategories_id)) {
+                $newTicket["category_rule"] = 1;
+            } else {
+                $newTicket["category_rule"] = 2;
+            }
+
+            $form["_targets"]["PluginFormcreatorTargetTicket"][] = $newTicket;
+        }
 
         $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
             ['plugin_metademands_metademands_id' => $metademands_id]);
