@@ -210,88 +210,90 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
             }
         } else {
-            $item = new $data['item']();
-            $criteria['FROM'] = getTableForItemType($data['item']);
+            if (getItemForItemtype($data["item"])) {
+                $item = new $data['item']();
+                $criteria['FROM'] = getTableForItemType($data['item']);
 
-            if ($item->maybeDeleted()) {
-                $criteria['WHERE'][getTableForItemType($data['item']) . '.is_deleted'] = 0;
-            }
-
-            if ($item->maybeTemplate()) {
-                $criteria['WHERE'][getTableForItemType($data['item']) . '.is_template'] = 0;
-            }
-
-            $criteria['WHERE'] = getEntitiesRestrictCriteria(
-                getTableForItemType($data['item']),
-                '',
-                '',
-                $item->maybeRecursive()
-            );
-
-            if ($data['item'] == Location::getType() || $data['item'] == Group::getType()) {
-                $criteria['ORDER'] = ['completename ASC'];
-            } else {
-                $criteria['ORDER'] = ['name ASC'];
-            }
-
-
-            $iterator = $DB->request($criteria);
-
-            $list = [];
-            if ($data['item'] == Location::getType() || $data['item'] == Group::getType()) {
-                foreach ($iterator as $datau) {
-                    $list[$datau['id']] = $datau['completename'];
+                if ($item->maybeDeleted()) {
+                    $criteria['WHERE'][getTableForItemType($data['item']) . '.is_deleted'] = 0;
                 }
-            } else {
-                foreach ($iterator as $datau) {
-                    $list[$datau['id']] = $datau['name'];
+
+                if ($item->maybeTemplate()) {
+                    $criteria['WHERE'][getTableForItemType($data['item']) . '.is_template'] = 0;
                 }
-            }
 
-            $custom_values = $data['custom_values'] ?? [];
-            if (count($custom_values) > 0 && ($data['item'] == "Appliance" || $data['item'] == "Group")) {
-                $list = [];
-                foreach ($custom_values as $k => $custom_value) {
-                    $app = new $data['item']();
-                    if ($app->getFromDB($custom_value)) {
-                        $list[$custom_value] = $app->getName();
-                    }
-                }
-            }
-
-            if (!empty($value) && !is_array($value)) {
-                $value = json_decode($value);
-            }
-            if (!is_array($value)) {
-                $value = [];
-            }
-
-            $default_values = $data['default_values'] ?? [];
-            if (count($value) == 0 && count($default_values) > 0 && ($data['item'] == "Appliance" || $data['item'] == "Group")) {
-                $value = [];
-                foreach ($default_values as $k => $as_default) {
-                    if ($as_default == 1) {
-                        $value[$k] = $k;
-                    }
-                }
-            }
-
-            if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
-
-                $field .= self::loadMultiselectScript($namefield, $data['id']);
-            } else {
-                $field = Dropdown::showFromArray(
-                    $namefield . "[" . $data['id'] . "]",
-                    $list,
-                    [
-                        'values' => $value,
-                        'width' => '250px',
-                        'multiple' => true,
-                        'display' => false,
-                        'required' => ($data['is_mandatory'] ? "required" : ""),
-                    ]
+                $criteria['WHERE'] = getEntitiesRestrictCriteria(
+                    getTableForItemType($data['item']),
+                    '',
+                    '',
+                    $item->maybeRecursive()
                 );
+
+                if ($data['item'] == Location::getType() || $data['item'] == Group::getType()) {
+                    $criteria['ORDER'] = ['completename ASC'];
+                } else {
+                    $criteria['ORDER'] = ['name ASC'];
+                }
+
+
+                $iterator = $DB->request($criteria);
+
+                $list = [];
+                if ($data['item'] == Location::getType() || $data['item'] == Group::getType()) {
+                    foreach ($iterator as $datau) {
+                        $list[$datau['id']] = $datau['completename'];
+                    }
+                } else {
+                    foreach ($iterator as $datau) {
+                        $list[$datau['id']] = $datau['name'];
+                    }
+                }
+
+                $custom_values = $data['custom_values'] ?? [];
+                if (count($custom_values) > 0 && ($data['item'] == "Appliance" || $data['item'] == "Group")) {
+                    $list = [];
+                    foreach ($custom_values as $k => $custom_value) {
+                        $app = new $data['item']();
+                        if ($app->getFromDB($custom_value)) {
+                            $list[$custom_value] = $app->getName();
+                        }
+                    }
+                }
+
+                if (!empty($value) && !is_array($value)) {
+                    $value = json_decode($value);
+                }
+                if (!is_array($value)) {
+                    $value = [];
+                }
+
+                $default_values = $data['default_values'] ?? [];
+                if (count($value) == 0 && count($default_values) > 0 && ($data['item'] == "Appliance" || $data['item'] == "Group")) {
+                    $value = [];
+                    foreach ($default_values as $k => $as_default) {
+                        if ($as_default == 1) {
+                            $value[$k] = $k;
+                        }
+                    }
+                }
+
+                if ($data["display_type"] != self::CLASSIC_DISPLAY) {
+                    $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
+
+                    $field .= self::loadMultiselectScript($namefield, $data['id']);
+                } else {
+                    $field = Dropdown::showFromArray(
+                        $namefield . "[" . $data['id'] . "]",
+                        $list,
+                        [
+                            'values' => $value,
+                            'width' => '250px',
+                            'multiple' => true,
+                            'display' => false,
+                            'required' => ($data['is_mandatory'] ? "required" : ""),
+                        ]
+                    );
+                }
             }
         }
 
@@ -1082,79 +1084,82 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $metaid = $data['plugin_metademands_metademands_id'];
         $id = $data["id"];
 
-        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-            $script = "";
-            $script2 = "";
-            $debug = (isset($_SESSION['glpi_use_mode'])
-            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-            if ($debug) {
-                $script = "console.log('taskScript-dropdownmultiple $id');";
-            }
-
-            if (count($check_values) > 0) {
-                //Si la valeur est en session
-                //specific
-                if (isset($data['value']) && is_array($data['value'])) {
-                    $values = $data['value'];
-                    foreach ($values as $value) {
-                        $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
-                    }
+        if (getItemForItemtype($data["item"])) {
+            if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                $script = "";
+                $script2 = "";
+                $debug = (isset($_SESSION['glpi_use_mode'])
+                && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+                if ($debug) {
+                    $script = "console.log('taskScript-dropdownmultiple $id');";
                 }
 
-                $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = __(
-                    'Next',
-                    'metademands'
-                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                if (count($check_values) > 0) {
+                    //Si la valeur est en session
+                    //specific
+                    if (isset($data['value']) && is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
+                        }
+                    }
+
+                    $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+                    $nextsteptitle = __(
+                            'Next',
+                            'metademands'
+                        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
-                foreach ($check_values as $idc => $check_value) {
-                    foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                        if ($tasks_id) {
-                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                                $script .= "});";
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                            if ($tasks_id) {
+                                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                    $script .= "});";
+                                }
                             }
                         }
                     }
-                }
 
-                $custom_value = $data['custom_values'] ?? [];
-                //            $custom_value = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
-                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                $script .= "var tohide = {};";
-                foreach ($check_values as $idc => $check_value) {
-                    foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                        $script .= "if ($tasks_id in tohide) {
+                    $custom_value = $data['custom_values'] ?? [];
+                    //            $custom_value = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                    $script .= "var tohide = {};";
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                            $script .= "if ($tasks_id in tohide) {
                              } else {
                                 tohide[$tasks_id] = true;
                              }";
-                        $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
+                            $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
-                        if ($data["item"] == "other") {
-                            if (isset($data['custom_values'])
-                                && is_array($data['custom_values'])
-                                && count($data['custom_values']) > 0) {
-                                $custom_values = $data['custom_values'];
-                                foreach ($custom_values as $k => $custom_value) {
-                                    if ($k == $idc) {
-                                        $val = Toolbox::addslashes_deep($custom_value['name']);
-                                        //Pas compris
-                                        $script .= "if ($(value).attr('title') == '$val') {
+                            if ($data["item"] == "other") {
+                                if (isset($data['custom_values'])
+                                    && is_array($data['custom_values'])
+                                    && count($data['custom_values']) > 0) {
+                                    $custom_values = $data['custom_values'];
+                                    foreach ($custom_values as $k => $custom_value) {
+                                        if ($k == $idc) {
+                                            $val = Toolbox::addslashes_deep($custom_value['name']);
+                                            //Pas compris
+                                            $script .= "if ($(value).attr('title') == '$val') {
                                         tohide[" . $tasks_id . "] = false;
                                     }";
+                                        }
                                     }
                                 }
-                            }
-                        } else {
-                            $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($tasks_id) . "') {
+                            } else {
+                                $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById(
+                                        $tasks_id
+                                    ) . "') {
                                     tohide[" . $tasks_id . "] = false;
                                 }";
-                        }
+                            }
 
-                        $script .= "});";
-                        $script .= "$.each( tohide, function( key, value ) {
+                            $script .= "});";
+                            $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -1182,116 +1187,115 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                     });
               ";
+                        }
                     }
-                }
-                $script .= "});";
+                    $script .= "});";
 
-                foreach ($check_values as $idc => $check_value) {
-                    foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
-                        //Initialize id default value
-                        if (isset($data['custom_values'])
-                            && is_array($data['custom_values'])
-                            && count($data['custom_values']) > 0) {
-                            $custom_values = $data['custom_values'];
-                            foreach ($custom_values as $k => $custom_value) {
-                                if (isset($custom_value['is_default'])
-                                    && $custom_value['is_default'] == 1) {
-                                    if ($idc == $k) {
-                                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
-                                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                            $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                                            $script .= "});";
-                                        }
-                                    } else {
-                                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                            $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                                            $script .= "});";
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
+                            //Initialize id default value
+                            if (isset($data['custom_values'])
+                                && is_array($data['custom_values'])
+                                && count($data['custom_values']) > 0) {
+                                $custom_values = $data['custom_values'];
+                                foreach ($custom_values as $k => $custom_value) {
+                                    if (isset($custom_value['is_default'])
+                                        && $custom_value['is_default'] == 1) {
+                                        if ($idc == $k) {
+                                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                                $script .= "});";
+                                            }
+                                        } else {
+                                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                                $script .= "});";
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+
+                    echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                }
+            } else {
+                $script = "";
+                $script2 = "";
+                $debug = (isset($_SESSION['glpi_use_mode'])
+                && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+                if ($debug) {
+                    $script = "console.log('taskScript-dropdownmultiple $id');";
                 }
 
-                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-            }
-        } else {
-            $script = "";
-            $script2 = "";
-            $debug = (isset($_SESSION['glpi_use_mode'])
-            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-            if ($debug) {
-                $script = "console.log('taskScript-dropdownmultiple $id');";
-            }
-
-            if (count($check_values) > 0) {
-                //Si la valeur est en session
-                //specific
-                if (isset($data['value']) && is_array($data['value'])) {
-                    $values = $data['value'];
-                    foreach ($values as $value) {
-                        $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
+                if (count($check_values) > 0) {
+                    //Si la valeur est en session
+                    //specific
+                    if (isset($data['value']) && is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
+                        }
                     }
-                }
 
-                $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-                $nextsteptitle = __(
-                    'Next',
-                    'metademands'
-                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                    $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+                    $nextsteptitle = __(
+                            'Next',
+                            'metademands'
+                        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
-                foreach ($check_values as $idc => $check_value) {
-                    foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                        if ($tasks_id) {
-                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                                $script .= "});";
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                            if ($tasks_id) {
+                                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                    $script .= "});";
+                                }
                             }
                         }
                     }
-                }
 
-                $script .=  "$('#multiselect" . $data["id"] . "').on('change', function() {";
-                $script .= "var tohide = {};";
-                foreach ($check_values as $idc => $check_value) {
-                    foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-
-                        $script .= "if ($tasks_id in tohide) {
+                    $script .= "$('#multiselect" . $data["id"] . "').on('change', function() {";
+                    $script .= "var tohide = {};";
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
+                            $script .= "if ($tasks_id in tohide) {
                             } else {
                                 tohide[$tasks_id] = true;
                             }";
-                        //
-                        //                    $script .= "$.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {";
-                        $script .= "if ($(this).val() == '$idc') {
+                            //
+                            //                    $script .= "$.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {";
+                            $script .= "if ($(this).val() == '$idc') {
                                tohide[" . $tasks_id . "] = false;
                             }";
-                        //
-                        //                $script .= "if ($tasks_id in tohide) {
-                        //                        } else {
-                        //                            tohide[$tasks_id] = true;
-                        //                        }
-                        //                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
-                        //                            tohide[$tasks_id] = false;
-                        //                        }";
+                            //
+                            //                $script .= "if ($tasks_id in tohide) {
+                            //                        } else {
+                            //                            tohide[$tasks_id] = true;
+                            //                        }
+                            //                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                            //                            tohide[$tasks_id] = false;
+                            //                        }";
 
-                        //            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
-                        //
-                        //            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                        //                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                        //                if (is_array($session_value)) {
-                        //                    foreach ($session_value as $k => $fieldSession) {
-                        //                        if ($fieldSession == $idc && $tasks_id > 0) {
-                        //                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
-                        //                        }
-                        //                    }
-                        //                }
-                        //            }
-                        //                    $script .= "});";
-                        $script .= "$.each( tohide, function( key, value ) {
+                            //            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
+                            //
+                            //            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                            //                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                            //                if (is_array($session_value)) {
+                            //                    foreach ($session_value as $k => $fieldSession) {
+                            //                        if ($fieldSession == $idc && $tasks_id > 0) {
+                            //                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
+                            //                        }
+                            //                    }
+                            //                }
+                            //            }
+                            //                    $script .= "});";
+                            $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -1318,38 +1322,39 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                         }
                     });";
+                        }
                     }
-                }
-                $script .= "});";
+                    $script .= "});";
 
-                foreach ($check_values as $idc => $check_value) {
-                    foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
-                        //Initialize id default value
-                        if (isset($data['custom_values'])
-                            && is_array($data['custom_values'])
-                            && count($data['custom_values']) > 0) {
-                            $custom_values = $data['custom_values'];
-                            foreach ($custom_values as $k => $custom_value) {
-                                if (isset($custom_value['is_default']) && $custom_value['is_default'] == 1) {
-                                    if ($idc == $k) {
-                                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
-                                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                            $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                                            $script .= "});";
-                                        }
-                                    } else {
-                                        if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-                                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                            $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-                                            $script .= "});";
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
+                            //Initialize id default value
+                            if (isset($data['custom_values'])
+                                && is_array($data['custom_values'])
+                                && count($data['custom_values']) > 0) {
+                                $custom_values = $data['custom_values'];
+                                foreach ($custom_values as $k => $custom_value) {
+                                    if (isset($custom_value['is_default']) && $custom_value['is_default'] == 1) {
+                                        if ($idc == $k) {
+                                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                                $script .= "});";
+                                            }
+                                        } else {
+                                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                                $script .= "});";
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                 }
-                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
             }
         }
     }
