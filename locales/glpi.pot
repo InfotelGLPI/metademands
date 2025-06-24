@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-19 05:10+0000\n"
+"POT-Creation-Date: 2025-06-24 07:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -581,7 +581,7 @@ msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:569 inc/wizard.class.php:2228
+#: inc/draft.class.php:569 inc/wizard.class.php:2230
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -637,7 +637,7 @@ msgstr ""
 
 #: inc/field.class.php:386 inc/field.class.php:772 inc/field.class.php:1187
 #: inc/field.class.php:3268 inc/field.class.php:4548 inc/step.class.php:384
-#: inc/step.class.php:469 inc/step.class.php:611 inc/wizard.class.php:1965
+#: inc/step.class.php:469 inc/step.class.php:611 inc/wizard.class.php:1966
 msgid "Block"
 msgstr ""
 
@@ -926,7 +926,7 @@ msgid "Block %s"
 msgstr ""
 
 #: inc/fieldoption.class.php:1943 inc/wizard.class.php:1442
-#: inc/wizard.class.php:1594 inc/typefields/basket.class.php:813
+#: inc/wizard.class.php:1595 inc/typefields/basket.class.php:813
 #: inc/typefields/checkbox.class.php:681 inc/typefields/dropdown.class.php:683
 #: inc/typefields/dropdownmeta.class.php:1752
 #: inc/typefields/dropdownmultiple.class.php:1104
@@ -941,9 +941,9 @@ msgid "Save & Post"
 msgstr ""
 
 #: inc/fieldoption.class.php:1945 inc/wizard.class.php:1210
-#: inc/wizard.class.php:1445 inc/wizard.class.php:1555
-#: inc/wizard.class.php:1564 inc/wizard.class.php:1598
-#: inc/wizard.class.php:1604 inc/wizard.class.php:2107
+#: inc/wizard.class.php:1445 inc/wizard.class.php:1556
+#: inc/wizard.class.php:1565 inc/wizard.class.php:1599
+#: inc/wizard.class.php:1605 inc/wizard.class.php:2109
 #: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:683
 #: inc/typefields/dropdown.class.php:684
 #: inc/typefields/dropdownmeta.class.php:1754
@@ -1967,68 +1967,68 @@ msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1548 inc/wizard.class.php:2203
+#: inc/wizard.class.php:1548 inc/wizard.class.php:2205
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
-#: inc/wizard.class.php:1557
+#: inc/wizard.class.php:1558
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1558
+#: inc/wizard.class.php:1559
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: inc/wizard.class.php:1565
+#: inc/wizard.class.php:1566
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1702
+#: inc/wizard.class.php:1703
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1798
+#: inc/wizard.class.php:1799
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2096
+#: inc/wizard.class.php:2098
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: inc/wizard.class.php:2104
+#: inc/wizard.class.php:2106
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:2146
+#: inc/wizard.class.php:2148
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:2156
+#: inc/wizard.class.php:2158
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2199
+#: inc/wizard.class.php:2201
 msgid "Confirmation"
 msgstr ""
 
-#: inc/wizard.class.php:3357
+#: inc/wizard.class.php:3360
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3368
+#: inc/wizard.class.php:3371
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3410
+#: inc/wizard.class.php:3413
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3422
+#: inc/wizard.class.php:3425
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
