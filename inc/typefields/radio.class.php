@@ -524,7 +524,7 @@ JAVASCRIPT
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $onchange = "console.log('fieldsHiddenScript-radio $id');";
+            $onchange = "console.log('fieldsMandatoryScript-radio $id');";
         }
 
         if (count($check_values) > 0) {

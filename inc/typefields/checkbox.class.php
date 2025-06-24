@@ -109,11 +109,11 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             $field .= "&nbsp;<span style='vertical-align: bottom;'>";
                             if (empty(
-                                $comment = PluginMetademandsField::displayCustomvaluesField(
-                                    $data['id'],
-                                    $key,
-                                    "comment"
-                                )
+                            $comment = PluginMetademandsField::displayCustomvaluesField(
+                                $data['id'],
+                                $key,
+                                "comment"
+                            )
                             )) {
                                 $comment = $label['comment'];
                             }
@@ -162,11 +162,11 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         $field .= "<small class='form-hint'>";
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             if (empty(
-                                $comment = PluginMetademandsField::displayCustomvaluesField(
-                                    $data['id'],
-                                    $key,
-                                    "comment"
-                                )
+                            $comment = PluginMetademandsField::displayCustomvaluesField(
+                                $data['id'],
+                                $key,
+                                "comment"
+                            )
                             )) {
                                 $comment = $label['comment'];
                             }
@@ -548,7 +548,7 @@ JAVASCRIPT
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $pre_onchange = "console.log('fieldsHiddenScript-checkbox $id');";
+            $pre_onchange = "console.log('fieldsMandatoryScript-checkbox $id');";
         }
         if (count($check_values) > 0) {
             //Si la valeur est en session
@@ -583,10 +583,8 @@ JAVASCRIPT
                             }
                         }
                     }
-                }
 
-
-                $onchange .= "$.each(tohide, function( key, value ) {
+                    $onchange .= "$.each(tohide, function( key, value ) {
                                 if (value == true) {
                                     var id = '#metademands_wizard_red'+ key;
                                     $(id).html('');
@@ -605,9 +603,9 @@ JAVASCRIPT
 
                             });";
 
-                $onchange .= "} else {";
-                //not checked
-                $onchange .= "if ($(this).val() == $idc) {
+                    $onchange .= "} else {";
+                    //not checked
+                    $onchange .= "if ($(this).val() == $idc) {
                                 if ($fields_link in tohide) {
                                 } else {
                                    tohide[$fields_link] = true;
@@ -620,7 +618,7 @@ JAVASCRIPT
                             }";
 
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                 var id = '#metademands_wizard_red'+ key;
                                 $(id).html('');
@@ -637,7 +635,8 @@ JAVASCRIPT
                                  " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                             }
                          });";
-                $onchange .= "}";
+                    $onchange .= "}";
+                }
             }
 
             if (is_array($display) && count($display) > 0) {
@@ -680,9 +679,9 @@ JAVASCRIPT
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
-                'Next',
-                'metademands'
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                    'Next',
+                    'metademands'
+                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -941,7 +940,7 @@ JAVASCRIPT
         $script = "";
         $script2 = "";
         $debug = isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         if ($debug) {
             $script = "console.log('blocksHiddenScript-checkbox $id');";
         }
@@ -1000,9 +999,9 @@ JAVASCRIPT
                                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                  " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                               $metaid,
-                                                               $childs
-                                                           );
+                                                                $metaid,
+                                                                $childs
+                                                            );
                                                     }
                                                 }
                                             }
@@ -1103,9 +1102,9 @@ JAVASCRIPT
                                                          document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                          $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                             $metaid,
-                                                             $childs
-                                                         );
+                                                            $metaid,
+                                                            $childs
+                                                        );
                                                 }
                                             }
                                         }
