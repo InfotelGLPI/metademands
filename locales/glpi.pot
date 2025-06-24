@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-24 07:03+0000\n"
+"POT-Creation-Date: 2025-06-24 07:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -927,14 +927,14 @@ msgstr ""
 
 #: inc/fieldoption.class.php:1943 inc/wizard.class.php:1442
 #: inc/wizard.class.php:1595 inc/typefields/basket.class.php:813
-#: inc/typefields/checkbox.class.php:681 inc/typefields/dropdown.class.php:683
+#: inc/typefields/checkbox.class.php:680 inc/typefields/dropdown.class.php:683
 #: inc/typefields/dropdownmeta.class.php:1752
 #: inc/typefields/dropdownmultiple.class.php:1104
 #: inc/typefields/dropdownmultiple.class.php:1239
 #: inc/typefields/dropdownobject.class.php:1032
 #: inc/typefields/email.class.php:332 inc/typefields/radio.class.php:646
 #: inc/typefields/tel.class.php:334 inc/typefields/text.class.php:332
-#: inc/typefields/textarea.class.php:288 inc/typefields/url.class.php:333
+#: inc/typefields/textarea.class.php:289 inc/typefields/url.class.php:333
 #: inc/typefields/yesno.class.php:380
 msgctxt "button"
 msgid "Save & Post"
@@ -944,7 +944,7 @@ msgstr ""
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1556
 #: inc/wizard.class.php:1565 inc/wizard.class.php:1599
 #: inc/wizard.class.php:1605 inc/wizard.class.php:2109
-#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:683
+#: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:682
 #: inc/typefields/dropdown.class.php:684
 #: inc/typefields/dropdownmeta.class.php:1754
 #: inc/typefields/dropdownmultiple.class.php:1106
@@ -952,7 +952,7 @@ msgstr ""
 #: inc/typefields/dropdownobject.class.php:1033
 #: inc/typefields/email.class.php:334 inc/typefields/radio.class.php:648
 #: inc/typefields/tel.class.php:336 inc/typefields/text.class.php:334
-#: inc/typefields/textarea.class.php:290 inc/typefields/url.class.php:335
+#: inc/typefields/textarea.class.php:291 inc/typefields/url.class.php:335
 #: inc/typefields/yesno.class.php:382
 msgid "Next"
 msgstr ""
@@ -2433,11 +2433,11 @@ msgstr ""
 msgid "Use richt text"
 msgstr ""
 
-#: inc/typefields/textarea.class.php:136
+#: inc/typefields/textarea.class.php:137
 msgid "Not available with Rich text option"
 msgstr ""
 
-#: inc/typefields/textarea.class.php:841
+#: inc/typefields/textarea.class.php:848
 msgid "The description field is mandatory"
 msgstr ""
 
