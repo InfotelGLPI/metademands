@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-24 07:01+0000\n"
+"POT-Creation-Date: 2025-06-24 07:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -611,23 +611,23 @@ msgstr ""
 msgid "Export JSON"
 msgstr ""
 
-#: inc/export.class.php:988
+#: inc/export.class.php:1012
 msgid "No link"
 msgstr ""
 
-#: inc/export.class.php:1059
+#: inc/export.class.php:1083
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/export.class.php:1068
+#: inc/export.class.php:1092
 msgid "Import"
 msgstr ""
 
-#: inc/export.class.php:1097
+#: inc/export.class.php:1121
 msgid "No file specified"
 msgstr ""
 
-#: inc/export.class.php:1112
+#: inc/export.class.php:1136
 msgid "The file is not an XML file"
 msgstr ""
 
