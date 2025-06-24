@@ -302,13 +302,13 @@ class PluginMetademandsExport extends CommonDBTM
         return "_plugins" . $name;
     }
 
-    static function transformFieldTypeForMetademands($type, $item = null)
+    static function transformFieldTypeFromMetademands($type, $item = null)
     {
         if ($type === 'dropdown' && $item === 'Location') {
             return 'dropdown';
         }
         $map = [
-//                'select' => 'dropdown',
+                'actor' => 'dropdown_object',
             'glpiselect' => 'dropdown_object',
             'select' => 'dropdown_meta',
             'multiselect' => 'dropdown_multiple',
@@ -367,14 +367,27 @@ class PluginMetademandsExport extends CommonDBTM
         $fields['metafieldoptions'] = [];
 
         $metafields = [];
+        $secid = 0;
         foreach ($sections as $ids => $section) {
 
             $questions = getAllDataFromTable('glpi_plugin_formcreator_questions',
                 ['plugin_formcreator_sections_id' => $ids]);
 
+            $secid++;
+            $metafields['id'] = $ids."00".$secid;
+            $metafields['entities_id'] = $entities_id;
+            $metafields['rank'] = $section['order'];
+            $metafields['name'] = $section['name'];
+            $metafields['type'] = "title-block";
+            $metafields['item'] = "";
+            $fields['metafields']['field'.$ids."00".$secid] = $metafields;
+
+            $fields['metafieldparameters']['fieldparameters' . $ids."00".$secid]['plugin_metademands_fields_id'] = $ids."00".$secid;
+            $fields['metafieldparameters']['fieldparameters' . $ids."00".$secid]['color'] = "#000000";
+
             foreach ($questions as $idq => $question) {
 
-                $metafields['type'] = self::transformFieldTypeForMetademands($question['fieldtype'], $question['itemtype']);
+                $metafields['type'] = self::transformFieldTypeFromMetademands($question['fieldtype'], $question['itemtype']);
                 if (empty($metafields['type'])) {
                     continue;
                 }
@@ -388,6 +401,17 @@ class PluginMetademandsExport extends CommonDBTM
 
                 $metafields['name'] = $question['name'];
                 $metafields['item'] = $question['itemtype'];
+
+                if ($metafields['type'] == "dropdown_meta" && empty($question['itemtype'])) {
+                    $metafields['item'] = "other";
+                }
+                if ($metafields['type'] == "dropdown_multiple" && empty($question['itemtype'])) {
+                    $metafields['item'] = "other";
+                }
+                if ($metafields['type'] == "dropdown_object" && empty($question['itemtype'])) {
+                    $metafields['item'] = "User";
+                }
+
                 $metafields['comment'] = $question['description'];
                 $fields['metafields']['field' . $idq] = $metafields;
 
@@ -433,7 +457,7 @@ class PluginMetademandsExport extends CommonDBTM
 //                        $idcd = $idq + $cpt;
                         $options[$idq][$key]['id'] = $val['id'];
 
-                        $showValue = $val['show_value'];
+                        $showValue = -1;
                         if ($question['fieldtype'] === 'yesno') {
                             if ($val['show_value'] == 'non') {
                                 $showValue = 1;
