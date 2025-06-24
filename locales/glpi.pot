@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-24 07:04+0000\n"
+"POT-Creation-Date: 2025-06-24 07:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -419,7 +419,7 @@ msgstr ""
 #: inc/typefields/basket.class.php:544 inc/typefields/checkbox.class.php:432
 #: inc/typefields/dropdown.class.php:430
 #: inc/typefields/dropdownmeta.class.php:1446
-#: inc/typefields/dropdownmultiple.class.php:723
+#: inc/typefields/dropdownmultiple.class.php:725
 #: inc/typefields/dropdownobject.class.php:740
 #: inc/typefields/radio.class.php:433 inc/typefields/yesno.class.php:211
 msgid "Value to check"
@@ -701,7 +701,7 @@ msgid "Use this field as object field"
 msgstr ""
 
 #: inc/field.class.php:1346 inc/fieldoption.class.php:366
-#: inc/fieldoption.class.php:1018
+#: inc/fieldoption.class.php:1021
 msgid "Launch a task with the field"
 msgstr ""
 
@@ -795,7 +795,7 @@ msgstr ""
 
 #: inc/fieldcustomvalue.class.php:547 inc/typefields/checkbox.class.php:248
 #: inc/typefields/dropdownmeta.class.php:1105
-#: inc/typefields/dropdownmultiple.class.php:550
+#: inc/typefields/dropdownmultiple.class.php:552
 #: inc/typefields/freetable.class.php:849
 #: inc/typefields/freetablefield.class.php:336
 #: inc/typefields/radio.class.php:250
@@ -804,8 +804,8 @@ msgstr ""
 
 #: inc/fieldcustomvalue.class.php:566 inc/typefields/checkbox.class.php:273
 #: inc/typefields/dropdownmeta.class.php:1161
-#: inc/typefields/dropdownmultiple.class.php:487
-#: inc/typefields/dropdownmultiple.class.php:575
+#: inc/typefields/dropdownmultiple.class.php:489
+#: inc/typefields/dropdownmultiple.class.php:577
 #: inc/typefields/radio.class.php:275 inc/typefields/yesno.class.php:155
 msgid "Default value"
 msgid_plural "Default values"
@@ -823,12 +823,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/fieldoption.class.php:129 inc/fieldoption.class.php:367
-#: inc/fieldoption.class.php:1036
+#: inc/fieldoption.class.php:1039
 msgid "Make this field mandatory"
 msgstr ""
 
 #: inc/fieldoption.class.php:138 inc/fieldoption.class.php:368
-#: inc/fieldoption.class.php:1069
+#: inc/fieldoption.class.php:1072
 msgid "Display this hidden field"
 msgstr ""
 
@@ -849,88 +849,88 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: inc/fieldoption.class.php:369 inc/fieldoption.class.php:1111
+#: inc/fieldoption.class.php:369 inc/fieldoption.class.php:1114
 msgid "Display this hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:370 inc/fieldoption.class.php:1161
+#: inc/fieldoption.class.php:370 inc/fieldoption.class.php:1164
 msgid "Display this hidden block in the same block"
 msgstr ""
 
-#: inc/fieldoption.class.php:371 inc/fieldoption.class.php:1201
+#: inc/fieldoption.class.php:371 inc/fieldoption.class.php:1204
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:372 inc/fieldoption.class.php:1231
+#: inc/fieldoption.class.php:372 inc/fieldoption.class.php:1234
 msgid "Launch a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:373 inc/fieldoption.class.php:1276
+#: inc/fieldoption.class.php:373 inc/fieldoption.class.php:1279
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: inc/fieldoption.class.php:1020
+#: inc/fieldoption.class.php:1023
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/fieldoption.class.php:1038
+#: inc/fieldoption.class.php:1041
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/fieldoption.class.php:1071
+#: inc/fieldoption.class.php:1074
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:1113
+#: inc/fieldoption.class.php:1116
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:1139
+#: inc/fieldoption.class.php:1142
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
 msgstr ""
 
-#: inc/fieldoption.class.php:1163
+#: inc/fieldoption.class.php:1166
 msgid ""
 "If the value selected equals the value to check, the block becomes visible "
 "on the same block"
 msgstr ""
 
-#: inc/fieldoption.class.php:1203
+#: inc/fieldoption.class.php:1206
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:1233
+#: inc/fieldoption.class.php:1236
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:1278
+#: inc/fieldoption.class.php:1281
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1397 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1400 inc/mailtask.class.php:150
 #: inc/step.class.php:345 inc/step.class.php:623 inc/step.class.php:637
 #: inc/task.class.php:768 inc/task.class.php:1165 inc/tickettask.class.php:161
 #, php-format
 msgid "Block %s"
 msgstr ""
 
-#: inc/fieldoption.class.php:1943 inc/wizard.class.php:1442
+#: inc/fieldoption.class.php:1946 inc/wizard.class.php:1442
 #: inc/wizard.class.php:1595 inc/typefields/basket.class.php:813
 #: inc/typefields/checkbox.class.php:680 inc/typefields/dropdown.class.php:683
 #: inc/typefields/dropdownmeta.class.php:1752
-#: inc/typefields/dropdownmultiple.class.php:1104
-#: inc/typefields/dropdownmultiple.class.php:1239
+#: inc/typefields/dropdownmultiple.class.php:1107
+#: inc/typefields/dropdownmultiple.class.php:1244
 #: inc/typefields/dropdownobject.class.php:1032
 #: inc/typefields/email.class.php:332 inc/typefields/radio.class.php:646
 #: inc/typefields/tel.class.php:334 inc/typefields/text.class.php:332
@@ -940,15 +940,15 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/fieldoption.class.php:1945 inc/wizard.class.php:1210
+#: inc/fieldoption.class.php:1948 inc/wizard.class.php:1210
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1556
 #: inc/wizard.class.php:1565 inc/wizard.class.php:1599
 #: inc/wizard.class.php:1605 inc/wizard.class.php:2109
 #: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:682
 #: inc/typefields/dropdown.class.php:684
 #: inc/typefields/dropdownmeta.class.php:1754
-#: inc/typefields/dropdownmultiple.class.php:1106
-#: inc/typefields/dropdownmultiple.class.php:1241
+#: inc/typefields/dropdownmultiple.class.php:1109
+#: inc/typefields/dropdownmultiple.class.php:1246
 #: inc/typefields/dropdownobject.class.php:1033
 #: inc/typefields/email.class.php:334 inc/typefields/radio.class.php:648
 #: inc/typefields/tel.class.php:336 inc/typefields/text.class.php:334
@@ -976,7 +976,7 @@ msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
 #: inc/fieldparameter.class.php:792
-#: inc/typefields/dropdownmultiple.class.php:697
+#: inc/typefields/dropdownmultiple.class.php:699
 #: inc/typefields/dropdownobject.class.php:638
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -2110,7 +2110,7 @@ msgstr ""
 #: inc/typefields/dropdownmeta.class.php:1531
 #: inc/typefields/dropdownmeta.class.php:1541
 #: inc/typefields/dropdownmeta.class.php:1562
-#: inc/typefields/dropdownmultiple.class.php:854
+#: inc/typefields/dropdownmultiple.class.php:856
 #: inc/typefields/dropdownobject.class.php:819
 #: inc/typefields/dropdownobject.class.php:822
 #: inc/typefields/dropdownobject.class.php:832
@@ -2152,7 +2152,7 @@ msgstr ""
 #: inc/typefields/checkbox.class.php:381 inc/typefields/dropdown.class.php:408
 #: inc/typefields/dropdownmeta.class.php:1333
 #: inc/typefields/dropdownmeta.class.php:1394
-#: inc/typefields/dropdownmultiple.class.php:650
+#: inc/typefields/dropdownmultiple.class.php:652
 #: inc/typefields/radio.class.php:382 inc/typefields/yesno.class.php:186
 msgid "Classic display"
 msgstr ""
@@ -2166,7 +2166,7 @@ msgstr ""
 #: inc/typefields/checkbox.class.php:385 inc/typefields/dropdown.class.php:412
 #: inc/typefields/dropdownmeta.class.php:1337
 #: inc/typefields/dropdownmeta.class.php:1398
-#: inc/typefields/dropdownmultiple.class.php:654
+#: inc/typefields/dropdownmultiple.class.php:656
 #: inc/typefields/radio.class.php:386 inc/typefields/yesno.class.php:190
 msgid "Display type of the field"
 msgstr ""
@@ -2247,33 +2247,33 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:491
+#: inc/typefields/dropdownmultiple.class.php:493
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:492
+#: inc/typefields/dropdownmultiple.class.php:494
 msgid "Select all"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:493
+#: inc/typefields/dropdownmultiple.class.php:495
 msgid "Unselect all"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:651
+#: inc/typefields/dropdownmultiple.class.php:653
 msgid "Double column display"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:668
+#: inc/typefields/dropdownmultiple.class.php:670
 #: inc/typefields/dropdownobject.class.php:592
 msgid "Only users of my groups"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:678
+#: inc/typefields/dropdownmultiple.class.php:680
 #: inc/typefields/dropdownobject.class.php:612
 msgid "Use id of requester by default"
 msgstr ""
 
-#: inc/typefields/dropdownmultiple.class.php:685
+#: inc/typefields/dropdownmultiple.class.php:687
 #: inc/typefields/dropdownobject.class.php:619
 msgid "Use id of supervisor requester by default"
 msgstr ""
