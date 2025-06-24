@@ -33,6 +33,7 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
+
 $dbu = new DbUtils();
 if (!isset($_POST["itemtype"]) || !($item = $dbu->getItemForItemtype($_POST['itemtype']))) {
    exit();
@@ -154,8 +155,8 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                      Html::textarea(['name'              => $search["linkfield"],
                                      'cols'              => '45',
                                      'rows'              => '5',
-                                     'value'             => $_POST['value'],
-                                     'enable_richtext'   => false,
+                                     'value'             => stripslashes($_POST['value']),
+                                     'enable_richtext'   => true,
                                      'enable_fileupload' => false]);
                      $already_display = true;
                      break;
@@ -254,7 +255,7 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                      Html::textarea(['name'            => $search["linkfield"] . "' >" . $_POST["value"],
                                      'cols'       => 45,
                                      'rows'       => 5,
-                                     'enable_richtext' => false]);
+                                     'enable_richtext' => true]);
                      $already_display = true;
                      break;
                }

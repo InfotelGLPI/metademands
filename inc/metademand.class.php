@@ -5358,7 +5358,12 @@ JAVASCRIPT
                     $value['item'] = $allowed_fields[$value['num']];
 
                     //Title of father ticket
-                    if ($value['item'] == 'name') {
+                    if ($value['item'] == 'name'
+                        || $value['item'] == 'impactcontent'
+                        || $value['item'] == 'controlistcontent'
+                        || $value['item'] == 'rolloutplancontent'
+                        || $value['item'] == 'backoutplancontent'
+                        || $value['item'] == 'checklistcontent') {
                         do {
                             $match = self::getBetween($value['value'], '[', ']');
                             if (empty($match)) {
