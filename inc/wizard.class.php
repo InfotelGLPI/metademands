@@ -1550,6 +1550,7 @@ class PluginMetademandsWizard extends CommonDBTM
             $metademands->fields['name']
         ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
+        $metaparams['seeform'] = $seeform;
 
         //MSG
         $metaparams['nexttitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -2052,11 +2053,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
             }
 
-            if ($metademands->fields['is_order'] == 0
+            if (
+                $metademands->fields['is_order'] == 0
                 && !$preview
-                && (!$seeform
-                    || (isset($options['resources_id'])
+                && ((isset($options['resources_id'])
                         && $options['resources_id'] > 0)
+                    || $seeform
                     || ($current_ticket > 0
                         && ((!$meta_validated
                                 && $metademands->fields['can_update'] == true) ||
@@ -2800,6 +2802,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandparams.confirmmsg = '$confirmmsg';
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
+                    metademandparams.seeform = '$seeform';
                     metademandparams.token = '$token';
                     metademandparams.id = '$ID';
                     metademandparams.nameform = '$nameform';
@@ -2835,7 +2838,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
-                    
+
                     plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
                     
                     prevBtn.addEventListener('click', () => {

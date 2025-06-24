@@ -572,10 +572,17 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         document.getElementById('prevBtn').style.display = 'none';
     }
 
-    document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
-    if (metademandparams.currentTab == (x.length - 1)) {
-        document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
-    }
+
+        document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
+
+        if (metademandparams.currentTab == (x.length - 1)) {
+
+            if (metademandparams.seeform == 0) {
+                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+            } else {
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
 
     //... and run a function that will display the correct step indicator:
     if (metademandparams.use_as_step == 1) {
@@ -618,15 +625,20 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
             }
         }
 
-        if (nextTab >= x.length) {
-            document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
-        } else {
-            if (create) {
-                document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+        if (metademandparams.seeform == 0) {
+            if (nextTab >= x.length) {
+                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
             } else {
-                document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                if (create) {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                } else {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                }
             }
+        } else {
+            document.getElementById('nextBtn').style.display == 'none';
         }
+
     }
 }
 
@@ -690,12 +702,14 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
             let field = 'field' + metademandconditionsparams.richtext_ids[i];
 
             if (typeof tinyMCE.get(field) !== 'undefined') {
-                let content = tinyMCE.get(field).getContent();
-                let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
-                formDatas.push({
-                    name: name,
-                    value: content
-                });
+                if (tinyMCE.get(field).getContent() !== 'undefined') {
+                    let content = tinyMCE.get(field).getContent();
+                    let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
+                    formDatas.push({
+                        name: name,
+                        value: content
+                    });
+                }
             }
         }
     }

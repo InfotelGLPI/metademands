@@ -40,7 +40,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `show_rule`                        tinyint      NOT NULL                   DEFAULT '1',
     `initial_requester_childs_tickets` tinyint      NOT NULL                   DEFAULT '1',
     `is_basket`                        tinyint                                 DEFAULT 0,
-    `use_confirm`                      tinyint                                 DEFAULT 0,
+    `use_confirm`                      tinyint      NOT NULL                   DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `name` (`name`),
     KEY `entities_id` (`entities_id`),
