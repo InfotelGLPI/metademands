@@ -950,7 +950,7 @@ class PluginMetademandsExport extends CommonDBTM
                 "sla_rule" => 1,
                 "sla_question_tto" => 0,
                 "ola_question_ttr" => 0,
-                "uuid" => $prefix . $metademands_id . "target",
+                "uuid" => $prefix . $metademands_id . "targetticket",
                 "_tickettemplate" => "",
                 "_actors" => [
                     [
@@ -959,7 +959,7 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 1,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => "f304dcbd-1885f3fc-684fc5eb15a578.54810731"
+                        "uuid" => $prefix . $metademands_id . "targetticketactor1"
                     ],
                     [
                         "itemtype" => "PluginFormcreatorTargetTicket",
@@ -967,7 +967,7 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 2,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => "f304dcbd-1885f3fc-684fc5eb18fdc4.49167764"
+                        "uuid" => $prefix . $metademands_id . "targetticketactor2"
                     ]
                 ],
                 "_ticket_relations" => [],
@@ -981,6 +981,57 @@ class PluginMetademandsExport extends CommonDBTM
             }
 
             $form["_targets"]["PluginFormcreatorTargetTicket"][] = $newTicket;
+        }
+        else if ($metademands->fields['object_to_create'] === "Problem"){
+            $newProblem = [
+                "name" => "Problem from metademand",
+                "target_name" => "Problem from metademand",
+                "impactcontent" => "",
+                "causecontent" => "",
+                "symptomcontent" => "",
+                "urgency_rule" => 1,
+                "type_question" => $metademands->fields['type'],
+                "content" => "",
+                "urgency_question" => 0,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_rule" => 1,
+                "category_question" => 0,
+                "show_rule" => 1,
+                "uuid" => $prefix . $metademands_id . "targetproblem",
+                "_problemtemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetProblem",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetproblemactor1"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetproblemactor2"
+                    ]
+                ],
+                "_ticket_relations" => [],
+                "_conditions" => [],
+            ];
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (empty($itilcategories_id)) {
+                $newTicket["category_rule"] = 1;
+            } else {
+                $newTicket["category_rule"] = 2;
+            }
+
+            $form["_targets"]["PluginFormcreatorTargetProblem"][] = $newProblem;
         }
 
         $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
