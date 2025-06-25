@@ -990,7 +990,6 @@ class PluginMetademandsExport extends CommonDBTM
                 "causecontent" => "",
                 "symptomcontent" => "",
                 "urgency_rule" => 1,
-                "type_question" => $metademands->fields['type'],
                 "content" => "",
                 "urgency_question" => 0,
                 "destination_entity" => 1,
@@ -1013,7 +1012,7 @@ class PluginMetademandsExport extends CommonDBTM
                         "uuid" => $prefix . $metademands_id . "targetproblemactor1"
                     ],
                     [
-                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "itemtype" => "PluginFormcreatorTargetProblem",
                         "actor_role" => 2,
                         "actor_type" => 2,
                         "actor_value" => 0,
@@ -1021,17 +1020,68 @@ class PluginMetademandsExport extends CommonDBTM
                         "uuid" => $prefix . $metademands_id . "targetproblemactor2"
                     ]
                 ],
-                "_ticket_relations" => [],
                 "_conditions" => [],
             ];
-            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
-            if (empty($itilcategories_id)) {
-                $newTicket["category_rule"] = 1;
-            } else {
-                $newTicket["category_rule"] = 2;
-            }
 
             $form["_targets"]["PluginFormcreatorTargetProblem"][] = $newProblem;
+        }
+        else if ($metademands->fields['object_to_create'] === "Change"){
+            $newChange = [
+                "name" => "Change from metademand",
+                "target_name" => "Change from metademand",
+                "impactcontent" => "",
+                "controlistcontent" => "",
+                "rolloutplancontent" => "",
+                "backoutplancontent" => "",
+                "checklistcontent" => "",
+                "due_date_rule" => 1,
+                "due_date_question" => 0,
+                "due_date_value" => null,
+                "due_date_period" => 0,
+                "urgency_rule" => 1,
+                "content" => "",
+                "urgency_question" => 0,
+                "validation_followup" => 1,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_rule" => 1,
+                "category_question" => 0,
+                "commonitil_validation_rule" => 1,
+                "commonitil_validation_question" => null,
+                "show_rule" => 1,
+                "sla_rule" => 1,
+                "sla_question_tto" => 1,
+                "sla_question_ttr" => 1,
+                "ola_rule" => 1,
+                "ola_question_tto" => 0,
+                "ola_question_ttr" => 0,
+                "uuid" => $prefix . $metademands_id . "targetchange",
+                "_changetemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetChange",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetchangeactor1"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetChange",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetchangeactor2"
+                    ]
+                ],
+                "_conditions" => [],
+            ];
+
+            $form["_targets"]["PluginFormcreatorTargetChange"][] = $newChange;
         }
 
         $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
