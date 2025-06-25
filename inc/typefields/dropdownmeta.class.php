@@ -50,6 +50,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
     public const CLASSIC_DISPLAY = 0;
     public const ICON_DISPLAY = 1;
 
+    public const BLOCK_DISPLAY = 2;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -80,6 +81,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if (!empty($data['custom_values'])) {
                     $custom_values = $data['custom_values'];
 
+                    if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                        $field .= "<div class='row flex-row'>";
+                    }
 
                     $default_value = "";
                     $choices = [];
@@ -93,41 +97,99 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             if ($label['is_default'] == 1) {
                                 $default_value = $label['id'];
                             }
+
+                            if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                                $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
+                                $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
+
+//                        $field .= '
+//<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
+//data-capacity-checkbox="1"  data-is-used="0" checked="">';
+
+                                $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
+
+                                $icon = $label['icon'];
+                                if (empty($label['icon'])) {
+                                    $icon = $data['icon'];
+                                }
+
+                                if (!empty($icon)) {
+                                    $field .= "<span class='me-2 mt-1'>";
+                                    $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                                    $field .= "</span>";
+                                }
+
+
+                                $field .= "<div class='text-start'>";
+                                $field .= "<div class='d-flex align-items-center'>";
+//                        $field .= "<div class='fw-bold'>";
+
+                                if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
+                                    $name = $label['name'];
+                                }
+                                $field .= $name;
+//                        $field .= "</div>";
+                                $field .= "</div>";
+                                $field .= "<small class='form-hint'>";
+                                if (isset($label['comment']) && !empty($label['comment'])) {
+                                    if (empty(
+                                    $comment = PluginMetademandsField::displayCustomvaluesField(
+                                        $data['id'],
+                                        $key,
+                                        "comment"
+                                    )
+                                    )) {
+                                        $comment = $label['comment'];
+                                    }
+                                    $field .= $comment;
+                                }
+                                $field .= "</small>";
+
+                                $field .= "</div>";
+
+                                $field .= "<div class='me-2 ms-auto'>";
+                                $checked = "";
+
+                                if (empty($value) && isset($label['is_default']) && $on_order == false) {
+                                    $checked = ($label['is_default'] == 1) ? 'checked' : '';
+                                }
+                                if (isset($value) && $value == $key) {
+                                    $checked = 'checked';
+                                }
+                                $required = "";
+                                if ($data['is_mandatory'] == 1) {
+                                    $required = "required=required";
+                                }
+                                $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                                $field .= "</div>";
+
+                                $field .= "</div>";
+                                $field .= "</label>";
+                                $field .= "</div>";
+                            }
                         }
                     }
 
-                    //                    $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
-                    //
-                    //                    foreach ($custom_values as $k => $val) {
-                    //                        if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
-                    //                            $custom_values[$k] = $ret;
-                    //                        }
-                    //                    }
-                    //
-                    //                    $defaults = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-                    //
-                    //                    $default_values = "";
-                    //                    if ($defaults) {
-                    //                        foreach ($defaults as $k => $v) {
-                    //                            if ($v == 1) {
-                    //                                $default_values = $k;
-                    //                            }
-                    //                        }
-                    //                    }
                     $value = !empty($value) ? $value : $default_value;
-                    //                     ksort($data['custom_values']);
-                    $field = "";
-                    $field .= Dropdown::showFromArray(
-                        $namefield . "[" . $data['id'] . "]",
-                        $choices,
-                        [
-                            'value' => $value,
-                            'width' => '100%',
-                            'display_emptychoice' => true,
-                            'display' => false,
-                            'required' => ($data['is_mandatory'] ? "required" : ""),
-                        ]
-                    );
+
+                    if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                        $field .= "</div>";
+                    }
+
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $field = "";
+                        $field .= Dropdown::showFromArray(
+                            $namefield . "[" . $data['id'] . "]",
+                            $choices,
+                            [
+                                'value' => $value,
+                                'width' => '100%',
+                                'display_emptychoice' => true,
+                                'display' => false,
+                                'required' => ($data['is_mandatory'] ? "required" : ""),
+                            ]
+                        );
+                    }
                 }
                 break;
 
@@ -1056,11 +1118,42 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "</span>";
                 echo "</td>";
 
+                if (isset($params["display_type"])
+                    && $params["display_type"] == self::BLOCK_DISPLAY) {
+                    echo "<td class='rowhandler control center'>";
+                    echo "<span id='comment_values$key'>";
+                    echo __('Comment') . " ";
+                    echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 30]);
+                    echo "</span>";
+                    echo "</td>";
+                }
                 echo "<td class='rowhandler control center'>";
-                //                echo "<span id='comment_values$key'>";
-                //                echo __('Comment') . " ";
-                //                echo Html::input('comment['.$key.']', ['value' => $value['comment'], 'size' => 30]);
-                //                echo "</span>";
+                echo "<span id='icon$key'>";
+                $icon_selector_id = 'icon_' . mt_rand();
+
+                echo Html::select(
+                    'icon[' . $key . ']',
+                    [$value['icon'] => $value['icon']],
+                    [
+                        'id' => $icon_selector_id,
+                        'selected' => $value['icon'],
+                        'style' => 'width:175px;',
+                    ]
+                );
+
+                echo Html::script('js/Forms/FaIconSelector.js');
+                echo Html::scriptBlock(
+                    <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+                );
+                $blank = "_blank_picture[$key]";
+                echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
@@ -1294,6 +1387,56 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             echo "</tr>";
         }
+
+        if ($params["id"] > 0 && ($params['type'] == "dropdown_meta")
+            && $params["item"] == "other") {
+            $disp = [];
+            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
+            $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Display type of the field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+
+            echo Dropdown::showFromArray(
+                "display_type",
+                $disp,
+                ['value' => $params['display_type'], 'display' => false]
+            );
+            echo "</td>";
+
+            echo "<td>";
+            echo __('Icon') . "&nbsp;";
+            echo "</td>";
+            echo "<td>";
+            $icon_selector_id = 'icon_' . mt_rand();
+
+            echo Html::select(
+                'icon',
+                [$params['icon'] => $params['icon']],
+                [
+                    'id' => $icon_selector_id,
+                    'selected' => $params['icon'],
+                    'style' => 'width:175px;',
+                ]
+            );
+
+            echo Html::script('js/Forms/FaIconSelector.js');
+            echo Html::scriptBlock(
+                <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+            );
+            echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
+            echo "</td>";
+            echo "</tr>";
+        }
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
@@ -1520,9 +1663,13 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                } else {
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                }
             }
-
 
             $onchange .= "$('[name=\"$name\"]').change(function() {";
 
@@ -1594,7 +1741,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         if (count($check_values) > 0) {
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').prop('checked', true).trigger('change');";
+                } else {
+                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                }
             }
 
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
@@ -1749,14 +1901,17 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Initialize default value - force change after onchange fonction
-            if (isset($data['custom_values'])
-                && is_array($data['custom_values'])
-                && count($data['custom_values']) > 0
-                && !isset($data['value'])) {
-                $custom_values = $data['custom_values'];
-                foreach ($custom_values as $k => $custom_value) {
-                    if ($custom_value['is_default'] == 1) {
-                        $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$k').trigger('change');";
+            //CANNOT DO THIS OR DEFINE ONLY AS CHECKED
+            if ($data["display_type"] != self::BLOCK_DISPLAY) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0
+                    && !isset($data['value'])) {
+                    $custom_values = $data['custom_values'];
+                    foreach ($custom_values as $k => $custom_value) {
+                        if ($custom_value['is_default'] == 1) {
+                            $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$k').trigger('change');";
+                        }
                     }
                 }
             }
@@ -1771,7 +1926,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
+                } else {
+                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                }
             }
 
 
@@ -1780,13 +1940,14 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $onchange .= "var tohide = {};";
 
             $display = 0;
+
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     $onchange .= "if ($hidden_link in tohide) {
                         } else {
                             tohide[$hidden_link] = true;
                         }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
+                        if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$hidden_link] = false;
                         }";
 
@@ -1801,18 +1962,18 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             sessionStorage.setItem('hiddenlink$name', key);
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
                             $('[name =\"field['+key+']\"]').removeAttr('required');";
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
-                                $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
-                                if (document.getElementById('ablock" . $childs . "'))
-                                document.getElementById('ablock" . $childs . "').style.display = 'none';";
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                                        $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
+                                        if (document.getElementById('ablock" . $childs . "'))
+                                        document.getElementById('ablock" . $childs . "').style.display = 'none';";
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
 
                     $onchange .= "} else {
                             $('[id-field =\"field'+key+'\"]').show();
@@ -1917,7 +2078,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                } else {
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                }
             }
 
             $onchange .= "$('[name=\"$name\"]').change(function() {";

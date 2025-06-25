@@ -130,6 +130,7 @@ class PluginMetademandsTextarea extends CommonDBTM
         echo __('If field empty', 'metademands');
         echo "</td>";
         echo "<td class = 'dropdown-valuetocheck'>";
+
         if ($params['use_richtext'] == 0) {
             self::showValueToCheck($fieldoption, $params);
         } else {
@@ -667,11 +668,17 @@ class PluginMetademandsTextarea extends CommonDBTM
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<tr><th $style_title colspan='$colspan'>";
+                $result[$field['rank']]['content'] .= "<tr>";
+                if ($field['hide_title'] == 0) {
+                    $result[$field['rank']]['content'] .= "<th $style_title colspan='$colspan'>";
+                }
             }
             $result[$field['rank']]['content'] .= $label;
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</th></tr><tr><td colspan='$colspan'>";
+                if ($field['hide_title'] == 0) {
+                    $result[$field['rank']]['content'] .= "</th>";
+                }
+                $result[$field['rank']]['content'] .= "</tr><tr><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field);
             if ($formatAsTable) {

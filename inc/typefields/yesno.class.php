@@ -82,7 +82,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 [
                     'value' => $value,
                     'display_emptychoice' => true,
-                    'class' => '',
+                    'class' => 'yesno',
                     //                    'noselect2' => true,
                     'width' => '70px',
                     'required' => ($data['is_mandatory'] ? "required" : ""),
@@ -92,7 +92,7 @@ class PluginMetademandsYesno extends CommonDBTM
             );
             echo $field;
         } else {
-            self::showSwitchField($data,  $namefield, $value);
+            self::showSwitchField($data, $namefield, $value);
         }
 
 
@@ -114,7 +114,10 @@ class PluginMetademandsYesno extends CommonDBTM
 
         $checked = "";
         if ($value == 2) {
-            $checked = "checked";
+            $checked = "checked='checked'";
+        }
+        if ($value == 0) {
+            $value = 1;
         }
         echo "<input type='checkbox' id='$id' name='$name' $checked isswitch='isswitch' >";
         echo "<span class='slider'>";
@@ -302,7 +305,13 @@ class PluginMetademandsYesno extends CommonDBTM
         if (count($check_values) > 0) {
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                } else {
+                    if ($data['value'] == 2) {
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                    }
+                }
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
@@ -541,10 +550,16 @@ class PluginMetademandsYesno extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                } else {
+                    if ($data['value'] == 2) {
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                    }
+                }
             }
 
-            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $onchange .= "$('[name^=\"field[" . $id . "]\"]').change(function() {";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['hidden_link'] as $hidden_link) {
@@ -624,8 +639,8 @@ class PluginMetademandsYesno extends CommonDBTM
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        $debug = isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         if ($debug) {
             $script = "console.log('blocksHiddenScript-yesno $id');";
         }
@@ -640,7 +655,13 @@ class PluginMetademandsYesno extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                } else {
+                    if ($data['value'] == 2) {
+                        $pre_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
+                    }
+                }
             }
 
             $onchange .= "$('[name=\"$name\"]').change(function() {";

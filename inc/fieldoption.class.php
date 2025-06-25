@@ -636,7 +636,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'hidden_block' => $this->fields['hidden_block'] ?? 0,
             'hidden_block_same_block' => $this->fields['hidden_block_same_block'] ?? 0,
             'custom_values' => $custom_values ?? 0,
-            'use_richtext' => ($item->fields['type'] == 'textarea') ?? $metademand_params->fields['use_richtext'] ?? 0,
+            'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
             'display_type' => ($item->fields['type'] == 'dropdown_multiple') ?? $metademand_params->fields['display_type'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
@@ -990,7 +990,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $task = 1;
         $field = 1;
         $hidden = 1;
-        if (isset($params['use_richtext']) && $params['use_richtext'] == 1) {
+
+        if ($params['type'] == "textarea"
+        && isset($params['use_richtext'])
+            && $params['use_richtext'] == 1) {
             $task = 0;
             $field = 0;
             $hidden = 0;
@@ -1054,7 +1057,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
-                    && $value['item'] != "informations" && (!in_array($id, $fieldslinkusedarray) || $id == $params['fields_link'])) {
+                    && $value['item'] != "informations" ) {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                         html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                     );
@@ -1085,8 +1088,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 }
             }
             foreach ($fields_data as $id => $value) {
-                if ($value['item'] != "ITILCategory_Metademands" &&
-                    (!in_array($id, $hiddenlinkusedarray) || $id == $params['hidden_link'])) {
+                if ($value['item'] != "ITILCategory_Metademands") {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                         html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                     );
@@ -1943,9 +1945,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
         $nextsteptitle =  __(
-                'Next',
-                'metademands'
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            'Next',
+            'metademands'
+        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
         if ($blockid > 0) {
             $fields = new PluginMetademandsField();

@@ -302,13 +302,13 @@ class PluginMetademandsExport extends CommonDBTM
         return "_plugins" . $name;
     }
 
-    static function transformFieldTypeForMetademands($type, $item = null)
+    static function transformFieldTypeFromMetademands($type, $item = null)
     {
         if ($type === 'dropdown' && $item === 'Location') {
             return 'dropdown';
         }
         $map = [
-//                'select' => 'dropdown',
+                'actor' => 'dropdown_object',
             'glpiselect' => 'dropdown_object',
             'select' => 'dropdown_meta',
             'multiselect' => 'dropdown_multiple',
@@ -367,14 +367,27 @@ class PluginMetademandsExport extends CommonDBTM
         $fields['metafieldoptions'] = [];
 
         $metafields = [];
+        $secid = 0;
         foreach ($sections as $ids => $section) {
 
             $questions = getAllDataFromTable('glpi_plugin_formcreator_questions',
                 ['plugin_formcreator_sections_id' => $ids]);
 
+            $secid++;
+            $metafields['id'] = $ids."00".$secid;
+            $metafields['entities_id'] = $entities_id;
+            $metafields['rank'] = $section['order'];
+            $metafields['name'] = $section['name'];
+            $metafields['type'] = "title-block";
+            $metafields['item'] = "";
+            $fields['metafields']['field'.$ids."00".$secid] = $metafields;
+
+            $fields['metafieldparameters']['fieldparameters' . $ids."00".$secid]['plugin_metademands_fields_id'] = $ids."00".$secid;
+            $fields['metafieldparameters']['fieldparameters' . $ids."00".$secid]['color'] = "#000000";
+
             foreach ($questions as $idq => $question) {
 
-                $metafields['type'] = self::transformFieldTypeForMetademands($question['fieldtype'], $question['itemtype']);
+                $metafields['type'] = self::transformFieldTypeFromMetademands($question['fieldtype'], $question['itemtype']);
                 if (empty($metafields['type'])) {
                     continue;
                 }
@@ -388,6 +401,17 @@ class PluginMetademandsExport extends CommonDBTM
 
                 $metafields['name'] = $question['name'];
                 $metafields['item'] = $question['itemtype'];
+
+                if ($metafields['type'] == "dropdown_meta" && empty($question['itemtype'])) {
+                    $metafields['item'] = "other";
+                }
+                if ($metafields['type'] == "dropdown_multiple" && empty($question['itemtype'])) {
+                    $metafields['item'] = "other";
+                }
+                if ($metafields['type'] == "dropdown_object" && empty($question['itemtype'])) {
+                    $metafields['item'] = "User";
+                }
+
                 $metafields['comment'] = $question['description'];
                 $fields['metafields']['field' . $idq] = $metafields;
 
@@ -433,7 +457,7 @@ class PluginMetademandsExport extends CommonDBTM
 //                        $idcd = $idq + $cpt;
                         $options[$idq][$key]['id'] = $val['id'];
 
-                        $showValue = $val['show_value'];
+                        $showValue = -1;
                         if ($question['fieldtype'] === 'yesno') {
                             if ($val['show_value'] == 'non') {
                                 $showValue = 1;
@@ -1488,9 +1512,8 @@ class PluginMetademandsExport extends CommonDBTM
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
                 $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
 
-                $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
-                $toUpdate["default_values"] = $old["default_values"] ?? $empty_values;
-                $toUpdate["comment_values"] = $old["comment_values"] ?? $empty_values;
+                $toUpdate["custom"] = $old["custom"] ?? $empty_values;
+                $toUpdate["default"] = $old["default"] ?? $empty_values;
                 $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
                 $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
                 $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
@@ -1575,6 +1598,7 @@ class PluginMetademandsExport extends CommonDBTM
                 $name = $old["name"] ?? "";
                 $is_default = $old["is_default"] ?? 0;
                 $comment = $old["comment"] ?? "";
+                $icon = $old["icon"] ?? "";
                 $rank = $old["rank"] ?? 0;
 
                 $toUpdate = [];
@@ -1586,6 +1610,9 @@ class PluginMetademandsExport extends CommonDBTM
                 }
                 if ($comment != "") {
                     $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
+                }
+                if ($icon != "") {
+                    $toUpdate["icon"] = $icon;
                 }
                 if ($rank != 0) {
                     $toUpdate["rank"] = $rank;
@@ -1669,6 +1696,7 @@ class PluginMetademandsExport extends CommonDBTM
             $childs_blocks = $old["childs_blocks"] ?? [];
             $checkbox_value = $old["checkbox_value"] ?? 0;
             $checkbox_id = $old["checkbox_id"] ?? 0;
+            $hidden_block_same_block = $old["hidden_block_same_block"] ?? 0;
 //            $parent_field_id = $old["parent_field_id"]??0;
 //
             $toUpdate = [];
@@ -1711,6 +1739,9 @@ class PluginMetademandsExport extends CommonDBTM
             if ($checkbox_id != 0) {
                 $toUpdate["checkbox_id"] = $checkbox_id;
             }
+            if ($hidden_block_same_block != 0) {
+                $toUpdate["hidden_block_same_block"] = $hidden_block_same_block;
+            }
 //            if ($parent_field_id != 0 && isset($mapTableField[$parent_field_id])) {
 //                $toUpdate["parent_field_id"] = $mapTableField[$parent_field_id];
 //            }
@@ -1742,9 +1773,18 @@ class PluginMetademandsExport extends CommonDBTM
         }
 
         if (!empty($stepconfig)) {
-            $stepconfig['plugin_metademands_metademands_id'] = $newIDMeta;
             $stepconfig_meta = new PluginMetademandsConfigstep();
-            $stepconfig_meta->add($stepconfig);
+            if($stepconfig_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $newIDMeta])) {
+                $stepconfig['id'] = $stepconfig_meta->fields['id'];
+                $stepconfig['plugin_metademands_metademands_id'] = $newIDMeta;
+                $stepconfig['see_blocks_as_tab'] = $stepconfig['see_blocks_as_tab'] ?? 0;
+                $stepconfig['link_user_block'] = $stepconfig['link_user_block'] ?? 0;
+                $stepconfig['multiple_link_groups_blocks'] = $stepconfig['multiple_link_groups_blocks'] ?? 0;
+                $stepconfig['add_user_as_requester'] = $stepconfig['add_user_as_requester'] ?? 0;
+                $stepconfig['supervisor_validation'] = $stepconfig['supervisor_validation'] ?? 0;
+                $stepconfig['step_by_step_interface'] = $stepconfig['step_by_step_interface'] ?? 0;
+                $stepconfig_meta->update($stepconfig);
+            }
         }
 
         if (!empty($steps)) {

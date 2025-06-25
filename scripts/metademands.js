@@ -556,8 +556,9 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         document.getElementById('prevBtn').style.display = 'inline';
 
     }
-
-    x[metademandparams.currentTab].style.display = 'block';
+    if (typeof x[metademandparams.currentTab] !== 'undefined') {
+        x[metademandparams.currentTab].style.display = 'block';
+    }
     //... and fix the Previous/Next buttons:
 
     if (typeof firstnumTab !== 'undefined') {
@@ -571,10 +572,17 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         document.getElementById('prevBtn').style.display = 'none';
     }
 
-    document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
-    if (metademandparams.currentTab == (x.length - 1)) {
-        document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
-    }
+
+        document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
+
+        if (metademandparams.currentTab == (x.length - 1)) {
+
+            if (metademandparams.seeform == 0) {
+                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+            } else {
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
 
     //... and run a function that will display the correct step indicator:
     if (metademandparams.use_as_step == 1) {
@@ -617,15 +625,20 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
             }
         }
 
-        if (nextTab >= x.length) {
-            document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
-        } else {
-            if (create) {
-                document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+        if (metademandparams.seeform == 0) {
+            if (nextTab >= x.length) {
+                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
             } else {
-                document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                if (create) {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                } else {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                }
             }
+        } else {
+            document.getElementById('nextBtn').style.display == 'none';
         }
+
     }
 }
 
@@ -689,12 +702,14 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
             let field = 'field' + metademandconditionsparams.richtext_ids[i];
 
             if (typeof tinyMCE.get(field) !== 'undefined') {
-                let content = tinyMCE.get(field).getContent();
-                let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
-                formDatas.push({
-                    name: name,
-                    value: content
-                });
+                if (tinyMCE.get(field).getContent() !== 'undefined') {
+                    let content = tinyMCE.get(field).getContent();
+                    let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
+                    formDatas.push({
+                        name: name,
+                        value: content
+                    });
+                }
             }
         }
     }
@@ -751,7 +766,7 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
 }
 
 
-function plugin_metademands_wizard_nextBtn(n, metademandparams, metademandconditionsparams) {
+async function plugin_metademands_wizard_nextBtn(n, metademandparams, metademandconditionsparams) {
 
     var firstnumTab = 0;
     // This function will figure out which tab to display
@@ -781,6 +796,35 @@ function plugin_metademands_wizard_nextBtn(n, metademandparams, metademandcondit
     // Exit the function if any field in the current tab is invalid:
     if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) return false;
 
+    if (metademandparams.useconfirm > 0) {
+        const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
+        const inputs = div.querySelectorAll('input, select, textarea');
+
+        let uneValeurSaisie = false;
+        inputs.forEach(input => {
+
+            if ((input.type === 'checkbox' || input.type === 'radio') && input.checked) {
+                uneValeurSaisie = true;
+            } else if (input.tagName === 'SELECT') {
+                const isYesNo = input.classList.contains("yesno");
+                const value = input.value;
+
+                if ((isYesNo && value === '2') || (!isYesNo && value !== '0')) {
+                    uneValeurSaisie = true;
+                }
+            }
+            // else if (input.value.trim() !== '') {
+            //     uneValeurSaisie = true;
+            // }
+        });
+
+        if (!uneValeurSaisie) {
+            const confirmation = await showBootstrapConfirmationModal(metademandparams.confirmmsg);
+            if (!confirmation) {
+                return false;
+            }
+        }
+    }
     // Increase or decrease the current tab by 1:
     nextTab = metademandparams.currentTab + n;
     // Hide the current tab:
@@ -931,9 +975,6 @@ function plugin_metademands_wizard_nextBtn(n, metademandparams, metademandcondit
                 } else {
                     plugin_metademands_wizard_nextUser(metademandparams.root_doc, arrayDatas);
                 }
-
-            } else {
-                plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
             }
         } else {
             location.href = metademandparams.root_doc + '/front/wizard.form.php';
@@ -1084,6 +1125,37 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas) {
 
         });
 
+}
+
+function showBootstrapConfirmationModal(message) {
+    return new Promise((resolve) => {
+        const modalElement = document.getElementById('confirmationModal');
+        const modalBody = modalElement.querySelector('.modal-body');
+        const yesBtn = modalElement.querySelector('#confirmYes');
+        const noBtn = modalElement.querySelector('#confirmNo');
+
+        modalBody.textContent = message;
+
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+
+        const cleanup = () => {
+            yesBtn.removeEventListener('click', onYes);
+            noBtn.removeEventListener('click', onNo);
+        };
+
+        const onYes = () => {
+            cleanup();
+            resolve(true);
+        };
+        const onNo = () => {
+            cleanup();
+            resolve(false);
+        };
+
+        yesBtn.addEventListener('click', onYes);
+        noBtn.addEventListener('click', onNo);
+    });
 }
 
 function updateActiveTab(rank) {

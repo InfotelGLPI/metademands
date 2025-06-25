@@ -59,6 +59,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             $comment = $data['comment'];
         }
 
+
         $field = "";
         if (!empty($data['custom_values'])) {
             $custom_values = $data['custom_values'];
@@ -85,7 +86,6 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
             if (count($custom_values) > 0) {
                 foreach ($custom_values as $key => $label) {
-
                     $checked = "";
                     if (isset($value[$key]) && $value[$key] == $key) {
                         $checked = 'checked';
@@ -127,14 +127,13 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             $field .= "</span>";
                         }
                         $field .= "</div>";
-
                     } else {
                         $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
                         $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
 
-//                        $field .= '
-//<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
-//data-capacity-checkbox="1"  data-is-used="0" checked="">';
+                        //                        $field .= '
+                        //<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
+                        //data-capacity-checkbox="1"  data-is-used="0" checked="">';
 
                         $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
 
@@ -152,13 +151,13 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
                         $field .= "<div class='text-start'>";
                         $field .= "<div class='d-flex align-items-center'>";
-//                        $field .= "<div class='fw-bold'>";
+                        //                        $field .= "<div class='fw-bold'>";
 
                         if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
                             $name = $label['name'];
                         }
                         $field .= $name;
-//                        $field .= "</div>";
+                        //                        $field .= "</div>";
                         $field .= "</div>";
                         $field .= "<small class='form-hint'>";
                         if (isset($label['comment']) && !empty($label['comment'])) {
@@ -178,15 +177,6 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         $field .= "</div>";
 
                         $field .= "<div class='me-2 ms-auto'>";
-                        $checked = "";
-
-                        if (empty($value) && isset($label['is_default']) && $on_order == false) {
-                            $checked = ($label['is_default'] == 1) ? 'checked' : '';
-                        }
-                        if (isset($value) && $value == $key) {
-                            $checked = 'checked';
-                        }
-
                         $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                         $field .= "</div>";
 
@@ -558,7 +548,7 @@ JAVASCRIPT
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $pre_onchange = "console.log('fieldsHiddenScript-checkbox $id');";
+            $pre_onchange = "console.log('fieldsMandatoryScript-checkbox $id');";
         }
         if (count($check_values) > 0) {
             //Si la valeur est en session
@@ -593,10 +583,8 @@ JAVASCRIPT
                             }
                         }
                     }
-                }
 
-
-                $onchange .= "$.each(tohide, function( key, value ) {
+                    $onchange .= "$.each(tohide, function( key, value ) {
                                 if (value == true) {
                                     var id = '#metademands_wizard_red'+ key;
                                     $(id).html('');
@@ -615,9 +603,9 @@ JAVASCRIPT
 
                             });";
 
-                $onchange .= "} else {";
-                //not checked
-                $onchange .= "if ($(this).val() == $idc) {
+                    $onchange .= "} else {";
+                    //not checked
+                    $onchange .= "if ($(this).val() == $idc) {
                                 if ($fields_link in tohide) {
                                 } else {
                                    tohide[$fields_link] = true;
@@ -630,7 +618,7 @@ JAVASCRIPT
                             }";
 
 
-                $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                 var id = '#metademands_wizard_red'+ key;
                                 $(id).html('');
@@ -647,7 +635,8 @@ JAVASCRIPT
                                  " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                             }
                          });";
-                $onchange .= "}";
+                    $onchange .= "}";
+                }
             }
 
             if (is_array($display) && count($display) > 0) {
@@ -950,8 +939,8 @@ JAVASCRIPT
 
         $script = "";
         $script2 = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        $debug = isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         if ($debug) {
             $script = "console.log('blocksHiddenScript-checkbox $id');";
         }
@@ -960,6 +949,17 @@ JAVASCRIPT
             $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
                 $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+            }
+
+            //Si la valeur est en session
+            //specific
+            if (isset($data['value'])) {
+                if (is_array($data['value'])) {
+                    $values = $data['value'];
+                    foreach ($values as $value) {
+                        $script2 .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                    }
+                }
             }
 
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";

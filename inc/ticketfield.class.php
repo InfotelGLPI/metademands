@@ -367,6 +367,7 @@ class PluginMetademandsTicketField extends CommonDBChild
             'value' => $this->fields["value"],
             'name' => 'value',
             'itemtype' => $object,
+            'datatype' => "text",
             'itemtype_used' => $itemtype_used,
             'relative_dates' => 1
         ];

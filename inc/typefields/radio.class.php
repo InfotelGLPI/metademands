@@ -85,7 +85,6 @@ class PluginMetademandsRadio extends CommonDBTM
 
             if (count($custom_values) > 0) {
                 foreach ($custom_values as $key => $label) {
-
                     $checked = "";
 
                     if (empty($value) && isset($label['is_default']) && $on_order == false) {
@@ -111,11 +110,11 @@ class PluginMetademandsRadio extends CommonDBTM
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             $field .= "&nbsp;<span style='vertical-align: bottom;'>";
                             if (empty(
-                            $comment = PluginMetademandsField::displayCustomvaluesField(
-                                $data['id'],
-                                $key,
-                                "comment"
-                            )
+                                $comment = PluginMetademandsField::displayCustomvaluesField(
+                                    $data['id'],
+                                    $key,
+                                    "comment"
+                                )
                             )) {
                                 $comment = $label['comment'];
                             }
@@ -164,11 +163,11 @@ class PluginMetademandsRadio extends CommonDBTM
                         $field .= "<small class='form-hint'>";
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             if (empty(
-                            $comment = PluginMetademandsField::displayCustomvaluesField(
-                                $data['id'],
-                                $key,
-                                "comment"
-                            )
+                                $comment = PluginMetademandsField::displayCustomvaluesField(
+                                    $data['id'],
+                                    $key,
+                                    "comment"
+                                )
                             )) {
                                 $comment = $label['comment'];
                             }
@@ -525,18 +524,27 @@ JAVASCRIPT
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $onchange = "console.log('fieldsHiddenScript-radio $id');";
+            $onchange = "console.log('fieldsMandatoryScript-radio $id');";
         }
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
             //specific
-            if (isset($data['value']) && is_array($data['value'])) {
-                $values = $data['value'];
-                foreach ($values as $value) {
-                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+
+            if (isset($data['value'])) {
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
+                } else {
+                    if (is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                        }
+                    }
                 }
             }
+
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
@@ -552,10 +560,19 @@ JAVASCRIPT
                             tohide[$fields_link] = false;
                         }";
 
-                    if (isset($data['value']) && is_array($data['value'])) {
-                        $values = $data['value'];
-                        foreach ($values as $value) {
-                            if ($idc == $value) {
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        if (isset($data['value']) && is_array($data['value'])) {
+                            $values = $data['value'];
+                            foreach ($values as $value) {
+                                if ($idc == $value) {
+                                    $display[] = $fields_link;
+                                }
+                            }
+                        }
+                    } else {
+                        if (isset($data['value'])) {
+                            $values = $data['value'];
+                            if ($idc == $values) {
                                 $display[] = $fields_link;
                             }
                         }
@@ -612,19 +629,25 @@ JAVASCRIPT
         if (count($check_values) > 0) {
             //Si la valeur est en session
             //specific
-            if (isset($data['value']) && is_array($data['value'])) {
-                $values = $data['value'];
-                foreach ($values as $value) {
-                    $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
+            if (isset($data['value'])) {
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $script2 .= "$('[name=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true);";
+                } else {
+                    if (is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            $script2 .= "$('[name=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true);";
+                        }
+                    }
                 }
             }
 
-
             $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
-                    'Next',
-                    'metademands'
-                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                'Next',
+                'metademands'
+            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -723,8 +746,8 @@ JAVASCRIPT
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        $debug = isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         if ($debug) {
             $onchange = "console.log('fieldsHiddenScript-radio $id');";
         }
@@ -770,10 +793,17 @@ JAVASCRIPT
 
             //Si la valeur est en session
             //specific
-            if (isset($data['value']) && is_array($data['value'])) {
-                $values = $data['value'];
-                foreach ($values as $value) {
-                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+            if (isset($data['value'])) {
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
+                } else {
+                    if (is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                        }
+                    }
                 }
             }
 
@@ -791,10 +821,19 @@ JAVASCRIPT
                             tohide[$hidden_link] = false;
                         }";
 
-                    if (isset($data['value']) && is_array($data['value'])) {
-                        $values = $data['value'];
-                        foreach ($values as $value) {
-                            if ($idc == $value) {
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        if (isset($data['value']) && is_array($data['value'])) {
+                            $values = $data['value'];
+                            foreach ($values as $value) {
+                                if ($idc == $value) {
+                                    $display[] = $hidden_link;
+                                }
+                            }
+                        }
+                    } else {
+                        if (isset($data['value'])) {
+                            $values = $data['value'];
+                            if ($idc == $values) {
                                 $display[] = $hidden_link;
                             }
                         }
@@ -910,9 +949,9 @@ JAVASCRIPT
                                                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                                 $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                        $metaid,
-                                                        $childs
-                                                    );
+                                                                    $metaid,
+                                                                    $childs
+                                                                );
                                             }
                                         }
                                     }
@@ -927,6 +966,22 @@ JAVASCRIPT
             $pre_onchange .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
                 $pre_onchange .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+            }
+
+            //Si la valeur est en session
+            //specific
+            if (isset($data['value'])) {
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
+                } else {
+                    if (is_array($data['value'])) {
+                        $values = $data['value'];
+                        foreach ($values as $value) {
+                            $pre_onchange .= "$('[id=\"field[" . $id . "][" . $value . "]\"]').prop('checked', true).trigger('change');";
+                        }
+                    }
+                }
             }
 
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
@@ -1002,8 +1057,22 @@ JAVASCRIPT
                 });
           ";
 
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_block;
+                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        if (isset($data['value']) && is_array($data['value'])) {
+                            $values = $data['value'];
+                            foreach ($values as $value) {
+                                if ($idc == $value) {
+                                    $display[] = $hidden_block;
+                                }
+                            }
+                        }
+                    } else {
+                        if (isset($data['value'])) {
+                            $values = $data['value'];
+                            if ($idc == $values) {
+                                $display[] = $hidden_block;
+                            }
+                        }
                     }
 
                     if ($data["item"] == "ITILCategory_Metademands") {

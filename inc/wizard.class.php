@@ -1317,7 +1317,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
             $use_as_step = 0;
-            if ($preview || $seeform) {
+            if ($preview) {
                 $use_as_step = 0;
             }
             if (!$preview && (!$seeform
@@ -1480,7 +1480,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
         }
-        if ($preview || $seeform) {
+        if ($preview) {
             $use_as_step = 0;
         }
 
@@ -1544,10 +1544,13 @@ class PluginMetademandsWizard extends CommonDBTM
         $metaparams['root_doc'] = $root_doc;
         $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
+        $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
+        $metaparams['confirmmsg'] = Toolbox::addslashes_deep(__("You have not entered any values. Is this normal?", 'metademands'));
         $metaparams['nameform'] = Toolbox::addslashes_deep(
             $metademands->fields['name']
         ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
+        $metaparams['seeform'] = $seeform;
 
         //MSG
         $metaparams['nexttitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -1771,7 +1774,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
         }
-        if ($preview || $seeform) {
+        if ($preview) {
             $use_as_step = 0;
         }
 
@@ -2050,11 +2053,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
             }
 
-            if ($metademands->fields['is_order'] == 0
+            if (
+                $metademands->fields['is_order'] == 0
                 && !$preview
-                && (!$seeform
-                    || (isset($options['resources_id'])
+                && ((isset($options['resources_id'])
                         && $options['resources_id'] > 0)
+                    || $seeform
                     || ($current_ticket > 0
                         && ((!$meta_validated
                                 && $metademands->fields['can_update'] == true) ||
@@ -2189,6 +2193,24 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
                 echo "<a id='backtotop'></a>";
+//                Modal Bootstrap confirmation
+                echo "<div class='modal fade' id='confirmationModal' tabindex='-1' role='dialog' aria-labelledby='confirmationModalLabel' aria-hidden='true'>";
+                echo "<div class='modal-dialog modal-dialog-centered' role='document'>";
+                echo "<div class='modal-content'>";
+                echo "<div class='modal-header'>";
+                echo "<h5 class='modal-title' id='confirmationModalLabel'>".__('Confirmation', 'metademands')."</h5>";
+                echo "<button type='button' class='close btn-close' data-bs-dismiss='modal' aria-label='".__('Close')."'></button>";
+                echo "</div>";
+                echo "<div class='modal-body'>";
+                echo __("You have not entered any values. Is this normal?", 'metademands');
+                echo "</div>";
+                echo "<div class='modal-footer'>";
+                echo "<button type='button' class='btn btn-secondary' id='confirmNo' data-bs-dismiss='modal'>".__('No')."</button>";
+                echo "<button type='button' class='btn btn-primary' id='confirmYes' data-bs-dismiss='modal'>".__('Yes')."</button>";
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
                 self::validateScript($metaparams, $metaconditionsparams);
             }
 
@@ -2771,13 +2793,16 @@ class PluginMetademandsWizard extends CommonDBTM
                 $$key = $metaconditionsparams[$key];
             }
         }
+
         echo "<script>
                   $(document).ready(function (){
 
                     window.metademandparams = {};
-                    
+                    metademandparams.useconfirm = '$useconfirm';
+                    metademandparams.confirmmsg = '$confirmmsg';
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
+                    metademandparams.seeform = '$seeform';
                     metademandparams.token = '$token';
                     metademandparams.id = '$ID';
                     metademandparams.nameform = '$nameform';
@@ -2813,12 +2838,19 @@ class PluginMetademandsWizard extends CommonDBTM
                     
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
-                
-                    prevBtn.addEventListener('click', () => plugin_metademands_wizard_prevBtn(-1, metademandparams, metademandconditionsparams));
-                    nextBtn.addEventListener('click', () => plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams));
-    
-                    plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams); // Display the current tab
 
+                    plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
+                    
+                    prevBtn.addEventListener('click', () => {
+                      plugin_metademands_wizard_prevBtn(-1, metademandparams, metademandconditionsparams);
+                    });
+                    
+                    nextBtn.addEventListener('click', async () => {
+                          const result = await plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams);
+                          if (result !== false) {
+                            plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
+                          }
+                        });
                   });
                </script>";
     }
