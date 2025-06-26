@@ -722,7 +722,10 @@ class PluginMetademandsExport extends CommonDBTM
             } else if ($fieldorigin->fields['type'] === 'text') {
                 $showCondition = 2;
 
-            } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
+            } else if ((int)$option['check_value'] === -1) {
+                $showCondition = 2;
+            }
+            else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
                 $showValue = $fieldcustomvalues->fields['name'] ?? "";
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
@@ -783,6 +786,9 @@ class PluginMetademandsExport extends CommonDBTM
                         $showValue = 'oui';
                     }
                 } else if ($fieldorigin->fields['type'] === 'text') {
+                    $showCondition = 2;
+
+                } else if ((int)$option['check_value'] === -1) {
                     $showCondition = 2;
 
                 } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
@@ -851,7 +857,6 @@ class PluginMetademandsExport extends CommonDBTM
     public static function exportAsJSONForFormcreator($id)
     {
         //TODOJSON case not null value -> add regex
-        //TODOJSON target PluginFormcreatorTargetTicket
         //TODOJSON rights
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
@@ -913,6 +918,171 @@ class PluginMetademandsExport extends CommonDBTM
             "_validators" => [],
             "_translations" => []
         ];
+
+        if ($metademands->fields['object_to_create'] === "Ticket") {
+            $newTicket = [
+                "name" => "Ticket from metademand",
+                "target_name" => "Ticket from metademand",
+                "source_rule" => 1,
+                "source_question" => 7,
+                "type_rule" => 1,
+                "type_question" => $metademands->fields['type'],
+                "content" => "",
+                "due_date_rule" => 1,
+                "due_date_question" => 0,
+                "due_date_value" => null,
+                "due_date_period" => 0,
+                "urgency_question" => 0,
+                "validation_followup" => 1,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_question" => 0,
+                "associate_rule" => 1,
+                "associate_question" => 0,
+                "location_rule" => 1,
+                "location_question" => 0,
+                "commonitil_validation_rule" => 1,
+                "commonitil_validation_question" => 0,
+                "show_rule" => 1,
+                "sla_rule" => 1,
+                "sla_question_tto" => 0,
+                "ola_question_ttr" => 0,
+                "uuid" => $prefix . $metademands_id . "targetticket",
+                "_tickettemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetticketactor1"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetTicket",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetticketactor2"
+                    ]
+                ],
+                "_ticket_relations" => [],
+                "_conditions" => [],
+            ];
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (empty($itilcategories_id)) {
+                $newTicket["category_rule"] = 1;
+            } else {
+                $newTicket["category_rule"] = 2;
+            }
+
+            $form["_targets"]["PluginFormcreatorTargetTicket"][] = $newTicket;
+        }
+        else if ($metademands->fields['object_to_create'] === "Problem"){
+            $newProblem = [
+                "name" => "Problem from metademand",
+                "target_name" => "Problem from metademand",
+                "impactcontent" => "",
+                "causecontent" => "",
+                "symptomcontent" => "",
+                "urgency_rule" => 1,
+                "content" => "",
+                "urgency_question" => 0,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_rule" => 1,
+                "category_question" => 0,
+                "show_rule" => 1,
+                "uuid" => $prefix . $metademands_id . "targetproblem",
+                "_problemtemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetProblem",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetproblemactor1"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetProblem",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetproblemactor2"
+                    ]
+                ],
+                "_conditions" => [],
+            ];
+
+            $form["_targets"]["PluginFormcreatorTargetProblem"][] = $newProblem;
+        }
+        else if ($metademands->fields['object_to_create'] === "Change"){
+            $newChange = [
+                "name" => "Change from metademand",
+                "target_name" => "Change from metademand",
+                "impactcontent" => "",
+                "controlistcontent" => "",
+                "rolloutplancontent" => "",
+                "backoutplancontent" => "",
+                "checklistcontent" => "",
+                "due_date_rule" => 1,
+                "due_date_question" => 0,
+                "due_date_value" => null,
+                "due_date_period" => 0,
+                "urgency_rule" => 1,
+                "content" => "",
+                "urgency_question" => 0,
+                "validation_followup" => 1,
+                "destination_entity" => 1,
+                "destination_entity_value" => 0,
+                "tag_type" => 1,
+                "tag_questions" => "",
+                "tag_specifics" => "",
+                "category_rule" => 1,
+                "category_question" => 0,
+                "commonitil_validation_rule" => 1,
+                "commonitil_validation_question" => null,
+                "show_rule" => 1,
+                "sla_rule" => 1,
+                "sla_question_tto" => 1,
+                "sla_question_ttr" => 1,
+                "ola_rule" => 1,
+                "ola_question_tto" => 0,
+                "ola_question_ttr" => 0,
+                "uuid" => $prefix . $metademands_id . "targetchange",
+                "_changetemplate" => "",
+                "_actors" => [
+                    [
+                        "itemtype" => "PluginFormcreatorTargetChange",
+                        "actor_role" => 1,
+                        "actor_type" => 1,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetchangeactor1"
+                    ],
+                    [
+                        "itemtype" => "PluginFormcreatorTargetChange",
+                        "actor_role" => 2,
+                        "actor_type" => 2,
+                        "actor_value" => 0,
+                        "use_notification" => 1,
+                        "uuid" => $prefix . $metademands_id . "targetchangeactor2"
+                    ]
+                ],
+                "_conditions" => [],
+            ];
+
+            $form["_targets"]["PluginFormcreatorTargetChange"][] = $newChange;
+        }
 
         $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
             ['plugin_metademands_metademands_id' => $metademands_id]);
