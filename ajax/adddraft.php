@@ -152,7 +152,7 @@ if (isset($_POST['save_draft'])) {
             $metademands->getFromDB($_POST['metademands_id']);
             if ($KO === false) {
                 // Save requester user
-                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+//                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                 // Case of simple ticket convertion
                 if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
                     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['items_id'];

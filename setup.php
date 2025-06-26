@@ -256,7 +256,8 @@ function plugin_version_metademands()
  */
 function plugin_metademands_check_prerequisites()
 {
-    if (!is_readable(__DIR__ . '/vendor/autoload.php') || !is_file(__DIR__ . '/vendor/autoload.php')) {
+    if (!is_readable(__DIR__ . '/vendor/autoload.php')
+        || !is_file(__DIR__ . '/vendor/autoload.php')) {
         echo "Run composer install --no-dev in the plugin directory<br>";
         return false;
     }

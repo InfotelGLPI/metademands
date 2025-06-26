@@ -797,6 +797,7 @@ async function plugin_metademands_wizard_nextBtn(n, metademandparams, metademand
     if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) return false;
 
     if (metademandparams.useconfirm > 0) {
+
         const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
         const inputs = div.querySelectorAll('input, select, textarea');
 
@@ -808,8 +809,7 @@ async function plugin_metademands_wizard_nextBtn(n, metademandparams, metademand
             } else if (input.tagName === 'SELECT') {
                 const isYesNo = input.classList.contains("yesno");
                 const value = input.value;
-
-                if ((isYesNo && value === '2') || (!isYesNo && value !== '0')) {
+                if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
                     uneValeurSaisie = true;
                 }
             }

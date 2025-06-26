@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -90,9 +91,7 @@ if (isset($_GET['meta_validated'])) {
 }
 
 if ($nofreetable == false) {
-
     if (isset($_POST['see_basket_summary']) && $_POST['see_basket_summary'] == 1) {
-
         $_POST['see_basket_summary'] = 0;
 
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
@@ -163,14 +162,14 @@ if ($nofreetable == false) {
                 $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
             }
 
-//            if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
-//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-//                    foreach ($freeinputs as $freeinput) {
-//                        $_POST['field'][] = $freeinput;
-//                    }
-//                }
-//            }
+            //            if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
+            //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+            //                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+            //                    foreach ($freeinputs as $freeinput) {
+            //                        $_POST['field'][] = $freeinput;
+            //                    }
+            //                }
+            //            }
 
             if (isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'])) {
                 $freetables = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'];
@@ -188,7 +187,7 @@ if ($nofreetable == false) {
                     $basketline = new PluginMetademandsBasketline();
                     $basketToSend = $basketline->find([
                         'plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-                        'users_id' => Session::getLoginUserID()
+                        'users_id' => Session::getLoginUserID(),
                     ]);
 
                     $basketLines = [];
@@ -244,16 +243,15 @@ if ($nofreetable == false) {
                                 foreach ($opts as $opt) {
                                     $check_value = $opt["check_value"];
 
-                                        $data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'][] = $opt['plugin_metademands_tasks_id'] ?? 0;
-                                        $data[$idf]["options"][$check_value]['fields_link'][] = $opt['fields_link'] ?? 0;
-                                        $data[$idf]["options"][$check_value]['hidden_link'][] = $opt['hidden_link'] ?? 0;
-                                        $data[$idf]["options"][$check_value]['hidden_block'][] = $opt['hidden_block'] ?? 0;
-                                        $data[$idf]["options"][$check_value]['users_id_validate'] = isset($opt['users_id_validate']) && $opt['users_id_validate'] > 0 ? $opt['users_id_validate'] : ($data[$idf]["options"][$check_value]['users_id_validate'] ?? 0);
-                                        $data[$idf]["options"][$check_value]['childs_blocks'] = isset($opt['childs_blocks']) && $opt['childs_blocks'] != '[]' ? $opt['childs_blocks'] : (isset($data[$idf]["options"][$check_value]['childs_blocks']) && $data[$idf]["options"][$check_value]['childs_blocks'] != '[]' ?$data[$idf]["options"][$check_value]['childs_blocks'] : $opt['childs_blocks']);
-                                        $data[$idf]["options"][$check_value]['checkbox_value'] = isset($opt['checkbox_value']) && $opt['checkbox_value'] > 0 ? $opt['checkbox_value'] : ($data[$idf]["options"][$check_value]['checkbox_value'] ?? 0);
-                                        $data[$idf]["options"][$check_value]['checkbox_id'] = isset($opt['checkbox_id']) && $opt['checkbox_id'] > 0 ? $opt['checkbox_id'] : ($data[$idf]["options"][$check_value]['checkbox_id'] ?? 0);
-                                        $data[$idf]["options"][$check_value]['parent_field_id'] = isset($opt['parent_field_id']) && $opt['parent_field_id'] > 0 ? $opt['parent_field_id'] : ($data[$idf]["options"][$check_value]['parent_field_id'] ?? 0);
-
+                                    $data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'][] = $opt['plugin_metademands_tasks_id'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['fields_link'][] = $opt['fields_link'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['hidden_link'][] = $opt['hidden_link'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['hidden_block'][] = $opt['hidden_block'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['users_id_validate'] = isset($opt['users_id_validate']) && $opt['users_id_validate'] > 0 ? $opt['users_id_validate'] : ($data[$idf]["options"][$check_value]['users_id_validate'] ?? 0);
+                                    $data[$idf]["options"][$check_value]['childs_blocks'] = isset($opt['childs_blocks']) && $opt['childs_blocks'] != '[]' ? $opt['childs_blocks'] : (isset($data[$idf]["options"][$check_value]['childs_blocks']) && $data[$idf]["options"][$check_value]['childs_blocks'] != '[]' ? $data[$idf]["options"][$check_value]['childs_blocks'] : $opt['childs_blocks']);
+                                    $data[$idf]["options"][$check_value]['checkbox_value'] = isset($opt['checkbox_value']) && $opt['checkbox_value'] > 0 ? $opt['checkbox_value'] : ($data[$idf]["options"][$check_value]['checkbox_value'] ?? 0);
+                                    $data[$idf]["options"][$check_value]['checkbox_id'] = isset($opt['checkbox_id']) && $opt['checkbox_id'] > 0 ? $opt['checkbox_id'] : ($data[$idf]["options"][$check_value]['checkbox_id'] ?? 0);
+                                    $data[$idf]["options"][$check_value]['parent_field_id'] = isset($opt['parent_field_id']) && $opt['parent_field_id'] > 0 ? $opt['parent_field_id'] : ($data[$idf]["options"][$check_value]['parent_field_id'] ?? 0);
                                 }
                             }
                         }
@@ -309,13 +307,12 @@ if ($nofreetable == false) {
                                 }
                             }
                             if ($value['item'] == 'ITILCategory_Metademands') {
-                                $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+                                $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                                 $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field'][$id];
                             }
 
                             if ($value['type'] == 'freetable') {
                                 if (isset($_POST["is_freetable_mandatory"])) {
-
                                     $mandatories = $_POST["is_freetable_mandatory"];
                                     foreach ($mandatories as $fm => $mandatory) {
                                         if ($mandatory == 1 && $fm == $id) {
@@ -344,9 +341,8 @@ if ($nofreetable == false) {
                             if ($check['result'] == true) {
                                 $KO = true;
                             }
-//                            $content = array_merge($content, $check['content']);
+                            //                            $content = array_merge($content, $check['content']);
                         }
-
                         if ($KO === false) {
                             // Save requester user
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];

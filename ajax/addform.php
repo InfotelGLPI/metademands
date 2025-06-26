@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -101,14 +102,14 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 }
             }
 
-//            if (Plugin::isPluginActive('orderfollowup')) {
-//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-//                    foreach ($freeinputs as $freeinput) {
-//                        $_POST['freeinputs'][] = $freeinput;
-//                    }
-//                }
-//            }
+            //            if (Plugin::isPluginActive('orderfollowup')) {
+            //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+            //                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+            //                    foreach ($freeinputs as $freeinput) {
+            //                        $_POST['freeinputs'][] = $freeinput;
+            //                    }
+            //                }
+            //            }
 
             if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
                 $freetables = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'];
@@ -155,7 +156,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                             }
 
                             if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
-                                $post[$id] = isset($_POST['quantity'][$id]) ? $_POST['quantity'][$id] : 0;
+                                $post[$id] = $_POST['quantity'][$id] ?? 0;
                             }
 
                             if ($value['type'] == 'freetable'
@@ -200,7 +201,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
             $metademands->getFromDB($_POST['metademands_id']);
             if ($KO === false) {
                 // Save requester user
-                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+//                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                 // Case of simple ticket convertion
                 if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
                     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['items_id'];
@@ -235,7 +236,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
             if (isset($_POST['resources_id']) && $_POST['resources_id'] > 0) {
                 $resForm = $forms->find([
                     'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                    'resources_id' => $_POST['resources_id']
+                    'resources_id' => $_POST['resources_id'],
                 ]);
                 if (count($resForm)) {
                     foreach ($resForm as $res) {
