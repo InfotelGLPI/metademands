@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 09:20+0000\n"
+"POT-Creation-Date: 2025-06-27 09:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -581,7 +581,7 @@ msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:569 inc/wizard.class.php:2230
+#: inc/draft.class.php:569 inc/wizard.class.php:2229
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -943,7 +943,7 @@ msgstr ""
 #: inc/fieldoption.class.php:1948 inc/wizard.class.php:1210
 #: inc/wizard.class.php:1445 inc/wizard.class.php:1556
 #: inc/wizard.class.php:1565 inc/wizard.class.php:1599
-#: inc/wizard.class.php:1605 inc/wizard.class.php:2109
+#: inc/wizard.class.php:1605 inc/wizard.class.php:2108
 #: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:682
 #: inc/typefields/dropdown.class.php:684
 #: inc/typefields/dropdownmeta.class.php:1754
@@ -1967,7 +1967,7 @@ msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1548 inc/wizard.class.php:2205
+#: inc/wizard.class.php:1548 inc/wizard.class.php:2204
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
@@ -1992,43 +1992,43 @@ msgstr ""
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2098
+#: inc/wizard.class.php:2097
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: inc/wizard.class.php:2106
+#: inc/wizard.class.php:2105
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:2148
+#: inc/wizard.class.php:2147
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:2158
+#: inc/wizard.class.php:2157
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2201
+#: inc/wizard.class.php:2200
 msgid "Confirmation"
 msgstr ""
 
-#: inc/wizard.class.php:3360
+#: inc/wizard.class.php:3359
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3371
+#: inc/wizard.class.php:3370
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3413
+#: inc/wizard.class.php:3412
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3425
+#: inc/wizard.class.php:3424
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
