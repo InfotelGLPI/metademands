@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 09:47+0000\n"
+"POT-Creation-Date: 2025-06-27 11:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2013,22 +2013,22 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
-#: inc/wizard.class.php:3359
+#: inc/wizard.class.php:3361
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3370
+#: inc/wizard.class.php:3372
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3412
+#: inc/wizard.class.php:3414
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3424
+#: inc/wizard.class.php:3426
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
