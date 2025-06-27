@@ -2059,11 +2059,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 //                (isset($options['resources_id'])
                 //                    && $options['resources_id'] > 0)
                 if ($current_ticket > 0
-                    && ((!$meta_validated
+                    && (((!$meta_validated
                             && !$metademands->fields['can_update']) ||
                         ($meta_validated
                             && !$metademands->fields['can_clone']))
-                    || !Session::haveRight('plugin_metademands_updatemeta', READ)) {
+                    || !Session::haveRight('plugin_metademands_updatemeta', READ))) {
                     return false;
                 }
                 echo "<div class=\"form-sc-group\">";
