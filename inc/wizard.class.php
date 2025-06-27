@@ -2053,20 +2053,19 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
             }
 
-            if (
-                $metademands->fields['is_order'] == 0
-                && !$preview
-                && ((isset($options['resources_id'])
-                        && $options['resources_id'] > 0)
-                    || $seeform
-                    || ($current_ticket > 0
-                        && ((!$meta_validated
-                                && $metademands->fields['can_update'] == true) ||
-                            ($meta_validated
-                                && $metademands->fields['can_clone'] == true))
-                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
-            ) {
-
+            if ($metademands->fields['is_order'] == 0
+                && !$preview) {
+                //TO DROP ?
+                //                (isset($options['resources_id'])
+                //                    && $options['resources_id'] > 0)
+                if ($current_ticket > 0
+                    && ((!$meta_validated
+                            && !$metademands->fields['can_update']) ||
+                        ($meta_validated
+                            && !$metademands->fields['can_clone']))
+                    || !Session::haveRight('plugin_metademands_updatemeta', READ)) {
+                    return false;
+                }
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
 
@@ -2193,20 +2192,20 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
                 echo "<a id='backtotop'></a>";
-//                Modal Bootstrap confirmation
+                //                Modal Bootstrap confirmation
                 echo "<div class='modal fade' id='confirmationModal' tabindex='-1' role='dialog' aria-labelledby='confirmationModalLabel' aria-hidden='true'>";
                 echo "<div class='modal-dialog modal-dialog-centered' role='document'>";
                 echo "<div class='modal-content'>";
                 echo "<div class='modal-header'>";
-                echo "<h5 class='modal-title' id='confirmationModalLabel'>".__('Confirmation', 'metademands')."</h5>";
-                echo "<button type='button' class='close btn-close' data-bs-dismiss='modal' aria-label='".__('Close')."'></button>";
+                echo "<h5 class='modal-title' id='confirmationModalLabel'>" . __('Confirmation', 'metademands') . "</h5>";
+                echo "<button type='button' class='close btn-close' data-bs-dismiss='modal' aria-label='" . __('Close') . "'></button>";
                 echo "</div>";
                 echo "<div class='modal-body'>";
                 echo __("You have not entered any values. Is this normal?", 'metademands');
                 echo "</div>";
                 echo "<div class='modal-footer'>";
-                echo "<button type='button' class='btn btn-secondary' id='confirmNo' data-bs-dismiss='modal'>".__('No')."</button>";
-                echo "<button type='button' class='btn btn-primary' id='confirmYes' data-bs-dismiss='modal'>".__('Yes')."</button>";
+                echo "<button type='button' class='btn btn-secondary' id='confirmNo' data-bs-dismiss='modal'>" . __('No') . "</button>";
+                echo "<button type='button' class='btn btn-primary' id='confirmYes' data-bs-dismiss='modal'>" . __('Yes') . "</button>";
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
