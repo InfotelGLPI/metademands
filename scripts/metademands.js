@@ -538,16 +538,6 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         var x = document.getElementsByClassName('tab-nostep');
     }
 
-    if (metademandparams.block_id > 0) {
-        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc', ''));
-        while (metademandparams.block_id != id_bloc) {
-            metademandparams.currentTab = metademandparams.currentTab + 1;
-            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
-        }
-        firstnumTab = metademandparams.currentTab;
-    }
 
     //First loading of first tab
     if (metademandparams.currentTab == 0) {
@@ -766,7 +756,7 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
 }
 
 
-async function plugin_metademands_wizard_nextBtn(n, metademandparams, metademandconditionsparams) {
+async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparams, metademandconditionsparams) {
 
     var firstnumTab = 0;
     // This function will figure out which tab to display
@@ -780,19 +770,7 @@ async function plugin_metademands_wizard_nextBtn(n, metademandparams, metademand
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
-    if (metademandparams.block_id > 0) {
-        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc', ''));
-        while (metademandparams.block_id != id_bloc) {
-            metademandparams.currentTab = metademandparams.currentTab + 1;
-            // if (typeof x[metademandparams.currentTab] !== 'undefined') {
-            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
-            // }
 
-        }
-        firstnumTab = metademandparams.currentTab;
-    }
     // Exit the function if any field in the current tab is invalid:
     if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) return false;
 
@@ -982,7 +960,26 @@ async function plugin_metademands_wizard_nextBtn(n, metademandparams, metademand
     }
 }
 
-function plugin_metademands_wizard_prevBtn(n, metademandparams, metademandconditionsparams) {
+function plugin_metademands_wizard_findFirstTab(block_id, metademandparams) {
+    if (metademandparams.use_as_step == 1) {
+        var x = document.getElementsByClassName('tab-step');
+    } else {
+        var x = document.getElementsByClassName('tab-nostep');
+    }
+
+    if(block_id > 0) {
+        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+        id_bloc = parseInt(bloc.replace('bloc',''));
+        while (block_id != id_bloc) {
+            metademandparams.currentTab = metademandparams.currentTab+1;
+            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            id_bloc = parseInt(bloc.replace('bloc',''));
+        }
+        firstnumTab = metademandparams.currentTab;
+    }
+}
+
+function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, metademandconditionsparams) {
 
     var firstnumTab = 0;
     // This function will figure out which tab to display
@@ -995,19 +992,6 @@ function plugin_metademands_wizard_prevBtn(n, metademandparams, metademandcondit
         // }
     } else {
         var x = document.getElementsByClassName('tab-nostep');
-    }
-    if (metademandparams.block_id > 0) {
-        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc', ''));
-        while (metademandparams.block_id != id_bloc) {
-            metademandparams.currentTab = metademandparams.currentTab + 1;
-            // if (typeof x[metademandparams.currentTab] !== 'undefined') {
-            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
-            // }
-
-        }
-        firstnumTab = metademandparams.currentTab;
     }
 
     // Increase or decrease the current tab by 1:

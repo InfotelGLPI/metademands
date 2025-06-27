@@ -2103,7 +2103,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         metademandconditionsparams.root_doc = '$root_doc';";
 
         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-            $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
         } else {
             $onchange .= "$('#multiselect" . $data["id"] . "').on('change', function() {";
         }

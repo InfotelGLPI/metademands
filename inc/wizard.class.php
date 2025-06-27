@@ -2838,14 +2838,16 @@ class PluginMetademandsWizard extends CommonDBTM
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
 
+                    firstnumTab = plugin_metademands_wizard_findFirstTab($block_id, metademandparams);
+                    
                     plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
                     
                     prevBtn.addEventListener('click', () => {
-                      plugin_metademands_wizard_prevBtn(-1, metademandparams, metademandconditionsparams);
+                      plugin_metademands_wizard_prevBtn(-1, firstnumTab, metademandparams, metademandconditionsparams);
                     });
                     
                     nextBtn.addEventListener('click', async () => {
-                          const result = await plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams);
+                          const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams);
                           if (result !== false) {
                             plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
                           }
