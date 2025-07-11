@@ -8561,7 +8561,7 @@ HTML;
 
         $critMeta = [];
         $critCategory = [];
-	    $custom_cat = false;
+
         if ($metademand->fields['object_to_create'] == 'Ticket') {
             if ($metademand->fields['type']) {
                 switch ($metademand->fields['type']) {
@@ -8600,11 +8600,6 @@ HTML;
                 if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
                     $critMeta = ['object_to_create' => $new_fields['object_to_create']];
                     $critCategory = $new_fields['critcategory'];
-
-					if(isset($new_fields['custom_cat'])){
-						$custom_cat = $new_fields['custom_cat'];
-					}
-
                 }
             }
         }
@@ -8632,18 +8627,18 @@ HTML;
             }
         }
 
-        $usedCategories = array_unique($usedCategories);
-        if (count($usedCategories) > 0) {
-            $critCategory += [
-                'NOT' => [
-                    'id' => $usedCategories,
-                ],
-            ];
-        }
-
-	    if(!$custom_cat) {
+	    if (!isset($resultat['critcategory']['use_custom_cat'])) {
+		    $usedCategories = array_unique($usedCategories);
+		    if (count($usedCategories) > 0) {
+			    $critCategory += [
+				    'NOT' => [
+					    'id' => $usedCategories,
+				    ],
+			    ];
+		    }
 		    $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
 	    }
+
         if (isset($PLUGIN_HOOKS['metademands'])
             && $critMeta["type"] != 1
             && $critMeta["type"] != 2) {
