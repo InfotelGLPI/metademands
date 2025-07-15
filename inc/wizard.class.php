@@ -2155,7 +2155,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         $modal_html .= Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
                         $title = __('Previous data edited', 'metademands');
-                        $setting_dialog = json_encode($modal_html);
+                        $setting_dialog = json_encode(stripslashes($modal_html));
                         echo Html::scriptBlock(
                             "$(function() {
                                                     glpi_html_dialog({
@@ -2840,7 +2840,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     firstnumTab = plugin_metademands_wizard_findFirstTab($block_id, metademandparams);
                     
-                    plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
+                    plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
                     
                     prevBtn.addEventListener('click', () => {
                       plugin_metademands_wizard_prevBtn(-1, firstnumTab, metademandparams, metademandconditionsparams);
@@ -2849,7 +2849,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     nextBtn.addEventListener('click', async () => {
                           const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams);
                           if (result !== false) {
-                            plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
+                            plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
                           }
                         });
                   });

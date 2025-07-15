@@ -13,7 +13,8 @@
         /**
          * Start the plugin
          */
-        function init() {
+        function init()
+        {
             object.params = [];
             object.params.lang = '';
             object.params.root_doc = '';
@@ -68,7 +69,6 @@
 var table = document.getElementById('tablesearch');
 
 if (table !== null) {
-
     // Get input elements and table
     var filterRefInput = document.getElementById('searchref');
     var filterNameInput = document.getElementById('searchname');
@@ -80,7 +80,8 @@ if (table !== null) {
     filterNameInput.addEventListener('input', filterTable);
     filterDescriptionInput.addEventListener('input', filterTable);
 
-    function filterTable() {
+    function filterTable()
+    {
         var filterRef = filterRefInput.value.toUpperCase();
         var filterName = filterNameInput.value.toUpperCase();
         var filterDesc = filterDescriptionInput.value.toUpperCase();
@@ -115,7 +116,8 @@ btn.on('click', function (e) {
     $('html, body').animate({scrollTop: 0}, '300');
 });
 
-function plugin_metademands_wizard_validateForm(metademandparams) {
+function plugin_metademands_wizard_validateForm(metademandparams)
+{
 
     // This function deals with validation of the form fields
     var x, y = 0, w = 0, z = 0, i, valid = true, ko = 0, kop = 0;
@@ -152,7 +154,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
 
     // A loop that checks every input field in the current tab:
     for (i = 0; i < y.length; i++) {
-
         // If a field is empty...
         fieldid = y[i].id;
         fieldname = y[i].name;
@@ -174,7 +175,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
             && fieldtype != 'informations'
             //                                    && fieldtype != 'hidden'
             && fieldmandatory == true) {
-
             var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
 
             if (res != 'none') {
@@ -250,7 +250,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
 
         if (y[i].type == 'radio'
             && fieldmandatory == true) {
-
             var boutonsRadio = document.querySelectorAll('input[name=\"' + fieldname + '\"]');
             var check = false;
             for (var b = 0; b < boutonsRadio.length; b++) {
@@ -274,7 +273,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
                 }
                 ko++;
             }
-
         }
         if (y[i].type == 'checkbox'
             && fieldmandatory == true) {
@@ -325,7 +323,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
             }
-
         }
     }
 
@@ -425,7 +422,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
                     $('[name=\"' + fieldname + '\"]').removeAttr('required');
 //                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                 }
-
             } else if (isnumber == 'isnumber'
                 && ismultiplenumber == null
                 && fieldmandatory == true) {
@@ -444,7 +440,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
                     $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                     $('[name=\"' + fieldname + '\"]').removeAttr('required');
                 }
-
             } else if (z[i].value == 0
                 && ismultiplenumber == 'ismultiplenumber'
                 && fieldmandatory == true) {
@@ -476,7 +471,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
                     }
                     ko++;
                 }
-
             } else {
                 z[i].classList.remove('invalid');
             }
@@ -484,7 +478,6 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
     }
 
     if (ko > 0) {
-
         valid = false;
 
         const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);
@@ -502,13 +495,12 @@ function plugin_metademands_wizard_validateForm(metademandparams) {
         alert_mandatory_fields_list = alert_mandatory_fields.join('<br> ');
         alert_msg = metademandparams.msg + ' : <br><br>' + alert_mandatory_fields_list;
         alert(alert_msg);
-
-
     }
     return valid;
 }
 
-function plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams) {
+function plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams)
+{
     // This function will display the specified tab of the form...
 
     if (metademandconditionsparams.use_condition == true) {
@@ -524,7 +516,6 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
             }
         });
         plugin_metademands_wizard_checkConditions(metademandconditionsparams);
-
     }
 
     if (metademandparams.use_as_step == 1) {
@@ -544,13 +535,11 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
         document.getElementById('prevBtn').style.display = 'none';
     } else {
         document.getElementById('prevBtn').style.display = 'inline';
-
     }
     if (typeof x[metademandparams.currentTab] !== 'undefined') {
         x[metademandparams.currentTab].style.display = 'block';
     }
     //... and fix the Previous/Next buttons:
-
     if (typeof firstnumTab !== 'undefined') {
         if (metademandparams.currentTab == firstnumTab) {
             document.getElementById('prevBtn').style.display = 'none';
@@ -558,21 +547,26 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
             document.getElementById('prevBtn').style.display = 'inline';
         }
     }
+
+    if (metademandparams.updatestepform == 1) {
+        document.getElementById('prevBtn').style.display = 'none';
+        document.getElementById('button_save_draft').style.display = 'none';
+    }
+
     if (metademandparams.currentTab == 0) {
         document.getElementById('prevBtn').style.display = 'none';
     }
 
 
-        document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
+    document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
 
-        if (metademandparams.currentTab == (x.length - 1)) {
-
-            if (metademandparams.seeform == 0) {
-                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
-            } else {
-                document.getElementById('nextBtn').style.display = 'none';
-            }
+    if (metademandparams.currentTab == (x.length - 1)) {
+        if (metademandparams.seeform == 0) {
+            document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+        } else {
+            document.getElementById('nextBtn').style.display = 'none';
         }
+    }
 
     //... and run a function that will display the correct step indicator:
     if (metademandparams.use_as_step == 1) {
@@ -581,11 +575,11 @@ function plugin_metademands_wizard_showTab(metademandparams, metademandcondition
     }
 }
 
-function plugin_metademands_wizard_displayStepButton(metademandparams) {
+function plugin_metademands_wizard_displayStepButton(metademandparams)
+{
 
     //for next user button change
     if (typeof metademandparams !== 'undefined') {
-
         var x = document.getElementsByClassName('tab-step');
         // var x = {};
         //
@@ -628,11 +622,11 @@ function plugin_metademands_wizard_displayStepButton(metademandparams) {
         } else {
             document.getElementById('nextBtn').style.display == 'none';
         }
-
     }
 }
 
-function plugin_metademands_wizard_displayStepMsg(metademandparams) {
+function plugin_metademands_wizard_displayStepMsg(metademandparams)
+{
     // This function removes the 'active' class of all steps...
     var i, x = document.getElementsByClassName('step_wizard');
     for (i = 0; i < x.length; i++) {
@@ -663,12 +657,11 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams) {
                     '_glpi_csrf_token': metademandparams.token,
                     plugin_metademands_metademands_id: metademandparams.id,
                     block_id: id_bloc
-                },
+            },
             success: function (response) {
                 if (response.length == 0) {
                     document.getElementById('nextMsg').style.display = 'none';
                 } else {
-
                     document.getElementById('nextMsg').style.display = 'block';
                     document.getElementById('nextMsg').innerHTML = response;
                 }
@@ -682,7 +675,8 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams) {
     });
 }
 
-function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
+function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
+{
 
     var formDatas;
     formDatas = $('#wizard_form').serializeArray();
@@ -756,9 +750,9 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams) {
 }
 
 
-async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparams, metademandconditionsparams) {
+async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparams, metademandconditionsparams)
+{
 
-    var firstnumTab = 0;
     // This function will figure out which tab to display
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
@@ -772,10 +766,11 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
     }
 
     // Exit the function if any field in the current tab is invalid:
-    if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) return false;
+    if (n == 1 && !plugin_metademands_wizard_validateForm(metademandparams)) {
+        return false;
+    }
 
     if (metademandparams.useconfirm > 0) {
-
         const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
         const inputs = div.querySelectorAll('input, select, textarea');
 
@@ -818,13 +813,10 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
     createNow = false;
 
     if (metademandparams.use_as_step == 1) {
-
         var finded = false;
 
         while (finded == false) {
-
             if (true) {
-
                 if (x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
                     createNow = true;
                     finded = true;
@@ -850,7 +842,6 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
 
     // if you have reached the end of the form...
     if (metademandparams.currentTab >= x.length || createNow) {
-
         document.getElementById('nextBtn').style.display = 'none';
         // ... the form gets submitted:
         if (typeof tinyMCE !== 'undefined') {
@@ -924,7 +915,6 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
 
     if (metademandparams.use_as_step == 1
         && typeof metademandparams !== 'undefined') {
-
         if (x[metademandparams.currentTab] !== undefined) {
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
             id_bloc = parseInt(bloc.replace('bloc', ''));
@@ -960,26 +950,28 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
     }
 }
 
-function plugin_metademands_wizard_findFirstTab(block_id, metademandparams) {
+function plugin_metademands_wizard_findFirstTab(block_id, metademandparams)
+{
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
     } else {
         var x = document.getElementsByClassName('tab-nostep');
     }
 
-    if(block_id > 0) {
+    if (block_id > 0) {
         bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc',''));
+        id_bloc = parseInt(bloc.replace('bloc', ''));
         while (block_id != id_bloc) {
-            metademandparams.currentTab = metademandparams.currentTab+1;
+            metademandparams.currentTab = metademandparams.currentTab + 1;
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc',''));
+            id_bloc = parseInt(bloc.replace('bloc', ''));
         }
         firstnumTab = metademandparams.currentTab;
     }
 }
 
-function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, metademandconditionsparams) {
+function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, metademandconditionsparams)
+{
 
     var firstnumTab = 0;
     // This function will figure out which tab to display
@@ -1007,13 +999,10 @@ function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, met
     }
 
     if (metademandparams.use_as_step == 1) {
-
         if (metademandparams.currentTab >= 1) {
             var finded = false;
             while (finded == false) {
-
                 if (true) {
-
                     if (x[metademandparams.currentTab] == undefined || x[metademandparams.currentTab].firstChild == undefined) {
                         finded = true;
                     } else {
@@ -1044,14 +1033,15 @@ function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, met
                 document.querySelector('.scrollable-tabs').scrollBy({left: -150, behavior: 'smooth'});
             }
 
-            plugin_metademands_wizard_showTab(metademandparams, metademandconditionsparams);
+            plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
         } else {
             location.href = metademandparams.root_doc + '/front/wizard.form.php';
         }
     }
 }
 
-function plugin_metademands_wizard_nextUser(root_doc, arrayDatas) {
+function plugin_metademands_wizard_nextUser(root_doc, arrayDatas)
+{
     $.ajax(
         {
             type: 'POST',
@@ -1075,7 +1065,8 @@ function plugin_metademands_wizard_nextUser(root_doc, arrayDatas) {
     );
 }
 
-function plugin_metademands_wizard_showStep(root_doc, arrayDatas) {
+function plugin_metademands_wizard_showStep(root_doc, arrayDatas)
+{
     $.ajax(
         {
             type: 'POST',
@@ -1084,17 +1075,13 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas) {
             dataType: 'JSON',
             success: function (response) {
                 try {
-
                     // For modern browsers except IE:
                     var event = new Event('show.bs.modal');
-
                 } catch (err) {
-
                     // If IE 11 (or 10 or 9...?) do it this way:
 
                     // Create the event.
                     var event = document.createEvent('Event');
-
                 }
                 $('#modalgroupspan').html(response);
                 $.globalEval(response.js);
@@ -1107,11 +1094,13 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas) {
                 // console.log(error);
             }
 
-        });
+        }
+    );
 
 }
 
-function showBootstrapConfirmationModal(message) {
+function showBootstrapConfirmationModal(message)
+{
     return new Promise((resolve) => {
         const modalElement = document.getElementById('confirmationModal');
         const modalBody = modalElement.querySelector('.modal-body');
@@ -1142,7 +1131,8 @@ function showBootstrapConfirmationModal(message) {
     });
 }
 
-function updateActiveTab(rank) {
+function updateActiveTab(rank)
+{
     document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
     document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
 
