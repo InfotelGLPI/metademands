@@ -1482,10 +1482,6 @@ JAVASCRIPT
 	    $name = "check_value";
 
         switch ($params["item"]) {
-            case 'urgency':
-	            Ticket::dropdownUrgency(["name" => $name,'value' =>$params['check_value']]);
-
-                break;
             case 'ITILCategory_Metademands':
                 $metademand = new PluginMetademandsMetademand();
                 $metademand->getFromDB($params["plugin_metademands_metademands_id"]);
@@ -1565,10 +1561,7 @@ JAVASCRIPT
             echo __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
-	            case 'urgency':
-		            echo CommonITILObject::getUrgencyName($params['check_value']);
-		            break;
-                case 'ITILCategory_Metademands':
+				case 'ITILCategory_Metademands':
 
                     $pass = false;
                     if (isset($PLUGIN_HOOKS['metademands'])) {

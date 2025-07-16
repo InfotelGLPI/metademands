@@ -58,7 +58,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         'textarea',
         'basket',
     ];
-    public static $allowed_options_items = ['other', 'ITILCategory_Metademands', 'urgency'];
+    public static $allowed_options_items = ['other', 'ITILCategory_Metademands'];
 
     /**
      * Return the localized name of the current Type
