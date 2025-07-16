@@ -8627,16 +8627,13 @@ HTML;
             }
         }
 
-	    if (!isset($resultat['critcategory']['use_custom_cat'])) {
-		    $usedCategories = array_unique($usedCategories);
-		    if (count($usedCategories) > 0) {
-			    $critCategory += [
-				    'NOT' => [
-					    'id' => $usedCategories,
-				    ],
-			    ];
-		    }
-		    $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+	    $usedCategories = array_unique($usedCategories);
+	    if (count($usedCategories) > 0) {
+		    $critCategory += [
+			    'NOT' => [
+				    'id' => $usedCategories,
+			    ],
+		    ];
 	    }
 
         if (isset($PLUGIN_HOOKS['metademands'])
