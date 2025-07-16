@@ -479,7 +479,7 @@ class PluginMetademandsStepform extends CommonDBTM
 
         $stepform   = new PluginMetademandsStepform();
         $waitingForms = [];
-        $stepforms  = $stepform->find();
+        $stepforms  = $stepform->find([], ["date DESC"] );
 
         foreach ($stepforms as $id => $form) {
             if((in_array($form['groups_id_dest'], $groups)
