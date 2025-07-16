@@ -8636,6 +8636,8 @@ HTML;
 		    ];
 	    }
 
+	    $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+
         if (isset($PLUGIN_HOOKS['metademands'])
             && $critMeta["type"] != 1
             && $critMeta["type"] != 2) {
