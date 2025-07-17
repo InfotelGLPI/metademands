@@ -399,6 +399,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 $parameters['metademands_id'],
                 true
             );
+            echo PluginMetademandsForm::showPublicFormsForUserMetademand(
+                $parameters['metademands_id'],
+            );
             echo "</div>";
 
             echo "<div id='divforms' class='tab-pane fade' role='tabpanel' aria-labelledby='divforms-tab'>";
@@ -1313,6 +1316,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
                         }
                         echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
+                        echo Html::hidden('is_private', ['value' => 1]);
                     }
                 }
             }

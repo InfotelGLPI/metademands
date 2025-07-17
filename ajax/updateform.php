@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -42,7 +43,6 @@ $form = new PluginMetademandsForm();
 use Glpi\Toolbox\Sanitizer;
 
 if (isset($_POST['save_model'])) {
-
     $form->getFromDB($_POST['plugin_metademands_forms_id']);
     if ($form->fields['is_model'] == 0) {
         $input = ['name' => $_POST['form_name'],
@@ -51,7 +51,8 @@ if (isset($_POST['save_model'])) {
             'items_id' => 0,
             'itemtype' => '',
             'date' => date('Y-m-d H:i:s'),
-            'is_model' => $_POST['is_model']];
+            'is_model' => $_POST['is_model'],
+            'is_private' => 0];
 
         if ($newid = $form->add($input)) {
             $KO = false;
@@ -61,21 +62,19 @@ if (isset($_POST['save_model'])) {
             $values = $form_values->find(['plugin_metademands_forms_id' => $_POST['plugin_metademands_forms_id']]);
 
             $input = [];
-//            if (isset($_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_filename'])) {
-//                $input['_filename'] = $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_filename'];
-//            }
-//            if (isset($_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_prefix_filename'])) {
-//                $input['_prefix_filename'] = $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_prefix_filename'];
-//            }
+            //            if (isset($_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_filename'])) {
+            //                $input['_filename'] = $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_filename'];
+            //            }
+            //            if (isset($_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_prefix_filename'])) {
+            //                $input['_prefix_filename'] = $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['fields']['files']['_prefix_filename'];
+            //            }
 
             foreach ($values as $value) {
-
                 $field = new PluginMetademandsField();
                 $field->getFromDB($value['plugin_metademands_fields_id']);
 
                 $fieldparameter            = new PluginMetademandsFieldParameter();
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['plugin_metademands_fields_id']])) {
-
                     if (isset($field->fields['type']) && $field->fields['type'] == 'textarea' && $fieldparameter->fields['use_richtext'] == 1) {
                         $form_value = new PluginMetademandsForm_Value();
                         $form_value->getFromDB($value['plugin_metademands_forms_id']);
@@ -87,7 +86,6 @@ if (isset($_POST['save_model'])) {
                             'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
                             'value' => $inputv,
                             'value2' => $value['value2']]);
-
                     } else {
                         $form_values->add(['plugin_metademands_forms_id' => $newid,
                             'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
@@ -98,7 +96,6 @@ if (isset($_POST['save_model'])) {
             }
         }
     } else {
-
         $input = ['name' => $_POST['form_name'],
             'plugin_metademands_metademands_id' => $form->fields['plugin_metademands_metademands_id'],
             'users_id' => $form->fields['users_id'],
@@ -106,6 +103,7 @@ if (isset($_POST['save_model'])) {
             'itemtype' => '',
             'date' => date('Y-m-d H:i:s'),
             'is_model' => 1,
+            'is_private' => 1,
             'id' => $_POST['plugin_metademands_forms_id']];
 
         $form->update($input);
@@ -118,7 +116,7 @@ if (isset($_POST['save_model'])) {
         $KO = false;
 
         if ($nblines == 0) {
-            if(isset($_POST['field'])){
+            if (isset($_POST['field'])) {
                 $post    =  $_POST['field'];
             }
 
@@ -129,15 +127,14 @@ if (isset($_POST['save_model'])) {
         $content = [];
 
         for ($i = 0; $i < $nblines; $i++) {
-
-//            if (Plugin::isPluginActive('orderfollowup')) {
-//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-//                    foreach ($freeinputs as $freeinput) {
-//                        $_POST['freeinputs'][] = $freeinput;
-//                    }
-//                }
-//            }
+            //            if (Plugin::isPluginActive('orderfollowup')) {
+            //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+            //                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+            //                    foreach ($freeinputs as $freeinput) {
+            //                        $_POST['freeinputs'][] = $freeinput;
+            //                    }
+            //                }
+            //            }
 
             if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
                 $freetables = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'];
@@ -149,7 +146,7 @@ if (isset($_POST['save_model'])) {
 
             $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
-            if(!isset($post) || !is_array($post)){
+            if (!isset($post) || !is_array($post)) {
                 $_POST['field'] = [];
             }
 
@@ -169,7 +166,7 @@ if (isset($_POST['save_model'])) {
 
                             if ($value['type'] == 'radio') {
                                 if (!isset($_POST['field'][$id])) {
-                                    $_POST['field'][$id] = NULL;
+                                    $_POST['field'][$id] = null;
                                 }
                             }
                             if ($value['type'] == 'checkbox') {
@@ -194,17 +191,14 @@ if (isset($_POST['save_model'])) {
                             if ($value['type'] == 'freetable'
                                 && isset($_POST['freetables'])
                                 && !empty($_POST['freetables'])) {
-
-                                if(!isset($_POST['field']) || !is_array($_POST['field'])){
+                                if (!isset($_POST['field']) || !is_array($_POST['field'])) {
                                     $_POST['field'] = [];
                                 }
                                 if (isset($_POST['freetables'][$_POST['metademands_id']][$id])) {
                                     $_POST['field'][$id] = $_POST['freetables'][$_POST['metademands_id']][$id];
                                 }
-
                             }
                         }
-
                     }
                 }
             }

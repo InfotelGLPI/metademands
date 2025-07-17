@@ -610,6 +610,7 @@ CREATE TABLE `glpi_plugin_metademands_forms`
     `date`                              timestamp    NOT NULL,
     `is_model`                          tinyint      NOT NULL                   DEFAULT '0',
     `resources_id`                      int unsigned NOT NULL                   DEFAULT '0',
+    `is_private`                        tinyint      NOT NULL                   DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
