@@ -1479,6 +1479,7 @@ JAVASCRIPT
         $field = new PluginMetademandsFieldOption();
         $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
         $already_used = [];
+	    $name = "check_value";
 
         switch ($params["item"]) {
             case 'ITILCategory_Metademands':
@@ -1486,7 +1487,6 @@ JAVASCRIPT
                 $metademand->getFromDB($params["plugin_metademands_metademands_id"]);
                 $values = json_decode($metademand->fields['itilcategories_id']);
 
-                $name = "check_value";
                 $opt = [
                     'name' => $name,
                     'right' => 'all',
@@ -1519,7 +1519,6 @@ JAVASCRIPT
                     //               if ($params['value'] == 'group') {
                     //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
                     //               } else {
-                    $name = "check_value";
                     //               }
                     $params['item']::Dropdown([
                         "name" => $name,
@@ -1562,7 +1561,7 @@ JAVASCRIPT
             echo __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
-                case 'ITILCategory_Metademands':
+				case 'ITILCategory_Metademands':
 
                     $pass = false;
                     if (isset($PLUGIN_HOOKS['metademands'])) {
