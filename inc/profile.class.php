@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -90,15 +91,18 @@ class PluginMetademandsProfile extends Profile
             $ID   = $item->getID();
             $prof = new self();
 
-            $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
-                       'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
-                       'plugin_metademands_updatemeta' => 1,
-                       'plugin_metademands_on_login' => 0,
-                       'plugin_metademands_in_menu' => 0,
-                        'plugin_metademands_createmeta' => 1,
-                        'plugin_metademands_validatemeta' => 1,
-                        'plugin_metademands_fillform' => 0,
-                        'plugin_metademands_cancelform' => 0];
+            $rights = [
+                'plugin_metademands' => 0,
+                'plugin_metademands_followup' => 0,
+                'plugin_metademands_updatemeta' => 0,
+                'plugin_metademands_on_login' => 0,
+                'plugin_metademands_in_menu' => 0,
+                'plugin_metademands_createmeta' => 0,
+                'plugin_metademands_validatemeta' => 0,
+                'plugin_metademands_fillform' => 0,
+                'plugin_metademands_cancelform' => 0,
+                'plugin_metademands_publicforms' => 0,
+            ];
 
             self::addDefaultProfileInfos($ID, $rights);
             $prof->showForm($ID);
@@ -130,8 +134,8 @@ class PluginMetademandsProfile extends Profile
         $rights = $this->getAllRights();
 
         $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-                                                      'default_class' => 'tab_bg_2',
-                                                      'title'         => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands')]);
+            'default_class' => 'tab_bg_2',
+            'title'         => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands')]);
 
         echo "<table class='tab_cadre_fixehov'>";
 
@@ -175,12 +179,20 @@ class PluginMetademandsProfile extends Profile
             'checked' => $effective_rights['plugin_metademands_cancelform']]);
         echo "</td></tr>\n";
 
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_publicforms']);
+        echo "<tr class='tab_bg_2'>";
+        echo "<td width='20%'>" . __('Define a private / public model', 'metademands') . "</td>";
+        echo "<td colspan='5'>";
+        Html::showCheckbox(['name'    => '_plugin_metademands_publicforms[1_0]',
+            'checked' => $effective_rights['plugin_metademands_publicforms']]);
+        echo "</td></tr>\n";
+
         echo "<tr class='tab_bg_2'>";
         echo "<td width='20%'>" . __('Right to update a meta-demand form from the ticket', 'metademands') . "</td>";
         echo "<td colspan='5'>";
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_updatemeta']);
         Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
-                            'checked' => $effective_rights['plugin_metademands_updatemeta']]);
+            'checked' => $effective_rights['plugin_metademands_updatemeta']]);
         echo "</td></tr>\n";
 
         echo "<tr class='tab_bg_2'>";
@@ -189,7 +201,7 @@ class PluginMetademandsProfile extends Profile
 
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_on_login']);
         echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>".__('Show form selection on connection and replace the create form', 'metademands')."</td>";
+        echo "<td width='20%'>" . __('Show form selection on connection and replace the create form', 'metademands') . "</td>";
         echo "<td colspan='5'>";
         Html::showCheckbox(['name'    => '_plugin_metademands_on_login[1_0]',
             'checked' => $effective_rights['plugin_metademands_on_login']]);
@@ -197,7 +209,7 @@ class PluginMetademandsProfile extends Profile
 
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_in_menu']);
         echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>".__('Hide button in menu', 'metademands')."</td>";
+        echo "<td width='20%'>" . __('Hide button in menu', 'metademands') . "</td>";
         echo "<td colspan='5'>";
         Html::showCheckbox(['name'    => '_plugin_metademands_in_menu[1_0]',
             'checked' => $effective_rights['plugin_metademands_in_menu']]);
@@ -226,45 +238,49 @@ class PluginMetademandsProfile extends Profile
     public static function getAllRights($all = false)
     {
         $rights = [
-           ['itemtype' => 'PluginMetademandsMetademand',
-            'label'    => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
-            'field'    => 'plugin_metademands'
-           ],
+            ['itemtype' => 'PluginMetademandsMetademand',
+                'label'    => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
+                'field'    => 'plugin_metademands',
+            ],
         ];
 
         $rights[] = ['itemtype' => 'PluginMetademandsInterticketfollowup',
-                     'label'    => _n('Inter ticket followup', 'Inter ticket followups', 2, 'metademands'),
-                     'field'    => 'plugin_metademands_followup'
+            'label'    => _n('Inter ticket followup', 'Inter ticket followups', 2, 'metademands'),
+            'field'    => 'plugin_metademands_followup',
         ];
 
         if ($all) {
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                 'label'    => __('Create a meta-demand', 'metademands'),
-                'field'    => 'plugin_metademands_createmeta'
+                'field'    => 'plugin_metademands_createmeta',
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                 'label'    => __('Validate a meta-demand', 'metademands'),
-                'field'    => 'plugin_metademands_validatemeta'
+                'field'    => 'plugin_metademands_validatemeta',
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsStepform',
                 'label'    => __('Fill out a form', 'metademands'),
-                'field'    => 'plugin_metademands_fillform'
+                'field'    => 'plugin_metademands_fillform',
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsStepform',
                 'label'    => __('Cancel / delete a form', 'metademands'),
-                'field'    => 'plugin_metademands_cancelform'
+                'field'    => 'plugin_metademands_cancelform',
+            ];
+            $rights[] = ['itemtype' => 'PluginMetademandsForm',
+                'label'    => __('Define a private / public model', 'metademands'),
+                'field'    => 'plugin_metademands_publicforms',
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
-                         'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
-                         'field'    => 'plugin_metademands_updatemeta'
+                'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
+                'field'    => 'plugin_metademands_updatemeta',
             ];
             $rights[] = ['itemtype'  => 'PluginMetademandsMetademand',
                 'label'     => __('Show form selection on connection and replace the create form', 'metademands'),
-                'field'     => 'plugin_metademands_on_login'
+                'field'     => 'plugin_metademands_on_login',
             ];
             $rights[] = ['itemtype'  => 'PluginMetademandsMetademand',
                 'label'     => __('Hide button in menu', 'metademands'),
-                'field'     => 'plugin_metademands_in_menu'
+                'field'     => 'plugin_metademands_in_menu',
             ];
         }
 
@@ -281,10 +297,10 @@ class PluginMetademandsProfile extends Profile
     {
         if ($interface == 'central') {
             $values = [CREATE => __('Create'),
-                       READ   => __('Read'),
-                       UPDATE => __('Update'),
-                       PURGE  => ['short' => __('Purge'),
-                                  'long'  => _x('button', 'Delete permanently')]];
+                READ   => __('Read'),
+                UPDATE => __('Update'),
+                PURGE  => ['short' => __('Purge'),
+                    'long'  => _x('button', 'Delete permanently')]];
         } else {
             $values = [READ => __('Read')];
         }
@@ -327,7 +343,7 @@ class PluginMetademandsProfile extends Profile
 
         $it = $DB->request([
             'FROM' => 'glpi_plugin_metademands_profiles',
-            'WHERE' => ['profiles_id' => $profiles_id]
+            'WHERE' => ['profiles_id' => $profiles_id],
         ]);
         foreach ($it as $profile_data) {
             $matching       = ['metademands' => 'plugin_metademands'];
@@ -336,7 +352,7 @@ class PluginMetademandsProfile extends Profile
                 if (!isset($current_rights[$old])) {
                     $DB->update('glpi_profilerights', ['rights' => self::translateARight($profile_data[$old])], [
                         'name'        => $new,
-                        'profiles_id' => $profiles_id
+                        'profiles_id' => $profiles_id,
                     ]);
                 }
             }
@@ -366,7 +382,7 @@ class PluginMetademandsProfile extends Profile
 
         $it = $DB->request([
             'SELECT' => ['id'],
-            'FROM' => 'glpi_profiles'
+            'FROM' => 'glpi_profiles',
         ]);
         foreach ($it as $prof) {
             self::migrateOneProfile($prof['id']);
@@ -376,8 +392,8 @@ class PluginMetademandsProfile extends Profile
             'FROM' => 'glpi_profilerights',
             'WHERE' => [
                 'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
-                'name' => ['LIKE', '%plugin_metademands%']
-            ]
+                'name' => ['LIKE', '%plugin_metademands%'],
+            ],
         ]);
         foreach ($it as $prof) {
             if (isset($_SESSION['glpiactiveprofile'])) {
@@ -392,14 +408,15 @@ class PluginMetademandsProfile extends Profile
     public static function createFirstAccess($profiles_id)
     {
         $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
-                   'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
-                   'plugin_metademands_updatemeta' => 1,
-                   'plugin_metademands_on_login' => 0,
-                   'plugin_metademands_in_menu' => 0,
+            'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
+            'plugin_metademands_updatemeta' => 1,
+            'plugin_metademands_on_login' => 0,
+            'plugin_metademands_in_menu' => 0,
             'plugin_metademands_createmeta' => 1,
             'plugin_metademands_validatemeta' => 1,
             'plugin_metademands_fillform' => 0,
-            'plugin_metademands_cancelform' => 0];
+            'plugin_metademands_cancelform' => 0,
+            'plugin_metademands_publicforms' => 0];
 
         self::addDefaultProfileInfos(
             $profiles_id,

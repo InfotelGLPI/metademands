@@ -231,6 +231,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
             $inputs['date'] = date('Y-m-d H:i:s');
             if (isset($_POST['is_model'])) {
                 $inputs['is_model'] = $_POST['is_model'];
+                $inputs['is_private'] = $_POST['is_private'];
             }
 
             if (isset($_POST['resources_id']) && $_POST['resources_id'] > 0) {

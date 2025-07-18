@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -32,8 +33,7 @@
  */
 class PluginMetademandsForm extends CommonDBTM
 {
-
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
 
     public function cleanDBonPurge()
@@ -48,12 +48,12 @@ class PluginMetademandsForm extends CommonDBTM
      *
      * @return string
      */
-    static function showFormsForUserMetademand($users_id, $plugin_metademands_metademands_id, $is_model = false)
+    public static function showFormsForUserMetademand($users_id, $plugin_metademands_metademands_id, $is_model = false)
     {
         $self = new self();
         $condition = [
             'users_id' => $users_id,
-            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
         ];
         if ($is_model == true) {
             $condition['is_model'] = 1;
@@ -89,7 +89,7 @@ class PluginMetademandsForm extends CommonDBTM
             $return .= Html::input('form_name', [
                 'maxlength' => 250,
                 'size' => 40,
-                'placeholder' => __('Form name', 'metademands')
+                'placeholder' => __('Form name', 'metademands'),
             ]);
             $return .= "<br>";
             $title = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
@@ -99,77 +99,43 @@ class PluginMetademandsForm extends CommonDBTM
                 'name' => 'save_form',
                 'form' => '',
                 'id' => 'FormAdd' . $rand,
-                'class' => 'btn btn-success btn-sm'
+                'class' => 'btn btn-success btn-sm',
             ]);
             $return .= "&nbsp;";
             $title = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
             $title .= _sx('button', 'Clean form', 'metademands');
             $return .= Html::submit($title, [
                 'name' => 'clean_form',
-                'class' => 'btn btn-warning btn-sm'
+                'class' => 'btn btn-warning btn-sm',
             ]);
             $return .= "<br>";
             $return .= "</td></tr>";
-            /*if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
-
-               $return .= "<div class='card-header'>";
-               $return .= __("Current form", 'metademands');
-               $return .= "</div>";
-               $return .= "<table class='tab_cadre_fixe'>";
-               $return .= "<tr class=''>";
-               $return .= "<td colspan='4' class='center'>";
-               $return .= Html::hidden('plugin_metademands_forms_id', ['value' => $form_id, 'id' => 'plugin_metademands_forms_id']);
-               $title  = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
-               $return .= Html::input('form_name', ['value'       => $formname,
-                                                    'maxlength'   => 250,
-                                                    'size'        => 20,
-                                                    'class'       => ' ',
-                                                    'placeholder' => __('Form name', 'metademands')]);
-               if($self->getFromDB($form_id)) {
-                   if ($self->fields['is_model'] == true) {
-                       $title .= _sx('button', 'Save model', 'metademands');
-                   } else {
-                       $title .= _sx('button', 'Save as model', 'metademands');
-                   }
-               }
-
-               $return .= "&nbsp;";
-
-
-               $return .= "<br>";
-               $return .= "</td></tr>";
-               $return .= "</table>";
-            }*/
         }
 
-        $return .= "<table class='tab_cadre_fixe'>";
-        //      $return .= "<tr class='tab_bg_1'><th colspan='4' class='center'>";
-        //      $return .= "<div class='card-header'>";
-        //      if ($is_model == true) {
-        //         $return .= __("Your models", 'metademands');
-        //      } else {
-        //         $return .= __("Your created forms", 'metademands');
-        //      }
-        //
-        //      $return .= "</div>";
-        $return .= "<p class='card-text'>";
-        //      $return .= "</th></tr>";
-        $return .= "<tbody id='bodyForm'>";
         if (count($forms) > 0) {
+            $return .= "<table class='tab_cadre_fixe'>";
+            $return .= "<tr class=''>";
+            $return .= "<th>";
+            $return .= __('Your private models', 'metademands');
+            $return .= "</th>";
+            $return .= "</tr>";
+            $return .= "<p class='card-text'>";
+            $return .= "<tbody id='bodyForm'>";
+
             foreach ($forms as $form) {
                 $return .= "<tr class=''>";
                 $meta = new PluginMetademandsMetademand();
                 $meta->getFromDB($form['plugin_metademands_metademands_id']);
                 $itemtype = $form['itemtype'];
 
-                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . " / ".Html::convDateTime($form['date'])."</td>";
+                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . " / " . Html::convDateTime($form['date']) . "</td>";
 
-                $content = __("Name")." : ".Toolbox::stripslashes_deep($form['name']);
-                $content .= "<br>".__("Date")." : ".Html::convDateTime($form['date']);
+                $content = __("Name") . " : " . Toolbox::stripslashes_deep($form['name']);
+                $content .= "<br>" . __("Date") . " : " . Html::convDateTime($form['date']);
                 if ($itemtype != null && getItemForItemtype($itemtype)) {
                     $item = new $itemtype();
                     if ($item->getFromDB($form['items_id'])) {
-                        $content .= "<br>".__("URL")." : ".$item->getLink();
+                        $content .= "<br>" . __("URL") . " : " . $item->getLink();
                     }
                 }
 
@@ -177,17 +143,38 @@ class PluginMetademandsForm extends CommonDBTM
                 $return .= Html::showToolTip($content, ['awesome-class' => 'fa-info-circle','display' => false]);
                 $return .= "</td>";
 
-                //            $return .= "<td><i class='".($form['is_model'] > 0 ? 'fas' : 'far')." fa-star fa-xs mark-default me-1'
-                //            title='".($form['is_model'] > 0 ? __('Used as model', 'metademands') : __('Mark as model', 'metademands'))."'
-                //            data-bs-toggle='tooltip' data-bs-placement='right' role='button'></i>";
-                //            $return .= "</td>";
+                $return .= "<td>";
+                if ($form['is_model'] == 1
+                    && Session::haveRight("plugin_metademands_publicforms", READ)) {
+                    if ($form['is_private'] == 1) {
+                        $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"changeVisibility(" . $form['id'] . ", 0)\">";
+                        $return .= "<i class='fas fa-1x fa-lock-open pointer' title='" . _sx(
+                            'button',
+                            'Define as public',
+                            'metademands'
+                        ) . "' 
+                           data-hasqtip='0' aria-hidden='true'></i>";
+                        $return .= "</button>";
+                    } else {
+                        $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"changeVisibility(" . $form['id'] . ", 1)\">";
+                        $return .= "<i class='fas fa-1x fa-lock pointer' title='" . _sx(
+                            'button',
+                            'Define as private',
+                            'metademands'
+                        ) . "' 
+                           data-hasqtip='0' aria-hidden='true'></i>";
+                        $return .= "</button>";
+                    }
+                }
+                $return .= "</td>";
+
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
                 $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
-                        'button',
-                        'Load form',
-                        'metademands'
-                    ) . "' 
+                    'button',
+                    'Load form',
+                    'metademands'
+                ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                 $return .= "</button>";
                 $return .= "</td>";
@@ -196,10 +183,10 @@ class PluginMetademandsForm extends CommonDBTM
                         $return .= "<td>";
                         $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateForm(" . $form['id'] . ", '" . $form['name'] . "')\">";
                         $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
-                                'button',
-                                'Save model',
-                                'metademands'
-                            ) . "' 
+                            'button',
+                            'Save model',
+                            'metademands'
+                        ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                         $return .= "</button>";
                         $return .= "</td>";
@@ -208,26 +195,21 @@ class PluginMetademandsForm extends CommonDBTM
                     $return .= "<td>";
                     $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
                     $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx(
-                            'button',
-                            'Delete form',
-                            'metademands'
-                        ) . "' 
+                        'button',
+                        'Delete form',
+                        'metademands'
+                    ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                     $return .= "</button>";
                     $return .= "</td>";
                 }
                 $return .= "</tr>";
             }
-        } else {
-            $return .= "<tr class=''>";
-            $return .= "<td>";
-            $return .= __("No existing forms founded", 'metademands');
-            $return .= "</td>";
-            $return .= "</tr>";
+            $return .= "</tbody>";
+            $return .= "</table>";
+            $return .= "</p>";
         }
-        $return .= "</tbody>";
-        $return .= "</table>";
-        $return .= "</p>";
+
         if ($is_model == true) {
             $return .= "<script>
                        var meta_id = {$plugin_metademands_metademands_id};
@@ -324,6 +306,37 @@ class PluginMetademandsForm extends CommonDBTM
                                 });
                           };
                         </script>";
+            $return .= "<script>
+                          function changeVisibility(form_id, is_private) {
+    
+                             if(typeof tinyMCE !== 'undefined'){
+                                tinyMCE.triggerSave();
+                             }
+                             jQuery('.resume_builder_input').trigger('change');
+                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                             $('#ajax_loader').show();
+                             arrayDatas = $('#wizard_form').serializeArray();
+                             arrayDatas.push({name: \"save_model\", value: true});
+                             arrayDatas.push({name: \"is_model\", value: 1});
+                             arrayDatas.push({name: \"is_private\", value: is_private});
+                             arrayDatas.push({name: \"plugin_metademands_forms_id\", value: form_id});
+
+                             $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/visibility.php',
+                                   type: 'POST',
+                                   data: arrayDatas,
+                                   success: function(response){
+                                        $('#ajax_loader').hide();
+                                       document.location.reload();
+                                    },
+                                   error: function(xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                    }
+                                });
+                          };
+                        </script>";
         }
         $itilcategories_id = 0 ;
         if (isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
@@ -366,6 +379,113 @@ class PluginMetademandsForm extends CommonDBTM
         return $return;
     }
 
+
+    /**
+     * @param $users_id
+     * @param $plugin_metademands_metademands_id
+     *
+     * @return string
+     */
+    public static function showPublicFormsForUserMetademand($plugin_metademands_metademands_id)
+    {
+        $self = new self();
+        $condition = [
+            'is_model' => 1,
+            'is_private' => 0,
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
+        ];
+        $forms = $self->find($condition, ['date DESC'], 20);
+
+        $return = "<span class=''>";
+
+        if (count($forms) > 0) {
+            $return .= "<table class='tab_cadre_fixe'>";
+            $return .= "<tr class=''>";
+            $return .= "<th>";
+            $return .= __('Public models', 'metademands');
+            $return .= "</th>";
+            $return .= "</tr>";
+            $return .= "<p class='card-text'>";
+            $return .= "<tbody id='bodyForm'>";
+
+            foreach ($forms as $form) {
+                $return .= "<tr class=''>";
+                $meta = new PluginMetademandsMetademand();
+                $meta->getFromDB($form['plugin_metademands_metademands_id']);
+                $itemtype = $form['itemtype'];
+
+                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . "</td>";
+
+                $content = __("Name") . " : " . Toolbox::stripslashes_deep($form['name']);
+                $content .= "<br>" . __("Date") . " : " . Html::convDateTime($form['date']);
+                $content .= "<br>" . __('Created by', 'metademands') . " : " . getUserName($form['users_id']);
+                if ($itemtype != null && getItemForItemtype($itemtype)) {
+                    $item = new $itemtype();
+                    if ($item->getFromDB($form['items_id'])) {
+                        $content .= "<br>" . __("URL") . " : " . $item->getLink();
+                    }
+                }
+
+                $return .= "<td>";
+                $return .= Html::showToolTip($content, ['awesome-class' => 'fa-info-circle','display' => false]);
+                $return .= "</td>";
+
+                $return .= "<td>";
+                $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
+                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
+                    'button',
+                    'Load form',
+                    'metademands'
+                ) . "' 
+                           data-hasqtip='0' aria-hidden='true'></i>";
+                $return .= "</button>";
+                $return .= "</td>";
+
+                $return .= "</tr>";
+            }
+
+            $return .= "</tbody>";
+            $return .= "</table>";
+            $return .= "</p>";
+        }
+
+        $itilcategories_id = 0 ;
+        if (isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+            $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+            if (is_array($cats) && count($cats) == 1) {
+                $itilcategories_id = $cats[0];
+            }
+        }
+        $step = PluginMetademandsMetademand::STEP_SHOW;
+        $return .= "<script>
+                      var meta_id = {$plugin_metademands_metademands_id};
+                      var step = {$step};
+                      var itilcategories_id = {$itilcategories_id};
+                      function loadForm(form_id) {
+                         $('#ajax_loader').show();
+                         var data_send = $('#wizard_form').serializeArray();
+                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
+                          $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
+                                type: 'POST',
+                                data: data_send,
+                                success: function(response){
+                                    $('#ajax_loader').hide();
+                                    if (response == 1) {
+                                       document.location.reload();
+                                    } else {
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=' + itilcategories_id + '&metademands_id=' + meta_id + '&step=' + step;
+                                    }
+                                 }
+                             });
+                       };
+                     </script>";
+
+        $return .= "</span>";
+
+        return $return;
+    }
+
     /**
      * Display tab for each itel object
      *
@@ -374,7 +494,7 @@ class PluginMetademandsForm extends CommonDBTM
      *
      * @return array|string
      */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if (($item->getType() == 'Ticket' && $_SESSION['glpiactiveprofile']['interface'] == 'helpdesk')
             || $item->getType() == 'Problem'
@@ -383,7 +503,7 @@ class PluginMetademandsForm extends CommonDBTM
                 && !$withtemplate
                 && countElementsInTable("glpi_plugin_metademands_forms", [
                     "itemtype" => $item->getType(),
-                    "items_id" => $item->fields['id']
+                    "items_id" => $item->fields['id'],
                 ])) {
                 $form_metademand_data = $this->find(
                     ['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]
@@ -425,7 +545,7 @@ class PluginMetademandsForm extends CommonDBTM
      * @return bool|true
      * @throws \GlpitestSQLError
      */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
         $form = new self();
 
@@ -449,7 +569,7 @@ class PluginMetademandsForm extends CommonDBTM
      * @return bool
      * @throws \GlpitestSQLError
      */
-    function showFormsForItilObject($item)
+    public function showFormsForItilObject($item)
     {
         if (!$this->canView()) {
             return false;
@@ -457,7 +577,7 @@ class PluginMetademandsForm extends CommonDBTM
         $form_metademand_data = $this->find([
             'itemtype' => $item->getType(),
             'items_id' => $item->fields['id'],
-            'is_model' => 0
+            'is_model' => 0,
         ], ['date DESC']);
 
         if (count($form_metademand_data)) {
@@ -484,7 +604,7 @@ class PluginMetademandsForm extends CommonDBTM
                 $meta = new PluginMetademandsMetademand();
                 $meta->getFromDB($plugin_metademands_metademands_id);
                 echo $meta->getName();
-//            echo $form_metademand_fields['name'];
+                //            echo $form_metademand_fields['name'];
                 echo "</td>";
 
                 echo "<td>";
@@ -499,10 +619,10 @@ class PluginMetademandsForm extends CommonDBTM
                 $rand = mt_rand();
                 echo "<button form='' class='submit btn btn-info btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
                 echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx(
-                        'button',
-                        'Load form',
-                        'metademands'
-                    ) . "' 
+                    'button',
+                    'Load form',
+                    'metademands'
+                ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                 echo "</button>";
                 $step = PluginMetademandsMetademand::STEP_SHOW;
@@ -548,14 +668,14 @@ class PluginMetademandsForm extends CommonDBTM
      * @return bool
      * @throws \GlpitestSQLError
      */
-    function showFormsForUser($user)
+    public function showFormsForUser($user)
     {
         if (!$this->canView()) {
             return false;
         }
         $forms_metademands = $this->find([
             'users_id' => $user->fields['id'],
-            'is_model' => 0
+            'is_model' => 0,
         ], ['date DESC']);
 
         if (count($forms_metademands)) {
@@ -590,10 +710,10 @@ class PluginMetademandsForm extends CommonDBTM
                 $rand = mt_rand();
                 echo "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm$rand(" . $forms_metademand['id'] . ", " . $forms_metademand['plugin_metademands_metademands_id'] . ")\">";
                 echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx(
-                        'button',
-                        'Load form',
-                        'metademands'
-                    ) . "'
+                    'button',
+                    'Load form',
+                    'metademands'
+                ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 echo "</button>";
                 $step = 2;

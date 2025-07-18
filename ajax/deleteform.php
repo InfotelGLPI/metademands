@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -42,35 +43,33 @@ $values = new PluginMetademandsForm_Value();
 $values->deleteByCriteria(['plugin_metademands_forms_id' => $form_id]);
 
 $forms = $self->find(['users_id'                          => $users_id,
-                       'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
-                      'is_model' => 1]);
-if($_POST['self_delete'] == true){
-   unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id']);
-   unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name']);
+    'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
+    'is_model' => 1]);
+if ($_POST['self_delete'] == true) {
+    unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id']);
+    unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name']);
 }
 $return = "";
 if (count($forms) > 0) {
-   foreach ($forms as $form) {
-      $return .= "<tr class='tab_bg_1'>";
-      $return .= "<td>" . Toolbox::stripslashes_deep($form['name']) . "</td>";
-      $return .= "<td>" . Html::convDateTime($form['date']) . "</td>";
-      $return .= "<td>";
-      $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
-      $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
+    foreach ($forms as $form) {
+        $return .= "<tr class='tab_bg_1'>";
+        $return .= "<td>" . Toolbox::stripslashes_deep($form['name']) . "</td>";
+        $return .= "<td>" . Html::convDateTime($form['date']) . "</td>";
+        $return .= "<td>";
+        $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
+        $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
-      $return .= "</button>";
-      $return .= "</td>";
-      $return .= "<td>";
-      $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
-      $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "'
+        $return .= "</button>";
+        $return .= "</td>";
+        $return .= "<td>";
+        $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
+        $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
-      $return .= "</button>";
-      $return .= "</tr>";
-   }
+        $return .= "</button>";
+        $return .= "</tr>";
+    }
 } else {
-   $return .= "<tr class='tab_bg_1'><td colspan='4' class='center'>" . __("No existing forms founded", 'metademands') . "</td></tr>";
+    $return .= "<tr class='tab_bg_1'><td colspan='4' class='center'>" . __("No existing forms founded", 'metademands') . "</td></tr>";
 }
 
 echo $return;
-
-
