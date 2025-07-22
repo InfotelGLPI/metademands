@@ -178,7 +178,8 @@ if ($nofreetable == false) {
                 }
             }
 
-            if (isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fdrpi'])) {
+            if (Plugin::isPluginActive('fdrpi') &&
+                isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fdrpi'])) {
                 $fdrpis = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fdrpi'];
                 foreach ($fdrpis as $fdrpi) {
                     $_POST['field'][] = $fdrpi;
