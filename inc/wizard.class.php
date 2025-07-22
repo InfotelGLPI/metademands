@@ -447,6 +447,7 @@ class PluginMetademandsWizard extends CommonDBTM
             'meta_type' => '',
             'block_id' => 0,
             'itilcategories_id' => 0,
+	           'defaultValues' => [],
         ];
 
         // if given parameters, override defaults
@@ -1236,7 +1237,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $seeform = false,
         $block = 0
     ) {
-        $parameters = ['itilcategories_id' => 0];
+        $parameters = ['itilcategories_id' => 0, 'defaultValues' => []];
 
         // if given parameters, override defaults
         foreach ($options as $key => $value) {
@@ -1267,6 +1268,11 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($data as $form_metademands_id => $line) {
 
                         $fields = $line['form'];
+                        foreach ($fields as $fid => $field) {
+				                        if(isset($parameters['defaultValues'][$fid])) {
+					                           $fields[$fid]['value'] = $parameters['defaultValues'][$fid];
+				                        }
+			                     }
                         if ($block > 0) {
                             $fieldsbyblock = [];
                             foreach ($fields as $fid => $field) {
