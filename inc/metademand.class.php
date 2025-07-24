@@ -188,7 +188,8 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
                 if (count($tickets_found) > 0
                     && $item->getType() == 'Ticket'
-                    && $this->canView()) {
+                    && $this->canView()
+                ) {
                     $name = __('Demand Progression', 'metademands');
                     return self::createTabEntry(
                         $name,
@@ -8561,6 +8562,7 @@ HTML;
 
         $critMeta = [];
         $critCategory = [];
+
         if ($metademand->fields['object_to_create'] == 'Ticket') {
             if ($metademand->fields['type']) {
                 switch ($metademand->fields['type']) {
@@ -8613,6 +8615,7 @@ HTML;
                 'id' => $id,
             ],
         ];
+
         $metademands = $dbu->getAllDataFromTable(self::getTable(), $critMeta);
 
         $usedCategories = [];
@@ -8625,16 +8628,18 @@ HTML;
             }
         }
 
-        $usedCategories = array_unique($usedCategories);
-        if (count($usedCategories) > 0) {
-            $critCategory += [
-                'NOT' => [
-                    'id' => $usedCategories,
-                ],
-            ];
+        if (!isset($resultat['critcategory']['use_custom_cat'])) {
+            $usedCategories = array_unique($usedCategories);
+            if (count($usedCategories) > 0) {
+                $critCategory += [
+                    'NOT' => [
+                        'id' => $usedCategories,
+                    ],
+                ];
+            }
+            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         }
 
-        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         if (isset($PLUGIN_HOOKS['metademands'])
             && $critMeta["type"] != 1
             && $critMeta["type"] != 2) {

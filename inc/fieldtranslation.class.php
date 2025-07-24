@@ -60,6 +60,18 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
    static function getIcon() {
       return PluginMetademandsMetademand::getIcon();
    }
+
+    public static function canCreate()
+    {
+        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+
+    public function canCreateItem()
+    {
+        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
    /**
     * Get the standard massive actions which are forbidden
     *

@@ -177,6 +177,14 @@ if ($nofreetable == false) {
                     $_POST['field'][] = $freetable;
                 }
             }
+
+            if (Plugin::isPluginActive('fdrpi') &&
+                isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fdrpi'])) {
+                $fdrpis = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fdrpi'];
+                foreach ($fdrpis as $fdrpi) {
+                    $_POST['field'][] = $fdrpi;
+                }
+            }
             if (count($meta) == 1) {
                 $orderprojects->createFromMetademands($_POST);
                 Html::back();

@@ -394,10 +394,9 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "<div class='tab-content' id='myTabContent'>";
 
             echo "<div id='divformmodels' class='tab-pane fade show active' role='tabpanel' aria-labelledby='divformmodels-tab'>";
-            echo PluginMetademandsForm::showFormsForUserMetademand(
+            echo PluginMetademandsForm::showPrivateFormsForUserMetademand(
                 Session::getLoginUserID(),
-                $parameters['metademands_id'],
-                true
+                $parameters['metademands_id']
             );
             echo PluginMetademandsForm::showPublicFormsForUserMetademand(
                 $parameters['metademands_id'],
@@ -407,8 +406,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "<div id='divforms' class='tab-pane fade' role='tabpanel' aria-labelledby='divforms-tab'>";
             echo PluginMetademandsForm::showFormsForUserMetademand(
                 Session::getLoginUserID(),
-                $parameters['metademands_id'],
-                false
+                $parameters['metademands_id']
             );
             echo "</div>";
 
