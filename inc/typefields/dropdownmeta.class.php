@@ -102,9 +102,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                 $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
                                 $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
 
-//                        $field .= '
-//<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
-//data-capacity-checkbox="1"  data-is-used="0" checked="">';
+                                //                        $field .= '
+                                //<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
+                                //data-capacity-checkbox="1"  data-is-used="0" checked="">';
 
                                 $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
 
@@ -122,13 +122,13 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
                                 $field .= "<div class='text-start'>";
                                 $field .= "<div class='d-flex align-items-center'>";
-//                        $field .= "<div class='fw-bold'>";
+                                //                        $field .= "<div class='fw-bold'>";
 
                                 if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
                                     $name = $label['name'];
                                 }
                                 $field .= $name;
-//                        $field .= "</div>";
+                                //                        $field .= "</div>";
                                 $field .= "</div>";
                                 $field .= "<small class='form-hint'>";
                                 if (isset($label['comment']) && !empty($label['comment'])) {
@@ -1482,7 +1482,7 @@ JAVASCRIPT
 
         switch ($params["item"]) {
             case 'urgency':
-                Ticket::dropdownUrgency(["name" => $name,'value' =>$params['check_value']]);
+                Ticket::dropdownUrgency(["name" => $name,'value' => $params['check_value']]);
 
                 break;
             case 'ITILCategory_Metademands':
@@ -2060,9 +2060,9 @@ JAVASCRIPT
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+                                                    $metaid,
+                                                    $childs
+                                                );
                                             }
                                         }
                                     }
