@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-23 07:05+0000\n"
+"POT-Creation-Date: 2025-07-24 09:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -928,7 +928,7 @@ msgstr ""
 #: inc/fieldoption.class.php:1946 inc/wizard.class.php:1446
 #: inc/wizard.class.php:1599 inc/typefields/basket.class.php:813
 #: inc/typefields/checkbox.class.php:680 inc/typefields/dropdown.class.php:683
-#: inc/typefields/dropdownmeta.class.php:1752
+#: inc/typefields/dropdownmeta.class.php:1758
 #: inc/typefields/dropdownmultiple.class.php:1107
 #: inc/typefields/dropdownmultiple.class.php:1244
 #: inc/typefields/dropdownobject.class.php:1032
@@ -946,7 +946,7 @@ msgstr ""
 #: inc/wizard.class.php:1609 inc/wizard.class.php:2112
 #: inc/typefields/basket.class.php:815 inc/typefields/checkbox.class.php:682
 #: inc/typefields/dropdown.class.php:684
-#: inc/typefields/dropdownmeta.class.php:1754
+#: inc/typefields/dropdownmeta.class.php:1760
 #: inc/typefields/dropdownmultiple.class.php:1109
 #: inc/typefields/dropdownmultiple.class.php:1246
 #: inc/typefields/dropdownobject.class.php:1033
@@ -2133,9 +2133,9 @@ msgstr ""
 #: inc/typefields/basket.class.php:545 inc/typefields/checkbox.class.php:467
 #: inc/typefields/checkbox.class.php:480 inc/typefields/dropdown.class.php:479
 #: inc/typefields/dropdown.class.php:515
-#: inc/typefields/dropdownmeta.class.php:1531
-#: inc/typefields/dropdownmeta.class.php:1541
-#: inc/typefields/dropdownmeta.class.php:1562
+#: inc/typefields/dropdownmeta.class.php:1534
+#: inc/typefields/dropdownmeta.class.php:1544
+#: inc/typefields/dropdownmeta.class.php:1565
 #: inc/typefields/dropdownmultiple.class.php:856
 #: inc/typefields/dropdownobject.class.php:819
 #: inc/typefields/dropdownobject.class.php:822
