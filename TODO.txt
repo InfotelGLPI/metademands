@@ -10,3 +10,8 @@ Field add is_active
 Ajouter option pour afficher le detail du lieu dans le ticket créé
 Ajouter des modèles globaux
 Clic sur onglet pour avancer ou reculer dans le formulaire ?
+ajouter onglet 'Tous'
+
+bug :
+obligation table libre si cachée
+

@@ -188,7 +188,8 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
                 if (count($tickets_found) > 0
                     && $item->getType() == 'Ticket'
-                    && $this->canView()) {
+                    && $this->canView()
+                ) {
                     $name = __('Demand Progression', 'metademands');
                     return self::createTabEntry(
                         $name,
