@@ -785,10 +785,14 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                 if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
                     uneValeurSaisie = true;
                 }
+            } else if (
+                (input.tagName === 'TEXTAREA') &&
+                input.type !== 'checkbox' &&
+                input.type !== 'radio' &&
+                input.value.trim() !== ''
+            ) {
+                uneValeurSaisie = true;
             }
-            // else if (input.value.trim() !== '') {
-            //     uneValeurSaisie = true;
-            // }
         });
 
         if (!uneValeurSaisie) {
