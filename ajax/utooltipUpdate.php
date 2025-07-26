@@ -29,27 +29,35 @@
 
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
-   include('../../../inc/includes.php');
-   header("Content-Type: text/html; charset=UTF-8");
-   Html::header_nocache();
+    include('../../../inc/includes.php');
+    header("Content-Type: text/html; charset=UTF-8");
+    Html::header_nocache();
 }
 
 Session::checkLoginUser();
+$fieldUser = new PluginMetademandsField();
 
 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']]) && !isset($_POST['value'])) {
-   $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
+    $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
 }
 
+$content = " ";
 $user = new User();
 if (isset($_POST['value']) && $_POST["value"] > 0) {
-   $id = $_POST['id_fielduser'];
-   if ($user->getFromDB($_POST["value"])) {
-      $opt = ['applyto' => $id,
 
-      ];
-      $content = PluginMetademandsWizard::showUserInformations($user);
-      Html::showToolTip($content, ['display' => false]);
-   }
+    $user_id = $_POST['value'];
+    $field_id = $_POST['id_fielduser'];
+    $user_tooltip = new User();
+    if ($user_id > 0 && $user_tooltip->getFromDB($user_id)) {
+        $display = "alert-info";
+        $color = "#000";
+        $class = "class='alert $display alert-dismissible fade show informations'";
+        echo "<br><br><div $class style='display:flex;align-items: center;'>";
+        echo "<div style='color: $color;'>";
+        PluginMetademandsWizard::showUserInformations($user_tooltip);
+        echo "</div>";
+        echo "</div>";
+    }
 }
 
 $_POST['name'] = "tooltip_user";

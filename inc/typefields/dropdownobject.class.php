@@ -66,28 +66,31 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $field    = "";
 
                 if ($on_order == false) {
-                    $paramstooltip
-                        = ['value'          => '__VALUE__',
+                    if ($data['display_type'] == 1) {
+                        $paramstooltip
+                            = ['value'          => '__VALUE__',
                             'id_fielduser'   => $data['id'],
+                            'display_type' => $data['display_type'],
                             'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                    $toupdate[] = ['value_fieldname'
-                    => 'value',
-                        'id_fielduser' => $data['id'],
-                        'to_update'    => "tooltip_user" . $data['id'],
-                        'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
-                        'moreparams'   => $paramstooltip];
+                        $toupdate[] = ['value_fieldname'
+                        => 'value',
+                            'id_fielduser' => $data['id'],
+                            'to_update'    => "tooltip_user" . $data['id'],
+                            'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
+                            'moreparams'   => $paramstooltip];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
-                        "tooltip_user" . $data['id'],
-                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
-                        $paramstooltip,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
-                    );
-                    echo "});</script>";
+                        echo "<script type='text/javascript'>";
+                        echo "$(function() {";
+                        Ajax::updateItemJsCode(
+                            "tooltip_user" . $data['id'],
+                            PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
+                            $paramstooltip,
+                            $namefield . "[" . $data['id'] . "]",
+                            false
+                        );
+                        echo "});</script>";
+                    }
                 }
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramsloc
@@ -300,7 +303,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 }
 
                 if ($data['link_to_user'] > 0) {
-
                     echo "<div id='manager_user" . $data['link_to_user'] . "' class=\"input-group\">";
                     $fieldUser             = new PluginMetademandsField();
                     $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
@@ -327,6 +329,23 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 echo User::dropdown($opt);
                 if ($opt['readonly']) {
                     echo Html::hidden($opt['name'], ['value' => $opt['value']]);
+                }
+                if ($data['display_type'] == 1) {
+                    $user_id = $opt['value'];
+                    $field_id = $data['id'];
+                    echo "<span id='tooltip_user$field_id'>";
+                    $user_tooltip = new User();
+                    if ($user_id > 0 && $user_tooltip->getFromDB($user_id)) {
+                        $display = "alert-info";
+                        $color = "#000";
+                        $class = "class='alert $display alert-dismissible fade show informations'";
+                        echo "<br><br><div $class style='display:flex;align-items: center;'>";
+                        echo "<div style='color: $color;'>";
+                        PluginMetademandsWizard::showUserInformations($user_tooltip);
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</span>";
+                    }
                 }
                 if ($data['link_to_user'] > 0) {
                     echo "</div>";
@@ -360,7 +379,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         field{$textField['id']}.val(response[{$f['used_by_ticket']}] ?? '');
                         field{$textField['id']}.trigger('input');
                         ";
-
                                 }
                             }
                         }
@@ -389,7 +407,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $_POST['field'] = $namefield . "[" . $data['id'] . "]";
 
                 if ($data['link_to_user'] > 0) {
-
                     $fieldparameter            = new PluginMetademandsFieldParameter();
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['link_to_user']])) {
                         $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
@@ -555,13 +572,14 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         echo $field;
     }
 
-    public static function showFieldCustomValues($values) {}
+    public static function showFieldCustomValues($values)
+    {
+    }
 
     public static function showFieldParameters($params)
     {
 
         if ($params['item'] == 'User') {
-
             $custom_values = PluginMetademandsFieldParameter::_unserialize($params['custom_values']);
             $user_group = $custom_values['user_group'] ?? 0;
 
@@ -584,7 +602,12 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             }
             Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
             echo "</td>";
-            echo "<td colspan='2'></td>";
+            echo "<td>";
+            echo __('Show a identity card of user', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('display_type', $params['display_type']);
+            echo "</td>";
             echo "</tr>";
 
             echo "<tr class='tab_bg_1'>";
@@ -655,9 +678,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 'multiple' => true,
             ]);
             echo "</tr>";
-
         } elseif ($params["item"] == "Group") {
-
             echo "<tr class='tab_bg_1'>";
             echo "<td>";
             echo __('Link this to a user field', 'metademands');
@@ -730,7 +751,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
             echo "</tr>";
         }
-
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
@@ -944,7 +964,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
-
             //Si la valeur est en session
             if (isset($data['value'])) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
@@ -1050,8 +1069,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             $script .= "var tohide = {};";
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-
-
                     $script .= "if ($tasks_id in tohide) {
                         } else {
                             tohide[$tasks_id] = true;
@@ -1333,8 +1350,10 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
                                 foreach ($childs_blocks as $childs) {
-                                    $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]);
+                                    $options = getAllDataFromTable(
+                                        'glpi_plugin_metademands_fieldoptions',
+                                        ['hidden_block' => $childs]
+                                    );
                                     if (count($options) == 0) {
                                         $script .= "if (document.getElementById('ablock" . $childs . "'))
                                              document.getElementById('ablock" . $childs . "').style.display = 'block';
