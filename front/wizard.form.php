@@ -317,7 +317,8 @@ if (isset($_POST['add_to_basket'])) {
         'ancestor_tickets_id' => $_GET['ancestor_tickets_id'],
         'resources_id' => $_GET['resources_id'],
         'resources_step' => $_GET['resources_step'],
-        'itilcategories_id' => $itilcategories_id
+        'itilcategories_id' => $itilcategories_id,
+	'defaultValues' =>  Glpi\Toolbox\Sanitizer::sanitize($_GET['field'] ?? [], true),
     ];
 
     if (isset($_GET['see_form']) && $_GET['see_form'] > 0) {
