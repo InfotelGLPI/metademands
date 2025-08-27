@@ -121,11 +121,7 @@ if ($nofreetable == false) {
         $metademands->getFromDB($_POST['form_metademands_id']);
 
         if ($metademands->fields['is_basket'] == 1) {
-            if (Plugin::isPluginActive('orderfollowup')) {
-                echo PluginOrderfollowupFreeinput::displayBasketSummary($post);
-            } else {
-                echo PluginMetademandsBasket::displayBasketSummary($post);
-            }
+            echo PluginMetademandsBasket::displayBasketSummary($post);
         }
 
 
