@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-26 11:02+0000\n"
+"POT-Creation-Date: 2025-08-27 09:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,7 +67,7 @@ msgstr[1] ""
 msgid "Draft name is required"
 msgstr ""
 
-#: ajax/addform.php:174 ajax/createmetademands.php:331
+#: ajax/addform.php:174 ajax/createmetademands.php:327
 #, php-format
 msgid "There is no line on the mandatory table %s"
 msgstr ""
@@ -76,21 +76,21 @@ msgstr ""
 msgid "Form name is required"
 msgstr ""
 
-#: ajax/createmetademands.php:220
+#: ajax/createmetademands.php:216
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:59 inc/draft.class.php:222
+#: ajax/deletedraft.php:59 inc/draft.class.php:221
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:65 inc/draft.class.php:247
+#: ajax/deletedraft.php:65 inc/draft.class.php:246
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:71 front/draft.form.php:26 inc/draft.class.php:257
+#: ajax/deletedraft.php:71 front/draft.form.php:26 inc/draft.class.php:256
 msgid "No draft available for this form"
 msgstr ""
 
@@ -186,16 +186,16 @@ msgid "Please activate the plugin"
 msgstr ""
 
 #: front/draft.form.php:11 front/draft.php:8 front/draftcreation.php:57
-#: inc/draft.class.php:206 inc/wizard.class.php:379
+#: inc/draft.class.php:205 inc/wizard.class.php:379
 msgid "Your drafts"
 msgstr ""
 
-#: front/draft.php:11 front/draftcreation.php:59 inc/draft.class.php:170
+#: front/draft.php:11 front/draftcreation.php:59 inc/draft.class.php:169
 msgid "New draft"
 msgstr ""
 
-#: front/draftcreation.php:60 inc/draft.class.php:180 inc/draft.class.php:627
-#: inc/draft.class.php:634
+#: front/draftcreation.php:60 inc/draft.class.php:179 inc/draft.class.php:626
+#: inc/draft.class.php:633
 msgid "Draft name"
 msgstr ""
 
@@ -566,22 +566,22 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: inc/draft.class.php:184 inc/draft.class.php:556 inc/draft.class.php:638
+#: inc/draft.class.php:183 inc/draft.class.php:555 inc/draft.class.php:637
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:193 inc/form.class.php:207
+#: inc/draft.class.php:192 inc/form.class.php:207
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: inc/draft.class.php:235
+#: inc/draft.class.php:234
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:569 inc/wizard.class.php:2222
+#: inc/draft.class.php:568 inc/wizard.class.php:2222
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
