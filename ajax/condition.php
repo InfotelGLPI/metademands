@@ -39,7 +39,8 @@ use Glpi\RichText\RichText;
 
 $predicate = '';
 
-if (isset($_POST['metademands_id']) && $_POST['field']) {
+if (isset($_POST['metademands_id'])
+    && isset($_POST['field'])) {
     $fields = $_POST['field'];
 
     $tab = PluginMetademandsCondition::conditionsTab($_POST['metademands_id']);

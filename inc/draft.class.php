@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -32,11 +33,10 @@
  */
 class PluginMetademandsDraft extends CommonDBTM
 {
+    public const DEFAULT_MODE = 1;
+    public const BASKET_MODE = 2;
 
-    const DEFAULT_MODE = 1;
-    const BASKET_MODE = 2;
-
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
 
     public static function getIcon()
@@ -44,7 +44,7 @@ class PluginMetademandsDraft extends CommonDBTM
         return "fa-regular fa-copy";
     }
 
-    static function getMenuContent()
+    public static function getMenuContent()
     {
         $menu['title'] = self::getMenuName(2);
         $menu['page'] = self::getSearchURL(false);
@@ -61,12 +61,12 @@ class PluginMetademandsDraft extends CommonDBTM
      *
      * @return int|void
      */
-    static function countDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
+    public static function countDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
     {
         $self = new self();
         $drafts = $self->find([
             'users_id' => $users_id,
-            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
         ]);
 
         return count($drafts);
@@ -78,7 +78,7 @@ class PluginMetademandsDraft extends CommonDBTM
         $temp->deleteByCriteria(['plugin_metademands_drafts_id' => $this->fields['id']]);
     }
 
-    function rawSearchOptions()
+    public function rawSearchOptions()
     {
         $tab = [];
 
@@ -88,7 +88,7 @@ class PluginMetademandsDraft extends CommonDBTM
             'field' => 'id',
             'name' => __('ID'),
             'massiveaction' => false,
-            'datatype' => 'number'
+            'datatype' => 'number',
         ];
 
         $tab[] = [
@@ -127,12 +127,12 @@ class PluginMetademandsDraft extends CommonDBTM
      *
      * @return string
      */
-    static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
+    public static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
     {
         $self = new self();
         $drafts = $self->find([
             'users_id' => $users_id,
-            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
         ]);
         $return = "<span class=''>";//draft
 
@@ -153,7 +153,6 @@ class PluginMetademandsDraft extends CommonDBTM
                           $(this).attr(\"clicked\", \"true\");
                       });
                         "
-
         );
         if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) {
             $draftname = Html::cleanInputText(
@@ -177,7 +176,7 @@ class PluginMetademandsDraft extends CommonDBTM
             'value' => '',
             'maxlength' => 250,
             'size' => 40,
-            'placeholder' => __('Draft name', 'metademands')
+            'placeholder' => __('Draft name', 'metademands'),
         ]);
         $return .= "<br>";
         $title = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
@@ -186,14 +185,14 @@ class PluginMetademandsDraft extends CommonDBTM
             'name' => 'save_draft',
             'form' => '',
             'id' => 'submitSave',
-            'class' => 'btn btn-success btn-sm'
+            'class' => 'btn btn-success btn-sm',
         ]);
         $return .= "&nbsp;";
         $title = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
         $title .= _sx('button', 'Clean form', 'metademands');
         $return .= Html::submit($title, [
             'name' => 'clean_form',
-            'class' => 'btn btn-warning btn-sm'
+            'class' => 'btn btn-warning btn-sm',
         ]);
         $return .= "<br>";
         $return .= "</td></tr>";
@@ -218,10 +217,10 @@ class PluginMetademandsDraft extends CommonDBTM
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadDraft(" . $draft['id'] . ")\">";
                 $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
-                        'button',
-                        'Load draft',
-                        'metademands'
-                    ) . "' 
+                    'button',
+                    'Load draft',
+                    'metademands'
+                ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                 $return .= "</button>";
                 $return .= "</td>";
@@ -231,10 +230,10 @@ class PluginMetademandsDraft extends CommonDBTM
                     $return .= "<td>";
                     $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateDraft(" . $draft['id'] . ", '" . $draft['name'] . "')\">";
                     $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
-                            'button',
-                            'Save draft',
-                            'metademands'
-                        ) . "' 
+                        'button',
+                        'Save draft',
+                        'metademands'
+                    ) . "' 
                                data-hasqtip='0' aria-hidden='true'></i>";
                     $return .= "</button>";
                     $return .= "</td>";
@@ -243,10 +242,10 @@ class PluginMetademandsDraft extends CommonDBTM
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteDraft(" . $draft['id'] . ")\">";
                 $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx(
-                        'button',
-                        'Delete draft',
-                        'metademands'
-                    ) . "' 
+                    'button',
+                    'Delete draft',
+                    'metademands'
+                ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                 $return .= "</button>";
                 $return .= "</td>";
@@ -254,9 +253,9 @@ class PluginMetademandsDraft extends CommonDBTM
             }
         } else {
             $return .= "<tr class=''><td colspan='4' class='center'>" . __(
-                    'No draft available for this form',
-                    'metademands'
-                ) . "</td></tr>";
+                'No draft available for this form',
+                'metademands'
+            ) . "</td></tr>";
         }
         $return .= "</tbody>";
         $return .= "</table>";
@@ -557,11 +556,11 @@ class PluginMetademandsDraft extends CommonDBTM
 
         //correct css with condition
         if ($type == 1) {
-            if ($freetable == 'freetable') {
+//            if ($freetable == 'freetable') {
                 $style = "display:inline-block;margin: 10px;display:none";
-            } else {
-                $style = "display:inline-block;margin: 10px;";
-            }
+//            } else {
+//                $style = "display:inline-block;margin: 10px;";
+//            }
         } else {
             $style = "display:inline-block;float:left;margin-right: 10px;";
         }
@@ -611,7 +610,7 @@ class PluginMetademandsDraft extends CommonDBTM
             'display' => true,
             'dialog_class' => 'modal-lg',
             'autoopen' => false,
-            'reloadonclose' => false
+            'reloadonclose' => false,
         ];
 
         if (count($options)) {
@@ -631,7 +630,7 @@ class PluginMetademandsDraft extends CommonDBTM
             'maxlength' => 250,
             'size' => 40,
             'class' => 'draft_name',
-            'placeholder' => __('Draft name', 'metademands')
+            'placeholder' => __('Draft name', 'metademands'),
         ]);
 
         $titl_submit_button = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
