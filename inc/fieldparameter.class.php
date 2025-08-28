@@ -54,6 +54,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
         'textarea',
         'dropdown_meta',
         'dropdown_object',
+        'dropdown_ldap',
         'dropdown',
         'dropdown_multiple',
         'checkbox',
@@ -299,6 +300,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 case 'textarea':
                 case 'dropdown_meta':
                 case 'dropdown_object':
+                case 'dropdown_ldap':
                 case 'dropdown':
                 case 'dropdown_multiple':
                 case 'date':

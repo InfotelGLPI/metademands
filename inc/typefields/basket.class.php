@@ -1337,6 +1337,9 @@ class PluginMetademandsBasket extends CommonDBTM
                     case 'dropdown_object':
                         echo PluginMetademandsDropdownobject::getFieldValue($values);
                         break;
+                    case 'dropdown_ldap' :
+                        echo PluginMetademandsLdapdropdown::getFieldValue($values);
+                        break;
                     case 'dropdown_meta':
                         echo PluginMetademandsDropdownmeta::getFieldValue($values, $lang);
                         break;

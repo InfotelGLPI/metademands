@@ -70,6 +70,7 @@ class PluginMetademandsCondition extends CommonDBChild
         'dropdown_object',
         'dropdown_meta',
         'dropdown_multiple',
+        'dropdown_ldap',
         'text',
         'tel',
         'email',

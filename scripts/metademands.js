@@ -1146,3 +1146,18 @@ function updateActiveTab(rank)
 
     document.getElementById('ablock' + rank)?.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
 }
+
+function plugin_metademands_changeLDAP(root_doc, ldap) {
+    var ldap_directory = ldap.value;
+
+    jQuery.ajax({
+        url: root_doc + '/ajax/ldap_filter.php',
+        type: 'POST',
+        data: {
+            value: ldap_directory,
+        },
+    }).done(function(response) {
+        var selector = '$slashSelector';
+        document.querySelector('form [name="ldap_filter"]').value = response;
+    });
+}

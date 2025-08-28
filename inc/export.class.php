@@ -1586,6 +1586,9 @@ class PluginMetademandsExport extends CommonDBTM
                 $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
                 $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
                 $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
+                $toUpdate['authldaps_id'] = $old['authldaps_id'] ?? 0;
+                $toUpdate['ldap_attribute'] = $old['ldap_attribute'] ?? 0;
+                $toUpdate['ldap_filter'] = $old['ldap_filter'];
                 $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
                 $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
                 $toUpdate["informations_to_display"] = PluginMetademandsFieldParameter::_serialize(['full_name']);
@@ -1629,6 +1632,9 @@ class PluginMetademandsExport extends CommonDBTM
                 $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
                 $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
                 $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
+                $toUpdate['authldaps_id'] = $old['authldaps_id'] ?? 0;
+                $toUpdate['ldap_attribute'] = $old['ldap_attribute'] ?? 0;
+                $toUpdate['ldap_filter'] = $old['ldap_filter'];
                 $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
                 $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
 

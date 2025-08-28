@@ -50,6 +50,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         'dropdown_multiple',
         'dropdown',
         'dropdown_object',
+//        'dropdown_ldap',
         'parent_field',
         'text',
         'tel',
@@ -723,6 +724,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'textarea':
             case 'dropdown_meta':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_multiple':
             case 'checkbox':
@@ -873,6 +875,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'dropdown_multiple':
             case 'dropdown':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown_meta':
             case 'textarea':
             case 'url':
@@ -940,6 +943,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'dropdown_multiple':
             case 'dropdown':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown_meta':
             case 'textarea':
             case 'url':
@@ -1463,6 +1467,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'textarea':
             case 'dropdown_meta':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_multiple':
             case 'checkbox':
@@ -1513,6 +1518,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'dropdown_multiple':
             case 'dropdown':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown_meta':
             case 'textarea':
             case 'url':
@@ -1564,6 +1570,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'textarea':
             case 'dropdown_meta':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_multiple':
             case 'checkbox':
@@ -1616,6 +1623,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'textarea':
             case 'dropdown_meta':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_multiple':
             case 'checkbox':
@@ -1696,6 +1704,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'dropdown_multiple':
             case 'dropdown':
             case 'dropdown_object':
+            case 'dropdown_ldap':
             case 'dropdown_meta':
             case 'textarea':
             case 'url':
