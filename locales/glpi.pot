@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 09:45+0000\n"
+"POT-Creation-Date: 2025-08-28 09:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1094,7 +1094,7 @@ msgid "Target followup"
 msgstr ""
 
 #: inc/mailtask.class.php:54 inc/metademandtask.class.php:56
-#: inc/task.class.php:65 inc/ticket_metademand.class.php:53
+#: inc/task.class.php:65 inc/ticket_metademand.class.php:55
 #: inc/ticket_task.class.php:50 inc/tickettask.class.php:56
 msgid "Task creation"
 msgstr ""
@@ -1250,12 +1250,12 @@ msgid "There is a problem on object creation"
 msgstr ""
 
 #: inc/metademand.class.php:3572 inc/metademand.class.php:5959
-#: inc/ticket_metademand.class.php:649
+#: inc/ticket_metademand.class.php:661
 msgid "Child Ticket"
 msgstr ""
 
 #: inc/metademand.class.php:3590 inc/metademand.class.php:5975
-#: inc/ticket_metademand.class.php:661
+#: inc/ticket_metademand.class.php:673
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] ""
@@ -1792,21 +1792,21 @@ msgid ""
 "resolved"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:87 inc/ticket_metademand.class.php:90
+#: inc/ticket_metademand.class.php:93 inc/ticket_metademand.class.php:97
 msgid "Linked opened tickets"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:266
+#: inc/ticket_metademand.class.php:277
 msgctxt "status"
 msgid "In progress"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:269
+#: inc/ticket_metademand.class.php:280
 msgctxt "status"
 msgid "To close"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:272
+#: inc/ticket_metademand.class.php:283
 msgctxt "status"
 msgid "Closed"
 msgstr ""
