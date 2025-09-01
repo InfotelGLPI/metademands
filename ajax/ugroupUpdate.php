@@ -67,7 +67,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     }
 
     if (!empty($fieldparameter->fields['custom']) && isset($_POST["value"])) {
-        $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+
+        $condition = ['is_requester' => 1] + getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
 
         $requester_groups = [];
@@ -117,7 +118,7 @@ if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
 if (is_array($groups_id)) {
     $groups_id = 0;
 }
-
+Toolbox::logInfo($cond);
 $rand = mt_rand();
 $opt  = ['name'      => $_POST["field"],
          'entity'    => $_SESSION['glpiactiveentities'],

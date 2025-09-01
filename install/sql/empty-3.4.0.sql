@@ -152,7 +152,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldparameters`
     `icon`                                varchar(255)                    DEFAULT NULL,
     `readonly`                            tinyint                         DEFAULT 0,
     `hidden`                              tinyint                         DEFAULT 0,
-    `authldaps_id`                        int                             DEFAULT 0,
+    `authldaps_id`                        int unsigned                    DEFAULT 0,
     `ldap_attribute`                      int                             DEFAULT 0,
     `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
     PRIMARY KEY (`id`),
