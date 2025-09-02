@@ -28,18 +28,19 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class PluginMetademandsTicket_Metademand
  */
-class PluginMetademandsTicket_Metademand extends CommonDBTM {
+class PluginMetademandsTicket_Metademand extends CommonDBTM
+{
 
-   static $rightname = 'plugin_metademands';
-   const RUNNING   = 1;
-   const TO_CLOSED = 2;
-   const CLOSED    = 3;
+    static $rightname = 'plugin_metademands';
+    const RUNNING   = 1;
+    const TO_CLOSED = 2;
+    const CLOSED    = 3;
 
    /**
     * functions mandatory
@@ -49,23 +50,26 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     *
     * @return string
     */
-   static function getTypeName($nb = 0) {
-      return __('Task creation', 'metademands');
-   }
+    static function getTypeName($nb = 0)
+    {
+        return __('Task creation', 'metademands');
+    }
 
    /**
     * @return bool|int
     */
-   static function canView() {
-      return Session::haveRight(self::$rightname, READ);
-   }
+    static function canView()
+    {
+        return Session::haveRight(self::$rightname, READ);
+    }
 
    /**
     * @return bool
     */
-   static function canCreate() {
-      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-   }
+    static function canCreate()
+    {
+        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
 
    /**
     * Display tab for each users
@@ -75,23 +79,26 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     *
     * @return array|string
     */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-      global $DB;
-      if (!$withtemplate) {
-         if ($item->getType() == 'PluginMetademandsMetademand') {
-            if ($_SESSION['glpishow_count_on_tabs']) {
-               $query = self::countTicketsInTable($item->getID());
-               $result  = $DB->query($query);
-               $numrows = $DB->numrows($result);
+    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
+        global $DB;
+        if (!$withtemplate) {
+            if ($item->getType() == 'PluginMetademandsMetademand') {
+                if ($_SESSION['glpishow_count_on_tabs']) {
+                    $query = self::countTicketsInTable($item->getID());
+                    $result  = $DB->query($query);
+                    $numrows = $DB->numrows($result);
 
-               return self::createTabEntry(__('Linked opened tickets', 'metademands'),
-                                           $numrows);
+                    return self::createTabEntry(
+                        __('Linked opened tickets', 'metademands'),
+                        $numrows
+                    );
+                }
+                return __('Linked opened tickets', 'metademands');
             }
-            return __('Linked opened tickets', 'metademands');
-         }
-      }
-      return '';
-   }
+        }
+        return '';
+    }
 
 
    /**
@@ -99,12 +106,13 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     *
     * @return string
     */
-   static function countTicketsInTable($meta_id) {
+    static function countTicketsInTable($meta_id)
+    {
 
-      $status  = CommonITILObject::INCOMING . ", " . CommonITILObject::PLANNED . ", " .
+        $status  = CommonITILObject::INCOMING . ", " . CommonITILObject::PLANNED . ", " .
                  CommonITILObject::ASSIGNED . ", " . CommonITILObject::WAITING;
 
-      $query = "SELECT DISTINCT `glpi_tickets`.`id`
+        $query = "SELECT DISTINCT `glpi_tickets`.`id`
                 FROM `glpi_tickets`
                 LEFT JOIN `glpi_tickets_users`
                   ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id`)
@@ -113,15 +121,14 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                 LEFT JOIN `glpi_groups_tickets`
                   ON (`glpi_tickets`.`id` = `glpi_groups_tickets`.`tickets_id`)";
 
-      $query .= "WHERE `glpi_tickets`.`is_deleted` = 0 
+        $query .= "WHERE `glpi_tickets`.`is_deleted` = 0 
       AND `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id` = $meta_id 
       AND (`glpi_tickets`.`status` IN ($status)) " .
                 getEntitiesRestrictRequest("AND", "glpi_tickets");
-      $query .= " ORDER BY id DESC";
+        $query .= " ORDER BY id DESC";
 
-      return $query;
-
-   }
+        return $query;
+    }
 
    /**
     * Display content for each users
@@ -134,43 +141,44 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     *
     * @return bool|true
     */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      global $DB;
+    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        global $DB;
 
-      if (!Session::haveRight("ticket", Ticket::READALL)
+        if (!Session::haveRight("ticket", Ticket::READALL)
           && !Session::haveRight("ticket", Ticket::READASSIGN)
           && !Session::haveRight("ticket", CREATE)) {
-         return false;
-      }
+            return false;
+        }
 
-      $query = self::countTicketsInTable($item->getID());
-      $result  = $DB->query($query);
-      $numrows = $DB->numrows($result);
+        $query = self::countTicketsInTable($item->getID());
+        $result  = $DB->query($query);
+        $numrows = $DB->numrows($result);
 
-      if ($numrows > 0) {
-          $rand = mt_rand();
+        if ($numrows > 0) {
+            $rand = mt_rand();
 
-         echo "<table class='tab_cadrehov'>";
+            echo "<table class='tab_cadrehov'>";
 
-         Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
-         for ($i = 0; $i < $numrows; $i++) {
-            $ID = $DB->result($result, $i, "id");
+            Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
+            for ($i = 0; $i < $numrows; $i++) {
+                $ID = $DB->result($result, $i, "id");
 
-             Ticket::showShort(
-                 $ID,
-                 [
+                Ticket::showShort(
+                    $ID,
+                    [
                      'row_num' => $i,
                      'type_for_massiveaction' => __CLASS__,
                      'id_for_massiveaction'   => $ID
-                 ]
-             );
-         }
-         echo "</table>";
-      } else {
-         echo "<div class='alert alert-important alert-info center'>".__('No item found')."</div>";
-      }
-      return true;
-   }
+                    ]
+                );
+            }
+            echo "</table>";
+        } else {
+            echo "<div class='alert alert-important alert-info center'>".__('No item found')."</div>";
+        }
+        return true;
+    }
 
    /**
     * @param $field
@@ -182,23 +190,24 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     * *@since version 0.84
     *
     */
-   static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
+    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
 
-      if (!is_array($values)) {
-         $values = [$field => $values];
-      }
-      $options['display'] = false;
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        $options['display'] = false;
 
-      switch ($field) {
-         case 'status' :
-            $options['name']  = $name;
-            $options['value'] = $values[$field];
-            //            $options['withmajor'] = 1;
-            return self::dropdownStatus($options);
+        switch ($field) {
+            case 'status':
+                $options['name']  = $name;
+                $options['value'] = $values[$field];
+               //            $options['withmajor'] = 1;
+                return self::dropdownStatus($options);
             break;
-      }
-      return parent::getSpecificValueToSelect($field, $name, $values, $options);
-   }
+        }
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
 
    /**
     * display a value according to a field
@@ -211,18 +220,19 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     **@since version 0.83
     *
     */
-   static function getSpecificValueToDisplay($field, $values, array $options = []) {
+    static function getSpecificValueToDisplay($field, $values, array $options = [])
+    {
 
-      if (!is_array($values)) {
-         $values = [$field => $values];
-      }
-      switch ($field) {
-         case 'status':
-            return self::getStatusName($values[$field]);
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        switch ($field) {
+            case 'status':
+                return self::getStatusName($values[$field]);
             break;
-      }
-      return parent::getSpecificValueToDisplay($field, $values, $options);
-   }
+        }
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
 
 
    /**
@@ -230,27 +240,28 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     *
     * @return int|string
     */
-   static function dropdownStatus(array $options = []) {
+    static function dropdownStatus(array $options = [])
+    {
 
-      $p['name']     = 'status';
-      $p['value']    = 0;
-      $p['showtype'] = 'normal';
-      $p['display']  = true;
+        $p['name']     = 'status';
+        $p['value']    = 0;
+        $p['showtype'] = 'normal';
+        $p['display']  = true;
 
-      if (is_array($options) && count($options)) {
-         foreach ($options as $key => $val) {
-            $p[$key] = $val;
-         }
-      }
+        if (is_array($options) && count($options)) {
+            foreach ($options as $key => $val) {
+                $p[$key] = $val;
+            }
+        }
 
-      $values                  = [];
-      $values[0]               = static::getStatusName(0);
-      $values[self::RUNNING]   = static::getStatusName(self::RUNNING);
-      $values[self::TO_CLOSED] = static::getStatusName(self::TO_CLOSED);
-      $values[self::CLOSED]    = static::getStatusName(self::CLOSED);
+        $values                  = [];
+        $values[0]               = static::getStatusName(0);
+        $values[self::RUNNING]   = static::getStatusName(self::RUNNING);
+        $values[self::TO_CLOSED] = static::getStatusName(self::TO_CLOSED);
+        $values[self::CLOSED]    = static::getStatusName(self::CLOSED);
 
-      return Dropdown::showFromArray($p['name'], $values, $p);
-   }
+        return Dropdown::showFromArray($p['name'], $values, $p);
+    }
 
 
    /**
@@ -258,31 +269,31 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     *
     * @return string
     */
-   static function getStatusName($value) {
+    static function getStatusName($value)
+    {
 
-      switch ($value) {
+        switch ($value) {
+            case self::RUNNING:
+                return _x('status', 'In progress', 'metademands');
 
-         case self::RUNNING :
-            return _x('status', 'In progress', 'metademands');
+            case self::TO_CLOSED:
+                return _x('status', 'To close', 'metademands');
 
-         case self::TO_CLOSED :
-            return _x('status', 'To close', 'metademands');
+            case self::CLOSED:
+                return _x('status', 'Closed', 'metademands');
 
-         case self::CLOSED :
-            return _x('status', 'Closed', 'metademands');
+            default:
+               // Return $value if not define
+                return Dropdown::EMPTY_VALUE;
+        }
+    }
 
-         default :
-            // Return $value if not define
-            return Dropdown::EMPTY_VALUE;
-      }
-   }
-
-    static function createSonsObjects($metademand, $values_form, $parent_tickets_id, $parent_fields, $parent_ticketfields, $tasklevel, $inputField, $inputFieldMain) {
+    static function createSonsObjects($metademand, $values_form, $parent_tickets_id, $parent_fields, $parent_ticketfields, $tasklevel, $inputField, $inputFieldMain)
+    {
 
         if (isset($line['tasks'])
             && is_array($line['tasks'])
             && count($line['tasks'])) {
-
             if ($metademand->fields["validation_subticket"] == 0) {
                 $ticket2 = new Ticket();
                 $ticket2->getFromDB($parent_tickets_id);
@@ -601,7 +612,6 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                                     if ($value != null) {
                                         $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                     }
-
                                 } else {
                                     $explodeContent2 = explode(".", $content);
 
@@ -632,10 +642,12 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                                     }
                                 }
                                 $values[$metademand->getID()] = $values_form[0]['fields'];
-                                $parent_fields_content = PluginMetademandsMetademand::formatFields($line['form'],
+                                $parent_fields_content = PluginMetademandsMetademand::formatFields(
+                                    $line['form'],
                                     $metademand->getID(),
                                     $values,
-                                    ['formatastable' => $l['formatastable']]);
+                                    ['formatastable' => $l['formatastable']]
+                                );
                                 $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                             } else {
                                 $parent_fields_content['content'] = $parent_fields['content'];
@@ -944,8 +956,9 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                             foreach ($users as $usr) {
                                 $address = $email->find(['users_id' => $usr['id']], [], 1);
                                 if (count($address) > 0) {
-                                    foreach ($address as $id => $adr)
+                                    foreach ($address as $id => $adr) {
                                         $recipients[$usr['id']]['email'] = $adr['email'];
+                                    }
                                     $recipients[$usr['id']]['name'] = $usr['realname'] . " " . $usr['firstname'];
                                 }
                             }
@@ -958,9 +971,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                                     $recipients[$user->fields['id']]['email'] = $adr['email'];
                                     $recipients[$user->fields['id']]['name'] = $user->fields['realname'] . " " . $user->fields['firstname'];
                                 }
-
                             }
-
                         }
                         if (count($recipients) > 0) {
                             PluginMetademandsMailTask::sendMail($line['tasks'][$key]['tickettasks_name'], $recipients, $line['tasks'][$key]['content']);
@@ -1048,7 +1059,6 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                                     if ($value != null) {
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                     }
-
                                 } else {
                                     $explodeTitle2 = explode(".", $title);
 

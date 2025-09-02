@@ -4953,6 +4953,10 @@ JAVASCRIPT
                         && ($field['value'] == "" || $field['value'] == "0")) {
                         continue;
                     }
+                    if ($field['type'] == 'dropdown_ldap'
+                        && ($field['value'] == "" || $field['value'] == "0")) {
+                        continue;
+                    }
                     if ($field['type'] == 'dropdown_multiple'
                         && $field['value'] == "") {
                         continue;
@@ -5151,6 +5155,7 @@ JAVASCRIPT
                     );
                     break;
                 case 'dropdown_object':
+                case 'dropdown_ldap':
                 case 'dropdown':
                     if ($field['value'] != 0) {
                         if ($return_value == true) {
@@ -7345,6 +7350,9 @@ JAVASCRIPT
                         $input['icon'] = $oldParam['icon'];
                         $input['readonly'] = $oldParam['readonly'];
                         $input['hidden'] = $oldParam['hidden'];
+                        $input['authldaps_id'] = $oldParam['authldaps_id'];
+                        $input['ldap_attribute'] = $oldParam['ldap_attribute'];
+                        $input['ldap_filter'] = $oldParam['ldap_filter'];
                         $input['plugin_metademands_fields_id'] = $newField['id'];
                         $fieldparameters->add($input);
                     }
@@ -8782,6 +8790,7 @@ HTML;
                 }
                 // no break
             case 'dropdown':
+            case 'dropdown_ldap':
             case 'dropdown_object':
             case 'yesno':
                 return $optionValue == $formValue;

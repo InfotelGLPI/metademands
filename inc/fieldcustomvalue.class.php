@@ -381,6 +381,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                 case 'textarea':
                 case 'dropdown_meta':
                 case 'dropdown_object':
+                case 'dropdown_ldap':
                 case 'date':
                 case 'time':
                 case 'date_interval':

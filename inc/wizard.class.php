@@ -3301,6 +3301,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 case 'yesno':
                 case 'checkbox':
                 case 'dropdown_object':
+                case 'dropdown_ldap':
                     $result = $class::checkMandatoryFields($value, $fields);
                     $checkKo[] = $result['checkKo'];
                     $msg[] = $result['msg'];

@@ -53,6 +53,7 @@ class PluginMetademandsField extends CommonDBChild
         'dropdown_object',
         'dropdown_meta',
         'dropdown_multiple',
+        'dropdown_ldap',
         'title',
         'title-block',
         'informations',
@@ -94,6 +95,7 @@ class PluginMetademandsField extends CommonDBChild
 
     public static $field_dropdown_types = [
         'dropdown',
+//        'dropdown_ldap',
         'dropdown_object',
     ];
 
@@ -1769,6 +1771,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             case 'dropdown_object':
             case 'dropdown':
             case 'dropdown_multiple':
+            case 'dropdown_ldap':
             case 'checkbox':
             case 'radio':
             case 'yesno':
@@ -2347,6 +2350,9 @@ border-style: none !important; border-color: initial !important;border-image: in
             'informations_to_display' => $metademand_params->fields['informations_to_display'] ?? ['fullname'],
             'link_to_user' => $metademand_params->fields["link_to_user"] ?? 0,
             'hidden' => $metademand_params->fields["hidden"] ?? 0,
+            'authldaps_id' => $metademand_params->fields["authldaps_id"] ?? 0,
+            'ldap_filter' => $metademand_params->fields["ldap_filter"] ?? "",
+            'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
             'custom_values' => $custom_values,
             'default_values' => $default_values,
         ];
@@ -2654,6 +2660,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                 return "PluginMetademandsDropdownmeta";
             case 'dropdown_object':
                 return "PluginMetademandsDropdownobject";
+            case 'dropdown_ldap':
+                return "PluginMetademandsLdapdropdown";
             case 'dropdown':
                 return "PluginMetademandsDropdown";
             case 'dropdown_multiple':
@@ -2758,6 +2766,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 $class::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'dropdown_object':
+            case 'dropdown_ldap' :
             case 'dropdown':
             case 'dropdown_meta':
                 $class::showWizardField(
@@ -2814,6 +2823,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                 }
                                                 break;
                                             case 'dropdown':
+                                            case 'dropdown_ldap':
                                             case 'dropdown_object':
                                             case 'dropdown_meta':
                                                 if (!empty($line_data['form'][$value_parent_field]['custom_values'])

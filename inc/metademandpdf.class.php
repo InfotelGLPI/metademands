@@ -663,6 +663,11 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
                         continue;
                     }
+                    if ($elt['type'] == 'dropdown_ldap'
+                        && isset($fields[$elt['id']])
+                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        continue;
+                    }
                     if ($elt['type'] == 'dropdown_multiple'
                         && isset($fields[$elt['id']])
                         && $fields[$elt['id']] == "") {
@@ -821,6 +826,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             break;
 
                         case 'dropdown':
+                        case 'dropdown_ldap':
                         case 'dropdown_object':
                         case 'dropdown_meta':
                             $value = " ";

@@ -134,7 +134,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldparameters`
     `hide_title`                          tinyint      NOT NULL           DEFAULT '0',
     `is_mandatory`                        int          NOT NULL           DEFAULT '0',
     `max_upload`                          int          NOT NULL           DEFAULT 0,
-    `regex`                               VARCHAR(255) NOT NULL           DEFAULT '',
+    `regex`                               varchar(255) NOT NULL           DEFAULT '',
     `color`                               varchar(255)                    DEFAULT NULL,
     `row_display`                         tinyint                         DEFAULT 0,
     `is_basket`                           tinyint                         DEFAULT 0,
@@ -152,6 +152,9 @@ CREATE TABLE `glpi_plugin_metademands_fieldparameters`
     `icon`                                varchar(255)                    DEFAULT NULL,
     `readonly`                            tinyint                         DEFAULT 0,
     `hidden`                              tinyint                         DEFAULT 0,
+    `authldaps_id`                        int unsigned                    DEFAULT 0,
+    `ldap_attribute`                      int                             DEFAULT 0,
+    `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
     PRIMARY KEY (`id`),
     KEY                                   `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB

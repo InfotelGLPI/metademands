@@ -50,7 +50,7 @@ class PluginMetademandsDraft extends CommonDBTM
         $menu['page'] = self::getSearchURL(false);
         $menu['links']['search'] = self::getSearchURL(false);
         $menu['icon'] = static::getIcon();
-        $menu['links']['add'] = PLUGIN_ORDERFOLLOWUP_DIR_NOFULL . "/front/draftcreation.php";
+        $menu['links']['add'] = PLUGIN_METADEMANDS_WEBDIR . "/front/draftcreation.php";
 
         return $menu;
     }

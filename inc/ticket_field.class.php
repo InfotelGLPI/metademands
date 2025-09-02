@@ -234,6 +234,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'url':
                 case 'textarea':
                 case 'dropdown_object':
+                case 'dropdown_ldap':
                 case 'dropdown_meta':
                 case 'dropdown_multiple':
                 case 'dropdown':
@@ -266,6 +267,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'yesno':
                 case 'dropdown':
                 case 'dropdown_object':
+                case 'dropdown_ldap':
                 case 'dropdown_meta':
                     if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($field_value)) {
                         return false;
