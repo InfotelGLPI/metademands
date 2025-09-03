@@ -1543,7 +1543,11 @@ class PluginMetademandsWizard extends CommonDBTM
             $metademands->fields['name']
         ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
-        $metaparams['seeform'] = $seeform;
+        if ($metademands->fields['can_update'] == 1) {
+            $metaparams['seeform'] = 0;
+        } else {
+            $metaparams['seeform'] = $seeform;
+        }
 
         //MSG
         $metaparams['nexttitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";

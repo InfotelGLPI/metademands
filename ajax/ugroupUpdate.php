@@ -118,7 +118,7 @@ if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
 if (is_array($groups_id)) {
     $groups_id = 0;
 }
-Toolbox::logInfo($cond);
+
 $rand = mt_rand();
 $opt  = ['name'      => $_POST["field"],
          'entity'    => $_SESSION['glpiactiveentities'],
