@@ -29,13 +29,15 @@
 
 include('../../../inc/includes.php');
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 Html::header(PluginMetademandsBasketobject::getTypeName(2), '', "management", PluginMetademandsBasketobject::getType());
 
 $material = new PluginMetademandsBasketobject();
 if ($material->canView()) {
     Search::show("PluginMetademandsBasketobject");
 } else {
-    Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 Html::footer();

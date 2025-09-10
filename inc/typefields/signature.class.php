@@ -62,26 +62,11 @@ class PluginMetademandsSignature extends CommonDBTM
         $metademands_id = $data['plugin_metademands_metademands_id'];
         $id = $data['id'];
 
-        $msg_add = "<i class=\"fas fa-check-circle fa-1x\" style=\"color:forestgreen\"></i> " . __(
-            'Your signature has been uploaded',
-            'metademands'
-        );
-        $msg_remove = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
-            'Your signature has been deleted',
-            'metademands'
-        );
-        $msg_failadd = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
-            'There was a problem on upload your signature',
-            'metademands'
-        );
-        $msg_failremove = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
-            'There was a problem on delete your signature',
-            'metademands'
-        );
-        $msg_mandatory = "<i class=\"fas fa-times-circle fa-1x\" style=\"color:darkred\"></i> " . __(
-            'This field is mandatory',
-            'metademands'
-        );
+        $msg_add = "<i class=\"ti ti-circle-check fa-1x\" style=\"color:forestgreen\"></i> ".__('Your signature has been uploaded', 'metademands');
+        $msg_remove = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('Your signature has been deleted', 'metademands');
+        $msg_failadd = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('There was a problem on upload your signature', 'metademands');
+        $msg_failremove = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('There was a problem on delete your signature', 'metademands');
+        $msg_mandatory = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('This field is mandatory', 'metademands');
 
         $field = "<div class='wrapper'>";
         $field .= "<canvas id='signature-pad' class='signature-pad' width=400 height=100></canvas>";
@@ -94,8 +79,8 @@ class PluginMetademandsSignature extends CommonDBTM
         $field .= "<button id='clearsign' form='' class='btn btn-primary'>" . __('Clear', 'metademands') . "</button>";
         $field .= "</div>";
 
-        $js = Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/signature/js/signature_pad.umd.min.js");
-        $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/signature/css/signature_pad.umd.css");
+        $js = Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
+        $css = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
 
         $field .= $js;
         $field .= $css;
@@ -115,13 +100,13 @@ class PluginMetademandsSignature extends CommonDBTM
                         var msg_mandatory = '$msg_mandatory';
                         var is_mandatory = $required;
                         let hasDrawn = false;
-                        
+
                         if (is_mandatory == true) {
                             sessionStorage.setItem('mandatory_sign', $id);
                         }
-                        
+
                         saveButton.addEventListener('click', function (event) {
-                            
+
                             var datasign = '';
                             if (!signaturePad.isEmpty()) {
                                 var datasign = signaturePad.toDataURL('image/png');
@@ -130,7 +115,7 @@ class PluginMetademandsSignature extends CommonDBTM
                             if (hasDrawn == false && is_mandatory == true) {
                                 $('.result').html(msg_mandatory);
                             }
-                            
+
                             if (hasDrawn) {
                                 $.ajax({
                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addsignature.php',
@@ -148,7 +133,7 @@ class PluginMetademandsSignature extends CommonDBTM
                                     });
                             }
                         });
-                        
+
                         cancelButton.addEventListener('click', function (event) {
                             signaturePad.clear();
                             hasDrawn = false;

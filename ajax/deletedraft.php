@@ -52,17 +52,17 @@ $return = "";
 if (count($drafts) > 0) {
    foreach ($drafts as $draft) {
       $return .= "<tr class='tab_bg_1'>";
-      $return .= "<td>" . Toolbox::stripslashes_deep($draft['name']) . "</td>";
+      $return .= "<td>" . $draft['name'] . "</td>";
       $return .= "<td>" . Html::convDateTime($draft['date']) . "</td>";
       $return .= "<td>";
       $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadDraft(" . $draft['id'] . ")\">";
-      $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load draft', 'metademands') . "'
+      $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx('button', 'Load draft', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
       $return .= "</button>";
       $return .= "</td>";
       $return .= "<td>";
       $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteDraft(" . $draft['id'] . ")\">";
-      $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete draft', 'metademands') . "'
+      $return .= "<i class='ti ti-trash pointer' title='" . _sx('button', 'Delete draft', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
       $return .= "</button>";
       $return .= "</tr>";

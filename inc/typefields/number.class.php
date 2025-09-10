@@ -132,8 +132,7 @@ class PluginMetademandsNumber extends CommonDBTM
         echo Html::submit("", [
             'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon' => 'fas fa-save',
-        ]);
+            'icon'  => 'ti ti-device-floppy']);
         echo "</td>";
         echo "</tr>";
     }

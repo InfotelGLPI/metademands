@@ -64,7 +64,7 @@ class PluginMetademandsEmail extends CommonDBTM
         $opt = [
             'id-field' => $name,
             'id' => $name,
-            'value' => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
+            'value' => $value,
             'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
             'size' => $size,
         ];
@@ -86,7 +86,7 @@ class PluginMetademandsEmail extends CommonDBTM
                             $(\"[name='field[$ID]']\").ready(function() {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: { 
+                                     data: {
                                          id : $(\"[name='field[$ID]']\").val()
                                      },
                                   success: function(response){
@@ -107,44 +107,43 @@ class PluginMetademandsEmail extends CommonDBTM
 
     public static function showFieldParameters($params)
     {
-        //        echo "<tr class='tab_bg_1'>";
-        //        echo "<td>";
-        //        echo __('Link this to a user field', 'metademands');
-        //        echo "</td>";
-        //        echo "<td>";
-        //
-        //        $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
-        //        $field = new PluginMetademandsField();
-        //        $fields = $field->find([
-        //            "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
-        //            'type' => "dropdown_object",
-        //            "item" => User::getType()
-        //        ]);
-        //        foreach ($fields as $f) {
-        //            $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
-        //        }
-        //        Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-        //        echo "</td>";
-        //
-        //
-        //        if ($params['link_to_user'] > 0) {
-        //            echo "<td>" . __('User information to get', 'metademands') . "</td>";
-        //            $options = [
-        //                0 => Dropdown::EMPTY_VALUE,
-        //                6 => _n('Phone', 'Phones', 0),
-        //                11 => __('Mobile phone'),
-        //            ];
-        //            echo "</td>";
-        //            echo "<td>";
-        //            Dropdown::showFromArray(
-        //                'used_by_ticket',
-        //                $options,
-        //                ['value' => $params["used_by_ticket"]]
-        //            );
-        //            echo "</td>";
-        //        } else {
-        //            echo "<td colspan='2'></td>";
-        //        }
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>";
+                echo __('Link this to a user field', 'metademands');
+                echo "</td>";
+                echo "<td>";
+
+                $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
+                $field = new PluginMetademandsField();
+                $fields = $field->find([
+                    "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
+                    'type' => "dropdown_object",
+                    "item" => User::getType()
+                ]);
+                foreach ($fields as $f) {
+                    $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+                }
+                Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
+                echo "</td>";
+
+
+                if ($params['link_to_user'] > 0) {
+                    echo "<td>" . __('User information to get', 'metademands') . "</td>";
+                    $options = [
+                        0 => Dropdown::EMPTY_VALUE,
+                        5 => __('Email'),
+                    ];
+                    echo "</td>";
+                    echo "<td>";
+                    Dropdown::showFromArray(
+                        'used_by_ticket',
+                        $options,
+                        ['value' => $params["used_by_ticket"]]
+                    );
+                    echo "</td>";
+                } else {
+                    echo "<td colspan='2'></td>";
+                }
         //
         //        echo "<tr class='tab_bg_1'>";
         //        echo "<td>";
@@ -182,7 +181,7 @@ class PluginMetademandsEmail extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -329,7 +328,7 @@ class PluginMetademandsEmail extends CommonDBTM
                 $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
                 'metademands'
@@ -380,7 +379,7 @@ class PluginMetademandsEmail extends CommonDBTM
                                        }
                                     },
                                 });
-                                 
+
                                  ";
                     $script .= "}";
                 }

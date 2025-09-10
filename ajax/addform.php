@@ -225,7 +225,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 break;
             }
             $inputs = [];
-            $inputs['name'] = Toolbox::addslashes_deep($_POST['form_name']);
+            $inputs['name'] = $_POST['form_name'];
             $inputs['users_id'] = Session::getLoginUserID();
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
             $inputs['date'] = date('Y-m-d H:i:s');

@@ -72,15 +72,15 @@ class PluginMetademandsTicketField extends CommonDBChild
         return _n('Ticket field', 'Ticket fields', $nb, 'metademands');
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
-        return PluginMetademandsMetademand::getIcon();
+        return "ti ti-filter-down";
     }
 
     /**
      * @return bool|int
      */
-    static function canView()
+    static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -88,7 +88,7 @@ class PluginMetademandsTicketField extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate()
+    static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -201,7 +201,7 @@ class PluginMetademandsTicketField extends CommonDBChild
                 || $field['type'] == 'signature') {
                 continue;
             }
-            $res[$field['id']] = Toolbox::stripslashes_deep($field['name']);
+            $res[$field['id']] = $field['name'];
             if ($field['type'] == 'dropdown_object' && $field['item'] == User::getType()) {
                 $res[$field['id'] . ".login"] = $field['name'] . " : " . __('Login');
                 $res[$field['id'] . ".name"] = $field['name'] . " : " . __('Name');
@@ -477,7 +477,7 @@ class PluginMetademandsTicketField extends CommonDBChild
         } else {
             echo "<div class='center first-bloc'>";
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'><td class='center'>" . __('No item to display') . "</td></tr>";
+            echo "<tr class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
             echo "</table></div>";
         }
     }
@@ -515,7 +515,7 @@ class PluginMetademandsTicketField extends CommonDBChild
               FROM `" . $this->getTable() . "`
               WHERE `" . self::$items_id . "` = '$ID'
               ORDER BY `id`";
-        $result = $DB->query($sql);
+        $result = $DB->doQuery($sql);
 
         $allowed_fields = $tt->getAllowedFields($withtypeandcategory, true);
         $fields = [];

@@ -146,7 +146,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
         $data["##$objettype.users_id_dest##"] = getUserName($item->getField('users_id_dest'), 0, true);
         $data["##$objettype.date##"] = Html::convDateTime($item->getField('date'));
         $data["##$objettype.reminder_date##"] = Html::convDateTime($item->getField('reminder_date'));
-        $data["##$objettypeMeta.url##"] = urldecode($CFG_GLPI["url_base"] . "/".PLUGIN_METADEMANDS_WEBDIR_NOFULL . "/front/stepform.php");
+        $data["##$objettypeMeta.url##"] = urldecode($CFG_GLPI["url_base"] . "/plugins/metademands/front/stepform.php");
 
 
         return $data;

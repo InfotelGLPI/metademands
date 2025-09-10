@@ -30,15 +30,15 @@ class PluginMetademandsAutoloader
 {
     public function autoload($classname)
     {
-        $dir      = PLUGIN_METADEMANDS_DIR . "/inc/";
-        foreach (glob(dirname(__FILE__).'/typefields/*.class.php') as $class_file) {
-            $matches = null;
-            preg_match("#typefields/(.+)\.class.php$#", $class_file, $matches);
+        $dir = PLUGIN_METADEMANDS_DIR . "/inc/typefields/";
 
-            $filename = $dir.$matches[0];
+        // Exemple : PluginMetademandsCheckbox → checkbox.class.php
+        if (preg_match('/^PluginMetademands(.+)$/', $classname, $matches)) {
+            $filename = strtolower($matches[1]) . ".class.php";
+            $file = $dir . $filename;
 
-            if (is_readable($filename) && is_file($filename)) {
-                include_once($filename);
+            if (is_readable($file)) {
+                include_once($file);
             }
         }
     }

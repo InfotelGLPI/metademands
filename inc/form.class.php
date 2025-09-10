@@ -33,6 +33,12 @@
  */
 class PluginMetademandsForm extends CommonDBTM
 {
+
+    public static function getIcon()
+    {
+        return "ti ti-eye";
+    }
+
     public static $rightname = 'plugin_metademands';
 
 
@@ -71,9 +77,9 @@ class PluginMetademandsForm extends CommonDBTM
                 $meta->getFromDB($form['plugin_metademands_metademands_id']);
                 $itemtype = $form['itemtype'];
 
-                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . " / " . Html::convDateTime($form['date']) . "</td>";
+                $return .= "<td>" . $meta->getName() . " / " . Html::convDateTime($form['date']) . "</td>";
 
-                $content = __("Name") . " : " . Toolbox::stripslashes_deep($form['name']);
+                $content = __("Name") . " : " . $form['name'];
                 $content .= "<br>" . __("Date") . " : " . Html::convDateTime($form['date']);
                 if ($itemtype != null && getItemForItemtype($itemtype)) {
                     $item = new $itemtype();
@@ -83,7 +89,7 @@ class PluginMetademandsForm extends CommonDBTM
                 }
 
                 $return .= "<td>";
-                $return .= Html::showToolTip($content, ['awesome-class' => 'fa-info-circle','display' => false]);
+                $return .= Html::showToolTip($content, ['awesome-class' => 'ti ti-info-circle','display' => false]);
                 $return .= "</td>";
 
                 $return .= "<td>";
@@ -91,7 +97,7 @@ class PluginMetademandsForm extends CommonDBTM
 
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
-                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
+                $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx(
                     'button',
                     'Load form',
                     'metademands'
@@ -163,11 +169,7 @@ class PluginMetademandsForm extends CommonDBTM
         $forms_private = $self->find($condition, ['date DESC'], 20);
 
         if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
-            $formname = Html::cleanInputText(
-                Toolbox::stripslashes_deep(
-                    $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name']
-                )
-            ) ?? '';
+            $formname = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'] ?? '';
         } else {
             $formname = '';
         }
@@ -193,20 +195,20 @@ class PluginMetademandsForm extends CommonDBTM
             'placeholder' => __('Form name', 'metademands'),
         ]);
         $return .= "<br>";
-        $title = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
-        $title .= _sx('button', 'Save as model', 'metademands');
+        $title = _sx('button', 'Save as model', 'metademands');
 
         $return .= Html::submit($title, [
             'name' => 'save_form',
             'form' => '',
             'id' => 'FormAdd' . $rand,
+            'icon' => 'ti ti-cloud-upload pointer',
             'class' => 'btn btn-success btn-sm',
         ]);
         $return .= "&nbsp;";
-        $title = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-        $title .= _sx('button', 'Clean form', 'metademands');
+        $title = _sx('button', 'Clean form', 'metademands');
         $return .= Html::submit($title, [
             'name' => 'clean_form',
+            'icon' => 'ti ti-brush pointer',
             'class' => 'btn btn-warning btn-sm',
         ]);
         $return .= "</td></tr>";
@@ -217,7 +219,7 @@ class PluginMetademandsForm extends CommonDBTM
         if (count($forms_private) > 0) {
             $return .= "<table class='tab_cadre_fixe'>";
             $return .= "<tr class=''>";
-            $return .= "<th>";
+            $return .= "<th colspan='6'>";
             $return .= __('Your private models', 'metademands');
             $return .= "</th>";
             $return .= "</tr>";
@@ -230,9 +232,9 @@ class PluginMetademandsForm extends CommonDBTM
                 $meta->getFromDB($form_private['plugin_metademands_metademands_id']);
                 $itemtype = $form_private['itemtype'];
 
-                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . " / " . Html::convDateTime($form_private['date']) . "</td>";
+                $return .= "<td>" . $meta->getName() . " / " . Html::convDateTime($form_private['date']) . "</td>";
 
-                $content = __("Name") . " : " . Toolbox::stripslashes_deep($form_private['name']);
+                $content = __("Name") . " : " . $form_private['name'];
                 $content .= "<br>" . __("Date") . " : " . Html::convDateTime($form_private['date']);
                 if ($itemtype != null && getItemForItemtype($itemtype)) {
                     $item = new $itemtype();
@@ -242,14 +244,14 @@ class PluginMetademandsForm extends CommonDBTM
                 }
 
                 $return .= "<td>";
-                $return .= Html::showToolTip($content, ['awesome-class' => 'fa-info-circle','display' => false]);
+                $return .= Html::showToolTip($content, ['awesome-class' => 'ti ti-info-circle','display' => false]);
                 $return .= "</td>";
 
                 $return .= "<td>";
                 if (Session::haveRight("plugin_metademands_publicforms", READ)) {
                     if ($form_private['is_private'] == 1) {
                         $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"changeVisibility(" . $form_private['id'] . ", 0)\">";
-                        $return .= "<i class='fas fa-1x fa-lock-open pointer' title='" . _sx(
+                        $return .= "<i class='ti ti-lock-open pointer' title='" . _sx(
                             'button',
                             'Define as public',
                             'metademands'
@@ -258,7 +260,7 @@ class PluginMetademandsForm extends CommonDBTM
                         $return .= "</button>";
                     } else {
                         $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"changeVisibility(" . $form_private['id'] . ", 1)\">";
-                        $return .= "<i class='fas fa-1x fa-lock pointer' title='" . _sx(
+                        $return .= "<i class='ti ti-lock pointer' title='" . _sx(
                             'button',
                             'Define as private',
                             'metademands'
@@ -271,7 +273,7 @@ class PluginMetademandsForm extends CommonDBTM
 
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form_private['id'] . ")\">";
-                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
+                $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx(
                     'button',
                     'Load form',
                     'metademands'
@@ -282,7 +284,7 @@ class PluginMetademandsForm extends CommonDBTM
                 if ($form_id == $form_private['id']) {
                     $return .= "<td>";
                     $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateForm(" . $form_private['id'] . ", '" . $form_private['name'] . "')\">";
-                    $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
+                    $return .= "<i class='ti ti-device-floppy pointer' title='" . _sx(
                         'button',
                         'Save model',
                         'metademands'
@@ -294,7 +296,7 @@ class PluginMetademandsForm extends CommonDBTM
 
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form_private['id'] . ")\">";
-                $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx(
+                $return .= "<i class='ti ti-trash pointer' title='" . _sx(
                     'button',
                     'Delete form',
                     'metademands'
@@ -496,7 +498,7 @@ class PluginMetademandsForm extends CommonDBTM
         if (count($forms) > 0) {
             $return .= "<table class='tab_cadre_fixe'>";
             $return .= "<tr class=''>";
-            $return .= "<th>";
+            $return .= "<th colspan='6'>";
             $return .= __('Public models', 'metademands');
             $return .= "</th>";
             $return .= "</tr>";
@@ -509,9 +511,9 @@ class PluginMetademandsForm extends CommonDBTM
                 $meta->getFromDB($form['plugin_metademands_metademands_id']);
                 $itemtype = $form['itemtype'];
 
-                $return .= "<td>" . Toolbox::stripslashes_deep($meta->getName()) . "</td>";
+                $return .= "<td>" .$meta->getName() . "</td>";
 
-                $content = __("Name") . " : " . Toolbox::stripslashes_deep($form['name']);
+                $content = __("Name") . " : " . $form['name'];
                 $content .= "<br>" . __("Date") . " : " . Html::convDateTime($form['date']);
                 $content .= "<br>" . __('Created by', 'metademands') . " : " . getUserName($form['users_id']);
                 if ($itemtype != null && getItemForItemtype($itemtype)) {
@@ -522,16 +524,16 @@ class PluginMetademandsForm extends CommonDBTM
                 }
 
                 $return .= "<td>";
-                $return .= Html::showToolTip($content, ['awesome-class' => 'fa-info-circle','display' => false]);
+                $return .= Html::showToolTip($content, ['awesome-class' => 'ti ti-info-circle','display' => false]);
                 $return .= "</td>";
 
                 $return .= "<td>";
                 $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
-                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
+                $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx(
                     'button',
                     'Load form',
                     'metademands'
-                ) . "' 
+                ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 $return .= "</button>";
                 $return .= "</td>";
@@ -717,7 +719,7 @@ class PluginMetademandsForm extends CommonDBTM
                     'button',
                     'Load form',
                     'metademands'
-                ) . "' 
+                ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 echo "</button>";
                 $step = PluginMetademandsMetademand::STEP_SHOW;

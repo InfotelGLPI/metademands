@@ -120,7 +120,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             $field .= Html::showToolTip(
                                 Glpi\RichText\RichText::getSafeHtml($comment),
                                 [
-                                    'awesome-class' => 'fa-info-circle',
+                                    'awesome-class' => 'ti ti-info-circle',
                                     'display' => false,
                                 ]
                             );
@@ -278,7 +278,6 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 echo "<td class='rowhandler control center'>";
                 echo "<span id='icon$key'>";
                 $icon_selector_id = 'icon_' . mt_rand();
-
                 echo Html::select(
                     'icon[' . $key . ']',
                     [$value['icon'] => $value['icon']],
@@ -289,24 +288,27 @@ class PluginMetademandsCheckbox extends CommonDBTM
                     ]
                 );
 
-                echo Html::script('js/Forms/FaIconSelector.js');
+                echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock(
                     <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
                 );
+
                 $blank = "_blank_picture[$key]";
                 echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
                 echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
+                echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
                 echo "</div>";
                 echo "</td>";
 
@@ -316,7 +318,7 @@ JAVASCRIPT
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
-                    'icon' => 'fas fa-save',
+                    'icon' => 'ti ti-device-floppy',
                 ]);
                 echo "</td>";
 
@@ -330,7 +332,7 @@ JAVASCRIPT
                         'rank' => $value['rank'],
                         'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                     ],
-                    'fa-times-circle',
+                    'ti-circle-x',
                     "class='btn btn-primary'"
                 );
                 echo "</td>";
@@ -398,7 +400,6 @@ JAVASCRIPT
         echo "</td>";
         echo "<td>";
         $icon_selector_id = 'icon_' . mt_rand();
-
         echo Html::select(
             'icon',
             [$params['icon'] => $params['icon']],
@@ -409,17 +410,21 @@ JAVASCRIPT
             ]
         );
 
-        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::script('js/modules/Form/WebIconSelector.js');
         echo Html::scriptBlock(
             <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
         );
+
+
         echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
@@ -449,7 +454,7 @@ JAVASCRIPT
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -677,7 +682,7 @@ JAVASCRIPT
                 }
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                     'Next',
                     'metademands'
@@ -854,7 +859,7 @@ JAVASCRIPT
                         }
                     }
 
-                    $onchange .= "$.each( tohide, function( key, value ) {                      
+                    $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);

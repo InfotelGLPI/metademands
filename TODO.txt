@@ -15,3 +15,11 @@ ajouter onglet 'Tous'
 bug :
 obligation table libre si cachée
 
+Bug :
+Salut. Normal que le tabler.css de tabler rentre en conflit avec bootstrap pour "alert" et "card"  ? car cela provoque des changements visuels quand même
+car la j'ai des problèmes de padding dans les card-header et des alert-secondary en display flex qui empèche les retours à la ligne
+
+et autre question : il n'y a pas de hook dans le controller RenderController.php pour l'affichage des formulaires ? pour faire un redirect par exemple ?
+genre un pre_item_form ?
+
+ajouter hook + champ form_categories_id dans glpi_plugin_metademands_metademands pour filtrer les formulaires par catégorie de ticket

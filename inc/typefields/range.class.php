@@ -52,7 +52,7 @@ class PluginMetademandsRange extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/range.css");
+        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/range.css");
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
@@ -124,14 +124,14 @@ class PluginMetademandsRange extends CommonDBTM
 
         $js = 'const sliderEl = document.querySelector("#range")
                                         const sliderValue = document.querySelector(".rangevalue")
-                                        
+
                                         sliderEl.addEventListener("input", (event) => {
-                                          const tempSliderValue = event.target.value; 
-                                          
+                                          const tempSliderValue = event.target.value;
+
                                           sliderValue.textContent = tempSliderValue;
-                                          
+
                                           const progress = (tempSliderValue / sliderEl.max) * 100;
-                                         
+
                                           sliderEl.style.background = `linear-gradient(to right, #f50 ${progress}%, #ccc ${progress}%)`;
                                         })';
         echo Html::scriptBlock('$(document).ready(function() {' . $js . '});');
@@ -181,13 +181,12 @@ class PluginMetademandsRange extends CommonDBTM
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo Html::submit("", [
-            'name' => 'update',
+        echo Html::submit("", ['name'  => 'update',
             'class' => 'btn btn-primary',
-            'icon' => 'fas fa-save',
-        ]);
+            'icon'  => 'ti ti-device-floppy']);
         echo "</td>";
         echo "</tr>";
+        Html::closeForm();
     }
 
     /**

@@ -52,4 +52,4 @@ ALTER TABLE `glpi_plugin_metademands_configs`
 ALTER TABLE `glpi_plugin_metademands_configs`
     ADD `comment_servicecatalog` TEXT DEFAULT NULL;
 ALTER TABLE `glpi_plugin_metademands_configs`
-    ADD `fa_servicecatalog` varchar(100) NOT NULL DEFAULT 'fas fa-share-alt';
+    ADD `fa_servicecatalog` varchar(100) NOT NULL DEFAULT 'ti ti-share';

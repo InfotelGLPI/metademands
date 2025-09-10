@@ -173,7 +173,7 @@ class PluginMetademandsYesno extends CommonDBTM
         echo Html::submit("", [
             'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon' => 'fas fa-save',
+            'icon' => 'ti ti-device-floppy',
         ]);
         echo "</td>";
         echo "</tr>";
@@ -227,7 +227,7 @@ class PluginMetademandsYesno extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -318,7 +318,7 @@ class PluginMetademandsYesno extends CommonDBTM
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
-                    $val = Toolbox::addslashes_deep($idc);
+                    $val = $idc;
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $onchange .= "if ($(this).val() == $val) {";
@@ -377,7 +377,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 }
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
                 'metademands'
@@ -400,7 +400,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                    $val = Toolbox::addslashes_deep($idc);
+                    $val = $idc;
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $script .= "if ($(this).val() == $val) {";
@@ -563,14 +563,14 @@ class PluginMetademandsYesno extends CommonDBTM
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['hidden_link'] as $hidden_link) {
-                    $val = Toolbox::addslashes_deep($idc);
+                    $val = $idc;
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $onchange .= "if ($(this).val() == $val) {";
                     } else {
                         $onchange .= " if (this.checked) {";
                     }
                     $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();
-                             
+
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
@@ -750,7 +750,7 @@ class PluginMetademandsYesno extends CommonDBTM
                     }
 
                     $onchange .= " } else {
-                
+
                 sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
 
                     //specific - one value

@@ -132,7 +132,7 @@ class PluginMetademandsStepformread extends CommonDBTM
 
     public function showWaitingFormReadOnly()
     {
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
+        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
         $stepforms = self::getWaitingFormsByMaker();
 
@@ -140,12 +140,17 @@ class PluginMetademandsStepformread extends CommonDBTM
             echo "<div class=\"row\">";
             echo "<div class=\"col-md-12\">";
             echo "<h4><div class='alert alert-dark' role='alert'>";
-            $icon = "fa-share-alt";
+            $icon = "ti-share";
             if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                 $icon = $meta->fields['icon'];
             }
             $cnt = count($stepforms);
-            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+            if (str_contains($icon, 'fa-')) {
+                echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+            } else {
+                echo "<i class='ti $icon' style='font-size:2em;'></i>&nbsp;";
+            }
+
             echo _n('Form in progress', 'Forms in progress', $cnt, 'metademands');
             echo "</div></h4></div></div>";
 
@@ -163,7 +168,7 @@ class PluginMetademandsStepformread extends CommonDBTM
                     if (!empty($meta->fields['icon'])) {
                         $icon = $meta->fields['icon'];
                     }
-                    echo "<i class='sc-colorform bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
+                    echo "<i class='sc-colorform bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
                     echo "</div>";
 
                     echo "<br><p> <span class='sc-colorform'>";
@@ -207,7 +212,7 @@ class PluginMetademandsStepformread extends CommonDBTM
                             'delete_form_from_list',
                             _sx('button', 'Delete form', 'metademands'),
                             ['plugin_metademands_stepforms_id' => $id],
-                            'fa-trash-alt fa-1x'
+                            'ti-trash'
                         );
                         echo "</span>";
                     }

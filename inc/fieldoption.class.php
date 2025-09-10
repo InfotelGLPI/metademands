@@ -77,11 +77,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function getIcon()
     {
-        return PluginMetademandsMetademand::getIcon();
+        return "ti ti-device-ipad-horizontal-cog";
     }
 
 
-    public static function canView()
+    static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -89,7 +89,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     /**
      * @return bool
      */
-    public static function canCreate()
+    static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -185,7 +185,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 if ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "informations") {
                                     $data[$id] = $value['rank'] . " - " . urldecode(
-                                        html_entity_decode(Toolbox::stripslashes_deep($value['name']))
+                                        html_entity_decode($value['name'])
                                     );
                                 }
                             }
@@ -314,9 +314,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "</script>\n";
 
             echo "<script type = \"text/javascript\">
-                
+
                 function reloadviewOption(value) {
-                    
+
                     $('#viewoption" . $item->getType() . $item->getID() . $rand . "')
                         .load('" . $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php',{
                         type:\"" . __CLASS__ . "\",
@@ -547,7 +547,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         } else {
             echo "<div class='center first-bloc'>";
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr  class='tab_bg_1'><td class='center'>" . __('No item to display') . "</td></tr>";
+            echo "<tr  class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
             echo "</table>";
             echo "</div>";
         }
@@ -568,7 +568,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         return true;
     }
 
-    public function canCreateItem()
+    public function canCreateItem(): bool
     {
         return true;
     }
@@ -1063,8 +1063,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if ($value['item'] != "ITILCategory_Metademands"
                     && $value['item'] != "informations" ) {
                     $data[$id] = $value['rank'] . " - " . urldecode(
-                        html_entity_decode(Toolbox::stripslashes_deep($value['name']))
-                    );
+                            html_entity_decode($value['name'])
+                        );
                 }
             }
 
@@ -1094,8 +1094,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands") {
                     $data[$id] = $value['rank'] . " - " . urldecode(
-                        html_entity_decode(Toolbox::stripslashes_deep($value['name']))
-                    );
+                            html_entity_decode($value['name'])
+                        );
                 }
             }
             Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link']]);
@@ -1309,7 +1309,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 Ajax::updateItemOnSelectEvent(
                     'dropdown_checkbox_id' . $randcheck,
                     "checkbox_value",
-                    $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/checkboxValues.php",
+                    $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_WEBDIR . "/ajax/checkboxValues.php",
                     $paramsajax
                 );
 
@@ -1952,7 +1952,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             $use_as_step = 1;
         }
 
-        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+        $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
         $nextsteptitle =  __(
             'Next',
             'metademands'
@@ -2151,7 +2151,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 this.click();
                                                 this.checked = false;
                                                 break;
-                                            }   
+                                            }
                                         }
                                         jQuery(this).removeAttr('required');
                                         jQuery(this).removeClass('invalid');

@@ -59,15 +59,27 @@ class PluginMetademandsConfig extends CommonDBTM {
         return __('Plugin setup', 'metademands');
     }
 
+    public function getName($options = [])
+    {
+        return _n('Meta-Demand', 'Meta-Demands', 2, 'metademands');
+    }
 
-   static function canView() {
+
+    public static function getIcon()
+    {
+        return "ti ti-share";
+    }
+
+   static function canView(): bool
+   {
       return Session::haveRight(self::$rightname, UPDATE);
    }
 
    /**
     * @return bool
     */
-   static function canCreate() {
+   static function canCreate(): bool
+   {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
 
@@ -82,11 +94,7 @@ class PluginMetademandsConfig extends CommonDBTM {
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
         if ($item->getType() == __CLASS__) {
-            switch ($tabnum) {
-                case 1:
-                    $item->showConfigForm();
-                    break;
-            }
+            $item->showConfigForm();
         }
         return true;
     }
@@ -100,11 +108,7 @@ class PluginMetademandsConfig extends CommonDBTM {
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if (!$withtemplate) {
-            $ong[1] = __('Setup', 'metademands');
-            return $ong;
-        }
-        return '';
+        return self::createTabEntry(self::getTypeName());
     }
 
 
@@ -251,21 +255,24 @@ class PluginMetademandsConfig extends CommonDBTM {
            'icon_incident',
            [$config['icon_incident'] => $config['icon_incident']],
            [
-               'id'       => $icon_selector_id,
+               'id' => $icon_selector_id,
                'selected' => $config['icon_incident'],
-               'style'    => 'width:175px;'
+               'style' => 'width:175px;',
            ]
        );
 
-       echo Html::script('js/Forms/FaIconSelector.js');
-       echo Html::scriptBlock(<<<JAVASCRIPT
+       echo Html::script('js/modules/Form/WebIconSelector.js');
+       echo Html::scriptBlock(
+           <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
        );
 
        echo "</td>";
@@ -279,21 +286,24 @@ JAVASCRIPT
            'icon_request',
            [$config['icon_request'] => $config['icon_request']],
            [
-               'id'       => $icon_selector_id,
+               'id' => $icon_selector_id,
                'selected' => $config['icon_request'],
-               'style'    => 'width:175px;'
+               'style' => 'width:175px;',
            ]
        );
 
-       echo Html::script('js/Forms/FaIconSelector.js');
-       echo Html::scriptBlock(<<<JAVASCRIPT
+       echo Html::script('js/modules/Form/WebIconSelector.js');
+       echo Html::scriptBlock(
+           <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
        );
 
        echo "</td>";
@@ -309,21 +319,24 @@ JAVASCRIPT
            'icon_problem',
            [$config['icon_problem'] => $config['icon_problem']],
            [
-               'id'       => $icon_selector_id,
+               'id' => $icon_selector_id,
                'selected' => $config['icon_problem'],
-               'style'    => 'width:175px;'
+               'style' => 'width:175px;',
            ]
        );
 
-       echo Html::script('js/Forms/FaIconSelector.js');
-       echo Html::scriptBlock(<<<JAVASCRIPT
+       echo Html::script('js/modules/Form/WebIconSelector.js');
+       echo Html::scriptBlock(
+           <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
        );
 
        echo "</td>";
@@ -337,21 +350,24 @@ JAVASCRIPT
            'icon_change',
            [$config['icon_change'] => $config['icon_change']],
            [
-               'id'       => $icon_selector_id,
+               'id' => $icon_selector_id,
                'selected' => $config['icon_change'],
-               'style'    => 'width:175px;'
+               'style' => 'width:175px;',
            ]
        );
 
-       echo Html::script('js/Forms/FaIconSelector.js');
-       echo Html::scriptBlock(<<<JAVASCRIPT
+       echo Html::script('js/modules/Form/WebIconSelector.js');
+       echo Html::scriptBlock(
+           <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
        );
 
        echo "</td>";
@@ -388,27 +404,30 @@ JAVASCRIPT
          echo __('Icon for Service Catalog widget', 'metademands');
          echo "</td>";
          echo "<td colspan='2'>";
-         $icon_selector_id = 'icon_' . mt_rand();
-         echo Html::select(
-            'fa_servicecatalog',
-            [$config['fa_servicecatalog'] => $config['fa_servicecatalog']],
-            [
-               'id'       => $icon_selector_id,
-               'selected' => $config['fa_servicecatalog'],
-               'style'    => 'width:175px;'
-            ]
-         );
+          $icon_selector_id = 'icon_' . mt_rand();
+          echo Html::select(
+              'fa_servicecatalog',
+              [$config['fa_servicecatalog'] => $config['fa_servicecatalog']],
+              [
+                  'id' => $icon_selector_id,
+                  'selected' => $config['fa_servicecatalog'],
+                  'style' => 'width:175px;',
+              ]
+          );
 
-         echo Html::script('js/Forms/FaIconSelector.js');
-         echo Html::scriptBlock(<<<JAVASCRIPT
+          echo Html::script('js/modules/Form/WebIconSelector.js');
+          echo Html::scriptBlock(
+              <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
-         );
+        JAVASCRIPT
+          );
 
          echo "</td>";
          echo "</tr>";

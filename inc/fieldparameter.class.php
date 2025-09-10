@@ -83,7 +83,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
 
     public static function getIcon()
     {
-        return PluginMetademandsMetademand::getIcon();
+        return "ti ti-settings-bolt";
     }
     //
     //
@@ -822,7 +822,7 @@ class PluginMetademandsFieldParameter extends CommonDBChild
             if (is_array($input)) {
                 foreach ($input as &$value) {
                     if ($value != null) {
-                        $clean = Html::cleanPostForTextArea($value);
+                        $clean = $value;
                         if ($clean != null) {
                             $value = urlencode($clean);
                         }

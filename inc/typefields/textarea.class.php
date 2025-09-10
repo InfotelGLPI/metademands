@@ -27,6 +27,8 @@
  */
 
 
+use Glpi\UI\ThemeManager;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -58,7 +60,6 @@ class PluginMetademandsTextarea extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-        $value = Html::cleanPostForTextArea($value);
         $self = new self();
         $required = "";
         if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
@@ -101,8 +102,8 @@ class PluginMetademandsTextarea extends CommonDBTM
             if (!empty($comment)) {
                 $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
             }
-            $field = "<textarea $required class='form-control' rows='6' cols='80' 
-               placeholder=\"" . $comment . "\" 
+            $field = "<textarea $required class='form-control' rows='6' cols='80'
+               placeholder=\"" . $comment . "\"
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             echo $field;
         }
@@ -152,7 +153,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                      $('select[name=\"users_id_validate\"]').val(),
                      $('select[name=\"checkbox_id\"]').val()
               ];
-                 
+
                  reloadviewOption(formOption);
              });";
 
@@ -286,7 +287,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                     $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 }
 
-                $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+                $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                 $nextsteptitle = __(
                     'Next',
                     'metademands'
@@ -335,7 +336,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                                     },
                                 });
 
-                                 
+
                                  ";
                         $script .= "}";
                     }
@@ -609,7 +610,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                             for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
                                 let field = 'field' + metademandconditionsparams.richtext_ids[i];
                                 let editor = tinyMCE.get(field);
-                        
+
                                 if (editor) {
                                     editor.on('keyup', function () {
                                         plugin_metademands_wizard_checkConditions(metademandconditionsparams);
@@ -787,23 +788,24 @@ class PluginMetademandsTextarea extends CommonDBTM
                 $language = "en_GB";
             }
         }
-        $language_url = $CFG_GLPI['root_doc'] . '/public/lib/tinymce-i18n/langs6/' . $language . '.js';
+        $language_url = $CFG_GLPI['root_doc'] . '/lib/tinymce-i18n/langs6/' . $language . '.js';
 
         // Apply all GLPI styles to editor content
-        $content_css = preg_replace(
-            '/^.*href="([^"]+)".*$/',
-            '$1',
-            Html::scss(
-                ('css/palettes/' . $_SESSION['glpipalette'] ?? 'auror') . '.scss',
-                ['force_no_version' => true]
-            )
-        )
-            . ',' . preg_replace(
-                '/^.*href="([^"]+)".*$/',
-                '$1',
-                Html::css('public/lib/base.css', ['force_no_version' => true])
-            );
-
+        $theme = ThemeManager::getInstance()->getCurrentTheme();
+        $content_css_paths = [
+            'css/glpi.scss',
+            'css/core_palettes.scss',
+        ];
+        if ($theme->isCustomTheme()) {
+            $content_css_paths[] = $theme->getPath();
+        }
+        $content_css = preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::css('lib/base.css', ['force_no_version' => true]));
+        $content_css .= ',' . preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::css('lib/tabler.css', ['force_no_version' => true]));
+        $content_css .= ',' . implode(',', array_map(static fn($path) => preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::scss($path, ['force_no_version' => true])), $content_css_paths));
+        // Fix & encoding so it can be loaded as expected in debug mode
+        $content_css = str_replace('&amp;', '&', $content_css);
+        $skin_url = preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::css('css/tinymce_empty_skin', ['force_no_version' => true], false));
+        $content_css = jsescape($content_css);
         $cache_suffix = '?v=' . \Glpi\Toolbox\FrontEnd::getVersionCacheKey(GLPI_VERSION);
         $readonlyjs = $readonly ? 'true' : 'false';
 
@@ -849,7 +851,7 @@ class PluginMetademandsTextarea extends CommonDBTM
         // init tinymce
         $js = <<<JS
          $(function() {
-            var is_dark = $('html').css('--is-dark').trim() === 'true';
+            var is_dark = false;//$('html').css('--is-dark').trim() === 'true'
             var richtext_layout = "{$_SESSION['glpirichtext_layout']}";
 
             // init editor
@@ -865,9 +867,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                plugins: {$pluginsjs},
 
                // Appearance
-               skin_url: is_dark
-                  ? CFG_GLPI['root_doc']+'/public/lib/tinymce/skins/ui/oxide-dark'
-                  : CFG_GLPI['root_doc']+'/public/lib/tinymce/skins/ui/oxide',
+               skin_url: '{$skin_url}',
                body_class: 'rich_text_container',
                content_css: '{$content_css}',
                highlight_on_focus: false,
@@ -969,14 +969,14 @@ class PluginMetademandsTextarea extends CommonDBTM
                   // TinyMCE.
                   // https://www.tiny.cloud/docs/advanced/events/
                   const placeholderManager = (e) => {
-      
+
                      // Check if the content contains the placeholder inserted above.
                      // The get() function looks for an id attribute.
                      // https://www.tiny.cloud/docs/api/tinymce.dom/tinymce.dom.domutils/#get
                      const placeholderExists = editor.dom.get('placeholder');
-                     
+
                      if (placeholderExists) {
-      
+
                         // In this demo we want to start an empty document with a title.
                            // This does not force having a title for a document, it's simply
                            // a convenience feature.
@@ -985,10 +985,10 @@ class PluginMetademandsTextarea extends CommonDBTM
                            });
                      }
                   };
-      
+
                   // Bind the click event listener to the placeholder manager function
                   editor.once('click tap keydown', placeholderManager);
-      
+
                   editor.on('Undo', () => {
                      // Rebind the click event listener when the editor is reverted back
                      // to the original content

@@ -199,7 +199,6 @@ class PluginMetademandsBasket extends CommonDBTM
         $field .= "</tr>";
 
         if ($nb > 1) {
-            $field .= "<a id='backtotop'></a>";
 
             $field .= "<tr class='tab_bg_1'>";
             $field .= "<th style='$background_color'>";
@@ -531,8 +530,7 @@ class PluginMetademandsBasket extends CommonDBTM
         echo Html::submit("", [
             'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon' => 'fas fa-save',
-        ]);
+            'icon'  => 'ti ti-device-floppy']);
         echo "</td>";
         echo "</tr>";
     }
@@ -593,7 +591,7 @@ class PluginMetademandsBasket extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -732,7 +730,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
                         $onchange .= "if($(this).val() == $idc){
                                 if($fields_link in tohide){
-    
+
                                 }else{
                                    tohide[$fields_link] = true;
                                 }
@@ -810,11 +808,8 @@ class PluginMetademandsBasket extends CommonDBTM
                 $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = __(
-                'Next',
-                'metademands'
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+        $nextsteptitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -862,7 +857,7 @@ class PluginMetademandsBasket extends CommonDBTM
                          tohide[$tasks_id] = false;
                       ";
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -900,7 +895,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                     },
                             });
                          }
-            
+
             ";
                     if ($withquantity == false) {
                         $script .= "}";
@@ -1809,7 +1804,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $content .= PluginMetademandsDraft::createDraftInput(PluginMetademandsDraft::BASKET_MODE);
             }
             $content .= "<span style='float:right'>";
-            $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
+            $title = "<i class='ti ti-shopping-bag'></i> " . _sx('button', 'Send order', 'metademands');
 
             $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
             $content .= Html::submit($title, [
@@ -1829,9 +1824,7 @@ class PluginMetademandsBasket extends CommonDBTM
             $meta_id = $fields['metademands_id'];
             $metademands = new PluginMetademandsMetademand();
             if ($metademands->getFromDB($meta_id)) {
-                $name = Toolbox::addslashes_deep(
-                    $metademands->fields['name']
-                ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+                $name = addslashes($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
                 $content .= "<script>
                           $('#submitOrder').click(function() {
                              var meta_id = $meta_id;
@@ -1877,7 +1870,7 @@ class PluginMetademandsBasket extends CommonDBTM
                            });
                            $('#prevBtn').hide();
                            $('.step_wizard').hide();
-                          
+
                         </script>";
                 //            }
             }

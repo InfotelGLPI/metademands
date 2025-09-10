@@ -34,6 +34,8 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 Html::header(PluginMetademandsMetademand::getTypeName(2), $_SERVER['PHP_SELF'], "plugins", "metademands");
 
 if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) && isset($_POST["itemtype"])) {
@@ -87,7 +89,7 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
    }
 } else {
 
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 Html::footer();

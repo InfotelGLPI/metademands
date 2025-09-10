@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -37,72 +38,78 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsExport extends CommonDBTM
 {
+    public static $rightname = 'plugin_metademands';
 
-    static $rightname = 'plugin_metademands';
-
-    static function getTable($classname = null)
+    public static function getTable($classname = null)
     {
         return PluginMetademandsMetademand::getTable();
     }
 
-   /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    *
-    * @param int $nb
-    *
-    * @return string
-    */
-    static function getTypeName($nb = 0)
+    /**
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     *
+     * @param int $nb
+     *
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
     {
         return __('Export', 'metademands');
 
     }
 
-   /**
-    * Get Tab Name used for itemtype
-    *
-    * NB : Only called for existing object
-    *      Must check right on what will be displayed + template
-    *
-    * @param CommonGLPI $item Item on which the tab need to be displayed
-    * @param int        $withtemplate is a template object ? (default 0)
-    *
-    * @return string tab name
-    * @since version 0.83
-    *
-    */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public static function getIcon()
+    {
+        return "ti ti-file-export";
+    }
+
+    /**
+     * Get Tab Name used for itemtype
+     *
+     * NB : Only called for existing object
+     *      Must check right on what will be displayed + template
+     *
+     * @param CommonGLPI $item Item on which the tab need to be displayed
+     * @param int        $withtemplate is a template object ? (default 0)
+     *
+     * @return string tab name
+     * @since version 0.83
+     *
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
 
         if (!$withtemplate) {
-            if ($item->getType() == 'PluginFormcreatorForm' && $this->canUpdate()) {
-                return PluginMetademandsMetademand::getTypeName();
+            if ($item->getType() == 'Glpi\Form\Form' && $this->canUpdate()) {
+                //TODO
+//                return self::createTabEntry(PluginMetademandsMetademand::getTypeName());
             } elseif ($item->getType() == 'PluginMetademandsMetademand' && $this->canUpdate()) {
-                return self::getTypeName();
+                return self::createTabEntry(self::getTypeName());
             }
         }
         return '';
     }
 
-   /**
-    * show Tab content
-    *
-    * @param CommonGLPI $item Item on which the tab need to be displayed
-    * @param integer    $tabnum tab number (default 1)
-    * @param int        $withtemplate is a template object ? (default 0)
-    *
-    * @return boolean
-    * @since version 0.83
-    *
-    */
+    /**
+     * show Tab content
+     *
+     * @param CommonGLPI $item Item on which the tab need to be displayed
+     * @param integer    $tabnum tab number (default 1)
+     * @param int        $withtemplate is a template object ? (default 0)
+     *
+     * @return boolean
+     * @since version 0.83
+     *
+     */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
         switch ($item->getType()) {
-            case 'PluginFormcreatorForm':
-                $form = new self();
-                $form->showExportFromFormcreator($item->getID());
+            case 'Glpi\Form\Form':
+                //TODO
+//                $form = new self();
+//                $form->showExportFromGLPIForm($item->getID());
                 break;
             case 'PluginMetademandsMetademand':
                 $form = new self();
@@ -114,12 +121,12 @@ class PluginMetademandsExport extends CommonDBTM
         return true;
     }
 
-   /**
-    * Configuring
-    *
-    * @param $ID
-    */
-    static function showExportFromFormcreator($ID)
+    /**
+     * Configuring
+     *
+     * @param $ID
+     */
+    public static function showExportFromGLPIForm($ID)
     {
 
         echo "<form name='form' method='post' action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
@@ -145,7 +152,7 @@ class PluginMetademandsExport extends CommonDBTM
      *
      * @param $ID
      */
-    static function showExportFromMetademands($ID)
+    public static function showExportFromMetademands($ID)
     {
 
         echo "<form name='form' method='post' action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
@@ -161,18 +168,16 @@ class PluginMetademandsExport extends CommonDBTM
         echo Html::submit(__('Export XML', 'metademands'), ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary']);
         echo "</td>";
         echo "</tr>";
-        if (Plugin::isPluginActive("formcreator")) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td class='left'>";
-            echo __('Export the metademand to JSON format for use with formcreator plugin', 'metademands');
-            echo "</td>";
-            echo "<td class='center'>";
-            echo Html::submit(
-                __('Export JSON', 'metademands'),
-                ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary']
-            );
-            echo "</td>";
-        }
+        echo "<tr class='tab_bg_1'>";
+        echo "<td class='left'>";
+        echo __('Export the metademand to JSON format for use with forms from GLPI', 'metademands');
+        echo "</td>";
+        echo "<td class='center'>";
+        echo Html::submit(
+            __('Export JSON', 'metademands'),
+            ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary']
+        );
+        echo "</td>";
         echo "</tr>";
         echo "</table></div>";
         Html::closeForm();
@@ -186,7 +191,7 @@ class PluginMetademandsExport extends CommonDBTM
         $metatranslation = new PluginMetademandsMetademandTranslation();
         $translations = $metatranslation->find([
             'items_id' => $metademands->getID(),
-            'itemtype' => self::getType()
+            'itemtype' => self::getType(),
         ]);
         foreach ($translations as $id => $translation) {
             $fields['translations']['meta_translation' . $id] = $translation;
@@ -252,7 +257,7 @@ class PluginMetademandsExport extends CommonDBTM
         foreach ($fields['metafields'] as $id => $f) {
             $translationsfield = $fieldtranslation->find([
                 'items_id' => $f['id'],
-                'itemtype' => PluginMetademandsField::getType()
+                'itemtype' => PluginMetademandsField::getType(),
             ]);
             foreach ($translationsfield as $k => $v) {
                 $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
@@ -302,25 +307,25 @@ class PluginMetademandsExport extends CommonDBTM
         return "_plugins" . $name;
     }
 
-    static function transformFieldTypeFromMetademands($type, $item = null)
+    public static function transformFieldTypeFromMetademands($type, $item = null)
     {
         if ($type === 'dropdown' && $item === 'Location') {
             return 'dropdown';
         }
         $map = [
-                'actor' => 'dropdown_object',
+            'actor' => 'dropdown_object',
             'glpiselect' => 'dropdown_object',
             'select' => 'dropdown_meta',
             'multiselect' => 'dropdown_multiple',
             'description' => 'title',
-//                'description' => 'title-block',
-//            'description' => 'informations',
+            //                'description' => 'title-block',
+            //            'description' => 'informations',
             'text' => 'text',
-//                'text' => 'tel',
+            //                'text' => 'tel',
             'email' => 'email',
-//                'text' => 'url',
+            //                'text' => 'url',
             'textarea' => 'textarea',
-//            'select' => 'yesno',
+            //            'select' => 'yesno',
             'checkboxes' => 'checkbox',
             'radios' => 'radio',
             'integer' => 'number',
@@ -328,7 +333,7 @@ class PluginMetademandsExport extends CommonDBTM
             'time' => 'time',
             'datetime' => 'datetime',
             'file' => 'upload',
-//                'description' => 'link',
+            //                'description' => 'link',
             'requesttype' => '**meta type**',
         ];
         return $map[$type] ?? "";
@@ -357,9 +362,11 @@ class PluginMetademandsExport extends CommonDBTM
         unset($fields['profiles']);
 
         $entities_id = $fields['entities_id'];
-//        PluginFormcreatorSection
-        $sections = getAllDataFromTable('glpi_plugin_formcreator_sections',
-            ['plugin_formcreator_forms_id' => $plugin_formcreator_forms_id]);
+        //        PluginFormcreatorSection
+        $sections = getAllDataFromTable(
+            'glpi_plugin_formcreator_sections',
+            ['plugin_formcreator_forms_id' => $plugin_formcreator_forms_id]
+        );
 
         $fields['metafields'] = [];
         $fields['metafieldparameters'] = [];
@@ -370,20 +377,22 @@ class PluginMetademandsExport extends CommonDBTM
         $secid = 0;
         foreach ($sections as $ids => $section) {
 
-            $questions = getAllDataFromTable('glpi_plugin_formcreator_questions',
-                ['plugin_formcreator_sections_id' => $ids]);
+            $questions = getAllDataFromTable(
+                'glpi_plugin_formcreator_questions',
+                ['plugin_formcreator_sections_id' => $ids]
+            );
 
             $secid++;
-            $metafields['id'] = $ids."00".$secid;
+            $metafields['id'] = $ids . "00" . $secid;
             $metafields['entities_id'] = $entities_id;
             $metafields['rank'] = $section['order'];
             $metafields['name'] = $section['name'];
             $metafields['type'] = "title-block";
             $metafields['item'] = "";
-            $fields['metafields']['field'.$ids."00".$secid] = $metafields;
+            $fields['metafields']['field' . $ids . "00" . $secid] = $metafields;
 
-            $fields['metafieldparameters']['fieldparameters' . $ids."00".$secid]['plugin_metademands_fields_id'] = $ids."00".$secid;
-            $fields['metafieldparameters']['fieldparameters' . $ids."00".$secid]['color'] = "#000000";
+            $fields['metafieldparameters']['fieldparameters' . $ids . "00" . $secid]['plugin_metademands_fields_id'] = $ids . "00" . $secid;
+            $fields['metafieldparameters']['fieldparameters' . $ids . "00" . $secid]['color'] = "#000000";
 
             foreach ($questions as $idq => $question) {
 
@@ -442,19 +451,21 @@ class PluginMetademandsExport extends CommonDBTM
                         foreach ($customvalues as $idc => $cnt) {
                             foreach ($cnt as $i => $customvalue) {
                                 $tempid++;
-                                $fields['metafieldcustoms']['fieldcustoms' .$idc. $tempid] = $customvalue;
+                                $fields['metafieldcustoms']['fieldcustoms' . $idc . $tempid] = $customvalue;
                             }
                         }
                     }
                 }
                 $options = [];
-                $conditions = getAllDataFromTable('glpi_plugin_formcreator_conditions',
-                    ['itemtype' => 'PluginFormcreatorQuestion', 'items_id' => $idq]);
+                $conditions = getAllDataFromTable(
+                    'glpi_plugin_formcreator_conditions',
+                    ['itemtype' => 'PluginFormcreatorQuestion', 'items_id' => $idq]
+                );
                 if (count($conditions) > 0) {
 
                     $cpt = 0;
                     foreach ($conditions as $key => $val) {
-//                        $idcd = $idq + $cpt;
+                        //                        $idcd = $idq + $cpt;
                         $options[$idq][$key]['id'] = $val['id'];
 
                         $showValue = -1;
@@ -464,7 +475,7 @@ class PluginMetademandsExport extends CommonDBTM
                             } elseif ($val['show_value'] == 'oui') {
                                 $showValue = '2';
                             }
-                        }  else if (in_array($metafields['type'], PluginMetademandsField::$field_customvalues_types)) {
+                        } elseif (in_array($metafields['type'], PluginMetademandsField::$field_customvalues_types)) {
                             $fieldcustomvalues = new PluginMetademandsFieldCustomvalue();
                             $fieldcustomvalues->getFromDBByCrit(["name" => $val['show_value']]);
                             $showValue = $fieldcustomvalues->fields['id'] ?? "";
@@ -472,7 +483,8 @@ class PluginMetademandsExport extends CommonDBTM
 
                         $options[$idq][$key]['check_value'] = $showValue;
                         $options[$idq][$key]['hidden_link'] = $val['items_id'];
-                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['plugin_formcreator_questions_id'];;
+                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['plugin_formcreator_questions_id'];
+                        ;
                         $cpt++;
                     }
                     $tempid = 0;
@@ -480,7 +492,7 @@ class PluginMetademandsExport extends CommonDBTM
                     foreach ($options as $ido => $cnt) {
                         foreach ($cnt as $j => $option) {
                             $tempid++;
-                            $fields['metafieldoptions']['fieldoptions' .$ido. $tempid] = $option;
+                            $fields['metafieldoptions']['fieldoptions' . $ido . $tempid] = $option;
                         }
                     }
                 }
@@ -490,109 +502,109 @@ class PluginMetademandsExport extends CommonDBTM
 
 
 
-//        $metatranslation = new PluginMetademandsMetademandTranslation();
-//        $translations = $metatranslation->find([
-//            'items_id' => $this->getID(),
-//            'itemtype' => self::getType()
-//        ]);
-//        foreach ($translations as $id => $translation) {
-//            $fields['translations']['meta_translation' . $id] = $translation;
-//        }
-//        $metafield = new PluginMetademandsField();
-//        $metafieldoption = new PluginMetademandsFieldOption();
-//        $metafieldparameter = new PluginMetademandsFieldParameter();
-//        $metafieldcustom = new PluginMetademandsFieldCustomvalue();
-//        $metafieldfreetablefield = new PluginMetademandsFreetablefield();
-//        $stepconfig = new PluginMetademandsConfigstep();
-//        $step = new PluginMetademandsStep();
-//        $condition = new PluginMetademandsCondition();
-//        $fields['metafields'] = [];
-//        $fields['stepconfig'] = [];
-//        $fields['step'] = [];
-//        $fields['metafieldparameters'] = [];
-//        $fields['metafieldoptions'] = [];
-//        $fields['metafieldcustoms'] = [];
-//        $fields['metafieldfreetablefields'] = [];
-//
-//        $stepconfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
-//        $fields['stepconfig'] = $stepconfig->fields;
-//
-//        $steps = $step->find(['plugin_metademands_metademands_id' => $this->getID()]);
-//        foreach ($steps as $id => $ste) {
-//            $fields['step'][$id] = $ste;
-//        }
-//
-//        //TODO GroupConfig
-//
-//        $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
-//        foreach ($metafields as $id => $metafield) {
-//            $fields['metafields']['field' . $id] = $metafield;
-//
-//            $metafieldparameters = $metafieldparameter->find(['plugin_metademands_fields_id' => $metafield["id"]]);
-//            foreach ($metafieldparameters as $idparameters => $metafieldparam) {
-//                $fields['metafieldparameters']['fieldparameters' . $idparameters] = $metafieldparam;
-//            }
-//
-//            $metaconditions = $condition->find(['plugin_metademands_fields_id' => $metafield['id']]);
-//            if (!empty($metaconditions)) {
-//                foreach ($metaconditions as $key => $value) {
-//                    $fields['metafields']['field' . $id]['condition_' . $key] = $value;
-//                }
-//            }
-//
-//            $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
-//            foreach ($metafieldoptions as $idoptions => $metafieldopt) {
-//                $fields['metafieldoptions']['fieldoptions' . $idoptions] = $metafieldopt;
-//            }
-//
-//            $metafieldcustoms = $metafieldcustom->find(['plugin_metademands_fields_id' => $metafield["id"]]);
-//            foreach ($metafieldcustoms as $idcustoms => $metafieldcusto) {
-//                $fields['metafieldcustoms']['fieldcustoms' . $idcustoms] = $metafieldcusto;
-//            }
-//            $metafieldfreetablefields = $metafieldfreetablefield->find(['plugin_metademands_fields_id' => $metafield["id"]]);
-//            foreach ($metafieldfreetablefields as $idfreetables => $metafieldfreetable) {
-//                $fields['metafieldfreetablefields']['freetablefields' . $idfreetables] = $metafieldfreetable;
-//            }
-//        }
-//
-//        $fieldtranslation = new PluginMetademandsFieldTranslation();
-//        foreach ($fields['metafields'] as $id => $f) {
-//            $translationsfield = $fieldtranslation->find([
-//                'items_id' => $f['id'],
-//                'itemtype' => PluginMetademandsField::getType()
-//            ]);
-//            foreach ($translationsfield as $k => $v) {
-//                $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
-//            }
-//        }
-//        $resourceMeta = new PluginMetademandsMetademand_Resource();
-//        $resourceMeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
-//        $fields['resource'] = $resourceMeta->fields;
-//        $meta_Task = new PluginMetademandsTask();
-//        $tasks = $meta_Task->find(['plugin_metademands_metademands_id' => $this->getID()]);
-//        $fields['tasks'] = [];
-//        foreach ($tasks as $id => $task) {
-//            $fields['tasks']['task' . $id] = $task;
-//        }
-//        $metaTask = new PluginMetademandsMetademandTask();
-//        $metatasks = $metaTask->find(['plugin_metademands_metademands_id' => $this->getID()]);
-//        foreach ($metatasks as $id => $task) {
-//            $fields['metatasks']['metatask' . $id] = $task;
-//        }
-//
-//        $ticketTask = new PluginMetademandsTicketTask();
-//        $metaMailTask = new PluginMetademandsMailTask();
-//
-//        foreach ($fields['tasks'] as $id => $task) {
-//            if ($task['type'] == PluginMetademandsTask::TICKET_TYPE) {
-//                $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
-//                $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
-//            }
-//            if ($task['type'] == PluginMetademandsTask::MAIL_TYPE) {
-//                $metaMailTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
-//                $fields['tasks'][$id]['mailtask'] = $metaMailTask->fields;
-//            }
-//        }
+        //        $metatranslation = new PluginMetademandsMetademandTranslation();
+        //        $translations = $metatranslation->find([
+        //            'items_id' => $this->getID(),
+        //            'itemtype' => self::getType()
+        //        ]);
+        //        foreach ($translations as $id => $translation) {
+        //            $fields['translations']['meta_translation' . $id] = $translation;
+        //        }
+        //        $metafield = new PluginMetademandsField();
+        //        $metafieldoption = new PluginMetademandsFieldOption();
+        //        $metafieldparameter = new PluginMetademandsFieldParameter();
+        //        $metafieldcustom = new PluginMetademandsFieldCustomvalue();
+        //        $metafieldfreetablefield = new PluginMetademandsFreetablefield();
+        //        $stepconfig = new PluginMetademandsConfigstep();
+        //        $step = new PluginMetademandsStep();
+        //        $condition = new PluginMetademandsCondition();
+        //        $fields['metafields'] = [];
+        //        $fields['stepconfig'] = [];
+        //        $fields['step'] = [];
+        //        $fields['metafieldparameters'] = [];
+        //        $fields['metafieldoptions'] = [];
+        //        $fields['metafieldcustoms'] = [];
+        //        $fields['metafieldfreetablefields'] = [];
+        //
+        //        $stepconfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
+        //        $fields['stepconfig'] = $stepconfig->fields;
+        //
+        //        $steps = $step->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        //        foreach ($steps as $id => $ste) {
+        //            $fields['step'][$id] = $ste;
+        //        }
+        //
+        //        //TODO GroupConfig
+        //
+        //        $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        //        foreach ($metafields as $id => $metafield) {
+        //            $fields['metafields']['field' . $id] = $metafield;
+        //
+        //            $metafieldparameters = $metafieldparameter->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+        //            foreach ($metafieldparameters as $idparameters => $metafieldparam) {
+        //                $fields['metafieldparameters']['fieldparameters' . $idparameters] = $metafieldparam;
+        //            }
+        //
+        //            $metaconditions = $condition->find(['plugin_metademands_fields_id' => $metafield['id']]);
+        //            if (!empty($metaconditions)) {
+        //                foreach ($metaconditions as $key => $value) {
+        //                    $fields['metafields']['field' . $id]['condition_' . $key] = $value;
+        //                }
+        //            }
+        //
+        //            $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+        //            foreach ($metafieldoptions as $idoptions => $metafieldopt) {
+        //                $fields['metafieldoptions']['fieldoptions' . $idoptions] = $metafieldopt;
+        //            }
+        //
+        //            $metafieldcustoms = $metafieldcustom->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+        //            foreach ($metafieldcustoms as $idcustoms => $metafieldcusto) {
+        //                $fields['metafieldcustoms']['fieldcustoms' . $idcustoms] = $metafieldcusto;
+        //            }
+        //            $metafieldfreetablefields = $metafieldfreetablefield->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+        //            foreach ($metafieldfreetablefields as $idfreetables => $metafieldfreetable) {
+        //                $fields['metafieldfreetablefields']['freetablefields' . $idfreetables] = $metafieldfreetable;
+        //            }
+        //        }
+        //
+        //        $fieldtranslation = new PluginMetademandsFieldTranslation();
+        //        foreach ($fields['metafields'] as $id => $f) {
+        //            $translationsfield = $fieldtranslation->find([
+        //                'items_id' => $f['id'],
+        //                'itemtype' => PluginMetademandsField::getType()
+        //            ]);
+        //            foreach ($translationsfield as $k => $v) {
+        //                $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
+        //            }
+        //        }
+        //        $resourceMeta = new PluginMetademandsMetademand_Resource();
+        //        $resourceMeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
+        //        $fields['resource'] = $resourceMeta->fields;
+        //        $meta_Task = new PluginMetademandsTask();
+        //        $tasks = $meta_Task->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        //        $fields['tasks'] = [];
+        //        foreach ($tasks as $id => $task) {
+        //            $fields['tasks']['task' . $id] = $task;
+        //        }
+        //        $metaTask = new PluginMetademandsMetademandTask();
+        //        $metatasks = $metaTask->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        //        foreach ($metatasks as $id => $task) {
+        //            $fields['metatasks']['metatask' . $id] = $task;
+        //        }
+        //
+        //        $ticketTask = new PluginMetademandsTicketTask();
+        //        $metaMailTask = new PluginMetademandsMailTask();
+        //
+        //        foreach ($fields['tasks'] as $id => $task) {
+        //            if ($task['type'] == PluginMetademandsTask::TICKET_TYPE) {
+        //                $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+        //                $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
+        //            }
+        //            if ($task['type'] == PluginMetademandsTask::MAIL_TYPE) {
+        //                $metaMailTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+        //                $fields['tasks'][$id]['mailtask'] = $metaMailTask->fields;
+        //            }
+        //        }
 
         $xml = new SimpleXMLElement(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>" . PLUGIN_METADEMANDS_VERSION . "</version></metademand>"
@@ -618,7 +630,7 @@ class PluginMetademandsExport extends CommonDBTM
             } else {
                 // if the key is an integer, it needs text with it to actually work.
 
-                if ($key != 0 && $key == (int)$key) {
+                if ($key != 0 && $key == (int) $key) {
                     $key = "key_$key";
                 }
 
@@ -632,7 +644,7 @@ class PluginMetademandsExport extends CommonDBTM
     }
 
 
-    static function generateCustomCode()
+    public static function generateCustomCode()
     {
         $part1 = bin2hex(random_bytes(4));
         $part2 = bin2hex(random_bytes(4));
@@ -644,7 +656,7 @@ class PluginMetademandsExport extends CommonDBTM
         return "{$part1}-{$part2}-{$part3}.{$part4}";
     }
 
-    static function transformFieldTypeForFormcreator($type, $item = null)
+    public static function transformFieldTypeForFormcreator($type, $item = null)
     {
         if ($type === 'dropdown' && $item === 'Location') {
             return 'dropdown';
@@ -670,28 +682,30 @@ class PluginMetademandsExport extends CommonDBTM
             'checkbox' => 'checkboxes',
             'radio' => 'radios',
             'number' => 'integer',
-//        'range' => '',
-//        'freetable' => '',
-//        'basket' => '',
+            //        'range' => '',
+            //        'freetable' => '',
+            //        'basket' => '',
             'date' => 'date',
             'time' => 'time',
             'datetime' => 'datetime',
-//        'date_interval' => '',
-//        'datetime_interval' => '',
+            //        'date_interval' => '',
+            //        'datetime_interval' => '',
             'upload' => 'file',
             'link' => 'description',
-//        'signature' => '',
-//        'parent_field' => ''
+            //        'signature' => '',
+            //        'parent_field' => ''
             '**meta type**' => 'requesttype',
         ];
         return $map[$type] ?? "";
     }
 
-    static function getOptionsByFieldId($prefix, $fieldId)
+    public static function getOptionsByFieldId($prefix, $fieldId)
     {
 
-        $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-            ['hidden_link' => $fieldId]);
+        $options = getAllDataFromTable(
+            'glpi_plugin_metademands_fieldoptions',
+            ['hidden_link' => $fieldId]
+        );
 
         $renamedOptions = [];
 
@@ -713,19 +727,18 @@ class PluginMetademandsExport extends CommonDBTM
             $showOrder = 1;
 
             if ($fieldorigin->fields['type'] === 'yesno') {
-                if ((int)$option['check_value'] === 1) {
+                if ((int) $option['check_value'] === 1) {
                     $showValue = 'non';
                     $showOrder = 2;
-                } elseif ((int)$option['check_value'] === 2) {
+                } elseif ((int) $option['check_value'] === 2) {
                     $showValue = 'oui';
                 }
-            } else if ($fieldorigin->fields['type'] === 'text') {
+            } elseif ($fieldorigin->fields['type'] === 'text') {
                 $showCondition = 2;
 
-            } else if ((int)$option['check_value'] === -1) {
+            } elseif ((int) $option['check_value'] === -1) {
                 $showCondition = 2;
-            }
-            else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
+            } elseif (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
                 $showValue = $fieldcustomvalues->fields['name'] ?? "";
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
@@ -751,11 +764,13 @@ class PluginMetademandsExport extends CommonDBTM
         return $renamedOptions;
     }
 
-    static function getSectionConditions($fieldId, $prefix)
+    public static function getSectionConditions($fieldId, $prefix)
     {
 
-        $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-            ['plugin_metademands_fields_id' => $fieldId]);
+        $options = getAllDataFromTable(
+            'glpi_plugin_metademands_fieldoptions',
+            ['plugin_metademands_fields_id' => $fieldId]
+        );
 
         $conditions = [];
         $countByQuestionId = [];
@@ -779,19 +794,19 @@ class PluginMetademandsExport extends CommonDBTM
                 $showOrder = 1;
 
                 if ($fieldorigin->fields['type'] === 'yesno') {
-                    if ((int)$option['check_value'] === 1) {
+                    if ((int) $option['check_value'] === 1) {
                         $showValue = 'non';
                         $showOrder = 2;
-                    } elseif ((int)$option['check_value'] === 2) {
+                    } elseif ((int) $option['check_value'] === 2) {
                         $showValue = 'oui';
                     }
-                } else if ($fieldorigin->fields['type'] === 'text') {
+                } elseif ($fieldorigin->fields['type'] === 'text') {
                     $showCondition = 2;
 
-                } else if ((int)$option['check_value'] === -1) {
+                } elseif ((int) $option['check_value'] === -1) {
                     $showCondition = 2;
 
-                } else if (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
+                } elseif (in_array($fieldorigin->fields["type"], PluginMetademandsField::$field_customvalues_types)) {
                     $fieldcustomvalues->getFromDB($option['check_value']);
                     $showValue = $fieldcustomvalues->fields['name'] ?? "";
                     $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
@@ -805,7 +820,7 @@ class PluginMetademandsExport extends CommonDBTM
                     'show_value' => $showValue,
                     'show_logic' => $logic,
                     'order' => $showOrder,
-                    'uuid' => $prefix . $option['id'] . '1'
+                    'uuid' => $prefix . $option['id'] . '1',
                 ];
             }
 
@@ -813,7 +828,7 @@ class PluginMetademandsExport extends CommonDBTM
         return $conditions;
     }
 
-    static function generateFieldParameters($fieldtype, $fieldId, $prefix)
+    public static function generateFieldParameters($fieldtype, $fieldId, $prefix)
     {
 
         switch ($fieldtype) {
@@ -827,15 +842,15 @@ class PluginMetademandsExport extends CommonDBTM
                             "range_min" => 0,
                             "range_max" => 0,
                             "fieldname" => "range",
-                            "uuid" => $prefix . $fieldId
+                            "uuid" => $prefix . $fieldId,
                         ],
                         "regex" => [
                             "regex" => null,
                             "range_max" => 0,
                             "fieldname" => "regex",
-                            "uuid" => $prefix . $fieldId
-                        ]
-                    ]
+                            "uuid" => $prefix . $fieldId,
+                        ],
+                    ],
                 ];
             case 'checkboxes':
             case 'multiselect':
@@ -845,9 +860,9 @@ class PluginMetademandsExport extends CommonDBTM
                             "range_min" => 0,
                             "range_max" => 0,
                             "fieldname" => "range",
-                            "uuid" => $prefix . $fieldId
-                        ]
-                    ]
+                            "uuid" => $prefix . $fieldId,
+                        ],
+                    ],
                 ];
             default:
                 return [];
@@ -877,20 +892,20 @@ class PluginMetademandsExport extends CommonDBTM
         // JSON array initialization for the response
         $json = [
             "schema_version" => PLUGIN_FORMCREATOR_SCHEMA_VERSION,
-            "forms" => []
+            "forms" => [],
         ];
 
         // Basic form
         $form = [
             "name" => $metademands->fields['name'] ?? "",
-            "is_recursive" => (int)($metademands->fields['is_recursive']),
+            "is_recursive" => (int) ($metademands->fields['is_recursive']),
             "icon" => $metademands->fields['icon'] ?? 0,
             "icon_color" => $metademands->fields['title_color'],
             "background_color" => $metademands->fields['background_color'],
             "access_rights" => 1,
             "description" => $metademands->fields['comment'],
             "content" => $metademands->fields['comment'],
-            "is_active" => (int)($metademands->fields['is_active']),
+            "is_active" => (int) ($metademands->fields['is_active']),
             "language" => "",
             "helpdesk_home" => 0,
             "is_deleted" => $metademands->fields['is_deleted'],
@@ -913,10 +928,10 @@ class PluginMetademandsExport extends CommonDBTM
             "_targets" => [
                 "PluginFormcreatorTargetTicket" => [],
                 "PluginFormcreatorTargetChange" => [],
-                "PluginFormcreatorTargetProblem" => []
+                "PluginFormcreatorTargetProblem" => [],
             ],
             "_validators" => [],
-            "_translations" => []
+            "_translations" => [],
         ];
 
         if ($metademands->fields['object_to_create'] === "Ticket") {
@@ -959,7 +974,7 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 1,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetticketactor1"
+                        "uuid" => $prefix . $metademands_id . "targetticketactor1",
                     ],
                     [
                         "itemtype" => "PluginFormcreatorTargetTicket",
@@ -967,8 +982,8 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 2,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetticketactor2"
-                    ]
+                        "uuid" => $prefix . $metademands_id . "targetticketactor2",
+                    ],
                 ],
                 "_ticket_relations" => [],
                 "_conditions" => [],
@@ -981,8 +996,7 @@ class PluginMetademandsExport extends CommonDBTM
             }
 
             $form["_targets"]["PluginFormcreatorTargetTicket"][] = $newTicket;
-        }
-        else if ($metademands->fields['object_to_create'] === "Problem"){
+        } elseif ($metademands->fields['object_to_create'] === "Problem") {
             $newProblem = [
                 "name" => "Problem from metademand",
                 "target_name" => "Problem from metademand",
@@ -1009,7 +1023,7 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 1,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetproblemactor1"
+                        "uuid" => $prefix . $metademands_id . "targetproblemactor1",
                     ],
                     [
                         "itemtype" => "PluginFormcreatorTargetProblem",
@@ -1017,15 +1031,14 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 2,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetproblemactor2"
-                    ]
+                        "uuid" => $prefix . $metademands_id . "targetproblemactor2",
+                    ],
                 ],
                 "_conditions" => [],
             ];
 
             $form["_targets"]["PluginFormcreatorTargetProblem"][] = $newProblem;
-        }
-        else if ($metademands->fields['object_to_create'] === "Change"){
+        } elseif ($metademands->fields['object_to_create'] === "Change") {
             $newChange = [
                 "name" => "Change from metademand",
                 "target_name" => "Change from metademand",
@@ -1067,7 +1080,7 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 1,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetchangeactor1"
+                        "uuid" => $prefix . $metademands_id . "targetchangeactor1",
                     ],
                     [
                         "itemtype" => "PluginFormcreatorTargetChange",
@@ -1075,8 +1088,8 @@ class PluginMetademandsExport extends CommonDBTM
                         "actor_type" => 2,
                         "actor_value" => 0,
                         "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetchangeactor2"
-                    ]
+                        "uuid" => $prefix . $metademands_id . "targetchangeactor2",
+                    ],
                 ],
                 "_conditions" => [],
             ];
@@ -1084,8 +1097,10 @@ class PluginMetademandsExport extends CommonDBTM
             $form["_targets"]["PluginFormcreatorTargetChange"][] = $newChange;
         }
 
-        $metademands_groups_data = getAllDataFromTable('glpi_plugin_metademands_groups',
-            ['plugin_metademands_metademands_id' => $metademands_id]);
+        $metademands_groups_data = getAllDataFromTable(
+            'glpi_plugin_metademands_groups',
+            ['plugin_metademands_metademands_id' => $metademands_id]
+        );
 
         $formattedGroups = [];
         $IDGroups = [];
@@ -1096,7 +1111,7 @@ class PluginMetademandsExport extends CommonDBTM
                 // Create a table to store groups in the desired format
                 $formattedGroups[] = [
                     "uuid" => $prefix . $groups['groups_id'],
-                    "_group" => $metagroup->fields['name']
+                    "_group" => $metagroup->fields['name'],
                 ];
                 $IDGroups[] = $groups['groups_id'];
             }
@@ -1107,8 +1122,10 @@ class PluginMetademandsExport extends CommonDBTM
         $form["_groups"] = $formattedGroups;
 
 
-        $fields = getAllDataFromTable('glpi_plugin_metademands_fields',
-            ['plugin_metademands_metademands_id' => $metademands_id]);
+        $fields = getAllDataFromTable(
+            'glpi_plugin_metademands_fields',
+            ['plugin_metademands_metademands_id' => $metademands_id]
+        );
 
 
         $sections = [];
@@ -1136,7 +1153,7 @@ class PluginMetademandsExport extends CommonDBTM
                     "order" => $rank,
                     "show_rule" => 1,
                     "uuid" => $prefix . $rank,
-                    "_questions" => []
+                    "_questions" => [],
                 ];
 
                 if ($titles_block = $fieldmeta->find(['plugin_metademands_metademands_id' => $metademands_id,
@@ -1145,68 +1162,68 @@ class PluginMetademandsExport extends CommonDBTM
                     foreach ($titles_block as $title_block) {
                         $sections[$rank]["name"] = $title_block['name'];
                     }
-//                    continue;
+                    //                    continue;
                 }
             }
 
             $fieldtype = self::transformFieldTypeForFormcreator($params['type'], $params['item']);
 
-//            if (empty($fieldtype)) {
-//                continue;
-//            }
+            //            if (empty($fieldtype)) {
+            //                continue;
+            //            }
             // Créer la question
             if (!empty($fieldtype)) {
-            $question = [
-                "name" => $params['name'],
-                "fieldtype" => $fieldtype,
-                "required" => $params['is_mandatory'],
-                "show_empty" => 1,
-                "default_values" => "",
-                "itemtype" => $params['item'] !== null ? $params['item'] : "",
-                "values" => "",
-                "description" => "",
-                "row" => $params['order'],
-                "col" => 0,
-                "width" => 4,
-                "show_rule" => 1,
-                "uuid" => $prefix . $fieldId,
-                "_conditions" => [],
-                "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix)
-            ];
+                $question = [
+                    "name" => $params['name'],
+                    "fieldtype" => $fieldtype,
+                    "required" => $params['is_mandatory'],
+                    "show_empty" => 1,
+                    "default_values" => "",
+                    "itemtype" => $params['item'] !== null ? $params['item'] : "",
+                    "values" => "",
+                    "description" => "",
+                    "row" => $params['order'],
+                    "col" => 0,
+                    "width" => 4,
+                    "show_rule" => 1,
+                    "uuid" => $prefix . $fieldId,
+                    "_conditions" => [],
+                    "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix),
+                ];
 
-            if ($params['type'] === 'link') {
-                if (isset($params['custom_values'][1])) {
-                    $decodedUrl = urldecode($params['custom_values'][1]);
-                    $question['description'] = "<a href=\"$decodedUrl\" target=\"_blank\">$decodedUrl</a>";
-                } else {
-                    $question['description'] = __('No link', 'metademands');
-                }
-            } else {
-                $question['description'] = $params['label2'] . $params['comment'];
-            }
-            // Check if options are associated with this field
-            $options = self::getOptionsByFieldId($prefix, $fieldId);
-            if ($options) {
-                $question['show_rule'] = 2;
-                $question['_conditions'] = $options;
-            }
-
-            if (is_array($params['custom_values'])) {
-                $custom_values= [];
-                foreach ($params['custom_values'] as $k => $customs) {
-                    if (isset($customs['name'])) {
-                        $custom_values[] = $customs['name'];
+                if ($params['type'] === 'link') {
+                    if (isset($params['custom_values'][1])) {
+                        $decodedUrl = urldecode($params['custom_values'][1]);
+                        $question['description'] = "<a href=\"$decodedUrl\" target=\"_blank\">$decodedUrl</a>";
+                    } else {
+                        $question['description'] = __('No link', 'metademands');
                     }
+                } else {
+                    $question['description'] = $params['label2'] . $params['comment'];
                 }
-                $question['values'] = json_encode($custom_values);
-            }
+                // Check if options are associated with this field
+                $options = self::getOptionsByFieldId($prefix, $fieldId);
+                if ($options) {
+                    $question['show_rule'] = 2;
+                    $question['_conditions'] = $options;
+                }
 
-            if ($params['type'] === 'yesno') {
-                $question['values'] = json_encode(["oui", "non"]);
-                $question['itemtype'] = "other";
-            }
+                if (is_array($params['custom_values'])) {
+                    $custom_values = [];
+                    foreach ($params['custom_values'] as $k => $customs) {
+                        if (isset($customs['name'])) {
+                            $custom_values[] = $customs['name'];
+                        }
+                    }
+                    $question['values'] = json_encode($custom_values);
+                }
 
-            $sections[$rank]['_questions'][] = $question;
+                if ($params['type'] === 'yesno') {
+                    $question['values'] = json_encode(["oui", "non"]);
+                    $question['itemtype'] = "other";
+                }
+
+                $sections[$rank]['_questions'][] = $question;
             }
         }
         foreach ($fields as $field) {
@@ -1234,7 +1251,7 @@ class PluginMetademandsExport extends CommonDBTM
         $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
         $name = "/metademands/" . $safeName . ".json";
 
-        $file = fopen(GLPI_PLUGIN_DOC_DIR .$name,'w+') or die("File not found");
+        $file = fopen(GLPI_PLUGIN_DOC_DIR . $name, 'w+') or die("File not found");
         fwrite($file, $jsonOutput);
         fclose($file);
 
@@ -1398,10 +1415,10 @@ class PluginMetademandsExport extends CommonDBTM
             if (is_array($data) && empty($data)) {
                 $datas[$key] = '';
             } elseif (!is_array($data)) {
-                $datas[$key] = Html::entity_decode_deep($data);
+                $datas[$key] = $data;
             }
         }
-        $datas = Toolbox::addslashes_deep($datas);
+
         $newIDMeta = $metademand->add($datas);
         //      $translations = [];
 
@@ -1411,9 +1428,9 @@ class PluginMetademandsExport extends CommonDBTM
         foreach ($fields as $k => $field) {
             $metaconditions = [];
             foreach ($field as $key => $f) {
-                $fields[$k][$key] = Html::entity_decode_deep($f);
+                $fields[$k][$key] = $f;
 
-                $fieldoldparams[$k][$key] = Html::entity_decode_deep($f);
+                $fieldoldparams[$k][$key] = $f;
 
                 if ($key == "custom_values" && isset($field['type'])
                     && in_array($field['type'], $allowed_customvalues_types)
@@ -1426,26 +1443,26 @@ class PluginMetademandsExport extends CommonDBTM
                         $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
                     }
 
-//                    if ($field['type'] != 'yesno') {
-//                        $fieldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
-//                    }
+                    //                    if ($field['type'] != 'yesno') {
+                    //                        $fieldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
+                    //                    }
                     if (is_null($fields[$k][$key])) {
                         $fieldoldcustoms[$k][$key] = "[]";
                     }
-//                } elseif ($key == "comment_values") {
-//                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-//                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-//                    if (is_null($fields[$k][$key])) {
-//                        $fields[$k][$key] = "[]";
-//                    }
+                    //                } elseif ($key == "comment_values") {
+                    //                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+                    //                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+                    //                    if (is_null($fields[$k][$key])) {
+                    //                        $fields[$k][$key] = "[]";
+                    //                    }
                 } elseif (str_contains($key, 'condition')) {
                     $metaconditions[] = $f;
-//                } elseif ($key == "default_values") {
-//                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-//                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-//                    if (is_null($fields[$k][$key])) {
-//                        $fields[$k][$key] = "[]";
-//                    }
+                    //                } elseif ($key == "default_values") {
+                    //                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+                    //                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+                    //                    if (is_null($fields[$k][$key])) {
+                    //                        $fields[$k][$key] = "[]";
+                    //                    }
                 } elseif ($key == "informations_to_display") {
                     $fields[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
                     $fields[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
@@ -1468,8 +1485,6 @@ class PluginMetademandsExport extends CommonDBTM
             unset($fields[$k]["id"]);
             $fields[$k]['entities_id'] = $_SESSION['glpiactive_entity'];
 
-            $fields[$k] = Toolbox::addslashes_deep($fields[$k]);
-
             $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
             $fields[$k]["date_creation"] = $_SESSION['glpi_currenttime'];
             $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
@@ -1490,12 +1505,8 @@ class PluginMetademandsExport extends CommonDBTM
             if (isset($fieldstranslations)) {
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
-                    $fieldstranslation['value'] = Html::entity_decode_deep(
-                        Toolbox::addslashes_deep($fieldstranslation['value'])
-                    );
-                    $fieldstranslation['field'] = Html::entity_decode_deep(
-                        Toolbox::addslashes_deep($fieldstranslation['field'])
-                    );
+                    $fieldstranslation['value'] = $fieldstranslation['value'];
+                    $fieldstranslation['field'] = $fieldstranslation['field'];
                     $fieldstranslation['items_id'] = $newIDField;
 
                     $trans = new PluginMetademandsFieldTranslation();
@@ -1513,12 +1524,11 @@ class PluginMetademandsExport extends CommonDBTM
             unset($task['id']);
             unset($task['ancestors_cache']);
             unset($task['sons_cache']);
-            $task = Toolbox::addslashes_deep($task);
             $tickettask = $task['tickettask'] ?? [];
             $mailtask = $task['mailtask'] ?? [];
 
             foreach ($task as $key => $val) {
-                $task[$key] = Html::entity_decode_deep($val);
+                $task[$key] = $val;
             }
             $task['entities_id'] = $_SESSION['glpiactive_entity'];
 
@@ -1537,7 +1547,7 @@ class PluginMetademandsExport extends CommonDBTM
                     if (is_array($val) && empty($val)) {
                         $tickettask[$key] = '';
                     } elseif (!is_array($val)) {
-                        $tickettask[$key] = Html::entity_decode_deep($val);
+                        $tickettask[$key] = $val;
                     }
                 }
                 $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
@@ -1552,7 +1562,7 @@ class PluginMetademandsExport extends CommonDBTM
                     if (is_array($val) && empty($val)) {
                         $mailtask[$key] = '';
                     } elseif (!is_array($val)) {
-                        $mailtask[$key] = Html::entity_decode_deep($val);
+                        $mailtask[$key] = $val;
                     }
                 }
                 $mailtask['plugin_metademands_tasks_id'] = $newIDTask;
@@ -1567,7 +1577,8 @@ class PluginMetademandsExport extends CommonDBTM
         if ($version < "3.3.11") {
             foreach ($fieldoldparams as $new => $old) {
                 $plugin_metademands_fields_id = $old["id"] ?? 0;
-                $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
+                $empty_values = PluginMetademandsFieldParameter::_serialize([]);
+                ;
 
                 $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
                 $toUpdate["default_values"] = $old["default_values"] ?? $empty_values;
@@ -1614,7 +1625,8 @@ class PluginMetademandsExport extends CommonDBTM
         if ($version >= "3.3.11") {
             foreach ($fieldparameters as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
-                $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
+                $empty_values = PluginMetademandsFieldParameter::_serialize([]);
+                ;
 
                 $toUpdate["custom"] = $old["custom"] ?? $empty_values;
                 $toUpdate["default"] = $old["default"] ?? $empty_values;
@@ -1638,14 +1650,14 @@ class PluginMetademandsExport extends CommonDBTM
                 $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
                 $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
 
-                if (isset($old["informations_to_display"]) && $old["informations_to_display"] != NULL) {
-                    if (PluginMetademandsFieldParameter::_serialize($old["informations_to_display"]) != NULL) {
+                if (isset($old["informations_to_display"]) && $old["informations_to_display"] != null) {
+                    if (PluginMetademandsFieldParameter::_serialize($old["informations_to_display"]) != null) {
                         $toUpdate["informations_to_display"] = PluginMetademandsFieldParameter::_serialize(
                             $old["informations_to_display"]
                         );
                     }
                 } else {
-                    $toUpdate["informations_to_display"] =PluginMetademandsFieldParameter::_serialize(['full_name']);
+                    $toUpdate["informations_to_display"] = PluginMetademandsFieldParameter::_serialize(['full_name']);
                 }
                 $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
                 $toUpdate["icon"] = $old["icon"] ?? "";
@@ -1671,7 +1683,7 @@ class PluginMetademandsExport extends CommonDBTM
 
                 if (count($custom_values) > 0) {
                     foreach ($custom_values as $rank => $custom_value) {
-                        $name = Toolbox::addslashes_deep($custom_value);
+                        $name = $custom_value;
                         $oldrank = $rank;
                         $is_default = $old["is_default"] ?? 0;
                         $comment = $old["comment"] ?? "";
@@ -1684,7 +1696,7 @@ class PluginMetademandsExport extends CommonDBTM
                             $toUpdate["is_default"] = $is_default;
                         }
                         if ($comment != "") {
-                            $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
+                            $toUpdate["comment"] = $comment;
                         }
                         $toUpdate["rank"] = $oldrank - 1;
 
@@ -1710,13 +1722,13 @@ class PluginMetademandsExport extends CommonDBTM
 
                 $toUpdate = [];
                 if ($name != "") {
-                    $toUpdate["name"] = Toolbox::addslashes_deep($name);
+                    $toUpdate["name"] = $name;
                 }
                 if ($is_default != 0) {
                     $toUpdate["is_default"] = $is_default;
                 }
                 if ($comment != "") {
-                    $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
+                    $toUpdate["comment"] = $comment;
                 }
                 if ($icon != "") {
                     $toUpdate["icon"] = $icon;
@@ -1750,19 +1762,19 @@ class PluginMetademandsExport extends CommonDBTM
 
                 $toUpdate = [];
                 if ($name != "") {
-                    $toUpdate["name"] = Toolbox::addslashes_deep($name);
+                    $toUpdate["name"] = $name;
                 }
                 if ($internal_name != "") {
-                    $toUpdate["internal_name"] = Toolbox::addslashes_deep($internal_name);
+                    $toUpdate["internal_name"] = $internal_name;
                 }
                 if ($type != "") {
                     $toUpdate["type"] = $type;
                 }
                 if ($comment != "") {
-                    $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
+                    $toUpdate["comment"] = $comment;
                 }
                 if ($dropdown_values != "") {
-                    $toUpdate["dropdown_values"] = Toolbox::addslashes_deep($dropdown_values);
+                    $toUpdate["dropdown_values"] = $dropdown_values;
                 }
                 if ($is_mandatory) {
                     $toUpdate["is_mandatory"] = $is_mandatory;
@@ -1787,12 +1799,12 @@ class PluginMetademandsExport extends CommonDBTM
         $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
         foreach ($fieldoptions as $new => $old) {
-//            $fieldMeta->getFromDBByCrit(["plugin_metademands_fileds_id" => $new]);
+            //            $fieldMeta->getFromDBByCrit(["plugin_metademands_fileds_id" => $new]);
 
-//            if (isset($field['type'])
-//                && !in_array($field['type'], $allowed_customvalues_types)
-//                || (isset($field['item']) && !in_array($field['item'], $allowed_customvalues_items))
-//            ) {
+            //            if (isset($field['type'])
+            //                && !in_array($field['type'], $allowed_customvalues_types)
+            //                || (isset($field['item']) && !in_array($field['item'], $allowed_customvalues_items))
+            //            ) {
             $check_value = $old["check_value"] ?? 0;
             $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
             $plugin_metademands_tasks_id = $old["plugin_metademands_tasks_id"] ?? 0;
@@ -1804,8 +1816,8 @@ class PluginMetademandsExport extends CommonDBTM
             $checkbox_value = $old["checkbox_value"] ?? 0;
             $checkbox_id = $old["checkbox_id"] ?? 0;
             $hidden_block_same_block = $old["hidden_block_same_block"] ?? 0;
-//            $parent_field_id = $old["parent_field_id"]??0;
-//
+            //            $parent_field_id = $old["parent_field_id"]??0;
+            //
             $toUpdate = [];
             if ($check_value != 0) {
                 $toUpdate["check_value"] = $check_value;
@@ -1849,17 +1861,17 @@ class PluginMetademandsExport extends CommonDBTM
             if ($hidden_block_same_block != 0) {
                 $toUpdate["hidden_block_same_block"] = $hidden_block_same_block;
             }
-//            if ($parent_field_id != 0 && isset($mapTableField[$parent_field_id])) {
-//                $toUpdate["parent_field_id"] = $mapTableField[$parent_field_id];
-//            }
-//
+            //            if ($parent_field_id != 0 && isset($mapTableField[$parent_field_id])) {
+            //                $toUpdate["parent_field_id"] = $mapTableField[$parent_field_id];
+            //            }
+            //
             if ($plugin_metademands_fields_id != 0
                 && isset($mapTableField[$plugin_metademands_fields_id])) {
                 $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
             }
 
             $fieldMetaopt->add($toUpdate);
-//            }
+            //            }
         }
 
         foreach ($mapTableTaskReverse as $new => $old) {
@@ -1881,15 +1893,15 @@ class PluginMetademandsExport extends CommonDBTM
 
         if (!empty($stepconfig)) {
             $stepconfig_meta = new PluginMetademandsConfigstep();
-            if($stepconfig_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $newIDMeta])) {
+            if ($stepconfig_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $newIDMeta])) {
                 $stepconfig['id'] = $stepconfig_meta->fields['id'];
                 $stepconfig['plugin_metademands_metademands_id'] = $newIDMeta;
-                $stepconfig['see_blocks_as_tab'] = $stepconfig['see_blocks_as_tab'] ?? 0;
-                $stepconfig['link_user_block'] = $stepconfig['link_user_block'] ?? 0;
-                $stepconfig['multiple_link_groups_blocks'] = $stepconfig['multiple_link_groups_blocks'] ?? 0;
-                $stepconfig['add_user_as_requester'] = $stepconfig['add_user_as_requester'] ?? 0;
-                $stepconfig['supervisor_validation'] = $stepconfig['supervisor_validation'] ?? 0;
-                $stepconfig['step_by_step_interface'] = $stepconfig['step_by_step_interface'] ?? 0;
+                $stepconfig['see_blocks_as_tab'] ??= 0;
+                $stepconfig['link_user_block'] ??= 0;
+                $stepconfig['multiple_link_groups_blocks'] ??= 0;
+                $stepconfig['add_user_as_requester'] ??= 0;
+                $stepconfig['supervisor_validation'] ??= 0;
+                $stepconfig['step_by_step_interface'] ??= 0;
                 $stepconfig_meta->update($stepconfig);
             }
         }
@@ -1920,8 +1932,8 @@ class PluginMetademandsExport extends CommonDBTM
         if (!empty($translations)) {
             foreach ($translations as $key => $trans) {
                 $meta_translation = new PluginMetademandsMetademandTranslation();
-                $trans['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($trans['value']));
-                $trans['field'] = Html::entity_decode_deep($trans['field']);
+                $trans['value'] = $trans['value'];
+                $trans['field'] = $trans['field'];
                 unset($trans['id']);
                 $trans['items_id'] = $newIDMeta;
 

@@ -45,7 +45,7 @@ if (isset($_POST["add_groups"])) {
         $grp = new Group();
         $groups = $grp->find();
         foreach ($groups as $g) {
-            $res = preg_match(Toolbox::stripslashes_deep($_POST['regex_value']), $g['name']) == 1;
+            $res = preg_match($_POST['regex_value'], $g['name']) == 1;
             if ($res) {
                 $group->add(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'], 'groups_id' => $g['id']]);
             }

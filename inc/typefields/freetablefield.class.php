@@ -231,7 +231,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
             echo "&nbsp;";
             Html::showToolTip(
                 Glpi\RichText\RichText::getSafeHtml($label),
-                ['awesome-class' => 'fa-info-circle']
+                ['awesome-class' => 'ti ti-info-circle']
             );
             echo "</th>";
             echo "</tr>";
@@ -313,7 +313,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => true]);
 
-        echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer;'
+        echo "&nbsp;<i class='ti ti-plus' style='cursor:pointer;'
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
     }
@@ -338,7 +338,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         $label = __('No spaces, no special characters', 'metademands');
         Html::showToolTip(
             Glpi\RichText\RichText::getSafeHtml($label),
-            ['awesome-class' => 'fa-info-circle']
+            ['awesome-class' => 'ti ti-info-circle']
         );
         $name = "internal_name_values[$rank]";
         echo Html::input($name, ['size' => 20]);
@@ -398,7 +398,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         $label = __('One value by line, separated by comma', 'metademands');
         Html::showToolTip(
             Glpi\RichText\RichText::getSafeHtml($label),
-            ['awesome-class' => 'fa-info-circle']
+            ['awesome-class' => 'ti ti-info-circle']
         );
         $name = "dropdown_values[$rank]";
         Html::textarea([
@@ -435,7 +435,7 @@ class PluginMetademandsFreetablefield extends CommonDBChild
         echo Html::submit("", [
             'name' => 'add',
             'class' => 'btn btn-primary',
-            'icon' => 'fas fa-save',
+            'icon' => 'ti ti-device-floppy',
         ]);
         echo "</td>";
         echo "</tr>";

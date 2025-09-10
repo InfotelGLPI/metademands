@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -29,15 +30,16 @@
 
 /**
  * @return bool
- * @throws \GlpitestSQLError
+ * @throws GlpitestSQLError
  */
-function plugin_metademands_install() {
+function plugin_metademands_install()
+{
     global $DB;
 
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.4.0.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.5.0.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -97,8 +99,8 @@ function plugin_metademands_install() {
 
     //version 2.7.1
     if ($DB->tableExists("glpi_plugin_metademands_fields", false)
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket", false) &&
-        !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order", false)) {
+        && !$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.1.sql");
 
         include(PLUGIN_METADEMANDS_DIR . "/install/update270_271.php");
@@ -296,7 +298,7 @@ function plugin_metademands_install() {
     }
     //version 3.2.8
     if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "step_by_step_mode", false)) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.8.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.8.sql");
     }
     //version 3.2.18
     if (!$DB->fieldExists("glpi_plugin_metademands_tickets_fields", "value2", false)) {
@@ -422,7 +424,7 @@ function plugin_metademands_install() {
                         'comment_values' => $field['comment_values'],
                         'default_values' => $field['default_values'],
                         'max_upload' => $field['max_upload'],
-                        'regex' => Toolbox::addslashes_deep($field['regex']),
+                        'regex' => $field['regex'],
                         'use_future_date' => $field['use_future_date'],
                         'use_date_now' => $field['use_date_now'],
                         'additional_number_day' => $field['additional_number_day'],
@@ -473,16 +475,16 @@ function plugin_metademands_install() {
                         foreach ($custom_values as $k => $name) {
                             $inputs[$k]['plugin_metademands_fields_id'] = $field['id'];
                             if (isset($custom_values[$k])) {
-                                $inputs[$k]['name'] = Toolbox::addslashes_deep($custom_values[$k]);
+                                $inputs[$k]['name'] = $custom_values[$k];
                             }
                             if (isset($default_values[$k])) {
                                 $inputs[$k]['is_default'] = $default_values[$k];
                             }
                             if (isset($comment_values[$k])) {
-                                $inputs[$k]['comment'] = Toolbox::addslashes_deep($comment_values[$k]);
+                                $inputs[$k]['comment'] = $comment_values[$k];
                             }
                             $inputs[$k]['old_check_value'] = $k;
-                            $inputs[$k]['old_translation_name'] = "custom".$k;
+                            $inputs[$k]['old_translation_name'] = "custom" . $k;
                             $inputs[$k]['rank'] = $rank;
                             $rank++;
                         }
@@ -498,7 +500,7 @@ function plugin_metademands_install() {
                             "id" => $metademand_params->fields['id'],
                             "custom_values" => null,
                             "default_values" => null,
-                            "comment_values" => null
+                            "comment_values" => null,
                         ]);
 
                         $metademand_options = new PluginMetademandsFieldOption();
@@ -527,7 +529,7 @@ function plugin_metademands_install() {
                         );
                         if (count($fieldtranslations) > 0) {
                             foreach ($fieldtranslations as $k => $fieldtranslation) {
-                                $new_value = "custom".$input['rank'];
+                                $new_value = "custom" . $input['rank'];
                                 $metademand_translations->update(
                                     ["id" => $fieldtranslation['id'], "field" => $new_value]
                                 );
@@ -683,8 +685,8 @@ function plugin_metademands_install() {
         $DB->doQuery($query);
 
         foreach ($DB->request("SELECT `profiles_id`
-                             FROM `glpi_profilerights` 
-                             WHERE `name` LIKE '%plugin_metademands%' 
+                             FROM `glpi_profilerights`
+                             WHERE `name` LIKE '%plugin_metademands%'
                              AND `rights` > '10'") as $prof) {
 
             $rights = ['plugin_metademands_validatemeta' => 1];
@@ -712,6 +714,11 @@ function plugin_metademands_install() {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.4.0.sql");
     }
 
+    //version 3.5.0
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_pinned", false)) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.5.0.sql");
+    }
+
     //Displayprefs
     $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
     foreach ($prefs as $num => $rank) {
@@ -720,13 +727,13 @@ function plugin_metademands_install() {
                 "glpi_displaypreferences",
                 ['itemtype' => 'PluginMetademandsDraft',
                     'num' => $num,
-                    'users_id' => 0
+                    'users_id' => 0,
                 ]
             )
         ) {
             $DB->doQuery("INSERT INTO glpi_displaypreferences
-                                  (`itemtype`, `num`, `rank`, `users_id`)
-                           VALUES ('PluginMetademandsDraft','$num','$rank','0');");
+                                  (`itemtype`, `num`, `rank`, `users_id`, `interface`)
+                           VALUES ('PluginMetademandsDraft','$num','$rank','0', 'central');");
         }
     }
     PluginMetademandsProfile::initProfile();
@@ -745,14 +752,15 @@ function plugin_metademands_install() {
 // Uninstall process for plugin : need to return true if succeeded
 /**
  * @return bool
- * @throws \GlpitestSQLError
+ * @throws GlpitestSQLError
  */
-function plugin_metademands_uninstall() {
+function plugin_metademands_uninstall()
+{
     global $DB;
 
     $options = ['itemtype' => 'PluginMetademandsInterticketfollowup',
-                'event'    => 'add_interticketfollowup',
-                'FIELDS'   => 'id'];
+        'event'    => 'add_interticketfollowup',
+        'FIELDS'   => 'id'];
 
     $notif = new Notification();
     foreach ($DB->request('glpi_notifications', $options) as $data) {
@@ -764,11 +772,11 @@ function plugin_metademands_uninstall() {
     $translation    = new NotificationTemplateTranslation();
     $notif_template = new Notification_NotificationTemplate();
     $options        = ['itemtype' => 'PluginMetademandsInterticketfollowup',
-                       'FIELDS'   => 'id'];
+        'FIELDS'   => 'id'];
 
     foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
         $options_template = ['notificationtemplates_id' => $data['id'],
-                             'FIELDS'                   => 'id'];
+            'FIELDS'                   => 'id'];
         foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
             $translation->delete($data_template);
         }
@@ -781,8 +789,8 @@ function plugin_metademands_uninstall() {
     //for step forms
 
     $options = ['itemtype' => 'PluginMetademandsStepform',
-                'event'    => 'new_step_form',
-                'FIELDS'   => 'id'];
+        'event'    => 'new_step_form',
+        'FIELDS'   => 'id'];
 
     $notif = new Notification();
     foreach ($DB->request('glpi_notifications', $options) as $data) {
@@ -799,8 +807,8 @@ function plugin_metademands_uninstall() {
     }
 
     $options = ['itemtype' => 'PluginMetademandsStepform',
-                'event'    => 'delete_step_form',
-                'FIELDS'   => 'id'];
+        'event'    => 'delete_step_form',
+        'FIELDS'   => 'id'];
 
     $notif = new Notification();
     foreach ($DB->request('glpi_notifications', $options) as $data) {
@@ -812,11 +820,11 @@ function plugin_metademands_uninstall() {
     $translation    = new NotificationTemplateTranslation();
     $notif_template = new Notification_NotificationTemplate();
     $options        = ['itemtype' => 'PluginMetademandsStepform',
-                       'FIELDS'   => 'id'];
+        'FIELDS'   => 'id'];
 
     foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
         $options_template = ['notificationtemplates_id' => $data['id'],
-                             'FIELDS'                   => 'id'];
+            'FIELDS'                   => 'id'];
         foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
             $translation->delete($data_template);
         }
@@ -921,22 +929,24 @@ function plugin_item_transfer_metademands($parm)
             'glpi_plugin_metademands_groupconfigs',
             'glpi_plugin_metademands_groups',
             'glpi_plugin_metademands_metademands_resources',
-            'glpi_plugin_metademands_ticketfields'
+            'glpi_plugin_metademands_ticketfields',
         ];
-        foreach($tables as $table) {
-            $DB->update($table,
+        foreach ($tables as $table) {
+            $DB->update(
+                $table,
                 ['entities_id' => $parm['entities_id']],
                 [
                     'WHERE' => [
-                        'plugin_metademands_metademands_id' => $parm['id']
-                    ]
+                        'plugin_metademands_metademands_id' => $parm['id'],
+                    ],
                 ]
             );
         }
     }
 }
 
-function plugin_metademands_item_purge($item) {
+function plugin_metademands_item_purge($item)
+{
 
     if ($item instanceof Ticket) {
         $temp = new PluginMetademandsForm();
@@ -971,64 +981,65 @@ function plugin_metademands_item_purge($item) {
 
 // Define dropdown relations
 /**
- * @return array|\string[][]
+ * @return array|string[][]
  */
-function plugin_metademands_getDatabaseRelations() {
+function plugin_metademands_getDatabaseRelations()
+{
 
     if (Plugin::isPluginActive("metademands")) {
         return ["glpi_entities" => ["glpi_plugin_metademands_metademands"           => "entities_id",
-                                    "glpi_plugin_metademands_fields"                => "entities_id",
-                                    "glpi_plugin_metademands_metademands_resources" => "entities_id",
-                                    "glpi_plugin_metademands_ticketfields"          => "entities_id",
-                                    "glpi_plugin_metademands_tasks"                 => "entities_id"],
+            "glpi_plugin_metademands_fields"                => "entities_id",
+            "glpi_plugin_metademands_metademands_resources" => "entities_id",
+            "glpi_plugin_metademands_ticketfields"          => "entities_id",
+            "glpi_plugin_metademands_tasks"                 => "entities_id"],
 
-                "glpi_plugin_metademands_metademands" => ["glpi_plugin_metademands_fields"                => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_tickets_metademands"   => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_metademandtasks"       => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_ticketfields"          => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_tasks"                 => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_groups"                => "plugin_metademands_metademands_id",
-//                                                          "glpi_plugin_metademands_basketlines"           => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_metademandvalidations" => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_configsteps"           => "plugin_metademands_metademands_id"],
+            "glpi_plugin_metademands_metademands" => ["glpi_plugin_metademands_fields"                => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_tickets_metademands"   => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_metademandtasks"       => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_ticketfields"          => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_tasks"                 => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_groups"                => "plugin_metademands_metademands_id",
+                //                                                          "glpi_plugin_metademands_basketlines"           => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_metademandvalidations" => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id",
+                "glpi_plugin_metademands_configsteps"           => "plugin_metademands_metademands_id"],
 
-                "glpi_tickets"                   => [
-//                    "glpi_plugin_metademands_tickets_fields"        => "tickets_id",
-//                                                     "glpi_plugin_metademands_metademandvalidations" => "tickets_id",
-//                                                     "glpi_plugin_metademands_tickets_tasks"         => "tickets_id",
-//                                                     "glpi_plugin_metademands_tickets_tasks"         => "parent_tickets_id",
-//                                                     "glpi_plugin_metademands_tickets_metademands"   => "tickets_id",
-//                                                     "glpi_plugin_metademands_tickets_metademands"   => "parent_tickets_id",
-//                                                     "glpi_plugin_metademands_interticketfollowups"   => "tickets_id",
-                ],
-                "glpi_users"                     => ["glpi_plugin_metademands_basketlines"           => "users_id",
-                                                     "glpi_plugin_metademands_metademandvalidations" => "users_id",
-                                                     "glpi_plugin_metademands_tickettasks"           => "users_id_assign",
-                                                     "glpi_plugin_metademands_tickettasks"           => "users_id_requester",
-                                                     "glpi_plugin_metademands_tickettasks"           => "users_id_observer",
-                                                     "glpi_plugin_metademands_drafts"                => "users_id"
-                ],
-                "glpi_groups"                    => ["glpi_plugin_metademands_groups"      => "groups_id",
-                                                     "glpi_plugin_metademands_tickettasks" => "groups_id_assign",
-                                                     "glpi_plugin_metademands_tickettasks" => "groups_id_requester",
-                                                     "glpi_plugin_metademands_tickettasks" => "groups_id_observer",
-                ],
-                "glpi_itilcategories"            => ["glpi_plugin_metademands_metademands" => "itilcategories_id",
-                                                     "glpi_plugin_metademands_tickettasks" => "itilcategories_id",
-                ],
-                "glpi_plugin_metademands_fields" => ["glpi_plugin_metademands_tickets_fields" => "plugin_metademands_fields_id",
-                                                     "glpi_plugin_metademands_drafts_values"  => "plugin_metademands_fields_id",
-                                                     "glpi_plugin_metademands_basketlines"    => "plugin_metademands_fields_id",
-                                                     "glpi_plugin_metademands_fieldoptions"    => "plugin_metademands_fields_id"],
+            "glpi_tickets"                   => [
+                //                    "glpi_plugin_metademands_tickets_fields"        => "tickets_id",
+                //                                                     "glpi_plugin_metademands_metademandvalidations" => "tickets_id",
+                //                                                     "glpi_plugin_metademands_tickets_tasks"         => "tickets_id",
+                //                                                     "glpi_plugin_metademands_tickets_tasks"         => "parent_tickets_id",
+                //                                                     "glpi_plugin_metademands_tickets_metademands"   => "tickets_id",
+                //                                                     "glpi_plugin_metademands_tickets_metademands"   => "parent_tickets_id",
+                //                                                     "glpi_plugin_metademands_interticketfollowups"   => "tickets_id",
+            ],
+            "glpi_users"                     => ["glpi_plugin_metademands_basketlines"           => "users_id",
+                "glpi_plugin_metademands_metademandvalidations" => "users_id",
+                "glpi_plugin_metademands_tickettasks"           => "users_id_assign",
+                "glpi_plugin_metademands_tickettasks"           => "users_id_requester",
+                "glpi_plugin_metademands_tickettasks"           => "users_id_observer",
+                "glpi_plugin_metademands_drafts"                => "users_id",
+            ],
+            "glpi_groups"                    => ["glpi_plugin_metademands_groups"      => "groups_id",
+                "glpi_plugin_metademands_tickettasks" => "groups_id_assign",
+                "glpi_plugin_metademands_tickettasks" => "groups_id_requester",
+                "glpi_plugin_metademands_tickettasks" => "groups_id_observer",
+            ],
+            "glpi_itilcategories"            => ["glpi_plugin_metademands_metademands" => "itilcategories_id",
+                "glpi_plugin_metademands_tickettasks" => "itilcategories_id",
+            ],
+            "glpi_plugin_metademands_fields" => ["glpi_plugin_metademands_tickets_fields" => "plugin_metademands_fields_id",
+                "glpi_plugin_metademands_drafts_values"  => "plugin_metademands_fields_id",
+                "glpi_plugin_metademands_basketlines"    => "plugin_metademands_fields_id",
+                "glpi_plugin_metademands_fieldoptions"    => "plugin_metademands_fields_id"],
 
-                "glpi_plugin_metademands_tasks" => ["glpi_plugin_metademands_fieldoptions"          => "plugin_metademands_tasks_id",
-                                                    "glpi_plugin_metademands_tickettasks"     => "plugin_metademands_tasks_id",
-                                                    "glpi_plugin_metademands_tickets_tasks"   => "plugin_metademands_tasks_id",
-                                                    "glpi_plugin_metademands_metademandtasks" => "plugin_metademands_tasks_id"],
+            "glpi_plugin_metademands_tasks" => ["glpi_plugin_metademands_fieldoptions"          => "plugin_metademands_tasks_id",
+                "glpi_plugin_metademands_tickettasks"     => "plugin_metademands_tasks_id",
+                "glpi_plugin_metademands_tickets_tasks"   => "plugin_metademands_tasks_id",
+                "glpi_plugin_metademands_metademandtasks" => "plugin_metademands_tasks_id"],
 
-                "glpi_plugin_metademands_drafts" => ["glpi_plugin_metademands_drafts_values" => "plugin_metademands_drafts_id"],
+            "glpi_plugin_metademands_drafts" => ["glpi_plugin_metademands_drafts_values" => "plugin_metademands_drafts_id"],
         ];
     } else {
         return [];
@@ -1075,7 +1086,8 @@ function plugin_metademands_getDatabaseRelations() {
  *
  * @return array
  */
-function plugin_metademands_getAddSearchOptions($itemtype) {
+function plugin_metademands_getAddSearchOptions($itemtype)
+{
 
     $sopt = [];
     if ($itemtype == "Ticket") {
@@ -1090,8 +1102,8 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
             $sopt[9499]['joinparams']    = ['beforejoin' => [
                 'table'      => 'glpi_plugin_metademands_metademandvalidations',
                 'joinparams' => [
-                    'jointype' => 'child'
-                ]
+                    'jointype' => 'child',
+                ],
             ]];
             $sopt[9499]['massiveaction'] = false;
 
@@ -1119,7 +1131,7 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
             $sopt[9502]['forcegroupby'] = true;
             //         $sopt[9502]['linkfield']     = 'parent_tickets_id';
             $sopt[9502]['joinparams']    = ['jointype'  => 'child',
-                                            'linkfield' => 'parent_tickets_id'];
+                'linkfield' => 'parent_tickets_id'];
             $sopt[9502]['massiveaction'] = false;
 
             $sopt[9503]['table']      = 'glpi_plugin_metademands_tickets_tasks';
@@ -1130,7 +1142,7 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
             //         $sopt[9503]['forcegroupby']    = true;
             //         $sopt[9502]['linkfield']     = 'parent_tickets_id';
             $sopt[9503]['joinparams'] = ['jointype'  => 'child',
-                                         'linkfield' => 'parent_tickets_id'];
+                'linkfield' => 'parent_tickets_id'];
             //         $sopt[9503]['joinparams']    = ['jointype'  => 'child'];
             $sopt[9503]['massiveaction'] = false;
 
@@ -1142,7 +1154,7 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
             $sopt[9504]['forcegroupby'] = true;
             //        $sopt[9502]['linkfield']     = 'parent_tickets_id';
             $sopt[9504]['joinparams']    = ['jointype'  => 'child',
-                                            'linkfield' => 'parent_tickets_id'];
+                'linkfield' => 'parent_tickets_id'];
             $sopt[9504]['massiveaction'] = false;
         }
     }
@@ -1160,9 +1172,10 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
  *
  * @return string
  */
-function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype) {
+function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype)
+{
 
-    $searchopt = &Search::getOptions($type);
+    $searchopt = Search::getOptions($type);
     $table     = $searchopt[$ID]["table"];
     $field     = $searchopt[$ID]["field"];
 
@@ -1188,22 +1201,26 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
 
         case "glpi_plugin_metademands_tickets_tasks.id":
             switch ($searchtype) {
-                case 'equals' :
+                case 'equals':
                     if ($val === '0') {
                         return " ";
                     }
                     if ($val == 'mygroups') {
-                        return " $link (`glpi_groups_metademands`.`id` IN ('" . implode("','",
-                                                                                        $_SESSION['glpigroups']) . "')) ";
+                        return " $link (`glpi_groups_metademands`.`id` IN ('" . implode(
+                            "','",
+                            $_SESSION['glpigroups']
+                        ) . "')) ";
                     } else {
                         return " $link (`glpi_groups_metademands`.`id` IN ('" . $val . "')) ";
                     }
                     break;
-                case 'notequals' :
-                    return " $link (`glpi_groups_metademands`.`id` NOT IN ('" . implode("','",
-                                                                                        $_SESSION['glpigroups']) . "')) ";
+                case 'notequals':
+                    return " $link (`glpi_groups_metademands`.`id` NOT IN ('" . implode(
+                        "','",
+                        $_SESSION['glpigroups']
+                    ) . "')) ";
                     break;
-                case 'contains' :
+                case 'contains':
                     return " ";
                     break;
             }
@@ -1211,16 +1228,16 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
 
         case "glpi_plugin_metademands_tickets_tasks.plugin_metademands_tasks_id":
             switch ($searchtype) {
-                case 'equals' :
+                case 'equals':
                     if ($val === '0') {
                         return " ";
                     }
                     return " $link (`glpi_users_metademands`.`id` IN ('" . $val . "')) ";
                     break;
-                case 'notequals' :
+                case 'notequals':
                     return " $link (`glpi_users_metademands`.`id` NOT IN ('" . $val . "')) ";
                     break;
-                case 'contains' :
+                case 'contains':
                     return " ";
                     break;
             }
@@ -1240,9 +1257,10 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
  * @param $linkfield
  * @param $already_link_tables
  *
- * @return \Left|string
+ * @return Left|string
  */
-function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables) {
+function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables)
+{
 
     // Rename table for meta left join
     $AS = "";
@@ -1253,15 +1271,15 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
 
     switch ($new_table) {
         //
-        case "glpi_plugin_metademands_tickets_tasks" :
+        case "glpi_plugin_metademands_tickets_tasks":
             return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` 
-          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
+          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id`
+          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
           LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
-          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id` 
+          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id`
           AND `glpi_tickets_metademands`.`is_deleted` = 0)
-          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id` 
-          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
+          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id`
+          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
           LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
             break;
 
@@ -1276,8 +1294,9 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
  *
  * @return string
  */
-function plugin_metademands_addSelect($type, $ID, $num) {
-    $searchopt = &Search::getOptions($type);
+function plugin_metademands_addSelect($type, $ID, $num)
+{
+    $searchopt = Search::getOptions($type);
     $table     = $searchopt[$ID]["table"];
     $field     = $searchopt[$ID]["field"];
 
@@ -1307,20 +1326,21 @@ function plugin_metademands_addSelect($type, $ID, $num) {
  * @param string $linkfield
  *
  * @return string
- * @throws \GlpitestSQLError
+ * @throws GlpitestSQLError
  */
-function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = "") {
+function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = "")
+{
     global $CFG_GLPI;
     switch ($field) {
-        case 9499 :
+        case 9499:
             $out = getUserName($data['raw']["ITEM_" . $num], 0, true);
             return $out;
             break;
-        case 9500 :
+        case 9500:
             $out = PluginMetademandsTicket_Metademand::getStatusName($data['raw']["ITEM_" . $num]);
             return $out;
             break;
-        case 9501 :
+        case 9501:
             if ($data['raw']["ITEM_" . $num] > -1) {
                 $style = "style='background-color: " . PluginMetademandsMetademandValidation::getStatusColor($data['raw']["ITEM_" . $num]) . ";'";
                 $out   = "<div class='center' $style>";
@@ -1331,10 +1351,10 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             }
             return $out;
             break;
-        //      case 9502 :
-        //         $out   = PluginMetademandsTicket_Metademand::getStatusName($data['raw']["ITEM_" . $num]);
-        //         return $out;
-        //         break;
+            //      case 9502 :
+            //         $out   = PluginMetademandsTicket_Metademand::getStatusName($data['raw']["ITEM_" . $num]);
+            //         return $out;
+            //         break;
         case 9503:
             $out                                  = $data['id'];
             $options['criteria'][0]['field']      = 50; // metademand status
@@ -1358,17 +1378,19 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             if ($metademands->getFromDBByCrit(['tickets_id' => $data['id']])) {
                 $DB                               = DBConnection::getReadConnection();
                 $dbu                              = new DbUtils();
-                $get_running_parents_tickets_meta =
-                    "SELECT  COUNT( DISTINCT `glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_tickets`
+                $get_running_parents_tickets_meta
+                    = "SELECT  COUNT( DISTINCT `glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_tickets`
                         LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                          LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
+                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` )
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
-                            `glpi_tickets`.`is_deleted` = 0 
-                             AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
-                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','",
-                                                                                                                                             $_SESSION['glpigroups']) . "')) AND  `glpi_tickets`.`id` =  " . $data['id'] . " " .
-                    $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+                            `glpi_tickets`.`is_deleted` = 0
+                             AND `glpi_plugin_metademands_tickets_metademands`.`status` =
+                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode(
+                        "','",
+                        $_SESSION['glpigroups']
+                    ) . "')) AND  `glpi_tickets`.`id` =  " . $data['id'] . " "
+                    . $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
                 $total_running_parents_meta = $DB->doQuery($get_running_parents_tickets_meta);
@@ -1378,8 +1400,8 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                     $total_running = $row['total_running'];
                 }
                 if ($total_running > 0) {
-                    $out = "<a href=\"" . $CFG_GLPI["root_doc"] . "/front/ticket.php?" .
-                           Toolbox::append_params($options, '&amp;') . "\"><i class='center fas fa-share-alt fa-2x'></i></a>";
+                    $out = "<a href=\"" . $CFG_GLPI["root_doc"] . "/front/ticket.php?"
+                           . Toolbox::append_params($options, '&amp;') . "\"><i class='center style=\"font-size:2em;\" ti ti-share'></i></a>";
                     return $out;
                 } else {
                     return " ";
@@ -1387,7 +1409,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             }
             return " ";
             break;
-        case 9504 :
+        case 9504:
             $result = "";
             if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
                 if (isset($data["Ticket_9504"]["count"])) {
@@ -1411,7 +1433,8 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
     return "";
 }
 
-function install_notifications_metademands() {
+function install_notifications_metademands()
+{
 
     global $DB;
 
@@ -1430,12 +1453,12 @@ function install_notifications_metademands() {
 VALUES('" . $templates_id . "',
 '',
 '##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
-##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate## 
+##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate##
 ##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
-##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors## 
-##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups## 
+##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors##
+##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups##
 ##IFticket.assigntousers####lang.ticket.assigntousers## : ##ticket.assigntousers## ##ENDIFticket.assigntousers##
-<!-- Suivis 
+<!-- Suivis
 ##ticket.action## -->
 ##FOREACH LAST 1 followups_intern##
 ##lang.followup_intern.author## : ##followup_intern.author## - ##followup_intern.date####followup_intern.description##
@@ -1464,10 +1487,10 @@ Ticket ###ticket.id##
     //retrieve notification id
     $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'New inter ticket Followup' AND `itemtype` = 'PluginMetademandsInterticketfollowup' AND `event` = 'add_interticketfollowup'";
-    $result = $DB->doQuery($query_id) or die ($DB->error());
+    $result = $DB->doQuery($query_id) or die($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 
@@ -1478,7 +1501,8 @@ Ticket ###ticket.id##
 
 }
 
-function install_notifications_forms_metademands() {
+function install_notifications_forms_metademands()
+{
 
     global $DB;
 
@@ -1515,10 +1539,10 @@ VALUES('" . $templates_id . "',
     //retrieve notification id
     $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'New form completed' AND `itemtype` = 'PluginMetademandsStepform' AND `event` = 'new_step_form'";
-    $result = $DB->doQuery($query_id) or die ($DB->error());
+    $result = $DB->doQuery($query_id) or die($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 
@@ -1552,10 +1576,10 @@ VALUES('" . $templates_id . "',
     //retrieve notification id
     $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'Form completed' AND `itemtype` = 'PluginMetademandsStepform' AND `event` = 'update_step_form'";
-    $result = $DB->doQuery($query_id) or die ($DB->error());
+    $result = $DB->doQuery($query_id) or die($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 
@@ -1580,13 +1604,13 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'provider'   => "PluginMetademandsMetademand::getRunningMetademands",
         'cache'      => false,
         'args'       => [
-                'params' => [
-                ]
+            'params' => [
             ],
+        ],
         'filters'    => [
             'dates', 'dates_mod', 'itilcategory',
-            'group_tech', 'user_tech', 'requesttype', 'location'
-        ]
+            'group_tech', 'user_tech', 'requesttype', 'location',
+        ],
     ];
 
 
@@ -1599,12 +1623,12 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'cache'      => false,
         'args'       => [
             'params' => [
-            ]
+            ],
         ],
         'filters'    => [
             'dates', 'dates_mod', 'itilcategory',
-            'group_tech', 'user_tech', 'requesttype', 'location'
-        ]
+            'group_tech', 'user_tech', 'requesttype', 'location',
+        ],
     ];
 
     $cards["count_metademands_need_validation"] = [
@@ -1616,12 +1640,12 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'cache'      => false,
         'args'       => [
             'params' => [
-            ]
+            ],
         ],
         'filters'    => [
             'dates', 'dates_mod', 'itilcategory',
-            'group_tech', 'user_tech', 'requesttype', 'location'
-        ]
+            'group_tech', 'user_tech', 'requesttype', 'location',
+        ],
     ];
 
     $cards["count_running_metademands_my_group_children"] = [
@@ -1633,18 +1657,19 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'cache'      => false,
         'args'       => [
             'params' => [
-            ]
+            ],
         ],
         'filters'    => [
             'dates', 'dates_mod', 'itilcategory',
-            'group_tech', 'user_tech', 'requesttype', 'location'
-        ]
+            'group_tech', 'user_tech', 'requesttype', 'location',
+        ],
     ];
 
     return $cards;
 }
 
-function plugin_datainjection_populate_basketobjects() {
+function plugin_datainjection_populate_basketobjects()
+{
     global $INJECTABLE_TYPES;
     $INJECTABLE_TYPES['PluginMetademandsBasketobjectInjection'] = 'metademands';
 }
@@ -1660,13 +1685,13 @@ function plugin_metademands_getDropdown()
     }
 }
 
-function plugin_metademands_addDefaultWhere($itemtype) {
+function plugin_metademands_addDefaultWhere($itemtype)
+{
 
-    switch ($itemtype){
+    switch ($itemtype) {
         case "PluginMetademandsDraft":
             $currentUser = Session::getLoginUserID();
             return "users_id = $currentUser";
     }
 
 }
-

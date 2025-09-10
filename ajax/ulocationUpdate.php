@@ -67,7 +67,7 @@ $locations_id = 0;
 if (isset($_POST['value']) && $_POST["value"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    $user = new User();
-   if ($user->getFromDB($_POST["value"])) {
+   if (is_int($_POST["value"]) && $user->getFromDB($_POST["value"])) {
       $locations_id = $user->fields['locations_id'];
    }
 }

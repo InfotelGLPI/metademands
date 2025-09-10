@@ -65,7 +65,7 @@ class PluginMetademandsTel extends CommonDBTM
         $opt = [
             'id-field' => $name,
             'id' => $name,
-            'value' => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
+            'value' => $value,
             'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
             'size' => $size,
         ];
@@ -89,7 +89,7 @@ class PluginMetademandsTel extends CommonDBTM
                             $(\"[name='field[$ID]']\").ready(function() {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: { 
+                                     data: {
                                          id : $(\"[name='field[$ID]']\").val()
                                      },
                                   success: function(response){
@@ -184,7 +184,7 @@ class PluginMetademandsTel extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -331,7 +331,7 @@ class PluginMetademandsTel extends CommonDBTM
                 $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
                 'metademands'
@@ -382,7 +382,7 @@ class PluginMetademandsTel extends CommonDBTM
                                        }
                                     },
                                 });
-                                 
+
                                  ";
                     $script .= "}";
                 }

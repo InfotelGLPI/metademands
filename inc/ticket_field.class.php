@@ -59,7 +59,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
     /**
      * @return bool|int
      */
-    static function canView()
+    static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -67,7 +67,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
     /**
      * @return bool
      */
-    static function canCreate()
+    static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -120,8 +120,6 @@ class PluginMetademandsTicket_Field extends CommonDBTM
 
                     if ($field['type'] == "textarea"  && $field['use_richtext'] == 1) {
                         $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $ticket, $linked_docs, false);
-                        $field['value'] = Sanitizer::unsanitize($field['value']);
-                        $field['value'] = Toolbox::addslashes_deep($field['value']);
                     } else {
                         $field['value'] = $values[$fields_id];
                     }
@@ -136,8 +134,8 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                     $field['value2'] = json_encode($values[$fields_id . "-2"]);
                 }
 
-                $this->add(['value' => Toolbox::addslashes_deep($field['value']),
-                    'value2' => Toolbox::addslashes_deep($field['value2']),
+                $this->add(['value' => $field['value'],
+                    'value2' => $field['value2'],
                     'tickets_id' => $tickets_id,
                     'plugin_metademands_fields_id' => $fields_id]);
             }
@@ -168,7 +166,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
               RIGHT JOIN `glpi_plugin_metademands_fieldoptions`
                   ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`)
                AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {

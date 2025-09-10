@@ -58,7 +58,7 @@ class PluginMetademandsGroup extends CommonDBChild
     /**
      * @return bool|int
      */
-    static function canView()
+    static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -66,11 +66,16 @@ class PluginMetademandsGroup extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate()
+    static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+
+    public static function getIcon()
+    {
+        return "ti ti-users";
+    }
     /**
      * Display tab for each users
      *
@@ -145,7 +150,7 @@ class PluginMetademandsGroup extends CommonDBChild
             $criteria['WHERE'][$table . '.' . static::$itemtype] = $itemtype;
             $request = true;
         } else {
-            $criteria['SELECT'][] = new \QueryExpression("'" . static::$itemtype . "' AS itemtype");
+            $criteria['SELECT'][] = new QueryExpression("'" . static::$itemtype . "' AS itemtype");
             if (
                 ($itemtype == static::$itemtype)
                 || is_subclass_of($itemtype, static::$itemtype)

@@ -285,7 +285,7 @@ CREATE TABLE `glpi_plugin_metademands_configs` (
    `display_buttonlist_servicecatalog` tinyint(1) default 1,
    `title_servicecatalog`     varchar(255)          DEFAULT NULL,
    `comment_servicecatalog`   TEXT                  DEFAULT NULL,
-   `fa_servicecatalog`        varchar(100) NOT NULL DEFAULT 'fas fa-share-alt',
+   `fa_servicecatalog`        varchar(100) NOT NULL DEFAULT 'ti ti-share',
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

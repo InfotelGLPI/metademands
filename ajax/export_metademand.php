@@ -26,6 +26,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\BadRequestHttpException;
+
 include('../../../inc/includes.php');
 
 if (isset($_POST["action"])
@@ -55,7 +57,7 @@ if (isset($_POST["action"])
         } else {
             ini_set("memory_limit", $old_memory);
             ini_set("max_execution_time", $old_execution);
-            Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+            throw new BadRequestHttpException(__('Unauthorized access to this file'));
         }
     }
 

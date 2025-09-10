@@ -77,7 +77,7 @@ class PluginMetademandsLink extends CommonDBTM
 
                     $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags(
                         $btnLabel
-                    ) . "' 
+                    ) . "'
                      target='_blank' onclick=\"window.open('" . $custom_values[1] . "','_blank');return false\">";
 
                     break;
@@ -124,10 +124,8 @@ class PluginMetademandsLink extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo Html::submit("", [
-            'name' => 'update',
             'class' => 'btn btn-primary',
-            'icon' => 'fas fa-save',
-        ]);
+            'icon'  => 'ti ti-device-floppy']);
         echo "</td>";
         echo "</tr>";
     }

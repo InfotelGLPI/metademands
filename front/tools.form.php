@@ -31,6 +31,8 @@ include('../../../inc/includes.php');
 
 Session::checkRight("plugin_metademands", UPDATE);
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
@@ -54,5 +56,5 @@ if (isset($_POST["purge_emptyoptions"])) {
     Session::addMessageAfterRedirect(__('Empty custom value has been cleaned', 'metademands'));
     Html::back();
 } else {
-    Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }

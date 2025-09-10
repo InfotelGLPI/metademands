@@ -58,7 +58,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
    /**
     * @return bool|int
     */
-    static function canView()
+    static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -66,9 +66,14 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
    /**
     * @return bool
     */
-    static function canCreate()
+    static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+    public static function getIcon()
+    {
+        return "ti ti-link";
     }
 
    /**
@@ -86,7 +91,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
             if ($item->getType() == 'PluginMetademandsMetademand') {
                 if ($_SESSION['glpishow_count_on_tabs']) {
                     $query = self::countTicketsInTable($item->getID());
-                    $result  = $DB->query($query);
+                    $result  = $DB->doQuery($query);
                     $numrows = $DB->numrows($result);
 
                     return self::createTabEntry(
@@ -121,8 +126,8 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
                 LEFT JOIN `glpi_groups_tickets`
                   ON (`glpi_tickets`.`id` = `glpi_groups_tickets`.`tickets_id`)";
 
-        $query .= "WHERE `glpi_tickets`.`is_deleted` = 0 
-      AND `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id` = $meta_id 
+        $query .= "WHERE `glpi_tickets`.`is_deleted` = 0
+      AND `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id` = $meta_id
       AND (`glpi_tickets`.`status` IN ($status)) " .
                 getEntitiesRestrictRequest("AND", "glpi_tickets");
         $query .= " ORDER BY id DESC";
@@ -152,13 +157,13 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
         }
 
         $query = self::countTicketsInTable($item->getID());
-        $result  = $DB->query($query);
+        $result  = $DB->doQuery($query);
         $numrows = $DB->numrows($result);
 
         if ($numrows > 0) {
             $rand = mt_rand();
 
-            echo "<table class='tab_cadrehov'>";
+            echo "<table class='tab_cadre_fixe'>";
 
             Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
             for ($i = 0; $i < $numrows; $i++) {
@@ -167,6 +172,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
                 Ticket::showShort(
                     $ID,
                     [
+                        'output_type' => Search::HTML_OUTPUT,
                      'row_num' => $i,
                      'type_for_massiveaction' => __CLASS__,
                      'id_for_massiveaction'   => $ID
@@ -175,7 +181,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
             }
             echo "</table>";
         } else {
-            echo "<div class='alert alert-important alert-info center'>".__('No item found')."</div>";
+            echo "<div class='alert alert-important alert-info center'>".__('No results found')."</div>";
         }
         return true;
     }
@@ -648,7 +654,6 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
                                     $values,
                                     ['formatastable' => $l['formatastable']]
                                 );
-                                $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                             } else {
                                 $parent_fields_content['content'] = $parent_fields['content'];
                             }
@@ -1004,7 +1009,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM
                             if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $parent_tickets_id)) {
                                 $ticket_task = new TicketTask();
                                 $input = [];
-                                $input['content'] = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                                $input['content'] = $meta_task['tickettasks_name'] . " " . $meta_task['content'];
                                 $input['tickets_id'] = $parent_tickets_id;
                                 $input['groups_id_tech'] = $meta_task["groups_id_assign"];
                                 $input['users_id_tech'] = $meta_task["users_id_assign"];

@@ -57,7 +57,7 @@ class PluginMetademandsMailTask extends CommonDBChild
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -65,7 +65,7 @@ class PluginMetademandsMailTask extends CommonDBChild
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -116,7 +116,6 @@ class PluginMetademandsMailTask extends CommonDBChild
 
         // Clean text fields
         $values['name'] = stripslashes($values['name']);
-        $values['content'] = Html::cleanPostForTextArea($values['content']);
         $values['type'] = $metademands->getField("type");
 
         // In percent

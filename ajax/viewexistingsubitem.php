@@ -33,6 +33,8 @@
  * ---------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\NotFoundHttpException;
+
 include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -40,10 +42,10 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 if (!isset($_POST['type'])) {
-    exit();
+    throw new NotFoundHttpException();
 }
 if (!isset($_POST['parenttype'])) {
-    exit();
+    throw new NotFoundHttpException();
 }
 
 if (

@@ -166,7 +166,7 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
     ) {
         $colspan = $is_order ? 3 : 1;
         if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
-            $label2 = Toolbox::stripslashes_deep($field['label2']);
+            $label2 = $field['label2'];
             if ($field['label2'] != null) {
                 $label2 = Glpi\RichText\RichText::getTextFromHtml($field['label2']);
             }

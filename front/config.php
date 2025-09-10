@@ -33,14 +33,16 @@ include('../../../inc/includes.php');
 //include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
 //migrateFieldsOptions();
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 if (Plugin::isPluginActive("metademands")) {
     if (Session::haveRight("plugin_metademands", UPDATE)) {
         Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/config.form.php");
     } else {
-        Html::displayRightError();
+        throw new AccessDeniedHttpException();
     }
 } else {
-    Html::header(__('Setup'), '', "config", "plugins");
+    Html::header(__('Setup'), '', "config", "plugin");
     echo "<div class='alert alert-important alert-warning d-flex'>";
     echo "<b>" . __('Please activate the plugin', 'metademands') . "</b></div>";
     Html::footer();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ---------------------------------------------------------------------
  * GLPI - Gestionnaire Libre de Parc Informatique
@@ -37,7 +38,6 @@ Session::checkLoginUser();
 
 use Glpi\Application\View\TemplateRenderer;
 
-
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
     $meta = new PluginMetademandsMetademand();
     $option['empty_value'] = true;
@@ -73,7 +73,7 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
                 'draft_name' => $draft_name,
                 'metademand_name' => $metademand_name,
                 'confirmation' => $confirmation,
-                '_glpi_csrf_token' => Session::getNewCSRFToken()
+                '_glpi_csrf_token' => Session::getNewCSRFToken(),
             ]
         );
 
@@ -84,7 +84,3 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
         }
     }
 }
-
-
-
-

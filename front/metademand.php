@@ -31,6 +31,8 @@ include('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
 $meta = new PluginMetademandsMetademand();
@@ -38,7 +40,7 @@ $meta = new PluginMetademandsMetademand();
 if ($meta->canView() || Session::haveRight("config", UPDATE)) {
    Search::show('PluginMetademandsMetademand');
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 Html::footer();

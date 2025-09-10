@@ -46,7 +46,7 @@ class PluginMetademandsTask extends CommonDBChild {
     const TASK_TYPE       = 2;
     const MAIL_TYPE = 3;
 
-    public function canCreateItem()
+    public function canCreateItem(): bool
     {
 
         return true;
@@ -65,10 +65,16 @@ class PluginMetademandsTask extends CommonDBChild {
         return __('Task creation', 'metademands');
     }
 
+
+     public static function getIcon()
+    {
+        return "ti ti-pencil-plus";
+    }
+
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -76,7 +82,7 @@ class PluginMetademandsTask extends CommonDBChild {
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -84,7 +90,7 @@ class PluginMetademandsTask extends CommonDBChild {
     /**
      * @return bool|int
      */
-    public static function canPurge()
+    public static function canPurge(): bool
     {
         return Session::haveRight(self::$rightname, PURGE);
     }
@@ -367,7 +373,7 @@ class PluginMetademandsTask extends CommonDBChild {
 
         } else {
             echo "<h3><div class='alert alert-warning' role='alert'>";
-            echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
             echo __('You cannot add new tasks if linked tickets are not solved', 'metademands');
             echo "</div>";
             echo "</h3>";
@@ -518,7 +524,7 @@ class PluginMetademandsTask extends CommonDBChild {
         if (count($tasks)) {
 //            Session::initNavigateListItems('PluginMetademandsTicketTask', self::getTypeName(1));
 
-            echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/treetable/treetable.js");
+            echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/treetable/treetable.js");
             echo "<div class='left first-bloc'>";
             if ($canedit && $solved) {
                 Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
@@ -811,7 +817,7 @@ class PluginMetademandsTask extends CommonDBChild {
         } else {
             echo "<div class='center first-bloc'>";
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'><td class='center'>" . __('No item to display') . "</td></tr>";
+            echo "<tr class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
             echo "</table></div>";
         }
     }
@@ -843,7 +849,7 @@ class PluginMetademandsTask extends CommonDBChild {
                        `glpi_plugin_metademands_tasks`.`plugin_metademands_tasks_id` as parent_task,
                        `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` as parent_metademand,
                        `glpi_plugin_metademands_tasks`.`id` as tasks_id,
-                       `glpi_plugin_metademands_tasks`.`completename` as tasks_completename, 
+                       `glpi_plugin_metademands_tasks`.`completename` as tasks_completename,
                        `glpi_plugin_metademands_tasks`.`level`,
                        `glpi_plugin_metademands_tasks`.`block_use`,
                        `glpi_plugin_metademands_tasks`.`formatastable`,
@@ -866,7 +872,7 @@ class PluginMetademandsTask extends CommonDBChild {
                     ON (`glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
                   LEFT JOIN `glpi_plugin_metademands_metademandtasks`
                     ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`) " .
-                 $params['join'] . " 
+                 $params['join'] . "
                   WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "";
 
         if (count($params['condition']) > 0) {
@@ -881,7 +887,7 @@ class PluginMetademandsTask extends CommonDBChild {
         }
 
         $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`id`, `glpi_plugin_metademands_tasks`.`completename`";
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {

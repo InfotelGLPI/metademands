@@ -47,10 +47,14 @@ class PluginMetademandsProfile extends Profile
         return _n('Right management', 'Rights management', $nb, 'metademands');
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-share";
+    }
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -58,7 +62,7 @@ class PluginMetademandsProfile extends Profile
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE, PURGE]);
     }
@@ -72,7 +76,7 @@ class PluginMetademandsProfile extends Profile
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if ($item->getType() == 'Profile') {
-            return PluginMetademandsMetademand::getTypeName(2);
+            return self::createTabEntry(PluginMetademandsMetademand::getTypeName(2));
         }
         return '';
     }

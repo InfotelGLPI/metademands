@@ -63,7 +63,11 @@ class PluginMetademandsTitle extends CommonDBTM
             echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
             $icon = $data['icon'];
             if (!empty($icon)) {
-                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+                if (str_contains($icon, 'fa-')) {
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
+                } else {
+                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
+                }
             }
             if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                 $label = "";
@@ -84,7 +88,7 @@ class PluginMetademandsTitle extends CommonDBTM
                 }
                 Html::showToolTip(
                     Glpi\RichText\RichText::getSafeHtml($label2),
-                    ['awesome-class' => 'fa-info-circle']
+                    ['awesome-class' => 'ti ti-info-circle']
                 );
             }
             if ($preview) {
@@ -132,17 +136,20 @@ class PluginMetademandsTitle extends CommonDBTM
             ]
         );
 
-        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::script('js/modules/Form/WebIconSelector.js');
         echo Html::scriptBlock(
             <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
         );
+
         echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
@@ -155,11 +162,11 @@ JAVASCRIPT
 
     public static function blocksHiddenScript($data) {}
 
+
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
         //to true automatickly if another field on the block is loaded
-        //        $result[$field['rank']]['display'] = false;
-
+        $result[$field['rank']]['display'] = false;
         if ($formatAsTable) {
             $colspan = $is_order ? 12 : 2;
             $result[$field['rank']]['content'] .= "<th colspan='$colspan'>";

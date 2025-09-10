@@ -59,7 +59,7 @@ class PluginMetademandsTicketTask extends CommonDBChild
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -67,7 +67,7 @@ class PluginMetademandsTicketTask extends CommonDBChild
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -129,7 +129,6 @@ class PluginMetademandsTicketTask extends CommonDBChild
 
         // Clean text fields
         $values['name'] = stripslashes($values['name']);
-        $values['content'] = Html::cleanPostForTextArea($values['content']);
         $values['type'] = $metademands->getField("type");
 
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
@@ -734,7 +733,7 @@ class PluginMetademandsTicketTask extends CommonDBChild
                   LEFT JOIN `glpi_plugin_metademands_metademands`
                     ON (`glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                   WHERE `glpi_plugin_metademands_tickettasks`.`id` = " . $tasks_id;
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
 
             if ($DB->numrows($result)) {
                 $metademands->fields = $DB->fetchAssoc($result);

@@ -60,17 +60,17 @@
                     <div class="row">
                         {{ fields.htmlField(
                             'date',
-                            item.fields['date']|formatted_datetime,
+                            subitem.fields['date']|formatted_datetime,
                             _n('Date', 'Dates', 1),
                             {
                                 'full_width': true,
                                 'icon_label': true,
                             }
                         ) }}
-                        <i class="fas fa-bullseye fa-fw"></i>
+                        <i class="ti ti-target"></i>
                         {{ fields.dropdownArrayField(
                             'targets_id',
-                            item.fields['targets_id'],
+                            subitem.fields['targets_id'],
                             targets_list,
                             targets_name,
                             {
@@ -86,7 +86,7 @@
                     {# Do not enable flex wrapping when creating a new item as the pending form will be merged with the add button in an input group #}
                     <div class="input-group flex-nowrap">
                         <button class="btn btn-primary" type="submit" name="add">
-                            <i class="fas fa-plus"></i>
+                            <i class="ti ti-plus"></i>
                             <span>{{ _x('button', 'Add') }}</span>
                         </button>
                     </div>
@@ -100,7 +100,7 @@
 {#                    {% if subitem.can(subitem.fields['id'], constant('PURGE')) %}#}
 {#                        <button class="btn btn-outline-danger me-2" type="submit" name="purge"#}
 {#                                onclick="return confirm('{{ __('Confirm the final deletion?') }}');">#}
-{#                            <i class="fas fa-trash-alt"></i>#}
+{#                            <i class="ti ti-trash-alt"></i>#}
 {#                            <span>{{ _x('button', 'Delete permanently') }}</span>#}
 {#                        </button>#}
 {#                    {% endif %}#}

@@ -162,7 +162,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
      */
     static function getIcon()
     {
-        return "fas fa-shopping-basket";
+        return "ti ti-shopping-bag";
     }
 
 

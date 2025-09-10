@@ -67,7 +67,7 @@ class PluginMetademandsBasketline extends CommonDBTM
                 echo "<div class='mydraft right' style='display: inline;float: right;'>";
                 echo "&nbsp;<button type='submit' class='pointer btn btn-light' name='clear_basket' title='"
                     . _sx('button', 'Clear the basket', 'metademands') . "'>";
-                echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
+                echo "<i class='ti ti-trash' data-hasqtip='0' aria-hidden='true'></i>";
                 echo "</button>";
                 echo "</div>";
                 echo Html::hidden('metademands_id', ['value' => $metademands_id]);
@@ -91,7 +91,7 @@ class PluginMetademandsBasketline extends CommonDBTM
 
 
                 echo "<span style='float:right'>";
-                $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
+                $title = "<i class='ti ti-shopping-bag'></i> " . _sx('button', 'Send order', 'metademands');
 
                 $current_ticket = $post["current_ticket_id"] = $post["tickets_id"];
                 echo Html::submit($title, ['name' => 'send_order',
@@ -138,7 +138,7 @@ class PluginMetademandsBasketline extends CommonDBTM
                           });
                           $('#prevBtn').hide();
                           $('.step_wizard').hide();
-                          
+
                         </script>";
             }
         }
@@ -222,13 +222,13 @@ class PluginMetademandsBasketline extends CommonDBTM
         echo "<td class='center'>";
         echo "<button type='submit' class='submit btn btn-primary' name='update_basket_line' value='$idline' title='"
             . _sx('button', 'Update this line', 'metademands') . "'>";
-        echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>";
+        echo "<i class='ti ti-device-floppy' data-hasqtip='0' aria-hidden='true'></i>";
         echo "</button>";
         echo "</td>";
         echo "<td class='center'>";
         echo "<button type='submit' class='submit btn btn-danger' name='delete_basket_line' value='$idline' title='"
             . _sx('button', 'Delete this line', 'metademands') . "'>";
-        echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
+        echo "<i class='ti ti-trash' data-hasqtip='0' aria-hidden='true'></i>";
         echo "</button>";
         echo "</td>";
         echo "</tr>";
@@ -247,9 +247,9 @@ class PluginMetademandsBasketline extends CommonDBTM
 
         $query = "SELECT MAX(`line`)
                 FROM `" . $this->getTable() . "`
-                WHERE `plugin_metademands_metademands_id` = $plugin_metademands_metademands_id 
+                WHERE `plugin_metademands_metademands_id` = $plugin_metademands_metademands_id
                 AND `users_id` = " . Session::getLoginUserID() . "";
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         $line = $DB->result($result, 0, 0) + 1;
 

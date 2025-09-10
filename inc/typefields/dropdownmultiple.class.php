@@ -66,8 +66,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $field = "";
 
         if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-            $js = Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/multiselect2/dist/js/multiselect.js");
-            $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/multiselect2/dist/css/multiselect.css");
+            $js = Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/multiselect2/dist/js/multiselect.js");
+            $css = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/multiselect2/dist/css/multiselect.css");
 
             $field = $js;
             $field .= $css;
@@ -380,38 +380,38 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                       },
                                       moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
                                         let self = Multiselect;
-                        
+
                                         $options.each(function(index, option) {
                                             let $option = $(option);
-                        
+
                                             if (self.options.ignoreDisabled && $option.is(":disabled")) {
                                                 return true;
                                             }
-                        
+
                                             if ($option.is("optgroup") || $option.parent().is("optgroup")) {
                                                 let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
                                                 let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
                                                 let $destinationGroup = $destination.find(optgroupSelector);
-                        
+
                                                 if (!$destinationGroup.length) {
                                                     $destinationGroup = $sourceGroup.clone(true);
                                                     $destinationGroup.empty();
-                        
+
                                                     $destination.move($destinationGroup);
                                                 }
-                        
+
                                                 if ($option.is("optgroup")) {
                                                     let disabledSelector = "";
-                        
+
                                                     if (self.options.ignoreDisabled) {
                                                         disabledSelector = ":not(:disabled)";
                                                     }
-                        
+
                                                     $destinationGroup.move($option.find("option" + disabledSelector));
                                                 } else {
                                                     $destinationGroup.move($option);
                                                 }
-                        
+
                                                 $sourceGroup.removeIfEmpty();
                                             } else {
                                                 $destination.move($option);
@@ -429,9 +429,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                                     destOption.style.color="#555555";
                                                 }
                                             }
-                                        });                        
+                                        });
                                         return self;
-                                          
+
                                       }
                                   });
                             });'
@@ -532,7 +532,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
-                    'icon' => 'fas fa-save',
+                    'icon' => 'ti ti-device-floppy',
                 ]);
                 echo "</td>";
                 echo "</tr>";
@@ -581,7 +581,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                             echo "<td class='rowhandler control center'>";
                             echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
+                            echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
                             echo "</div>";
                             echo "</td>";
 
@@ -591,7 +591,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             echo Html::submit("", [
                                 'name' => 'update',
                                 'class' => 'btn btn-primary',
-                                'icon' => 'fas fa-save',
+                                'icon' => 'ti ti-device-floppy',
                             ]);
                             echo "</td>";
 
@@ -605,7 +605,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                     'rank' => $value['rank'],
                                     'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                                 ],
-                                'fa-times-circle',
+                                'ti-circle-x',
                                 "class='btn btn-primary'"
                             );
                             echo "</td>";
@@ -742,7 +742,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -961,7 +961,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     foreach ($check_value['fields_link'] as $fields_link) {
 
                         $onchange .= "$.each($(this).val(), function( keys, values ) {
-    
+
                             if ($fields_link in tohide) {
                             } else {
                                 tohide[$fields_link] = true;
@@ -1104,7 +1104,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                     }
 
-                    $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+                    $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                     $nextsteptitle = __(
                             'Next',
                             'metademands'
@@ -1142,7 +1142,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                     $custom_values = $data['custom_values'];
                                     foreach ($custom_values as $k => $custom_value) {
                                         if ($k == $idc) {
-                                            $val = Toolbox::addslashes_deep($custom_value['name']);
+                                            $val = $custom_value['name'];
                                             //Pas compris
                                             $script .= "if ($(value).attr('title') == '$val') {
                                         tohide[" . $tasks_id . "] = false;
@@ -1241,7 +1241,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                     }
 
-                    $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+                    $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                     $nextsteptitle = __(
                             'Next',
                             'metademands'
@@ -2043,7 +2043,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
             if (isset($checkbox_id) && $checkbox_id > 0) {
                 if ($data["item"] == "other") {
-                    $title = Toolbox::addslashes_deep($custom_values[$idc]['name']);
+                    $title = $custom_values[$idc]['name'];
                     $script .= "if ($(value).attr('title') == '$title') {
                                     document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
                                 }";
@@ -2069,7 +2069,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 //                $script .= "$.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {";
 
                 if (isset($checkbox_id) && $checkbox_id > 0) {
-                    $script .= " 
+                    $script .= "
                            if($(this).val() == '$idc'){
                               document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
                            }

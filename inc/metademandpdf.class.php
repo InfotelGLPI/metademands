@@ -208,7 +208,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
 
         //Cellule contenant l'image
-        $image = '../pics/login_logo_glpi.png';
+        $image = '../public/pics/login_logo_glpi.png';
         $target = 20;
         list($width, $height, $type, $attr) = getimagesize($image);
         list($width, $height) = $this->imageResize($width, $height, $target);
@@ -239,10 +239,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
         $this->SetX($this->margin_left + $largeurCoteTitre);
 
-        $this->CellTitleValue($largeurCaseTitre, 5, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($title)), 'LR', 'C', '', 1, $this->title_size, 'black');
+        $this->CellTitleValue($largeurCaseTitre, 5, Toolbox::decodeFromUtf8($title), 'LR', 'C', '', 1, $this->title_size, 'black');
         $this->SetY($this->GetY() + 5);
         $this->SetX($this->margin_left + $largeurCoteTitre);
-        $this->CellTitleValue($largeurCaseTitre, 10, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($subtitle)), 'BLR', 'C', '', 0, $this->font_size, 'black');
+        $this->CellTitleValue($largeurCaseTitre, 10, Toolbox::decodeFromUtf8($subtitle), 'BLR', 'C', '', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() - 10);
 
 
@@ -663,11 +663,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
                         continue;
                     }
-                    if ($elt['type'] == 'dropdown_ldap'
-                        && isset($fields[$elt['id']])
-                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
-                        continue;
-                    }
                     if ($elt['type'] == 'dropdown_multiple'
                         && isset($fields[$elt['id']])
                         && $fields[$elt['id']] == "") {
@@ -706,10 +701,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                     $label = "";
                     if (!empty($elt['name'])) {
                         if (empty($label = PluginMetademandsField::displayField($elt['id'], 'name'))) {
-                            $label = Toolbox::stripslashes_deep($elt['name']);
+                            $label = $elt['name'];
                         }
                         $label = str_replace("’", "'", $label);
-                        $label = Toolbox::stripslashes_deep($label);
+                        $label = $label;
                         if ($label != null) {
                             $label = Toolbox::decodeFromUtf8($label);
                         }
@@ -746,7 +741,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'number':
                         case 'range':
                             $value = $fields[$elt['id']];
-                            $value = Toolbox::stripslashes_deep($value);
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
                                 // Draw line
@@ -757,10 +751,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'textarea':
                             $value = $fields[$elt['id']];
                             $value = Glpi\RichText\RichText::getTextFromHtml($value);
-                            $value = Toolbox::stripslashes_deep($value);
-
-                            $value = (Toolbox::addslashes_deep($value));
-                            $value = Html::cleanPostForTextArea($value);
 
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
@@ -794,7 +784,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                         $value[] .= $valid_name;
                                     }
                                     $value = implode(', ', $value);
-                                    $value = Toolbox::stripslashes_deep($value);
                                     if ($value != null) {
                                         $value = Toolbox::decodeFromUtf8($value);
 
@@ -815,7 +804,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     }
                                 }
                                 $value = implode(', ', $value);
-                                $value = Toolbox::stripslashes_deep($value);
                                 if ($value != null) {
                                     $value = Toolbox::decodeFromUtf8($value);
 
@@ -860,7 +848,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                                     }
                                     if (empty($dataItems)) {
-                                        $value = $dbu->getUserName($fields[$elt['id']], 0, true);
+                                        $value = getUserName($fields[$elt['id']], 0, true);
                                     } else {
                                         $value = $dataItems;
                                     }
@@ -906,7 +894,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
                                     break;
                             }
-                            $value = Toolbox::stripslashes_deep($value);
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
                                 // Draw line
@@ -919,7 +906,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             if ($fields[$elt['id']] == 2) {
                                 $value = __('Yes');
                             }
-                            $value = Toolbox::stripslashes_deep($value);
+
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
 
@@ -949,7 +936,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     }
                                 }
                                 $value = implode(', ', $parseValue);
-                                $value = Toolbox::stripslashes_deep($value);
+
                                 if ($value != null) {
                                     $value = Toolbox::decodeFromUtf8($value);
 
@@ -999,7 +986,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     }
                                 }
                                 $value = implode("", $parseValue);
-                                $value = Toolbox::stripslashes_deep($value);
+
                                 if ($value != null) {
                                     $value = Toolbox::decodeFromUtf8($value);
 
@@ -1027,7 +1014,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     }
                                 }
                                 $value = implode(', ', $custom_checkbox);
-                                $value = Toolbox::stripslashes_deep($value);
+
                                 if ($value != null) {
                                     $value = Toolbox::decodeFromUtf8($value);
 
@@ -1052,7 +1039,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                         }
                                     }
                                 }
-                                $value = Toolbox::stripslashes_deep($value);
+
                                 if ($value != null && isset($fields[$elt['id']]) && $fields[$elt['id']] != null) {
                                     $value = Toolbox::decodeFromUtf8($value);
                                     // Draw line
@@ -1063,7 +1050,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                         case 'date':
                             $value = Html::convDate($fields[$elt['id']]);
-                            $value = Toolbox::stripslashes_deep($value);
+
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
 
@@ -1074,7 +1061,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                         case 'time':
                             $value = $fields[$elt['id']];
-                            $value = Toolbox::stripslashes_deep($value);
+
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
 
@@ -1085,7 +1072,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                         case 'datetime':
                             $value = Html::convDateTime($fields[$elt['id']]);
-                            $value = Toolbox::stripslashes_deep($value);
+
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
 
@@ -1097,26 +1084,22 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'date_interval':
                             $value = Html::convDate($fields[$elt['id']]);
                             $value2 = Html::convDate($fields[$elt['id'] . "-2"]);
-                            $value = Toolbox::stripslashes_deep($value);
+
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
                             }
-                            $value2 = Toolbox::stripslashes_deep($value2);
                             if ($value2 != null) {
                                 $value2 = Toolbox::decodeFromUtf8($value2);
                             }
                             if (!empty($elt['label2'])) {
                                 //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
                                 if (empty($label2 = PluginMetademandsField::displayField($elt['id'], 'label2'))) {
-                                    $label2 = Toolbox::stripslashes_deep($elt['label2']);
+                                    $label2 = $elt['label2'];
                                 }
                                 $label2 = str_replace("’", "'", $label2);
-                                $label2 = Toolbox::stripslashes_deep($label2);
                                 if ($label2 != null) {
                                     $label2 = Toolbox::decodeFromUtf8($label2);
                                 }
-                                $label2 = (Toolbox::addslashes_deep($label2));
-                                $label2 = Html::cleanPostForTextArea($label2);
 
                                 $label2 = Glpi\RichText\RichText::getTextFromHtml($label2);
                             }
@@ -1128,26 +1111,22 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'datetime_interval':
                             $value = Html::convDateTime($fields[$elt['id']]);
                             $value2 = Html::convDateTime($fields[$elt['id'] . "-2"]);
-                            $value = Toolbox::stripslashes_deep($value);
+
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
                             }
-                            $value2 = Toolbox::stripslashes_deep($value2);
                             if ($value2 != null) {
                                 $value2 = Toolbox::decodeFromUtf8($value2);
                             }
                             if (!empty($elt['label2'])) {
                                 //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
                                 if (empty($label2 = PluginMetademandsField::displayField($elt['id'], 'label2'))) {
-                                    $label2 = Toolbox::stripslashes_deep($elt['label2']);
+                                    $label2 = $elt['label2'];
                                 }
                                 $label2 = str_replace("’", "'", $label2);
-                                $label2 = Toolbox::stripslashes_deep($label2);
                                 if ($label2 != null) {
                                     $label2 = Toolbox::decodeFromUtf8($label2);
                                 }
-                                $label2 = (Toolbox::addslashes_deep($label2));
-                                $label2 = Html::cleanPostForTextArea($label2);
 
                                 $label2 = Glpi\RichText\RichText::getTextFromHtml($label2);
                             }

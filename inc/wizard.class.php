@@ -58,6 +58,11 @@ class PluginMetademandsWizard extends CommonDBTM
         return CommonDBTM::getTable("PluginMetademandsMetademand");
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-device-imac-search";
+    }
+
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()
@@ -74,7 +79,7 @@ class PluginMetademandsWizard extends CommonDBTM
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -82,7 +87,7 @@ class PluginMetademandsWizard extends CommonDBTM
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         if (Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE])
             || Session::haveRight('plugin_metademands_createmeta', READ)) {
@@ -192,8 +197,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function showUserInformations(User $user)
     {
-        $infos = getUserName($user->getID(), 2, true);
-        echo $infos['comment'];
+        echo $user->getInfoCard();
 
         $cond['is_requester'] = 1;
         $groups = PluginMetademandsField::getUserGroup(
@@ -219,13 +223,16 @@ class PluginMetademandsWizard extends CommonDBTM
         echo "<div class=\"col-md-12 md-title\">";
         echo "<div style='background-color: #FFF'>";
 
-        $title_color = "#000";
+        $background_color = $title_color = "#000";
         if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
             $title_color = $meta->fields['title_color'];
         }
+        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+            $background_color = $meta->fields['background_color'];
+        }
 
-        $color = self::hex2rgba($title_color, "0.03");
-        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;'";
+//        $background_color = self::hex2rgba($title_color, "0.03");
+        $style_background = "style='background-color: $background_color!important;border-radius: 0;padding: 20px;'";
         echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";
 
         $meta = new PluginMetademandsMetademand();
@@ -237,7 +244,11 @@ class PluginMetademandsWizard extends CommonDBTM
 
         echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
         if (!empty($icon)) {
-            echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+            if (str_contains($icon, 'fa-')) {
+                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
+            } else {
+                echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
+            }
         }
         if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
             echo $meta->getName();
@@ -307,7 +318,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
                 'PluginMetademandsMetademand'
             ) . "?id=" . $parameters['metademands_id'] . "'>
-                            <i class='fas fa-wrench'></i></a>";
+                            <i class='ti ti-settings'></i></a>";
         }
         echo "</h2>";
 
@@ -436,7 +447,7 @@ class PluginMetademandsWizard extends CommonDBTM
             'meta_type' => '',
             'block_id' => 0,
             'itilcategories_id' => 0,
-	    'defaultValues' => [],
+            'defaultvalues' => [],
         ];
 
         // if given parameters, override defaults
@@ -459,9 +470,6 @@ class PluginMetademandsWizard extends CommonDBTM
         if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['ancestor_tickets_id'])) {
             $parameters['ancestor_tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['ancestor_tickets_id'];
         }
-
-        Html::requireJs("metademands");
-
         $meta = new PluginMetademandsMetademand();
         $maintenance_mode = 0;
         $title = 1;
@@ -479,11 +487,11 @@ class PluginMetademandsWizard extends CommonDBTM
         echo "<div id ='content'>";
 
         if ($maintenance_mode == 1 && !$parameters['preview']) {
-            echo "<h3>";
+
             echo "<div class='alert alert-warning center'>";
-            echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
             echo __('This form is in maintenance mode', 'metademands') . "<br>";
-            echo __('Please come back later', 'metademands') . "</div></h3>";
+            echo __('Please come back later', 'metademands') . "</div>";
         } else {
             echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
             if ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
@@ -540,7 +548,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             && !empty($helpdesk_category->fields['display_warning'])) {
                             echo "<h5>";
                             echo "<div class='alert alert-danger' role='alert'>";
-                            echo "<i class='fas fa-exclamation-circle fa-2x'></i>";
+                            echo "<i style='font-size:3em;' class='ti ti-exclamation-circle'></i>";
                             echo "&nbsp;" . nl2br(
                                 PluginServicecatalogCategory::displayField($helpdesk_category, 'display_warning')
                             );
@@ -554,7 +562,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $know_id = $helpdesk_category->fields['knowbaseitems_id'];
                             echo "<h5>";
                             echo "<div class='alert alert-warning' role='alert'>";
-                            echo "<i class='fas fa-exclamation-triangle fa-2x'></i>";
+                            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>";
                             echo "&nbsp;";
                             echo __(
                                 'Did you know that there is an FAQ article that may be able to help you?',
@@ -563,7 +571,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             echo "&nbsp;";
                             echo "<a href='" . PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1&itilcategories_id=" . $parameters['itilcategories_id'] . "&type=" . $meta->fields['type'] . "&id=" . $know_id . "'>";
                             echo "<button form='' class='submit btn btn-info btn-sm'>
-<i class='fas fa-link' data-hasqtip='0' aria-hidden='true'></i>";
+<i class='ti ti-link' data-hasqtip='0' aria-hidden='true'></i>";
                             echo "&nbsp;";
                             echo __('Click here for more informations', 'servicecatalog');
                             echo "</button>";
@@ -597,11 +605,16 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
                 echo "<h3><div class='alert alert-light' role='alert'>";
-                $icon = "fa-share-alt";
+                $icon = "ti-share";
                 if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
                 }
                 echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+                if (str_contains($icon, 'fa-')) {
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                } else {
+                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
+                }
                 echo __('What you want to do ?', 'metademands');
                 echo "</div></h3></div></div>";
 
@@ -610,7 +623,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
                 echo "<h3><div class='alert alert-light' role='alert'>";
-                $icon = "fa-share-alt";
+                $icon = "ti-share";
 
                 $config = PluginMetademandsConfig::getInstance();
                 if (!empty($config['icon_incident']) && $parameters['meta_type'] == Ticket::INCIDENT_TYPE) {
@@ -629,7 +642,11 @@ class PluginMetademandsWizard extends CommonDBTM
                     $icon = $meta->fields['icon'];
                 }
 
-                echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+                if (str_contains($icon, 'fa-')) {
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
+                } else {
+                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
+                }
                 echo __('Form choice', 'metademands');
                 echo "</div></h3></div></div>";
 
@@ -804,7 +821,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $query = "SELECT `id`,`name`, 'comment'
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE (is_order = 1  OR `itilcategories_id` <> '')
-                   AND $crit  
+                   AND $crit
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
             . $dbu->getEntitiesRestrictRequest(
                 " AND ",
@@ -826,7 +843,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $query .= "AND `is_active` = 1 ORDER BY `name` $limit";
 
         $metademands = [];
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
                 $canuse = PluginMetademandsGroup::isUserHaveRight($data['id']);
@@ -923,7 +940,7 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function listMetademandTypes()
     {
 
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
+        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
         $data = self::countMetademandTypes();
 
@@ -940,7 +957,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $fasize = "fa-6x";
                 echo "<div class='center'>";
                 $config = PluginMetademandsConfig::getInstance();
-                $icon = "fa-share-alt";
+                $icon = "ti-share";
                 if (!empty($config['icon_incident']) && $type == Ticket::INCIDENT_TYPE) {
                     $icon = $config['icon_incident'];
                 }
@@ -953,7 +970,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (!empty($config['icon_change']) && $type == "Change") {
                     $icon = $config['icon_change'];
                 }
-                echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+                if (str_contains($icon, 'fa-')) {
+                    echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                } else {
+                    echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:3em;\"></i>";//$style
+                }
                 echo "</div>";
                 echo "<br><p style='font-weight: normal;font-size: 13px;'>";
                 echo $typename;
@@ -1051,7 +1072,7 @@ class PluginMetademandsWizard extends CommonDBTM
             foreach ($iterator as $row) {
                 $meta = new PluginMetademandsMetademand();
                 $meta->getFromDB($row['plugin_metademands_metademands_id']);
-                $icon = "fa-share-alt";
+                $icon = "ti-share";
                 if (!empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
                 }
@@ -1060,7 +1081,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div style='margin-right: 5px;'>";
                 echo "<h6>";
                 echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;'>";
-                echo "<i class='fas " . $icon . " fa-1x'></i>";
+                if (str_contains($icon, 'fa-')) {
+                    echo "<i class='fas $icon fa-1x' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                } else {
+                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
+                }
                 echo "&nbsp;";
                 echo  $row['name'];
                 echo "</div>";
@@ -1077,7 +1102,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function listMetademands($type)
     {
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
+        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
         $config = PluginMetademandsConfig::getInstance();
 
@@ -1106,7 +1131,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $meta = new PluginMetademandsMetademand();
                     if ($meta->getFromDB($id)) {
 
-                        $icon = "fa-share-alt";
+                        $icon = "ti-share";
                         $name_meta = '';
                         if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
                             $name_meta = $meta->getName();
@@ -1147,7 +1172,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo '<div class="btnsc-normal" >';
                         $fasize = "fa-3x";
                         echo "<div class='center'>";
-                        echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
+                        if (str_contains($icon, 'fa-')) {
+                            echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                        } else {
+                            echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:3em;\"></i>";//$style
+                        }
                         echo "</div>";
                         echo "<br><p style='font-size: 14px;'>";
                         echo Html::resume_text($name_meta, 40);
@@ -1226,7 +1255,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $seeform = false,
         $block = 0
     ) {
-        $parameters = ['itilcategories_id' => 0, 'defaultValues' => []];
+        $parameters = ['itilcategories_id' => 0, 'defaultvalues' => []];
 
         // if given parameters, override defaults
         foreach ($options as $key => $value) {
@@ -1258,10 +1287,10 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         $fields = $line['form'];
                         foreach ($fields as $fid => $field) {
-				if(isset($parameters['defaultValues'][$fid])) {
-					$fields[$fid]['value'] = $parameters['defaultValues'][$fid];
-				}
-			}
+                            if(isset($parameters['defaultvalues'][$fid])) {
+                                $fields[$fid]['value'] = $parameters['defaultvalues'][$fid];
+                            }
+                        }
                         if ($block > 0) {
                             $fieldsbyblock = [];
                             foreach ($fields as $fid => $field) {
@@ -1288,7 +1317,8 @@ class PluginMetademandsWizard extends CommonDBTM
                             unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
                         }
 
-                        if ($metademands->fields['is_order'] == 1) {
+                        if (isset($metademands->fields['is_order'])
+                            && $metademands->fields['is_order'] == 1) {
                             if (!$preview
                                 && countElementsInTable(
                                     "glpi_plugin_metademands_basketlines",
@@ -1299,7 +1329,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 )
                             ) {
                                 echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-                                $title = "<i class='fas fa-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+                                $title = "<i class='ti ti-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                                 $title .= _sx('button', 'Add to basket', 'metademands');
                                 echo Html::submit($title, [
                                     'name' => 'add_to_basket',
@@ -1352,7 +1382,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo Html::hidden('ancestor_tickets_id', ['value' => $options['ancestor_tickets_id']]);
             }
 
-            if ($metademands->fields['is_order'] == 1) {
+            if (isset($metademands->fields['is_order'])
+                && $metademands->fields['is_order'] == 1) {
                 if (!countElementsInTable(
                     "glpi_plugin_metademands_basketlines",
                     [
@@ -1360,7 +1391,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         "users_id" => Session::getLoginUserID(),
                     ]
                 )) {
-                    $title = "<i class='fas fa-plus'></i>&nbsp;";
+                    $title = "<i class='ti ti-plus'></i>&nbsp;";
                     $title .= _sx('button', 'Add to basket', 'metademands');
                     echo Html::submit($title, [
                         'name' => 'add_to_basket',
@@ -1370,7 +1401,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 } else {
                     echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                     echo "</div>";
-                    $title = "<i class='fas fa-save'></i>&nbsp;";
+                    $title = "<i class='ti ti-device-floppy'></i>&nbsp;";
                     $title .= _sx('button', 'Validate your basket', 'metademands');
                     echo Html::hidden('see_basket_summary', ['value' => 1]);
                     echo Html::submit($title, [
@@ -1409,10 +1440,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
             if (!$preview
+                && isset($metademands->fields['step_by_step_mode'])
                 && $metademands->fields['step_by_step_mode']  == 0
                 && $see_summary == 0) {
                 echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
-                echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
+                echo "<i style='font-size:2em;' class='ti fa-printer' style='color:#e3e0e0;'></i>";
                 echo "</a>";
             }
         } else {
@@ -1420,7 +1452,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "<div class='center first-bloc'>";
             echo "<div class=\"row\">";
             echo "<div class=\"bt-feature col-md-12 \">";
-            echo __('No item to display');
+            echo __('No results found');
             echo "</div></div>";
             echo "<div class=\"row\">";
             echo "<div class=\"bt-feature col-md-12 \">";
@@ -1448,7 +1480,7 @@ class PluginMetademandsWizard extends CommonDBTM
             $title = _sx('button', 'See basket summary & send it', 'metademands');
             $see_summary = 1;
         }
-        $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+        $submittitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . $title;
 
         $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
 
@@ -1511,7 +1543,7 @@ class PluginMetademandsWizard extends CommonDBTM
             foreach ($fields_data as $data) {
                 $label = "";
                 if (isset($data['name'])) {
-                    $label = Toolbox::stripslashes_deep($data['name']);
+                    $label = $data['name'];
                 }
                 $metademand_params = new PluginMetademandsFieldParameter();
                 $metademand_params->getFromDBByCrit(
@@ -1544,10 +1576,10 @@ class PluginMetademandsWizard extends CommonDBTM
         $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
         $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
-        $metaparams['confirmmsg'] = Toolbox::addslashes_deep(__("You have not entered any values. Is this normal?", 'metademands'));
-        $metaparams['nameform'] = Toolbox::addslashes_deep(
-            $metademands->fields['name']
-        ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+        $metaparams['confirmmsg'] = addslashes(__("You have not entered any values. Is this normal?", 'metademands'));
+        $metaparams['nameform'] =
+            addslashes($metademands->fields['name'])
+         . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
         if ($metademands->fields['can_update'] == 1) {
             $metaparams['seeform'] = 0;
@@ -1566,7 +1598,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $metaparams['use_as_step'] = $use_as_step;
         $metaparams['listStepBlocks'] = $listStepBlocks;
         $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-        $metaparams['submitsteptitle'] = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & send to another user / group', 'metademands');
+        $metaparams['submitsteptitle'] = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & send to another user / group', 'metademands');
         //For multi User forms
         $metaparams['havenextuser'] = $havenextuser;
         $metaparams['updatestepform'] = $updatestepform;
@@ -1601,7 +1633,7 @@ class PluginMetademandsWizard extends CommonDBTM
         if (count($childs_meta) > 0) {
             $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         }
-        $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+        $submittitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . $title;
 
 
         $metaparams['submittitle'] = $submittitle;
@@ -1678,7 +1710,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
         //Redirected after end user Step
         $user_id = Session::getLoginUserID();
-        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
+        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
@@ -1758,7 +1790,8 @@ class PluginMetademandsWizard extends CommonDBTM
         $stepConfig = new PluginMetademandsConfigstep();
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
 
-        if ($metademands->fields['step_by_step_mode'] == 1) {
+        if (isset($metademands->fields['step_by_step_mode'])
+            && $metademands->fields['step_by_step_mode'] == 1) {
             if (isset($stepConfig->fields['step_by_step_interface'])) {
                 switch ($stepConfig->fields['step_by_step_interface']) {
                     case PluginMetademandsConfigstep::BOTH_INTERFACE:
@@ -1782,7 +1815,8 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         $see_summary = 0;
-        if ($metademands->fields['is_basket'] == 1) {
+        if (isset($metademands->fields['is_basket'])
+            && $metademands->fields['is_basket'] == 1) {
             $see_summary = 1;
         }
 
@@ -1868,32 +1902,32 @@ class PluginMetademandsWizard extends CommonDBTM
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem('loadedblock');
                         var block_id = $block_id;
-                        
+
                         window.metademandparams = {};
-                        
+
                         metademandparams.root_doc = '$root_doc';
                         metademandparams.paramUrl = '$paramUrl';
                         metademandparams.token = '$token';
                         metademandparams.id = '$ID';
                         metademandparams.nameform = '$nameform';
                         metademandparams.block_id = '$block_id';
-                        
+
                         metademandparams.nexttitle = '$nexttitle';
                         metademandparams.submittitle = '$submittitle';
                         metademandparams.msg = '$alert';
                         metademandparams.msg_regex = '$alert_regex';
-                        
+
                         metademandparams.seesummary = '$see_summary';
-                        
+
                         metademandparams.json_all_meta_fields = {$json_all_meta_fields};
                         metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                       
+
                         metademandparams.use_condition = '$use_condition';
                         metademandparams.show_rule = '$show_rule';
                         metademandparams.show_button = '$show_button';
                         metademandparams.use_richtext = '$use_richtext';
                         metademandparams.richtext_ids = {$richtext_id};
-                        
+
                         metademandparams.use_as_step = '$use_as_step';
                         metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                         metademandparams.havenextuser = '$havenextuser';
@@ -1925,16 +1959,16 @@ class PluginMetademandsWizard extends CommonDBTM
 //                         var clicbloc = parseInt(tabId.replace('block', ''));
 ////                         console.log(clicbloc);
 ////                         console.log(parseInt(loadedId));
-//                         
+//
 //                         if (clicbloc > parseInt(loadedId)) {
-//                         
+//
 //                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
 //                                plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams);
-//                                
+//
 //                        } else if (clicbloc <= parseInt(loadedId)) {
-//                                
+//
 //                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
@@ -1973,7 +2007,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
                 if (count($blocks) > 0) {
                     echo "<div class='tabs-container'>";
-                    echo "<button form='' class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
+                    echo "<button form='' class='scroll-btn scroll-left'><i class='ti ti-chevron-left'></i></button>";
                     echo "<div class='d-flex flex-nowrap scrollable-tabs'>";
                     echo "<ul class='nav nav-tabs flex-nowrap' style='border-bottom:unset' role='tablist' id='fieldslist'>";
                     $hiddenblocks = [];
@@ -2010,7 +2044,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                     echo "</ul>";
                     echo "</div>";
-                    echo "<button form='' class='scroll-btn scroll-right'><i class='fas fa-chevron-right'></i></button>";
+                    echo "<button form='' class='scroll-btn scroll-right'><i class='ti ti-chevron-right'></i></button>";
                     echo "</div>";
 
                     echo Html::scriptBlock(
@@ -2018,12 +2052,12 @@ class PluginMetademandsWizard extends CommonDBTM
                                     const scrollContainer = document.querySelector(".scrollable-tabs");
                                     const scrollLeftBtn = document.querySelector(".scroll-left");
                                     const scrollRightBtn = document.querySelector(".scroll-right");
-                                
+
                                     if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
                                         scrollLeftBtn.addEventListener("click", function () {
                                             scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
                                         });
-                                
+
                                         scrollRightBtn.addEventListener("click", function () {
                                             scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
                                         });
@@ -2061,7 +2095,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 //TO DROP ?
                 //                (isset($options['resources_id'])
                 //                    && $options['resources_id'] > 0)
-                if ($current_ticket > 0
+                if ($seeform == 0 && $current_ticket > 0
                     && (((!$meta_validated
                             && !$metademands->fields['can_update']) ||
                         ($meta_validated
@@ -2194,7 +2228,6 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
-                echo "<a id='backtotop'></a>";
                 //                Modal Bootstrap confirmation
                 echo "<div class='modal fade' id='confirmationModal' tabindex='-1' role='dialog' aria-labelledby='confirmationModalLabel' aria-hidden='true'>";
                 echo "<div class='modal-dialog modal-dialog-centered' role='document'>";
@@ -2232,31 +2265,31 @@ class PluginMetademandsWizard extends CommonDBTM
                 $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
 
                 echo "<script>
-                        
+
                         function updateThisDraft(draft_id, draft_name) {
                             //Security in case of unconfirmed line
                             var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
                             if (tr_input.length > 0) {
-                                var careful = false;    
-                            
+                                var careful = false;
+
                                 for(var j = 0; j < tr_input.length; j++) {
                                    if(tr_input[j].value != '' && tr_input[j].value != '0'){
                                         careful = true;
-                                   } 
+                                   }
                                 }
-                                
+
                                 if(careful){
-                                    if (!confirm('{$trad}')) {   
+                                    if (!confirm('{$trad}')) {
                                         return;
                                     }
                                 }
-                                
+
                             }
-    
+
                             if(typeof tinyMCE !== 'undefined'){
                                 tinyMCE.triggerSave();
                             }
-    
+
                             jQuery('.resume_builder_input').trigger('change');
                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                             $('#ajax_loader').show();
@@ -2268,7 +2301,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             arrayDatas.push({name: \"fied\", value: ''});
                             arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
                             arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
-    
+
                             $.ajax({
                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
                                type: 'POST',
@@ -2283,7 +2316,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
                             });
                         }
-    
+
                         function deleteThisDraft(draft_id) {
                               var self_delete = true;
                               $('#ajax_loader').show();
@@ -2309,16 +2342,16 @@ class PluginMetademandsWizard extends CommonDBTM
                                      }
                                  });
                            };
-                                
+
                         var check_free_table = document.querySelector('#freetable_table');
                         if(check_free_table){
-                            document.querySelector('.boutons_draft #button_save_mydraft').style='display:none';    
+                            document.querySelector('.boutons_draft #button_save_mydraft').style='display:none';
                         }
-    
+
                     </script>";
             }
         } else {
-            echo "<div class='center'><b>" . __('No item to display') . "</b></div>";
+            echo "<div class='center'><b>" . __('No results found') . "</b></div>";
         }
     }
 
@@ -2520,7 +2553,7 @@ class PluginMetademandsWizard extends CommonDBTM
             $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
                 'PluginMetademandsField'
             ) . "?id=" . $data['id'] . "'>";
-            $config_link .= "<i class='fas fa-wrench'></i></a>";
+            $config_link .= "<i class='ti ti-settings'></i></a>";
         }
 
         $fieldparameter = new PluginMetademandsFieldParameter();
@@ -2618,21 +2651,21 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                     Html::showToolTip(
                         Glpi\RichText\RichText::getSafeHtml($label2),
-                        ['awesome-class' => 'fa-info-circle']
+                        ['awesome-class' => 'ti ti-info-circle']
                     );
                 }
-                echo "<i id='up" . $block . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
+                echo "<i id='up" . $block . "' class='fa-1x ti ti-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
                 $rand = mt_rand();
                 echo Html::scriptBlock(
                     "var myelement$rand = '#up" . $block . "';
                                  var bloc$rand = 'bloc" . $block . "';
-                                 $(myelement$rand).click(function() {     
+                                 $(myelement$rand).click(function() {
                                      if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
                                          $('[bloc-hideid =' + bloc$rand + ']').hide();
-                                         $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
+                                         $(myelement$rand).toggleClass('ti ti-chevron-up ti ti-chevron-down');
                                      } else {
                                          $('[bloc-hideid =' + bloc$rand + ']').show();
-                                         $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
+                                         $(myelement$rand).toggleClass('ti ti-chevron-down ti ti-chevron-up');
                                      }
                                  });"
                 );
@@ -2809,25 +2842,25 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandparams.id = '$ID';
                     metademandparams.nameform = '$nameform';
                     metademandparams.block_id = '$block_id';
-                    
+
                     metademandparams.nexttitle = '$nexttitle';
                     metademandparams.submittitle = '$submittitle';
-                   
+
                     metademandparams.msg = '$alert';
                     metademandparams.msg_regex = '$alert_regex';
 
                     metademandparams.seesummary = '$see_summary';
-                    
+
                     metademandparams.json_all_meta_fields = {$json_all_meta_fields};
                     metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                    
+
                     metademandparams.use_as_step = '$use_as_step';
                     metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                     metademandparams.havenextuser = '$havenextuser';
                     metademandparams.updatestepform = '$updatestepform';
                     metademandparams.submitsteptitle = '$submitsteptitle';
                     metademandparams.nextsteptitle = '$nextsteptitle';
-                    
+
                     window.metademandconditionsparams = {};
                     metademandconditionsparams.root_doc = '$root_doc';
                     metademandconditionsparams.submittitle = '$submittitle';
@@ -2837,18 +2870,18 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandconditionsparams.show_button = '$show_button';
                     metademandconditionsparams.use_richtext = '$use_richtext';
                     metademandconditionsparams.richtext_ids = {$richtext_id};
-                    
+
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
 
                     firstnumTab = plugin_metademands_wizard_findFirstTab($block_id, metademandparams);
-                    
+
                     plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
-                    
+
                     prevBtn.addEventListener('click', () => {
                       plugin_metademands_wizard_prevBtn(-1, firstnumTab, metademandparams, metademandconditionsparams);
                     });
-                    
+
                     nextBtn.addEventListener('click', async () => {
                           const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams);
                           if (result !== false) {
@@ -3396,7 +3429,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 && !empty($value["regex"])) {
                 if ((!empty($fields['value']) && $value['is_mandatory'] == 0) || $value['is_mandatory'] == 1) {
                     if (!preg_match('/' . $value['regex'] . '/', $fields['value'])) {
-                        $msg3[] = Toolbox::stripslashes_deep($value['name']);
+                        $msg3[] = addslashes($value['name']);
                         $checkRegex[] = 1;
                     }
                 }

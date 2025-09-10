@@ -79,12 +79,12 @@ function update270_271() {
       $transient_metademands[$metademand['id']]['metademands_id']  = $metademand['id'];
    }
    $query_alter_itilcat_type = "ALTER TABLE `glpi_plugin_metademands_metademands` CHANGE `itilcategories_id` `itilcategories_id` VARCHAR(255) NOT NULL DEFAULT '[]';";
-   $DB->query($query_alter_itilcat_type);
+   $DB->doQuery($query_alter_itilcat_type);
 
    foreach ($transient_metademands as $transient_metademand) {
       $query_update_itilcat = "UPDATE `glpi_plugin_metademands_metademands` 
                                        SET `glpi_plugin_metademands_metademands`.`itilcategories_id` = '" . $transient_metademand['itil_categories'] . "'
                                                    WHERE `id` = '" . $transient_metademand['metademands_id'] . "';";
-      $DB->query($query_update_itilcat);
+      $DB->doQuery($query_update_itilcat);
    }
 }

@@ -32,6 +32,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\DBAL\QueryExpression;
+/**
 /**
  * Class PluginMetademandsField
  */
@@ -136,11 +138,11 @@ class PluginMetademandsField extends CommonDBChild
 
     public static function getIcon()
     {
-        return PluginMetademandsMetademand::getIcon();
+        return "ti ti-shape";
     }
 
 
-    public function canCreateItem()
+    public function canCreateItem(): bool
     {
         return true;
     }
@@ -161,7 +163,7 @@ class PluginMetademandsField extends CommonDBChild
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -169,7 +171,7 @@ class PluginMetademandsField extends CommonDBChild
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -219,7 +221,7 @@ class PluginMetademandsField extends CommonDBChild
             $criteria['WHERE'][$table . '.' . static::$itemtype] = $itemtype;
             $request = true;
         } else {
-            $criteria['SELECT'][] = new \QueryExpression("'" . static::$itemtype . "' AS itemtype");
+            $criteria['SELECT'][] = new QueryExpression("'" . static::$itemtype . "' AS itemtype");
             if (
                 ($itemtype == static::$itemtype)
                 || is_subclass_of($itemtype, static::$itemtype)
@@ -504,7 +506,7 @@ class PluginMetademandsField extends CommonDBChild
 
         if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo "<i class='fas fa-exclamation-triangle fa-3x'></i>&nbsp;" . __(
+            echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;" . __(
                 'Please add a type category field',
                 'metademands'
             );
@@ -550,7 +552,7 @@ class PluginMetademandsField extends CommonDBChild
 
         echo "</td>";
         echo "<td>";
-        $label2 = Html::cleanPostForTextArea($this->fields['label2']);
+        $label2 = $this->fields['label2'];
         Html::textarea([
             'name' => 'label2',
             'value' => $label2,
@@ -565,7 +567,7 @@ class PluginMetademandsField extends CommonDBChild
         // COMMENT
         echo "<td>" . __('Comments') . "</td>";
         echo "<td>";
-        $comment = Html::cleanPostForTextArea($this->fields['comment']);
+        $comment = $this->fields['comment'];
         Html::textarea([
             'name' => 'comment',
             'value' => $comment,
@@ -1034,7 +1036,7 @@ class PluginMetademandsField extends CommonDBChild
                         function updateActiveTab(rank) {
                             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
                             document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
-                    
+
                             document.getElementById('ablock' + rank)?.classList.add('active');
                             $('div[id^=\"block\"]').hide();
                             $('#block' + rank).show();
@@ -1056,7 +1058,7 @@ class PluginMetademandsField extends CommonDBChild
                                 }
                             });
                         }
-                       
+
                         loadPreview(fieldid);
                         window.location.hash = '#block' + fieldid;
                 });";
@@ -1086,7 +1088,7 @@ class PluginMetademandsField extends CommonDBChild
                 '$(document).ready(function () {
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem("loadedblock") || "1";
-                            
+
                         function updateActiveTab(rank) {
                             $("a[id^=\"ablock\"]").removeClass("active");
                             $("div[id^=\"block\"]").removeClass("active").hide();
@@ -1105,11 +1107,11 @@ class PluginMetademandsField extends CommonDBChild
                             sessionStorage.setItem("loadedblock", "block1");
                             window.location.hash = "#block1";
                         }
-                    
+
                         $("#fieldslist a").click(function (e) {
                             e.preventDefault();
                             var tabId = $(this).attr("href").replace("#", "");
-                        
+
                             if (document.getElementById(tabId)) {
                                 var rank = tabId.replace("block", "");
                                 sessionStorage.setItem("loadedblock", tabId);
@@ -1117,22 +1119,22 @@ class PluginMetademandsField extends CommonDBChild
                                 window.location.hash = tabId;
                             }
                         });
-                        
+
                         $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
                             var id = $(e.target).attr("href").substr(1);
                             sessionStorage.setItem("loadedblock", id);
                             window.location.hash = "#" + id;
                         });
-                        
+
                         function scrollToActiveTab() {
                             const activeTab = document.querySelector(".scrollable-tabs .active");
                             const container = document.querySelector(".scrollable-tabs");
-                            
+
                             if (activeTab && container) {
                                 const offsetLeft = activeTab.offsetLeft;
                                 const containerWidth = container.clientWidth;
                                 const tabWidth = activeTab.offsetWidth;
-                        
+
                                 // Centrage de l’onglet actif
                                 const scrollTo = offsetLeft - (containerWidth / 2) + (tabWidth / 2);
                                 container.scrollTo({ left: scrollTo, behavior: "smooth" });
@@ -1193,7 +1195,7 @@ class PluginMetademandsField extends CommonDBChild
         }
         if (count($blocks) > 0) {
             echo "<div class='tabs-container'>";
-            echo "<button class='scroll-btn scroll-left'><i class='fas fa-chevron-left'></i></button>";
+            echo "<button class='scroll-btn scroll-left'><i class='ti ti-chevron-left'></i></button>";
             echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
             echo "<ul class='nav nav-tabs flex-nowrap' style='border-bottom:unset' role='tablist' id='fieldslist'>";
 
@@ -1205,7 +1207,7 @@ class PluginMetademandsField extends CommonDBChild
             }
             echo "</ul>";
             echo "</div>";
-            echo "<button class='scroll-btn scroll-right'><i class='fas fa-chevron-right'></i></button>";
+            echo "<button class='scroll-btn scroll-right'><i class='ti ti-chevron-right'></i></button>";
             echo "</div>";
 
             echo Html::scriptBlock('
@@ -1213,12 +1215,12 @@ class PluginMetademandsField extends CommonDBChild
                     const scrollContainer = document.querySelector(".scrollable-tabs");
                     const scrollLeftBtn = document.querySelector(".scroll-left");
                     const scrollRightBtn = document.querySelector(".scroll-right");
-                
+
                     if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
                         scrollLeftBtn.addEventListener("click", function () {
                             scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
                         });
-                
+
                         scrollRightBtn.addEventListener("click", function () {
                             scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
                         });
@@ -1252,7 +1254,7 @@ class PluginMetademandsField extends CommonDBChild
                 && self::isSequentialFromOne($orders) == false) {
                 echo "<div class='alert alert-warning flex'>";
                 echo "<div class='left'>";
-                echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
                     'The fields are not ordered correctly, you will not be able to order them!',
                     'metademands'
                 );
@@ -1269,7 +1271,7 @@ class PluginMetademandsField extends CommonDBChild
                         'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id'],
                         'rank' => $value['rank'],
                     ],
-                    'fa-wrench',
+                    'ti-settings',
                     "class='btn btn-warning'"
                 );
                 echo "</div>";
@@ -1421,7 +1423,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     if (empty(trim($name))) {
                         echo __('ID') . " - " . $value['id'];
                     } else {
-                        echo Toolbox::stripslashes_deep($name);
+                        echo $name;
                     }
                     echo "</a>";
                     echo "</div>";
@@ -1589,7 +1591,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     if ($debug) {
                         echo $value['order'];
                     }
-                    echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
+                    echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
                     echo "</div>";
                     echo "&nbsp;";
                     echo Html::getSimpleForm(
@@ -1623,7 +1625,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             } else {
                 echo "<div class='center first-bloc'>";
                 echo "<table class='tab_cadre_fixe'>";
-                echo "<tr  class='tab_bg_1'><td class='center'>" . __('No item to display') . "</td></tr>";
+                echo "<tr  class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
                 echo "</table>";
                 echo "</div>";
             }
@@ -1643,7 +1645,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 var meta_id = $id;
                 var urlmeta = '$url';
                 var fieldid = '1';
-            
+
                 function loadPreview(fieldid) {
                     $.ajax({
                         url: urlmeta + '/ajax/previewMetademand.php',
@@ -1660,7 +1662,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                         }
                     });
                 }
-            
+
                 if (fieldid === 1) {
                     loadPreview(fieldid);
                 }
@@ -2468,7 +2470,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
                 'PluginMetademandsField'
             ) . "?id=" . $data['id'] . "'>";
-            $config_link .= "<i class='fas fa-wrench'></i></a>";
+            $config_link .= "<i class='ti ti-settings'></i></a>";
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
@@ -2512,7 +2514,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             if (isset($data['hide_title']) && $data['hide_title'] == 0) {
                 if ($hidden == 0) {
                     echo "<div $required class='col-form-label metademand-label'>";
-                    echo Toolbox::stripslashes_deep($label) . " $upload";
+                    echo $label . " $upload";
 
                     if ($debug) {
                         echo " (ID:" . $data['id'] . ")";
@@ -2536,7 +2538,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                         if ($display) {
                             echo "&nbsp;";
                             echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), [
-                                'awesome-class' => 'fa-info-circle',
+                                'awesome-class' => 'ti ti-info-circle',
                                 'display' => false,
                             ]);
                         }
@@ -3356,7 +3358,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 return true;
             case 'change_icon':
                 $icon_selector_id = 'icon_' . mt_rand();
-                $return = Html::select(
+                $return =  Html::select(
                     'icon',
                     [],
                     [
@@ -3366,17 +3368,20 @@ border-style: none !important; border-color: initial !important;border-image: in
                     ]
                 );
 
-                $return .= Html::script('js/Forms/FaIconSelector.js');
+                $return .= Html::script('js/modules/Form/WebIconSelector.js');
                 $return .= Html::scriptBlock(
                     <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
                 );
+
                 echo $return;
                 echo "&nbsp;" .
                     Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
@@ -3506,7 +3511,7 @@ JAVASCRIPT
         $select = [Dropdown::EMPTY_VALUE];
 
         foreach ($this->find($restrict, ['order']) as $id => $values) {
-            $select[$id] = $values['name'] ? Toolbox::stripslashes_deep($values['name']) : $id;
+            $select[$id] = $values['name'] ?: $id;
             if (empty(trim($select[$id]))) {
                 $select[$id] = __('ID') . " - " . $id;
             }
@@ -4532,7 +4537,7 @@ JAVASCRIPT
         }
 
         echo "<form name='form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/field.php'>";
-        echo "<div class='center'><table class='tab_cadrehov'>";
+        echo "<div class='center'><table class='tab_cadre_fixe'>";
         echo "<tr class='tab_bg_2'>";
 
         echo "<td class='center'><b>";

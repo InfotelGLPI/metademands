@@ -56,10 +56,11 @@ class PluginMetademandsMetademandTask extends CommonDBChild
         return __('Task creation', 'metademands');
     }
 
+
     /**
      * @return bool|int
      */
-    static function canView()
+    static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -67,7 +68,7 @@ class PluginMetademandsMetademandTask extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate()
+    static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -127,7 +128,7 @@ class PluginMetademandsMetademandTask extends CommonDBChild
                LEFT JOIN `glpi_plugin_metademands_metademandtasks`
                   ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = " . $tasks_id;
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
 
             if ($DB->numrows($result)) {
                 while ($data = $DB->fetchAssoc($result)) {
@@ -194,7 +195,7 @@ class PluginMetademandsMetademandTask extends CommonDBChild
 //               LEFT JOIN `glpi_plugin_metademands_tasks`
 //                  ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id`)
 //               WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-//      $result = $DB->query($query);
+//      $result = $DB->doQuery($query);
 //
 //      if ($DB->numrows($result)) {
 //         while ($data = $DB->fetchAssoc($result)) {
@@ -219,7 +220,7 @@ class PluginMetademandsMetademandTask extends CommonDBChild
         $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
                FROM `glpi_plugin_metademands_metademandtasks`
                WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
@@ -249,7 +250,7 @@ class PluginMetademandsMetademandTask extends CommonDBChild
           LEFT JOIN `glpi_plugin_metademands_metademandtasks`
               ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
           WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = '$metademands_id'";
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
                 $id_found[] = $data['parent_metademands_id'];

@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\NotFoundHttpException;
+
 include('../../../inc/includes.php');
 
 header("Content-Type: text/html; charset=UTF-8");
@@ -36,7 +38,7 @@ Session::checkLoginUser();
 
 $dbu = new DbUtils();
 if (!isset($_POST["itemtype"]) || !($item = $dbu->getItemForItemtype($_POST['itemtype']))) {
-   exit();
+    throw new NotFoundHttpException();
 }
 
 if (in_array($_POST["itemtype"], $CFG_GLPI["infocom_types"])) {
@@ -49,7 +51,7 @@ if (in_array($_POST["itemtype"], $CFG_GLPI["infocom_types"])) {
 if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]) {
    $search = Search::getOptions($_POST["itemtype"]);
    if (!isset($search[$_POST["id_field"]])) {
-      exit();
+       throw new NotFoundHttpException();
    }
    $search            = $search[$_POST["id_field"]];
    $FIELDNAME_PRINTED = false;

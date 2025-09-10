@@ -29,7 +29,7 @@
  
 include('../../../inc/includes.php');
 
-
+use Glpi\Exception\Http\AccessDeniedHttpException;
 
 if (Session::getCurrentInterface() == 'central') {
     Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
@@ -47,7 +47,7 @@ $stepform = new PluginMetademandsStepform();
 if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
     $stepform->showWaitingForm();
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (Session::getCurrentInterface() != 'central'

@@ -27,7 +27,7 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 
@@ -35,13 +35,14 @@ if (!defined('GLPI_ROOT')) {
  * PluginMetademandsMetademandTranslation Class
  *
  **/
-class PluginMetademandsMetademandTranslation extends CommonDBChild {
+class PluginMetademandsMetademandTranslation extends CommonDBChild
+{
 
-   static public $itemtype  = 'itemtype';
-   static public $items_id  = 'items_id';
-   public        $dohistory = true;
+    public static $itemtype  = 'itemtype';
+    public static $items_id  = 'items_id';
+    public $dohistory = true;
 
-   static $rightname = 'plugin_metademands';
+    static $rightname = 'plugin_metademands';
 
 
    /**
@@ -52,14 +53,16 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return string
     **/
-   static function getTypeName($nb = 0) {
-      return _n('Translation', 'Translations', $nb);
-   }
+    static function getTypeName($nb = 0)
+    {
+        return _n('Translation', 'Translations', $nb);
+    }
 
 
-   static function getIcon() {
-      return PluginMetademandsMetademand::getIcon();
-   }
+    public static function getIcon()
+    {
+        return "ti ti-language";
+    }
    /**
     * Get the standard massive actions which are forbidden
     *
@@ -69,12 +72,13 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     * This should be overloaded in Class
     *
     */
-   function getForbiddenStandardMassiveAction() {
+    function getForbiddenStandardMassiveAction()
+    {
 
-      $forbidden   = parent::getForbiddenStandardMassiveAction();
-      $forbidden[] = 'update';
-      return $forbidden;
-   }
+        $forbidden   = parent::getForbiddenStandardMassiveAction();
+        $forbidden[] = 'update';
+        return $forbidden;
+    }
 
 
    /**
@@ -84,11 +88,12 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     * @return array|string
     * @see CommonGLPI::getTabNameForItem()
     */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
 
-      $nb = self::getNumberOfTranslationsForItem($item);
-      return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
-   }
+        $nb = self::getNumberOfTranslationsForItem($item);
+        return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
+    }
 
    /**
     * @param $item            CommonGLPI object
@@ -98,12 +103,13 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return bool
     */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      if (self::canBeTranslated($item)) {
-         self::showTranslations($item);
-      }
-      return true;
-   }
+    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        if (self::canBeTranslated($item)) {
+            self::showTranslations($item);
+        }
+        return true;
+    }
 
 
    /**
@@ -113,32 +119,35 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return true;
     **/
-   static function showTranslations($item) {
-      global $DB, $CFG_GLPI;
+    static function showTranslations($item)
+    {
+        global $DB, $CFG_GLPI;
 
-      $rand    = mt_rand();
-      $canedit = $item->can($item->getID(), UPDATE);
+        $rand    = mt_rand();
+        $canedit = $item->can($item->getID(), UPDATE);
 
-      if ($canedit) {
-         echo "<div id='viewtranslation" . $item->getType() . $item->getID() . "$rand'></div>\n";
+        if ($canedit) {
+            echo "<div id='viewtranslation" . $item->getType() . $item->getID() . "$rand'></div>\n";
 
-         echo "<script type='text/javascript' >\n";
-         echo "function addTranslation" . $item->getType() . $item->getID() . "$rand() {\n";
-         $params = ['type'                      => __CLASS__,
+            echo "<script type='text/javascript' >\n";
+            echo "function addTranslation" . $item->getType() . $item->getID() . "$rand() {\n";
+            $params = ['type'                      => __CLASS__,
                     'parenttype'                => get_class($item),
                     $item->getForeignKeyField() => $item->getID(),
                     'id'                        => -1];
-         Ajax::updateItemJsCode("viewtranslation" . $item->getType() . $item->getID() . "$rand",
-                                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                                $params);
-         echo "};";
-         echo "</script>\n";
-         echo "<div class='center'>" .
+            Ajax::updateItemJsCode(
+                "viewtranslation" . $item->getType() . $item->getID() . "$rand",
+                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                $params
+            );
+            echo "};";
+            echo "</script>\n";
+            echo "<div class='center'>" .
               "<a class='submit btn btn-primary' href='javascript:addTranslation" .
               $item->getType() . $item->getID() . "$rand();'>" . __('Add a new translation') .
               "</a></div><br>";
-      }
-      $iterator = $DB->request([
+        }
+        $iterator = $DB->request([
                                   'FROM'  => getTableForItemType(__CLASS__),
                                   'WHERE' => [
                                      'itemtype' => $item->getType(),
@@ -147,82 +156,82 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
                                   ],
                                   'ORDER' => ['language ASC']
                                ]);
-      if (count($iterator)) {
-         if ($canedit) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
-         }
-         echo "<div class='left'>";
-         echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-         echo "<th colspan='4'>" . __("List of translations") . "</th></tr><tr>";
-         if ($canedit) {
-            echo "<th width='10'>";
-             echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            echo "</th>";
-         }
-         echo "<th>" . __("Language") . "</th>";
-         echo "<th>" . __("Field") . "</th>";
-         echo "<th>" . __("Value") . "</th></tr>";
-         foreach ($iterator as $data) {
-            $onhover = '';
+        if (count($iterator)) {
             if ($canedit) {
-               $onhover = "style='cursor:pointer'
+                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
+                $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
+                Html::showMassiveActions($massiveactionparams);
+            }
+            echo "<div class='left'>";
+            echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
+            echo "<th colspan='4'>" . __("List of translations") . "</th></tr><tr>";
+            if ($canedit) {
+                echo "<th width='10'>";
+                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo "</th>";
+            }
+            echo "<th>" . __("Language") . "</th>";
+            echo "<th>" . __("Field") . "</th>";
+            echo "<th>" . __("Value") . "</th></tr>";
+            foreach ($iterator as $data) {
+                $onhover = '';
+                if ($canedit) {
+                    $onhover = "style='cursor:pointer'
                            onClick=\"viewEditTranslation" . $data['itemtype'] . $data['id'] . "$rand();\"";
-            }
-            echo "<tr class='tab_bg_1'>";
-            if ($canedit) {
-               echo "<td class='center'>";
-               Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
-               echo "</td>";
-            }
+                }
+                echo "<tr class='tab_bg_1'>";
+                if ($canedit) {
+                    echo "<td class='center'>";
+                    Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
+                    echo "</td>";
+                }
 
-            echo "<td $onhover>";
-            if ($canedit) {
-               echo "\n<script type='text/javascript' >\n";
-               echo "function viewEditTranslation" . $data['itemtype'] . $data['id'] . "$rand() {\n";
-               $params = ['type'                      => __CLASS__,
+                echo "<td $onhover>";
+                if ($canedit) {
+                    echo "\n<script type='text/javascript' >\n";
+                    echo "function viewEditTranslation" . $data['itemtype'] . $data['id'] . "$rand() {\n";
+                    $params = ['type'                      => __CLASS__,
                           'parenttype'                => get_class($item),
                           $item->getForeignKeyField() => $item->getID(),
                           'id'                        => $data["id"]];
-               Ajax::updateItemJsCode("viewtranslation" . $item->getType() . $item->getID() . "$rand",
-                                      $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                                      $params);
-               echo "};";
-               echo "</script>\n";
+                    Ajax::updateItemJsCode(
+                        "viewtranslation" . $item->getType() . $item->getID() . "$rand",
+                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                        $params
+                    );
+                    echo "};";
+                    echo "</script>\n";
+                }
+                echo Dropdown::getLanguageName($data['language']);
+                echo "</td><td $onhover>";
+                $searchOption = $item->getSearchOptionByField('field', $data['field']);
+                if (empty($searchOption)) {
+                    if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
+                        $custom = PluginMetademandsFieldParameter::_unserialize($item->fields["custom_values"]);
+
+                        foreach ($custom as $key => $val) {
+                            if ("custom" . $key == $data["field"]) {
+                                $searchOption['name'] = $val;
+                            }
+                        }
+                    }
+                }
+                echo $searchOption['name'] . "</td>";
+                echo "<td $onhover>" . $data['value'] . "</td>";
+                echo "</tr>";
             }
-            echo Dropdown::getLanguageName($data['language']);
-            echo "</td><td $onhover>";
-            $searchOption = $item->getSearchOptionByField('field', $data['field']);
-            if (empty($searchOption)) {
-               if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-                  $custom = PluginMetademandsFieldParameter::_unserialize($item->fields["custom_values"]);
-
-                  foreach ($custom as $key => $val) {
-                     if ("custom" . $key == $data["field"]) {
-                        $searchOption['name'] = $val;
-                     }
-
-                  }
-
-               }
+            echo "</table>";
+            if ($canedit) {
+                $massiveactionparams['ontop'] = false;
+                Html::showMassiveActions($massiveactionparams);
+                Html::closeForm();
             }
-            echo $searchOption['name'] . "</td>";
-            echo "<td $onhover>" . $data['value'] . "</td>";
-            echo "</tr>";
-         }
-         echo "</table>";
-         if ($canedit) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-         }
-      } else {
-         echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
-         echo "<th class='b'>" . __("No translation found") . "</th></tr></table>";
-      }
-      return true;
-   }
+        } else {
+            echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
+            echo "<th class='b'>" . __("No translation found") . "</th></tr></table>";
+        }
+        return true;
+    }
 
 
    /**
@@ -233,69 +242,74 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return bool
     */
-   function showForm($ID = -1, $options = []) {
-      global $CFG_GLPI;
+    function showForm($ID = -1, $options = [])
+    {
+        global $CFG_GLPI;
 
-      if (isset($options['parent']) && !empty($options['parent'])) {
-         $item = $options['parent'];
-      }
-      if ($ID > 0) {
-         $this->check($ID, UPDATE);
-      } else {
-         $options['itemtype'] = get_class($item);
-         $options['items_id'] = $item->getID();
+        if (isset($options['parent']) && !empty($options['parent'])) {
+            $item = $options['parent'];
+        }
+        if ($ID > 0) {
+            $this->check($ID, UPDATE);
+        } else {
+            $options['itemtype'] = get_class($item);
+            $options['items_id'] = $item->getID();
 
-         // Create item
-         $this->check(-1, CREATE, $options);
-      }
+           // Create item
+            $this->check(-1, CREATE, $options);
+        }
 
-      $this->showFormHeader($options);
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Language') . "</td>";
-      echo "<td>";
-      echo Html::hidden('items_id', ['value' => $item->getID()]);
-      echo Html::hidden('itemtype', ['value' => get_class($item)]);
-      if ($ID > 0) {
-         echo Html::hidden('language', ['value' => $this->fields['language']]);
-         echo Dropdown::getLanguageName($this->fields['language']);
-      } else {
-         $rand   = Dropdown::showLanguages("language",
-                                           ['display_none' => false,
-                                            'value'        => $_SESSION['glpilanguage']]);
-         $params = ['language' => '__VALUE__',
+        $this->showFormHeader($options);
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Language') . "</td>";
+        echo "<td>";
+        echo Html::hidden('items_id', ['value' => $item->getID()]);
+        echo Html::hidden('itemtype', ['value' => get_class($item)]);
+        if ($ID > 0) {
+            echo Html::hidden('language', ['value' => $this->fields['language']]);
+            echo Dropdown::getLanguageName($this->fields['language']);
+        } else {
+            $rand   = Dropdown::showLanguages(
+                "language",
+                ['display_none' => false,
+                'value'        => $_SESSION['glpilanguage']]
+            );
+            $params = ['language' => '__VALUE__',
                     'itemtype' => get_class($item),
                     'items_id' => $item->getID()];
-         Ajax::updateItemOnSelectEvent("dropdown_language$rand",
-                                       "span_fields",
-                                       PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateTranslationMetademands.php",
-                                       $params);
-      }
-      echo "</td><td colspan='2'>&nbsp;</td></tr>";
+            Ajax::updateItemOnSelectEvent(
+                "dropdown_language$rand",
+                "span_fields",
+                PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateTranslationMetademands.php",
+                $params
+            );
+        }
+        echo "</td><td colspan='2'>&nbsp;</td></tr>";
 
-      echo "<tr class='tab_bg_1'><td>" . __('Field') . "</td>";
-      echo "<td>";
-      if ($ID > 0) {
-         echo Html::hidden('field', ['value' => $this->fields['field']]);
-         $searchOption = $item->getSearchOptionByField('field', $this->fields['field']);
-         echo $searchOption['name'];
-      } else {
-         echo "<span id='span_fields' name='span_fields'>";
-         self::dropdownFields($item, $_SESSION['glpilanguage']);
-         echo "</span>";
-      }
-      echo "</td>";
-      echo "<td>" . __('Value') . "</td>";
-      echo "<td>";
-      Html::textarea(['name'            => 'value',
+        echo "<tr class='tab_bg_1'><td>" . __('Field') . "</td>";
+        echo "<td>";
+        if ($ID > 0) {
+            echo Html::hidden('field', ['value' => $this->fields['field']]);
+            $searchOption = $item->getSearchOptionByField('field', $this->fields['field']);
+            echo $searchOption['name'];
+        } else {
+            echo "<span id='span_fields' name='span_fields'>";
+            self::dropdownFields($item, $_SESSION['glpilanguage']);
+            echo "</span>";
+        }
+        echo "</td>";
+        echo "<td>" . __('Value') . "</td>";
+        echo "<td>";
+        Html::textarea(['name'            => 'value',
                       'value'           => $this->fields["value"],
                       'cols'       => 80,
                       'rows'       => 3,
                       'enable_richtext' => false]);
-      echo "</td>";
-      echo "</tr>\n";
-      $this->showFormButtons($options);
-      return true;
-   }
+        echo "</td>";
+        echo "</tr>\n";
+        $this->showFormButtons($options);
+        return true;
+    }
 
    /**
     * Display a dropdown with fields that can be translated for an itemtype
@@ -306,26 +320,27 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return the dropdown's random identifier
     */
-   static function dropdownFields(CommonDBTM $item, $language = '', $value = '') {
-      global $DB;
+    static function dropdownFields(CommonDBTM $item, $language = '', $value = '')
+    {
+        global $DB;
 
-      $options = [];
-      foreach ($item->rawSearchOptions() as $id => $field) {
-         //Can only translate name, and fields whose datatype is text or string
-         $dbu = new DbUtils();
-         if (isset ($field['field'])
+        $options = [];
+        foreach ($item->rawSearchOptions() as $id => $field) {
+           //Can only translate name, and fields whose datatype is text or string
+            $dbu = new DbUtils();
+            if (isset($field['field'])
              && ($field['field'] == 'name')
              && ($field['table'] == $dbu->getTableForItemType(get_class($item)))
              || (isset($field['datatype'])
                  && in_array($field['datatype'], ['text', 'string']) && ($field['field'] != 'icon'))) {
-            $options[$field['field']] = $field['name'];
-         }
-      }
+                $options[$field['field']] = $field['name'];
+            }
+        }
 
 
-      $used = [];
-      if (!empty($options)) {
-         $iterator = $DB->request([
+        $used = [];
+        if (!empty($options)) {
+            $iterator = $DB->request([
                                      'SELECT' => 'field',
                                      'FROM'   => self::getTable(),
                                      'WHERE'  => [
@@ -334,16 +349,16 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
                                         'language' => $language
                                      ]
                                   ]);
-         if (count($iterator) > 0) {
-            foreach ($iterator as $data) {
-               $used[$data['field']] = $data['field'];
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
+                    $used[$data['field']] = $data['field'];
+                }
             }
-         }
-      }
-      //$used = [];
-      return Dropdown::showFromArray('field', $options, ['value' => $value,
+        }
+       //$used = [];
+        return Dropdown::showFromArray('field', $options, ['value' => $value,
                                                          'used'  => $used]);
-   }
+    }
 
    /**
     * Check if an item can be translated
@@ -354,10 +369,11 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return true if item can be translated, false otherwise
     */
-   static function canBeTranslated(CommonGLPI $item) {
+    static function canBeTranslated(CommonGLPI $item)
+    {
 
-      return ($item instanceof PluginMetademandsMetademand);
-   }
+        return ($item instanceof PluginMetademandsMetademand);
+    }
 
 
    /**
@@ -367,10 +383,12 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
     *
     * @return int number of translations for this item
     */
-   static function getNumberOfTranslationsForItem($item) {
-      $dbu = new DbUtils();
-      return $dbu->countElementsInTable($dbu->getTableForItemType(__CLASS__),
-                                        ["items_id" => $item->getID()]);
-   }
-
+    static function getNumberOfTranslationsForItem($item)
+    {
+        $dbu = new DbUtils();
+        return $dbu->countElementsInTable(
+            $dbu->getTableForItemType(__CLASS__),
+            ["items_id" => $item->getID()]
+        );
+    }
 }

@@ -60,7 +60,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -68,7 +68,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -312,9 +312,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                     if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)) {
                         $ticket_task = new TicketTask();
                         $input = [];
-                        $input['content'] = Toolbox::addslashes_deep(
-                                $meta_task['tickettasks_name']
-                            ) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                        $input['content'] = $meta_task['tickettasks_name'] . " " . $meta_task['content'];
                         $input['tickets_id'] = $ticket_id;
                         $input['groups_id_tech'] = $meta_task["groups_id_assign"];
                         $input['users_id_tech'] = $meta_task["users_id_assign"];
@@ -405,8 +403,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                 $style = "btn-orange";
                 $title = __('Metademand validation', 'metademands');
             }
-            echo "<li class='btn primary answer-action mb-2 $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='fas fa-thumbs-up' style='margin-left: 10px;'></i>".$title."</li>";
+            echo "<button class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>".$title."</button>";
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',
@@ -428,7 +426,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
         $ticket = new Ticket();
         $ticket->getFromDB($ticket_id);
-        echo "<form name='form_raz' id='form_raz' method='post' 
+        echo "<form name='form_raz' id='form_raz' method='post'
       action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/metademandvalidation.form.php" . "' >";
         echo Html::hidden('action', ['id' => 'action_validationMeta', 'value' => 'validationMeta']);
         echo Html::hidden('tickets_id', ['id' => 'action_validationMeta', 'value' => $ticket_id]);

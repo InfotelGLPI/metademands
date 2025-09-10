@@ -92,6 +92,12 @@ class PluginMetademandsCondition extends CommonDBChild
     }
 
 
+     public static function getIcon()
+    {
+        return "ti ti-sort-descending-2";
+    }
+    
+    
     /**
      * @param \CommonGLPI $item
      * @param int $withtemplate
@@ -369,7 +375,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 );
                 $dropdown_fields = [];
                 foreach ($fields as $f) {
-                    $dropdown_fields[$f['id']] = Toolbox::stripslashes_deep($f['name']) . " (" . $f['id'] . ") ";
+                    $dropdown_fields[$f['id']] = addslashes($f['name']) . " (" . $f['id'] . ") ";
                 }
                 echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
                 echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);

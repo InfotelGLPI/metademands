@@ -53,17 +53,17 @@ $return = "";
 if (count($forms) > 0) {
     foreach ($forms as $form) {
         $return .= "<tr class='tab_bg_1'>";
-        $return .= "<td>" . Toolbox::stripslashes_deep($form['name']) . "</td>";
+        $return .= "<td>" . $form['name'] . "</td>";
         $return .= "<td>" . Html::convDateTime($form['date']) . "</td>";
         $return .= "<td>";
         $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
-        $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
+        $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
         $return .= "</button>";
         $return .= "</td>";
         $return .= "<td>";
         $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
-        $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "'
+        $return .= "<i class='ti ti-trash pointer pointer' title='" . _sx('button', 'Delete form', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
         $return .= "</button>";
         $return .= "</tr>";

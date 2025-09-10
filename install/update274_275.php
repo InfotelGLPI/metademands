@@ -79,12 +79,12 @@ function update274_275() {
       $transient_metademands[$field['id']]['fields_id']   = $field['id'];
    }
    $query_alter = "ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `fields_link` `fields_link` VARCHAR(255) NOT NULL DEFAULT '[]';";
-   $DB->query($query_alter);
+   $DB->doQuery($query_alter);
 
    foreach ($transient_metademands as $transient_metademand) {
       $query_update = "UPDATE `glpi_plugin_metademands_fields` 
                                        SET `glpi_plugin_metademands_fields`.`fields_link` = '" . $transient_metademand['fields_link'] . "'
                                                    WHERE `id` = '" . $transient_metademand['fields_id'] . "';";
-      $DB->query($query_update);
+      $DB->doQuery($query_update);
    }
 }

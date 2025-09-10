@@ -21,6 +21,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\BadRequestHttpException;
+
 if (!defined('GLPI_ROOT')) {
    include ('../../../inc/includes.php');
 }
@@ -30,9 +32,9 @@ Html::popHeader(__('List of available tags'), $_SERVER['PHP_SELF']);
 if (isset($_GET["metademands_id"])) {
    Session::checkCentralAccess();
     PluginMetademandsTicketField::showAvailableTags($_GET["metademands_id"]);
-   Html::ajaxFooter();
+
 } else {
-   Html::displayErrorAndDie("lost");
+    throw new BadRequestHttpException();
 }
 
 Html::popFooter();

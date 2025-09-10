@@ -79,8 +79,7 @@ if (isset($_POST['save_model'])) {
                         $form_value = new PluginMetademandsForm_Value();
                         $form_value->getFromDB($value['plugin_metademands_forms_id']);
                         $inputv = Toolbox::convertTagToImage($value['value'], $form_value, $input, false);
-                        $inputv = Sanitizer::unsanitize($inputv);
-                        $inputv = Toolbox::addslashes_deep($inputv);
+
 
                         $form_values->add(['plugin_metademands_forms_id' => $newid,
                             'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],

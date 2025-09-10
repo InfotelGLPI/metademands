@@ -53,9 +53,9 @@ if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields
             $fieldcustom = new PluginMetademandsFieldCustomvalue();
             $fieldcustom->deleteByCriteria(['plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id']]);
             while (($data = fgetcsv($handle, 1000, $_SESSION["glpicsv_delimiter"])) !== false) {
-                $input['name'] = Toolbox::addslashes_deep($data[0]);
+                $input['name'] = $data[0];
                 $input['is_default'] = $data[1];
-                $input['comment'] = Toolbox::addslashes_deep($data[2]);
+                $input['comment'] = $data[2];
                 $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
                 $input['rank'] = $rank;
                 $rank++;

@@ -98,7 +98,11 @@ class PluginMetademandsInformation extends CommonDBTM
             $icon = $data['icon'];
             $color = $data['color'];
             if ($icon) {
-                $field .= "<div style='margin-right: 20px;'><i class='fas fa-2x $icon $iconcolor' style='vertical-align: top;'></i></div>";
+                if (str_contains($icon, 'fa-')) {
+                    $field .= "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
+                } else {
+                    $field .= "<i class='ti $icon' style='font-size:2em;color: $color;'></i>&nbsp;";
+                }
             }
             $field .= "<div style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</div>";
         }
@@ -139,21 +143,24 @@ class PluginMetademandsInformation extends CommonDBTM
             [
                 'id' => $icon_selector_id,
                 'selected' => $params['icon'],
-                'style' => 'width:175px;'
+                'style' => 'width:175px;',
             ]
         );
 
-        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::script('js/modules/Form/WebIconSelector.js');
         echo Html::scriptBlock(
             <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
         );
+
         echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";

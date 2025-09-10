@@ -55,7 +55,7 @@ class PluginMetademandsStep extends CommonDBChild
         return _n('Step-by-Step block', 'Step-by-Step blocks', $nb, 'metademands');
     }
 
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -63,19 +63,19 @@ class PluginMetademandsStep extends CommonDBChild
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
 
-    public function canCreateItem()
+    public function canCreateItem(): bool
     {
         return true;
     }
 
 
-    public static function canUpdate()
+    public static function canUpdate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -83,7 +83,7 @@ class PluginMetademandsStep extends CommonDBChild
 
     public static function getIcon()
     {
-        return PluginMetademandsMetademand::getIcon();
+        return "ti ti-device-ipad-pause";
     }
 
     /**
@@ -349,8 +349,8 @@ class PluginMetademandsStep extends CommonDBChild
         }
         ksort($blocks);
         if (count($blocks) > 0) {
-            echo "<div class='alert alert-warning d-flex'>";
-            echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange'></i>&nbsp;";
+            echo "<div class='alert alert-important alert-warning d-flex'>";
+            echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;";
             echo __(
                 'Be careful if all blocks are not assigned, they will be displayed to the last assigned group',
                 'metademands'
@@ -406,7 +406,7 @@ class PluginMetademandsStep extends CommonDBChild
             }
         }
 
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/_process-chart.css");
+        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/_process-chart.css");
         echo "<div class='row'>";
         echo "<div class='col-12 col-lg-12'>";
         echo "<ul class='process-chart'>";
@@ -538,7 +538,7 @@ class PluginMetademandsStep extends CommonDBChild
                         'delete',
                         _sx('button', 'Delete visibility', 'metademands'),
                         ['id' => $data['id']],
-                        'fa-trash-alt fa-1x'
+                        'ti-trash'
                     );
                     echo "</div>";
 
@@ -567,7 +567,7 @@ class PluginMetademandsStep extends CommonDBChild
             echo "<div class='row'>";
             echo "<div class='col-12 col-lg-12'>";
             echo "<div class='center alert alert-danger' style='margin-top:20px'>";
-            echo "<i class='fas fa-times-circle' style='color: darkred'></i>&nbsp;";
+            echo "<i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;";
             echo __('There is a problem with the setup', 'metademands') . "<br>" . __(
                 'Your blocks are not all defined',
                 'metademands'
@@ -859,7 +859,7 @@ class PluginMetademandsStep extends CommonDBChild
 
             if ($users_id_supervisor) {
                 echo "<div class='alert alert-warning d-flex'>";
-                echo "<i class='fas fa-check-circle' style='color: orange'></i>&nbsp;";
+                echo "<i class='ti ti-circle-check' style='color: orange'></i>&nbsp;";
                 echo "&nbsp;" . __(
                     'Your form will be validated by your supervisor',
                     'metademands'
@@ -868,7 +868,7 @@ class PluginMetademandsStep extends CommonDBChild
                 echo "</div>";
             } else {
                 echo "<div class='alert alert-danger d-flex'>";
-                echo "<i class='fas fa-times-circle' style='color: darkred'></i>&nbsp;";
+                echo "<i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;";
                 echo "&nbsp;" . __(
                     "You haven't defined supervisor, you cannot continue this request",
                     'metademands'
@@ -991,7 +991,7 @@ class PluginMetademandsStep extends CommonDBChild
 
                 if ($users_id_supervisor) {
                     echo "<div class='alert alert-warning d-flex'>";
-                    echo "<i class='fas fa-check-circle' style='color: orange'></i>";
+                    echo "<i class='ti ti-circle-check' style='color: orange'></i>";
                     echo "&nbsp;" . __('Your form will be validated by your supervisor', 'metademands') . "&nbsp;";
                     echo getUserName($users_id_supervisor);
                     echo Html::hidden('next_users_id', ['value' => $users_id_supervisor]);
@@ -1266,7 +1266,7 @@ class PluginMetademandsStep extends CommonDBChild
                     }
 
                     $inputs = [];
-                    $inputs['name'] = Toolbox::addslashes_deep($_POST['form_name']);
+                    $inputs['name'] = $_POST['form_name'];
                     $inputs['users_id'] = Session::getLoginUserID();
                     if (isset($_POST['next_groups_id'])) {
                         $inputs['groups_id_dest'] = $_POST['next_groups_id'];

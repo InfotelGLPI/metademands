@@ -47,14 +47,20 @@ class PluginMetademandsConfigstep extends CommonDBTM
 
 
     public static $disableAutoEntityForwarding   = true;
-    static function canView() {
+    static function canView(): bool
+    {
         return Session::haveRight(self::$rightname, UPDATE);
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-adjustments-pause";
+    }
     /**
      * @return bool
      */
-    static function canCreate() {
+    static function canCreate(): bool
+    {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
     /**

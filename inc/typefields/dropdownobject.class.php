@@ -388,7 +388,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                             $(\"[id-field='field{$data['id']}'] select\").on('change', function(e) {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: { 
+                                     data: {
                                          id : $(this).val()
                                      },
                                   success: function(response){
@@ -724,7 +724,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             Dropdown::showYesNo('is_requester', $is_requester);
             echo "</td>";
             echo "<td>";
-            echo __('Watcher');
+            echo __('Observer');
             echo "</td>";
             echo "<td>";
             // Watcher group
@@ -777,7 +777,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -1048,8 +1048,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             }
         }
 
-        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-        $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+        $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+        $nextsteptitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
         foreach ($check_values as $idc => $check_value) {
@@ -1090,7 +1090,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     //                }
                     //            }
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -1246,7 +1246,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         //                        }
                         //                    }
 
-                        $onchange .= "$.each( tohide, function( key, value ) {           
+                        $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);

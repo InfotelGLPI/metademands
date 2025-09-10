@@ -54,7 +54,7 @@ class PluginMetademandsLdapdropdown extends CommonDBTM
 
     public static function getTable($classname = null)
     {
-        return '';
+        return RuleRightParameter::getTable();
     }
 
     public static function getForeignKeyField()
@@ -86,10 +86,11 @@ class PluginMetademandsLdapdropdown extends CommonDBTM
             $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
         }
 
-        $opt['url'] = Plugin::getWebDir('metademands') . '/ajax/getldapvalues.php';
+        $opt['url'] = PLUGIN_METADEMANDS_WEBDIR. '/ajax/getldapvalues.php';
 
-        $field = Dropdown::show(self::class, $opt);
-
+        if ($item = getItemForItemtype(self::class)) {
+            $field = Dropdown::show(self::class, $opt);
+        }
         echo $field;
     }
 
@@ -299,7 +300,7 @@ class PluginMetademandsLdapdropdown extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -532,7 +533,7 @@ class PluginMetademandsLdapdropdown extends CommonDBTM
 //                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
 //            }
 //
-//            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+//            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
 //            $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 //
 //

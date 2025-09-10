@@ -178,7 +178,7 @@ if (isset($_POST['save_draft'])) {
                 break;
             }
             $inputs = [];
-            $inputs['name'] = Toolbox::addslashes_deep($_POST['draft_name']);
+            $inputs['name'] = $_POST['draft_name'];
             //               $inputs['name'] = 'd1';
             $inputs['users_id'] = Session::getLoginUserID();
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];

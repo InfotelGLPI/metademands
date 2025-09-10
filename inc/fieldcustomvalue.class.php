@@ -318,7 +318,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                     $hasDuplicates = count($ranks) > count(array_unique($ranks));
                     if ($hasDuplicates == true) {
                         echo "<div class='alert alert-warning d-flex'>";
-                        echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                        echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
                             'You have duplicates rank!',
                             'metademands'
                         );
@@ -328,7 +328,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                     if (self::isSequentialFromZero($ranks) == false) {
                         echo "<div class='alert alert-warning flex'>";
                         echo "<div class='left'>";
-                        echo "<i class='fas fa-exclamation-triangle fa-2x' style='color: orange;'></i>&nbsp;" . __(
+                        echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
                             'The ranks are not ordered correctly, you will not be able to order them!',
                             'metademands'
                         );
@@ -344,7 +344,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
                             [
                                 'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                             ],
-                            'fa-wrench',
+                            'ti-settings',
                             "class='btn btn-warning'"
                         );
                         echo "</div>";
@@ -470,7 +470,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
      */
     public static function initCustomValue($count, $display_comment = false, $display_default = false, $plugin_metademands_fields_id = 0)
     {
-        Html::requireJs("metademands");
+
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
             ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
         ) . ");";
@@ -479,7 +479,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
 
-        echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer;'
+        echo "&nbsp;<i class='ti ti-square-plus' style='cursor:pointer;'
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
@@ -508,7 +508,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBChild
         echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
         echo Html::submit("", ['name'  => 'importreplacecsv',
             'class' => 'btn btn-success',
-            'icon'  => 'fas fa-upload',
+            'icon'  => 'ti ti-upload',
             'confirm' => __('Are you sure ? Custom values will be deleted !', 'metademands')]);
         $warning = __('Please respect this format : name; display by default(0|1); comment; - sorted by display order', 'metademands');
         Html::showToolTip($warning);
@@ -578,7 +578,7 @@ JAVASCRIPT
         echo "<td>";
         echo Html::submit("", ['name'  => 'add',
             'class' => 'btn btn-primary',
-            'icon'  => 'fas fa-save']);
+            'icon'  => 'ti ti-device-floppy']);
 
         echo Html::hidden('rank', ['value' => $rank]);
         echo Html::hidden('fields_id', ['value' => $fields_id]);
@@ -666,12 +666,12 @@ JAVASCRIPT
     public static function isSequentialFromZero(array $arr)
     {
         if (empty($arr) || $arr[0] !== 0) {
-            return false; // Vérifie que le tableau n'est pas vide et commence bien par 0
+            return false; // V�rifie que le tableau n'est pas vide et commence bien par 0
         }
 
         for ($i = 1; $i < count($arr); $i++) {
             if ($arr[$i] - $arr[$i - 1] !== 1) {
-                return false; // Vérifie que la progression est bien de +1
+                return false; // V�rifie que la progression est bien de +1
             }
         }
         return true;
@@ -679,10 +679,10 @@ JAVASCRIPT
 
     public static function fixRanks(array $data)
     {
-        // Extraire les clés du tableau
+        // Extraire les cl�s du tableau
         $keys = array_keys($data);
 
-        // Réinitialiser le rank à partir de 0
+        // R�initialiser le rank � partir de 0
         foreach ($keys as $index => $key) {
             $data[$key]['rank'] = $index;
         }

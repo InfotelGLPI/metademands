@@ -74,19 +74,17 @@ class PluginMetademandsDropdown extends CommonDBTM
         ];
         foreach (
             /** @phpstan-ignore-next-line */
-            $DB->request(Location::getTable(), [
+            $DB->request([
+                'FROM' => Location::getTable(),
                 'WHERE' => $entity_criteria,
             ]) as $location
         ) {
-            if (DropdownTranslation::isDropdownTranslationActive()) {
-                $location['name'] = DropdownTranslation::getTranslatedValue(
-                    $location['id'],
-                    Location::class,
-                    'name',
-                    $_SESSION['glpilanguage']
-                ) ?: $location['name'];
-            }
-            $location['name'] = Html::entity_decode_deep($location['name']);
+            $location['name'] = DropdownTranslation::getTranslatedValue(
+                $location['id'],
+                Location::class,
+                'name',
+                $_SESSION['glpilanguage']
+            ) ?: $location['name'];
             $locations[$location['id']] = $location;
         }
         uasort($locations, function ($a, $b) {
@@ -148,7 +146,7 @@ class PluginMetademandsDropdown extends CommonDBTM
     public static function locationDropdown($opt)
     {
 
-        echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/cascading-dropdowns/jquery.chained.selects.js");
+        echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/cascading-dropdowns/jquery.chained.selects.js");
 
         $locations = self::getLocations($_SESSION['glpiactiveentities']);
         $locations_json = json_encode($locations);
@@ -157,7 +155,7 @@ class PluginMetademandsDropdown extends CommonDBTM
         $value = $opt['value'];
         $required = $opt['required'];
 
-        echo "<select name=\"$name-dropdown\" id=\"$id-dropdown\" $required class='chained-select'></select>";
+        echo "<select class='chained-select' name=\"$name-dropdown\" id=\"$id-dropdown\" $required class='chained-select'></select>";
         echo Html::scriptBlock("function loadSplittedLocations() {
 
                             $(\"#$id-dropdown\").chainedSelects({
@@ -171,7 +169,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                                 },
                             });
                         }
-    
+
                         $(document).ready(function () {
                             loadSplittedLocations();
                         });
@@ -447,7 +445,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -680,7 +678,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                 $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
@@ -709,7 +707,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                             tohide[$tasks_id] = false;
                         }";
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -837,7 +835,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         $display = $hidden_link;
                     }
 
-                    $onchange .= "$.each( tohide, function( key, value ) {           
+                    $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);

@@ -49,6 +49,11 @@ class PluginMetademandsTools extends CommonDBTM
         return __('Tools', 'metademands');
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-tools";
+    }
+
     public static function getTable($classname = null)
     {
         return "glpi_plugin_metademands_configs";
@@ -64,7 +69,7 @@ class PluginMetademandsTools extends CommonDBTM
     function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if ($item->getType() == 'PluginMetademandsConfig') {
-            return self::getTypeName();
+            return self::createTabEntry(self::getTypeName());
         }
         return '';
     }
@@ -98,14 +103,14 @@ class PluginMetademandsTools extends CommonDBTM
                         check_value, COUNT(check_value) as nbr_doublon
                     FROM
                         `glpi_plugin_metademands_fieldoptions`
-                    GROUP BY 
-                        plugin_metademands_fields_id, 
+                    GROUP BY
+                        plugin_metademands_fields_id,
                         check_value
-                    HAVING 
-                           (COUNT(plugin_metademands_fields_id) > 1) AND 
+                    HAVING
+                           (COUNT(plugin_metademands_fields_id) > 1) AND
                            (COUNT(check_value) > 1)";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result) > 0) {
             echo "<tr class='tab_bg_2'>";
@@ -166,7 +171,7 @@ class PluginMetademandsTools extends CommonDBTM
         $query = "SELECT `glpi_plugin_metademands_fieldoptions`.`id`, `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`
                     FROM
                         `glpi_plugin_metademands_fieldoptions`
-                    LEFT JOIN `glpi_plugin_metademands_fields` 
+                    LEFT JOIN `glpi_plugin_metademands_fields`
                         ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`)
                     WHERE
                         ((`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
@@ -177,11 +182,11 @@ class PluginMetademandsTools extends CommonDBTM
                         `childs_blocks` = '[]' AND
                         `checkbox_value` = 0 AND
                         `checkbox_id` = 0 AND
-                        `parent_field_id` = 0) OR `check_value` = 0 
+                        `parent_field_id` = 0) OR `check_value` = 0
                                                       AND `glpi_plugin_metademands_fields`.`item` != 'other'
                     AND `glpi_plugin_metademands_fields`.`item` != 'User'";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result) > 0) {
             echo "<tr class='tab_bg_2'>";
@@ -246,23 +251,23 @@ class PluginMetademandsTools extends CommonDBTM
         echo "<br><div class='left'>";
         echo "<table class='tab_cadre_fixe'>";
 
-        $query = "SELECT `glpi_plugin_metademands_fieldparameters`.`id`, 
-                            `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`, 
-                           `glpi_plugin_metademands_fields`.`type`, 
+        $query = "SELECT `glpi_plugin_metademands_fieldparameters`.`id`,
+                            `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`,
+                           `glpi_plugin_metademands_fields`.`type`,
                            `glpi_plugin_metademands_fieldcustomvalues`.`name`
                     FROM
                         `glpi_plugin_metademands_fieldparameters`
-                    LEFT JOIN `glpi_plugin_metademands_fields` 
+                    LEFT JOIN `glpi_plugin_metademands_fields`
                         ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`)
-                    LEFT JOIN `glpi_plugin_metademands_fieldcustomvalues` 
+                    LEFT JOIN `glpi_plugin_metademands_fieldcustomvalues`
                         ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldcustomvalues`.`plugin_metademands_fields_id`)
                     WHERE
-                        `glpi_plugin_metademands_fields`.`type` = 'radio' 
-                        OR `glpi_plugin_metademands_fields`.`type` = 'checkbox' 
+                        `glpi_plugin_metademands_fields`.`type` = 'radio'
+                        OR `glpi_plugin_metademands_fields`.`type` = 'checkbox'
                         OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_meta'
                         OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_multiple'";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result) > 0) {
             echo "<tr class='tab_bg_2'>";
@@ -329,7 +334,7 @@ class PluginMetademandsTools extends CommonDBTM
                         'fix_emptycustomvalues',
                         _x('button', 'Fix empty custom values', 'metademands'),
                         ['id' => $array['id']],
-                        'fa-check-circle'
+                        'ti ti-circle-check'
                     );
                     echo "</td>";
                     echo "</tr>";
@@ -351,12 +356,12 @@ class PluginMetademandsTools extends CommonDBTM
        `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
                     FROM
                         `glpi_plugin_metademands_groups`
-                    LEFT JOIN `glpi_plugin_metademands_metademands` 
+                    LEFT JOIN `glpi_plugin_metademands_metademands`
                         ON (`glpi_plugin_metademands_groups`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                     WHERE
                         `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_groups`.`entities_id`";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result) > 0) {
             while ($array = $DB->fetchAssoc($result)) {
@@ -373,12 +378,12 @@ class PluginMetademandsTools extends CommonDBTM
        `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
                     FROM
                         `glpi_plugin_metademands_ticketfields`
-                    LEFT JOIN `glpi_plugin_metademands_metademands` 
+                    LEFT JOIN `glpi_plugin_metademands_metademands`
                         ON (`glpi_plugin_metademands_ticketfields`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                     WHERE
                         `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_ticketfields`.`entities_id`";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result) > 0) {
             $field = new PluginMetademandsTicketField();
@@ -395,12 +400,12 @@ class PluginMetademandsTools extends CommonDBTM
        `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
                     FROM
                         `glpi_plugin_metademands_fields`
-                    LEFT JOIN `glpi_plugin_metademands_metademands` 
+                    LEFT JOIN `glpi_plugin_metademands_metademands`
                         ON (`glpi_plugin_metademands_fields`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                     WHERE
                         `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_fields`.`entities_id`";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($DB->numrows($result) > 0) {
             $field = new PluginMetademandsField();
@@ -484,7 +489,7 @@ class PluginMetademandsTools extends CommonDBTM
                         'fixranks',
                         _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
                         ['plugin_metademands_fields_id' => $not_ordered_field],
-                        'fa-wrench',
+                        'ti ti-settings',
                     );
                     echo "</td>";
                     echo "</tr>";

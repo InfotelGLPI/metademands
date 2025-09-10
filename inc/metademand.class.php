@@ -29,6 +29,12 @@
  */
 
 
+use Glpi\Form\Category;
+use Glpi\Form\ServiceCatalog\ServiceCatalog;
+use Glpi\Form\ServiceCatalog\ServiceCatalogLeafInterface;
+use Glpi\UI\IllustrationManager;
+use Glpi\DBAL\QueryExpression;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -39,7 +45,7 @@ include_once('metademandpdf.class.php');
 /**
  * Class PluginMetademandsMetademand
  */
-class PluginMetademandsMetademand extends CommonDBTM
+class PluginMetademandsMetademand extends CommonDBTM  implements ServiceCatalogLeafInterface
 {
     public const LOG_ADD = 1;
     public const LOG_UPDATE = 2;
@@ -97,7 +103,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     /**
      * @return bool|int
      */
-    public static function canView()
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -105,7 +111,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     /**
      * @return bool
      */
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -264,6 +270,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
         $this->addStandardTab('PluginMetademandsTask', $ong, $options);
         $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
+        $this->addStandardTab(ServiceCatalog::class, $ong, $options);
         if (Session::getCurrentInterface() == 'central') {
             $this->addStandardTab('Log', $ong, $options);
         }
@@ -297,7 +304,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         if ($config['simpleticket_to_metademand']) {
             if (($type == 'show' && $object->fields["id"] == 0)
                 || ($type == 'update' && $object->fields["id"] > 0)) {
-                if (!empty($object->input["itilcategories_id"]) && $object->input["type"] != "formcreator") {
+                if (!empty($object->input["itilcategories_id"])) {
                     $dbu = new DbUtils();
                     $metademand = new self();
                     $metas = $metademand->find([
@@ -433,6 +440,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     {
         global $DB;
         $cat_already_store = false;
+
         if (isset($input['itilcategories_id'])) {
             if (count($input['itilcategories_id']) > 0) {
                 //retrieve all multiple cats from all metademands
@@ -499,6 +507,9 @@ class PluginMetademandsMetademand extends CommonDBTM
             } else {
                 $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
             }
+        }
+        if (isset($input['is_pinned'])) {
+            unset ($input['itilcategories_id']);
         }
 
         if (isset($input['is_order']) && $input['is_order'] == 1) {
@@ -836,6 +847,15 @@ class PluginMetademandsMetademand extends CommonDBTM
         ];
 
         $tab[] = [
+            'id' => '15',
+            'table'         => Category::getTable(),
+            'field'         => 'completename',
+            'name'          => Category::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => true,
+        ];
+
+        $tab[] = [
             'id' => '121',
             'table' => $this->getTable(),
             'field' => 'date_creation',
@@ -1085,7 +1105,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         if ($this->fields['maintenance_mode'] == 1) {
             echo "<h3>";
             echo "<div class='alert alert-warning center'>";
-            echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
             echo __('This form is in maintenance mode', 'metademands') . "</div></h3>";
         }
 
@@ -1250,16 +1270,8 @@ class PluginMetademandsMetademand extends CommonDBTM
         echo $this->getURL($ID);
         echo "</td>";
 
-        echo "<td rowspan='2'>" . __('Comments') . "</td>";
-        echo "<td rowspan='2'>";
-        Html::textarea([
-            'name' => 'comment',
-            'value' => $this->fields["comment"],
-            'cols' => 50,
-            'rows' => 10,
-            'enable_richtext' => false,
-            'enable_fileupload' => false,
-        ]);
+        echo "<td></td>";
+        echo "<td>";
         echo "</td>";
 
         echo "</tr>";
@@ -1278,17 +1290,20 @@ class PluginMetademandsMetademand extends CommonDBTM
             ]
         );
 
-        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::script('js/modules/Form/WebIconSelector.js');
         echo Html::scriptBlock(
             <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
         );
+
         echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";
@@ -1368,7 +1383,19 @@ JAVASCRIPT
         echo "<td>" . __('Use a confirm popup check for empty values', 'metademands') . "</td><td>";
         Dropdown::showYesNo("use_confirm", $this->fields['use_confirm']);
         echo "</td>";
-        echo "<td colspan='2'></td>";
+
+        echo "<td rowspan='2'>" . __('Comments') . "</td>";
+        echo "<td rowspan='2'>";
+        Html::textarea([
+            'name' => 'comment',
+            'value' => $this->fields["comment"],
+            'cols' => 40,
+            'rows' => 10,
+            'enable_richtext' => false,
+            'enable_fileupload' => false,
+        ]);
+        echo "</td>";
+
         echo "</tr>";
 
         $this->showFormButtons($options);
@@ -1383,13 +1410,13 @@ JAVASCRIPT
     public function showDuplication($metademands_id)
     {
         echo "<h3><div class='alert alert-warning' role='alert'>";
-        echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+        echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
         echo __(
             'Tasks tree cannot be changed as unresolved related tickets exist or activate maintenance mode',
             'metademands'
         );
 
-        echo "<br><br><form name='task_form' id='task_form' method='post' 
+        echo "<br><br><form name='task_form' id='task_form' method='post'
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
         echo Html::submit(_sx('button', 'Duplicate'), ['name' => 'execute', 'class' => 'btn btn-primary']);
         echo Html::hidden('_method', ['value' => 'Duplicate']);
@@ -1514,17 +1541,20 @@ JAVASCRIPT
                     ]
                 );
 
-                echo Html::script('js/Forms/FaIconSelector.js');
+                echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock(
                     <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
                 );
+
                 break;
         }
     }
@@ -1729,14 +1759,14 @@ JAVASCRIPT
             $type = $options['type'];
         }
         if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
-            $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type' 
-                        AND `is_active` = 1 
-                        AND `is_deleted` = 0 
+            $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type'
+                        AND `is_active` = 1
+                        AND `is_deleted` = 0
                         AND `is_template` = 0 ";
         } else {
-            $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type' 
-                        AND `is_active` = 1 
-                        AND `is_deleted` = 0 
+            $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type'
+                        AND `is_active` = 1
+                        AND `is_deleted` = 0
                         AND `is_template` = 0 ";
         }
 
@@ -1747,8 +1777,8 @@ JAVASCRIPT
         }
 
         if (!empty($type) || $forceview) {
-            $query = "SELECT `" . $this->getTable() . "`.`name`, 
-                          `" . $this->getTable() . "`.`id`, 
+            $query = "SELECT `" . $this->getTable() . "`.`name`,
+                          `" . $this->getTable() . "`.`id`,
                           `glpi_entities`.`completename` as entities_name
                    FROM " . $this->getTable() . "
                    INNER JOIN `glpi_entities`
@@ -1756,7 +1786,7 @@ JAVASCRIPT
                    WHERE $condition
                    ORDER BY `" . $this->getTable() . "`.`name`";
 
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
             if ($DB->numrows($result)) {
                 while ($data = $DB->fetchAssoc($result)) {
                     if ($this->canCreate() || PluginMetademandsGroup::isUserHaveRight($data['id'])) {
@@ -1790,8 +1820,8 @@ JAVASCRIPT
             $meta_data[0] = Dropdown::EMPTY_VALUE;
         }
 
-        $condition = "  `is_active` = 1 
-                        AND `is_deleted` = 0 
+        $condition = "  `is_active` = 1
+                        AND `is_deleted` = 0
                         AND `is_template` = 0 ";
 
         $query_cat = "SELECT id,name FROM glpi_itilcategories";
@@ -1811,8 +1841,8 @@ JAVASCRIPT
 
         $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
 
-        $query = "SELECT `" . $this->getTable() . "`.`name`, 
-                          `" . $this->getTable() . "`.`id`, 
+        $query = "SELECT `" . $this->getTable() . "`.`name`,
+                          `" . $this->getTable() . "`.`id`,
                           `" . $this->getTable() . "`.`itilcategories_id`,
                           `glpi_entities`.`completename` as entities_name
                    FROM " . $this->getTable() . "
@@ -1962,7 +1992,7 @@ JAVASCRIPT
             //                        RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
             //                          ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
             //                        WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-            //                $result = $DB->query($query);
+            //                $result = $DB->doQuery($query);
             //                if ($DB->numrows($result)) {
             //                    while ($data = $DB->fetchAssoc($result)) {
             //                        $step++;
@@ -2230,7 +2260,6 @@ JAVASCRIPT
                             $values_form[0] = $values['fields'];
                             $parent_fields = self::formatFields($line['form'], $metademands_id, $values_form, $options);
 
-                            $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                         }
                     } elseif ($metademand->fields['is_order'] == 1) {
                         $options['is_order'] = true;
@@ -2255,7 +2284,7 @@ JAVASCRIPT
                         }
 
                         $parent_fields = self::formatFields($line['form'], $metademands_id, $values_form, $options);
-                        $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
+
                     }
 
 
@@ -2486,7 +2515,7 @@ JAVASCRIPT
                     //                           WHERE `glpi_groups_users`.`users_id` = " . $parent_fields['_users_id_requester'] . "
                     //                           AND `glpi_groups`.`is_requester` = 1
                     //                           LIMIT 1";
-                    //                  $result = $DB->query($query);
+                    //                  $result = $DB->doQuery($query);
                     //                  if ($DB->numrows($result)) {
                     //                     $groups_id_requester                   = $DB->result($result, 0, '_groups_id_requester');
                     //                     $parent_fields['_groups_id_requester'] = $groups_id_requester;
@@ -2640,7 +2669,6 @@ JAVASCRIPT
                         }
 
                         //                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
-                        $input = Toolbox::addslashes_deep($input);
 
                         if (Plugin::isPluginActive('collectmetademand')) {
                             if (isset($_SESSION['plugin_collectmetademands']['textOrigin'])) {
@@ -2678,6 +2706,7 @@ JAVASCRIPT
                             //                            $input['_actors'] = [];
 
                             $parent_tickets_id = $object->add($input);
+                            self::incrementFormUsageCount($metademand);
                         }
 
                         //delete drafts
@@ -2841,8 +2870,8 @@ JAVASCRIPT
                             $object->getFromDB($parent_tickets_id);
                             $parent_fields['content'] = $object->fields['content']
                                 . "<br>" . $parent_fields['content'];
-                            $parent_fields['name'] = Html::cleanPostForTextArea($parent_fields['name'])
-                                . '&nbsp;:&nbsp;' . Html::cleanPostForTextArea($object->fields['name']);
+                            $parent_fields['name'] = $parent_fields['name']
+                                . '&nbsp;:&nbsp;' . $object->fields['name'];
                             $ticket_exists_array[] = 1;
                             $ticket_exists = true;
                             $values['fields']['tickets_id'] = 0;
@@ -2967,9 +2996,8 @@ JAVASCRIPT
                                             $task = new ChangeTask();
                                             $input['changes_id'] = $parent_tickets_id;
                                         }
-                                        $input['content'] = Toolbox::addslashes_deep(
-                                            $meta_task['tickettasks_name']
-                                        ) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                                        $input['content'] = $meta_task['tickettasks_name']
+                                         . " " . $meta_task['content'];
                                         $input['groups_id_tech'] = $meta_task["groups_id_assign"];
                                         $input['users_id_tech'] = $meta_task["users_id_assign"];
                                         $task->add($input);
@@ -3556,9 +3584,6 @@ JAVASCRIPT
                                                         ['formatastable' => $l['formatastable']]
                                                     );
 
-                                                    $parent_fields_content['content'] = Html::cleanPostForTextArea(
-                                                        $parent_fields_content['content']
-                                                    );
                                                 } else {
                                                     $parent_fields_content['content'] = $parent_fields['content'];
                                                 }
@@ -4085,9 +4110,8 @@ JAVASCRIPT
                                                 )) {
                                                     $ticket_task = new TicketTask();
                                                     $input = [];
-                                                    $input['content'] = Toolbox::addslashes_deep(
-                                                        $meta_task['tickettasks_name']
-                                                    ) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                                                    $input['content'] = $meta_task['tickettasks_name']
+                                                     . " " . $meta_task['content'];
                                                     $input['tickets_id'] = $parent_tickets_id;
                                                     $input['groups_id_tech'] = $meta_task["groups_id_assign"];
                                                     $input['users_id_tech'] = $meta_task["users_id_assign"];
@@ -4747,7 +4771,7 @@ JAVASCRIPT
         }
 
         // Message return
-        $parent_metademands_name = Toolbox::stripslashes_deep($object->fields['name']);
+        $parent_metademands_name = $object->fields['name'];
         if (count($KO)) {
             $message = __('Demand add failed', 'metademands');
         } else {
@@ -5111,7 +5135,7 @@ JAVASCRIPT
         //      $style_title = "style='background-color: #cccccc;'";
 
         if (empty($label = PluginMetademandsField::displayField($field['id'], 'name', $lang))) {
-            $label = Toolbox::stripslashes_deep($field['name']);
+            $label = $field['name'];
         }
 
         //use plugin fields types
@@ -5831,9 +5855,6 @@ JAVASCRIPT
                                                 [$values_form],
                                                 ['formatastable' => $task->fields['formatastable']]
                                             );
-                                            $parent_fields_content['content'] = Html::cleanPostForTextArea(
-                                                $parent_fields_content['content']
-                                            );
                                         } else {
                                             $parent_fields_content['content'] = $parent_fields['content'];
                                         }
@@ -5993,8 +6014,6 @@ JAVASCRIPT
                     }
                     $son_ticket_data = self::mergeFields($son_ticket_data, $inputFieldMain);
 
-                    $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
-                    $son_ticket_data['name'] = Toolbox::addslashes_deep($son_ticket_data['name']);
                     if (!isset($son_ticket_data['users_id_recipient']) || empty($son_ticket_data['users_id_recipient'])) {
                         $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
                     }
@@ -6124,7 +6143,7 @@ JAVASCRIPT
                         LEFT JOIN `glpi_plugin_metademands_tickets_tasks`
                            ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id`)
                         WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = " . $tickets_data['id'];
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
 
             if ($DB->numrows($result)) {
                 $values = [];
@@ -6734,10 +6753,8 @@ JAVASCRIPT
             echo "<br>";
             echo __('Do you want to validate her?', 'metademands');
             $style = "btn-orange";
-            echo "<br>";
-            echo "<br>";
-            echo "<a class='btn primary mb-2 answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='fas fa-thumbs-up' style='margin-left: 10px;'></i>" . __(
+            echo "<a class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>" . __(
                     'Metademand validation',
                     'metademands'
                 ) . "</a>";
@@ -6976,11 +6993,11 @@ JAVASCRIPT
                         //status
                         echo "<td class='center'>";
                         if (in_array($childticket->fields['status'], $status)) {
-                            echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
+                            echo "<i class='ti ti-circle-check' style='font-size:1em;color:forestgreen'></i> ";
                         }
 
                         if (!in_array($childticket->fields['status'], $status)) {
-                            echo "<i class='fas fa-cog fa-2x' style='color:orange'></i> ";
+                            echo "<i class='ti ti-clock' style='font-size:1em;color:orange'></i> ";
                         }
                         echo Ticket::getStatus($childticket->fields['status']);
                         echo "</td>";
@@ -6989,7 +7006,7 @@ JAVASCRIPT
                         if (Session::getCurrentInterface() == 'central') {
                             echo "<td class='$color_class'>";
                             if ($is_late && !in_array($childticket->fields['status'], $status)) {
-                                echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
+                                echo "<i class='ti ti-alert-triangle' style='font-size:1em;color:darkred'></i>";
                             }
                             echo Html::convDateTime($childticket->fields['time_to_resolve']);
                             echo "</td>";
@@ -7361,9 +7378,9 @@ JAVASCRIPT
                     $oldCustoms = $fieldcustoms->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldCustoms as $oldCustom) {
                         $inputc = [];
-                        $inputc['name'] = Toolbox::addslashes_deep($oldCustom['name']);
+                        $inputc['name'] = $oldCustom['name'];
                         $inputc['is_default'] = $oldCustom['is_default'];
-                        $inputc['comment'] = Toolbox::addslashes_deep($oldCustom['comment']);
+                        $inputc['comment'] = $oldCustom['comment'];
                         $inputc['rank'] = $oldCustom['rank'];
                         $inputc['plugin_metademands_fields_id'] = $newField['id'];
 
@@ -7375,12 +7392,12 @@ JAVASCRIPT
                     $oldFreeTables = $fieldfreetables->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldFreeTables as $oldFreeTable) {
                         $inputf = [];
-                        $inputf['name'] = Toolbox::addslashes_deep($oldFreeTable['name']);
-                        $inputf['internal_name'] = Toolbox::addslashes_deep($oldFreeTable['internal_name']);
+                        $inputf['name'] = $oldFreeTable['name'];
+                        $inputf['internal_name'] = $oldFreeTable['internal_name'];
                         $inputf['type'] = $oldFreeTable['type'];
                         $inputf['is_mandatory'] = $oldFreeTable['is_mandatory'];
-                        $inputf['comment'] = Toolbox::addslashes_deep($oldFreeTable['comment']);
-                        $inputf['dropdown_values'] = Toolbox::addslashes_deep($oldFreeTable['dropdown_values']);
+                        $inputf['comment'] = $oldFreeTable['comment'];
+                        $inputf['dropdown_values'] = $oldFreeTable['dropdown_values'];
                         $inputf['rank'] = $oldFreeTable['rank'];
                         $inputf['plugin_metademands_fields_id'] = $newField['id'];
 
@@ -7533,12 +7550,10 @@ JAVASCRIPT
         if ($isadmin) {
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'duplicate'] = _sx('button', 'Duplicate');
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportXML'] = __('Export XML', 'metademands');
-            if (Plugin::isPluginActive("formcreator")) {
-                $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __(
-                    'Export JSON',
-                    'metademands'
-                );
-            }
+            $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __(
+                'Export JSON',
+                'metademands'
+            );
         }
 
         return $actions;
@@ -7598,17 +7613,17 @@ JAVASCRIPT
                                             let url = window.URL.createObjectURL(blob);
                                             let link = document.createElement('a');
                                             link.href = url;
-                                
+
                                             const contentDisposition = xhr.getResponseHeader('Content-Disposition');
                                             let filename = 'export_' + new Date().toISOString().slice(0, 10) + '.zip';
-                                
+
                                             if (contentDisposition) {
                                                 let matches = contentDisposition.match(/filename[^;=\\n]*=((['\"]).*?\\2|[^;\\n]*)/);
                                                 if (matches != null && matches[1]) {
                                                     filename = matches[1].replace(/['\"]/g, '');
                                                 }
                                             }
-                                
+
                                             link.download = filename;
                                             document.body.appendChild(link);
                                             link.click();
@@ -7617,9 +7632,9 @@ JAVASCRIPT
                                             window.URL.revokeObjectURL(url);
                                             document.body.removeChild(link);
                                     }
-                                }) 
+                                })
                             })
-                        }) 
+                        })
                     </script>";
                     return true;
                 }
@@ -7831,12 +7846,12 @@ JAVASCRIPT
         $get_running_parents_tickets_meta =
             "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " " .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
-        $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
+        $total_running_parents_meta = $DB->doQuery($get_running_parents_tickets_meta);
 
         $total_running = 0;
         while ($row = $DB->fetchArray($total_running_parents_meta)) {
@@ -7890,17 +7905,17 @@ JAVASCRIPT
             "SELECT COUNT(DISTINCT(`glpi_plugin_metademands_tickets_metademands`.`id`)) as 'total_running' FROM `glpi_tickets`
                         LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                          LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands 
-                             ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '" . CommonITILActor::ASSIGN . "') 
+                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands
+                             ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '" . CommonITILActor::ASSIGN . "')
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode(
                 "','",
                 $_SESSION['glpigroups']
             ) . "'))  " .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
-        $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
+        $total_running_parents_meta = $DB->doQuery($get_running_parents_tickets_meta);
 
         $total_running = 0;
         while ($row = $DB->fetchArray($total_running_parents_meta)) {
@@ -7960,12 +7975,12 @@ JAVASCRIPT
         $get_closed_parents_tickets_meta =
             "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_to_closed' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =
                                     " . PluginMetademandsTicket_Metademand::TO_CLOSED . " " .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
-        $results_closed_parents = $DB->query($get_closed_parents_tickets_meta);
+        $results_closed_parents = $DB->doQuery($get_closed_parents_tickets_meta);
 
         $total_closed = 0;
         while ($row = $DB->fetchArray($results_closed_parents)) {
@@ -8015,15 +8030,15 @@ JAVASCRIPT
         ];
 
         $get_to_validated_meta =
-            "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' 
+            "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated'
           FROM `glpi_plugin_metademands_metademandvalidations`
-         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` 
+         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id`
          WHERE  `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "')
            AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (" . PluginMetademandsMetademandValidation::TO_VALIDATE . "," . PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK . ")" .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
-        $results_meta_to_validated = $DB->query($get_to_validated_meta);
+        $results_meta_to_validated = $DB->doQuery($get_to_validated_meta);
 
         $total_to_validated = 0;
         while ($row = $DB->fetchArray($results_meta_to_validated)) {
@@ -8307,7 +8322,7 @@ JAVASCRIPT
 
         $tickets_existant = [];
 
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/_process-chart.css");
+        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/_process-chart.css");
         echo "<div class='row'>";
         echo "<div class='col-12 col-lg-12'>";
         echo "<ul class='process-chart'>";
@@ -8532,7 +8547,7 @@ HTML;
                     $target,
                     'purge',
                     _x('button', 'Delete permanently'),
-                    ['id' => $template["id"], 'withtemplate' => 1]
+                    ['id' => $template["id"], 'withtemplate' => 1],
                 );
                 echo "</td>";
             } else {
@@ -8798,5 +8813,70 @@ HTML;
                 return ($formValue && in_array($optionValue, $formValue));
         }
         return false;
+    }
+
+    #[Override]
+    public function getServiceCatalogLink(): string
+    {
+        $id = $this->getID();
+        return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=$id&step=2";
+    }
+
+    #[Override]
+    public function getServiceCatalogItemTitle(): string
+    {
+        $name = "";
+        if (empty($name = self::displayField($this->getID(), 'name'))) {
+            $name =  $this->fields['name'];
+        }
+        return $name;
+    }
+
+    #[Override]
+    public function getServiceCatalogItemDescription(): string
+    {
+        if (empty($comment = self::displayField($this->getID(), 'comment'))) {
+            $comment =  $this->fields['comment'] ?? "";
+        }
+        if (empty($comment) && empty($description = self::displayField($this->getID(), 'description'))) {
+            $description =  $this->fields['description'] ?? "";
+        }
+        return $comment ?? $description ?? "";
+    }
+
+    #[Override]
+    public function getServiceCatalogItemIllustration(): string
+    {
+        if ($this->fields['illustration']) {
+            return $this->fields['illustration'];
+        }
+        $category = new Category();
+        if ($this->fields['forms_categories_id'] && $category->getFromDB($this->fields['forms_categories_id'])) {
+            return $category->fields['illustration'];
+        }
+        return IllustrationManager::DEFAULT_ILLUSTRATION;
+    }
+
+    #[Override]
+    public function isServiceCatalogItemPinned(): bool
+    {
+        return $this->fields['is_pinned'] ?? 0;
+    }
+
+    public function getUsageCount(): int
+    {
+        return $this->fields['usage_count'] ?? 0;
+    }
+
+    protected static function incrementFormUsageCount(PluginMetademandsMetademand $form): void
+    {
+        global $DB;
+
+        // Note: Using direct DB update prevents race conditions
+        $DB->update(
+            PluginMetademandsMetademand::getTable(),
+            ['usage_count' => new QueryExpression('usage_count + 1')],
+            ['id' => $form->getID()]
+        );
     }
 }

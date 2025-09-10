@@ -996,11 +996,11 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                      'Requester groups',
                      Session::getPluralNumber()
                  ),
-                 $objettype . '.observergroups'       => _n('Watcher group', 'Watcher groups', Session::getPluralNumber()),
+                 $objettype . '.observergroups'       => _n('Observer group', 'Observer groups', Session::getPluralNumber()),
                  $objettype . '.assigntogroups'       => __('Assigned to groups'),
                  $objettype . '.solution.type'        => SolutionType::getTypeName(1),
                  $objettype . '.solution.description' => ITILSolution::getTypeName(1),
-                 $objettype . '.observerusers'        => _n('Watcher', 'Watchers', Session::getPluralNumber()),
+                 $objettype . '.observerusers'        => _n('Observer', 'Observers', Session::getPluralNumber()),
                  $objettype . '.action'               => _n('Event', 'Events', 1),
                  'followup.date'                      => __('Opening date'),
                  'followup.isprivate'                 => __('Private'),

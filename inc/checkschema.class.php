@@ -50,6 +50,11 @@ class PluginMetademandsCheckSchema extends CommonDBTM {
         return __('Schema check', 'metademands');
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-check";
+    }
+
     public static function getTable($classname = null) {
         return "glpi_plugin_metademands_configs";
     }
@@ -65,7 +70,7 @@ class PluginMetademandsCheckSchema extends CommonDBTM {
     {
 
         if ($item->getType() == 'PluginMetademandsConfig') {
-            return self::getTypeName();
+            return self::createTabEntry(self::getTypeName());
         }
         return '';
     }

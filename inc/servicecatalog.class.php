@@ -86,7 +86,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
     {
         global $CFG_GLPI;
 
-        return PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+        return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
     }
 
     /**
@@ -97,7 +97,11 @@ class PluginMetademandsServicecatalog extends CommonGLPI
         $config = new PluginMetademandsConfig();
         $config->getFromDB(1);
         if (!empty($config->getField('fa_servicecatalog'))) {
-            return "fas ".$config->getField('fa_servicecatalog');
+            if (str_contains($config->getField('fa_servicecatalog'), 'fa-')) {
+                return "fas " . $config->getField('fa_servicecatalog');
+            } else {
+                return "ti " . $config->getField('fa_servicecatalog');
+            }
         }
         return PluginMetademandsMetademand::getIcon();
     }

@@ -746,7 +746,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                         if (isset($pictures) && is_array($pictures)) {
                                             foreach ($pictures as $picture) {
                                                 $picture_url = Toolbox::getPictureUrl($picture);
-                                                $icon = "<img class='user_picture' style='width: 30%;height: 30%;' 
+                                                $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
                                         alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
                                                     $picture_url . "'>";
                                                 $ok = 1;
@@ -762,7 +762,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                     if (isset($pictures) && is_array($pictures)) {
                                         foreach ($pictures as $picture) {
                                             $picture_url = Toolbox::getPictureUrl($picture);
-                                            $icon = "<img class='user_picture' style='width: 30%;height: 30%;' 
+                                            $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
                                         alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
                                                 $picture_url . "'>";
                                             $ok = 1;
@@ -1048,12 +1048,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         echo Html::scriptBlock(
             "
                         function changeBackgroundColor(idLabel,newCss) {
-                        
+
                            hardwareType.forEach(function(item, index, array) {
                                  document.getElementById(item).className='btn buttonelt col-md-2 center';
                               });
                            document.getElementById(idLabel).className='btn buttonelt col-md-2 center '+newCss;
-                           
+
                            var buttonelt = document.getElementById('hardwareType_0');
                            var tooltip = document.querySelector('.tooltipelt');
                            if (buttonelt.innerHTML.length > 0) {
@@ -1129,7 +1129,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "<td class='rowhandler control center'>";
                 echo "<span id='icon$key'>";
                 $icon_selector_id = 'icon_' . mt_rand();
-
                 echo Html::select(
                     'icon[' . $key . ']',
                     [$value['icon'] => $value['icon']],
@@ -1140,16 +1139,18 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     ]
                 );
 
-                echo Html::script('js/Forms/FaIconSelector.js');
+                echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock(
                     <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
                 );
                 $blank = "_blank_picture[$key]";
                 echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
@@ -1164,7 +1165,7 @@ JAVASCRIPT
 
                 echo "<td class='rowhandler control center'>";
                 echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
+                echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
                 echo "</div>";
                 echo "</td>";
 
@@ -1174,7 +1175,7 @@ JAVASCRIPT
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
-                    'icon' => 'fas fa-save',
+                    'icon' => 'ti ti-device-floppy',
                 ]);
                 echo "</td>";
 
@@ -1188,7 +1189,7 @@ JAVASCRIPT
                         'rank' => $value['rank'],
                         'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                     ],
-                    'fa-times-circle',
+                    'ti-circle-x',
                     "class='btn btn-primary'"
                 );
                 echo "</td>";
@@ -1264,7 +1265,7 @@ JAVASCRIPT
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
-                    'icon' => 'fas fa-save',
+                    'icon' => 'ti ti-device-floppy',
                 ]);
                 echo "</td>";
                 echo "</tr>";
@@ -1303,7 +1304,7 @@ JAVASCRIPT
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
-                    'icon' => 'fas fa-save',
+                    'icon' => 'ti ti-device-floppy',
                 ]);
                 echo "</td>";
                 echo "</tr>";
@@ -1410,7 +1411,6 @@ JAVASCRIPT
             echo "</td>";
             echo "<td>";
             $icon_selector_id = 'icon_' . mt_rand();
-
             echo Html::select(
                 'icon',
                 [$params['icon'] => $params['icon']],
@@ -1421,17 +1421,20 @@ JAVASCRIPT
                 ]
             );
 
-            echo Html::script('js/Forms/FaIconSelector.js');
+            echo Html::script('js/modules/Form/WebIconSelector.js');
             echo Html::scriptBlock(
                 <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
             );
+
             echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
             echo "</td>";
             echo "</tr>";
@@ -1462,7 +1465,7 @@ JAVASCRIPT
                         $('select[name=\"users_id_validate\"]').val(),
                         $('select[name=\"checkbox_id\"]').val()
                  ];
-                    
+
                     reloadviewOption(formOption);
                 });";
 
@@ -1751,7 +1754,7 @@ JAVASCRIPT
                 }
             }
 
-            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
                 'metademands'
@@ -1800,7 +1803,7 @@ JAVASCRIPT
                     //                }
                     //            }
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',

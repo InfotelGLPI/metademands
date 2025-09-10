@@ -84,7 +84,7 @@ function migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand
                             `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "', '" . Ticket::SOLVED . "') 
                                  AND `glpi_tickets`.`is_deleted` = 0 ";
 
-   $results_running_parents = $DB->query($get_running_parents_tickets_meta);
+   $results_running_parents = $DB->doQuery($get_running_parents_tickets_meta);
 
    $running_parents_meta = [];
    while ($row = $DB->fetchArray($results_running_parents)) {
@@ -100,7 +100,7 @@ function migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand
 
          $get_running_sons_ticket = getSonsQuery($running_parent);
 
-         $results_sons_ticket = $DB->query($get_running_sons_ticket);
+         $results_sons_ticket = $DB->doQuery($get_running_sons_ticket);
 
          $counterClosed = 0;
 
@@ -130,7 +130,7 @@ function migrateAllClosedMetademands($DB, $dbu, $ticket_metademand) {
                             `glpi_tickets`.`status` IN ('" . Ticket::CLOSED . "', '" . Ticket::SOLVED . "') 
                                  AND `glpi_tickets`.`is_deleted` = 0 ";
 
-   $results_closed_parents = $DB->query($get_closed_meta);
+   $results_closed_parents = $DB->doQuery($get_closed_meta);
 
    $closed_parents_meta = [];
    while ($row = $DB->fetchArray($results_closed_parents)) {
@@ -146,7 +146,7 @@ function migrateAllClosedMetademands($DB, $dbu, $ticket_metademand) {
 
          $get_closed_sons_ticket = getSonsQuery($closed_parent);
 
-         $results_sons_ticket = $DB->query($get_closed_sons_ticket);
+         $results_sons_ticket = $DB->doQuery($get_closed_sons_ticket);
 
          $counterClosed = 0;
 
