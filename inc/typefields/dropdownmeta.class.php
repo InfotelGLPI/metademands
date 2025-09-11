@@ -26,6 +26,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Badges\Badge;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -636,7 +638,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 && $itemtype != "Domain"
                 && $itemtype != "Line"
                 && $itemtype != "PDU"
-                && $itemtype != "PluginBadgesBadge"
+                && $itemtype != Badge::class
                 && $itemtype != "PluginResourcesResource"
             ) {
                 $where = [];
@@ -925,7 +927,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             && $itemtype_groups != "Domain"
                             && $itemtype_groups != "Line"
                             && $itemtype_groups != "PDU"
-                            && $itemtype_groups != "PluginBadgesBadge"
+                            && $itemtype_groups != Badge::class
                             && $itemtype_groups != "PluginResourcesResource"
                             && in_array($itemtype_groups, $objects)
                         ) {
