@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-10 11:07+0000\n"
+"POT-Creation-Date: 2025-09-11 09:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -742,7 +742,7 @@ msgid ""
 msgstr ""
 
 #: inc/fieldcustomvalue.class.php:548 inc/typefields/checkbox.class.php:248
-#: inc/typefields/dropdownmeta.class.php:1104
+#: inc/typefields/dropdownmeta.class.php:1106
 #: inc/typefields/dropdownmultiple.class.php:552
 #: inc/typefields/freetable.class.php:849
 #: inc/typefields/freetablefield.class.php:336
@@ -2016,16 +2016,16 @@ msgstr ""
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:64
+#: inc/typefields/dropdownmeta.class.php:66
 #: inc/typefields/freetablefield.class.php:132
 msgid "Dropdown"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:320
+#: inc/typefields/dropdownmeta.class.php:322
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
-#: inc/typefields/dropdownmeta.class.php:824
+#: inc/typefields/dropdownmeta.class.php:826
 msgid "No equipment founded"
 msgstr ""
 
