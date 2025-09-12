@@ -27,6 +27,9 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Servicecatalog\Main;
+
 include('../../../inc/includes.php');
 
 
@@ -35,7 +38,7 @@ if (Session::getCurrentInterface() == 'central') {
     Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 } else {
     if (Plugin::isPluginActive('servicecatalog')) {
-        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
+        Main::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
     } else {
         Html::helpHeader(__('Continue metademand', 'metademands'));
     }
@@ -52,13 +55,13 @@ if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ))
     }
 
 } else {
-    Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (Session::getCurrentInterface() != 'central'
     && Plugin::isPluginActive('servicecatalog')) {
 
-    PluginServicecatalogMain::showNavBarFooter('metademands');
+    Main::showNavBarFooter('metademands');
 }
 
 if (Session::getCurrentInterface() == 'central') {

@@ -4,11 +4,12 @@ include('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
-use Glpi\Event;
+use GlpiPlugin\Servicecatalog\Main;
 
-if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
+if (Plugin::isPluginActive('servicecatalog')
+    && Session::getCurrentInterface() != 'central') {
 
-    PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
+    Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
     $draft_id = 0;
 

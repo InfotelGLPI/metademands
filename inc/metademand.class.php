@@ -8355,7 +8355,7 @@ class PluginMetademandsMetademand extends CommonDBTM  implements ServiceCatalogL
                     $fa = "fa-tasks";
 
                     if (Plugin::isPluginActive("servicecatalog")) {
-                        $fa = PluginServicecatalogCategory::getUsedConfig(
+                        $fa = GlpiPlugin\Servicecatalog\Category::getUsedConfig(
                             "inherit_config",
                             $ticket->fields['itilcategories_id'],
                             'icon'

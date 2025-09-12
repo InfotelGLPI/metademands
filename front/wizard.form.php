@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Servicecatalog\Main;
+
 include('../../../inc/includes.php');
 Session::checkLoginUser();
 
@@ -288,7 +290,7 @@ if (isset($_POST['add_to_basket'])) {
     } else {
         if (Plugin::isPluginActive('servicecatalog')
             && Session::haveRight("plugin_servicecatalog", READ)) {
-            PluginServicecatalogMain::showDefaultHeaderHelpdesk($name);
+            Main::showDefaultHeaderHelpdesk($name);
         } else {
             Html::helpHeader($name);
         }
@@ -348,7 +350,7 @@ if (isset($_POST['add_to_basket'])) {
     if (Session::getCurrentInterface() != 'central'
         && Plugin::isPluginActive('servicecatalog')
         && Session::haveRight("plugin_servicecatalog", READ)) {
-        PluginServicecatalogMain::showNavBarFooter('metademands');
+        Main::showNavBarFooter('metademands');
     }
 
 

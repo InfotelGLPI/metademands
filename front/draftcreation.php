@@ -37,6 +37,7 @@ include('../../../inc/includes.php');
 Session::checkLoginUser();
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Servicecatalog\Main;
 
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
     $meta = new PluginMetademandsMetademand();
@@ -54,7 +55,7 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
 
     } else {
 
-        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
+        Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
         $new_draft = __("New draft", 'metademands');
         $draft_name = __('Draft name', 'metademands');

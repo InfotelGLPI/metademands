@@ -28,6 +28,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Servicecatalog\Category;
+use GlpiPlugin\Servicecatalog\Config as ServiceCatalogConfig;
 
 /**
  * Class PluginMetademandsWizard
@@ -267,9 +269,9 @@ class PluginMetademandsWizard extends CommonDBTM
         }
         if ($meta->getFromDB($parameters['metademands_id'])
             && Plugin::isPluginActive('servicecatalog')) {
-            $configsc = new PluginServicecatalogConfig();
+            $configsc = new ServiceCatalogConfig();
             $seedetail = 1;
-            if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
+            if (method_exists("GlpiPlugin\\Servicecatalog\\Config", "getDetailBeforeFormRedirect")) {
                 $seedetail = $configsc->getDetailBeforeFormRedirect();
             }
             if ($configsc->seeCategoryDetails() && $seedetail == 0) {
@@ -281,7 +283,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
                 $type = $meta->fields['type'];
-                $helpdesk_category = new PluginServicecatalogCategory();
+                $helpdesk_category = new Category();
                 if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
                     && ($helpdesk_category->fields['comment_incident'] != null
                         || $helpdesk_category->fields['comment_request'] != null
@@ -500,7 +502,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     && Plugin::isPluginActive('servicecatalog')
                     && Session::getCurrentInterface() != 'central'
                     && $parameters['itilcategories_id'] > 0) {
-                    $treename = PluginServicecatalogCategory::getTreeCategoryFriendlyName(
+                    $treename = Category::getTreeCategoryFriendlyName(
                         $meta->fields['type'],
                         $parameters['itilcategories_id'],
                         6
@@ -525,9 +527,9 @@ class PluginMetademandsWizard extends CommonDBTM
                     $plugin = new Plugin();
                     if (Plugin::isPluginActive('servicecatalog')
                         && ($plugin->getInfo('servicecatalog')["version"] > "2.0.8")) {
-                        $config = new PluginServicecatalogConfig();
-                        if ($config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED
-                            || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
+                        $config = new ServiceCatalogConfig();
+                        if ($config->getLayout() == ServiceCatalogConfig::BOOTSTRAPPED
+                            || $config->getLayout() == ServiceCatalogConfig::BOOTSTRAPPED_COLOR) {
                             $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
                         }
                         $force = $config->getforceBackgroundColor();
@@ -543,14 +545,14 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</h5>";
 
                     if (Plugin::isPluginActive('servicecatalog')) {
-                        $helpdesk_category = new PluginServicecatalogCategory();
+                        $helpdesk_category = new Category();
                         if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
                             && !empty($helpdesk_category->fields['display_warning'])) {
                             echo "<h5>";
                             echo "<div class='alert alert-danger' role='alert'>";
                             echo "<i style='font-size:3em;' class='ti ti-exclamation-circle'></i>";
                             echo "&nbsp;" . nl2br(
-                                PluginServicecatalogCategory::displayField($helpdesk_category, 'display_warning')
+                                Category::displayField($helpdesk_category, 'display_warning')
                             );
                             echo "</div>";
                             echo "</h5>";
@@ -1714,7 +1716,7 @@ class PluginMetademandsWizard extends CommonDBTM
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
-                if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
+                if (ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
                 } else {
                     $type = $metademands->fields['type'];
@@ -3041,7 +3043,7 @@ class PluginMetademandsWizard extends CommonDBTM
         } else {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
-                if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
+                if (ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
                 } else {
                     $type = $metademands->fields['type'];

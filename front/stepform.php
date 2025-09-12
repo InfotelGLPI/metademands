@@ -26,16 +26,17 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 include('../../../inc/includes.php');
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Servicecatalog\Main;
 
 if (Session::getCurrentInterface() == 'central') {
     Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 } else {
     if (Plugin::isPluginActive('servicecatalog')) {
-        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
+        Main::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
     } else {
         Html::helpHeader(__('Continue metademand', 'metademands'));
     }
@@ -53,7 +54,7 @@ if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ))
 if (Session::getCurrentInterface() != 'central'
     && Plugin::isPluginActive('servicecatalog')) {
 
-    PluginServicecatalogMain::showNavBarFooter('metademands');
+    Main::showNavBarFooter('metademands');
 }
 
 if (Session::getCurrentInterface() == 'central') {
