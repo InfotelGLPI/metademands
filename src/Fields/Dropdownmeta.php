@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use CommonITILObject;
 use DbUtils;
+use GlpiPlugin\Metademands\FieldCustomvalue;
 use Html;
 use ITILCategory;
 use Plugin;
@@ -132,7 +133,11 @@ class Dropdownmeta extends CommonDBTM
 
                                 if (!empty($icon)) {
                                     $field .= "<span class='me-2 mt-1'>";
-                                    $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                                    if (str_contains($icon, 'fa-')) {
+                                        $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                                    } else {
+                                        $field .= "<i class='ti $icon text-secondary'></i>";
+                                    }
                                     $field .= "</span>";
                                 }
 
@@ -791,7 +796,12 @@ class Dropdownmeta extends CommonDBTM
                         if ($ok == 1) {
                             echo "$icon&nbsp;";
                         } else {
-                            echo "<i style='font-size:4em' class='$icon fa-3x mr-3'></i>&nbsp;";
+
+                            if (str_contains($icon, 'fa-')) {
+                                echo "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>&nbsp;";
+                            } else {
+                                echo "<i style='font-size:4em' class='ti $icon mr-3'></i>&nbsp;";
+                            }
                         }
 
                         echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
@@ -1025,7 +1035,11 @@ class Dropdownmeta extends CommonDBTM
                                 if ($ok == 1) {
                                     echo "$icon&nbsp;";
                                 } else {
-                                    echo "<i style='font-size:4em' class='$icon fa-3x mr-3'></i>&nbsp;";
+                                    if (str_contains($icon, 'fa-')) {
+                                        echo "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>&nbsp;";
+                                    } else {
+                                        echo "<i style='font-size:4em' class='ti $icon mr-3'></i>&nbsp;";
+                                    }
                                 }
 
                                 echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
@@ -1091,9 +1105,9 @@ class Dropdownmeta extends CommonDBTM
     {
         if (!empty($type)) {
             $item = new $type();
-            return 'fas ' . $item->getIcon();
+            return $item->getIcon();
         } else {
-            return 'far fa-question-circle';
+            return 'ti ti-exclamation-circle';
         }
     }
 

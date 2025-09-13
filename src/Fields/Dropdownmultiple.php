@@ -337,10 +337,10 @@ class Dropdownmultiple extends CommonDBTM
         $div .= "</div>";
 
         $div .= " <div class=\"centralCol\" style='width: 10%;'>
-                       <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_rightAll\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                       <button type=\"button\" id=\"multiselect" . $id . "_rightSelected\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                       <button type=\"button\" id=\"multiselect" . $id . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                       <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
+                       <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_rightAll\" class=\"btn  buttonCol\"><i class=\"ti ti-chevrons-right\"></i></button>
+                       <button type=\"button\" id=\"multiselect" . $id . "_rightSelected\" class=\"btn buttonColTop buttonCol\"><i class=\"ti ti-chevron-right\"></i></button>
+                       <button type=\"button\" id=\"multiselect" . $id . "_leftSelected\" class=\"btn buttonCol\"><i class=\"ti ti-chevron-left\"></i></button>
+                       <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_leftAll\" class=\"btn buttonCol\"><i class=\"ti ti-chevrons-left\"></i></button>
                    </div>";
 
         $div .= "<div class='zone'>";

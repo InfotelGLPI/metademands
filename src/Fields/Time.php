@@ -150,7 +150,7 @@ class Time extends CommonDBTM
             : "";
         $clear    = $p['maybeempty'] && $p['canedit']
             ? "<a data-clear  title='" . __s('Clear') . "'>
-               <i class='input-group-text fas fa-times-circle pointer'></i>
+               <i class='input-group-text ti ti-circle-x pointer'></i>
             </a>"
             : "";
 

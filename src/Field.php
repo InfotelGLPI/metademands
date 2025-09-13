@@ -2191,7 +2191,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 $options = \Dropdown::getStandardDropdownItemTypes();
                 if (isset($p["with_empty_value"])
                     && $p["with_empty_value"] == true) {
-                    $allowedDropdownValues[0] = Dropdown::EMPTY_VALUE;
+                    $allowedDropdownValues[0] = \Dropdown::EMPTY_VALUE;
                     $options = array_merge($allowedDropdownValues, $options);
                 }
 
@@ -2200,7 +2200,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             case "dropdown_meta":
                 if (isset($p["with_empty_value"])
                     && $p["with_empty_value"] == true) {
-                    $options[0] = Dropdown::EMPTY_VALUE;
+                    $options[0] = \Dropdown::EMPTY_VALUE;
                 }
                 foreach ($type_fields as $key => $items) {
                     if (empty($items)) {

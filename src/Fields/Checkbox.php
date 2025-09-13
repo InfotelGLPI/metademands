@@ -155,7 +155,11 @@ class Checkbox extends CommonDBTM
 
                         if (!empty($icon)) {
                             $field .= "<span class='me-2 mt-1'>";
-                            $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                            if (str_contains($icon, 'fa-')) {
+                                $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                            } else {
+                                $field .= "<i class='ti $icon text-secondary'></i>";
+                            }
                             $field .= "</span>";
                         }
 

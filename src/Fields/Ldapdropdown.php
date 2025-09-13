@@ -291,7 +291,7 @@ class Ldapdropdown extends CommonDBTM
         echo "<tr>";
         echo "<td>";
         echo __('Value to check', 'metademands');
-        //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+        //        echo " ( " . \Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         echo "<td class = 'dropdown-valuetocheck'>";
         self::showValueToCheck($fieldoption, $params);
