@@ -487,7 +487,7 @@ class Dropdownobject extends CommonDBTM
                         $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                     }
 
-                    $field .= Group::dropdown($opt);
+                    $field .= \Group::dropdown($opt);
                 }
 
 

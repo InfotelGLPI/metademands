@@ -307,10 +307,10 @@ class FieldOption extends CommonDBChild
         }
 
         if ($canedit) {
-            echo "<div id='viewoption" . $item->getType() . $item->getID() . "$rand'></div>\n";
+            echo "<div id='viewoption" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addOption" . $item->getType() . $item->getID() . "$rand() {\n";
+            echo "function addOption"  . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
@@ -318,7 +318,7 @@ class FieldOption extends CommonDBChild
                 'id' => -1,
             ];
             Ajax::updateItemJsCode(
-                "viewoption" . $item->getType() . $item->getID() . "$rand",
+                "viewoption" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                 $params
             );
@@ -329,7 +329,7 @@ class FieldOption extends CommonDBChild
 
                 function reloadviewOption(value) {
 
-                    $('#viewoption" . $item->getType() . $item->getID() . $rand . "')
+                    $('#viewoption" . $item->getID() . $rand . "')
                         .load('" . $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php',{
                         type:\"" . __CLASS__ . "\",
                         parenttype:\"" . get_class($item) . "\"," .
@@ -349,7 +349,7 @@ class FieldOption extends CommonDBChild
             echo       "}</script>";
             echo "<div class='center'>" .
                 "<a class='submit btn btn-primary' href='javascript:addOption" .
-                $item->getType() . $item->getID() . "$rand();'>" . __('Add a new option', 'metademands') .
+                 $item->getID() . "$rand();'>" . __('Add a new option', 'metademands') .
                 "</a></div><br>";
         }
 
@@ -423,7 +423,7 @@ class FieldOption extends CommonDBChild
                 $onhover = '';
                 if ($canedit) {
                     $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditOption" . $item->getType() . $data['id'] . "$rand();\"";
+                           onClick=\"viewEditOption"  . $data['id'] . "$rand();\"";
                 }
                 echo "<tr class='tab_bg_1'>";
                 if ($canedit) {
@@ -435,7 +435,7 @@ class FieldOption extends CommonDBChild
                 echo "<td $onhover>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditOption" . $item->getType() . $data['id'] . "$rand() {\n";
+                    echo "function viewEditOption"  . $data['id'] . "$rand() {\n";
                     $params = [
                         'type' => __CLASS__,
                         'parenttype' => get_class($item),
@@ -443,7 +443,7 @@ class FieldOption extends CommonDBChild
                         'id' => $data["id"],
                     ];
                     Ajax::updateItemJsCode(
-                        "viewoption" . $item->getType() . $item->getID() . "$rand",
+                        "viewoption"  . $item->getID() . "$rand",
                         $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                         $params
                     );

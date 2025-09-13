@@ -516,7 +516,7 @@ class Condition extends CommonDBChild
                     $onhover = '';
                     if ($canedit) {
                         $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditcondition" . $item->getType() . $condition['id'] . "$rand();\"";
+                           onClick=\"viewEditcondition"  . $condition['id'] . "$rand();\"";
                     }
 
                     echo "<tr class = 'tab_bg_1'>";
@@ -529,7 +529,7 @@ class Condition extends CommonDBChild
                     echo "<td $onhover>";
                     if ($canedit) {
                         echo "\n<script type='text/javascript' >\n";
-                        echo "function viewEditcondition" . $item->getType() . $condition['id'] . "$rand() {\n";
+                        echo "function viewEditcondition" . $condition['id'] . "$rand() {\n";
                         $params = [
                             'type' => __CLASS__,
                             'parenttype' => get_class($item),
@@ -537,7 +537,7 @@ class Condition extends CommonDBChild
                             'id' => $condition["id"],
                         ];
                         Ajax::updateItemJsCode(
-                            "viewcondition" . $item->getType() . $item->getID() . "$rand",
+                            "viewcondition"  . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                             $params
                         );

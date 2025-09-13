@@ -28,45 +28,42 @@
  */
 
 use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\TicketField;
 
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 
 $ticketField = new TicketField();
 
 if (isset($_POST["add"])) {
    // Check update rights for fields
-   $ticketField->can(-1, UPDATE, $_POST);
-   $_POST['value'] = $_POST[$_POST['field']];
-   $_POST['id'] = $ticketField->add($_POST);
+    $ticketField->can(-1, UPDATE, $_POST);
+    $_POST['value'] = $_POST[$_POST['field']];
+    $_POST['id'] = $ticketField->add($_POST);
 
-   Html::back();
-
-} else if (isset($_POST["update"])) {
+    Html::back();
+} elseif (isset($_POST["update"])) {
    // Check update rights for fields
-   $_POST['value'] = $_POST[$_POST['field']];
-   $ticketField->can(-1, UPDATE, $_POST);
-   $ticketField->update($_POST);
+    $_POST['value'] = $_POST[$_POST['field']];
+    $ticketField->can(-1, UPDATE, $_POST);
+    $ticketField->update($_POST);
 
-   Html::back();
-
-} else if (isset($_POST["purge"])) {
+    Html::back();
+} elseif (isset($_POST["purge"])) {
    // Check update rights for fields
-   $ticketField->can(-1, UPDATE, $_POST);
-   $ticketField->delete($_POST, 1);
-   $ticketField->redirectToList();
-
-} else if (isset($_POST['template_sync'])) {
-   TicketField::updateMandatoryTicketFields($_POST);
-   Html::back();
-
+    $ticketField->can(-1, UPDATE, $_POST);
+    $ticketField->delete($_POST, 1);
+    $ticketField->redirectToList();
+} elseif (isset($_POST['template_sync'])) {
+    TicketField::updateMandatoryTicketFields($_POST);
+    Html::back();
 } else {
-   $ticketField->checkGlobal(READ);
-   Html::header(Ticket_Field::getTypeName(2), '', "helpdesk", Menu::class);
-   $ticketField->display(['id' => $_GET["id"]]);
-   Html::footer();
+    $ticketField->checkGlobal(READ);
+    Html::header(Ticket_Field::getTypeName(2), '', "helpdesk", Menu::class);
+    $ticketField->display(['id' => $_GET["id"]]);
+    Html::footer();
 }

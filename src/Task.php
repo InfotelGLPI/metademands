@@ -608,7 +608,7 @@ class Task extends CommonDBChild {
                 $onhover = '';
                 if ($canedit && ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE)) {
                     $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditchild" . $item->getType() . $id . "$rand();\"";
+                           onClick=\"viewEditchild"  . $id . "$rand();\"";
                 }
 
                 if ($canedit && $solved) {
@@ -625,13 +625,13 @@ class Task extends CommonDBChild {
                 echo "<td data-column='name'>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditchild" . $item->getType() . $id . "$rand() {\n";
+                    echo "function viewEditchild"  . $id . "$rand() {\n";
                     $params = ['type' => __CLASS__,
                         'parenttype' => get_class($item),
                         $item->getForeignKeyField() => $item->getID(),
                         'id' => $id,
                         'solved' => $solved];
-                    Ajax::updateItemJsCode("viewchild" . $item->getType() . $item->getID() . "$rand",
+                    Ajax::updateItemJsCode("viewchild"  . $item->getID() . "$rand",
                         $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                         $params);
                     echo "};";

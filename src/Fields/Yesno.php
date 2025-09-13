@@ -258,7 +258,7 @@ class Yesno extends CommonDBTM
 
         $options[1] = __('No');
         $options[2] = __('Yes');
-        Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
+        \Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
     }
 
     public static function showParamsValueToCheck($params)
