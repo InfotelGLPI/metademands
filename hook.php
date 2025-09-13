@@ -28,6 +28,7 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\BasketobjectInjection;
 use GlpiPlugin\Metademands\Basketobjecttype;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Draft;
@@ -1585,7 +1586,7 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'itemtype'   => Metademand::getType(),
         'group'      => __('Assistance'),
         'label'      => __("Running metademands", "metademands"),
-        'provider'   => "Metademand::getRunningMetademands",
+        'provider'   => "GlpiPlugin\Metademands\Metademand::getRunningMetademands",
         'cache'      => false,
         'args'       => [
             'params' => [
@@ -1603,7 +1604,7 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'itemtype'   => Metademand::getType(),
         'group'      => __('Assistance'),
         'label'      => __("Metademands to be closed", "metademands"),
-        'provider'   => "Metademand::getMetademandsToBeClosed",
+        'provider'   => "GlpiPlugin\Metademands\Metademand::getMetademandsToBeClosed",
         'cache'      => false,
         'args'       => [
             'params' => [
@@ -1620,7 +1621,7 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'itemtype'   => Metademand::getType(),
         'group'      => __('Assistance'),
         'label'      => __("Metademands to be validated", "metademands"),
-        'provider'   => "Metademand::getMetademandsToBeValidated",
+        'provider'   => "GlpiPlugin\Metademands\Metademand::getMetademandsToBeValidated",
         'cache'      => false,
         'args'       => [
             'params' => [
@@ -1637,7 +1638,7 @@ function plugin_metademands_hook_dashboard_cards($cards)
         'itemtype'   => Metademand::getType(),
         'group'      => __('Assistance'),
         'label'      => __("Running metademands with tickets of my groups", "metademands"),
-        'provider'   => "Metademand::getRunningMetademandsAndMygroups",
+        'provider'   => "GlpiPlugin\Metademands\Metademand::getRunningMetademandsAndMygroups",
         'cache'      => false,
         'args'       => [
             'params' => [

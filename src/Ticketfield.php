@@ -554,7 +554,7 @@ class TicketField extends CommonDBChild
      */
 //   static function getSpecificTicketFields($field_id, $name, $value) {
 //
-//      $ticket = new Ticket();
+//      $ticket = new \Ticket();
 //
 //      switch ($name) {
 //         case '_users_id_requester':

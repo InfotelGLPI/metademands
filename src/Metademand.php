@@ -40,6 +40,7 @@ use DBConnection;
 use DbUtils;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
+use GlpiPlugin\Servicecatalog\Category as ServicecatalogCategory;
 use Group_Ticket;
 use Group_User;
 use Html;
@@ -2514,7 +2515,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                                             $parent_fields["items_id"] = [$fields_values["item"] => [$v[$id]]];
                                         }
                                         if ($fields_values['type'] == "dropdown_multiple"
-//                                            && Ticket::isPossibleToAssignType("Appliance")
+//                                            && \Ticket::isPossibleToAssignType("Appliance")
                                             && $fields_values["item"] == "Appliance") {
                                             foreach ($v[$id] as $k => $items_id) {
                                                 $parent_fields["items_id"] = ['Appliance' => [$items_id]];
@@ -6839,7 +6840,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                         if ($son['type'] == Task::TICKET_TYPE
                             && isset($son['itilcategories_id'])
                             && $son['itilcategories_id'] > 0) {
-                            $cat = Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
+                            $cat = \Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
                         }
                         echo "<td $color_class>";
                         echo $cat;
@@ -8006,7 +8007,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
         $get_closed_parents_tickets_meta =
             "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_to_closed' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . \Ticket::CLOSED . "','" . \Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =
                                     " . Ticket_Metademand::TO_CLOSED . " " .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
@@ -8379,14 +8380,14 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                 }
             }
             if (count($tickets_existant)) {
-                $ticket = new Ticket();
+                $ticket = new \Ticket();
                 foreach ($tickets_existant as $values) {
                     // Get ticket values if it exists
                     $ticket->getFromDB($values['tickets_id']);
                     $fa = "fa-tasks";
 
                     if (Plugin::isPluginActive("servicecatalog")) {
-                        $fa = GlpiPlugin\Servicecatalog\Category::getUsedConfig(
+                        $fa = ServicecatalogCategory::getUsedConfig(
                             "inherit_config",
                             $ticket->fields['itilcategories_id'],
                             'icon'
@@ -8394,7 +8395,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                     }
 
                     $class = '';
-                    if (in_array($ticket->fields['status'], [Ticket::SOLVED, Ticket::CLOSED])) {
+                    if (in_array($ticket->fields['status'], [\Ticket::SOLVED, \Ticket::CLOSED])) {
                         $class = 'closedchild';
                     }
                     echo "<li class='step'>";

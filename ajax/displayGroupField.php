@@ -38,7 +38,7 @@ switch ($_POST['create_subticket']) {
       echo "";
       break;
    case '0':
-      $ticket = new Ticket();
+      $ticket = new \Ticket();
       $ticket->getFromDB($_POST['tickets_id']);
       echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
       $group = 0;

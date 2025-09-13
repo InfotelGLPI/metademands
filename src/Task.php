@@ -494,23 +494,23 @@ class Task extends CommonDBChild {
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
         if ($canedit && $solved) {
-            echo "<div id='viewchild" . $item->getType() . $item->getID() . "$rand'></div>\n";
+            echo "<div id='viewchild"  . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addchild" . $item->getType() . $item->getID() . "$rand() {\n";
+            echo "function addchild"  . $item->getID() . "$rand() {\n";
             $params = ['type' => __CLASS__,
                 'parenttype' => get_class($item),
                 $item->getForeignKeyField() => $item->getID(),
                 'id' => -1,
                 'solved' => $solved];
-            Ajax::updateItemJsCode("viewchild" . $item->getType() . $item->getID() . "$rand",
+            Ajax::updateItemJsCode("viewchild"  . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                 $params);
             echo "};";
             echo "</script>\n";
             echo "<div class='center'>" .
                 "<a class='submit btn btn-primary' href='javascript:addchild" .
-                $item->getType() . $item->getID() . "$rand();'>" . __('Add a task', 'metademands') .
+                 $item->getID() . "$rand();'>" . __('Add a task', 'metademands') .
                 "</a></div><br>";
         }
 

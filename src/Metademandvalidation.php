@@ -33,6 +33,7 @@ use Ajax;
 use CommonDBTM;
 use CommonITILActor;
 use Html;
+use Plugin;
 use Session;
 use Ticket_User;
 use Toolbox;
@@ -211,7 +212,6 @@ class MetademandValidation extends CommonDBTM
                                 if ($fields_field->fields['type'] == 'dropdown') {
                                     if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])
                                         || empty($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])) {
-
                                         $val_f = 0;
                                         if ($values_form[$plfield['plugin_metademands_fields_id']] == "") {
                                             $values_form[$plfield['plugin_metademands_fields_id']] = 0;
@@ -263,7 +263,6 @@ class MetademandValidation extends CommonDBTM
                         if ($fields_container->fields['type'] == 'dom') {
                             if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
                                 if ($fields_field->fields['type'] == 'dropdown') {
-
                                     $val_f = 0;
                                     if ($values_form[$plfield['plugin_metademands_fields_id']] == "") {
                                         $values_form[$plfield['plugin_metademands_fields_id']] = 0;
@@ -381,19 +380,19 @@ class MetademandValidation extends CommonDBTM
 
         if ($inputVal['validate'] == self::TASK_CREATION) {
             echo "<div class='alert alert-success alert-important d-flex'>" . __(
-                    'Tasks are created',
-                    'metademands'
-                ) . "</div>";
+                'Tasks are created',
+                'metademands'
+            ) . "</div>";
         } elseif ($inputVal['validate'] == self::TICKET_CREATION) {
             echo "<div class='alert alert-success alert-important d-flex'>" . __(
-                    'Sub-tickets are created',
-                    'metademands'
-                ) . "</div>";
+                'Sub-tickets are created',
+                'metademands'
+            ) . "</div>";
         } elseif ($inputVal['validate'] == self::VALIDATE_WITHOUT_TASK) {
             echo "<div class='alert alert-success alert-important d-flex'>" . __(
-                    'The metademand is validated and affected',
-                    'metademands'
-                ) . "</div>";
+                'The metademand is validated and affected',
+                'metademands'
+            ) . "</div>";
         }
     }
 
@@ -416,8 +415,8 @@ class MetademandValidation extends CommonDBTM
                 $style = "btn-orange";
                 $title = __('Metademand validation', 'metademands');
             }
-            echo "<button class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>".$title."</button>";
+            echo "<li><button class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>".$title."</button></li>";
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',

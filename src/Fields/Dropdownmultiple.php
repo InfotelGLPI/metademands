@@ -40,7 +40,6 @@ use GlpiPlugin\Metademands\MetademandTask;
 use Session;
 use User;
 
-
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -322,7 +321,7 @@ class Dropdownmultiple extends CommonDBTM
 
         $div = "<div class='row'>";
         $div .= "<div class='zone'>";
-        $div .= "<select name='from[]' id=\"multiselect" . $id . "\" class='formCol' size='8' multiple='multiple'>";
+        $div .= "<select name='from[]' id=\"multiselect" . $id . "\" class='formCol' size='8' multiple='multiple' style='font-size: 1em;'>";
         if (is_array($list) && count($list) > 0) {
             foreach ($list as $k => $val) {
                 if (!in_array($k, $value)) {
@@ -348,9 +347,8 @@ class Dropdownmultiple extends CommonDBTM
         if (isset($value) && is_array($value) && count($value) > 0) {
             $required = "";
         }
-        $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect" . $id . "_to\" size='8' multiple='multiple'>";
+        $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect" . $id . "_to\" size='8' multiple='multiple' style='font-size: 1em;'>";
         if (is_array($value) && count($value) > 0) {
-
             foreach ($value as $k => $val) {
                 if ($item == 'other') {
                     if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$id])) {
@@ -383,11 +381,11 @@ class Dropdownmultiple extends CommonDBTM
                             $("#multiselect' . $id . '").multiselect({
                                       search: {
                                           left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __(
-                "Search"
-            ) . '...\" />",
+                                "Search"
+                            ) . '...\" />",
                                           right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __(
-                "Search"
-            ) . '...\" />",
+                                "Search"
+                            ) . '...\" />",
                                       },
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
@@ -552,7 +550,6 @@ class Dropdownmultiple extends CommonDBTM
                 echo "</td>";
                 echo "</tr>";
                 Html::closeForm();
-
             } else {
                 if ($params['item'] != 'Location') {
                     if (is_array($custom_values) && !empty($custom_values)) {
@@ -836,7 +833,6 @@ class Dropdownmultiple extends CommonDBTM
                     if ($params["item"] != "other"
                         && $params["item"] != "Location"
                         && $params["type"] == "dropdown_multiple") {
-
                         if ($params["item"] == "Appliance") {
                             $params['custom_values'] = FieldParameter::_unserialize($params['custom_values']);
                         }
@@ -949,7 +945,6 @@ class Dropdownmultiple extends CommonDBTM
         $name = "field[" . $data["id"] . "]";
 
         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-
             $onchange = "";
             $pre_onchange = "";
             $post_onchange = "";
@@ -959,7 +954,6 @@ class Dropdownmultiple extends CommonDBTM
                 $onchange = "console.log('fieldsLinkScript-dropdownmultiple $id');";
             }
             if (count($check_values) > 0) {
-
                 //Si la valeur est en session
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
@@ -974,7 +968,6 @@ class Dropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
-
                         $onchange .= "$.each($(this).val(), function( keys, values ) {
 
                             if ($fields_link in tohide) {
@@ -1004,7 +997,6 @@ class Dropdownmultiple extends CommonDBTM
                                  " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });";
-
                     }
                 }
 
@@ -1024,7 +1016,6 @@ class Dropdownmultiple extends CommonDBTM
                 $onchange = "console.log('fieldsLinkScript-dropdownmultiple $id');";
             }
             if (count($check_values) > 0) {
-
                 //Si la valeur est en session
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
@@ -1036,7 +1027,6 @@ class Dropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
-
                         $onchange .= "$('.centralCol').on('click', 'button', function () {
                     const index = $(this).index();
                     setTimeout(() => {
@@ -1121,9 +1111,9 @@ class Dropdownmultiple extends CommonDBTM
 
                     $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                     $nextsteptitle = __(
-                            'Next',
-                            'metademands'
-                        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                        'Next',
+                        'metademands'
+                    ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
                     foreach ($check_values as $idc => $check_value) {
@@ -1167,8 +1157,8 @@ class Dropdownmultiple extends CommonDBTM
                                 }
                             } else {
                                 $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById(
-                                        $tasks_id
-                                    ) . "') {
+                                    $tasks_id
+                                ) . "') {
                                     tohide[" . $tasks_id . "] = false;
                                 }";
                             }
@@ -1258,9 +1248,9 @@ class Dropdownmultiple extends CommonDBTM
 
                     $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                     $nextsteptitle = __(
-                            'Next',
-                            'metademands'
-                        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                        'Next',
+                        'metademands'
+                    ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
                     foreach ($check_values as $idc => $check_value) {
@@ -1382,7 +1372,6 @@ class Dropdownmultiple extends CommonDBTM
         $name = "field[" . $data["id"] . "]";
 
         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-
             $onchange = "";
             $pre_onchange = "";
             $post_onchange = "";
@@ -1415,7 +1404,6 @@ class Dropdownmultiple extends CommonDBTM
                 //Initialize id default value
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
-
                         //Initialize id default value
                         if (isset($data['custom_values'])
                             && is_array($data['custom_values'])
@@ -1452,7 +1440,6 @@ class Dropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
-
                         //                    $onchange .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( keys, values ) {";
                         $onchange .= "$.each($(this).val(), function( keys, values ) {
                             if ($hidden_link in tohide) {
@@ -1579,7 +1566,6 @@ class Dropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
-
                         //                    $onchange .= "if ($(this).val() == $idc || $idc == -1) {
                         //                            if ($hidden_link in tohide) {
                         //
@@ -1752,7 +1738,6 @@ class Dropdownmultiple extends CommonDBTM
                 $display = [];
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_block'] as $hidden_block) {
-
                         $script .= "if ($hidden_block in tohide) {
                         } else {
                             tohide[$hidden_block] = true;
@@ -1871,10 +1856,7 @@ class Dropdownmultiple extends CommonDBTM
                 //multiple value at each time
                 $display = [];
                 foreach ($check_values as $idc => $check_value) {
-
                     foreach ($check_value['hidden_block'] as $hidden_block) {
-
-
                         //                    $script .= "if ($(this).val() == $idc || $idc == -1) {
                         //                            if ($hidden_block in tohide) {
                         //
@@ -2149,7 +2131,6 @@ class Dropdownmultiple extends CommonDBTM
                 }
                 return implode(', ', $parseValue);
             } else {
-
                 $custom_values = [];
                 foreach ($field['custom_values'] as $key => $val) {
                     $custom_values[$val['id']] = $val['name'];
@@ -2208,7 +2189,6 @@ class Dropdownmultiple extends CommonDBTM
             && $field['item'] != 'Location'
             && $field['item'] != 'Group'
             && $field['item'] != 'Appliance' && $field['value'] > 0) {
-
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
@@ -2222,7 +2202,6 @@ class Dropdownmultiple extends CommonDBTM
             }
         } elseif (($field['item'] == 'Location' || $field['item'] == 'Group' || $field['item'] == 'Appliance')
             && $field['value'] > 0) {
-
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
