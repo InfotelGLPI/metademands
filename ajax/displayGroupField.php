@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -45,8 +45,6 @@ switch ($_POST['create_subticket']) {
       foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
          $group = $d['groups_id'];
       }
-      Group::dropdown(['condition' => ['is_assign' => 1], 'name' => 'group_to_assign', 'value' => $group]);
+      \Group::dropdown(['condition' => ['is_assign' => 1], 'name' => 'group_to_assign', 'value' => $group]);
       break;
 }
-
-Html::ajaxFooter();

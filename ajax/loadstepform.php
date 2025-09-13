@@ -27,8 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Stepform;
+use GlpiPlugin\Metademands\Stepform_Value;
+use GlpiPlugin\Metademands\Wizard;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -37,14 +40,14 @@ Session::checkLoginUser();
 
 $KO = false;
 
-$metademands = new PluginMetademandsMetademand();
-$wizard      = new PluginMetademandsWizard();
-$form        = new PluginMetademandsStepform();
+$metademands = new Metademand();
+$wizard      = new Wizard();
+$form        = new Stepform();
 
 if ($form->getFromDB($_POST['plugin_metademands_stepforms_id'])) {
     unset($_SESSION['plugin_metademands']);
     $metademands->getFromDB($_POST['metademands_id']);
-    PluginMetademandsStepform_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_stepforms_id']);
+    Stepform_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_stepforms_id']);
     $form_name = $form->getField('name');
 
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];

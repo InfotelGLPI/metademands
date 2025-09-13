@@ -27,8 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+use GlpiPlugin\Metademands\Form;
+use GlpiPlugin\Metademands\Form_Value;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -37,15 +40,15 @@ Session::checkLoginUser();
 
 $KO = false;
 
-$metademands = new PluginMetademandsMetademand();
-$wizard      = new PluginMetademandsWizard();
-$form      = new PluginMetademandsForm();
+$metademands = new Metademand();
+$wizard      = new Wizard();
+$form      = new Form();
 
 if ($form->getFromDB($_POST['plugin_metademands_forms_id'])) {
 //   unset($_SESSION['plugin_metademands']);
    $metademands->getFromDB($_POST['metademands_id']);
 
-   PluginMetademandsForm_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
+   Form_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
    $form_name = $form->getField('name');
 
    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];

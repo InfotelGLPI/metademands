@@ -31,16 +31,14 @@
  * ---------------------------------------------------------------------
  */
 
-
-include('../../../inc/includes.php');
+use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Servicecatalog\Main;
 
 Session::checkLoginUser();
 
-use Glpi\Application\View\TemplateRenderer;
-use GlpiPlugin\Servicecatalog\Main;
-
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
-    $meta = new PluginMetademandsMetademand();
+    $meta = new Metademand();
     $option['empty_value'] = true;
     $listMetademand = $meta->listMetademandsForDraft($option);
 

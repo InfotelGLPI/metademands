@@ -26,9 +26,9 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\MetademandTranslation;
 
-$translation = new PluginMetademandsMetademandTranslation();
+$translation = new MetademandTranslation();
 if (isset($_POST['add'])) {
    $translation->add($_POST);
 } else if (isset($_POST['update'])) {

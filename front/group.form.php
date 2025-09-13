@@ -27,10 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\GroupConfig;
+
 Session::checkLoginUser();
 
-$group = new PluginMetademandsGroup();
+$group = new Group();
 
 if (isset($_POST["add_groups"])) {
     if (isset($_POST['groups_id'])) {
@@ -54,7 +56,7 @@ if (isset($_POST["add_groups"])) {
     Html::back();
 } else if (isset($_POST["define_visibility"])) {
 
-    $groupconfig = new PluginMetademandsGroupConfig();
+    $groupconfig = new GroupConfig();
     if (!$groupconfig->getFromDBByCrit(['plugin_metademands_metademands_id'=> $_POST['plugin_metademands_metademands_id']])) {
         $groupconfig->add(['visibility' => $_POST['visibility'],
             'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);

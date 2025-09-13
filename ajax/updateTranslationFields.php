@@ -27,8 +27,9 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\FieldTranslation;
+
 $AJAX_INCLUDE = 1;
-include("../../../inc/includes.php");
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -38,5 +39,5 @@ Session::checkRight("plugin_metademands", UPDATE);
 if (isset($_POST['itemtype']) && isset($_POST['language'])) {
    $item = new $_POST['itemtype'];
    $item->getFromDB($_POST['items_id']);
-   PluginMetademandsFieldTranslation::dropdownFields($item, $_POST['language']);
+   FieldTranslation::dropdownFields($item, $_POST['language']);
 }

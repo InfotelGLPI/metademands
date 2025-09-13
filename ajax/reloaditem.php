@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -36,9 +37,9 @@ Session::checkLoginUser();
 if (isset($_POST['action'])
     && $_POST['action'] == 'reloaditem') {
     if (isset($_POST["type"])) {
-        if (in_array($_POST['type'], PluginMetademandsField::$field_withobjects)) {
+        if (in_array($_POST['type'], Field::$field_withobjects)) {
             echo __('Object', 'metademands') . "&nbsp;";
-            PluginMetademandsField::dropdownFieldItems($_POST['type'], ['with_empty_value' => true]);
+            Field::dropdownFieldItems($_POST['type'], ['with_empty_value' => true]);
         }
     }
 }

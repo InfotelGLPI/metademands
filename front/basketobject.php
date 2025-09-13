@@ -27,15 +27,15 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Basketobject;
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
-Html::header(PluginMetademandsBasketobject::getTypeName(2), '', "management", PluginMetademandsBasketobject::getType());
+Html::header(Basketobject::getTypeName(2), '', "management", Basketobject::class);
 
-$material = new PluginMetademandsBasketobject();
+$material = new Basketobject();
 if ($material->canView()) {
-    Search::show("PluginMetademandsBasketobject");
+    Search::show(Basketobject::class);
 } else {
     throw new AccessDeniedHttpException();
 }

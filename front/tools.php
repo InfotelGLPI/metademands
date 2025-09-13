@@ -27,8 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
 if (Plugin::isPluginActive("metademands")) {

@@ -27,11 +27,13 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
+
 $AJAX_INCLUDE = 1;
-include ('../../../inc/includes.php');
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
-echo PluginMetademandsMetademand::fuzzySearch($_REQUEST['action'], $_REQUEST['type']);
+echo Metademand::fuzzySearch($_REQUEST['action'], $_REQUEST['type']);

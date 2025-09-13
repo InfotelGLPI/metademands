@@ -31,7 +31,10 @@
  * -------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Condition;
+use GlpiPlugin\Metademands\Field;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 Session::checkLoginUser();
@@ -42,7 +45,7 @@ if (isset($_POST['fields_id'])) {
 if (isset($_POST['rand'])) {
     $rand = $_POST['rand'];
 }
-$field = new PluginMetademandsField();
+$field = new Field();
 if ($field->getFromDB($fields_id)) {
     $item = $field->fields['item'];
     $type = $field->fields['type'];
@@ -53,7 +56,7 @@ if ($field->getFromDB($fields_id)) {
 
     Dropdown::showFromArray(
         'show_condition',
-        PluginMetademandsCondition::getEnumShowCondition($type),
+        Condition::getEnumShowCondition($type),
         $options
     );
 

@@ -28,7 +28,14 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Basketline;
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldOption;
+use GlpiPlugin\Metademands\Fields\Basket;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
+use GlpiPlugin\Metademands\Group;
+use PluginOrderprojectsMetademand;
 
 if (isset($_POST['see_basket_summary'])) {
     header("Content-Type: text/html; charset=UTF-8");
@@ -42,9 +49,9 @@ Session::checkLoginUser();
 
 $KO = false;
 $step = $_POST['step'] + 1;
-$metademands = new PluginMetademandsMetademand();
-$wizard = new PluginMetademandsWizard();
-$fields = new PluginMetademandsField();
+$metademands = new Metademand();
+$wizard = new Wizard();
+$fields = new Field();
 $nofreetable = false;
 
 //if (isset($_POST['is_freetable'])
@@ -121,12 +128,12 @@ if ($nofreetable == false) {
         $metademands->getFromDB($_POST['form_metademands_id']);
 
         if ($metademands->fields['is_basket'] == 1) {
-            echo PluginMetademandsBasket::displayBasketSummary($post);
+            echo Basket::displayBasketSummary($post);
         }
 
 
         if ($metademands->fields['is_order'] == 1) {
-            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['form_metademands_id']);
+            $metademands_data = Metademand::constructMetademands($_POST['form_metademands_id']);
             //Reorder array
             $metademands_data = array_values($metademands_data);
             array_unshift($metademands_data, "", "");
@@ -136,7 +143,7 @@ if ($nofreetable == false) {
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
                     foreach ($data as $form_metademands_id => $line) {
-                        echo PluginMetademandsBasketline::displayBasketSummary(
+                        echo Basketline::displayBasketSummary(
                             $_POST['form_metademands_id'],
                             $line['form'],
                             $post
@@ -147,7 +154,7 @@ if ($nofreetable == false) {
         }
     } elseif (isset($_POST['form_metademands_id'])) {
         if ($metademands->canCreate()
-            || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
+            || Group::isUserHaveRight($_POST['form_metademands_id'])) {
             $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
             $metademands->getFromDB($_POST['form_metademands_id']);
 
@@ -188,7 +195,7 @@ if ($nofreetable == false) {
                 $nblines = 0;
                 //Create ticket
                 if ($metademands->fields['is_order'] == 1) {
-                    $basketline = new PluginMetademandsBasketline();
+                    $basketline = new Basketline();
                     $basketToSend = $basketline->find([
                         'plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
                         'users_id' => Session::getLoginUserID(),
@@ -242,7 +249,7 @@ if ($nofreetable == false) {
 
 
                         foreach ($data as $idf => $form_data_fields) {
-                            $fieldopt = new PluginMetademandsFieldOption();
+                            $fieldopt = new FieldOption();
                             if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
                                 foreach ($opts as $opt) {
                                     $check_value = $opt["check_value"];
@@ -271,9 +278,9 @@ if ($nofreetable == false) {
 
                         //end fields_link to be mandatory
                         foreach ($data as $id => $value) {
-                            $field = new PluginMetademandsField();
+                            $field = new Field();
                             if ($field->getFromDB($id)) {
-                                $parameters = PluginMetademandsField::getAllParamsFromField($field);
+                                $parameters = Field::getAllParamsFromField($field);
                             }
 
                             if ($parameters['is_mandatory'] == 1 && $value['item'] != 'ITILCategory_Metademands') {
@@ -338,7 +345,7 @@ if ($nofreetable == false) {
                             }
 
 
-                            $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
+                            $checks[] = Wizard::checkvalues($value, $id, $_POST, 'field');
                         }
 
                         foreach ($checks as $check) {
@@ -378,7 +385,7 @@ if ($nofreetable == false) {
                             if (isset($_POST['quantity'])) {
                                 $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
                             }
-                            $step = PluginMetademandsMetademand::STEP_CREATE;
+                            $step = Metademand::STEP_CREATE;
                         }
                     }
                 }

@@ -1,12 +1,12 @@
 <?php
 
 use GlpiPlugin\Servicecatalog\Main;
-
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Draft;
 
 Session::checkLoginUser();
 
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
+
     Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
     echo "<a class='btn btn-sm btn-primary mb-3 fs-4' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/draftcreation.php'>" . __(
@@ -14,7 +14,7 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
             'metademands'
         ) . "</a>";
 
-    Search::show(PluginMetademandsDraft::getType());
+    Search::show(Draft::class);
 
     if ($_SESSION['glpiactiveprofile']['interface'] == 'central') {
         Html::footer();

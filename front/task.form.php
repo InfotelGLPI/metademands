@@ -26,17 +26,22 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-include('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Task;
+use GlpiPlugin\Metademands\TicketTask;
+use GlpiPlugin\Metademands\MetademandTask;
+use GlpiPlugin\Metademands\MailTask;
+
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
    $_GET["id"] = "";
 }
 
-$task           = new PluginMetademandsTask();
-$tickettask     = new PluginMetademandsTicketTask();
-$metademandtask = new PluginMetademandsMetademandTask();
-$mailtask = new PluginMetademandsMailTask();
+$task           = new Task();
+$tickettask     = new TicketTask();
+$metademandtask = new MetademandTask();
+$mailtask = new MailTask();
 
 if (isset($_POST["add"])) {
 
@@ -54,25 +59,25 @@ if (isset($_POST["add"])) {
       $_POST['level'] = 1;
 
       if (isset($_POST['plugin_metademands_tasks_id']) && $_POST['plugin_metademands_tasks_id'] > 0) {
-         $parenttask = new PluginMetademandsTask();
+         $parenttask = new Task();
          $parenttask->getFromDB($_POST['plugin_metademands_tasks_id']);
          $_POST['level'] = $parenttask->fields['level'] + 1;
       }
 
       if ($tickettask->isMandatoryField($_POST) && $tasks_id = $task->add($_POST)) {
-         if ($_POST['taskType'] == PluginMetademandsTask::TICKET_TYPE
-             || $_POST['taskType'] == PluginMetademandsTask::TASK_TYPE) {
+         if ($_POST['taskType'] == Task::TICKET_TYPE
+             || $_POST['taskType'] == Task::TASK_TYPE) {
             $_POST['plugin_metademands_tasks_id'] = $tasks_id;
-            $_POST['type']                        = Ticket::DEMAND_TYPE;
+            $_POST['type']                        = \Ticket::DEMAND_TYPE;
             $tickettask->add($_POST);
-         } else if($_POST['taskType'] == PluginMetademandsTask::METADEMAND_TYPE){
+         } else if($_POST['taskType'] == Task::METADEMAND_TYPE){
             if ($_POST['link_metademands_id']) {
                $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
                                      'plugin_metademands_metademands_id' => $_POST['link_metademands_id']]);
             }
-         } else if ($_POST['taskType'] == PluginMetademandsTask::MAIL_TYPE){
+         } else if ($_POST['taskType'] == Task::MAIL_TYPE){
              $_POST['plugin_metademands_tasks_id'] = $tasks_id;
-             $_POST['type']                        = Ticket::DEMAND_TYPE;
+             $_POST['type']                        = \Ticket::DEMAND_TYPE;
              $mailtask->add($_POST);
          }
       }
@@ -87,7 +92,7 @@ if (isset($_POST["add"])) {
     $input = $_POST;
     $input['type'] = $_POST['taskType'];
     $input['content'] = $_POST['content'];
-    if ($input['type'] == PluginMetademandsTask::MAIL_TYPE) {
+    if ($input['type'] == Task::MAIL_TYPE) {
         $input['id'] = $_POST['mailtask_id'];
         if($mailtask->update($input)){
             if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
@@ -113,7 +118,7 @@ if (isset($_POST["add"])) {
             }
 
             if ($parent_task > 0) {
-                $parenttask = new PluginMetademandsTask();
+                $parenttask = new Task();
                 $parenttask->getFromDB($parent_task);
                 $input['level'] = $parenttask->fields['level'] + 1;
             } else {

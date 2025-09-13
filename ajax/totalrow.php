@@ -25,7 +25,9 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use PluginOrdermaterialMetademand;
+use PluginOrderfollowupMetademand;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -46,16 +48,6 @@ if (isset($_POST['action'])) {
                         $totalrow = $_POST['quantity'] * $_POST['estimated_price'];
 
                     }
-                }
-                if (Plugin::isPluginActive('orderfollowup')) {
-                    $ordermaterialmeta = new PluginOrderfollowupMetademand();
-                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
-                        && isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
-                        $totalrow = $_POST['quantity'] * $_POST['unit_price'];
-
-                    }
-                }
-                if (Plugin::isPluginActive('ordermaterial')) {
                     if (isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
                         echo Html::formatNumber($totalrow, false, 2);
                         echo " €";
@@ -64,6 +56,12 @@ if (isset($_POST['action'])) {
                     }
                 }
                 if (Plugin::isPluginActive('orderfollowup')) {
+                    $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
+                        && isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
+                        $totalrow = $_POST['quantity'] * $_POST['unit_price'];
+
+                    }
                     if (isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
                         echo Html::formatNumber($totalrow, false, 2);
                         echo " €";
@@ -71,8 +69,6 @@ if (isset($_POST['action'])) {
                         echo $totalrow;
                     }
                 }
-
-//                }
 
                 echo "<input class='form-check-input' type='hidden' check='" . $_POST['check'] . "' name='" . $_POST['name'] . "' key='" . $_POST['key'] . "' id='" . $_POST['name'] . "' value='" . $_POST['key'] . "'>";
 //                if (!isset($_SESSION['plugin_metademands']['total_order'])) {

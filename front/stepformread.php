@@ -28,14 +28,15 @@
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Stepformread;
 use GlpiPlugin\Servicecatalog\Main;
+use GlpiPlugin\Metademands\Metademand;
 
 include('../../../inc/includes.php');
 
-
-
 if (Session::getCurrentInterface() == 'central') {
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
 } else {
     if (Plugin::isPluginActive('servicecatalog')) {
         Main::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
@@ -44,8 +45,8 @@ if (Session::getCurrentInterface() == 'central') {
     }
 }
 
-$meta = new PluginMetademandsMetademand();
-$stepformread = new PluginMetademandsStepformread();
+$meta = new Metademand();
+$stepformread = new Stepformread();
 
 if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
     if (isset($_GET['standard'])) {

@@ -27,17 +27,19 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Config;
+use GlpiPlugin\Metademands\Menu;
+
 Session::checkLoginUser();
 
 if (Plugin::isPluginActive("metademands")) {
 
    Session::checkRight("config", UPDATE);
 
-   $config = new PluginMetademandsConfig();
+   $config = new Config();
 
    if (isset($_POST["update_config"])) {
-      $config_data = PluginMetademandsConfig::getInstance();
+      $config_data = Config::getInstance();
       if (empty($config_data)) {
          $config->add($_POST);
       } else {
@@ -47,13 +49,13 @@ if (Plugin::isPluginActive("metademands")) {
       Html::back();
 
    } else {
-      Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
+      Html::header(__('Setup'), '', "helpdesk", Menu::class, "config");
       $config->display($_GET);
       Html::footer();
    }
 
 } else {
-   Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
+   Html::header(__('Setup'), '', "helpdesk", Menu::class, "config");
    echo "<div class='alert alert-important alert-warning d-flex'>";
    echo "<b>".__('Please activate the plugin', 'metademands')."</b></div>";
    Html::footer();

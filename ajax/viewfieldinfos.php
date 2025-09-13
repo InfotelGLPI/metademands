@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -35,7 +36,7 @@ Session::checkLoginUser();
 
 //var_dump($_POST);
 
-$field = new PluginMetademandsField();
+$field = new Field();
 if ($field->getFromDB($_POST["fields_id"])) {
 
     echo "<br><table class='tab_cadre' width='100%'>";
@@ -46,7 +47,7 @@ if ($field->getFromDB($_POST["fields_id"])) {
     echo "<tr class='tab_bg_1'>";
     echo "<td>" . __('Type') . "</td>";
     echo "<td>";
-    echo PluginMetademandsField::getFieldTypesName($field->fields["type"]);
+    echo Field::getFieldTypesName($field->fields["type"]);
     echo "</td>";
     echo "</tr>";
 
@@ -54,13 +55,12 @@ if ($field->getFromDB($_POST["fields_id"])) {
     echo "<td>" . __('Example', 'metademands') . "</td>";
     echo "<td>";
 
-    $params = PluginMetademandsField::getAllParamsFromField($field);
+    $params = Field::getAllParamsFromField($field);
     $params['is_mandatory'] = 0;
-    echo PluginMetademandsField::getFieldInput([], $params, false, 0, 0, false, "");
+    echo Field::getFieldInput([], $params, false, 0, 0, false, "");
     echo "</td>";
     echo "</tr>";
 
     echo "</table>";
 }
 
-Html::ajaxFooter();

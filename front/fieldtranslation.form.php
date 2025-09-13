@@ -26,9 +26,9 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\FieldTranslation;
 
-$translation = new PluginMetademandsFieldTranslation();
+$translation = new FieldTranslation();
 if (isset($_POST['add'])) {
    $translation->add($_POST);
 } else if (isset($_POST['update'])) {

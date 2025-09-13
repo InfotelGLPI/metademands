@@ -28,8 +28,12 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Form;
+use GlpiPlugin\Metademands\Form_Value;
+use GlpiPlugin\Metademands\Metademand;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -38,9 +42,7 @@ Session::checkLoginUser();
 
 $KO = true;
 
-$form = new PluginMetademandsForm();
-
-use Glpi\Toolbox\Sanitizer;
+$form = new Form();
 
 if (isset($_POST['save_model'])) {
     $form->getFromDB($_POST['plugin_metademands_forms_id']);
@@ -58,7 +60,7 @@ if (isset($_POST['save_model'])) {
             $KO = false;
             $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
             $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['plugin_metademands_forms_id'] = $newid;
-            $form_values = new PluginMetademandsForm_Value();
+            $form_values = new Form_Value();
             $values = $form_values->find(['plugin_metademands_forms_id' => $_POST['plugin_metademands_forms_id']]);
 
             $input = [];
@@ -70,13 +72,13 @@ if (isset($_POST['save_model'])) {
             //            }
 
             foreach ($values as $value) {
-                $field = new PluginMetademandsField();
+                $field = new Field();
                 $field->getFromDB($value['plugin_metademands_fields_id']);
 
-                $fieldparameter            = new PluginMetademandsFieldParameter();
+                $fieldparameter            = new FieldParameter();
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['plugin_metademands_fields_id']])) {
                     if (isset($field->fields['type']) && $field->fields['type'] == 'textarea' && $fieldparameter->fields['use_richtext'] == 1) {
-                        $form_value = new PluginMetademandsForm_Value();
+                        $form_value = new Form_Value();
                         $form_value->getFromDB($value['plugin_metademands_forms_id']);
                         $inputv = Toolbox::convertTagToImage($value['value'], $form_value, $input, false);
 
@@ -106,10 +108,10 @@ if (isset($_POST['save_model'])) {
             'id' => $_POST['plugin_metademands_forms_id']];
 
         $form->update($input);
-        $metademands = new PluginMetademandsMetademand();
-        $forms_values = new PluginMetademandsForm_Value();
+        $metademands = new Metademand();
+        $forms_values = new Form_Value();
         $forms_values->deleteByCriteria(['plugin_metademands_forms_id' => $_POST['plugin_metademands_forms_id']]);
-        $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+        $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
 
         $nblines = 0;
         $KO = false;
@@ -143,7 +145,7 @@ if (isset($_POST['save_model'])) {
                 }
             }
 
-            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+            $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
 
             if (!isset($post) || !is_array($post)) {
                 $_POST['field'] = [];
@@ -206,11 +208,11 @@ if (isset($_POST['save_model'])) {
                 foreach ($metademands_data as $form_step => $data) {
                     $docitem = null;
                     foreach ($data as $form_metademands_id => $line) {
-                        PluginMetademandsForm_Value::setFormValues($_POST['metademands_id'], $line['form'], $_POST['field'], $_POST['plugin_metademands_forms_id']);
+                        Form_Value::setFormValues($_POST['metademands_id'], $line['form'], $_POST['field'], $_POST['plugin_metademands_forms_id']);
                     }
                 }
             }
-            PluginMetademandsForm_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
+           Form_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
 
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id'] = $_POST['plugin_metademands_forms_id'];

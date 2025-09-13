@@ -27,8 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+
+use GlpiPlugin\Metademands\Draft;
+use GlpiPlugin\Metademands\Draft_Value;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -37,17 +41,16 @@ Session::checkLoginUser();
 
 $KO = false;
 
-$metademands = new PluginMetademandsMetademand();
-$wizard      = new PluginMetademandsWizard();
-$draft      = new PluginMetademandsDraft();
+$metademands = new Metademand();
+$wizard      = new Wizard();
+$draft      = new Draft();
 
 if ($draft->getFromDB($_POST['plugin_metademands_drafts_id'])) {
+    $metademands->getFromDB($_POST['metademands_id']);
+    Draft_Value::loadDraftValues($_POST['metademands_id'], $_POST['plugin_metademands_drafts_id']);
+    $draft_name = $draft->getField('name');
 
-   $metademands->getFromDB($_POST['metademands_id']);
-   PluginMetademandsDraft_Value::loadDraftValues($_POST['metademands_id'], $_POST['plugin_metademands_drafts_id']);
-   $draft_name = $draft->getField('name');
-
-   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
    // Case of simple ticket convertion
     if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['items_id'];
@@ -59,19 +62,18 @@ if ($draft->getFromDB($_POST['plugin_metademands_drafts_id'])) {
         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['resources_step'] = $_POST['resources_step'];
     }
    //Category id if have category field
-   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
-   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
+    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
       (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
           && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
 //   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
-   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id']                  = $_POST['plugin_metademands_drafts_id'];
-   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name']                = $draft_name;
-
+    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id']                  = $_POST['plugin_metademands_drafts_id'];
+    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name']                = $draft_name;
 } else {
-   $KO = true;
+    $KO = true;
 }
 if ($KO === false) {
-   echo 0;
+    echo 0;
 } else {
-   echo $KO;
+    echo $KO;
 }

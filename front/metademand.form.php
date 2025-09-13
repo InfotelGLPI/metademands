@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
 
 if (!isset($_GET["id"])) {
     $_GET["id"] = "";
@@ -36,7 +37,7 @@ if (!isset($_GET["withtemplate"])) {
     $_GET["withtemplate"] = "";
 }
 
-$meta = new PluginMetademandsMetademand();
+$meta = new Metademand();
 
 if (isset($_POST['apply_rule'])) {
     $meta->check($_POST['id'], UPDATE);
@@ -46,7 +47,7 @@ if (isset($_POST['apply_rule'])) {
 
 // override itil_categories_id if checkbox all was checked
 if (isset($_POST['itilcategories_id_all']) && $_POST['itilcategories_id_all'] == 1) {
-    $_POST['itilcategories_id'] = array_keys(PluginMetademandsMetademand::getAvailableItilCategories($_POST['id']));
+    $_POST['itilcategories_id'] = array_keys(Metademand::getAvailableItilCategories($_POST['id']));
     unset($_POST['itilcategories_id_all']);
 }
 
@@ -81,7 +82,7 @@ if (isset($_POST["add"])) {
 } else {
     $meta->checkGlobal(READ);
 
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
 
     $meta->display(['id' => $_GET["id"], 'withtemplate' => $_GET["withtemplate"]]);
 

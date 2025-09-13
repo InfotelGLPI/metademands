@@ -31,22 +31,26 @@
  * -------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Condition;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
+
 Session::checkLoginUser();
+
 $show_check_value = true;
 if(isset($_POST['show_condition'])){
-    if($_POST['show_condition'] == PluginMetademandsCondition::SHOW_CONDITION_EMPTY){
+    if($_POST['show_condition'] == Condition::SHOW_CONDITION_EMPTY){
         echo __('Empty', 'metademands');
         $show_check_value = false;
-    } else if($_POST['show_condition'] == PluginMetademandsCondition::SHOW_CONDITION_NOTEMPTY){
+    } else if($_POST['show_condition'] == Condition::SHOW_CONDITION_NOTEMPTY){
         echo __('Not empty', 'metademands');
         $show_check_value = false;
     }
 }
 if (isset($_POST['fields_id']) && $show_check_value) {
     $fields_id = $_POST['fields_id'];
-    PluginMetademandsCondition::showCheckValue($fields_id);
+    Condition::showCheckValue($fields_id);
 }
 

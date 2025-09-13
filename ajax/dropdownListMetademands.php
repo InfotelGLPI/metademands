@@ -26,8 +26,10 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
-include ('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -36,8 +38,8 @@ Session::checkLoginUser();
 if (isset($_POST["step"])) {
    switch ($_POST["step"]) {
       case 'metademands':
-         $metademands = new PluginMetademandsMetademand();
-         $wizard = new PluginMetademandsWizard();
+         $metademands = new Metademand();
+         $wizard = new Wizard();
          $dbu = new DbUtils();
 
          $condition = '';
@@ -46,9 +48,9 @@ if (isset($_POST["step"])) {
             $condition = " AND `".$metademands->getTable()."`.`itilcategories_id` IN ('".implode("','", $children)."')";
          }
          $data = $metademands->listMetademands(false, ['condition' => $condition]);
-         $data[0] = Dropdown::EMPTY_VALUE;
+         $data[0] = \Dropdown::EMPTY_VALUE;
          ksort($data);
-         Dropdown::showFromArray('metademands_id', $data, ['width' => 150]);
+         \Dropdown::showFromArray('metademands_id', $data, ['width' => 150]);
          break;
    }
 }

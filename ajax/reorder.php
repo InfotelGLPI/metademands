@@ -27,17 +27,18 @@
  --------------------------------------------------------------------------
  */
 
-include("../../../inc/includes.php");
+use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\Fields\Freetablefield;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-
 if ($_POST['type'] == "freetable") {
-    $field = new PluginMetademandsFreetablefield();
+    $field = new Freetablefield();
 } else {
-    $field = new PluginMetademandsFieldCustomvalue();
+    $field = new FieldCustomvalue();
 }
 
 $field->reorder($_POST);

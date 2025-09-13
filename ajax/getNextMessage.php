@@ -27,15 +27,17 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Step;
+
 if (strpos($_SERVER['PHP_SELF'], "getNextMessage.php")) {
-    include('../../../inc/includes.php');
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 } elseif (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");
 }
 
-$metademands = new PluginMetademandsMetademand();
+$metademands = new Metademand();
 $metademands->getFromDB($_POST['plugin_metademands_metademands_id']);
 $block_id = $_POST['block_id'];
 
@@ -43,7 +45,7 @@ if ($metademands->fields['step_by_step_mode'] == 1
 ) {
     $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
 
-    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), $block_id);
+    $msg = Step::getMsgForNextBlock($metademands->getID(), $block_id);
     if ($msg) {
         $submitmsg = $msg;
         $submitstepmsg = $msg;

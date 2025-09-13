@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include("../../../inc/includes.php");
+use GlpiPlugin\Metademands\Metademand;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -45,7 +46,7 @@ if ($_POST['object_to_create'] != NULL) {
       $opt  = [
          'display_emptychoice' => true,
       ];
-      $rand = Ticket::dropdownType('type', $opt);
+      $rand = \Ticket::dropdownType('type', $opt);
 
       $params = ['type'             => '__VALUE__',
                  'value'            => 0,
@@ -92,7 +93,7 @@ if ($_POST['object_to_create'] != NULL) {
       foreach ($result as $item) {
          $temp[$item['id']] = $item['completename'];
       }
-      Dropdown::showFromArray('itilcategories_id', $temp,
+      \Dropdown::showFromArray('itilcategories_id', $temp,
                               ['width'    => '100%',
                                'multiple' => true,
                                'entity'   => $_SESSION['glpiactiveentities']]);
@@ -103,7 +104,7 @@ if ($_POST['object_to_create'] != NULL) {
        if (isset($PLUGIN_HOOKS['metademands'])) {
            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                if (Plugin::isPluginActive($plug)) {
-                   echo PluginMetademandsMetademand::getPluginUniqueDropdown($plug);
+                   echo Metademand::getPluginUniqueDropdown($plug);
                }
            }
        }

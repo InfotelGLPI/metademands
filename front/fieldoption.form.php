@@ -27,14 +27,16 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldOption;
+
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
-$field = new PluginMetademandsFieldOption();
+$field = new FieldOption();
 
 if (isset($_POST["add"])) {
 
@@ -65,7 +67,7 @@ if (isset($_POST["add"])) {
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $p = $_POST;
-                $new_res = PluginMetademandsField::getPluginSaveOptions($plug, $p);
+                $new_res = Field::getPluginSaveOptions($plug, $p);
             }
         }
     }

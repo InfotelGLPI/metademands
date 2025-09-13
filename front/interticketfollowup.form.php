@@ -32,12 +32,11 @@
 
 use Glpi\Event;
 use Glpi\Exception\Http\BadRequestHttpException;
-
-include ('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Interticketfollowup;
 
 Session::checkLoginUser();
 
-$fup = new PluginMetademandsInterticketfollowup();
+$fup = new Interticketfollowup();
 
 if (!isset($_POST['itemtype']) || !class_exists($_POST['itemtype'])) {
     throw new BadRequestHttpException();

@@ -27,8 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+use GlpiPlugin\Metademands\MetademandTask;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -38,7 +38,7 @@ Session::checkLoginUser();
 $KO = false;
 
 if (isset($_REQUEST["tasks_id"]) && $_REQUEST["tasks_id"] > 0) {
-    $used = PluginMetademandsMetademandTask::setUsedTask($_REQUEST["tasks_id"], $_REQUEST["used"]);
+    $used = MetademandTask::setUsedTask($_REQUEST["tasks_id"], $_REQUEST["used"]);
 
     if ($used == 0) {
         $KO = true;

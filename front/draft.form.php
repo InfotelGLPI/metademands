@@ -1,6 +1,6 @@
 <?php
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Draft;
 
 Session::checkLoginUser();
 
@@ -19,8 +19,8 @@ if (Plugin::isPluginActive('servicecatalog')
 
     if ($draft_id > 0) {
 
-        $datas = PluginMetademandsDraft::loadDatasDraft($draft_id);
-        PluginMetademandsDraft::showDraft($datas);
+        $datas = Draft::loadDatasDraft($draft_id);
+        Draft::showDraft($datas);
 
     } else {
         echo __(

@@ -26,15 +26,17 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
-include ('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\TicketField;
+
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
    $_GET["id"] = "";
 }
 
-$ticketField = new PluginMetademandsTicketField();
+$ticketField = new TicketField();
 
 if (isset($_POST["add"])) {
    // Check update rights for fields
@@ -59,12 +61,12 @@ if (isset($_POST["add"])) {
    $ticketField->redirectToList();
 
 } else if (isset($_POST['template_sync'])) {
-   PluginMetademandsTicketField::updateMandatoryTicketFields($_POST);
+   TicketField::updateMandatoryTicketFields($_POST);
    Html::back();
 
 } else {
    $ticketField->checkGlobal(READ);
-   Html::header(PluginMetademandsTicket_Field::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+   Html::header(Ticket_Field::getTypeName(2), '', "helpdesk", Menu::class);
    $ticketField->display(['id' => $_GET["id"]]);
    Html::footer();
 }

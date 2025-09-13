@@ -27,7 +27,9 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Step;
 
 if (!isset($_GET["id"])) {
     $_GET["id"] = "";
@@ -36,7 +38,7 @@ if (!isset($_GET["withtemplate"])) {
     $_GET["withtemplate"] = "";
 }
 
-$meta = new PluginMetademandsStep();
+$meta = new Step();
 
 if (isset($_POST["add"])) {
 
@@ -80,7 +82,7 @@ if (isset($_POST["add"])) {
 } else {
     $meta->checkGlobal(READ);
 
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
 
     $meta->display($_GET);
 

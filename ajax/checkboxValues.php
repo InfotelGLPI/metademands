@@ -27,18 +27,20 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldCustomvalue;
+
 header("Content-Type: text/html; charset=UTF-8");
 
 Html::header_nocache();
 
 Session::checkLoginUser();
 $KO          = false;
-$fields = new PluginMetademandsField();
+$fields = new Field();
 $fields->getFromDB($_POST['checkbox_id_val']);
 
 $arrayValues = [];
-$field_custom = new PluginMetademandsFieldCustomvalue();
+$field_custom = new FieldCustomvalue();
 if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $fields->getID()], "rank")) {
     if (count($customs) > 0) {
         foreach ($customs as $custom) {
@@ -47,4 +49,4 @@ if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $fields->g
     }
 }
 
-Dropdown::showFromArray('checkbox_value',$arrayValues,['display_emptychoice'=> false]);
+\Dropdown::showFromArray('checkbox_value',$arrayValues,['display_emptychoice'=> false]);

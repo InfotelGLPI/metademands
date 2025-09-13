@@ -27,17 +27,20 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Fields\Dropdownmeta;
+
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
-    include('../../../inc/includes.php');
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
 
 Session::checkLoginUser();
 
-$fieldUser = new PluginMetademandsField();
-$fieldparameter = new PluginMetademandsFieldParameter();
+$fieldUser = new Field();
+$fieldparameter = new FieldParameter();
 
 if (isset($_POST["fields_id"])
     && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["fields_id"]])) {
@@ -101,7 +104,7 @@ $p = [
     'value' => $val
 ];
 
-if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
+if ($_POST['display_type'] == Dropdownmeta::ICON_DISPLAY) {
 
     $p['selected_items_id'] = $_POST['selected_items_id'] ?? 0;
     $p['selected_itemtype'] = $_POST['selected_itemtype'] ?? "";
@@ -112,12 +115,12 @@ if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
     }
     $users_id = $p['users_id'];
 
-    PluginMetademandsDropdownmeta::getItemsForUser($p);
+    Dropdownmeta::getItemsForUser($p);
     $_POST['name'] = "mydevices_user$users_id";
 
 } else {
 
-    PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
+    Field::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
     $_POST['name'] = "mydevices_user";
 
 }

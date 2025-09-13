@@ -39,9 +39,10 @@ use Glpi\Form\ServiceCatalog\ItemRequest;
 use Glpi\Form\ServiceCatalog\Provider\LeafProviderInterface;
 use Glpi\FuzzyMatcher\FuzzyMatcher;
 use Glpi\FuzzyMatcher\PartialMatchStrategy;
+use GlpiPlugin\Metademands\Metademand;
 use Override;
-use PluginMetademandsGroup;
-use PluginMetademandsMetademand;
+use GlpiPlugin\Metademands\Group;
+
 use Session;
 
 /** @implements LeafProviderInterface<MetademandForServiceCatalog> */
@@ -91,12 +92,12 @@ final class MetademandProvider implements LeafProviderInterface
             ];
         }
         $entity_restriction = $this->getCachedEntityRestriction(
-            table: PluginMetademandsMetademand::getTable(),
+            table: Metademand::getTable(),
             value: $parameters->getSessionInfo()->getActiveEntitiesIds(),
             is_recursive: true,
         );
 
-        $raw_forms = (new PluginMetademandsMetademand())->find(
+        $raw_forms = (new Metademand())->find(
             [
                 'is_active' => 1,
                 'is_template' => 0,
@@ -106,7 +107,7 @@ final class MetademandProvider implements LeafProviderInterface
         );
 
         foreach ($raw_forms as $raw_form) {
-            $meta = new PluginMetademandsMetademand();
+            $meta = new Metademand();
             $meta->getFromResultSet($raw_form);
             $meta->post_getFromDB();
 
@@ -123,7 +124,7 @@ final class MetademandProvider implements LeafProviderInterface
             // directly to the SQL query (which would require more complicated code).
             // However, the number of forms is expected to be low, so this is acceptable.
             // If performance becomes an issue, we can revisit this and/or add a cache.
-            if (!PluginMetademandsGroup::isUserHaveRight($meta->getID())) {
+            if (!Group::isUserHaveRight($meta->getID())) {
                 continue;
             }
 

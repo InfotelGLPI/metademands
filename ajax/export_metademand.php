@@ -1,4 +1,5 @@
 <?php
+
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
@@ -26,9 +27,9 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
-
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Export;
 
 if (isset($_POST["action"])
     && isset($_POST["metademands"])
@@ -41,9 +42,9 @@ if (isset($_POST["action"])
     foreach ($_POST["metademands"] as $id) {
 
         if ($_POST["action"] == "exportXML") {
-            $file = PluginMetademandsExport::exportAsXMLForMetademands($id);
+            $file = Export::exportAsXMLForMetademands($id);
         } else {
-            $file = PluginMetademandsExport::exportAsJSONForFormcreator($id);
+            $file = Export::exportAsJSONForFormcreator($id);
         }
 
         $splitter = explode("/", $file, 2);
@@ -61,7 +62,7 @@ if (isset($_POST["action"])
         }
     }
 
-    $zip = new ZipArchive;
+    $zip = new ZipArchive();
     $filename = '/metademands/export_' . date('Y-m-d') . '.zip';
     $fullZip = GLPI_PLUGIN_DOC_DIR . $filename;
     if ($zip->open($fullZip, ZipArchive::CREATE)) {
@@ -99,5 +100,5 @@ if (isset($_POST["action"])
         Html::back();
     }
 } else {
-    Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }

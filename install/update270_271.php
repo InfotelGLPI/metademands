@@ -31,6 +31,8 @@
  * @return bool for success (will die for most error)
  * */
 
+use GlpiPlugin\Metademands\Metademand;
+
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
@@ -69,7 +71,7 @@ $CFG_GLPI['use_notifications']     = 0;
 function update270_271() {
    global $DB;
 
-   $metademands           = new PluginMetademandsMetademand();
+   $metademands           = new Metademand();
    $metademands           = $metademands->find();
    $transient_metademands = [];
 
@@ -82,7 +84,7 @@ function update270_271() {
    $DB->doQuery($query_alter_itilcat_type);
 
    foreach ($transient_metademands as $transient_metademand) {
-      $query_update_itilcat = "UPDATE `glpi_plugin_metademands_metademands` 
+      $query_update_itilcat = "UPDATE `glpi_plugin_metademands_metademands`
                                        SET `glpi_plugin_metademands_metademands`.`itilcategories_id` = '" . $transient_metademand['itil_categories'] . "'
                                                    WHERE `id` = '" . $transient_metademand['metademands_id'] . "';";
       $DB->doQuery($query_update_itilcat);

@@ -27,13 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Basketobject;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
-$material = new PluginMetademandsBasketobject();
+$material = new Basketobject();
 
 if (isset($_POST["add"])) {
 
@@ -69,7 +69,7 @@ if (isset($_POST["add"])) {
     Html::back();
 
 } else {
-    Html::header(__('Reference catalog', 'metademands'), '', "management", "pluginmetademandsbasketobject");
+    Html::header(__('Reference catalog', 'metademands'), '', "management", Basketobject::class);
     $material->display(['id' => $_GET["id"]]);
     Html::footer();
 }

@@ -31,14 +31,17 @@
  * -------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
+
 Session::checkLoginUser();
 
 if (isset($_POST['fields_id'])) {
     $fields_id = $_POST['fields_id'];
-    $field = new PluginMetademandsField();
+    $field = new Field();
     $field->getFromDB($fields_id);
-    echo PluginMetademandsField::getFieldTypesName($field->fields['type']);
+    echo Field::getFieldTypesName($field->fields['type']);
 }

@@ -27,8 +27,9 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
+
 if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
-   include ('../../../inc/includes.php');
    header("Content-Type: text/html; charset=UTF-8");
    Html::header_nocache();
 } else if (!defined('GLPI_ROOT')) {
@@ -40,11 +41,11 @@ $condition  =[];
 
 if ($_POST["type"]) {
     switch ($_POST['type']) {
-        case Ticket::INCIDENT_TYPE :
+        case \Ticket::INCIDENT_TYPE :
             $criteria['is_incident'] = 1;
             break;
 
-        case Ticket::DEMAND_TYPE:
+        case \Ticket::DEMAND_TYPE:
             $criteria['is_request'] = 1;
             break;
     }
@@ -72,7 +73,7 @@ $crit["is_deleted"] = 0;
 $crit["is_template"] = 0;
 $crit['type'] = $_POST['type'];
 
-$cats = $dbu->getAllDataFromTable(PluginMetademandsMetademand::getTable(), $crit);
+$cats = $dbu->getAllDataFromTable(Metademand::getTable(), $crit);
 
 $used = [];
 foreach ($cats as $item) {
@@ -87,7 +88,7 @@ foreach ($cats as $item) {
 
 }
 
-//$ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
+//$ticketcats = $dbu->getAllDataFromTable(TicketTask::getTable());
 //foreach ($ticketcats as $item) {
 //    if ($item['itilcategories_id'] > 0) {
 //        $used []= $item['itilcategories_id'];
@@ -109,7 +110,7 @@ foreach ($result as $item) {
    $temp[$item['id']] = html_entity_decode($item['completename']);
 }
 
-Dropdown::showFromArray('itilcategories_id', $temp,
+\Dropdown::showFromArray('itilcategories_id', $temp,
                         ['width'    => '100%',
                          'multiple' => true,
                          'entity'   => $_POST["entity_restrict"]]);

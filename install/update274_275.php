@@ -31,6 +31,8 @@
  * @return bool for success (will die for most error)
  * */
 
+use GlpiPlugin\Metademands\Field;
+
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
@@ -69,7 +71,7 @@ $CFG_GLPI['use_notifications']     = 0;
 function update274_275() {
    global $DB;
 
-   $fieldsclass           = new PluginMetademandsField();
+   $fieldsclass           = new Field();
    $fields                = $fieldsclass->find();
    $transient_metademands = [];
 
@@ -82,7 +84,7 @@ function update274_275() {
    $DB->doQuery($query_alter);
 
    foreach ($transient_metademands as $transient_metademand) {
-      $query_update = "UPDATE `glpi_plugin_metademands_fields` 
+      $query_update = "UPDATE `glpi_plugin_metademands_fields`
                                        SET `glpi_plugin_metademands_fields`.`fields_link` = '" . $transient_metademand['fields_link'] . "'
                                                    WHERE `id` = '" . $transient_metademand['fields_id'] . "';";
       $DB->doQuery($query_update);

@@ -27,11 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\FieldOption;
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\FieldParameter;
 
 Session::checkRight("plugin_metademands", UPDATE);
-
-use Glpi\Exception\Http\AccessDeniedHttpException;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -39,14 +39,14 @@ if (empty($_GET["id"])) {
 
 if (isset($_POST["purge_emptyoptions"])) {
     $itil = $_POST["id"];
-    $field = new PluginMetademandsFieldOption();
+    $field = new FieldOption();
     $field->check(-1, DELETE, $_POST);
     $field->delete($_POST, 1);
     Session::addMessageAfterRedirect(__('Empty option has been deleted', 'metademands'));
     Html::back();
 } else if (isset($_POST["fix_emptycustomvalues"])) {
     $itil = $_POST["id"];
-    $field = new PluginMetademandsFieldParameter();
+    $field = new FieldParameter();
     $field->getfromDB($itil);
     $test = json_decode($field->fields['custom_values'], true);
     $start_one = array_combine(range(1, count($test)), array_values($test));

@@ -35,7 +35,6 @@
 
 use Glpi\Exception\Http\NotFoundHttpException;
 
-include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -62,5 +61,3 @@ if (
         echo __('Access denied');
     }
 }
-
-Html::ajaxFooter();
