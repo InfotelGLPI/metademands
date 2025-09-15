@@ -294,13 +294,6 @@ class PluginMetademandsField extends CommonDBChild
         }
         $this->addStandardTab('PluginMetademandsFieldOption', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
-
-        $plugin = new Plugin();
-        if ($plugin->isActivated("genius")) {
-            if ($this->fields['type'] == 'date' || $this->fields['type'] == 'datetime') {
-                $this->addStandardTab('PluginGeniusFieldDate', $ong, $options);
-            }
-        }
         if (Session::getCurrentInterface() == 'central') {
             $this->addStandardTab('Log', $ong, $options);
         }
