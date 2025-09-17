@@ -343,7 +343,7 @@ class Condition extends CommonDBChild
             $options = [
                 'value' => $item->fields['show_rule'],
             ];
-            Dropdown::showFromArray(
+            \Dropdown::showFromArray(
                 'show_rule',
                 self::getEnumShowRule(),
                 $options

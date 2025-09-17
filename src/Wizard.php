@@ -110,6 +110,7 @@ class Wizard extends CommonDBTM
             || Session::haveRight('plugin_metademands_createmeta', READ)) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -817,7 +818,7 @@ class Wizard extends CommonDBTM
      * @return array
      * @throws \GlpitestSQLError
      */
-    public static function selectMetademands($all = false, $limit = "", $type = Ticket::DEMAND_TYPE)
+    public static function selectMetademands($all = false, $limit = "", $type = \Ticket::DEMAND_TYPE)
     {
         global $DB;
 

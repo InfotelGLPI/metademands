@@ -64,7 +64,7 @@ use PluginFieldsContainer;
 use PluginFieldsField;
 use User;
 use UserEmail;
-use PluginOrderfollowupMetademand;
+use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use MassiveAction;
 
 if (!defined('GLPI_ROOT')) {
@@ -5139,7 +5139,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
         $style_title = "class='title'";
         if ($color != "") {
             if (Plugin::isPluginActive('orderfollowup')) {
-                $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                $ordermaterialmeta = new OrderMetademand();
                 if ($ordermaterialmeta->getFromDBByCrit(
                     ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']]
                 )) {
@@ -5152,7 +5152,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
             }
         } else {
             if (Plugin::isPluginActive('orderfollowup')) {
-                $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                $ordermaterialmeta = new OrderMetademand();
                 if ($ordermaterialmeta->getFromDBByCrit(
                     ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']]
                 )) {

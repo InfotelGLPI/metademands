@@ -289,7 +289,7 @@ class Radio extends CommonDBTM
                 echo "<td class='rowhandler control center'>";
                 echo "<span id='default_values$key'>";
                 echo _n('Default value', 'Default values', 1, 'metademands') . " ";
-                Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
+                \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
                 echo "</span>";
                 echo "</td>";
 
@@ -405,7 +405,7 @@ class Radio extends CommonDBTM
         echo "</td>";
         echo "<td>";
 
-        echo Dropdown::showFromArray(
+        echo \Dropdown::showFromArray(
             "display_type",
             $disp,
             ['value' => $params['display_type'], 'display' => false]
@@ -489,7 +489,7 @@ class Radio extends CommonDBTM
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        Dropdown::showFromArray(
+        \Dropdown::showFromArray(
             "check_value",
             $elements,
             ['value' => $params['check_value'], 'used' => $already_used]

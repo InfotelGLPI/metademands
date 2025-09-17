@@ -283,6 +283,7 @@ class Interticketfollowup extends CommonITILObject
                 }
             }
         }
+        return $item;
     }
 
 

@@ -28,6 +28,7 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use GlpiPlugin\Orderfollowup\Material;
 use Html;
 use Plugin;
 use Session;
@@ -138,7 +139,7 @@ class Basketobject extends CommonDBTM
             $tab = array_merge($tab, PluginOrdermaterialMaterial::rawSearchOptionsToAdd());
         }
         if (Plugin::isPluginActive("orderfollowup")) {
-            $tab = array_merge($tab, PluginOrderfollowupMaterial::rawSearchOptionsToAdd());
+            $tab = array_merge($tab, Material::rawSearchOptionsToAdd());
         }
         return $tab;
     }

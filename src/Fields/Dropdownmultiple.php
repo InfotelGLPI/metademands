@@ -359,7 +359,7 @@ class Dropdownmultiple extends CommonDBTM
                 } elseif ($item == User::getType()) {
                     $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
                 } else {
-                    $div .= "<option selected value=\"$val\" >" . Dropdown::getDropdownName(
+                    $div .= "<option selected value=\"$val\" >" . \Dropdown::getDropdownName(
                         getTableForItemType($item),
                         $val
                     ) . "</option>";

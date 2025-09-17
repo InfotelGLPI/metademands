@@ -100,7 +100,7 @@ class Ldapdropdown extends CommonDBTM
         $opt['url'] = PLUGIN_METADEMANDS_WEBDIR. '/ajax/getldapvalues.php';
 
         if ($item = getItemForItemtype(self::class)) {
-            $field = Dropdown::show(self::class, $opt);
+            $field = \Dropdown::show(self::class, $opt);
         }
         echo $field;
     }

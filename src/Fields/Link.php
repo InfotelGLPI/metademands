@@ -117,7 +117,7 @@ class Link extends CommonDBTM
         echo "<td>";
 
         echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
-        Dropdown::showFromArray(
+        \Dropdown::showFromArray(
             "custom[0]",
             [
                 'button' => __('button', "metademands"),

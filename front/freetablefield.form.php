@@ -29,7 +29,7 @@
 
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
-use GlpiPlugin\Metademands\Fields\Freetablefield;
+use GlpiPlugin\Metademands\Freetablefield;
 use GlpiPlugin\Metademands\Menu;
 
 Session::checkLoginUser();

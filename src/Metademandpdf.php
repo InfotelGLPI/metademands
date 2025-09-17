@@ -34,13 +34,14 @@ use Document;
 use Document_Item;
 use Fpdf\Fpdf;
 use Glpi\RichText\RichText;
+use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Freetable;
 use Html;
 use Plugin;
 use Session;
 use Toolbox;
-use PluginOrderfollowupMetademand;
-use PluginOrderfollowupFreeinput;
+use GlpiPlugin\Orderfollowup\OrderMetademand;
+use GlpiPlugin\Orderfollowup\Freeinput;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -324,8 +325,8 @@ class MetaDemandPdf extends Fpdf
     /**
      * Permet de dessiner une cellule multiligne.
      *
-     * @param type $w
-     * @param type $h
+     * @param int $w
+     * @param int $h
      * @param type $values
      * @param type $label
      * @param type $type
@@ -711,7 +712,6 @@ class MetaDemandPdf extends Fpdf
                             $label = $elt['name'];
                         }
                         $label = str_replace("’", "'", $label);
-                        $label = $label;
                         if ($label != null) {
                             $label = Toolbox::decodeFromUtf8($label);
                         }
@@ -1140,7 +1140,7 @@ class MetaDemandPdf extends Fpdf
                             break;
                         case 'basket':
                             if (Plugin::isPluginActive('orderfollowup')) {
-                                $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                                $ordermaterialmeta = new OrderMetademand();
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
                                     $items = Basket::displayFieldPDF($elt, $fields, $label);
                                     if (count($items)) {
@@ -1170,9 +1170,9 @@ class MetaDemandPdf extends Fpdf
 
                         case 'freetable':
                             if (Plugin::isPluginActive('orderfollowup')) {
-                                $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                                $ordermaterialmeta = new OrderMetademand();
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
-                                    $items = PluginOrderfollowupFreeinput::displayFieldPDF($elt, $fields, $label);
+                                    $items = Freeinput::displayFieldPDF($elt, $fields, $label);
                                     if (count($items)) {
                                         foreach ($items as $id => $values) {
                                             foreach ($values as $label => $value) {

@@ -57,7 +57,6 @@ use GlpiPlugin\Metademands\Fields\Dropdownmultiple;
 use GlpiPlugin\Metademands\Fields\Dropdownobject;
 use GlpiPlugin\Metademands\Fields\Email;
 use GlpiPlugin\Metademands\Fields\Freetable;
-use GlpiPlugin\Metademands\Fields\Freetablefield;
 use GlpiPlugin\Metademands\Fields\Information;
 use GlpiPlugin\Metademands\Fields\Ldapdropdown;
 use GlpiPlugin\Metademands\Fields\Link;

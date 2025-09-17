@@ -32,7 +32,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use Document;
-use GlpiPlugin\Metademands\Fields\Freetablefield;
+use GlpiPlugin\Metademands\Freetablefield;
 use Html;
 use Session;
 use CommonGLPI;
@@ -1394,8 +1394,6 @@ class Export extends CommonDBTM
             if (isset($fieldstranslations)) {
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
-                    $fieldstranslation['value'] = $fieldstranslation['value'];
-                    $fieldstranslation['field'] = $fieldstranslation['field'];
                     $fieldstranslation['items_id'] = $newIDField;
 
                     $trans = new FieldTranslation();
@@ -1821,8 +1819,6 @@ class Export extends CommonDBTM
         if (!empty($translations)) {
             foreach ($translations as $key => $trans) {
                 $meta_translation = new MetademandTranslation();
-                $trans['value'] = $trans['value'];
-                $trans['field'] = $trans['field'];
                 unset($trans['id']);
                 $trans['items_id'] = $newIDMeta;
 

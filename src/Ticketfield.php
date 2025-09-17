@@ -770,6 +770,7 @@ class TicketField extends CommonDBChild
                                 break;
                             case '_tasktemplates_id' :
                                 $exception = true;
+                                break;
                             default:
                                 $default_value = 0;
                                 break;
@@ -898,6 +899,7 @@ class TicketField extends CommonDBChild
                                     break;
                                 case '_tasktemplates_id' :
                                     $exception = true;
+                                    break;
                                 default:
                                     $default_value = 0;
                                     break;

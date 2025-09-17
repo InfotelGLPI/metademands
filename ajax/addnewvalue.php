@@ -30,7 +30,7 @@
 
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
-use GlpiPlugin\Metademands\Fields\Freetablefield;
+use GlpiPlugin\Metademands\Freetablefield;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();

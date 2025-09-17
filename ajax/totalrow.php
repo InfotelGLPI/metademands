@@ -25,8 +25,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Orderfollowup\Metademand;
 use PluginOrdermaterialMetademand;
-use PluginOrderfollowupMetademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -56,7 +56,7 @@ if (isset($_POST['action'])) {
                     }
                 }
                 if (Plugin::isPluginActive('orderfollowup')) {
-                    $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                    $ordermaterialmeta = new Metademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
                         && isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
                         $totalrow = $_POST['quantity'] * $_POST['unit_price'];

@@ -115,7 +115,7 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 
 if ($fieldEntity->fields['readonly'] == 1) {
     $opt['readonly'] = true;
-    echo Dropdown::getDropdownName("glpi_entities", $entities_id);
+    echo \Dropdown::getDropdownName("glpi_entities", $entities_id);
     echo Html::hidden($_POST["field"], ['value' => $entities_id]);
 } else {
     Entity::dropdown($opt);

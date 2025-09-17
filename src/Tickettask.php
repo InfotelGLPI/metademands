@@ -441,7 +441,7 @@ class TicketTask extends CommonDBChild
                     echo "<th width='$colsize1%'>" . __('Status') . '&nbsp;:' . $tt->getMandatoryMark('status') . "</th>";
                     echo "<td>";
 
-                    \Ticket::dropdownStatus(['value' => isset($values['status']) ? $values['status'] : Ticket::INCOMING]);
+                    \Ticket::dropdownStatus(['value' => isset($values['status']) ? $values['status'] : \Ticket::INCOMING]);
                     echo "</td>";
                 } else {
                     echo "<td colspan = '2'>";

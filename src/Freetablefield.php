@@ -28,16 +28,14 @@
  --------------------------------------------------------------------------
  */
 
-namespace GlpiPlugin\Metademands\Fields;
+namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
 use CommonGLPI;
 use DbUtils;
 use Glpi\RichText\RichText;
+use GlpiPlugin\Metademands\Fields\Freetable;
 use Html;
-use GlpiPlugin\Metademands\Field;
-use GlpiPlugin\Metademands\FieldParameter;
-use GlpiPlugin\Metademands\Metademand;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -316,7 +314,6 @@ class Freetablefield extends CommonDBChild
      */
     public static function initCustomValue($count, $plugin_metademands_fields_id = 0)
     {
-        Html::requireJs("metademands");
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
             ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
         ) . ");";
@@ -325,7 +322,7 @@ class Freetablefield extends CommonDBChild
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => true]);
 
-        echo "&nbsp;<i class='ti ti-plus' style='cursor:pointer;'
+        echo "&nbsp;<i class='ti ti-plus btn btn-primary' style='cursor:pointer;'
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
     }

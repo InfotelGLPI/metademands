@@ -54,7 +54,7 @@ if ($field->getFromDB($fields_id)) {
         'rand' => $rand,
     ];
 
-    Dropdown::showFromArray(
+    \Dropdown::showFromArray(
         'show_condition',
         Condition::getEnumShowCondition($type),
         $options

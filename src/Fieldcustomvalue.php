@@ -488,7 +488,7 @@ class FieldCustomvalue extends CommonDBChild
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
 
-        echo "&nbsp;<i class='ti ti-square-plus' style='cursor:pointer;'
+        echo "&nbsp;<i class='ti ti-square-plus btn btn-primary' style='cursor:pointer;'
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
@@ -576,7 +576,7 @@ JAVASCRIPT
             echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
             $name = "default_values[$rank]";
             $value = 0;
-            Dropdown::showYesNo($name, $value);
+            \Dropdown::showYesNo($name, $value);
         }
 
         echo "</span>";
