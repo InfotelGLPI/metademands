@@ -107,55 +107,53 @@ class PluginMetademandsEmail extends CommonDBTM
 
     public static function showFieldParameters($params)
     {
-        //        echo "<tr class='tab_bg_1'>";
-        //        echo "<td>";
-        //        echo __('Link this to a user field', 'metademands');
-        //        echo "</td>";
-        //        echo "<td>";
-        //
-        //        $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
-        //        $field = new PluginMetademandsField();
-        //        $fields = $field->find([
-        //            "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
-        //            'type' => "dropdown_object",
-        //            "item" => User::getType()
-        //        ]);
-        //        foreach ($fields as $f) {
-        //            $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
-        //        }
-        //        Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-        //        echo "</td>";
-        //
-        //
-        //        if ($params['link_to_user'] > 0) {
-        //            echo "<td>" . __('User information to get', 'metademands') . "</td>";
-        //            $options = [
-        //                0 => Dropdown::EMPTY_VALUE,
-        //                6 => _n('Phone', 'Phones', 0),
-        //                11 => __('Mobile phone'),
-        //            ];
-        //            echo "</td>";
-        //            echo "<td>";
-        //            Dropdown::showFromArray(
-        //                'used_by_ticket',
-        //                $options,
-        //                ['value' => $params["used_by_ticket"]]
-        //            );
-        //            echo "</td>";
-        //        } else {
-        //            echo "<td colspan='2'></td>";
-        //        }
-        //
-        //        echo "<tr class='tab_bg_1'>";
-        //        echo "<td>";
-        //        echo __('Regex to respect', 'metademands');
-        //        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-        //        echo "</td>";
-        //        echo "<td>";
-        //        echo Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
-        //        echo "</td>";
-        //        echo "<td colspan='2'></td>";
-        //        echo "</tr>";
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>";
+                echo __('Link this to a user field', 'metademands');
+                echo "</td>";
+                echo "<td>";
+
+                $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
+                $field = new PluginMetademandsField();
+                $fields = $field->find([
+                    "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
+                    'type' => "dropdown_object",
+                    "item" => User::getType()
+                ]);
+                foreach ($fields as $f) {
+                    $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+                }
+                Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
+                echo "</td>";
+
+
+                if ($params['link_to_user'] > 0) {
+                    echo "<td>" . __('User information to get', 'metademands') . "</td>";
+                    $options = [
+                        5 => __('Email'),
+                    ];
+                    echo "</td>";
+                    echo "<td>";
+                    Dropdown::showFromArray(
+                        'used_by_ticket',
+                        $options,
+                        ['value' => $params["used_by_ticket"]]
+                    );
+                    echo "</td>";
+                } else {
+                    echo "<td colspan='2'></td>";
+                }
+
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>";
+                echo __('Regex to respect', 'metademands');
+                //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                echo "</td>";
+                echo "<td>";
+                echo Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
+                echo "</td>";
+                echo "<td colspan='2'></td>";
+                echo "</tr>";
 
     }
 
