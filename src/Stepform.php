@@ -515,13 +515,11 @@ class Stepform extends CommonDBTM
             echo "<div class='center alert alert-warning alert-dismissible fade show' role='alert'>";
             echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close' style='float: right;'>&times;</a>";
             echo "<i style='font-size:2em;' class='ti ti-alert-triangle'></i>";
-            echo "<br>";
             $warnings = sprintf(__('You have %s', 'metademands'), count($stepforms));
             $warnings .= " " . _n('form', 'forms', count($stepforms), 'metademands');
             $warnings .= " " . __('to complete', 'metademands');
 
             echo $warnings;
-            echo "<br>";
 
             $url = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php";
             echo "<a href=\"" . $url . "\">";

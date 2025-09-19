@@ -29,8 +29,8 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
-use Html;
 use GlpiPlugin\Metademands\Field;
+use Html;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -43,10 +43,9 @@ if (!defined('GLPI_ROOT')) {
  **/
 class Information extends CommonDBTM
 {
-
-    const INFO = 1;
-    const WARNING = 2;
-    const ALERT = 3;
+    public const INFO = 1;
+    public const WARNING = 2;
+    public const ALERT = 3;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -55,12 +54,12 @@ class Information extends CommonDBTM
      *
      * @return string
      **/
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Informations', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
+    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
 
         $field = '';
@@ -88,7 +87,7 @@ class Information extends CommonDBTM
             if (empty(Field::displayField($data['id'], 'comment'))) {
                 $todisplay .= htmlspecialchars_decode(stripslashes($data['comment']));
             } else {
-                $todisplay .=Field::displayField($data['id'], 'comment');
+                $todisplay .= Field::displayField($data['id'], 'comment');
             }
         }
 
@@ -96,7 +95,7 @@ class Information extends CommonDBTM
             if (empty(Field::displayField($data['id'], 'label2'))) {
                 $todisplay .= htmlspecialchars_decode(stripslashes($data['label2']));
             } else {
-                $todisplay .=Field::displayField($data['id'], 'label2');
+                $todisplay .= Field::displayField($data['id'], 'label2');
             }
         }
 
@@ -120,14 +119,16 @@ class Information extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($params)
+    public static function showFieldCustomValues($params) {}
+
+
+    public static function showFieldParameters($params)
     {
 
-    }
+        $values[self::INFO] = __('Information', 'metademands');
+        $values[self::WARNING] = __('Warning', 'metademands');
+        $values[self::ALERT] = __('Alert', 'metademands');
 
-
-    static function showFieldParameters($params)
-    {
         echo "<tr class='tab_bg_1'>";
 
         echo "<td>";
@@ -178,9 +179,6 @@ class Information extends CommonDBTM
         echo '</td>';
 
         echo "<td>";
-        $values[self::INFO] = __('Information', 'metademands');
-        $values[self::WARNING] = __('Warning', 'metademands');
-        $values[self::ALERT] = __('Alert', 'metademands');
 
         \Dropdown::showFromArray("display_type", $values, ['value' => $params['display_type']]);
         echo "</td>";
@@ -189,19 +187,11 @@ class Information extends CommonDBTM
 
     }
 
-    static function fieldsMandatoryScript($data) {
+    public static function fieldsMandatoryScript($data) {}
 
-    }
+    public static function fieldsHiddenScript($data) {}
 
-    static function fieldsHiddenScript($data)
-    {
-
-    }
-
-    public static function blocksHiddenScript($data)
-    {
-
-    }
+    public static function blocksHiddenScript($data) {}
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {

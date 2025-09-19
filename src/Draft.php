@@ -472,7 +472,7 @@ class Draft extends CommonDBTM
         }
 
         $color = Wizard::hex2rgba($title_color, "0.03");
-        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;padding: 20px;'";
         echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
 
         if (isset($metademands->fields['icon']) && !empty($metademands->fields['icon'])) {

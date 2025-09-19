@@ -2271,11 +2271,11 @@ class Wizard extends CommonDBTM
 
                 echo "<div class='boutons_draft' >";
                 echo "<button form='' id='button_save_mydraft' class='submit btn btn-success btn-sm update_draft' onclick=\"updateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
-                echo __('Upgrade');
+                echo __('Update the draft', 'metademands');
                 echo "</button>";
 
                 echo "<button form='' class='submit btn btn-danger btn-sm delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
-                echo __('Delete');
+                echo __('Delete the draft', 'metademands');
                 echo "</button>";
                 echo "</div>";
 
