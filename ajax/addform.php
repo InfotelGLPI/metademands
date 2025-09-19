@@ -28,7 +28,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Form;
+use GlpiPlugin\Metademands\Form_Value;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
 
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -38,9 +42,9 @@ Session::checkLoginUser();
 
 $KO = false;
 $step = $_POST['step'] + 1;
-$metademands = new PluginMetademandsMetademand();
-$wizard = new PluginMetademandsWizard();
-$fields = new PluginMetademandsField();
+$metademands = new Metademand();
+$wizard = new Wizard();
+$fields = new Field();
 $nofreetable = false;
 
 //if (isset($_POST['is_freetable'])
@@ -118,7 +122,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 }
             }
 
-            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+            $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
 
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
@@ -218,14 +222,14 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                         && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
             }
 
-            $forms = new PluginMetademandsForm();
+            $forms = new Form();
 
             if (!isset($_POST['form_name']) || (isset($_POST['form_name']) && empty($_POST['form_name']))) {
                 Session::addMessageAfterRedirect(__('Form name is required', 'metademands'), false, ERROR);
                 break;
             }
             $inputs = [];
-            $inputs['name'] = Toolbox::addslashes_deep($_POST['form_name']);
+            $inputs['name'] = $_POST['form_name'];
             $inputs['users_id'] = Session::getLoginUserID();
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
             $inputs['date'] = date('Y-m-d H:i:s');
@@ -253,7 +257,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id'] = $form_new_id;
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
 
-                $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+                $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
 
                 if ($metademands->fields['is_basket'] == 1
                     && isset($_POST['quantity'])) {
@@ -264,7 +268,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;
                         foreach ($data as $form_metademands_id => $line) {
-                            PluginMetademandsForm_Value::setFormValues(
+                            Form_Value::setFormValues(
                                 $_POST['metademands_id'],
                                 $line['form'],
                                 $post,

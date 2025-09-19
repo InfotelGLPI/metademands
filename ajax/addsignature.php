@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,8 +28,6 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-
 header("Content-Type: text/html; charset=UTF-8");
 
 Html::header_nocache();
@@ -43,8 +42,8 @@ if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {
     $decoded_image = base64_decode($encoded_image);
 
     $login = Session::getLoginUserID();
-    $filename = "sign-".$_POST['metademands_id']."-".$login.".png";
-    $filepath = GLPI_TMP_DIR .'/'. $filename;
+    $filename = "sign-" . $_POST['metademands_id'] . "-" . $login . ".png";
+    $filepath = GLPI_TMP_DIR . '/' . $filename;
     if (file_put_contents($filepath, $decoded_image)) {
         $ok = true;
     }

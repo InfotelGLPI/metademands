@@ -27,7 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Metademands\MailTask;
+use GlpiPlugin\Metademands\MetademandTask;
+use GlpiPlugin\Metademands\Task;
+use GlpiPlugin\Metademands\TicketTask;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -35,15 +39,15 @@ Session::checkLoginUser();
 
 if (isset($_POST["taskType"])) {
    switch ($_POST["taskType"]) {
-       case PluginMetademandsTask::MAIL_TYPE:
-           PluginMetademandsMailTask::showMailTaskForm($_POST["plugin_metademands_metademands_id"], $_POST["taskType"]);
+       case Task::MAIL_TYPE:
+           MailTask::showMailTaskForm($_POST["plugin_metademands_metademands_id"], $_POST["taskType"]);
            break;
-      case PluginMetademandsTask::TICKET_TYPE:
-      case PluginMetademandsTask::TASK_TYPE:
-         PluginMetademandsTicketTask::showTicketTaskForm($_POST["plugin_metademands_metademands_id"], true, $_POST["taskType"]);
+      case Task::TICKET_TYPE:
+      case Task::TASK_TYPE:
+         TicketTask::showTicketTaskForm($_POST["plugin_metademands_metademands_id"], true, $_POST["taskType"]);
          break;
-      case PluginMetademandsTask::METADEMAND_TYPE:
-         PluginMetademandsMetademandTask::showMetademandTaskForm($_POST["plugin_metademands_metademands_id"]);
+      case Task::METADEMAND_TYPE:
+         MetademandTask::showMetademandTaskForm($_POST["plugin_metademands_metademands_id"]);
          break;
    }
 }

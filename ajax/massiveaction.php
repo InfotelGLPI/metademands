@@ -27,20 +27,23 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
-
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
-Html::header(PluginMetademandsMetademand::getTypeName(2), $_SERVER['PHP_SELF'], "plugins", "metademands");
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\TicketField;
+use GlpiPlugin\Metademands\Group;
+
+Html::header(Metademand::getTypeName(2), $_SERVER['PHP_SELF'], "plugins", Metademand::class);
 
 if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) && isset($_POST["itemtype"])) {
 
    switch ($_POST["itemtype"]) {
-      case 'PluginMetademandsField':
-         $field = new PluginMetademandsField();
+       case Field::class :
+         $field = new Field();
          switch ($_POST["action"]) {
             case "delete":
                foreach ($_POST["item"] as $key => $val) {
@@ -54,8 +57,8 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
                break;
          }
       break;
-      case 'PluginMetademandsTicketField':
-         $ticketField = new PluginMetademandsTicketField();
+      case TicketField::class :
+         $ticketField = new TicketField();
          switch ($_POST["action"]) {
             case "delete":
                foreach ($_POST["item"] as $key => $val) {
@@ -69,8 +72,8 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
                break;
          }
       break;
-      case 'PluginMetademandsGroup':
-         $group = new PluginMetademandsGroup();
+      case Group::class :
+         $group = new \Group();
          switch ($_POST["action"]) {
             case "delete":
                foreach ($_POST["item"] as $key => $val) {
@@ -87,7 +90,7 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
    }
 } else {
 
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 Html::footer();

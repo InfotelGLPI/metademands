@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,8 +28,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -36,6 +36,7 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 use Glpi\RichText\RichText;
+use GlpiPlugin\Metademands\Condition;
 
 $predicate = '';
 
@@ -43,7 +44,7 @@ if (isset($_POST['metademands_id'])
     && isset($_POST['field'])) {
     $fields = $_POST['field'];
 
-    $tab = PluginMetademandsCondition::conditionsTab($_POST['metademands_id']);
+    $tab = Condition::conditionsTab($_POST['metademands_id']);
 
     foreach ($tab as $key => $value) {
         if (array_key_exists($value['fields_id'], $fields)) {
@@ -64,13 +65,13 @@ if (isset($_POST['metademands_id'])
 
     if (count($tab) > 0) {
         foreach ($tab as $key => $condition) {
-            $result = (int)PluginMetademandsCondition::verifyCondition($condition);
+            $result = (int) Condition::verifyCondition($condition);
             if (!empty($predicate) && $actual_group == $condition['order']) {
-                $predicate .= ' ' . PluginMetademandsCondition::showPhpLogic($condition['show_logic']);
+                $predicate .= ' ' . Condition::showPhpLogic($condition['show_logic']);
             } elseif (empty($predicate)) {
                 $predicate = '(';
             } elseif ($actual_group != $condition['order']) {
-                $predicate .= ") " . PluginMetademandsCondition::showPhpLogic($condition['show_logic']) . "( ";
+                $predicate .= ") " . Condition::showPhpLogic($condition['show_logic']) . "( ";
             }
             $actual_group = $condition['order'];
             $predicate .= " $result ";

@@ -27,11 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\MetademandValidation;
 
 Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
 
-$metavalidation = new PluginMetademandsMetademandValidation();
+$metavalidation = new MetademandValidation();
 
 if (isset($_POST['action'])) {
    $metavalidation->validateMeta($_REQUEST);

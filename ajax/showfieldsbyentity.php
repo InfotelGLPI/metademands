@@ -27,7 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -42,11 +41,11 @@ switch ($_POST['action']) {
 
             $condition = [];
             switch ($_POST['type']) {
-                case Ticket::DEMAND_TYPE:
+                case \Ticket::DEMAND_TYPE:
                     $condition = ['is_request' => 1];
                     break;
 
-                default: // Ticket::INCIDENT_TYPE :
+                default: // \Ticket::INCIDENT_TYPE :
                     $condition = ['is_incident' => 1];
             }
             $opt = [
@@ -77,13 +76,11 @@ switch ($_POST['action']) {
 
             $restrict = getEntitiesRestrictCriteria('glpi_groups', '', $_POST['entities_id'], false);
             $condition = $_POST['condition'];
-            Dropdown::show('Group', ['name' => $_POST['action'],
+            \Dropdown::show('Group', ['name' => $_POST['action'],
                 'value' => isset($_POST[$_POST['action']]) ? $_POST[$_POST['action']] : 0,
                 'entity' => $_POST["entities_id"],
                 'condition' => $condition + $restrict]);
         }
         break;
 }
-
-Html::ajaxFooter();
 

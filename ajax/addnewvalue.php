@@ -27,7 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\Freetablefield;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -38,20 +42,20 @@ if (!isset($_POST['field_id'])) {
 }
 switch ($_POST['action']) {
     case 'add':
-        $field = new PluginMetademandsField();
+        $field = new Field();
         $type = "";
 
         if ($field->getFromDB($_POST['field_id'])) {
             $type = $field->fields['type'];
             if ($type != "freetable") {
-                PluginMetademandsFieldCustomvalue::addNewValue(
+                FieldCustomvalue::addNewValue(
                     $_POST['count'],
                     $_POST['display_comment'],
                     $_POST['display_default'],
                     $_POST['field_id']
                 );
             } else {
-                PluginMetademandsFreetablefield::addNewValue(
+                Freetablefield::addNewValue(
                     $_POST['count'],
                     $_POST['field_id']
                 );
@@ -59,5 +63,3 @@ switch ($_POST['action']) {
         }
         break;
 }
-
-Html::ajaxFooter();

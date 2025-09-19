@@ -31,15 +31,15 @@
  */
 
 use Glpi\Event;
-
-include ('../../../inc/includes.php');
+use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Metademands\Interticketfollowup;
 
 Session::checkLoginUser();
 
-$fup = new PluginMetademandsInterticketfollowup();
+$fup = new Interticketfollowup();
 
 if (!isset($_POST['itemtype']) || !class_exists($_POST['itemtype'])) {
-   Html::displayErrorAndDie('Lost');
+    throw new BadRequestHttpException();
 }
 $track = new $_POST['itemtype'];
 
@@ -84,4 +84,4 @@ if (isset($_POST["add"])) {
 //   Html::redirect($track->getFormURLWithID($fup->getField('tickets_id')));
 //}
 
-Html::displayErrorAndDie('Lost');
+throw new BadRequestHttpException();

@@ -27,11 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-include("../../../inc/includes.php");
+use GlpiPlugin\Metademands\Field;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-$field = new PluginMetademandsField();
+$field = new Field();
 $field->reorder($_POST);

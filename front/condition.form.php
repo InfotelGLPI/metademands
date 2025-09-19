@@ -27,15 +27,16 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Condition;
+use GlpiPlugin\Metademands\Field;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 global $DB;
 
-$condition = new PluginMetademandsCondition();
-$field = new PluginMetademandsField();
+$condition = new Condition();
+$field = new Field();
 $dbu = new DbUtils();
 
 $criteria = [
@@ -131,7 +132,7 @@ if (isset($_POST['add'])) {
     $res = $condition->update($input);
     Html::back();
     } else {
-    Html::header(__('Condition', 'metademands'), '', "helpdesk", "pluginmetademandscondition");
+    Html::header(__('Condition', 'metademands'), '', "helpdesk", Condition::class);
     $condition->display(['id' => $_GET["id"]]);
     Html::footer();
 }

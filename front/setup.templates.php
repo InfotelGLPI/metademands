@@ -26,13 +26,14 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-include('../../../inc/includes.php');
 
-$meta = new PluginMetademandsMetademand();
+use GlpiPlugin\Metademands\Metademand;
+
+$meta = new Metademand();
 
 if ($meta->canView() || Session::haveRight("config", UPDATE)) {
 
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
 
     $meta->listOfTemplates(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php", $_GET["add"]);
 

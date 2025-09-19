@@ -33,17 +33,18 @@
  * ---------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use Glpi\Exception\Http\NotFoundHttpException;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
 if (!isset($_POST['type'])) {
-    exit();
+    throw new NotFoundHttpException();
 }
 if (!isset($_POST['parenttype'])) {
-    exit();
+    throw new NotFoundHttpException();
 }
 
 if (
@@ -60,5 +61,3 @@ if (
         echo __('Access denied');
     }
 }
-
-Html::ajaxFooter();

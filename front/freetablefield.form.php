@@ -27,7 +27,10 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Freetablefield;
+use GlpiPlugin\Metademands\Menu;
 
 Session::checkLoginUser();
 
@@ -35,8 +38,8 @@ if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
-$fieldcustom = new PluginMetademandsFreetablefield();
-$fieldparam = new PluginMetademandsFieldParameter();
+$fieldcustom = new Freetablefield();
+$fieldparam = new FieldParameter();
 
 if (isset($_POST["add"])) {
     $params = [];
@@ -167,7 +170,7 @@ if (isset($_POST["add"])) {
     Html::back();
 } else {
     $fieldcustom->checkGlobal(READ);
-    Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Field::getTypeName(2), '', "helpdesk", Menu::class);
     Html::requireJs('tinymce');
     $fieldcustom->display(['id' => $_GET["id"]]);
     Html::footer();

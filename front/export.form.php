@@ -27,13 +27,16 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Export;
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
 
 if (Session::haveRight("plugin_metademands", CREATE)) {
 
     if (isset($_POST["exportFormcreatorXML"])) {
 
-        $file = PluginMetademandsExport::exportAsXMLFromFormcreator($_POST["plugin_formcreator_forms_id"]);
+        $file = Export::exportAsXMLFromFormcreator($_POST["plugin_formcreator_forms_id"]);
 
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
@@ -46,12 +49,12 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
             Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
             unlink($send);
         } else {
-            Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+            throw new AccessDeniedHttpException();
         }
 
     } else if (isset($_POST["exportMetademandsXML"])) {
 
-        $file = PluginMetademandsExport::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
+        $file = Export::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
 
@@ -64,11 +67,11 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
             unlink($send);
 
         } else {
-            Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+            throw new AccessDeniedHttpException();
         }
     } else if (isset($_POST["exportMetademandsJSON"])) {
 
-        $file = PluginMetademandsExport::exportAsJSONForFormcreator($_POST["plugin_metademands_metademands_id"]);
+        $file = Export::exportAsJSONForFormcreator($_POST["plugin_metademands_metademands_id"]);
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
 
@@ -81,25 +84,25 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
             unlink($send);
 
         } else {
-            Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+            throw new AccessDeniedHttpException();
         }
 
     }  elseif (isset($_GET["import_form"])) {
 
-        Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-        PluginMetademandsExport::showImportForm();
+        Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
+        Export::showImportForm();
         Html::footer();
 
     } elseif (isset($_POST["import_file"])) {
-        $id = PluginMetademandsExport::importXml();
+        $id = Export::importXml();
         if ($id) {
-            $meta = new PluginMetademandsMetademand();
+            $meta = new Metademand();
             Html::redirect($meta->getFormURL() . "?id=" . $id);
         } else {
             Html::back();
         }
     }
 } else {
-    Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 

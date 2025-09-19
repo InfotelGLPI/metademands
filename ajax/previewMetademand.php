@@ -27,21 +27,23 @@
  --------------------------------------------------------------------------
  */
 
-include("../../../inc/includes.php");
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
 $metademands_id = $_REQUEST['metademands_id'];
-$step = PluginMetademandsMetademand::STEP_SHOW;
+$step = Metademand::STEP_SHOW;
 $current_ticket = 0;
 $meta_validated = 0;
 $preview = 1;
 $options = [];
 $seeform = 0;
 
-PluginMetademandsWizard::showMetademands(
+Wizard::showMetademands(
     $metademands_id,
     $step,
     $current_ticket,

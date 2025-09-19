@@ -27,10 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Metademand_Resource;
+
 Session::checkLoginUser();
 
-$metademand_resource = new PluginMetademandsMetademand_Resource();
+$metademand_resource = new Metademand_Resource();
 
 if (isset($_POST["update"])) {
    $metademand_resource->check(-1, UPDATE, $_POST);

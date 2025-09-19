@@ -28,8 +28,8 @@
  */
 
 $AJAX_INCLUDE = 1;
+
 if (strpos($_SERVER['PHP_SELF'], "uTextFieldUpdate.php")) {
-    include('../../../inc/includes.php');
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
@@ -41,6 +41,7 @@ if (isset($_GET['id']) && $_GET["id"] > 0) {
     $user->getFromDB($_GET['id']);
     // see field.class.php used_by_ticket dropdown definition
     $data = [
+        5 => $user->getDefaultEmail(),
         6 => $user->getField('phone'),
         11 => $user->getField('mobile'),
         22 => $user->getField('registration_number'),

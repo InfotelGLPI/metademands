@@ -27,7 +27,9 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Metademands\Fields\Ldapdropdown;
+
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");
@@ -38,9 +40,9 @@ Html::header_nocache();
 
 // Check if plugin is activated...
 if (!Plugin::isPluginActive('metademands')) {
-    Html::displayNotFoundError();
+    throw new NotFoundHttpException();
 }
 
 Session::checkLoginUser();
 
-echo PluginMetademandsLdapdropdown::getDropdownValue($_POST);
+echo Ldapdropdown::getDropdownValue($_POST);

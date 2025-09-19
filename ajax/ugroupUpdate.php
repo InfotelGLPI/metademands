@@ -27,17 +27,19 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
-    include('../../../inc/includes.php');
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
 
 Session::checkLoginUser();
 
-$fieldGroup = new PluginMetademandsField();
-$fieldparameter = new PluginMetademandsFieldParameter();
+$fieldGroup = new Field();
+$fieldparameter = new FieldParameter();
 $cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
@@ -67,7 +69,6 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     }
 
     if (!empty($fieldparameter->fields['custom']) && isset($_POST["value"])) {
-
         $condition = ['is_requester' => 1] + getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
 
@@ -76,7 +77,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             $requester_groups[] = $groups['id'];
         }
 
-        $options = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
+        $options = FieldParameter::_unserialize($fieldparameter->fields['custom']);
 
         foreach ($options as $type_group => $values) {
             if ($type_group != 'user_group') {
@@ -96,7 +97,7 @@ if (isset($_POST['value']) && !is_array($_POST["value"]) && $_POST["value"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     $user = new User();
     if ($user->getFromDB($_POST["value"])) {
-        $groups_id = PluginMetademandsField::getUserGroup(
+        $groups_id = Field::getUserGroup(
             $_SESSION['glpiactiveentities'],
             $_POST["value"],
             $cond,
@@ -118,7 +119,7 @@ if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
 if (is_array($groups_id)) {
     $groups_id = 0;
 }
-Toolbox::logInfo($cond);
+
 $rand = mt_rand();
 $opt  = ['name'      => $_POST["field"],
          'entity'    => $_SESSION['glpiactiveentities'],
@@ -128,7 +129,7 @@ $opt  = ['name'      => $_POST["field"],
     'width' => '200px'
 ];
 
-$fieldparameter            = new PluginMetademandsFieldParameter();
+$fieldparameter            = new FieldParameter();
 
 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldGroup->fields['id']])) {
     if ($fieldparameter->fields["is_mandatory"] && $fieldparameter->fields['is_mandatory'] == 1) {
@@ -137,7 +138,7 @@ if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldGr
 }
 
 
-Group::dropdown($opt);
+\Group::dropdown($opt);
 
 $_POST['name'] = "group_user";
 $_POST['rand'] = $rand;

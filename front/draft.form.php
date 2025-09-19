@@ -1,14 +1,15 @@
 <?php
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Draft;
 
 Session::checkLoginUser();
 
-use Glpi\Event;
+use GlpiPlugin\Servicecatalog\Main;
 
-if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
+if (Plugin::isPluginActive('servicecatalog')
+    && Session::getCurrentInterface() != 'central') {
 
-    PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
+    Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
     $draft_id = 0;
 
@@ -18,8 +19,8 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
 
     if ($draft_id > 0) {
 
-        $datas = PluginMetademandsDraft::loadDatasDraft($draft_id);
-        PluginMetademandsDraft::showDraft($datas);
+        $datas = Draft::loadDatasDraft($draft_id);
+        Draft::showDraft($datas);
 
     } else {
         echo __(

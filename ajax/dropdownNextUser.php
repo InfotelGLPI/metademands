@@ -26,7 +26,9 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-include('../../../inc/includes.php');
+
+use GlpiPlugin\Metademands\Step;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -34,7 +36,7 @@ Session::checkLoginUser();
 
 $groupUser = new Group_User();
 
-$step = new PluginMetademandsStep();
+$step = new Step();
 
 if (isset($_POST['next_groups_id'])
     && $_POST['next_groups_id'] > 0) {

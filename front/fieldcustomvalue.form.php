@@ -28,7 +28,10 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Menu;
 
 Session::checkLoginUser();
 
@@ -36,8 +39,8 @@ if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
-$fieldcustom = new PluginMetademandsFieldCustomvalue();
-$fieldparam = new PluginMetademandsFieldParameter();
+$fieldcustom = new FieldCustomvalue();
+$fieldparam = new FieldParameter();
 
 if (isset($_POST["add"])) {
     $params = [];
@@ -93,8 +96,8 @@ if (isset($_POST["add"])) {
         if (!isset($_POST['default'])) {
             $_POST['default'] = 0;
         }
-        $input["custom"] = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
-        $input["default"] = PluginMetademandsFieldParameter::_serialize($_POST['default']);
+        $input["custom"] = FieldParameter::_serialize($_POST['custom']);
+        $input["default"] = FieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"] = $fieldparam->getID();
@@ -110,8 +113,8 @@ if (isset($_POST["add"])) {
             $fieldparam->check(-1, UPDATE, $input);
             $fieldparam->update($input);
         }
-    } elseif (in_array($_POST["item"], PluginMetademandsField::$field_specificobjects)) {
-        $input["default"] = PluginMetademandsFieldParameter::_serialize($_POST['default']);
+    } elseif (in_array($_POST["item"], Field::$field_specificobjects)) {
+        $input["default"] = FieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"] = $fieldparam->getID();
@@ -178,11 +181,11 @@ if (isset($_POST["add"])) {
     Html::back();
 } elseif (isset($_POST["fixranks"])) {
 
-    $field = new PluginMetademandsField();
+    $field = new Field();
     if ($field->getFromDB($_POST["plugin_metademands_fields_id"])) {
-        $params = PluginMetademandsField::getAllParamsFromField($field);
+        $params = Field::getAllParamsFromField($field);
         $custom_values = $params['custom_values'];
-        $newranks = PluginMetademandsFieldCustomvalue::fixRanks($custom_values);
+        $newranks = FieldCustomvalue::fixRanks($custom_values);
         foreach ($newranks as $id => $newrank) {
             $fieldcustom->update($newrank);
         }
@@ -191,7 +194,7 @@ if (isset($_POST["add"])) {
     Html::back();
 } else {
     $fieldcustom->checkGlobal(READ);
-    Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Field::getTypeName(2), '', "helpdesk", Menu::class);
     Html::requireJs('tinymce');
     $fieldcustom->display(['id' => $_GET["id"]]);
     Html::footer();

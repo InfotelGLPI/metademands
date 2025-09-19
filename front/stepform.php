@@ -26,34 +26,38 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 include('../../../inc/includes.php');
 
-
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Stepform;
+use GlpiPlugin\Servicecatalog\Main;
 
 if (Session::getCurrentInterface() == 'central') {
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
 } else {
     if (Plugin::isPluginActive('servicecatalog')) {
-        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
+        Main::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
     } else {
         Html::helpHeader(__('Continue metademand', 'metademands'));
     }
 }
 
-$meta = new PluginMetademandsMetademand();
-$stepform = new PluginMetademandsStepform();
+$meta = new Metademand();
+$stepform = new Stepform();
 
 if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
     $stepform->showWaitingForm();
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (Session::getCurrentInterface() != 'central'
     && Plugin::isPluginActive('servicecatalog')) {
 
-    PluginServicecatalogMain::showNavBarFooter('metademands');
+    Main::showNavBarFooter('metademands');
 }
 
 if (Session::getCurrentInterface() == 'central') {

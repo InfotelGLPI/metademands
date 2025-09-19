@@ -27,15 +27,17 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Wizard;
+
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
-    include('../../../inc/includes.php');
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
 
 Session::checkLoginUser();
-$fieldUser = new PluginMetademandsField();
+$fieldUser = new Field();
 
 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']]) && !isset($_POST['value'])) {
     $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
@@ -54,7 +56,7 @@ if (isset($_POST['value']) && $_POST["value"] > 0) {
         $class = "class='alert $display alert-dismissible fade show informations'";
         echo "<br><br><div $class style='display:flex;align-items: center;'>";
         echo "<div style='color: $color;'>";
-        PluginMetademandsWizard::showUserInformations($user_tooltip);
+        Wizard::showUserInformations($user_tooltip);
         echo "</div>";
         echo "</div>";
     }

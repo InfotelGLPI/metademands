@@ -27,10 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\ConfigStep;
+
 Session::checkLoginUser();
 
-$stepConfig = new PluginMetademandsConfigStep();
+$stepConfig = new ConfigStep();
 
 if (isset($_POST['update_configstep']) && isset($_POST['plugin_metademands_metademands_id'])) {
     $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);

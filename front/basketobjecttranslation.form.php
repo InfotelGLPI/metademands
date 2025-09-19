@@ -26,9 +26,9 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\BasketobjectTranslation;
 
-$translation = new PluginMetademandsBasketobjectTranslation();
+$translation = new BasketobjectTranslation();
 if (isset($_POST['add'])) {
     $translation->add($_POST);
 } else if (isset($_POST['update'])) {

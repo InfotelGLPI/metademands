@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\FieldCustomvalue;
 
 Session::checkLoginUser();
 
@@ -50,12 +50,12 @@ if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields
     if (!empty($_FILES['importFrm']['name']) && in_array($_FILES['importFrm']['type'], $csvMimes)) {
         if (($handle = fopen($_FILES['importFrm']['tmp_name'], "r")) !== false) {
             $rank = 0;
-            $fieldcustom = new PluginMetademandsFieldCustomvalue();
+            $fieldcustom = new FieldCustomvalue();
             $fieldcustom->deleteByCriteria(['plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id']]);
             while (($data = fgetcsv($handle, 1000, $_SESSION["glpicsv_delimiter"])) !== false) {
-                $input['name'] = Toolbox::addslashes_deep($data[0]);
+                $input['name'] = $data[0];
                 $input['is_default'] = $data[1];
-                $input['comment'] = Toolbox::addslashes_deep($data[2]);
+                $input['comment'] = $data[2];
                 $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
                 $input['rank'] = $rank;
                 $rank++;

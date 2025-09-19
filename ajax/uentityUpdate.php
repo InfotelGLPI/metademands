@@ -27,16 +27,18 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "uentityUpdate.php")) {
-    include('../../../inc/includes.php');
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
 
 Session::checkLoginUser();
 
-$fieldEntity = new PluginMetademandsField();
+$fieldEntity = new Field();
 $cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
@@ -45,7 +47,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                                           'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                           'item'                              => Entity::getType()])) {
             foreach ($fields as $f) {
-                $fieldparameter = new PluginMetademandsFieldParameter();
+                $fieldparameter = new FieldParameter();
                 if ($fieldparameter->getFromDBByCrit(
                     [
                         'plugin_metademands_fields_id' => $f['id'],
@@ -113,7 +115,7 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 
 if ($fieldEntity->fields['readonly'] == 1) {
     $opt['readonly'] = true;
-    echo Dropdown::getDropdownName("glpi_entities", $entities_id);
+    echo \Dropdown::getDropdownName("glpi_entities", $entities_id);
     echo Html::hidden($_POST["field"], ['value' => $entities_id]);
 } else {
     Entity::dropdown($opt);

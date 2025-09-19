@@ -27,16 +27,21 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
+
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
-$field = new PluginMetademandsField();
-$fieldparameter = new PluginMetademandsFieldParameter();
-$fieldcustomvalues = new PluginMetademandsFieldCustomvalue();
+$field = new Field();
+$fieldparameter = new FieldParameter();
+$fieldcustomvalues = new FieldCustomvalue();
 
 if (isset($_POST['existing_field_id'])) {
     if ($field->getFromDB($_POST['existing_field_id'])) {
@@ -70,11 +75,8 @@ if (isset($_POST['type'])
 }
 
 if (isset($_POST["add"])) {
-    $_POST["name"] = Toolbox::addslashes_deep($_POST["name"]);
-    $_POST["comment"] = Toolbox::addslashes_deep($_POST["comment"]);
-    $_POST["label2"] = Toolbox::addslashes_deep($_POST["label2"]);
     if (isset($_POST["plugin_metademands_metademands_id"])) {
-        $meta = new PluginMetademandsMetademand();
+        $meta = new Metademand();
         $meta->getFromDB($_POST["plugin_metademands_metademands_id"]);
         $_POST["entities_id"] = $meta->getEntityID();
     }
@@ -107,7 +109,7 @@ if (isset($_POST["add"])) {
         }
 
         $field->recalculateOrder($_POST);
-        PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_ADD);
+        Metademand::addLog($_POST, Metademand::LOG_ADD);
         unset($_SESSION['glpi_plugin_metademands_fields']);
     }
 
@@ -144,13 +146,13 @@ if (isset($_POST["add"])) {
 
     if ($field->update($_POST)) {
         $field->recalculateOrder($_POST);
-        PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
+        Metademand::addLog($_POST, Metademand::LOG_UPDATE);
 
         //Hook to add and update values add from plugins
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $p = $_POST;
-                $new_res = PluginMetademandsField::getPluginSaveOptions($plug, $p);
+                $new_res = Field::getPluginSaveOptions($plug, $p);
             }
         }
     }
@@ -158,7 +160,7 @@ if (isset($_POST["add"])) {
     Html::back();
 }  else if (isset($_POST["fixorders"])) {
 
-    $field = new PluginMetademandsField();
+    $field = new Field();
     if ($field_values = $field->find(["plugin_metademands_metademands_id" =>$_POST["plugin_metademands_metademands_id"],
         'rank' => $_POST["rank"]])) {
         if (count($field_values) > 0) {
@@ -167,7 +169,7 @@ if (isset($_POST["add"])) {
                 $orders[$k]['order'] = $field_value['order'];
             }
 
-            $neworders = PluginMetademandsField::fixOrders($orders);
+            $neworders = Field::fixOrders($orders);
             foreach ($neworders as $id => $neworder) {
                 $input['id'] = $id;
                 $input['order'] = $neworder['order'];
@@ -180,11 +182,11 @@ if (isset($_POST["add"])) {
     // Check update rights for fields
     $field->check(-1, UPDATE, $_POST);
     $field->delete($_POST, 1);
-    PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
+    Metademand::addLog($_POST, Metademand::LOG_DELETE);
     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $_POST['plugin_metademands_metademands_id']);
 } else {
     $field->checkGlobal(READ);
-    Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::header(Field::getTypeName(2), '', "helpdesk", Menu::class);
     Html::requireJs('tinymce');
     $field->display(['id' => $_GET["id"]]);
     Html::footer();

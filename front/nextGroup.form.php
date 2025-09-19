@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Configstep;
+use GlpiPlugin\Metademands\Step;
 
 Session::checkLoginUser();
 
@@ -35,8 +36,8 @@ Session::checkLoginUser();
 // and/or the display of the drop-down lists of the users linked to the group
 global $CFG_GLPI;
 
-$conf = new PluginMetademandsConfigstep();
-$step = new PluginMetademandsStep();
+$conf = new Configstep();
+$step = new Step();
 $group = new Group();
 $groupUser = new Group_User();
 $user_id = Session::getLoginUserID();
@@ -71,7 +72,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
             $groupName
         );
     }
-    $KO = PluginMetademandsStep::nextUser();
+    $KO = Step::nextUser();
 
     unset($_SESSION['plugin_metademands']);
 
@@ -95,7 +96,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
 
 } else {
     Html::popHeader(__('Next recipient', 'metademands'));
-    PluginMetademandsStep::showModalForm();
+    Step::showModalForm();
     Html::popFooter();
 }
 

@@ -27,17 +27,19 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
-$field = new PluginMetademandsField();
+$field = new Field();
 $field->getFromDB($_POST['plugin_metademands_fields_id']);
 
-$fieldparameter = new PluginMetademandsFieldParameter();
+$fieldparameter = new FieldParameter();
 
 if (isset($field->fields['type']) && $field->fields['type'] == 'dropdown_object'
     && isset($field->fields['item']) && ($field->fields['item'] == 'Group'
@@ -70,16 +72,16 @@ if (isset($_POST["add"])) {
         if (isset($field->fields['type']) && $field->fields['type'] == 'dropdown_multiple') {
             $field->fields['item'] = 'other';
         }
-        $_POST["custom_values"] = PluginMetademandsFieldParameter::_serialize($_POST["custom_values"]);
+        $_POST["custom_values"] = FieldParameter::_serialize($_POST["custom_values"]);
 
         if (isset($_POST["comment_values"])) {
-            $_POST["comment_values"] = PluginMetademandsFieldParameter::_serialize($_POST["comment_values"]);
+            $_POST["comment_values"] = FieldParameter::_serialize($_POST["comment_values"]);
         }
         if (isset($_POST["default_values"])) {
-            $_POST["default_values"] = PluginMetademandsFieldParameter::_serialize($_POST["default_values"]);
+            $_POST["default_values"] = FieldParameter::_serialize($_POST["default_values"]);
         }
         if (isset($_POST["informations_to_display"])) {
-            $_POST["informations_to_display"] = PluginMetademandsFieldParameter::_serialize(
+            $_POST["informations_to_display"] = FieldParameter::_serialize(
                 $_POST["informations_to_display"]
             );
         }
@@ -102,7 +104,7 @@ if (isset($_POST["add"])) {
             || $field->fields['type'] == 'dropdown_multiple'
             || (isset($field->fields['item']) && ($field->fields['item'] == 'Group'
                     || $field->fields['item'] == 'User'
-                    || in_array($field->fields["item"], PluginMetademandsField::$field_specificobjects)))
+                    || in_array($field->fields["item"], Field::$field_specificobjects)))
             || $field->fields['type'] == 'number'
             || $field->fields['type'] == 'range'
             || $field->fields['type'] == 'basket')) {
@@ -120,11 +122,11 @@ if (isset($_POST["add"])) {
             $default_values = $_POST['default_values'];
         }
 
-        $_POST["custom_values"] = PluginMetademandsFieldParameter::_serialize($custom_values);
-        $_POST["comment_values"] = PluginMetademandsFieldParameter::_serialize($comment_values);
-        $_POST["default_values"] = PluginMetademandsFieldParameter::_serialize($default_values);
+        $_POST["custom_values"] = FieldParameter::_serialize($custom_values);
+        $_POST["comment_values"] = FieldParameter::_serialize($comment_values);
+        $_POST["default_values"] = FieldParameter::_serialize($default_values);
     } elseif ($field->fields['type'] == 'link') {
-        $_POST["custom_values"] = PluginMetademandsFieldParameter::_serialize($_POST['custom_values']);
+        $_POST["custom_values"] = FieldParameter::_serialize($_POST['custom_values']);
         $_POST["comment_values"] = '';
     } elseif ($field->fields['type'] != 'yesno') {
         //used for default_values don't uncomment
@@ -132,14 +134,14 @@ if (isset($_POST["add"])) {
         $_POST["comment_values"] = '';
     }
     if (isset($_POST["value"]) && is_array($_POST["value"])) {
-        $_POST["value"] = PluginMetademandsFieldParameter::_serialize($_POST["value"]);
+        $_POST["value"] = FieldParameter::_serialize($_POST["value"]);
     }
 
     $informations_to_display = [];
     if (isset($_POST['informations_to_display'])) {
         $informations_to_display = $_POST['informations_to_display'];
     }
-    $_POST["informations_to_display"] = PluginMetademandsFieldParameter::_serialize($informations_to_display);
+    $_POST["informations_to_display"] = FieldParameter::_serialize($informations_to_display);
 
     if (!isset($field->fields['item'])) {
         $field->fields['item'] = "";
@@ -148,12 +150,12 @@ if (isset($_POST["add"])) {
         && isset($field->fields['item']) && $field->fields['item'] == 'User') {
         if (isset($_POST['user_group'])) {
             $custom_values['user_group'] = $_POST['user_group'];
-            $_POST["custom"] = PluginMetademandsFieldParameter::_serialize($custom_values);
+            $_POST["custom"] = FieldParameter::_serialize($custom_values);
         }
     }
 
     if (isset($field->fields['item']) && $field->fields['item'] == 'Group') {
-        $_POST["custom"] = PluginMetademandsFieldParameter::_serialize($custom_values);
+        $_POST["custom"] = FieldParameter::_serialize($custom_values);
     }
 
     //    Check update rights for fields
@@ -169,7 +171,7 @@ if (isset($_POST["add"])) {
     Html::back();
 } else {
 //   $field->checkGlobal(READ);
-//   Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+//   Html::header(Field::getTypeName(2), '', "helpdesk", Menu::class);
 //   Html::requireJs('tinymce');
 //   $field->display(['id' => $_GET["id"]]);
 //   Html::footer();

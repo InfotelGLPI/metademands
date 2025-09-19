@@ -398,7 +398,7 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `display_buttonlist_servicecatalog` tinyint               DEFAULT 1,
     `title_servicecatalog`              varchar(255)          DEFAULT NULL,
     `comment_servicecatalog`            text                  DEFAULT NULL,
-    `fa_servicecatalog`                 varchar(100) NOT NULL DEFAULT 'fas fa-share-alt',
+    `fa_servicecatalog`                 varchar(100) NOT NULL DEFAULT 'ti ti-share',
     `languageTech`                      varchar(100)          DEFAULT NULL,
     `use_draft`                         tinyint               DEFAULT 0,
     `show_form_changes`                 tinyint      NOT NULL DEFAULT '0',

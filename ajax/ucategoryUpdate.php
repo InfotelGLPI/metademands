@@ -27,15 +27,17 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
+
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "ucategoryUpdate.php")) {
-   include('../../../inc/includes.php');
    header("Content-Type: text/html; charset=UTF-8");
    Html::header_nocache();
 }
 
 Session::checkLoginUser();
-$fieldUser = new PluginMetademandsField();
+$fieldUser = new Field();
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
@@ -44,7 +46,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                                        'item'         => UserCategory::getType()])) {
 
           foreach ($fields as $f) {
-              $fieldparameter = new PluginMetademandsFieldParameter();
+              $fieldparameter = new FieldParameter();
               if ($fieldparameter->getFromDBByCrit(
                   ['plugin_metademands_fields_id' => $f['id'],
                       'link_to_user' => $_POST['id_fielduser']]

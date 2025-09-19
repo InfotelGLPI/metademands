@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Metademands\Field;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -39,7 +40,7 @@ if (!isset($_POST['step'])) {
 
 switch ($_POST['step']) {
     case 'order':
-        $fields = new PluginMetademandsField();
+        $fields = new Field();
 
         $params['rank'] = $_POST['rank'];
         $params['id'] = $_POST['fields_id'];
@@ -66,7 +67,7 @@ switch ($_POST['step']) {
                 }
         ");
 
-            $randItem = PluginMetademandsField::dropdownFieldItems(
+            $randItem = Field::dropdownFieldItems(
                 $_POST["type"],
                 ['value' => $_POST['item'], 'rand' => $_POST["rand"]]
             );
@@ -87,9 +88,9 @@ switch ($_POST['step']) {
         }
         break;
     case 'listfieldbytype':
-        $fields = new PluginMetademandsField();
+        $fields = new Field();
         $crit = ["type" => $_POST['value']];
-        $rand = PluginMetademandsField::dropdown(['name' => "existing_field_id", "condition" => $crit]);
+        $rand = Field::dropdown(['name' => "existing_field_id", "condition" => $crit]);
         $params = ['fields_id' => '__VALUE__'];
         Ajax::updateItemOnSelectEvent(
             'dropdown_existing_field_id' . $rand,
@@ -102,5 +103,3 @@ switch ($_POST['step']) {
     default:
         break;
 }
-
-Html::ajaxFooter();

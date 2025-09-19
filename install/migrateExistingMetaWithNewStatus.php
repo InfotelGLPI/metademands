@@ -31,6 +31,8 @@
  * @return bool for success (will die for most error)
  * */
 
+use GlpiPlugin\Metademands\Ticket_Metademand;
+
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
@@ -70,7 +72,7 @@ function migrateAllExistingMetademandsWithNewStatus() {
    global $DB;
    $dbu = new DbUtils();
 
-   $ticket_metademand = new PluginMetademandsTicket_Metademand();
+   $ticket_metademand = new Ticket_Metademand();
 
    //Migrate existing metademands status for mini-dashboards
    migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand);
@@ -81,10 +83,10 @@ function migrateAllExistingMetademandsWithNewStatus() {
 function migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand) {
    $get_running_parents_tickets_meta = "SELECT `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` as 'ticket_id' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "', '" . Ticket::SOLVED . "') 
+                            `glpi_tickets`.`status` NOT IN ('" . \Ticket::CLOSED . "', '" . \Ticket::SOLVED . "')
                                  AND `glpi_tickets`.`is_deleted` = 0 ";
 
-   $results_running_parents = $DB->query($get_running_parents_tickets_meta);
+   $results_running_parents = $DB->doQuery($get_running_parents_tickets_meta);
 
    $running_parents_meta = [];
    while ($row = $DB->fetchArray($results_running_parents)) {
@@ -100,25 +102,25 @@ function migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand
 
          $get_running_sons_ticket = getSonsQuery($running_parent);
 
-         $results_sons_ticket = $DB->query($get_running_sons_ticket);
+         $results_sons_ticket = $DB->doQuery($get_running_sons_ticket);
 
          $counterClosed = 0;
 
          if ($results_sons_ticket->num_rows != 0) {
 
             while ($row = $DB->fetchArray($results_sons_ticket)) {
-               if ($row['status'] == Ticket::CLOSED || $row['status'] == Ticket::SOLVED) {
+               if ($row['status'] == \Ticket::CLOSED || $row['status'] == \Ticket::SOLVED) {
                   $counterClosed++;
                }
             }
 
             if ($counterClosed == $results_sons_ticket->num_rows) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED]);
             } elseif ($counterClosed < $results_sons_ticket->num_rows) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]);
             }
          } else {
-            $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+            $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]);
          }
       }
    }
@@ -127,10 +129,10 @@ function migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand
 function migrateAllClosedMetademands($DB, $dbu, $ticket_metademand) {
    $get_closed_meta = "SELECT `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` as 'ticket_id' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`status` IN ('" . Ticket::CLOSED . "', '" . Ticket::SOLVED . "') 
+                            `glpi_tickets`.`status` IN ('" . \Ticket::CLOSED . "', '" . \Ticket::SOLVED . "')
                                  AND `glpi_tickets`.`is_deleted` = 0 ";
 
-   $results_closed_parents = $DB->query($get_closed_meta);
+   $results_closed_parents = $DB->doQuery($get_closed_meta);
 
    $closed_parents_meta = [];
    while ($row = $DB->fetchArray($results_closed_parents)) {
@@ -146,27 +148,27 @@ function migrateAllClosedMetademands($DB, $dbu, $ticket_metademand) {
 
          $get_closed_sons_ticket = getSonsQuery($closed_parent);
 
-         $results_sons_ticket = $DB->query($get_closed_sons_ticket);
+         $results_sons_ticket = $DB->doQuery($get_closed_sons_ticket);
 
          $counterClosed = 0;
 
          if ($results_sons_ticket->num_rows != 0) {
 
             while ($row = $DB->fetchArray($results_sons_ticket)) {
-               if ($row['status'] == Ticket::CLOSED || $row['status'] == Ticket::SOLVED) {
+               if ($row['status'] == \Ticket::CLOSED || $row['status'] == \Ticket::SOLVED) {
                   $counterClosed++;
                }
             }
 
 
             if ($counterClosed == $results_sons_ticket->num_rows) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED]);
             } elseif ($counterClosed < $results_sons_ticket->num_rows) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]);
             }
 
          } else {
-            $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::CLOSED]);
+            $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::CLOSED]);
          }
       }
    }
@@ -174,7 +176,7 @@ function migrateAllClosedMetademands($DB, $dbu, $ticket_metademand) {
 
 function getSonsQuery($parent_id) {
    return " SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id` as 'sons_ticket', `glpi_tickets`.`status` FROM `glpi_plugin_metademands_tickets_tasks`
-                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` = 
+                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =
                         `glpi_plugin_metademands_tickets_tasks`.`tickets_id` WHERE `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = " . $parent_id;
 }
 

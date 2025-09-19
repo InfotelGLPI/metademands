@@ -27,8 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
+use GlpiPlugin\Metademands\Draft;
+use GlpiPlugin\Metademands\Draft_Value;
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
@@ -37,9 +41,9 @@ Session::checkLoginUser();
 
 $KO = false;
 $step = $_POST['step'] + 1;
-$metademands = new PluginMetademandsMetademand();
-$wizard = new PluginMetademandsWizard();
-$fields = new PluginMetademandsField();
+$metademands = new Metademand();
+$wizard = new Wizard();
+$fields = new Field();
 
 if (isset($_POST['save_draft'])) {
     $nblines = 0;
@@ -91,7 +95,7 @@ if (isset($_POST['save_draft'])) {
                 }
             }
 
-            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+            $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
 
             if (!isset($_POST['field']) || !is_array($_POST['field'])) {
                 $_POST['field'] = [];
@@ -170,7 +174,7 @@ if (isset($_POST['save_draft'])) {
 //                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
             }
 
-            $drafts = new PluginMetademandsDraft();
+            $drafts = new Draft();
 
             if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
                 Session::addMessageAfterRedirect(__('Draft name is required', 'metademands'), false, ERROR);
@@ -178,7 +182,7 @@ if (isset($_POST['save_draft'])) {
                 break;
             }
             $inputs = [];
-            $inputs['name'] = Toolbox::addslashes_deep($_POST['draft_name']);
+            $inputs['name'] = $_POST['draft_name'];
             //               $inputs['name'] = 'd1';
             $inputs['users_id'] = Session::getLoginUserID();
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
@@ -187,12 +191,12 @@ if (isset($_POST['save_draft'])) {
             if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
                 $draft_id = $_POST['plugin_metademands_drafts_id'];
 
-                $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+                $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
                 if (count($metademands_data)) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;
                         foreach ($data as $form_metademands_id => $line) {
-                            PluginMetademandsDraft_Value::updateDraftValues(
+                            Draft_Value::updateDraftValues(
                                 $_POST['metademands_id'],
                                 $line['form'],
                                 $_POST['field'],
@@ -206,12 +210,12 @@ if (isset($_POST['save_draft'])) {
             } else {
                 $draft_id = $drafts->add($inputs);
 
-                $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
+                $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
                 if (count($metademands_data)) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;
                         foreach ($data as $form_metademands_id => $line) {
-                            PluginMetademandsDraft_Value::setDraftValues(
+                            Draft_Value::setDraftValues(
                                 $_POST['metademands_id'],
                                 $line['form'],
                                 $_POST['field'],

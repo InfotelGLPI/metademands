@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ---------------------------------------------------------------------
  * GLPI - Gestionnaire Libre de Parc Informatique
@@ -30,16 +31,14 @@
  * ---------------------------------------------------------------------
  */
 
-
-include('../../../inc/includes.php');
+use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Servicecatalog\Main;
 
 Session::checkLoginUser();
 
-use Glpi\Application\View\TemplateRenderer;
-
-
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
-    $meta = new PluginMetademandsMetademand();
+    $meta = new Metademand();
     $option['empty_value'] = true;
     $listMetademand = $meta->listMetademandsForDraft($option);
 
@@ -54,7 +53,7 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
 
     } else {
 
-        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
+        Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
         $new_draft = __("New draft", 'metademands');
         $draft_name = __('Draft name', 'metademands');
@@ -73,7 +72,7 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
                 'draft_name' => $draft_name,
                 'metademand_name' => $metademand_name,
                 'confirmation' => $confirmation,
-                '_glpi_csrf_token' => Session::getNewCSRFToken()
+                '_glpi_csrf_token' => Session::getNewCSRFToken(),
             ]
         );
 
@@ -84,7 +83,3 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
         }
     }
 }
-
-
-
-
