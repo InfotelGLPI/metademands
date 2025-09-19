@@ -457,7 +457,7 @@ class FieldParameter extends CommonDBChild
             }
 
             //            //TODO ELCH into releases
-            //            if ($objectclass == 'PluginReleasesRelease') {
+            //            if ($objectclass == 'Release') {
             //                $allowed_fields = $tt->getAllowedFields(true, true);
             //                $allowed_fields[9] = 'date_production';
             //                $allowed_fields[18] = 'date_preproduction';
@@ -590,7 +590,7 @@ class FieldParameter extends CommonDBChild
             }
 
             //            TODO ELCH into releases
-            //            if ($objectclass == 'PluginReleasesRelease') {
+            //            if ($objectclass == 'Release') {
             //                if ($params['type'] == "date"
             //                    || $params["type"] == "datetime") {
             //                    $granted_fields = [

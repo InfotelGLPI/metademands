@@ -8541,7 +8541,7 @@ HTML;
 
         echo "<div align='center'><table class='tab_cadre'>";
         if ($add) {
-            echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Choose a template') . " - " . self::getTypeName(
+            echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Choose a template', 'metademands') . " - " . self::getTypeName(
                 2
             ) . "</th>";
         } else {
@@ -8596,7 +8596,7 @@ HTML;
         if (!$add) {
             echo "<tr>";
             echo "<td colspan='" . (2 + $colsup) . "' class='tab_bg_2 center'>";
-            echo "<b><a href=\"$target?withtemplate=1\">" . __('Add a template...') . "</a></b>";
+            echo "<b><a href=\"$target?withtemplate=1\">" . __('Add a template') . "</a></b>";
             echo "</td>";
             echo "</tr>";
         }
