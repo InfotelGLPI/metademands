@@ -523,18 +523,14 @@ class FieldCustomvalue extends CommonDBChild
         Html::showToolTip($warning);
         Html::closeForm();
         echo "</div>";
-        echo Html::scriptBlock(
-            <<<JAVASCRIPT
-         function formToggle(ID) {
+        echo Html::scriptBlock("function formToggle(ID) {
                 var element = document.getElementById(ID);
-                if (element.style.display === "none") {
-                    element.style.display = "block";
+                if (element.style.display === 'none') {
+                    element.style.display = 'block';
                 } else {
-                    element.style.display = "none";
+                    element.style.display = 'none';
                 }
-            };
-JAVASCRIPT
-        );
+            };");
         echo "</td>";
         echo "</tr>";
     }

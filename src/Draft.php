@@ -677,13 +677,12 @@ HTML;
 
         $reloadonclose = $param['reloadonclose'] ? "true" : "false";
         $autoopen = $param['autoopen'] ? "true" : "false";
-        $js = <<<JAVASCRIPT
-      $(function() {
+        $js = "$(function() {
          myModalEl{$rand} = document.getElementById('{$domid}');
          myModal{$rand}   = new bootstrap.Modal(myModalEl{$rand});
 
          // move modal to body
-         $(myModalEl{$rand}).appendTo($("body"));
+         $(myModalEl{$rand}).appendTo($('body'));
 
 
          myModalEl{$rand}.addEventListener('hide.bs.modal', function () {
@@ -727,8 +726,7 @@ HTML;
             // reajust height to content
             myModal{$rand}.handleUpdate()
          };
-      });
-JAVASCRIPT;
+      });";
 
         $out = "<script type='text/javascript'>$js</script>" . trim($html);
 

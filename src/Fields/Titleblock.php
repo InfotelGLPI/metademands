@@ -159,19 +159,14 @@ class Titleblock extends CommonDBTM
         );
 
         echo Html::script('js/modules/Form/WebIconSelector.js');
-        echo Html::scriptBlock(
-            <<<JAVASCRIPT
-         $(
+        echo Html::scriptBlock("$(
             function() {
             import('/js/modules/Form/WebIconSelector.js').then((m) => {
                var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
                });
             }
-         );
-        JAVASCRIPT
-        );
-
+         );");
         echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
         echo "</td>";
         echo "</tr>";

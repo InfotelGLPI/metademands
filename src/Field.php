@@ -3439,18 +3439,14 @@ border-style: none !important; border-color: initial !important;border-image: in
                 );
 
                 $return .= Html::script('js/modules/Form/WebIconSelector.js');
-                $return .= Html::scriptBlock(
-                    <<<JAVASCRIPT
-         $(
+                $return .= Html::scriptBlock("$(
             function() {
             import('/js/modules/Form/WebIconSelector.js').then((m) => {
                var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
                });
             }
-         );
-        JAVASCRIPT
-                );
+         );");
 
                 echo $return;
                 echo "&nbsp;"
