@@ -86,5 +86,30 @@ if (isset($_POST["add"])) {
 
     $meta->display(['id' => $_GET["id"], 'withtemplate' => $_GET["withtemplate"]]);
 
+    echo Html::scriptBlock("
+    function cacherSubblocs() {
+        \$('[bloc-id^=\"subbloc\"]').each(function() {
+            var subblocValue = \$(this).attr('bloc-id');
+            var number = subblocValue.replace('subbloc', '');
+            var blocHideIdValue = 'bloc' + number;
+            \$('[bloc-hideid=\"' + blocHideIdValue + '\"]').parent().hide();
+        });
+    }
+
+    \$(document).ready(function() {
+        cacherSubblocs();
+
+        const observer = new MutationObserver(function(mutationsList) {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    cacherSubblocs();
+                }
+            }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+");
+
     Html::footer();
 }
