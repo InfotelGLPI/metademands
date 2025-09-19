@@ -140,7 +140,6 @@ function plugin_metademands_install()
 
     //version 2.7.2
     if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "create_one_ticket", false)) {
-
         $sql    = "SHOW COLUMNS FROM `glpi_plugin_metademands_metademands`";
         $result = $DB->doQuery($sql);
         while ($data = $DB->fetchArray($result)) {
@@ -421,9 +420,7 @@ function plugin_metademands_install()
         $metademand_fieldparams = new FieldParameter();
 
         if (count($fields) > 0) {
-
             foreach ($fields as $k => $field) {
-
                 if (!$metademand_fieldparams->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id']])) {
                     $input = [
                         'plugin_metademands_fields_id' => $field['id'],
@@ -510,7 +507,6 @@ function plugin_metademands_install()
                     }
 
                     foreach ($inputs as $key => $input) {
-
                         if (!empty($input['name'])) {
                             $newid = $metademand_fieldcustom->add($input);
                         }
@@ -563,7 +559,6 @@ function plugin_metademands_install()
 
         if (count($old_new_custom_values) > 0) {
             foreach ($old_new_custom_values as $fieldid => $oldandnews) {
-
                 $metademand_formvalues = new Form_Value();
                 $fieldformvalues = $metademand_formvalues->find(
                     ["plugin_metademands_fields_id" => $fieldid]
@@ -707,7 +702,6 @@ function plugin_metademands_install()
                              FROM `glpi_profilerights`
                              WHERE `name` LIKE '%plugin_metademands%'
                              AND `rights` > '10'") as $prof) {
-
             $rights = ['plugin_metademands_validatemeta' => 1];
             Profile::addDefaultProfileInfos($prof['profiles_id'], $rights);
         }
@@ -741,18 +735,23 @@ function plugin_metademands_install()
     //Displayprefs
     $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
     foreach ($prefs as $num => $rank) {
-        if (
-            !countElementsInTable(
-                "glpi_displaypreferences",
-                ['itemtype' => Draft::class,
+        if (!countElementsInTable(
+            "glpi_displaypreferences",
+            ['itemtype' => Draft::class,
                     'num' => $num,
                     'users_id' => 0,
+                    'interface' => 'central',
                 ]
-            )
+        )
         ) {
-            $DB->doQuery("INSERT INTO glpi_displaypreferences
-                                  (`itemtype`, `num`, `rank`, `users_id`, `interface`)
-                           VALUES ('GlpiPlugin\Metademands\Draft','$num','$rank','0', 'central');");
+            $DB->insert(
+                "glpi_displaypreferences",
+                ['itemtype' => 'GlpiPlugin\\Metademands\\Draft',
+                                      'num' => $num,
+                                      'rank' => $rank,
+                                      'users_id' => 0,
+                'interface' => 'central']
+            );
         }
     }
     Profile::initProfile();
@@ -778,11 +777,12 @@ function plugin_metademands_uninstall()
     global $DB;
 
     $options = ['itemtype' => Interticketfollowup::class,
-        'event'    => 'add_interticketfollowup',
-        'FIELDS'   => 'id'];
+        'event'    => 'add_interticketfollowup'];
 
     $notif = new Notification();
-    foreach ($DB->request('glpi_notifications', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notifications',
+        'WHERE' => $options]) as $data) {
         $notif->delete($data);
     }
 
@@ -791,47 +791,57 @@ function plugin_metademands_uninstall()
     $translation    = new NotificationTemplateTranslation();
     $notif_template = new Notification_NotificationTemplate();
 
-    $options        = ['itemtype' => Interticketfollowup::class,
-        'FIELDS'   => 'id'];
+    $options        = ['itemtype' => Interticketfollowup::class];
 
-    foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
-        $options_template = ['notificationtemplates_id' => $data['id'],
-            'FIELDS'                   => 'id'];
-        foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notificationtemplates',
+        'WHERE' => $options]) as $data) {
+        $options_template = [
+            'notificationtemplates_id' => $data['id']
+        ];
+
+        foreach ($DB->request([
+            'FROM' => 'glpi_notificationtemplatetranslations',
+            'WHERE' => $options_template]) as $data_template) {
             $translation->delete($data_template);
         }
         $template->delete($data);
 
-        foreach ($DB->request('glpi_notifications_notificationtemplates', $options_template) as $data_template) {
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications_notificationtemplates',
+            'WHERE' => $options_template]) as $data_template) {
             $notif_template->delete($data_template);
         }
     }
     //for step forms
 
     $options = ['itemtype' => Stepform::class,
-        'event'    => 'new_step_form',
-        'FIELDS'   => 'id'];
+        'event'    => 'new_step_form'];
 
     $notif = new Notification();
-    foreach ($DB->request('glpi_notifications', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notifications',
+        'WHERE' => $options]) as $data) {
         $notif->delete($data);
     }
 
     $options = ['itemtype' => Stepform::class,
-        'event'    => 'update_step_form',
-        'FIELDS'   => 'id'];
+        'event'    => 'update_step_form'];
 
     $notif = new Notification();
-    foreach ($DB->request('glpi_notifications', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notifications',
+        'WHERE' => $options]) as $data) {
         $notif->delete($data);
     }
 
     $options = ['itemtype' => Stepform::class,
-        'event'    => 'delete_step_form',
-        'FIELDS'   => 'id'];
+        'event'    => 'delete_step_form'];
 
     $notif = new Notification();
-    foreach ($DB->request('glpi_notifications', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notifications',
+        'WHERE' => $options]) as $data) {
         $notif->delete($data);
     }
 
@@ -839,18 +849,25 @@ function plugin_metademands_uninstall()
     $template       = new NotificationTemplate();
     $translation    = new NotificationTemplateTranslation();
     $notif_template = new Notification_NotificationTemplate();
-    $options        = ['itemtype' => Stepform::class,
-        'FIELDS'   => 'id'];
+    $options        = ['itemtype' => Stepform::class];
 
-    foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
-        $options_template = ['notificationtemplates_id' => $data['id'],
-            'FIELDS'                   => 'id'];
-        foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notificationtemplates',
+        'WHERE' => $options]) as $data) {
+        $options_template = [
+            'notificationtemplates_id' => $data['id']
+        ];
+
+        foreach ($DB->request([
+            'FROM' => 'glpi_notificationtemplatetranslations',
+            'WHERE' => $options_template]) as $data_template) {
             $translation->delete($data_template);
         }
         $template->delete($data);
 
-        foreach ($DB->request('glpi_notifications_notificationtemplates', $options_template) as $data_template) {
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications_notificationtemplates',
+            'WHERE' => $options_template]) as $data_template) {
             $notif_template->delete($data_template);
         }
     }
@@ -901,6 +918,29 @@ function plugin_metademands_uninstall()
         "glpi_plugin_metademands_freetablefields"];
     foreach ($tables as $table) {
         $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
+    }
+
+
+    $itemtypes = ['Alert',
+        'DisplayPreference',
+        'Document_Item',
+        'ImpactItem',
+        'Item_Ticket',
+        'Link_Itemtype',
+        'Notepad',
+        'SavedSearch',
+        'DropdownTranslation',
+        'NotificationTemplate',
+        'Notification'];
+    foreach ($itemtypes as $itemtype) {
+        $item = new $itemtype();
+        $item->deleteByCriteria(['itemtype' => Metademand::class]);
+
+        $item = new $itemtype();
+        $item->deleteByCriteria(['itemtype' => Draft::class]);
+
+        $item = new $itemtype();
+        $item->deleteByCriteria(['itemtype' => Interticketfollowup::class]);
     }
 
     Profile::removeRightsFromSession();
@@ -1077,7 +1117,6 @@ function plugin_metademands_getAddSearchOptions($itemtype)
     $sopt = [];
     if ($itemtype == "Ticket") {
         if (Session::haveRight("plugin_metademands", READ)) {
-
             $sopt[9499]['table']         = 'glpi_users';
             $sopt[9499]['field']         = 'name';
             $sopt[9499]['linkfield']     = 'users_id';
@@ -1267,7 +1306,6 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
           AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
           LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
             break;
-
     }
     return "";
 }
@@ -1405,14 +1443,11 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                             $result .= "\n";
                         }
                         $result .= getUserName($data["Ticket_9504"][$i]["name"], 0, true);
-
-
                     }
                 }
             }
             return $result;
             break;
-
     }
 
     return "";
@@ -1426,64 +1461,88 @@ function install_notifications_metademands()
     $migration = new Migration(1.0);
 
     // Notification
+    $options_notif        = ['itemtype' => Interticketfollowup::class,
+        'name' => 'New inter ticket Followup'];
     // Request
-    $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New inter ticket Followup','GlpiPlugin\\Metademands\\Interticketfollowup', NOW());";
-    $DB->doQuery($query_id) or die($DB->error());
+    $DB->insert(
+        "glpi_notificationtemplates",
+        $options_notif
+    );
 
-    $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='GlpiPlugin\\Metademands\\Interticketfollowup' AND `name` = 'New inter ticket Followup'";
-    $result = $DB->doQuery($query_id) or die($DB->error());
-    $templates_id = $DB->result($result, 0, 'id');
+    foreach ($DB->request([
+        'FROM' => 'glpi_notificationtemplates',
+        'WHERE' => $options_notif]) as $data) {
+        $templates_id = $data['id'];
 
-    $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
-VALUES('" . $templates_id . "',
-'',
-'##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
-##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate##
-##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
-##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors##
-##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups##
-##IFticket.assigntousers####lang.ticket.assigntousers## : ##ticket.assigntousers## ##ENDIFticket.assigntousers##
-<!-- Suivis
-##ticket.action## -->
-##FOREACH LAST 1 followups_intern##
-##lang.followup_intern.author## : ##followup_intern.author## - ##followup_intern.date####followup_intern.description##
-##ENDFOREACHfollowups_intern##
-##lang.ticket.numberoffollowups## : ##ticket.numberoffollowups##
-##lang.ticket.description##
-##ticket.description##
-##lang.ticket.category## :
-##ticket.category##
-##lang.ticket.urgency## :
-##ticket.urgency##
-##lang.ticket.location## :
-##ticket.location####FOREACHitems##
-##lang.ticket.item.name## :##ENDFOREACHitems####FOREACHitems##
-##ticket.item.name####ENDFOREACHitems####FOREACHdocuments##
-Documents :##ENDFOREACHdocuments####FOREACHdocuments##
-##document.filename####ENDFOREACHdocuments##
-Ticket ###ticket.id##
-','');";
-    $DB->doQuery($query);
+        if ($templates_id) {
+            $DB->insert(
+                "glpi_notificationtemplatetranslations",
+                [
+                    'notificationtemplates_id' => $templates_id,
+                    'subject' => '##ticket.action##Ticket : ##ticket.title##',
+                    'content_text' => '##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
+    ##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate##
+    ##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
+    ##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors##
+    ##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups##
+    ##IFticket.assigntousers####lang.ticket.assigntousers## : ##ticket.assigntousers## ##ENDIFticket.assigntousers##
+    <!-- Suivis
+    ##ticket.action## -->
+    ##FOREACH LAST 1 followups_intern##
+    ##lang.followup_intern.author## : ##followup_intern.author## - ##followup_intern.date####followup_intern.description##
+    ##ENDFOREACHfollowups_intern##
+    ##lang.ticket.numberoffollowups## : ##ticket.numberoffollowups##
+    ##lang.ticket.description##
+    ##ticket.description##
+    ##lang.ticket.category## :
+    ##ticket.category##
+    ##lang.ticket.urgency## :
+    ##ticket.urgency##
+    ##lang.ticket.location## :
+    ##ticket.location####FOREACHitems##
+    ##lang.ticket.item.name## :##ENDFOREACHitems####FOREACHitems##
+    ##ticket.item.name####ENDFOREACHitems####FOREACHdocuments##
+    Documents :##ENDFOREACHdocuments####FOREACHdocuments##
+    ##document.filename####ENDFOREACHdocuments##
+    Ticket ###ticket.id##',
+                    'content_html' => ''
+                ]
+            );
 
-    $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
-              VALUES ('New inter ticket Followup', 0, 'GlpiPlugin\\Metademands\\Interticketfollowup', 'add_interticketfollowup', 1);";
-    $DB->doQuery($query);
+            $DB->insert(
+                "glpi_notifications",
+                [
+                    'name' => 'New inter ticket Followup',
+                    'entities_id' => 0,
+                    'itemtype' => Interticketfollowup::class,
+                    'event' => 'add_interticketfollowup',
+                    'is_recursive' => 1
+                ]
+            );
 
-    //retrieve notification id
-    $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'New inter ticket Followup' AND `itemtype` = 'GlpiPlugin\\Metademands\\Interticketfollowup' AND `event` = 'add_interticketfollowup'";
-    $result = $DB->doQuery($query_id) or die($DB->error());
-    $notification = $DB->result($result, 0, 'id');
+            $options_notif        = ['itemtype' => Interticketfollowup::class,
+                'name' => 'New inter ticket Followup',
+            'event' => 'add_interticketfollowup'];
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
-               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
-    $DB->doQuery($query);
-
-
+            foreach ($DB->request([
+                'FROM' => 'glpi_notifications',
+                'WHERE' => $options_notif]) as $data_notif) {
+                $notification = $data_notif['id'];
+                if ($notification) {
+                    $DB->insert(
+                        "glpi_notifications_notificationtemplates",
+                        [
+                            'notifications_id' => $notification,
+                            'mode' => 'mailing',
+                            'notificationtemplates_id' => $templates_id
+                        ]
+                    );
+                }
+            }
+        }
+    }
     $migration->executeMigration();
     return true;
-
-
 }
 
 function install_notifications_forms_metademands()
@@ -1495,83 +1554,140 @@ function install_notifications_forms_metademands()
 
     // Notification
     // Request
-    $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New form completed','GlpiPlugin\\Metademands\\Stepform', NOW());";
-    $DB->doQuery($query_id) or die($DB->error());
+    $options_notif        = ['itemtype' => Stepform::class,
+        'name' => 'New form completed'];
+    $DB->insert(
+        "glpi_notificationtemplates",
+        $options_notif
+    );
 
-    $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='GlpiPlugin\\Metademands\\Stepform' AND `name` = 'New form completed'";
-    $result = $DB->doQuery($query_id) or die($DB->error());
-    $templates_id = $DB->result($result, 0, 'id');
+    foreach ($DB->request([
+        'FROM' => 'glpi_notificationtemplates',
+        'WHERE' => $options_notif]) as $data) {
+        $templates_id = $data['id'];
 
-    $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
-VALUES('" . $templates_id . "',
-'##pluginmetademandsstepform.action##',
-'##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+        if ($templates_id) {
+
+            $DB->insert(
+                "glpi_notificationtemplatetranslations",
+                [
+                    'notificationtemplates_id' => $templates_id,
+                    'subject' => '##pluginmetademandsstepform.action##',
+                    'content_text' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
 ##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
-##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##
-','##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##',
+                    'content_html' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
 ##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
-##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##');";
-    $DB->doQuery($query);
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##'
+                ]
+            );
 
-    $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
-              VALUES ('New form completed', 0, 'GlpiPlugin\\Metademands\\Stepform', 'new_step_form', 1);";
-    $DB->doQuery($query);
+            $DB->insert(
+                "glpi_notifications",
+                [
+                    'name' => 'New form completed',
+                    'entities_id' => 0,
+                    'itemtype' => Stepform::class,
+                    'event' => 'new_step_form',
+                    'is_recursive' => 1
+                ]
+            );
 
-    //retrieve notification id
-    $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'New form completed' AND `itemtype` = 'GlpiPlugin\\Metademands\\Stepform' AND `event` = 'new_step_form'";
-    $result = $DB->doQuery($query_id) or die($DB->error());
-    $notification = $DB->result($result, 0, 'id');
+            $options_notif        = ['itemtype' => Stepform::class,
+                'name' => 'New form completed',
+                'event' => 'new_step_form'];
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
-               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
-    $DB->doQuery($query);
+            foreach ($DB->request([
+                'FROM' => 'glpi_notifications',
+                'WHERE' => $options_notif]) as $data_notif) {
+                $notification = $data_notif['id'];
+                if ($notification) {
+                    $DB->insert(
+                        "glpi_notifications_notificationtemplates",
+                        [
+                            'notifications_id' => $notification,
+                            'mode' => 'mailing',
+                            'notificationtemplates_id' => $templates_id
+                        ]
+                    );
+                }
+            }
+        }
+    }
 
     // Update
-    $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('Form completed','GlpiPlugin\\Metademands\\Stepform', NOW());";
-    $DB->doQuery($query_id) or die($DB->error());
+    $options_notif        = ['itemtype' => Stepform::class,
+        'name' => 'Form completed'];
+    // Request
+    $DB->insert(
+        "glpi_notificationtemplates",
+        $options_notif
+    );
 
-    $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='GlpiPlugin\\Metademands\\Stepform' AND `name` = 'Form completed'";
-    $result = $DB->doQuery($query_id) or die($DB->error());
-    $templates_id = $DB->result($result, 0, 'id');
+    foreach ($DB->request([
+        'FROM' => 'glpi_notificationtemplates',
+        'WHERE' => $options_notif]) as $data) {
+        $templates_id = $data['id'];
 
-    $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
-VALUES('" . $templates_id . "',
-'##pluginmetademandsstepform.action##',
-'##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+        if ($templates_id) {
+
+            $DB->insert(
+                "glpi_notificationtemplatetranslations",
+                [
+                    'notificationtemplates_id' => $templates_id,
+                    'subject' => '##pluginmetademandsstepform.action##',
+                    'content_text' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
 ##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
-##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##
-','##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##',
+                    'content_html' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
 ##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
-##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##');";
-    $DB->doQuery($query);
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##'
+                ]
+            );
 
-    $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
-              VALUES ('Form completed', 0, 'GlpiPlugin\\Metademands\\Stepform', 'update_step_form', 1);";
-    $DB->doQuery($query);
+            $DB->insert(
+                "glpi_notifications",
+                [
+                    'name' => 'Form completed',
+                    'entities_id' => 0,
+                    'itemtype' => Stepform::class,
+                    'event' => 'update_step_form',
+                    'is_recursive' => 1
+                ]
+            );
 
-    //retrieve notification id
-    $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'Form completed' AND `itemtype` = 'GlpiPlugin\\Metademands\\Stepform' AND `event` = 'update_step_form'";
-    $result = $DB->doQuery($query_id) or die($DB->error());
-    $notification = $DB->result($result, 0, 'id');
+            $options_notif        = ['itemtype' => Stepform::class,
+                'name' => 'New form completed',
+                'event' => 'update_step_form'];
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
-               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
-    $DB->doQuery($query);
+            foreach ($DB->request([
+                'FROM' => 'glpi_notifications',
+                'WHERE' => $options_notif]) as $data_notif) {
+                $notification = $data_notif['id'];
+                if ($notification) {
+                    $DB->insert(
+                        "glpi_notifications_notificationtemplates",
+                        [
+                            'notifications_id' => $notification,
+                            'mode' => 'mailing',
+                            'notificationtemplates_id' => $templates_id
+                        ]
+                    );
+                }
+            }
+        }
+    }
 
     $migration->executeMigration();
     return true;
-
-
 }
 
 function plugin_metademands_hook_dashboard_cards($cards)
@@ -1678,5 +1794,4 @@ function plugin_metademands_addDefaultWhere($itemtype)
             $currentUser = Session::getLoginUserID();
             return "users_id = $currentUser";
     }
-
 }

@@ -101,7 +101,7 @@ class Basket extends CommonDBTM
 
         $criteria = [
             'FROM' => [Basketobject::getTable()],
-            'FIELDS' => [Basketobject::getTable() => '*'],
+            'SELECT' => [Basketobject::getTable() => '*'],
             'WHERE' => [],
             'ORDER' => ['name', 'description'],
         ];

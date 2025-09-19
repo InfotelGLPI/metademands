@@ -3092,7 +3092,7 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
 
         $query = [
-            'FIELDS' => ['glpi_groups' => ['id']],
+            'SELECT' => ['glpi_groups'.'id'],
             'FROM' => 'glpi_groups_users',
             'INNER JOIN' => [
                 'glpi_groups' => [
@@ -4548,7 +4548,7 @@ border-style: none !important; border-color: initial !important;border-image: in
     final public function getDistinctUserCriteria()
     {
         return [
-            'FIELDS' => [
+            'SELECT' => [
                 User::getTable() . '.id AS users_id',
                 User::getTable() . '.language AS language',
             ],

@@ -262,8 +262,8 @@ class NotificationTargetInterticketfollowup extends NotificationTarget
                 ]
             ]] + $this->getDistinctUserCriteria() + $this->getProfileJoinCriteria();
         $criteria['FROM'] = $userlinktable;
-        $criteria['FIELDS'] = array_merge(
-            $criteria['FIELDS'],
+        $criteria['SELECT'] = array_merge(
+            $criteria['SELECT'],
             [
                 "$userlinktable.use_notification AS notif",
                 "$userlinktable.alternative_email AS altemail"
