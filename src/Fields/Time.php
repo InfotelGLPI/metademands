@@ -192,9 +192,13 @@ JS;
     }
 
 
-    public static function showFieldCustomValues($params) {}
+    public static function showFieldCustomValues($params)
+    {
+    }
 
-    public static function showFieldParameters($params) {}
+    public static function showFieldParameters($params)
+    {
+    }
 
     /**
      * @param array $value
@@ -215,11 +219,17 @@ JS;
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    public static function fieldsMandatoryScript($data) {}
+    public static function fieldsMandatoryScript($data)
+    {
+    }
 
-    public static function fieldsHiddenScript($data) {}
+    public static function fieldsHiddenScript($data)
+    {
+    }
 
-    public static function blocksHiddenScript($data) {}
+    public static function blocksHiddenScript($data)
+    {
+    }
 
     public static function getFieldValue($field)
     {

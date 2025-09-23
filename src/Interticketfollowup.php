@@ -132,7 +132,6 @@ class Interticketfollowup extends CommonITILObject
      * @param $items_id
      *
      * @return array
-     * @throws GlpitestSQLError
      */
     public static function getTargets($items_id)
     {
@@ -181,7 +180,6 @@ class Interticketfollowup extends CommonITILObject
      * @param $item
      *
      * @return array
-     * @throws GlpitestSQLError
      */
     public static function getlistItems($item)
     {

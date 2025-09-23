@@ -369,7 +369,6 @@ class Stepform extends CommonDBTM
      * @param int        $withtemplate
      *
      * @return bool|true
-     * @throws GlpitestSQLError
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {

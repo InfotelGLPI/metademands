@@ -45,7 +45,7 @@ use GlpiPlugin\Metademands\Group;
 
 use Session;
 
-/** @implements LeafProviderInterface<MetademandForServiceCatalog> */
+/** @implements LeafProviderInterface<MetademandProvider> */
 final class MetademandProvider implements LeafProviderInterface
 {
 

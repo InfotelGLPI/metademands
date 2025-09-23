@@ -121,7 +121,6 @@ class Ticket extends CommonDBTM
      * @param Ticket $ticket
      *
      * @return Ticket
-     * @throws GlpitestSQLError
      */
     public static function post_update_ticket(\Ticket $ticket)
     {
@@ -240,7 +239,6 @@ class Ticket extends CommonDBTM
      * @param Ticket $ticket
      *
      * @return Ticket
-     * @throws GlpitestSQLError
      */
     public static function pre_update_ticket(\Ticket $ticket)
     {
@@ -278,7 +276,6 @@ class Ticket extends CommonDBTM
      * @param bool    $with_message
      *
      * @return bool
-     * @throws GlpitestSQLError
      */
     public static function checkSonTicketsStatus(\Ticket $ticket, $with_message = true)
     {
@@ -339,7 +336,6 @@ class Ticket extends CommonDBTM
      * @param bool  $recursive
      *
      * @return array
-     * @throws GlpitestSQLError
      */
     public static function getSonTickets($tickets_id, $metademands_id, $ticket_task_data = [], $recursive = false, $seesolved = false)
     {
@@ -493,7 +489,7 @@ class Ticket extends CommonDBTM
      * @param array $ticket_task_data
      *
      * @return array
-     * @throws GlpitestSQLError
+
      */
     public static function getAncestorTickets($tickets_id, $only_metademand = false, $ticket_task_data = [])
     {
@@ -651,7 +647,7 @@ class Ticket extends CommonDBTM
             echo "<td>" . __('Urgency');
             echo $tt->getMandatoryMark('urgency') . "</td>";
             echo "<td>";
-            Ticket::dropdownUrgency("urgency");
+            \Ticket::dropdownUrgency("urgency");
             echo "</td></tr>";
         }
 
@@ -684,7 +680,6 @@ class Ticket extends CommonDBTM
      * @param $ID
      *
      * @return bool
-     * @throws GlpitestSQLError
      */
     public static function isTicketSolved($ID)
     {

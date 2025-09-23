@@ -505,7 +505,6 @@ class Wizard extends CommonDBTM
         echo "<div id ='content'>";
 
         if ($maintenance_mode == 1 && !$parameters['preview']) {
-
             echo "<div class='alert alert-warning center'>";
             echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
             echo __('This form is in maintenance mode', 'metademands') . "<br>";
@@ -635,7 +634,6 @@ class Wizard extends CommonDBTM
                 }
                 echo __('What you want to do ?', 'metademands');
                 echo "</div></h3></div></div>";
-
             } elseif ($parameters['step'] == Metademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
@@ -667,9 +665,7 @@ class Wizard extends CommonDBTM
                 }
                 echo __('Form choice', 'metademands');
                 echo "</div></h3></div></div>";
-
             } elseif ($parameters['step'] > Metademand::STEP_LIST) {
-
                 if ($title == 1) {
                     self::showMetademandTitle($meta, $parameters);
                 }
@@ -782,7 +778,6 @@ class Wizard extends CommonDBTM
         } else {
             switch ($step) {
                 case Metademand::STEP_LIST:
-
                     if (isset($options['meta_type'])) {
                         $_SESSION['plugin_metademands']['type'] = $options['meta_type'];
                         self::listMetademands($options['meta_type']);
@@ -901,13 +896,11 @@ class Wizard extends CommonDBTM
                         if (Plugin::isPluginActive($plug) && is_array($new_cat)) {
                             $objectName = $new_cat['name'];
                             return $objectName;
-
                         }
                     }
                 }
                 break;
         }
-
     }
 
     public static function countMetademandTypes()
@@ -939,14 +932,12 @@ class Wizard extends CommonDBTM
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_cat = self::createPluginNewKindOfCategory($plug);
                 if (Plugin::isPluginActive($plug) && is_array($new_cat)) {
-
                     $objectCreate = $new_cat['type'];
 
                     $metademands_plugin = self::selectMetademands(false, "", $objectCreate);
                     if (count($metademands_plugin) > 0) {
                         $data[$objectCreate] = self::getMetademandTypeName($objectCreate);
                     }
-
                 }
             }
         }
@@ -1085,7 +1076,6 @@ class Wizard extends CommonDBTM
         $iterator = $DB->request($criteria);
 
         if (count($iterator) > 0) {
-
             echo "<div style='display:flex;'>";
             foreach ($iterator as $row) {
                 $meta = new Metademand();
@@ -1128,7 +1118,6 @@ class Wizard extends CommonDBTM
         if ($config['display_type'] == 1) {
             $metademands = self::selectMetademands(false, "", $type);
             if (count($metademands) > 1) {
-
                 echo "<div id='listmeta'>";
 
                 if ($config['see_top'] && ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE)) {
@@ -1148,7 +1137,6 @@ class Wizard extends CommonDBTM
                 foreach ($metademands as $id => $name) {
                     $meta = new Metademand();
                     if ($meta->getFromDB($id)) {
-
                         $icon = "ti-share";
                         $name_meta = '';
                         if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
@@ -1166,7 +1154,8 @@ class Wizard extends CommonDBTM
                             $comm = Metademand::displayField(
                                 $meta->getID(),
                                 'comment'
-                            ))) {
+                            )
+                        )) {
                             $comment_meta = $comm;
                         }
 
@@ -1302,7 +1291,6 @@ class Wizard extends CommonDBTM
             foreach ($metademands_data as $form_step => $data) {
                 if ($form_step == $step) {
                     foreach ($data as $form_metademands_id => $line) {
-
                         $fields = $line['form'];
                         foreach ($fields as $fid => $field) {
                             if (isset($parameters['defaultvalues'][$fid])) {
@@ -1782,7 +1770,6 @@ class Wizard extends CommonDBTM
         $subblocks_data = [];
         foreach ($allfields as $blockid => $blockfields) {
             foreach ($blockfields as $value) {
-
                 $fieldopt = new FieldOption();
                 if ($opts = $fieldopt->find(
                     [
@@ -1902,7 +1889,6 @@ class Wizard extends CommonDBTM
 
             if ($metademands->fields['step_by_step_mode'] == 1
                 && $displayBlocksAsTab == 1  && !$preview) {
-
                 foreach ($metaparams as $key => $val) {
                     if (isset($metaparams[$key])) {
                         $$key = $metaparams[$key];
@@ -2087,7 +2073,6 @@ class Wizard extends CommonDBTM
             }
 
             foreach ($allfields as $block => $line) {
-
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
                     if (!in_array($block, $all_hidden_blocks)) {
                         echo "<div class='tab-step'>";
@@ -2268,7 +2253,6 @@ class Wizard extends CommonDBTM
             }
 
             if ($draft_id != 0) {
-
                 echo "<div class='boutons_draft' >";
                 echo "<button form='' id='button_save_mydraft' class='submit btn btn-success btn-sm update_draft' onclick=\"updateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
                 echo __('Update the draft', 'metademands');
@@ -2436,7 +2420,6 @@ class Wizard extends CommonDBTM
 
         if (($displayBlocksAsTab == 0 || $preview)
             && $line[$keys[0]]['type'] == 'title-block') {
-
             $data = $line[$keys[0]];
             $fieldparameter = new FieldParameter();
             if ($fieldparameter->getFromDBByCrit(
@@ -2543,7 +2526,6 @@ class Wizard extends CommonDBTM
                         echo "</div>";
                     }
                 }
-
             }
         }
 
@@ -2551,7 +2533,6 @@ class Wizard extends CommonDBTM
         echo "</div>";
         echo "</div>";
         echo "</div>";
-
     }
 
 
@@ -2737,7 +2718,6 @@ class Wizard extends CommonDBTM
 
         // Title field
         if ($data['type'] != 'title-block') {
-
             // end wrapper div classes
             //see fields
             Field::displayFieldByType(
@@ -2748,7 +2728,6 @@ class Wizard extends CommonDBTM
                 $itilcategories_id,
                 $count
             );
-
         }
 
         // Next row
@@ -2766,7 +2745,6 @@ class Wizard extends CommonDBTM
         // If values are saved in session we retrieve it
         //needed to load twice
         if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
-
             foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
                 if (strval($data['id']) === strval($id)) {
                     $data['value'] = $value;

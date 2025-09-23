@@ -554,7 +554,8 @@ class Yesno extends CommonDBTM
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
                 }
             }
 
@@ -583,6 +584,7 @@ class Yesno extends CommonDBTM
 
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
+                            $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
                             " . Fieldoption::resetMandatoryFieldsByField($name);
 

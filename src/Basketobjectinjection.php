@@ -40,10 +40,9 @@ if (!defined('GLPI_ROOT')) {
 class BasketobjectInjection extends Basketobject implements PluginDatainjectionInjectionInterface
 {
 
-    static function getTable($classname = null)
+    public static function getTable($classname = null)
     {
-        $parenttype = get_parent_class();
-        return $parenttype::getTable();
+        return Basketobject::getTable();
     }
 
     function isPrimaryType()

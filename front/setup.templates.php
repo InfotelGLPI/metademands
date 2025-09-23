@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 
 $meta = new Metademand();

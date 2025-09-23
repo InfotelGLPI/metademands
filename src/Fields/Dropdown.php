@@ -653,6 +653,7 @@ class Dropdown extends CommonDBTM
                              var fieldid = 'field'+ key;
                              $(id).html('*');
                              $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                             $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                              //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);
                                  " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
@@ -825,7 +826,8 @@ class Dropdown extends CommonDBTM
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
                 }
             }
 
@@ -855,8 +857,10 @@ class Dropdown extends CommonDBTM
                     $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
+                            $('[id-field =\"field'+key+'-2\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
                             $('[name =\"field['+key+']\"]').removeAttr('required');
+                            $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                             " . Fieldoption::resetMandatoryFieldsByField($name);
 
                     if (is_array($childs_by_checkvalue)) {
@@ -873,6 +877,7 @@ class Dropdown extends CommonDBTM
                     }
                     $onchange .= "} else {
                             $('[id-field =\"field'+key+'\"]').show();
+                            $('[id-field =\"field'+key+'-2\"]').show();
                         }
                     });
               ";

@@ -29,6 +29,7 @@
 
 use GlpiPlugin\Metademands\Basketline;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Stepform;

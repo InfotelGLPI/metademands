@@ -37,6 +37,7 @@ use Entity;
 use Html;
 use ITILCategory;
 use Session;
+use Toolbox;
 use User;
 
 if (!defined('GLPI_ROOT')) {
@@ -728,8 +729,8 @@ class TicketTask extends CommonDBChild
     }
 
     /**
-     * @param                              $tasks_id
-     * @param \Metademand $metademands
+     * @param   $tasks_id
+     * @param  $metademands
      *
      * @throws \GlpitestSQLError
      */

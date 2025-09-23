@@ -266,7 +266,7 @@ class Basket extends CommonDBTM
                 $field .= "</td>";
 
                 $field .= "<td>";
-                $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
+                $field .= RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
@@ -738,11 +738,13 @@ class Basket extends CommonDBTM
                                    sessionStorage.setItem('hiddenlink$name', key);
                                     " . FieldOption::resetMandatoryFieldsByField($name) . "
                                     $('[name =\"field['+key+']\"]').removeAttr('required');
+                                    $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                                 } else {
                                      var id = '#metademands_wizard_red'+ key;
                                      var fieldid = 'field'+ key;
                                      $(id).html('*');
                                      $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                     $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                     //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', key);
                                      " . FieldOption::checkMandatoryFile($fields_link, $name) . "
@@ -773,11 +775,13 @@ class Basket extends CommonDBTM
                                    sessionStorage.setItem('hiddenlink$name', key);
                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
                                    $('[name =\"field['+key+']\"]').removeAttr('required');
+                                   $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                                 } else {
                                     var id = '#metademands_wizard_red'+ key;
                                     var fieldid = 'field'+ key;
                                     $(id).html('*');
                                     $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                    $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                     //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', key);
                                      " . FieldOption::checkMandatoryFile($fields_link, $name) . "
@@ -1005,7 +1009,8 @@ class Basket extends CommonDBTM
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
                 }
             }
 
@@ -1049,6 +1054,7 @@ class Basket extends CommonDBTM
                     $onchange .= "$.each(tohide, function( key, value ) {
                             if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
+                            $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
                                 " . FieldOption::resetMandatoryFieldsByField($name);
 
@@ -1066,6 +1072,7 @@ class Basket extends CommonDBTM
                     }
                     $onchange .= "} else {
                                 $('[id-field =\"field'+key+'\"]').show();
+                                $('[id-field =\"field'+key+'-2\"]').show();
                             }
                         });";
 
@@ -1091,11 +1098,14 @@ class Basket extends CommonDBTM
                         $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                $('[id-field =\"field'+key+'\"]').hide();
+                               $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
                                " . FieldOption::resetMandatoryFieldsByField($name) . "
                                $('[name =\"field['+key+']\"]').removeAttr('required');
+                               $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                             } else {
                                $('[id-field =\"field'+key+'\"]').show();
+                               $('[id-field =\"field'+key+'-2\"]').show();
                             }
                          });";
 
@@ -1105,7 +1115,8 @@ class Basket extends CommonDBTM
                     } else {
                         $onchange .= "} else {";
 
-                        $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                        $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                        $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
 
                         $onchange .= "}";
                     }

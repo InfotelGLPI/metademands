@@ -121,7 +121,7 @@ class Condition extends CommonDBChild
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if ($item->getType() == sMetademand::class) {
+        if ($item->getType() == Metademand::class) {
             if ($_SESSION['glpishow_count_on_tabs']) {
                 $dbu = new DbUtils();
                 return self::createTabEntry(
@@ -350,7 +350,7 @@ class Condition extends CommonDBChild
             );
             echo "</td>";
             echo "<tr>";
-            echo "<td colspan = '2' class='tab_bg_2 center' colspan='4'>";
+            echo "<td class='tab_bg_2 center' colspan='4'>";
             echo "<input class='btn btn-primary' type='submit' name='apply_rule' value=\""
                 . _sx("button", __('Apply', 'metademands')) . "\" class='submit'>";
             echo "</td>";

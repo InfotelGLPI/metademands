@@ -115,7 +115,9 @@ class Title extends CommonDBTM
         }
     }
 
-    public static function showFieldCustomValues($params) {}
+    public static function showFieldCustomValues($params)
+    {
+    }
 
     public static function showFieldParameters($params)
     {
@@ -160,11 +162,17 @@ class Title extends CommonDBTM
     }
 
 
-    public static function fieldsMandatoryScript($data) {}
+    public static function fieldsMandatoryScript($data)
+    {
+    }
 
-    public static function fieldsHiddenScript($data) {}
+    public static function fieldsHiddenScript($data)
+    {
+    }
 
-    public static function blocksHiddenScript($data) {}
+    public static function blocksHiddenScript($data)
+    {
+    }
 
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
@@ -182,5 +190,4 @@ class Title extends CommonDBTM
 
         return $result;
     }
-
 }

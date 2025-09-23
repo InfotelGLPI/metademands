@@ -1278,11 +1278,11 @@ class Dropdownmeta extends CommonDBTM
                 $options['name'] = "default[1]";
                 $options['display_emptychoice'] = true;
                 if ($params['item'] == 'urgency') {
-                    Ticket::dropdownUrgency($options);
+                    \Ticket::dropdownUrgency($options);
                 } elseif ($params['item'] == 'impact') {
-                    Ticket::dropdownImpact($options);
+                    \Ticket::dropdownImpact($options);
                 } elseif ($params['item'] == 'priority') {
-                    Ticket::dropdownPriority($options);
+                    \Ticket::dropdownPriority($options);
                 }
 
                 echo "</td>";
@@ -1732,6 +1732,7 @@ class Dropdownmeta extends CommonDBTM
                              var fieldid = 'field'+ key;
                              $(id).html('*');
                              $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                             $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                              //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);
                                  " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
@@ -1948,6 +1949,7 @@ class Dropdownmeta extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                     $('[name=\"field[" . $hidden_link . "]\"]').removeAttr('required');";
                 }
             }
@@ -1987,9 +1989,11 @@ class Dropdownmeta extends CommonDBTM
                     $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
+                            $('[id-field =\"field'+key+'-2\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
                             " . Fieldoption::resetMandatoryFieldsByField($name) . "
-                            $('[name =\"field['+key+']\"]').removeAttr('required');";
+                            $('[name =\"field['+key+']\"]').removeAttr('required');
+                            $('[name =\"field['+key+'-2]\"]').removeAttr('required');";
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
@@ -2005,6 +2009,7 @@ class Dropdownmeta extends CommonDBTM
 
                     $onchange .= "} else {
                             $('[id-field =\"field'+key+'\"]').show();
+                            $('[id-field =\"field'+key+'-2\"]').show();
                         }
                     });
               ";

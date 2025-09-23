@@ -30,11 +30,11 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\RichText\RichText;
-use GlpiPlugin\Metademands\FieldCustomvalue;
-use Html;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\MetademandTask;
+use Html;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -120,11 +120,11 @@ class Checkbox extends CommonDBTM
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             $field .= "&nbsp;<span style='vertical-align: bottom;'>";
                             if (empty(
-                            $comment = Field::displayCustomvaluesField(
-                                $data['id'],
-                                $key,
-                                "comment"
-                            )
+                                $comment = Field::displayCustomvaluesField(
+                                    $data['id'],
+                                    $key,
+                                    "comment"
+                                )
                             )) {
                                 $comment = $label['comment'];
                             }
@@ -177,11 +177,11 @@ class Checkbox extends CommonDBTM
                         $field .= "<small class='form-hint'>";
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             if (empty(
-                            $comment = Field::displayCustomvaluesField(
-                                $data['id'],
-                                $key,
-                                "comment"
-                            )
+                                $comment = Field::displayCustomvaluesField(
+                                    $data['id'],
+                                    $key,
+                                    "comment"
+                                )
                             )) {
                                 $comment = $label['comment'];
                             }
@@ -220,7 +220,7 @@ class Checkbox extends CommonDBTM
 
                         foreach ($childs_blocks[$key] as $customvalue => $childs) {
                             $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
-                            $script .= Fieldoption::resetMandatoryBlockFields($childs);
+                            $script .= FieldOption::resetMandatoryBlockFields($childs);
                             $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
                         }
                         $script .= "}";
@@ -599,16 +599,17 @@ class Checkbox extends CommonDBTM
                                     var id = '#metademands_wizard_red'+ key;
                                     $(id).html('');
                                     sessionStorage.setItem('hiddenlink$name', key);
-                                    " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
                                     $('[name =\"field[' + key + ']\"]').removeAttr('required');
                                 } else {
                                     var id = '#metademands_wizard_red'+ key;
                                     var fieldid = 'field'+ key;
                                     $(id).html('*');
                                     $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                    $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                     //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                 }
 
                             });";
@@ -633,16 +634,17 @@ class Checkbox extends CommonDBTM
                                 var id = '#metademands_wizard_red'+ key;
                                 $(id).html('');
                                 sessionStorage.setItem('hiddenlink$name', key);
-                                " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                " . FieldOption::resetMandatoryFieldsByField($name) . "
                                 $('[name =\"field[' + key + ']\"]').removeAttr('required');
                             } else {
                                var id = '#metademands_wizard_red'+ key;
                                var fieldid = 'field'+ key;
                                $(id).html('*');
                                $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                               $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                             }
                          });";
                     $onchange .= "}";
@@ -651,7 +653,7 @@ class Checkbox extends CommonDBTM
 
             if (is_array($display) && count($display) > 0) {
                 foreach ($display as $see) {
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $see);
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $see);
                 }
             }
 
@@ -689,9 +691,9 @@ class Checkbox extends CommonDBTM
 
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
-                    'Next',
-                    'metademands'
-                ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                'Next',
+                'metademands'
+            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -826,7 +828,8 @@ class Checkbox extends CommonDBTM
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
                 }
             }
 
@@ -867,10 +870,12 @@ class Checkbox extends CommonDBTM
                     $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
+                            $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
-                                " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                " . FieldOption::resetMandatoryFieldsByField($name) . "
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
+                                $('[id-field =\"field'+key+'-2\"]').show();
                             }
                         });";
 
@@ -891,11 +896,13 @@ class Checkbox extends CommonDBTM
                     $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                $('[id-field =\"field'+key+'\"]').hide();
+                               $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
-                               " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                               " . FieldOption::resetMandatoryFieldsByField($name) . "
                                $('[name =\"field[' + key + ']\"]').removeAttr('required');
                             } else {
                                $('[id-field =\"field'+key+'\"]').show();
+                               $('[id-field =\"field'+key+'-2\"]').show();
                             }
                          });";
                     $onchange .= "}";
@@ -905,7 +912,8 @@ class Checkbox extends CommonDBTM
             if (is_array($display) && count($display) > 0) {
                 foreach ($display as $see) {
                     $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $see);
+                    $pre_onchange .= "$('[id-field =\"field" . $see . "-2\"]').show();";
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $see);
                 }
             }
 
@@ -956,9 +964,9 @@ class Checkbox extends CommonDBTM
         }
         if (count($check_values) > 0) {
             //by default - hide all
-            $script2 .= Fieldoption::hideAllblockbyDefault($data);
+            $script2 .= FieldOption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
-                $script2 .= Fieldoption::emptyAllblockbyDefault($check_values);
+                $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
             }
 
             //Si la valeur est en session
@@ -993,7 +1001,7 @@ class Checkbox extends CommonDBTM
                                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                                 $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                                 $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
-                                " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                                " . FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                                     if (is_array($childs_by_checkvalue)) {
                                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1008,10 +1016,10 @@ class Checkbox extends CommonDBTM
                                                            if (document.getElementById('ablock" . $childs . "'))
                                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                 " . Fieldoption::setMandatoryBlockFields(
-                                                                $metaid,
-                                                                $childs
-                                                            );
+                                                 " . FieldOption::setMandatoryBlockFields(
+                                                            $metaid,
+                                                            $childs
+                                                        );
                                                     }
                                                 }
                                             }
@@ -1031,7 +1039,7 @@ class Checkbox extends CommonDBTM
                         $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                         $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
 
-                    $script .= Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $script .= FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
@@ -1071,8 +1079,8 @@ class Checkbox extends CommonDBTM
                             $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();
                             $('[bloc-id =\"subbloc'+$hidden_block+'\"]').hide();
                             sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
-                    $script .= Fieldoption::resetMandatoryBlockFields($name)
-                        . Fieldoption::setEmptyBlockFields($name);
+                    $script .= FieldOption::resetMandatoryBlockFields($name)
+                        . FieldOption::setEmptyBlockFields($name);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1082,8 +1090,8 @@ class Checkbox extends CommonDBTM
                                 document.getElementById('ablock" . $childs . "').style.display = 'none';
                                 $('[bloc-id =\"bloc" . $childs . "\"]').hide();
                                 sessionStorage.setItem('hiddenbloc$childs', $childs);
-                                                         " . Fieldoption::setEmptyBlockFields($childs)
-                                        . Fieldoption::resetMandatoryBlockFields($childs);
+                                                         " . FieldOption::setEmptyBlockFields($childs)
+                                        . FieldOption::resetMandatoryBlockFields($childs);
                                 }
                             }
                         }
@@ -1111,10 +1119,10 @@ class Checkbox extends CommonDBTM
                                                     $script2 .= "if (document.getElementById('ablock" . $childs . "'))
                                                          document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                          $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . Fieldoption::setMandatoryBlockFields(
-                                                            $metaid,
-                                                            $childs
-                                                        );
+                                                     " . FieldOption::setMandatoryBlockFields(
+                                                        $metaid,
+                                                        $childs
+                                                    );
                                                 }
                                             }
                                         }

@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use GlpiPlugin\Metademands\FieldCustomvalue;
 use Html;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -175,7 +176,9 @@ class Upload extends CommonDBTM
         echo $field;
     }
 
-    public static function showFieldCustomValues($params) {}
+    public static function showFieldCustomValues($params)
+    {
+    }
 
     public static function showFieldParameters($params)
     {
@@ -219,10 +222,15 @@ class Upload extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    public static function fieldsMandatoryScript($data) {}
+    public static function fieldsMandatoryScript($data)
+    {
+    }
 
-    public static function fieldsHiddenScript($data) {}
+    public static function fieldsHiddenScript($data)
+    {
+    }
 
-    public static function blocksHiddenScript($data) {}
-
+    public static function blocksHiddenScript($data)
+    {
+    }
 }

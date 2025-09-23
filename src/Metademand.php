@@ -38,6 +38,7 @@ use CommonITILActor;
 use CommonITILObject;
 use DBConnection;
 use DbUtils;
+use Dropdown;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
 use GlpiPlugin\Servicecatalog\Category as ServicecatalogCategory;
@@ -46,6 +47,7 @@ use Group_User;
 use Html;
 use ITILCategory;
 use Log;
+use Override;
 use Plugin;
 use PluginResourcesResource;
 use ProblemTask;
@@ -8497,7 +8499,7 @@ HTML;
 
                         $metas[] = [
                             'title' => $name,
-                            'comment' => ($comment_meta != null) ? Html::resume_text(Glpi\RichText\RichText::getTextFromHtml($comment_meta), "50") : "",
+                            'comment' => ($comment_meta != null) ? Html::resume_text(RichText::getTextFromHtml($comment_meta), "50") : "",
                             'icon' => $icon,
                             'url' => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2",
                         ];

@@ -32,6 +32,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use Document;
+use Entity;
 use GlpiPlugin\Metademands\Freetablefield;
 use Html;
 use Session;
@@ -795,7 +796,7 @@ class Export extends CommonDBTM
 
         // JSON array initialization for the response
         $json = [
-            "schema_version" => PLUGIN_FORMCREATOR_SCHEMA_VERSION,
+//            "schema_version" => PLUGIN_FORMCREATOR_SCHEMA_VERSION,
             "forms" => [],
         ];
 

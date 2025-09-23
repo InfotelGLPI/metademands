@@ -29,11 +29,13 @@
 
 namespace GlpiPlugin\Metademands;
 
+use Budget;
 use CommonDBTM;
 use CommonITILActor;
 use CommonITILCost;
 use CommonITILObject;
 use Document;
+use Dropdown;
 use Entity;
 use Html;
 use ITILFollowup;
@@ -92,7 +94,7 @@ class NotificationTargetInterticketfollowup extends NotificationTarget
     /**
      * Get notification subject prefix
      *
-     * @param $event Event name (default '')
+     * @param $event  name (default '')
      *
      * @return string
      **/

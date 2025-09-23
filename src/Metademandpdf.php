@@ -29,9 +29,11 @@
 
 namespace GlpiPlugin\Metademands;
 
+use AllowDynamicProperties;
 use DbUtils;
 use Document;
 use Document_Item;
+use Dropdown;
 use Fpdf\Fpdf;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
@@ -40,7 +42,7 @@ use Html;
 use Plugin;
 use Session;
 use Toolbox;
-use GlpiPlugin\Orderfollowup\OrderMetademand;
+use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use GlpiPlugin\Orderfollowup\Freeinput;
 
 if (!defined('GLPI_ROOT')) {
@@ -302,9 +304,9 @@ class MetaDemandPdf extends Fpdf
     /**
      * Permet de dessiner une cellule.
      *
-     * @param type $w
-     * @param type $h
-     * @param type $value
+     * @param  $w
+     * @param  $h
+     * @param  $value
      * @param string $border
      * @param string $align
      * @param string $color
@@ -327,9 +329,9 @@ class MetaDemandPdf extends Fpdf
      *
      * @param int $w
      * @param int $h
-     * @param type $values
-     * @param type $label
-     * @param type $type
+     * @param  $values
+     * @param  $label
+     * @param  $type
      * @param string $border
      * @param string $align
      * @param string $color
@@ -528,9 +530,9 @@ class MetaDemandPdf extends Fpdf
     /**
      * Redéfinit une fonte
      *
-     * @param type $color
-     * @param type $bold
-     * @param type $size
+     * @param  $color
+     * @param  $bold
+     * @param  $size
      */
     function SetFontNormal($color, $bold, $size)
     {

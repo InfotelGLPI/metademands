@@ -1757,7 +1757,7 @@ border-style: none !important; border-color: initial !important;border-image: in
     /**
      * Show field types dropdown
      *
-     * @param type $name
+     * @param  $name
      * @param array $param
      *
      * @return dropdown of types
@@ -2140,7 +2140,7 @@ border-style: none !important; border-color: initial !important;border-image: in
     /**
      * Show field item dropdown
      *
-     * @param type $name
+     * @param  $name
      * @param array $param
      *
      * @return false|int|string of items
@@ -2665,7 +2665,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             }
 
             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                echo "</div><div class=\"form-group col-md-6 md-bottom\">";
+                echo "</div><div id-field='field" . $data['id'] . "-2' class=\"form-group col-md-6 md-bottom\">";
             }
             if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
@@ -2683,7 +2683,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                 } else {
                     echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
                         $label2
-                    ) . "<span $required>" . $required_icon . "</span></div>";
+                    ) . "<span $required>" . $required_icon . "</span>";
+                    echo "</div>";
                 }
             }
             $value2 = '';
@@ -2703,6 +2704,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $count++;
                         break;
                 }
+//                echo "</div>";
             }
         }
         echo "</div>";
@@ -3657,11 +3659,11 @@ border-style: none !important; border-color: initial !important;border-image: in
     /**
      * Returns the translation of the field
      *
-     * @param type $item
-     * @param type $field
+     * @param  $item
+     * @param  $field
      *
-     * @return type
-     * @global type $DB
+     * @return
+     * @global  $DB
      *
      */
     public static function displayField($id, $field, $lang = '')
@@ -3712,11 +3714,11 @@ border-style: none !important; border-color: initial !important;border-image: in
     /**
      * Returns the translation of the field
      *
-     * @param type $item
-     * @param type $field
+     * @param  $item
+     * @param  $field
      *
-     * @return type
-     * @global type $DB
+     * @return
+     * @global  $DB
      *
      */
     public static function displayCustomvaluesField($id, $field, $type = "name", $lang = '')

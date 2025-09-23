@@ -278,7 +278,7 @@ class Draft extends CommonDBTM
                        var meta_id = {$plugin_metademands_metademands_id};
                       function deleteDraft(draft_id) {
                           var self_delete = false;
-                          if($draft_id == draft_id ){
+                          if ($draft_id == draft_id ){
                               self_delete = true;
                           }
                           $('#ajax_loader').show();
@@ -299,11 +299,6 @@ class Draft extends CommonDBTM
                                         document.location.reload();
                                     }
                                  },
-                                error: function(xhr, status, error) {
-                                   console.log(xhr);
-                                   console.log(status);
-                                   console.log(error);
-                                 }
                              });
                        };
                      </script>";

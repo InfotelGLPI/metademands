@@ -437,7 +437,8 @@ class Email extends CommonDBTM
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
                 }
             }
 
@@ -453,6 +454,7 @@ class Email extends CommonDBTM
                     if (isset($idc) && $idc == 1) {
                         $onchange .= "if ($(this).val().trim().length < 1) {
                                      $('[id-field =\"field" . $hidden_link . "\"]').hide();
+                                     $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                      sessionStorage.setItem('hiddenlink$name', $hidden_link);
                                       " . FieldOption::resetMandatoryFieldsByField($name);
 
@@ -481,6 +483,7 @@ class Email extends CommonDBTM
                                     $('[id-field =\"field" . $hidden_link . "\"]').show();
                                  } else {
                                     $('[id-field =\"field" . $hidden_link . "\"]').hide();
+                                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                     sessionStorage.setItem('hiddenlink$name', $hidden_link);
                                      " . FieldOption::resetMandatoryFieldsByField($name);
 
@@ -498,7 +501,8 @@ class Email extends CommonDBTM
                         }
                         $onchange .= "}";
 
-                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                        $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                        $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
 
                         if (isset($data['value']) && $idc == $data['value']) {
                             $display = $hidden_link;

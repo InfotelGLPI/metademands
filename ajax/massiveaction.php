@@ -33,6 +33,7 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\TicketField;
 use GlpiPlugin\Metademands\Group;

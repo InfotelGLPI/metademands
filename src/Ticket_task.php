@@ -33,6 +33,7 @@ use CommonDBTM;
 use DbUtils;
 use Session;
 use CommonGLPI;
+use User;
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -109,7 +110,7 @@ class Ticket_Task extends CommonDBTM {
       $field = new self();
 
       if ($item->getType() == Metademand::class) {
-         $field->showPluginFromItems($item);
+//         $field->showPluginFromItems($item);
       }
       return true;
    }
