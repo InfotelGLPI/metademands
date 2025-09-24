@@ -44,7 +44,7 @@ if (isset($_POST["action"])
         if ($_POST["action"] == "exportXML") {
             $file = Export::exportAsXMLForMetademands($id);
         } else {
-            $file = Export::exportAsJSONForFormcreator($id);
+            $file = Export::exportAsJSONForGLPIForm($id);
         }
 
         $splitter = explode("/", $file, 2);

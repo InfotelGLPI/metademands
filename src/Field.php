@@ -3094,7 +3094,7 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
 
         $query = [
-            'SELECT' => ['glpi_groups'.'id'],
+            'SELECT' => ['glpi_groups.id'],
             'FROM' => 'glpi_groups_users',
             'INNER JOIN' => [
                 'glpi_groups' => [

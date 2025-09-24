@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -34,9 +35,9 @@ use GlpiPlugin\Metademands\Metademand;
 
 if (Session::haveRight("plugin_metademands", CREATE)) {
 
-    if (isset($_POST["exportFormcreatorXML"])) {
+    if (isset($_POST["exportFormGLPIXML"])) {
 
-        $file = Export::exportAsXMLFromFormcreator($_POST["plugin_formcreator_forms_id"]);
+        $file = Export::exportAsXMLFromGLPI($_POST["forms_id"]);
 
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
@@ -46,13 +47,12 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
         }
 
         if ($send && file_exists($send)) {
-            Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
-            unlink($send);
+            return Toolbox::getFileAsResponse($send, $splitter[1], 'xml', $expires_headers);
         } else {
             throw new AccessDeniedHttpException();
         }
 
-    } else if (isset($_POST["exportMetademandsXML"])) {
+    } elseif (isset($_POST["exportMetademandsXML"])) {
 
         $file = Export::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
         $splitter = explode("/", $file, 2);
@@ -63,15 +63,13 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
         }
 
         if ($send && file_exists($send)) {
-            Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
-            unlink($send);
-
+            return Toolbox::getFileAsResponse($send, $splitter[1], 'xml', $expires_headers);
         } else {
             throw new AccessDeniedHttpException();
         }
-    } else if (isset($_POST["exportMetademandsJSON"])) {
+    } elseif (isset($_POST["exportMetademandsJSON"])) {
 
-        $file = Export::exportAsJSONForFormcreator($_POST["plugin_metademands_metademands_id"]);
+        $file = Export::exportAsJSONForGLPIForm($_POST["plugin_metademands_metademands_id"]);
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
 
@@ -80,14 +78,12 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
         }
 
         if ($send && file_exists($send)) {
-            Toolbox::sendFile($send, $splitter[1], 'json', $expires_headers);
-            unlink($send);
-
+            return Toolbox::getFileAsResponse($send, $splitter[1], 'json', $expires_headers);
         } else {
             throw new AccessDeniedHttpException();
         }
 
-    }  elseif (isset($_GET["import_form"])) {
+    } elseif (isset($_GET["import_form"])) {
 
         Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
         Export::showImportForm();
@@ -105,4 +101,3 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
 } else {
     throw new AccessDeniedHttpException();
 }
-

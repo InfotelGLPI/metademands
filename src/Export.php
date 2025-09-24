@@ -31,12 +31,16 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use CommonGLPI;
 use Document;
 use Entity;
-use GlpiPlugin\Metademands\Freetablefield;
+use Glpi\Event;
+use Glpi\Form\Form;
+use Glpi\Form\Question;
+use Glpi\Form\QuestionType\QuestionTypeRequester;
+use Glpi\Form\Section;
 use Html;
 use Session;
-use CommonGLPI;
 use SimpleXMLElement;
 use Toolbox;
 
@@ -67,7 +71,6 @@ class Export extends CommonDBTM
     public static function getTypeName($nb = 0)
     {
         return __('Export', 'metademands');
-
     }
 
     public static function getIcon()
@@ -82,7 +85,7 @@ class Export extends CommonDBTM
      *      Must check right on what will be displayed + template
      *
      * @param CommonGLPI $item Item on which the tab need to be displayed
-     * @param int        $withtemplate is a template object ? (default 0)
+     * @param int $withtemplate is a template object ? (default 0)
      *
      * @return string tab name
      * @since version 0.83
@@ -90,11 +93,9 @@ class Export extends CommonDBTM
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-
         if (!$withtemplate) {
-            if ($item->getType() == 'Glpi\Form\Form' && $this->canUpdate()) {
-                //TODO
-//                return self::createTabEntry(Metademand::getTypeName());
+            if ($item->getType() == Form::class && $this->canUpdate()) {
+                return self::createTabEntry(Metademand::getTypeName());
             } elseif ($item->getType() == Metademand::class && $this->canUpdate()) {
                 return self::createTabEntry(self::getTypeName());
             }
@@ -106,8 +107,8 @@ class Export extends CommonDBTM
      * show Tab content
      *
      * @param CommonGLPI $item Item on which the tab need to be displayed
-     * @param integer    $tabnum tab number (default 1)
-     * @param int        $withtemplate is a template object ? (default 0)
+     * @param integer $tabnum tab number (default 1)
+     * @param int $withtemplate is a template object ? (default 0)
      *
      * @return boolean
      * @since version 0.83
@@ -115,12 +116,10 @@ class Export extends CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-
         switch ($item->getType()) {
-            case 'Glpi\Form\Form':
-                //TODO
-//                $form = new self();
-//                $form->showExportFromGLPIForm($item->getID());
+            case Form::class:
+                $form = new self();
+                $form->showExportFromGLPIForm($item->getID());
                 break;
             case Metademand::class:
                 $form = new self();
@@ -139,18 +138,18 @@ class Export extends CommonDBTM
      */
     public static function showExportFromGLPIForm($ID)
     {
-
         echo "<form name='form' method='post' action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
         echo "<div class='center'>";
         echo "<table class='tab_cadre_fixe'>";
-        echo Html::hidden('plugin_formcreator_forms_id', ['value' => $ID]);
+        echo Html::hidden('forms_id', ['value' => $ID]);
         echo "<tr class='tab_bg_1'>";
 
         echo "<td class='left'>";
         echo __('Export the form to XML format for use with metademands plugin', 'metademands');
         echo "</td>";
         echo "<td class='center'>";
-        echo Html::submit(__('Export XML', 'metademands'), ['name' => 'exportFormcreatorXML', 'class' => 'btn btn-primary']);
+        echo Html::submit(__('Export XML', 'metademands'), ['name' => 'exportFormGLPIXML', 'class' => 'btn btn-primary']
+        );
         echo "</td>";
 
         echo "</tr>";
@@ -165,7 +164,6 @@ class Export extends CommonDBTM
      */
     public static function showExportFromMetademands($ID)
     {
-
         echo "<form name='form' method='post' action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
         echo "<div class='center'>";
         echo "<table class='tab_cadre_fixe'>";
@@ -176,7 +174,10 @@ class Export extends CommonDBTM
         echo __('Export the metademand to XML format for use on another GLPI', 'metademands');
         echo "</td>";
         echo "<td class='center'>";
-        echo Html::submit(__('Export XML', 'metademands'), ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary']);
+        echo Html::submit(
+            __('Export XML', 'metademands'),
+            ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary']
+        );
         echo "</td>";
         echo "</tr>";
         echo "<tr class='tab_bg_1'>";
@@ -258,7 +259,9 @@ class Export extends CommonDBTM
             foreach ($metafieldcustoms as $idcustoms => $metafieldcusto) {
                 $fields['metafieldcustoms']['fieldcustoms' . $idcustoms] = $metafieldcusto;
             }
-            $metafieldfreetablefields = $metafieldfreetablefield->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+            $metafieldfreetablefields = $metafieldfreetablefield->find(
+                ['plugin_metademands_fields_id' => $metafield["id"]]
+            );
             foreach ($metafieldfreetablefields as $idfreetables => $metafieldfreetable) {
                 $fields['metafieldfreetablefields']['freetablefields' . $idfreetables] = $metafieldfreetable;
             }
@@ -318,55 +321,94 @@ class Export extends CommonDBTM
         return "_plugins" . $name;
     }
 
+//    private function getDefaultQuestionTypesConverter(): array
+//    {
+//        return [
+//            'checkboxes'  => new QuestionTypeCheckbox(),
+//            'date'        => new QuestionTypeDateTime(),
+//            'datetime'    => new QuestionTypeDateTime(),
+//            'dropdown'    => new QuestionTypeItemDropdown(),
+//            'email'       => new QuestionTypeEmail(),
+//            'file'        => new QuestionTypeFile(),
+//            'float'       => new QuestionTypeNumber(),
+//            'glpiselect'  => new QuestionTypeItem(),
+//            'integer'     => new QuestionTypeNumber(),
+//            'multiselect' => new QuestionTypeDropdown(),
+//            'radios'      => new QuestionTypeRadio(),
+//            'requesttype' => new QuestionTypeRequestType(),
+//            'select'      => new QuestionTypeDropdown(),
+//            'textarea'    => new QuestionTypeLongText(),
+//            'text'        => new QuestionTypeShortText(),
+//            'time'        => new QuestionTypeDateTime(),
+//            'urgency'     => new QuestionTypeUrgency(),
+//
+//            // We do not have a question of type "Actor", we have more specific
+//            // types: "Assignee", "Requester" and "Observer".
+//            // Fallback to "Requester" as we can't guess the expected type.
+//            'actor'       => new QuestionTypeRequester(),
+//
+//            // Description is replaced by a new block : Comment
+//            'description' => null,
+//
+//            // Unsupported types, some of them might be implemented by plugins.
+//            'fields'      => null,
+//            'tag'         => null,
+//            'hidden'      => null,
+//            'hostname'    => null,
+//            'ip'          => null,
+//            'ldapselect'  => null,
+//
+//            // Invalid type
+//            'undefined'   => null,
+//        ];
+//    }
     public static function transformFieldTypeFromMetademands($type, $item = null)
     {
-        if ($type === 'dropdown' && $item === 'Location') {
+        if ($type === 'Glpi\Form\QuestionType\QuestionTypeItemDropdown' && $item === 'Location') {
             return 'dropdown';
         }
         $map = [
-            'actor' => 'dropdown_object',
-            'glpiselect' => 'dropdown_object',
-            'select' => 'dropdown_meta',
-            'multiselect' => 'dropdown_multiple',
+            'Glpi\Form\QuestionType\QuestionTypeActors' => 'dropdown_object',
+            'Glpi\Form\QuestionType\QuestionTypeItem' => 'dropdown_object',
+            'Glpi\Form\QuestionType\QuestionTypeSelectable' => 'dropdown_meta',
+            'Glpi\Form\QuestionType\QuestionTypeDropdown' => 'dropdown_multiple',
             'description' => 'title',
             //                'description' => 'title-block',
             //            'description' => 'informations',
-            'text' => 'text',
+            'Glpi\Form\QuestionType\QuestionTypeShortText' => 'text',
             //                'text' => 'tel',
-            'email' => 'email',
+            'Glpi\Form\QuestionType\QuestionTypeShortEmail' => 'email',
             //                'text' => 'url',
-            'textarea' => 'textarea',
+            'Glpi\Form\QuestionType\QuestionTypeLongText' => 'textarea',
             //            'select' => 'yesno',
-            'checkboxes' => 'checkbox',
-            'radios' => 'radio',
-            'integer' => 'number',
-            'date' => 'date',
-            'time' => 'time',
-            'datetime' => 'datetime',
-            'file' => 'upload',
+            'Glpi\Form\QuestionType\QuestionTypeCheckbox' => 'checkbox',
+            'Glpi\Form\QuestionType\QuestionTypeRadio' => 'radio',
+            'Glpi\Form\QuestionType\QuestionTypeNumber' => 'number',
+            'Glpi\Form\QuestionType\QuestionTypeDateTime' => 'date',
+            'Glpi\Form\QuestionType\QuestionTypeDateTime' => 'time',
+            'Glpi\Form\QuestionType\QuestionTypeDateTime' => 'datetime',
+            'Glpi\Form\QuestionType\QuestionTypeFile' => 'upload',
             //                'description' => 'link',
-            'requesttype' => '**meta type**',
+            'Glpi\Form\QuestionType\QuestionTypeRequestType' => '**meta type**',
         ];
         return $map[$type] ?? "";
     }
 
-    public static function exportAsXMLFromFormcreator($plugin_formcreator_forms_id)
+    public static function exportAsXMLFromGLPI($forms_forms_id)
     {
         //TODO
-        $form = new PluginFormcreatorForm();
-        $form->getFromDB($plugin_formcreator_forms_id);
+        $form = new Form();
+        $form->getFromDB($forms_forms_id);
 
         $fields = $form->fields;
 
-        //TODOXML Use target for object_to_create & type & category (PluginFormcreatorTargetTicket..)
-        //TODOXML groups
         //TODOXML Traductions ?
         //TODOXML child tickets ?
 
         $fields['type'] = 2;
         $fields['object_to_create'] = "Ticket";
         unset($fields['access_rights']);
-        unset($fields['show_rule']);
+        unset($fields['visibility_strategy']);
         unset($fields['uuid']);
         unset($fields['formanswer_name']);
         unset($fields['users']);
@@ -374,10 +416,10 @@ class Export extends CommonDBTM
         unset($fields['profiles']);
 
         $entities_id = $fields['entities_id'];
-        //        PluginFormcreatorSection
+
         $sections = getAllDataFromTable(
-            'glpi_plugin_formcreator_sections',
-            ['plugin_formcreator_forms_id' => $plugin_formcreator_forms_id]
+            'glpi_forms_sections',
+            ['forms_forms_id' => $forms_forms_id]
         );
 
         $fields['metafields'] = [];
@@ -388,16 +430,15 @@ class Export extends CommonDBTM
         $metafields = [];
         $secid = 0;
         foreach ($sections as $ids => $section) {
-
             $questions = getAllDataFromTable(
-                'glpi_plugin_formcreator_questions',
-                ['plugin_formcreator_sections_id' => $ids]
+                'glpi_forms_questions',
+                ['forms_sections_id' => $ids]
             );
 
             $secid++;
             $metafields['id'] = $ids . "00" . $secid;
             $metafields['entities_id'] = $entities_id;
-            $metafields['rank'] = $section['order'];
+            $metafields['rank'] = $section['rank'];
             $metafields['name'] = $section['name'];
             $metafields['type'] = "title-block";
             $metafields['item'] = "";
@@ -407,29 +448,34 @@ class Export extends CommonDBTM
             $fields['metafieldparameters']['fieldparameters' . $ids . "00" . $secid]['color'] = "#000000";
 
             foreach ($questions as $idq => $question) {
+                $itemtype = null;
+                $raw_config = json_decode($question['extra_data'] ?? '', true);
+                if (is_array($raw_config) && isset($raw_config['itemtype'])) {
+                    $itemtype = $raw_config['itemtype'];
+                }
 
-                $metafields['type'] = self::transformFieldTypeFromMetademands($question['fieldtype'], $question['itemtype']);
+                $metafields['type'] = self::transformFieldTypeFromMetademands($question['type'], $itemtype);
                 if (empty($metafields['type'])) {
                     continue;
                 }
 
                 $metafields['id'] = $idq;
                 $metafields['entities_id'] = $entities_id;
-                $sec = new PluginFormcreatorSection();
-                $sec->getFromDB($question['plugin_formcreator_sections_id']);
-                $metafields['rank'] = $sec->fields['order'];
-                $metafields['order'] = $question['row'] + 1;
+                $sec = new Section();
+                $sec->getFromDB($question['forms_sections_id']);
+                $metafields['rank'] = $sec->fields['rank'];
+                $metafields['order'] = $question['vertical_rank'] + 1;
 
                 $metafields['name'] = $question['name'];
-                $metafields['item'] = $question['itemtype'];
+                $metafields['item'] = $itemtype;
 
-                if ($metafields['type'] == "dropdown_meta" && empty($question['itemtype'])) {
+                if ($metafields['type'] == "dropdown_meta" && empty($itemtype)) {
                     $metafields['item'] = "other";
                 }
-                if ($metafields['type'] == "dropdown_multiple" && empty($question['itemtype'])) {
+                if ($metafields['type'] == "dropdown_multiple" && empty($itemtype)) {
                     $metafields['item'] = "other";
                 }
-                if ($metafields['type'] == "dropdown_object" && empty($question['itemtype'])) {
+                if ($metafields['type'] == "dropdown_object" && empty($itemtype)) {
                     $metafields['item'] = "User";
                 }
 
@@ -439,13 +485,12 @@ class Export extends CommonDBTM
                 $fields['metafieldparameters']['fieldparameters' . $idq]['plugin_metademands_fields_id'] = $idq;
                 $fields['metafieldparameters']['fieldparameters' . $idq]['color'] = "#000000";
                 $fields['metafieldparameters']['fieldparameters' . $idq]['link_to_user'] = "0";
-                $fields['metafieldparameters']['fieldparameters' . $idq]['is_mandatory'] = $question['required'];
+                $fields['metafieldparameters']['fieldparameters' . $idq]['is_mandatory'] = $question['is_mandatory'];
 
                 $customvalues = [];
 
                 if (in_array($metafields['type'], Field::$field_customvalues_types)
                     || $question['fieldtype'] = 'yesno') {
-
                     if (!empty($question['values'])) {
                         $values = Toolbox::jsonDecode($question['values'], true);
 
@@ -469,45 +514,46 @@ class Export extends CommonDBTM
                     }
                 }
                 $options = [];
-                $conditions = getAllDataFromTable(
-                    'glpi_plugin_formcreator_conditions',
-                    ['itemtype' => 'PluginFormcreatorQuestion', 'items_id' => $idq]
-                );
-                if (count($conditions) > 0) {
-
-                    $cpt = 0;
-                    foreach ($conditions as $key => $val) {
-                        //                        $idcd = $idq + $cpt;
-                        $options[$idq][$key]['id'] = $val['id'];
-
-                        $showValue = -1;
-                        if ($question['fieldtype'] === 'yesno') {
-                            if ($val['show_value'] == 'non') {
-                                $showValue = 1;
-                            } elseif ($val['show_value'] == 'oui') {
-                                $showValue = '2';
-                            }
-                        } elseif (in_array($metafields['type'], Field::$field_customvalues_types)) {
-                            $fieldcustomvalues = new FieldCustomvalue();
-                            $fieldcustomvalues->getFromDBByCrit(["name" => $val['show_value']]);
-                            $showValue = $fieldcustomvalues->fields['id'] ?? "";
-                        }
-
-                        $options[$idq][$key]['check_value'] = $showValue;
-                        $options[$idq][$key]['hidden_link'] = $val['items_id'];
-                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['plugin_formcreator_questions_id'];
-                        ;
-                        $cpt++;
-                    }
-                    $tempid = 0;
-
-                    foreach ($options as $ido => $cnt) {
-                        foreach ($cnt as $j => $option) {
-                            $tempid++;
-                            $fields['metafieldoptions']['fieldoptions' . $ido . $tempid] = $option;
-                        }
-                    }
-                }
+                //TODO
+//                $conditions = getAllDataFromTable(
+//                    'glpi_forms_conditions',
+//                    ['itemtype' => Question::class, 'items_id' => $idq]
+//                );
+//                if (count($conditions) > 0) {
+//
+//                    $cpt = 0;
+//                    foreach ($conditions as $key => $val) {
+//                        //                        $idcd = $idq + $cpt;
+//                        $options[$idq][$key]['id'] = $val['id'];
+//
+//                        $showValue = -1;
+//                        if ($question['fieldtype'] === 'yesno') {
+//                            if ($val['show_value'] == 'non') {
+//                                $showValue = 1;
+//                            } elseif ($val['show_value'] == 'oui') {
+//                                $showValue = '2';
+//                            }
+//                        } elseif (in_array($metafields['type'], Field::$field_customvalues_types)) {
+//                            $fieldcustomvalues = new FieldCustomvalue();
+//                            $fieldcustomvalues->getFromDBByCrit(["name" => $val['show_value']]);
+//                            $showValue = $fieldcustomvalues->fields['id'] ?? "";
+//                        }
+//
+//                        $options[$idq][$key]['check_value'] = $showValue;
+//                        $options[$idq][$key]['hidden_link'] = $val['items_id'];
+//                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['forms_questions_id'];
+//                        ;
+//                        $cpt++;
+//                    }
+//                    $tempid = 0;
+//
+//                    foreach ($options as $ido => $cnt) {
+//                        foreach ($cnt as $j => $option) {
+//                            $tempid++;
+//                            $fields['metafieldoptions']['fieldoptions' . $ido . $tempid] = $option;
+//                        }
+//                    }
+//                }
             }
         }
 
@@ -535,7 +581,7 @@ class Export extends CommonDBTM
             } else {
                 // if the key is an integer, it needs text with it to actually work.
 
-                if ($key != 0 && $key == (int) $key) {
+                if ($key != 0 && $key == (int)$key) {
                     $key = "key_$key";
                 }
 
@@ -561,107 +607,104 @@ class Export extends CommonDBTM
         return "{$part1}-{$part2}-{$part3}.{$part4}";
     }
 
-    public static function transformFieldTypeForFormcreator($type, $item = null)
+    public static function transformFieldTypeForGLPI($type, $item = null)
     {
         if ($type === 'dropdown' && $item === 'Location') {
-            return 'dropdown';
+            return 'Glpi\Form\QuestionType\QuestionTypeItemDropdown';
         }
         if ($type === 'dropdown_multiple' && $item === 'User') {
-            return 'actor';
+            return 'Glpi\Form\QuestionType\QuestionTypeRequester';
+        }
+        if ($type === 'dropdown_meta' && $item === 'urgency') {
+            return 'Glpi\Form\QuestionType\QuestionTypeUrgency';
         }
 
+
         $map = [
-            'dropdown' => 'select',
-            'dropdown_object' => 'glpiselect',
-            'dropdown_meta' => 'select',
-            'dropdown_multiple' => 'multiselect',
-            'title' => 'description',
-            'title-block' => 'description',
-            'informations' => 'description',
-            'text' => 'text',
-            'tel' => 'text',
-            'email' => 'email',
-            'url' => 'text',
-            'textarea' => 'textarea',
-            'yesno' => 'select',
-            'checkbox' => 'checkboxes',
-            'radio' => 'radios',
-            'number' => 'integer',
+            'dropdown' => 'Glpi\Form\QuestionType\QuestionTypeItemDropdown',
+            'dropdown_object' => 'Glpi\Form\QuestionType\QuestionTypeItem',
+            'dropdown_meta' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
+            'dropdown_multiple' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
+//            'title' => 'description',
+//            'title-block' => 'description',
+//            'informations' => 'description',
+            'text' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
+            'tel' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
+            'email' => 'Glpi\Form\QuestionType\QuestionTypeShortEmail',
+            'url' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
+            'textarea' => 'Glpi\Form\QuestionType\QuestionTypeLongText',
+            'yesno' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
+            'checkbox' => 'Glpi\Form\QuestionType\QuestionTypeCheckbox',
+            'radio' => 'Glpi\Form\QuestionType\QuestionTypeRadio',
+            'number' => 'Glpi\Form\QuestionType\QuestionTypeNumber',
             //        'range' => '',
             //        'freetable' => '',
             //        'basket' => '',
-            'date' => 'date',
-            'time' => 'time',
-            'datetime' => 'datetime',
+            'date' => 'Glpi\Form\QuestionType\QuestionTypeDateTime',
+            'time' => 'Glpi\Form\QuestionType\QuestionTypeDateTime',
+            'datetime' => 'Glpi\Form\QuestionType\QuestionTypeDateTime',
             //        'date_interval' => '',
             //        'datetime_interval' => '',
-            'upload' => 'file',
+            'upload' => 'Glpi\Form\QuestionType\QuestionTypeFile',
             'link' => 'description',
             //        'signature' => '',
             //        'parent_field' => ''
-            '**meta type**' => 'requesttype',
+            '**meta type**' => 'Glpi\Form\QuestionType\QuestionTypeRequestType',
         ];
         return $map[$type] ?? "";
     }
 
-    public static function getOptionsByFieldId($prefix, $fieldId)
+    public static function getOptionsByFieldId($fieldId, $uuid, $fieldvalues = [])
     {
-
         $options = getAllDataFromTable(
             'glpi_plugin_metademands_fieldoptions',
             ['hidden_link' => $fieldId]
         );
 
         $renamedOptions = [];
+//
+//        $countByQuestionId = [];
+//        foreach ($options as $option) {
+//            $id = $prefix . $option['plugin_metademands_fields_id'];
+//            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
+//        }
 
-        $countByQuestionId = [];
         foreach ($options as $option) {
-            $id = $prefix . $option['plugin_metademands_fields_id'];
-            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
-        }
-
-        foreach ($options as $option) {
-
             $fieldorigin = new Field();
             $fieldorigin->getFromDB($option['plugin_metademands_fields_id']);
 
             $fieldcustomvalues = new FieldCustomvalue();
 
-            $showCondition = 1;
+            $showCondition = "equals";
             $showValue = "";
-            $showOrder = 1;
+//            $showOrder = 1;
 
             if ($fieldorigin->fields['type'] === 'yesno') {
-                if ((int) $option['check_value'] === 1) {
-                    $showValue = 'non';
-                    $showOrder = 2;
-                } elseif ((int) $option['check_value'] === 2) {
-                    $showValue = 'oui';
+                if ((int)$option['check_value'] === 1) {
+                    $showValue = array_search('oui', $fieldvalues);
+                }
+                if ((int)$option['check_value'] === 2) {
+                    $showValue = array_search('non', $fieldvalues);
                 }
             } elseif ($fieldorigin->fields['type'] === 'text') {
-                $showCondition = 2;
-
-            } elseif ((int) $option['check_value'] === -1) {
-                $showCondition = 2;
+                $showCondition = "contains";
+            } elseif ((int)$option['check_value'] === -1) {
+                $showCondition = "not_empty";
             } elseif (in_array($fieldorigin->fields["type"], Field::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
                 $showValue = $fieldcustomvalues->fields['name'] ?? "";
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
             }
-            $questionId = $prefix . $option['plugin_metademands_fields_id'];
-            $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
-            $renamedOptions[] = [
-                'itemtype' => "PluginFormcreatorQuestion",
-                'plugin_formcreator_questions_id' => $questionId,
-                'show_condition' => $showCondition,
-                'show_value' => $showValue,
-                'show_logic' => $logic,
-                'order' => $showOrder,
-                'uuid' => $prefix . $option['id'],
-                //'child_blocks' => json_decode($option['childs_blocks']),
-                // 'checkbox_value' => $option['checkbox_value'],
-                //'checkbox_id' => $option['checkbox_id'],
-                //'parent_field_id' => $option['parent_field_id']
+//            $questionId = $prefix . $option['plugin_metademands_fields_id'];
+//            $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
+            $renamedOptions[][] = [
+                'item_uuid' => $uuid,
+                'item_type' => "question",
+//                    'forms_questions_id' => $questionId,
+                'value_operator' => $showCondition,
+                'logic_operator' => "and",
+                'value' => [$showValue],
+//                    'order' => $showOrder,
 
             ];
         }
@@ -669,75 +712,69 @@ class Export extends CommonDBTM
         return $renamedOptions;
     }
 
-    public static function getSectionConditions($fieldId, $prefix)
+    public static function getSectionConditions($fieldId, $uuid, $fieldvalues = [])
     {
-
         $options = getAllDataFromTable(
             'glpi_plugin_metademands_fieldoptions',
             ['plugin_metademands_fields_id' => $fieldId]
         );
 
         $conditions = [];
-        $countByQuestionId = [];
-        foreach ($options as $option) {
-            $id = $prefix . $option['plugin_metademands_fields_id'];
-            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
-        }
+//        $countByQuestionId = [];
+//        foreach ($options as $option) {
+//            $id = $prefix . $option['plugin_metademands_fields_id'];
+//            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
+//        }
 
         foreach ($options as $option) {
-
             if (isset($option['hidden_block'])
                 && $option['hidden_block'] > 0) {
-
                 $fieldorigin = new Field();
                 $fieldorigin->getFromDB($option['plugin_metademands_fields_id']);
 
                 $fieldcustomvalues = new FieldCustomvalue();
 
-                $showCondition = 1;
+                $showCondition = "equals";
                 $showValue = "";
                 $showOrder = 1;
 
                 if ($fieldorigin->fields['type'] === 'yesno') {
-                    if ((int) $option['check_value'] === 1) {
-                        $showValue = 'non';
-                        $showOrder = 2;
-                    } elseif ((int) $option['check_value'] === 2) {
-                        $showValue = 'oui';
+                    if ((int)$option['check_value'] === 1) {
+                        $showValue = array_search('oui', $fieldvalues);
+                    }
+                    if ((int)$option['check_value'] === 2) {
+                        $showValue = array_search('non', $fieldvalues);
                     }
                 } elseif ($fieldorigin->fields['type'] === 'text') {
-                    $showCondition = 2;
-
-                } elseif ((int) $option['check_value'] === -1) {
-                    $showCondition = 2;
-
+                    $showCondition = "contains";
+                } elseif ((int)$option['check_value'] === -1) {
+                    $showCondition = "not_empty";
                 } elseif (in_array($fieldorigin->fields["type"], Field::$field_customvalues_types)) {
                     $fieldcustomvalues->getFromDB($option['check_value']);
-                    $showValue = $fieldcustomvalues->fields['name'] ?? "";
+                    $showValue = array_search($fieldcustomvalues->fields['name'], $fieldvalues);
                     $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
                 }
-                $questionId = $prefix . $option['plugin_metademands_fields_id'];
-                $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
+//                $questionId = $prefix . $option['plugin_metademands_fields_id'];
+//                $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
+
                 $conditions[$option['hidden_block']][] = [
-                    'itemtype' => "PluginFormcreatorSection",
-                    'plugin_formcreator_questions_id' => $questionId,
-                    'show_condition' => $showCondition,
-                    'show_value' => $showValue,
-                    'show_logic' => $logic,
-                    'order' => $showOrder,
-                    'uuid' => $prefix . $option['id'] . '1',
+                    'item_uuid' => $uuid,
+                    'item_type' => "question",
+//                    'forms_questions_id' => $questionId,
+                    'value_operator' => $showCondition,
+                    'logic_operator' => "and",
+                    'value' => [$showValue],
+//                    'order' => $showOrder,
+
                 ];
             }
-
         }
         return $conditions;
     }
 
     public static function generateFieldParameters($fieldtype, $fieldId, $prefix)
     {
-
         switch ($fieldtype) {
-
             case 'text':
             case 'textarea':
             case 'integer':
@@ -774,7 +811,7 @@ class Export extends CommonDBTM
         }
     }
 
-    public static function exportAsJSONForFormcreator($id)
+    public static function exportAsJSONForGLPIForm($id)
     {
         //TODOJSON case not null value -> add regex
         //TODOJSON rights
@@ -796,236 +833,154 @@ class Export extends CommonDBTM
 
         // JSON array initialization for the response
         $json = [
-//            "schema_version" => PLUGIN_FORMCREATOR_SCHEMA_VERSION,
+            "version" => 1,
             "forms" => [],
         ];
 
         // Basic form
         $form = [
-            "name" => $metademands->fields['name'] ?? "",
-            "is_recursive" => (int) ($metademands->fields['is_recursive']),
-            "icon" => $metademands->fields['icon'] ?? 0,
-            "icon_color" => $metademands->fields['title_color'],
-            "background_color" => $metademands->fields['background_color'],
-            "access_rights" => 1,
-            "description" => $metademands->fields['comment'],
-            "content" => $metademands->fields['comment'],
-            "is_active" => (int) ($metademands->fields['is_active']),
-            "language" => "",
-            "helpdesk_home" => 0,
-            "is_deleted" => $metademands->fields['is_deleted'],
-            "validation_required" => 0,
-            "is_default" => 0,
-            "is_captcha_enabled" => 0,
-            "show_rule" => $metademands->fields['show_rule'],
-            "formanswer_name" => $metademands->fields['name'],
-            "is_visible" => 0,
+            "id" => $metademands->getID(),
             "uuid" => $prefix . $metademands_id,
-            "users" => [],
-            "profiles" => [],
-            "_entity" => $entity_name,
-            "_plugin_formcreator_category" => "",
-            "_profiles" => [],
-            "_users" => [],
-            "_groups" => [],
-            "_sections" => [],
-            "_conditions" => [],
-            "_targets" => [
-                "PluginFormcreatorTargetTicket" => [],
-                "PluginFormcreatorTargetChange" => [],
-                "PluginFormcreatorTargetProblem" => [],
-            ],
-            "_validators" => [],
-            "_translations" => [],
+            "name" => $metademands->fields['name'] ?? "",
+            "header" => null,
+            "description" => $metademands->fields['comment'],
+            "illustration" => "",
+            "entity_name" => $entity_name,
+            "is_recursive" => (int)($metademands->fields['is_recursive']),
+            "is_active" => (int)($metademands->fields['is_active']),
+            "submit_button_visibility_strategy" => "",
+            "submit_button_conditions" => [],
+            "sections" => [],
+            "comments" => [],
+            "questions" => [],
+            "policies" => [],
+            "destinations" => [],
+            "translations" => [],
         ];
 
-        if ($metademands->fields['object_to_create'] === "Ticket") {
-            $newTicket = [
-                "name" => "Ticket from metademand",
-                "target_name" => "Ticket from metademand",
-                "source_rule" => 1,
-                "source_question" => 7,
-                "type_rule" => 1,
-                "type_question" => $metademands->fields['type'],
-                "content" => "",
-                "due_date_rule" => 1,
-                "due_date_question" => 0,
-                "due_date_value" => null,
-                "due_date_period" => 0,
-                "urgency_question" => 0,
-                "validation_followup" => 1,
-                "destination_entity" => 1,
-                "destination_entity_value" => 0,
-                "tag_type" => 1,
-                "tag_questions" => "",
-                "tag_specifics" => "",
-                "category_question" => 0,
-                "associate_rule" => 1,
-                "associate_question" => 0,
-                "location_rule" => 1,
-                "location_question" => 0,
-                "commonitil_validation_rule" => 1,
-                "commonitil_validation_question" => 0,
-                "show_rule" => 1,
-                "sla_rule" => 1,
-                "sla_question_tto" => 0,
-                "ola_question_ttr" => 0,
-                "uuid" => $prefix . $metademands_id . "targetticket",
-                "_tickettemplate" => "",
-                "_actors" => [
-                    [
-                        "itemtype" => "PluginFormcreatorTargetTicket",
-                        "actor_role" => 1,
-                        "actor_type" => 1,
-                        "actor_value" => 0,
-                        "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetticketactor1",
-                    ],
-                    [
-                        "itemtype" => "PluginFormcreatorTargetTicket",
-                        "actor_role" => 2,
-                        "actor_type" => 2,
-                        "actor_value" => 0,
-                        "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetticketactor2",
-                    ],
-                ],
-                "_ticket_relations" => [],
-                "_conditions" => [],
-            ];
-            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
-            if (empty($itilcategories_id)) {
-                $newTicket["category_rule"] = 1;
-            } else {
-                $newTicket["category_rule"] = 2;
-            }
-
-            $form["_targets"]["PluginFormcreatorTargetTicket"][] = $newTicket;
-        } elseif ($metademands->fields['object_to_create'] === "Problem") {
-            $newProblem = [
-                "name" => "Problem from metademand",
-                "target_name" => "Problem from metademand",
-                "impactcontent" => "",
-                "causecontent" => "",
-                "symptomcontent" => "",
-                "urgency_rule" => 1,
-                "content" => "",
-                "urgency_question" => 0,
-                "destination_entity" => 1,
-                "destination_entity_value" => 0,
-                "tag_type" => 1,
-                "tag_questions" => "",
-                "tag_specifics" => "",
-                "category_rule" => 1,
-                "category_question" => 0,
-                "show_rule" => 1,
-                "uuid" => $prefix . $metademands_id . "targetproblem",
-                "_problemtemplate" => "",
-                "_actors" => [
-                    [
-                        "itemtype" => "PluginFormcreatorTargetProblem",
-                        "actor_role" => 1,
-                        "actor_type" => 1,
-                        "actor_value" => 0,
-                        "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetproblemactor1",
-                    ],
-                    [
-                        "itemtype" => "PluginFormcreatorTargetProblem",
-                        "actor_role" => 2,
-                        "actor_type" => 2,
-                        "actor_value" => 0,
-                        "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetproblemactor2",
-                    ],
-                ],
-                "_conditions" => [],
-            ];
-
-            $form["_targets"]["PluginFormcreatorTargetProblem"][] = $newProblem;
-        } elseif ($metademands->fields['object_to_create'] === "Change") {
-            $newChange = [
-                "name" => "Change from metademand",
-                "target_name" => "Change from metademand",
-                "impactcontent" => "",
-                "controlistcontent" => "",
-                "rolloutplancontent" => "",
-                "backoutplancontent" => "",
-                "checklistcontent" => "",
-                "due_date_rule" => 1,
-                "due_date_question" => 0,
-                "due_date_value" => null,
-                "due_date_period" => 0,
-                "urgency_rule" => 1,
-                "content" => "",
-                "urgency_question" => 0,
-                "validation_followup" => 1,
-                "destination_entity" => 1,
-                "destination_entity_value" => 0,
-                "tag_type" => 1,
-                "tag_questions" => "",
-                "tag_specifics" => "",
-                "category_rule" => 1,
-                "category_question" => 0,
-                "commonitil_validation_rule" => 1,
-                "commonitil_validation_question" => null,
-                "show_rule" => 1,
-                "sla_rule" => 1,
-                "sla_question_tto" => 1,
-                "sla_question_ttr" => 1,
-                "ola_rule" => 1,
-                "ola_question_tto" => 0,
-                "ola_question_ttr" => 0,
-                "uuid" => $prefix . $metademands_id . "targetchange",
-                "_changetemplate" => "",
-                "_actors" => [
-                    [
-                        "itemtype" => "PluginFormcreatorTargetChange",
-                        "actor_role" => 1,
-                        "actor_type" => 1,
-                        "actor_value" => 0,
-                        "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetchangeactor1",
-                    ],
-                    [
-                        "itemtype" => "PluginFormcreatorTargetChange",
-                        "actor_role" => 2,
-                        "actor_type" => 2,
-                        "actor_value" => 0,
-                        "use_notification" => 1,
-                        "uuid" => $prefix . $metademands_id . "targetchangeactor2",
-                    ],
-                ],
-                "_conditions" => [],
-            ];
-
-            $form["_targets"]["PluginFormcreatorTargetChange"][] = $newChange;
-        }
+        $form["data_requirements"] = [["itemtype" => "Entity", "name" => $entity_name]];
 
         $metademands_groups_data = getAllDataFromTable(
             'glpi_plugin_metademands_groups',
             ['plugin_metademands_metademands_id' => $metademands_id]
         );
 
-        $formattedGroups = [];
-        $IDGroups = [];
+        $groups_required = [];
+        $policies = [];
         if (!empty($metademands_groups_data)) {
+            $policies = ["strategy" => "Glpi\\Form\\AccessControl\\ControlType\\AllowList",
+                "is_active" => true];
+            $policies["config"]["user_ids"] = [];
+            $policies["config"]["profile_ids"] = [];
             foreach ($metademands_groups_data as $groups) {
                 $metagroup = new \Group();
                 $metagroup->getFromDB($groups['groups_id']);
-                // Create a table to store groups in the desired format
-                $formattedGroups[] = [
-                    "uuid" => $prefix . $groups['groups_id'],
-                    "_group" => $metagroup->fields['name'],
-                ];
-                $IDGroups[] = $groups['groups_id'];
+                $groups_required[] = ["itemtype" => "Group", "name" => $metagroup->getName()];
+                $policies["config"]["group_ids"][] = $metagroup->getName();
             }
         }
+        $form["data_requirements"] = array_merge(
+            $form["data_requirements"],
+            $groups_required
+        );
 
-        // Add groups to the form
-        $form["groups"] = $IDGroups;
-        $form["_groups"] = $formattedGroups;
+        $form["policies"] = array_merge(
+            $form["policies"],
+            [$policies]
+        );
 
+
+        if ($metademands->fields['object_to_create'] === "Ticket") {
+            $newTicket = [
+                "id" => $metademands->getID(),
+                "name" => "Ticket from metademand",
+                "itemtype" => "Glpi\Form\Destination\FormDestinationTicket",
+                "config" => [],
+                "creation_strategy" => "always_created",
+                "conditions" => []
+            ];
+            $config = [];
+            $metademands_ticketfields_data = getAllDataFromTable(
+                'glpi_plugin_metademands_ticketfields',
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1]
+            );
+            if (!empty($metademands_ticketfields_data)) {
+                foreach ($metademands_ticketfields_data as $ticketfields_data) {
+                    $config["glpi-form-destination-commonitilfield-titlefield"] = [
+                        "value" => $ticketfields_data['value']
+                    ];
+                }
+            }
+
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (is_array($itilcategories_id) && count($itilcategories_id) == 1) {
+                $category = new \ITILCategory();
+                foreach ($itilcategories_id as $itilcategorie_id) {
+                    if ($category->getFromDB($itilcategorie_id)) {
+                        $config["glpi-form-destination-commonitilfield-itilcategoryfield"] = [
+                            "strategy" => "specific_value",
+                            "specific_itilcategory_id" => $category->getRawCompleteName()
+                        ];
+                        $form["data_requirements"] = array_merge(
+                            $form["data_requirements"],
+                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]]
+                        );
+                    }
+                }
+            }
+            $config["glpi-form-destination-commonitilfield-requesttypefield"] = [
+                "strategy" => "specific_value",
+                "specific_request_type" => $metademands->fields['type']
+            ];
+
+
+            $metademands_ticketfields_groupdata = getAllDataFromTable(
+                'glpi_plugin_metademands_ticketfields',
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8]
+            );
+            if (!empty($metademands_ticketfields_groupdata)) {
+                $group = new \Group();
+                foreach ($metademands_ticketfields_groupdata as $ticketfields_groupdata) {
+                    if ($group->getFromDB($ticketfields_groupdata['value'])) {
+                        $config["glpi-form-destination-commonitilfield-assigneefield"] = [
+                            "strategies" => ["specific_values"],
+                            "specific_question_ids" => null,
+                            "specific_itilactors_ids" => ['Group' => [$group->getName()]]
+                        ];
+                        $form["data_requirements"] = array_merge(
+                            $form["data_requirements"],
+                            [["itemtype" => "Group", "name" => $group->getName()]]
+                        );
+                    }
+                }
+            }
+
+            $newTicket["config"] = array_merge($newTicket["config"], $config);
+
+            $form["destinations"][] = $newTicket;
+        } elseif ($metademands->fields['object_to_create'] === "Problem") {
+            $newProblem = [
+                "id" => $metademands->getID(),
+                "name" => "Problem from metademand",
+                "itemtype" => "Glpi\Form\Destination\FormDestinationProblem",
+                "config" => [],
+                "creation_strategy" => "always_created",
+                "conditions" => [],
+            ];
+
+            $form["destinations"][] = $newProblem;
+        } elseif ($metademands->fields['object_to_create'] === "Change") {
+            $newChange = [
+                "id" => $metademands->getID(),
+                "name" => "Change from metademand",
+                "itemtype" => "Glpi\Form\Destination\FormDestinationChange",
+                "config" => [],
+                "creation_strategy" => "always_created",
+                "conditions" => [],
+            ];
+
+            $form["destinations"][] = $newChange;
+        }
 
         $fields = getAllDataFromTable(
             'glpi_plugin_metademands_fields',
@@ -1036,6 +991,7 @@ class Export extends CommonDBTM
         $sections = [];
 
         $questionsAdded = [];
+
         foreach ($fields as $field) {
             $fieldId = $field['id'];
 
@@ -1054,48 +1010,98 @@ class Export extends CommonDBTM
 
             if (!isset($sections[$rank])) {
                 $sections[$rank] = [
-                    "name" => "Section " . $rank,
-                    "order" => $rank,
-                    "show_rule" => 1,
+                    "id" => $rank,
                     "uuid" => $prefix . $rank,
-                    "_questions" => [],
+                    "name" => "Section " . $rank,
+                    "description" => null,
+                    "rank" => $rank,
+                    "visibility_strategy" => "",
+                    "conditions" => [],
                 ];
+                $questions[$rank] = [];
 
-                if ($titles_block = $fieldmeta->find(['plugin_metademands_metademands_id' => $metademands_id,
+                if ($titles_block = $fieldmeta->find([
+                    'plugin_metademands_metademands_id' => $metademands_id,
                     'rank' => $rank,
-                    'type' => 'title-block'])) {
+                    'type' => 'title-block'
+                ])) {
                     foreach ($titles_block as $title_block) {
                         $sections[$rank]["name"] = $title_block['name'];
                     }
-                    //                    continue;
                 }
             }
 
-            $fieldtype = self::transformFieldTypeForFormcreator($params['type'], $params['item']);
-
+            $fieldtype = self::transformFieldTypeForGLPI($params['type'], $params['item']);
+            $values = [];
             //            if (empty($fieldtype)) {
             //                continue;
             //            }
             // Créer la question
             if (!empty($fieldtype)) {
                 $question = [
-                    "name" => $params['name'],
-                    "fieldtype" => $fieldtype,
-                    "required" => $params['is_mandatory'],
-                    "show_empty" => 1,
-                    "default_values" => "",
-                    "itemtype" => $params['item'] !== null ? $params['item'] : "",
-                    "values" => "",
-                    "description" => "",
-                    "row" => $params['order'],
-                    "col" => 0,
-                    "width" => 4,
-                    "show_rule" => 1,
+                    "id" => $params['id'],
                     "uuid" => $prefix . $fieldId,
-                    "_conditions" => [],
-                    "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix),
+                    "name" => $params['name'],
+                    "type" => $fieldtype,
+                    "is_mandatory" => $params['is_mandatory'],
+                    "vertical_rank" => $params['order'],
+                    "horizontal_rank" => null,
+                    "description" => null,
+                    "extra_data" => null,
+                    "section_id" => $rank,
+                    "visibility_strategy" => 1,
+                    "validation_strategy" => "",
+                    "conditions" => [],
+                    "validation_conditions" => [],
+//                    "width" => 4,
+//                    "show_empty" => 1,
+//                    "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix),
                 ];
 
+                if ($params['item'] !== null && getItemForItemtype($params['item'])) {
+                    if ($params['item'] === "Location") {
+                        $question['extra_data'] = [
+                            "itemtype" => $params['item'],
+                            "categories_filter" => [
+                                "request",
+                                "incident",
+                                "change",
+                                "problem"
+                            ],
+                            "root_items_id" => 0,
+                            "subtree_depth" => 0
+                        ];
+                    } else {
+                        $question['extra_data'] = ["itemtype" => $params['item']];
+                    }
+                    $question['default_value'] = ["items_id" => 0];
+                } else {
+                    $question['default_value'] = "";
+                }
+                if ($params['type'] === 'dropdown_multiple' && $params['item'] === 'User') {
+                    $question['extra_data'] = ["is_multiple_actors" => 1];
+                }
+                if ($params['type'] === 'date') {
+                    $question['extra_data'] = [
+                        "is_default_value_current_time" => 0,
+                        "is_date_enabled" => 1,
+                        "is_time_enabled" => 0
+                    ];
+                }
+                if ($params['type'] === 'datetime') {
+                    $question['extra_data'] = [
+                        "is_default_value_current_time" => 0,
+                        "is_date_enabled" => 1,
+                        "is_time_enabled" => 1
+                    ];
+                }
+                if ($params['type'] === 'time') {
+                    $question['extra_data'] = [
+                        "is_default_value_current_time" => 0,
+                        "is_date_enabled" => 0,
+                        "is_time_enabled" => 1
+                    ];
+                }
                 if ($params['type'] === 'link') {
                     if (isset($params['custom_values'][1])) {
                         $decodedUrl = urldecode($params['custom_values'][1]);
@@ -1106,49 +1112,61 @@ class Export extends CommonDBTM
                 } else {
                     $question['description'] = $params['label2'] . $params['comment'];
                 }
+                if ($params['type'] === 'yesno') {
+                    $rand1 = mt_rand();
+                    $rand2 = mt_rand();
+                    $values = [
+                        $rand1 => "Oui",
+                        $rand2 => "Non"
+                    ];
+                    $question['extra_data'] = ["options" => $values, "is_multiple_dropdown" => false];
+                }
                 // Check if options are associated with this field
-                $options = self::getOptionsByFieldId($prefix, $fieldId);
+                $options = self::getOptionsByFieldId($field['id'], $prefix . $fieldId, $values);
                 if ($options) {
-                    $question['show_rule'] = 2;
-                    $question['_conditions'] = $options;
+                    $question['visibility_strategy'] = "visible_if";
+                    $question['conditions'] = $options;
                 }
 
-                if (is_array($params['custom_values'])) {
+                if (is_array($params['custom_values'])
+                    && count($params['custom_values']) > 0
+                    && $params['type'] != "dropdown"
+                    && $params['type'] != "number"
+                    && $params['type'] != "dropdown_object"
+                    && $params['item'] != 'User') {
                     $custom_values = [];
                     foreach ($params['custom_values'] as $k => $customs) {
                         if (isset($customs['name'])) {
-                            $custom_values[] = $customs['name'];
+                            $rand = mt_rand();
+                            $values[$rand] = $customs['name'];
                         }
                     }
-                    $question['values'] = json_encode($custom_values);
+                    $question['extra_data'] = ["options" => $values];
                 }
 
-                if ($params['type'] === 'yesno') {
-                    $question['values'] = json_encode(["oui", "non"]);
-                    $question['itemtype'] = "other";
-                }
+                $questions[$rank][] = $question;
 
-                $sections[$rank]['_questions'][] = $question;
+                //Sections conditions
+                $sectionConditions = self::getSectionConditions($field['id'], $prefix . $fieldId, $values);
+                foreach ($sectionConditions as $block => $cond) {
+                    $sections[$block]['conditions'] = $cond;
+                    if (count($sections[$block]['conditions']) > 0) {
+                        $sections[$block]['visibility_strategy'] = "visible_if";
+                    }
+                }
             }
         }
-        foreach ($fields as $field) {
-            $fieldtype = self::transformFieldTypeForFormcreator($params['type'], $params['item']);
 
-            if (empty($fieldtype)) {
-                continue;
-            }
-            $sectionConditions = self::getSectionConditions($field['id'], $prefix);
-            foreach ($sectionConditions as $block => $cond) {
-                $sections[$block]['_conditions'] = $cond;
-                if (count($sections[$block]['_conditions']) > 0) {
-                    $sections[$block]['show_rule'] = 2;
-                }
+        $list_questions = [];
+        foreach ($questions as $r => $ql) {
+            foreach ($ql as $q) {
+                $list_questions[] = $q;
             }
         }
 
         ksort($sections);
-        $form['_sections'] = array_values($sections);
-
+        $form['sections'] = array_values($sections);
+        $form['questions'] = array_values($list_questions);
         $json['forms'][] = $form;
         $jsonOutput = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
@@ -1161,7 +1179,6 @@ class Export extends CommonDBTM
         fclose($file);
 
         return "_plugins" . $name;
-
     }
 
     public static function showImportForm()
@@ -1188,7 +1205,6 @@ class Export extends CommonDBTM
         Html::closeForm();
         echo "</div>";
     }
-
 
 
     public static function importXml()
@@ -1465,8 +1481,7 @@ class Export extends CommonDBTM
         if ($version < "3.3.11") {
             foreach ($fieldoldparams as $new => $old) {
                 $plugin_metademands_fields_id = $old["id"] ?? 0;
-                $empty_values = FieldParameter::_serialize([]);
-                ;
+                $empty_values = FieldParameter::_serialize([]);;
 
                 $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
                 $toUpdate["default_values"] = $old["default_values"] ?? $empty_values;
@@ -1513,8 +1528,7 @@ class Export extends CommonDBTM
         if ($version >= "3.3.11") {
             foreach ($fieldparameters as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
-                $empty_values = FieldParameter::_serialize([]);
-                ;
+                $empty_values = FieldParameter::_serialize([]);;
 
                 $toUpdate["custom"] = $old["custom"] ?? $empty_values;
                 $toUpdate["default"] = $old["default"] ?? $empty_values;

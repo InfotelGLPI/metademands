@@ -2241,46 +2241,46 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                             } elseif (isset($values['plugin_metademands_forms_id'])) {
                                 $forms_id = $values['plugin_metademands_forms_id'];
                             }
-                            if ($config['show_form_changes'] && $forms_id > 0) {
-                                foreach ($values['fields'] as $idField => $valueField) {
-                                    $diffRemove = "";
-                                    $oldFormValues = new Form_Value();
-                                    if ($oldFormValues->getFromDBByCrit([
-                                        'plugin_metademands_forms_id' => $forms_id,
-                                        'plugin_metademands_fields_id' => $idField,
-                                    ])) {
-                                        $jsonDecode = json_decode($oldFormValues->getField('value'), true);
-                                        if (is_array($jsonDecode)) {
-                                            if (empty($valueField)) {
-                                                $valueField = [];
-                                            }
-                                            $diffAdd = array_diff($valueField, $jsonDecode);
-                                            $diffRemove = array_diff($jsonDecode, $valueField);
-                                        } elseif (is_array($oldFormValues->getField('value'))) {
-                                            if (empty($valueField)) {
-                                                $valueField = [];
-                                            }
-                                            $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
-                                            $diffAdd = array_diff($valueField, $oldFormValues->getField('value'));
-                                        } elseif ($oldFormValues->getField('value') != $valueField) {
-                                            $values['fields'][$idField . '#orange'] = $valueField;
-                                        }
-                                        if ($oldFormValues->getField('value') == $valueField ||
-                                            (isset($diffRemove) && empty($diffRemove) && empty($diffAdd))) {
-                                            unset($values['fields'][$idField]);
-                                        } else {
-                                            if (isset($diffRemove) && !empty($diffRemove)) {
-                                                if (!empty($diffAdd)) {
-                                                    $values['fields'][$idField . '#green'] = $diffAdd;
-                                                }
-                                                $values['fields'][$idField . '#red'] = $diffRemove;
-                                            } elseif (!isset($values['fields'][$idField . '#orange'])) {
-                                                $values['fields'][$idField . '#green'] = $valueField;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+//                            if ($config['show_form_changes'] && $forms_id > 0) {
+//                                foreach ($values['fields'] as $idField => $valueField) {
+//                                    $diffRemove = "";
+//                                    $oldFormValues = new Form_Value();
+//                                    if ($oldFormValues->getFromDBByCrit([
+//                                        'plugin_metademands_forms_id' => $forms_id,
+//                                        'plugin_metademands_fields_id' => $idField,
+//                                    ])) {
+//                                        $jsonDecode = json_decode($oldFormValues->getField('value'), true);
+//                                        if (is_array($jsonDecode)) {
+//                                            if (empty($valueField)) {
+//                                                $valueField = [];
+//                                            }
+//                                            $diffAdd = array_diff($valueField, $jsonDecode);
+//                                            $diffRemove = array_diff($jsonDecode, $valueField);
+//                                        } elseif (is_array($oldFormValues->getField('value'))) {
+//                                            if (empty($valueField)) {
+//                                                $valueField = [];
+//                                            }
+//                                            $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
+//                                            $diffAdd = array_diff($valueField, $oldFormValues->getField('value'));
+//                                        } elseif ($oldFormValues->getField('value') != $valueField) {
+//                                            $values['fields'][$idField . '#orange'] = $valueField;
+//                                        }
+//                                        if ($oldFormValues->getField('value') == $valueField ||
+//                                            (isset($diffRemove) && empty($diffRemove) && empty($diffAdd))) {
+//                                            unset($values['fields'][$idField]);
+//                                        } else {
+//                                            if (isset($diffRemove) && !empty($diffRemove)) {
+//                                                if (!empty($diffAdd)) {
+//                                                    $values['fields'][$idField . '#green'] = $diffAdd;
+//                                                }
+//                                                $values['fields'][$idField . '#red'] = $diffRemove;
+//                                            } elseif (!isset($values['fields'][$idField . '#orange'])) {
+//                                                $values['fields'][$idField . '#green'] = $valueField;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
                             unset($_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare']);
                             $values_form[0] = $values['fields'];
                             $parent_fields = self::formatFields($line['form'], $metademands_id, $values_form, $options);

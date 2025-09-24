@@ -36,7 +36,8 @@ use GlpiPlugin\Metademands\BasketobjectTranslation;
 use GlpiPlugin\Metademands\Basketobjecttype;
 use GlpiPlugin\Metademands\BasketobjecttypeTranslation;
 use GlpiPlugin\Metademands\Export;
-use GlpiPlugin\Metademands\Form;
+use GlpiPlugin\Metademands\Form as MetaForm;
+use Glpi\Form\Form;
 use GlpiPlugin\Metademands\Form\MetademandProvider;
 use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Menu;
@@ -101,7 +102,7 @@ function plugin_init_metademands()
         }
 
         Plugin::registerClass(Metademand::class, ['addtabon' => 'Ticket']);
-        Plugin::registerClass(Form::class, ['addtabon' => ['Ticket', 'Problem', 'Change', 'User']]);
+        Plugin::registerClass(MetaForm::class, ['addtabon' => ['Ticket', 'Problem', 'Change', 'User']]);
         Plugin::registerClass(Profile::class, ['addtabon' => 'Profile']);
         Plugin::registerClass(Metademand_Resource::class, ['addtabon' => 'PluginResourcesContractType']);
 
@@ -265,11 +266,9 @@ function plugin_init_metademands()
 
         $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_basketobjects';
 
-        Plugin::registerClass(Export::class, ['addtabon' => 'Glpi\Form\Form']);
+        Plugin::registerClass(Export::class, ['addtabon' => Form::class]);
     }
 
-    // Import webservice
-    //   $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
     $PLUGIN_HOOKS['timeline_actions']['metademands'] = [
         MetademandValidation::class,
         'showActionsForm',

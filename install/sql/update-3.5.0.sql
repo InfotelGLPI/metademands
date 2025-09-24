@@ -3,7 +3,7 @@ ALTER TABLE `glpi_plugin_metademands_metademands` ADD `illustration` varchar(255
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_pinned` tinyint NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `usage_count` int unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `description` longtext;
-
+UPDATE `glpi_plugin_metademands_configs` SET `show_form_changes` = '0';
 
 UPDATE `glpi_displaypreferences` SET `itemtype` = 'GlpiPlugin\\Metademands\\Metademand' WHERE `glpi_displaypreferences`.`itemtype` = 'PluginMetademandsMetademand';
 UPDATE `glpi_notificationtemplates` SET `itemtype` = 'GlpiPlugin\\Metademands\\Metademand' WHERE `itemtype` = 'PluginMetademandsMetademand';

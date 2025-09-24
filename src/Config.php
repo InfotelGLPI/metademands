@@ -215,10 +215,11 @@ class Config extends CommonDBTM
         echo "</td>";
 
         echo "<td>";
-        echo __('Show only differences between last form and new form in ticket content', 'metademands');
+//        echo __('Show only differences between last form and new form in ticket content', 'metademands');
         echo "</td>";
         echo "<td>";
-        \Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
+//        \Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
+        echo Html::hidden('show_form_changes', ['value' =>0]);
         echo "</td>";
         echo "</tr>";
 
