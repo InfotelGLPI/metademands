@@ -34,10 +34,7 @@ use CommonDBTM;
 use CommonGLPI;
 use Document;
 use Entity;
-use Glpi\Event;
 use Glpi\Form\Form;
-use Glpi\Form\Question;
-use Glpi\Form\QuestionType\QuestionTypeRequester;
 use Glpi\Form\Section;
 use Html;
 use Session;
@@ -813,10 +810,10 @@ class Export extends CommonDBTM
 
     public static function exportAsJSONForGLPIForm($id)
     {
-        //TODOJSON case not null value -> add regex
-        //TODOJSON rights
+
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
+
         $metademands = new Metademand();
         $metademands->getFromDB($id);
         $metademands_id = $metademands->getID();
@@ -968,6 +965,59 @@ class Export extends CommonDBTM
                 "conditions" => [],
             ];
 
+            $config = [];
+            $metademands_ticketfields_data = getAllDataFromTable(
+                'glpi_plugin_metademands_ticketfields',
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1]
+            );
+            if (!empty($metademands_ticketfields_data)) {
+                foreach ($metademands_ticketfields_data as $ticketfields_data) {
+                    $config["glpi-form-destination-commonitilfield-titlefield"] = [
+                        "value" => $ticketfields_data['value']
+                    ];
+                }
+            }
+
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (is_array($itilcategories_id) && count($itilcategories_id) == 1) {
+                $category = new \ITILCategory();
+                foreach ($itilcategories_id as $itilcategorie_id) {
+                    if ($category->getFromDB($itilcategorie_id)) {
+                        $config["glpi-form-destination-commonitilfield-itilcategoryfield"] = [
+                            "strategy" => "specific_value",
+                            "specific_itilcategory_id" => $category->getRawCompleteName()
+                        ];
+                        $form["data_requirements"] = array_merge(
+                            $form["data_requirements"],
+                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]]
+                        );
+                    }
+                }
+            }
+
+            $metademands_ticketfields_groupdata = getAllDataFromTable(
+                'glpi_plugin_metademands_ticketfields',
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8]
+            );
+            if (!empty($metademands_ticketfields_groupdata)) {
+                $group = new \Group();
+                foreach ($metademands_ticketfields_groupdata as $ticketfields_groupdata) {
+                    if ($group->getFromDB($ticketfields_groupdata['value'])) {
+                        $config["glpi-form-destination-commonitilfield-assigneefield"] = [
+                            "strategies" => ["specific_values"],
+                            "specific_question_ids" => null,
+                            "specific_itilactors_ids" => ['Group' => [$group->getName()]]
+                        ];
+                        $form["data_requirements"] = array_merge(
+                            $form["data_requirements"],
+                            [["itemtype" => "Group", "name" => $group->getName()]]
+                        );
+                    }
+                }
+            }
+
+            $newProblem["config"] = array_merge($newProblem["config"], $config);
+
             $form["destinations"][] = $newProblem;
         } elseif ($metademands->fields['object_to_create'] === "Change") {
             $newChange = [
@@ -978,6 +1028,59 @@ class Export extends CommonDBTM
                 "creation_strategy" => "always_created",
                 "conditions" => [],
             ];
+
+            $config = [];
+            $metademands_ticketfields_data = getAllDataFromTable(
+                'glpi_plugin_metademands_ticketfields',
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1]
+            );
+            if (!empty($metademands_ticketfields_data)) {
+                foreach ($metademands_ticketfields_data as $ticketfields_data) {
+                    $config["glpi-form-destination-commonitilfield-titlefield"] = [
+                        "value" => $ticketfields_data['value']
+                    ];
+                }
+            }
+
+            $itilcategories_id = json_decode($metademands->fields['itilcategories_id'], true);
+            if (is_array($itilcategories_id) && count($itilcategories_id) == 1) {
+                $category = new \ITILCategory();
+                foreach ($itilcategories_id as $itilcategorie_id) {
+                    if ($category->getFromDB($itilcategorie_id)) {
+                        $config["glpi-form-destination-commonitilfield-itilcategoryfield"] = [
+                            "strategy" => "specific_value",
+                            "specific_itilcategory_id" => $category->getRawCompleteName()
+                        ];
+                        $form["data_requirements"] = array_merge(
+                            $form["data_requirements"],
+                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]]
+                        );
+                    }
+                }
+            }
+
+            $metademands_ticketfields_groupdata = getAllDataFromTable(
+                'glpi_plugin_metademands_ticketfields',
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8]
+            );
+            if (!empty($metademands_ticketfields_groupdata)) {
+                $group = new \Group();
+                foreach ($metademands_ticketfields_groupdata as $ticketfields_groupdata) {
+                    if ($group->getFromDB($ticketfields_groupdata['value'])) {
+                        $config["glpi-form-destination-commonitilfield-assigneefield"] = [
+                            "strategies" => ["specific_values"],
+                            "specific_question_ids" => null,
+                            "specific_itilactors_ids" => ['Group' => [$group->getName()]]
+                        ];
+                        $form["data_requirements"] = array_merge(
+                            $form["data_requirements"],
+                            [["itemtype" => "Group", "name" => $group->getName()]]
+                        );
+                    }
+                }
+            }
+
+            $newChange["config"] = array_merge($newChange["config"], $config);
 
             $form["destinations"][] = $newChange;
         }
