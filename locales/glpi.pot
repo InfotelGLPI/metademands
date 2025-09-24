@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-23 15:13+0000\n"
+"POT-Creation-Date: 2025-09-24 16:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:297 src/Menu.php:48 src/Config.php:74 src/Metademand.php:129
+#: setup.php:296 src/Menu.php:48 src/Config.php:74 src/Metademand.php:129
 #: src/Tools.php:138 src/Tools.php:215 src/Tools.php:310 src/Tools.php:473
 #: src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
 msgid "Meta-Demand"
@@ -469,55 +469,51 @@ msgstr ""
 msgid "Use drafts"
 msgstr ""
 
-#: src/Config.php:218
-msgid "Show only differences between last form and new form in ticket content"
-msgstr ""
-
-#: src/Config.php:227
+#: src/Config.php:228
 msgid "Language Tech"
 msgstr ""
 
-#: src/Config.php:234
+#: src/Config.php:235
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: src/Config.php:243
+#: src/Config.php:244
 msgid "Allow adding groups by regex"
 msgstr ""
 
-#: src/Config.php:250
+#: src/Config.php:251
 msgid "See top metademands"
 msgstr ""
 
-#: src/Config.php:261
+#: src/Config.php:262
 msgid "Icon for incidents"
 msgstr ""
 
-#: src/Config.php:288
+#: src/Config.php:289
 msgid "Icon for requests"
 msgstr ""
 
-#: src/Config.php:317
+#: src/Config.php:318
 msgid "Icon for problems"
 msgstr ""
 
-#: src/Config.php:344
+#: src/Config.php:345
 msgid "Icon for changes"
 msgstr ""
 
-#: src/Config.php:373
+#: src/Config.php:374
 msgid "Configuration of the Service Catalog plugin"
 msgstr ""
 
-#: src/Config.php:376
+#: src/Config.php:377
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: src/Config.php:387
+#: src/Config.php:388
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
-#: src/Config.php:399
+#: src/Config.php:400
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
@@ -1255,47 +1251,47 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Export.php:69
+#: src/Export.php:73
 msgid "Export"
 msgstr ""
 
-#: src/Export.php:150
+#: src/Export.php:148
 msgid "Export the form to XML format for use with metademands plugin"
 msgstr ""
 
-#: src/Export.php:153 src/Export.php:179 src/Metademand.php:7577
+#: src/Export.php:151 src/Export.php:178 src/Metademand.php:7577
 msgid "Export XML"
 msgstr ""
 
-#: src/Export.php:176
+#: src/Export.php:174
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: src/Export.php:184
+#: src/Export.php:185
 msgid "Export the metademand to JSON format for use with forms from GLPI"
 msgstr ""
 
-#: src/Export.php:188 src/Metademand.php:7579
+#: src/Export.php:189 src/Metademand.php:7579
 msgid "Export JSON"
 msgstr ""
 
-#: src/Export.php:1104
+#: src/Export.php:1110
 msgid "No link"
 msgstr ""
 
-#: src/Export.php:1175
+#: src/Export.php:1192
 msgid "Metademand file to import"
 msgstr ""
 
-#: src/Export.php:1184
+#: src/Export.php:1201
 msgid "Import"
 msgstr ""
 
-#: src/Export.php:1213
+#: src/Export.php:1229
 msgid "No file specified"
 msgstr ""
 
-#: src/Export.php:1228
+#: src/Export.php:1244
 msgid "The file is not an XML file"
 msgstr ""
 
