@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-24 16:41+0000\n"
+"POT-Creation-Date: 2025-09-24 16:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1251,47 +1251,47 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Export.php:73
+#: src/Export.php:70
 msgid "Export"
 msgstr ""
 
-#: src/Export.php:148
+#: src/Export.php:145
 msgid "Export the form to XML format for use with metademands plugin"
 msgstr ""
 
-#: src/Export.php:151 src/Export.php:178 src/Metademand.php:7577
+#: src/Export.php:148 src/Export.php:175 src/Metademand.php:7577
 msgid "Export XML"
 msgstr ""
 
-#: src/Export.php:174
+#: src/Export.php:171
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: src/Export.php:185
+#: src/Export.php:182
 msgid "Export the metademand to JSON format for use with forms from GLPI"
 msgstr ""
 
-#: src/Export.php:189 src/Metademand.php:7579
+#: src/Export.php:186 src/Metademand.php:7579
 msgid "Export JSON"
 msgstr ""
 
-#: src/Export.php:1110
+#: src/Export.php:1213
 msgid "No link"
 msgstr ""
 
-#: src/Export.php:1192
+#: src/Export.php:1295
 msgid "Metademand file to import"
 msgstr ""
 
-#: src/Export.php:1201
+#: src/Export.php:1304
 msgid "Import"
 msgstr ""
 
-#: src/Export.php:1229
+#: src/Export.php:1332
 msgid "No file specified"
 msgstr ""
 
-#: src/Export.php:1244
+#: src/Export.php:1347
 msgid "The file is not an XML file"
 msgstr ""
 
