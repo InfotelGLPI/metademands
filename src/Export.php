@@ -37,7 +37,20 @@ use CommonTreeDropdown;
 use Document;
 use Entity;
 use Glpi\Form\Form;
+use Glpi\Form\QuestionType\QuestionTypeCheckbox;
+use Glpi\Form\QuestionType\QuestionTypeDateTime;
+use Glpi\Form\QuestionType\QuestionTypeDropdown;
+use Glpi\Form\QuestionType\QuestionTypeEmail;
+use Glpi\Form\QuestionType\QuestionTypeFile;
+use Glpi\Form\QuestionType\QuestionTypeItem;
 use Glpi\Form\QuestionType\QuestionTypeItemDropdown;
+use Glpi\Form\QuestionType\QuestionTypeLongText;
+use Glpi\Form\QuestionType\QuestionTypeNumber;
+use Glpi\Form\QuestionType\QuestionTypeRadio;
+use Glpi\Form\QuestionType\QuestionTypeRequester;
+use Glpi\Form\QuestionType\QuestionTypeRequestType;
+use Glpi\Form\QuestionType\QuestionTypeShortText;
+use Glpi\Form\QuestionType\QuestionTypeUrgency;
 use Glpi\Form\Section;
 use Html;
 use Session;
@@ -321,75 +334,34 @@ class Export extends CommonDBTM
         return "_plugins" . $name;
     }
 
-//    private function getDefaultQuestionTypesConverter(): array
-//    {
-//        return [
-//            'checkboxes'  => new QuestionTypeCheckbox(),
-//            'date'        => new QuestionTypeDateTime(),
-//            'datetime'    => new QuestionTypeDateTime(),
-//            'dropdown'    => new QuestionTypeItemDropdown(),
-//            'email'       => new QuestionTypeEmail(),
-//            'file'        => new QuestionTypeFile(),
-//            'float'       => new QuestionTypeNumber(),
-//            'glpiselect'  => new QuestionTypeItem(),
-//            'integer'     => new QuestionTypeNumber(),
-//            'multiselect' => new QuestionTypeDropdown(),
-//            'radios'      => new QuestionTypeRadio(),
-//            'requesttype' => new QuestionTypeRequestType(),
-//            'select'      => new QuestionTypeDropdown(),
-//            'textarea'    => new QuestionTypeLongText(),
-//            'text'        => new QuestionTypeShortText(),
-//            'time'        => new QuestionTypeDateTime(),
-//            'urgency'     => new QuestionTypeUrgency(),
-//
-//            // We do not have a question of type "Actor", we have more specific
-//            // types: "Assignee", "Requester" and "Observer".
-//            // Fallback to "Requester" as we can't guess the expected type.
-//            'actor'       => new QuestionTypeRequester(),
-//
-//            // Description is replaced by a new block : Comment
-//            'description' => null,
-//
-//            // Unsupported types, some of them might be implemented by plugins.
-//            'fields'      => null,
-//            'tag'         => null,
-//            'hidden'      => null,
-//            'hostname'    => null,
-//            'ip'          => null,
-//            'ldapselect'  => null,
-//
-//            // Invalid type
-//            'undefined'   => null,
-//        ];
-//    }
     public static function transformFieldTypeFromMetademands($type, $item = null)
     {
-        if ($type === 'Glpi\Form\QuestionType\QuestionTypeItemDropdown' && $item === 'Location') {
+        if ($type === QuestionTypeItemDropdown::class && $item === 'Location') {
             return 'dropdown';
         }
         $map = [
-            'Glpi\Form\QuestionType\QuestionTypeActors' => 'dropdown_object',
-            'Glpi\Form\QuestionType\QuestionTypeItem' => 'dropdown_object',
-            'Glpi\Form\QuestionType\QuestionTypeSelectable' => 'dropdown_meta',
-            'Glpi\Form\QuestionType\QuestionTypeDropdown' => 'dropdown_multiple',
-            'description' => 'title',
-            //                'description' => 'title-block',
+            QuestionTypeItemDropdown::class => 'dropdown',
+            QuestionTypeRequester::class => 'dropdown_object',
+            QuestionTypeItem::class => 'dropdown_object',
+            QuestionTypeDropdown::class => 'dropdown_meta',
+//            QuestionTypeDropdown::class => 'dropdown_multiple',
+            //            'description' => 'title',
             //            'description' => 'informations',
-            'Glpi\Form\QuestionType\QuestionTypeShortText' => 'text',
+            QuestionTypeShortText::class => 'text',
             //                'text' => 'tel',
-            'Glpi\Form\QuestionType\QuestionTypeShortEmail' => 'email',
+            QuestionTypeEmail::class => 'email',
             //                'text' => 'url',
-            'Glpi\Form\QuestionType\QuestionTypeLongText' => 'textarea',
-            //            'select' => 'yesno',
-            'Glpi\Form\QuestionType\QuestionTypeCheckbox' => 'checkbox',
-            'Glpi\Form\QuestionType\QuestionTypeRadio' => 'radio',
-            'Glpi\Form\QuestionType\QuestionTypeNumber' => 'number',
-            'Glpi\Form\QuestionType\QuestionTypeDateTime' => 'date',
-            'Glpi\Form\QuestionType\QuestionTypeDateTime' => 'time',
-            'Glpi\Form\QuestionType\QuestionTypeDateTime' => 'datetime',
-            'Glpi\Form\QuestionType\QuestionTypeFile' => 'upload',
+            QuestionTypeLongText::class => 'textarea',
+//            QuestionTypeItemDropdown::class => 'yesno',
+            QuestionTypeCheckbox::class => 'checkbox',
+            QuestionTypeRadio::class => 'radio',
+            QuestionTypeNumber::class => 'number',
+//            QuestionTypeDateTime::class => 'date',
+//            QuestionTypeDateTime::class => 'time',
+            QuestionTypeDateTime::class => 'datetime',
+            QuestionTypeFile::class => 'upload',
             //                'description' => 'link',
-            'Glpi\Form\QuestionType\QuestionTypeRequestType' => '**meta type**',
+            QuestionTypeRequestType::class => '**meta type**',
         ];
         return $map[$type] ?? "";
     }
@@ -610,45 +582,45 @@ class Export extends CommonDBTM
     public static function transformFieldTypeForGLPI($type, $item = null)
     {
         if ($type === 'dropdown' && $item === 'Location') {
-            return 'Glpi\Form\QuestionType\QuestionTypeItemDropdown';
+            return QuestionTypeItemDropdown::class;
         }
         if ($type === 'dropdown_multiple' && $item === 'User') {
-            return 'Glpi\Form\QuestionType\QuestionTypeRequester';
+            return QuestionTypeRequester::class;
         }
         if ($type === 'dropdown_meta' && $item === 'urgency') {
-            return 'Glpi\Form\QuestionType\QuestionTypeUrgency';
+            return QuestionTypeUrgency::class;
         }
 
 
         $map = [
-            'dropdown' => 'Glpi\Form\QuestionType\QuestionTypeItemDropdown',
-            'dropdown_object' => 'Glpi\Form\QuestionType\QuestionTypeItem',
-            'dropdown_meta' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
-            'dropdown_multiple' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
+            'dropdown' => QuestionTypeItemDropdown::class,
+            'dropdown_object' => QuestionTypeItem::class,
+            'dropdown_meta' => QuestionTypeDropdown::class,
+            'dropdown_multiple' => QuestionTypeDropdown::class,
             //        'title' => '',
             //        'informations' => '',
-            'text' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
-            'tel' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
-            'email' => 'Glpi\Form\QuestionType\QuestionTypeShortEmail',
-            'url' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
-            'textarea' => 'Glpi\Form\QuestionType\QuestionTypeLongText',
-            'yesno' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
-            'checkbox' => 'Glpi\Form\QuestionType\QuestionTypeCheckbox',
-            'radio' => 'Glpi\Form\QuestionType\QuestionTypeRadio',
-            'number' => 'Glpi\Form\QuestionType\QuestionTypeNumber',
+            'text' => QuestionTypeShortText::class,
+            'tel' => QuestionTypeShortText::class,
+            'email' => QuestionTypeEmail::class,
+            'url' => QuestionTypeShortText::class,
+            'textarea' => QuestionTypeLongText::class,
+            'yesno' => QuestionTypeDropdown::class,
+            'checkbox' => QuestionTypeCheckbox::class,
+            'radio' => QuestionTypeRadio::class,
+            'number' => QuestionTypeNumber::class,
             //        'range' => '',
             //        'freetable' => '',
             //        'basket' => '',
-            'date' => 'Glpi\Form\QuestionType\QuestionTypeDateTime',
-            'time' => 'Glpi\Form\QuestionType\QuestionTypeDateTime',
-            'datetime' => 'Glpi\Form\QuestionType\QuestionTypeDateTime',
+            'date' => QuestionTypeDateTime::class,
+            'time' => QuestionTypeDateTime::class,
+            'datetime' => QuestionTypeDateTime::class,
             //        'date_interval' => '',
             //        'datetime_interval' => '',
-            'upload' => 'Glpi\Form\QuestionType\QuestionTypeFile',
+            'upload' => QuestionTypeFile::class,
             //         'link' => '',
             //        'signature' => '',
             //        'parent_field' => ''
-            '**meta type**' => 'Glpi\Form\QuestionType\QuestionTypeRequestType',
+            '**meta type**' => QuestionTypeRequestType::class,
         ];
         return $map[$type] ?? "";
     }
@@ -692,7 +664,10 @@ class Export extends CommonDBTM
                 $showCondition = "not_empty";
             } elseif (in_array($fieldorigin->fields["type"], Field::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
-                $showValue = array_search($fieldcustomvalues->fields['name'], $fieldvalues[$option['plugin_metademands_fields_id']]);
+                $showValue = array_search(
+                    $fieldcustomvalues->fields['name'],
+                    $fieldvalues[$option['plugin_metademands_fields_id']]
+                );
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
             }
 //            $questionId = $prefix . $option['plugin_metademands_fields_id'];
@@ -813,7 +788,6 @@ class Export extends CommonDBTM
 
     public static function exportAsJSONForGLPIForm($id)
     {
-
         //TODOJSON Traductions ?
         //TODOJSON child tickets ?
 
@@ -868,8 +842,10 @@ class Export extends CommonDBTM
         $groups_required = [];
         $policies = [];
         if (!empty($metademands_groups_data)) {
-            $policies = ["strategy" => "Glpi\\Form\\AccessControl\\ControlType\\AllowList",
-                "is_active" => true];
+            $policies = [
+                "strategy" => "Glpi\\Form\\AccessControl\\ControlType\\AllowList",
+                "is_active" => true
+            ];
             $policies["config"]["user_ids"] = [];
             $policies["config"]["profile_ids"] = [];
             foreach ($metademands_groups_data as $groups) {
@@ -1171,7 +1147,7 @@ class Export extends CommonDBTM
                 if ($params['item'] !== null && getItemForItemtype($params['item'])) {
                     if ($params['item'] instanceof CommonDropdown
                         || $params['item'] instanceof CommonTreeDropdown
-                    || $fieldtype == QuestionTypeItemDropdown::class) {
+                        || $fieldtype == QuestionTypeItemDropdown::class) {
                         $question['extra_data'] = [
                             "itemtype" => $params['item'],
                             "categories_filter" => [
@@ -1282,7 +1258,6 @@ class Export extends CommonDBTM
                     $cond
                 );
             }
-
         }
 
         $list_questions = [];

@@ -56,6 +56,7 @@ class Dropdown extends CommonDBTM
 {
     public const CLASSIC_DISPLAY = 0;
     public const SPLITTED_DISPLAY = 1;
+    public const BLOCK_DISPLAY = 2;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -361,13 +362,79 @@ class Dropdown extends CommonDBTM
                 }
                 break;
             default:
-                if ($data['item'] == "PluginResourcesResource") {
-                    $opt['showHabilitations'] = true;
-                }
-                if ($item = getItemForItemtype($data['item'])) {
-                    $container_class = new $data['item']();
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+
+                    $classfield = new $data["item"]();
+                    $custom_values = $classfield->find();
+
                     $field = "";
-                    $field .= $container_class::dropdown($opt);
+                    if (!empty($custom_values)) {
+
+                        $field .= "<div class='row flex-row'>";
+
+                        $choices = [];
+                        if (count($custom_values) > 0) {
+
+                            foreach ($custom_values as $key => $label) {
+
+                                $name = $label['name'];
+
+                                $choices[$label['id']] = $name;
+
+                                $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
+                                $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
+
+                                $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
+
+                                $icon = $data['icon'];
+
+                                if (!empty($icon)) {
+                                    $field .= "<span class='me-2 mt-1'>";
+                                    $field .= "<i class='ti $icon text-secondary'></i>";
+                                    $field .= "</span>";
+                                }
+
+
+                                $field .= "<div class='text-start'>";
+                                $field .= "<div class='d-flex align-items-center'>";
+                                $name = $label['name'];
+                                $field .= $name;
+                                $field .= "</div>";
+                                $field .= "<small class='form-hint'>";
+                                $field .= $label['comment'];
+                                $field .= "</small>";
+
+                                $field .= "</div>";
+
+                                $field .= "<div class='me-2 ms-auto'>";
+                                $checked = "";
+
+                                if (isset($value) && $value == $key) {
+                                    $checked = 'checked';
+                                }
+                                $required = "";
+                                if ($data['is_mandatory'] == 1) {
+                                    $required = "required=required";
+                                }
+                                $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                                $field .= "</div>";
+
+                                $field .= "</div>";
+                                $field .= "</label>";
+                                $field .= "</div>";
+                            }
+                        }
+                        $field .= "</div>";
+                    }
+                } else {
+                    if ($data['item'] == "PluginResourcesResource") {
+                        $opt['showHabilitations'] = true;
+                    }
+                    if ($item = getItemForItemtype($data['item'])) {
+                        $container_class = new $data['item']();
+                        $field = "";
+                        $field .= $container_class::dropdown($opt);
+                    }
                 }
                 break;
         }
@@ -433,6 +500,51 @@ class Dropdown extends CommonDBTM
                 $disp,
                 ['value' => $params['display_type'], 'display' => false]
             );
+            echo "</td>";
+            echo "</tr>";
+        } else {
+            $disp = [];
+            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
+            $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Display type of the field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+
+            echo \Dropdown::showFromArray(
+                "display_type",
+                $disp,
+                ['value' => $params['display_type'], 'display' => false]
+            );
+            echo "</td>";
+
+            echo "<td>";
+            echo __('Icon') . "&nbsp;";
+            echo "</td>";
+            echo "<td>";
+            $icon_selector_id = 'icon_' . mt_rand();
+            echo Html::select(
+                'icon',
+                [$params['icon'] => $params['icon']],
+                [
+                    'id' => $icon_selector_id,
+                    'selected' => $params['icon'],
+                    'style' => 'width:175px;',
+                ]
+            );
+
+            echo Html::script('js/modules/Form/WebIconSelector.js');
+            echo Html::scriptBlock("$(
+            function() {
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+               });
+            }
+         );");
+
+            echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
             echo "</td>";
             echo "</tr>";
         }

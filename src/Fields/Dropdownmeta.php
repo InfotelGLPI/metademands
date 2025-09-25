@@ -31,16 +31,16 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use CommonITILObject;
 use DbUtils;
-use GlpiPlugin\Metademands\FieldCustomvalue;
-use Html;
-use ITILCategory;
-use Plugin;
+use GlpiPlugin\Badges\Badge;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTask;
+use Html;
+use ITILCategory;
+use Plugin;
 use Session;
-use GlpiPlugin\Badges\Badge;
 use Toolbox;
 use User;
 
@@ -769,8 +769,8 @@ class Dropdownmeta extends CommonDBTM
                                             foreach ($pictures as $picture) {
                                                 $picture_url = Toolbox::getPictureUrl($picture);
                                                 $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
-                                                    $picture_url . "'>";
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
+                                                    . $picture_url . "'>";
                                                 $ok = 1;
                                             }
                                         }
@@ -785,8 +785,8 @@ class Dropdownmeta extends CommonDBTM
                                         foreach ($pictures as $picture) {
                                             $picture_url = Toolbox::getPictureUrl($picture);
                                             $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
-                                                $picture_url . "'>";
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
+                                                . $picture_url . "'>";
                                             $ok = 1;
                                         }
                                     }
@@ -1008,8 +1008,8 @@ class Dropdownmeta extends CommonDBTM
                                                     foreach ($pictures as $picture) {
                                                         $picture_url = Toolbox::getPictureUrl($picture);
                                                         $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
-                                                            $picture_url . "'>";
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
+                                                            . $picture_url . "'>";
                                                         $ok = 1;
                                                     }
                                                 }
@@ -1024,8 +1024,8 @@ class Dropdownmeta extends CommonDBTM
                                                 foreach ($pictures as $picture) {
                                                     $picture_url = Toolbox::getPictureUrl($picture);
                                                     $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
-                                                        $picture_url . "'>";
+                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
+                                                        . $picture_url . "'>";
                                                     $ok = 1;
                                                 }
                                             }
@@ -1725,7 +1725,7 @@ class Dropdownmeta extends CommonDBTM
                             var id = '#metademands_wizard_red'+ key;
                             $(id).html('');
                             sessionStorage.setItem('hiddenlink$name', key);
-                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                            " . FieldOption::resetMandatoryFieldsByField($name) . "
                             $('[name =\"field['+ key +']\"]').removeAttr('required');
                         } else {
                              var id = '#metademands_wizard_red'+ key;
@@ -1735,7 +1735,7 @@ class Dropdownmeta extends CommonDBTM
                              $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                              //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });
               ";
@@ -1743,7 +1743,7 @@ class Dropdownmeta extends CommonDBTM
             }
 
             if ($display > 0) {
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
 
             $onchange .= "});";
@@ -1991,7 +1991,7 @@ class Dropdownmeta extends CommonDBTM
                             $('[id-field =\"field'+key+'\"]').hide();
                             $('[id-field =\"field'+key+'-2\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
-                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                            " . FieldOption::resetMandatoryFieldsByField($name) . "
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                             $('[name =\"field['+key+'-2]\"]').removeAttr('required');";
                     if (is_array($childs_by_checkvalue)) {
@@ -2018,7 +2018,7 @@ class Dropdownmeta extends CommonDBTM
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
             $onchange .= "});";
 
@@ -2090,7 +2090,7 @@ class Dropdownmeta extends CommonDBTM
                                                 $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                             " . Fieldoption::setMandatoryBlockFields(
+                                                             " . FieldOption::setMandatoryBlockFields(
                                                     $metaid,
                                                     $childs
                                                 );
@@ -2106,9 +2106,9 @@ class Dropdownmeta extends CommonDBTM
 
 
             //by default - hide all
-            $pre_onchange .= Fieldoption::hideAllblockbyDefault($data);
+            $pre_onchange .= FieldOption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
-                $pre_onchange .= Fieldoption::emptyAllblockbyDefault($check_values);
+                $pre_onchange .= FieldOption::emptyAllblockbyDefault($check_values);
             }
 
             //Si la valeur est en session
@@ -2144,8 +2144,8 @@ class Dropdownmeta extends CommonDBTM
                         $('[bloc-id =\"bloc'+ key +'\"]').hide();
                         $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                         sessionStorage.setItem('hiddenbloc$name', key);
-                        " . Fieldoption::setEmptyBlockFields($name) . "";
-                    $hidden = Fieldoption::resetMandatoryBlockFields($name);
+                        " . FieldOption::setEmptyBlockFields($name) . "";
+                    $hidden = FieldOption::resetMandatoryBlockFields($name);
                     $onchange .= "$hidden";
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -2167,7 +2167,7 @@ class Dropdownmeta extends CommonDBTM
                         $('[bloc-id =\"subbloc'+ key +'\"]').show();
                         ";
 
-                    $hidden = Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $hidden = FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                     $onchange .= "$hidden";
                     if (is_array($childs_by_checkvalue)) {
@@ -2200,7 +2200,7 @@ class Dropdownmeta extends CommonDBTM
                         if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
                             $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
-                          " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                          " . FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
                         }
                     }
                 }

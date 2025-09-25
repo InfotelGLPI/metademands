@@ -64,7 +64,7 @@ class FieldOption extends CommonDBChild
         'dropdown_multiple',
         'dropdown',
         'dropdown_object',
-//        'dropdown_ldap',
+        //        'dropdown_ldap',
         'parent_field',
         'text',
         'tel',
@@ -95,7 +95,7 @@ class FieldOption extends CommonDBChild
     }
 
 
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -103,7 +103,7 @@ class FieldOption extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -192,7 +192,7 @@ class FieldOption extends CommonDBChild
                         }
                         if ($metademands_id > 0) {
                             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                            $data = [\Dropdown::EMPTY_VALUE];
+                            $data = [Dropdown::EMPTY_VALUE];
                             foreach ($fields_data as $id => $value) {
                                 if ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "informations") {
@@ -201,7 +201,7 @@ class FieldOption extends CommonDBChild
                                     );
                                 }
                             }
-                            return \Dropdown::showFromArray($name, $data, $options);
+                            return Dropdown::showFromArray($name, $data, $options);
                         }
                     }
                 }
@@ -212,7 +212,7 @@ class FieldOption extends CommonDBChild
     }
 
     /**
-     * @param \CommonGLPI $item
+     * @param CommonGLPI $item
      * @param int $withtemplate
      *
      * @return array|string
@@ -236,7 +236,7 @@ class FieldOption extends CommonDBChild
     {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
-            $dbu->getTableForItemType(__CLASS__),
+            $dbu->getTableForItemType(FieldOption::class),
             ["plugin_metademands_fields_id" => $item->getID()]
         );
     }
@@ -310,9 +310,9 @@ class FieldOption extends CommonDBChild
             echo "<div id='viewoption" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addOption"  . $item->getID() . "$rand() {\n";
+            echo "function addOption" . $item->getID() . "$rand() {\n";
             $params = [
-                'type' => __CLASS__,
+                'type' => FieldOption::class,
                 'parenttype' => get_class($item),
                 $item->getForeignKeyField() => $item->getID(),
                 'id' => -1,
@@ -331,9 +331,9 @@ class FieldOption extends CommonDBChild
 
                     $('#viewoption" . $item->getID() . $rand . "')
                         .load('" . $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php',{
-                        type:\"" . __CLASS__ . "\",
-                        parenttype:\"" . get_class($item) . "\"," .
-                        $item->getForeignKeyField() . ":" . $item->getID() . ",
+                        'type':'GlpiPlugin\\\Metademands\\\FieldOption',
+                        'parenttype':'GlpiPlugin\\\Metademands\\\Field',"
+                        . $item->getForeignKeyField() . ":" . $item->getID() . ",
                         id:value[0],
                         check_value : value[1],
                         plugin_metademands_tasks_id : value[2],
@@ -347,10 +347,10 @@ class FieldOption extends CommonDBChild
                     );";
 
             echo       "}</script>";
-            echo "<div class='center'>" .
-                "<a class='submit btn btn-primary' href='javascript:addOption" .
-                 $item->getID() . "$rand();'>" . __('Add a new option', 'metademands') .
-                "</a></div><br>";
+            echo "<div class='center'>"
+                . "<a class='submit btn btn-primary' href='javascript:addOption"
+                 . $item->getID() . "$rand();'>" . __('Add a new option', 'metademands')
+                . "</a></div><br>";
         }
 
 
@@ -362,8 +362,8 @@ class FieldOption extends CommonDBChild
         $options = $self->find(['plugin_metademands_fields_id' => $item->getID()]);
         if (is_array($options) && count($options) > 0) {
             if ($canedit) {
-                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-                $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
+                Html::openMassiveActionsForm('mass' . FieldOption::class . $rand);
+                $massiveactionparams = ['container' => 'mass' . FieldOption::class . $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
             echo "<div class='left'>";
@@ -371,7 +371,7 @@ class FieldOption extends CommonDBChild
             echo "<th colspan='11'>" . __("List of options", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
                 echo "<th width='11'>";
-                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo Html::getCheckAllAsCheckbox('mass' . FieldOption::class . $rand);
                 echo "</th>";
             }
             echo "<th>" . __("ID") . "</th>";
@@ -423,27 +423,27 @@ class FieldOption extends CommonDBChild
                 $onhover = '';
                 if ($canedit) {
                     $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditOption"  . $data['id'] . "$rand();\"";
+                           onClick=\"viewEditOption" . $data['id'] . "$rand();\"";
                 }
                 echo "<tr class='tab_bg_1'>";
                 if ($canedit) {
                     echo "<td class='center'>";
-                    Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
+                    Html::showMassiveActionCheckBox(FieldOption::class, $data["id"]);
                     echo "</td>";
                 }
 
                 echo "<td $onhover>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditOption"  . $data['id'] . "$rand() {\n";
+                    echo "function viewEditOption" . $data['id'] . "$rand() {\n";
                     $params = [
-                        'type' => __CLASS__,
+                        'type' => FieldOption::class,
                         'parenttype' => get_class($item),
                         $item->getForeignKeyField() => $item->getID(),
                         'id' => $data["id"],
                     ];
                     Ajax::updateItemJsCode(
-                        "viewoption"  . $item->getID() . "$rand",
+                        "viewoption" . $item->getID() . "$rand",
                         $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                         $params
                     );
@@ -464,7 +464,7 @@ class FieldOption extends CommonDBChild
                         if ($metatask->getFromDBByCrit(
                             ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']]
                         )) {
-                            echo \Dropdown::getDropdownName(
+                            echo Dropdown::getDropdownName(
                                 'glpi_plugin_metademands_metademands',
                                 $metatask->fields['plugin_metademands_metademands_id']
                             );
@@ -505,7 +505,7 @@ class FieldOption extends CommonDBChild
                 echo "</td>";
 
                 echo "<td $onhover>";
-                echo \Dropdown::getYesNo($data['hidden_block_same_block']);
+                echo Dropdown::getYesNo($data['hidden_block_same_block']);
                 echo "</td>";
 
                 echo "<td $onhover>";
@@ -566,7 +566,7 @@ class FieldOption extends CommonDBChild
 
 
         //      $iterator = $DB->request([
-        //                                  'FROM'  => getTableForItemType(__CLASS__),
+        //                                  'FROM'  => getTableForItemType(FieldOption::class),
         //                                  'WHERE' => [
         //                                     'itemtype' => $item->getType(),
         //                                     'items_id' => $item->getID(),
@@ -921,7 +921,7 @@ class FieldOption extends CommonDBChild
                         }
                     }
                 }
-                \Dropdown::showFromArray('parent_field_id', $fields);
+                Dropdown::showFromArray('parent_field_id', $fields);
                 echo Html::hidden('check_value', ['value' => 0]);
                 break;
         }
@@ -1063,7 +1063,7 @@ class FieldOption extends CommonDBChild
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
             unset($fields_data[$id]);
 
-            $data = [\Dropdown::EMPTY_VALUE];
+            $data = [Dropdown::EMPTY_VALUE];
             $fieldslinkusedarray = [];
             foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id']]) as $fieldslinkused) {
                 if ($fieldslinkused['fields_link'] > 0) {
@@ -1079,7 +1079,7 @@ class FieldOption extends CommonDBChild
                 }
             }
 
-            \Dropdown::showFromArray('fields_link', $data, ['value' => $params['fields_link']]);
+            Dropdown::showFromArray('fields_link', $data, ['value' => $params['fields_link']]);
             echo "</td></tr>";
         }
         if ($hidden) {
@@ -1095,7 +1095,7 @@ class FieldOption extends CommonDBChild
             $fields = new Field();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
             //            unset($fields_data[$id]);
-            $data = [\Dropdown::EMPTY_VALUE];
+            $data = [Dropdown::EMPTY_VALUE];
             $hiddenlinkusedarray = [];
             foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id']]) as $hiddenlinkused) {
                 if ($hiddenlinkused['hidden_link'] > 0) {
@@ -1109,7 +1109,7 @@ class FieldOption extends CommonDBChild
                     );
                 }
             }
-            \Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link']]);
+            Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link']]);
             echo "</td></tr>";
 
             $hiddenblockarray = [];
@@ -1164,12 +1164,12 @@ class FieldOption extends CommonDBChild
             //            Dropdown::showFromArray('hidden_block', $data, ['value' => $params['hidden_link']]);
             $hiddenblockarray[] = $field_class->getField('rank');
 
-            \Dropdown::showNumber('hidden_block', [
+            Dropdown::showNumber('hidden_block', [
                 'value' => $params['hidden_block'],
                 'used' => $hiddenblockarray,
                 'min' => 1,
                 'max' => Field::MAX_FIELDS,
-                'toadd' => [0 => \Dropdown::EMPTY_VALUE],
+                'toadd' => [0 => Dropdown::EMPTY_VALUE],
             ]);
 
             echo "</td></tr>";
@@ -1187,7 +1187,7 @@ class FieldOption extends CommonDBChild
             if (empty($params['hidden_block_same_block'])) {
                 $params['hidden_block_same_block'] = 0;
             }
-            \Dropdown::showYesNo('hidden_block_same_block', $params['hidden_block_same_block']);
+            Dropdown::showYesNo('hidden_block_same_block', $params['hidden_block_same_block']);
 
             echo "</td></tr>";
 
@@ -1211,9 +1211,9 @@ class FieldOption extends CommonDBChild
                 || $field_class->getField("type") == "dropdown"
                 || $field_class->getField("type") == "dropdown_object"
                 || $field_class->getField("type") == "dropdown_meta"
-                || $field_class->getField("type") == "yesno") &&
-                ($params['check_value'] == "" || count($childsblockarray) == 0 ||
-                    (!empty($params['childs_blocks']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))
+                || $field_class->getField("type") == "yesno")
+                && ($params['check_value'] == "" || count($childsblockarray) == 0
+                    || (!empty($params['childs_blocks']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))
             ) {
                 echo "<tr><td>";
                 echo __('Childs blocks', 'metademands');
@@ -1238,8 +1238,8 @@ class FieldOption extends CommonDBChild
                     }
                 }
             }
-            if ($params['check_value'] == "" || count($uservalidatearray) == 0 ||
-                (!empty($params['users_id_validate']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0)) {
+            if ($params['check_value'] == "" || count($uservalidatearray) == 0
+                || (!empty($params['users_id_validate']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0)) {
                 if ($field_class->getField("type") == "checkbox"
                 || $field_class->getField("type") == "radio"
                     || $field_class->getField("type") == "dropdown_meta"
@@ -1287,9 +1287,9 @@ class FieldOption extends CommonDBChild
                 }
             }
             if ($field_class->getField("type") == "dropdown_multiple"
-            &&  $field_class->getField("item") == "Appliance" &&
-                ($params['check_value'] == "" || count($checkboxarray) == 0 ||
-                    (!empty($params['checkbox_id']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))) {
+            &&  $field_class->getField("item") == "Appliance"
+                && ($params['check_value'] == "" || count($checkboxarray) == 0
+                    || (!empty($params['checkbox_id']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))) {
                 echo "<tr><td>";
                 echo __('Bind to the value of this checkbox', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
@@ -1325,7 +1325,7 @@ class FieldOption extends CommonDBChild
                 );
 
                 $arrayValues = [];
-                $arrayValues[0] = \Dropdown::EMPTY_VALUE;
+                $arrayValues[0] = Dropdown::EMPTY_VALUE;
                 if (!empty($params['checkbox_id'])) {
                     $field_custom = new FieldCustomvalue();
                     if ($customs = $field_custom->find(
@@ -1341,7 +1341,7 @@ class FieldOption extends CommonDBChild
                 }
                 echo "<span id='checkbox_value'>\n";
                 $elements = $arrayValues ?? [];
-                \Dropdown::showFromArray('checkbox_value', $elements, [
+                Dropdown::showFromArray('checkbox_value', $elements, [
                     'display_emptychoice' => false,
                     'value' => $params['checkbox_value'],
                 ]);
@@ -1436,7 +1436,7 @@ class FieldOption extends CommonDBChild
 
 
         $name = "childs_blocks[]";
-        \Dropdown::showFromArray(
+        Dropdown::showFromArray(
             $name,
             $blocks,
             [
