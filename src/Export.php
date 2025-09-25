@@ -31,10 +31,13 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use CommonDropdown;
 use CommonGLPI;
+use CommonTreeDropdown;
 use Document;
 use Entity;
 use Glpi\Form\Form;
+use Glpi\Form\QuestionType\QuestionTypeItemDropdown;
 use Glpi\Form\Section;
 use Html;
 use Session;
@@ -622,9 +625,8 @@ class Export extends CommonDBTM
             'dropdown_object' => 'Glpi\Form\QuestionType\QuestionTypeItem',
             'dropdown_meta' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
             'dropdown_multiple' => 'Glpi\Form\QuestionType\QuestionTypeDropdown',
-//            'title' => 'description',
-//            'title-block' => 'description',
-//            'informations' => 'description',
+            //        'title' => '',
+            //        'informations' => '',
             'text' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
             'tel' => 'Glpi\Form\QuestionType\QuestionTypeShortText',
             'email' => 'Glpi\Form\QuestionType\QuestionTypeShortEmail',
@@ -643,7 +645,7 @@ class Export extends CommonDBTM
             //        'date_interval' => '',
             //        'datetime_interval' => '',
             'upload' => 'Glpi\Form\QuestionType\QuestionTypeFile',
-            'link' => 'description',
+            //         'link' => '',
             //        'signature' => '',
             //        'parent_field' => ''
             '**meta type**' => 'Glpi\Form\QuestionType\QuestionTypeRequestType',
@@ -651,7 +653,7 @@ class Export extends CommonDBTM
         return $map[$type] ?? "";
     }
 
-    public static function getOptionsByFieldId($fieldId, $uuid, $fieldvalues = [])
+    public static function getOptionsByFieldId($fieldId, $prefix, $fieldvalues = [])
     {
         $options = getAllDataFromTable(
             'glpi_plugin_metademands_fieldoptions',
@@ -670,6 +672,7 @@ class Export extends CommonDBTM
             $fieldorigin = new Field();
             $fieldorigin->getFromDB($option['plugin_metademands_fields_id']);
 
+            $uuid = $prefix . $option['plugin_metademands_fields_id'];
             $fieldcustomvalues = new FieldCustomvalue();
 
             $showCondition = "equals";
@@ -678,10 +681,10 @@ class Export extends CommonDBTM
 
             if ($fieldorigin->fields['type'] === 'yesno') {
                 if ((int)$option['check_value'] === 1) {
-                    $showValue = array_search('oui', $fieldvalues);
+                    $showValue = array_search('Non', $fieldvalues[$option['plugin_metademands_fields_id']]);
                 }
                 if ((int)$option['check_value'] === 2) {
-                    $showValue = array_search('non', $fieldvalues);
+                    $showValue = array_search('Oui', $fieldvalues[$option['plugin_metademands_fields_id']]);
                 }
             } elseif ($fieldorigin->fields['type'] === 'text') {
                 $showCondition = "contains";
@@ -689,12 +692,12 @@ class Export extends CommonDBTM
                 $showCondition = "not_empty";
             } elseif (in_array($fieldorigin->fields["type"], Field::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
-                $showValue = $fieldcustomvalues->fields['name'] ?? "";
+                $showValue = array_search($fieldcustomvalues->fields['name'], $fieldvalues[$option['plugin_metademands_fields_id']]);
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
             }
 //            $questionId = $prefix . $option['plugin_metademands_fields_id'];
 //            $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
-            $renamedOptions[][] = [
+            $renamedOptions[] = [
                 'item_uuid' => $uuid,
                 'item_type' => "question",
 //                    'forms_questions_id' => $questionId,
@@ -875,16 +878,17 @@ class Export extends CommonDBTM
                 $groups_required[] = ["itemtype" => "Group", "name" => $metagroup->getName()];
                 $policies["config"]["group_ids"][] = $metagroup->getName();
             }
-        }
-        $form["data_requirements"] = array_merge(
-            $form["data_requirements"],
-            $groups_required
-        );
 
-        $form["policies"] = array_merge(
-            $form["policies"],
-            [$policies]
-        );
+            $form["policies"] = array_merge(
+                $form["policies"],
+                [$policies]
+            );
+
+            $form["data_requirements"] = array_merge(
+                $form["data_requirements"],
+                $groups_required
+            );
+        }
 
 
         if ($metademands->fields['object_to_create'] === "Ticket") {
@@ -1085,14 +1089,17 @@ class Export extends CommonDBTM
             $form["destinations"][] = $newChange;
         }
 
+        $criteria['WHERE'] = ['plugin_metademands_metademands_id' => $metademands_id];
+        $criteria['ORDER'] = ['rank, order'];
+
         $fields = getAllDataFromTable(
             'glpi_plugin_metademands_fields',
-            ['plugin_metademands_metademands_id' => $metademands_id]
+            $criteria
         );
 
 
         $sections = [];
-
+        $conditions = [];
         $questionsAdded = [];
 
         foreach ($fields as $field) {
@@ -1162,7 +1169,9 @@ class Export extends CommonDBTM
                 ];
 
                 if ($params['item'] !== null && getItemForItemtype($params['item'])) {
-                    if ($params['item'] === "Location") {
+                    if ($params['item'] instanceof CommonDropdown
+                        || $params['item'] instanceof CommonTreeDropdown
+                    || $fieldtype == QuestionTypeItemDropdown::class) {
                         $question['extra_data'] = [
                             "itemtype" => $params['item'],
                             "categories_filter" => [
@@ -1180,6 +1189,9 @@ class Export extends CommonDBTM
                     $question['default_value'] = ["items_id" => 0];
                 } else {
                     $question['default_value'] = "";
+                }
+                if ($params['type'] === 'dropdown_multiple') {
+                    $question['extra_data'] = ["is_multiple_dropdown" => 1];
                 }
                 if ($params['type'] === 'dropdown_multiple' && $params['item'] === 'User') {
                     $question['extra_data'] = ["is_multiple_actors" => 1];
@@ -1213,7 +1225,7 @@ class Export extends CommonDBTM
                         $question['description'] = __('No link', 'metademands');
                     }
                 } else {
-                    $question['description'] = $params['label2'] . $params['comment'];
+                    $question['description'] = $params['comment'];
                 }
                 if ($params['type'] === 'yesno') {
                     $rand1 = mt_rand();
@@ -1223,12 +1235,6 @@ class Export extends CommonDBTM
                         $rand2 => "Non"
                     ];
                     $question['extra_data'] = ["options" => $values, "is_multiple_dropdown" => false];
-                }
-                // Check if options are associated with this field
-                $options = self::getOptionsByFieldId($field['id'], $prefix . $fieldId, $values);
-                if ($options) {
-                    $question['visibility_strategy'] = "visible_if";
-                    $question['conditions'] = $options;
                 }
 
                 if (is_array($params['custom_values'])
@@ -1247,17 +1253,36 @@ class Export extends CommonDBTM
                     $question['extra_data'] = ["options" => $values];
                 }
 
+                // Check if options are associated with this field
+                $valuesbyfields[$fieldId] = $values;
+                $options = self::getOptionsByFieldId($fieldId, $prefix, $valuesbyfields);
+                if ($options) {
+                    $question['visibility_strategy'] = "visible_if";
+                    $question['conditions'] = $options;
+                }
+
                 $questions[$rank][] = $question;
 
                 //Sections conditions
-                $sectionConditions = self::getSectionConditions($field['id'], $prefix . $fieldId, $values);
-                foreach ($sectionConditions as $block => $cond) {
-                    $sections[$block]['conditions'] = $cond;
-                    if (count($sections[$block]['conditions']) > 0) {
-                        $sections[$block]['visibility_strategy'] = "visible_if";
+                $sectionConditions = self::getSectionConditions($fieldId, $prefix . $fieldId, $values);
+                if (count($sectionConditions) > 0) {
+                    foreach ($sectionConditions as $block => $cond) {
+                        $conditions[$block]['conditions'] = $cond;
+                        if (count($conditions[$block]['conditions']) > 0) {
+                            $conditions[$block]['visibility_strategy'] = "visible_if";
+                        }
                     }
                 }
             }
+        }
+        foreach ($conditions as $r => $cond) {
+            if (isset($sections[$r])) {
+                $sections[$r] = array_merge(
+                    $sections[$r],
+                    $cond
+                );
+            }
+
         }
 
         $list_questions = [];
