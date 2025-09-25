@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 09:35+0000\n"
+"POT-Creation-Date: 2025-09-25 12:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,7 +179,7 @@ msgid ""
 msgstr ""
 
 #: ajax/viewtypefields.php:56 src/Fields/Tel.php:125
-#: src/Fields/Dropdownmeta.php:1378 src/Fields/Dropdown.php:401
+#: src/Fields/Dropdownmeta.php:1378 src/Fields/Dropdown.php:468
 #: src/Fields/Text.php:123 src/Fields/Dropdownobject.php:606
 #: src/Fields/Dropdownobject.php:701 src/Fields/Email.php:122
 msgid "Link this to a user field"
@@ -398,7 +398,7 @@ msgstr ""
 
 #: src/Field.php:1415 src/Condition.php:372 src/Condition.php:510
 #: src/Condition.php:612 src/Condition.php:938 src/Fields/Ldapdropdown.php:293
-#: src/Fields/Dropdownmeta.php:1471 src/Fields/Dropdown.php:445
+#: src/Fields/Dropdownmeta.php:1471 src/Fields/Dropdown.php:557
 #: src/Fields/Checkbox.php:442 src/Fields/Radio.php:446
 #: src/Fields/Dropdownobject.php:777 src/Fields/Dropdownmultiple.php:739
 #: src/Fields/Yesno.php:221 src/Fields/Basket.php:566 src/Fieldoption.php:378
@@ -658,7 +658,7 @@ msgstr[1] ""
 #: src/Wizard.php:1239 src/Wizard.php:1482 src/Wizard.php:1597
 #: src/Wizard.php:1606 src/Wizard.php:1640 src/Wizard.php:1646
 #: src/Wizard.php:2148 src/Fields/Tel.php:346 src/Fields/Dropdownmeta.php:1783
-#: src/Fields/Dropdown.php:700 src/Fields/Text.php:345
+#: src/Fields/Dropdown.php:812 src/Fields/Text.php:345
 #: src/Fields/Checkbox.php:694 src/Fields/Radio.php:681 src/Fields/Url.php:345
 #: src/Fields/Dropdownobject.php:1070 src/Fields/Dropdownmultiple.php:1118
 #: src/Fields/Dropdownmultiple.php:1255 src/Fields/Yesno.php:392
@@ -678,7 +678,7 @@ msgid "Validate your basket"
 msgstr ""
 
 #: src/Wizard.php:1479 src/Wizard.php:1636 src/Fields/Tel.php:344
-#: src/Fields/Dropdownmeta.php:1781 src/Fields/Dropdown.php:699
+#: src/Fields/Dropdownmeta.php:1781 src/Fields/Dropdown.php:811
 #: src/Fields/Text.php:343 src/Fields/Checkbox.php:692 src/Fields/Radio.php:679
 #: src/Fields/Url.php:343 src/Fields/Dropdownobject.php:1069
 #: src/Fields/Dropdownmultiple.php:1116 src/Fields/Dropdownmultiple.php:1253
@@ -1511,11 +1511,11 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: src/Metademand.php:7577 src/Export.php:151 src/Export.php:178
+#: src/Metademand.php:7577 src/Export.php:164 src/Export.php:191
 msgid "Export XML"
 msgstr ""
 
-#: src/Metademand.php:7579 src/Export.php:189
+#: src/Metademand.php:7579 src/Export.php:202
 msgid "Export JSON"
 msgstr ""
 
@@ -1610,39 +1610,39 @@ msgstr ""
 msgid "Groups visibility"
 msgstr ""
 
-#: src/Export.php:73
+#: src/Export.php:86
 msgid "Export"
 msgstr ""
 
-#: src/Export.php:148
+#: src/Export.php:161
 msgid "Export the form to XML format for use with metademands plugin"
 msgstr ""
 
-#: src/Export.php:174
+#: src/Export.php:187
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: src/Export.php:185
+#: src/Export.php:198
 msgid "Export the metademand to JSON format for use with forms from GLPI"
 msgstr ""
 
-#: src/Export.php:1225
+#: src/Export.php:1201
 msgid "No link"
 msgstr ""
 
-#: src/Export.php:1320
+#: src/Export.php:1295
 msgid "Metademand file to import"
 msgstr ""
 
-#: src/Export.php:1329
+#: src/Export.php:1304
 msgid "Import"
 msgstr ""
 
-#: src/Export.php:1357
+#: src/Export.php:1332
 msgid "No file specified"
 msgstr ""
 
-#: src/Export.php:1372
+#: src/Export.php:1347
 msgid "The file is not an XML file"
 msgstr ""
 
@@ -1995,8 +1995,8 @@ msgstr ""
 
 #: src/Fields/Ldapdropdown.php:342 src/Fields/Ldapdropdown.php:378
 #: src/Fields/Dropdownmeta.php:1559 src/Fields/Dropdownmeta.php:1569
-#: src/Fields/Dropdownmeta.php:1590 src/Fields/Dropdown.php:494
-#: src/Fields/Dropdown.php:530 src/Fields/Checkbox.php:477
+#: src/Fields/Dropdownmeta.php:1590 src/Fields/Dropdown.php:606
+#: src/Fields/Dropdown.php:642 src/Fields/Checkbox.php:477
 #: src/Fields/Checkbox.php:490 src/Fields/Radio.php:481
 #: src/Fields/Radio.php:494 src/Fields/Dropdownobject.php:856
 #: src/Fields/Dropdownobject.php:859 src/Fields/Dropdownobject.php:869
@@ -2028,15 +2028,15 @@ msgid "No equipment founded"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1352 src/Fields/Datetime.php:101
-#: src/Fields/Dropdown.php:388 src/Fields/Dropdownobject.php:640
+#: src/Fields/Dropdown.php:455 src/Fields/Dropdownobject.php:640
 #: src/Fields/Dropdownobject.php:720 src/Fields/Date.php:101
 msgid "Use this field for child ticket field"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1360 src/Fields/Dropdownmeta.php:1421
-#: src/Fields/Dropdown.php:423 src/Fields/Checkbox.php:394
-#: src/Fields/Radio.php:397 src/Fields/Dropdownmultiple.php:666
-#: src/Fields/Yesno.php:196
+#: src/Fields/Dropdown.php:490 src/Fields/Dropdown.php:507
+#: src/Fields/Checkbox.php:394 src/Fields/Radio.php:397
+#: src/Fields/Dropdownmultiple.php:666 src/Fields/Yesno.php:196
 msgid "Classic display"
 msgstr ""
 
@@ -2045,9 +2045,9 @@ msgid "Icon display"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1364 src/Fields/Dropdownmeta.php:1425
-#: src/Fields/Dropdown.php:427 src/Fields/Checkbox.php:398
-#: src/Fields/Radio.php:401 src/Fields/Dropdownmultiple.php:670
-#: src/Fields/Yesno.php:200
+#: src/Fields/Dropdown.php:494 src/Fields/Dropdown.php:511
+#: src/Fields/Checkbox.php:398 src/Fields/Radio.php:401
+#: src/Fields/Dropdownmultiple.php:670 src/Fields/Yesno.php:200
 msgid "Display type of the field"
 msgstr ""
 
@@ -2059,8 +2059,8 @@ msgstr ""
 msgid "Hidden field"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1422 src/Fields/Checkbox.php:395
-#: src/Fields/Radio.php:398
+#: src/Fields/Dropdownmeta.php:1422 src/Fields/Dropdown.php:508
+#: src/Fields/Checkbox.php:395 src/Fields/Radio.php:398
 msgid "Block display"
 msgstr ""
 
@@ -2068,7 +2068,7 @@ msgstr ""
 msgid "Date & Hour"
 msgstr ""
 
-#: src/Fields/Dropdown.php:424
+#: src/Fields/Dropdown.php:491
 msgid "Splitted display"
 msgstr ""
 
