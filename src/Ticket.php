@@ -152,26 +152,31 @@ class Ticket extends CommonDBTM
         //parent or child
         if (count($ticket_metademand->fields) > 0) {
             $parent_ticket = true;
+
+            $ticketparent = new \Ticket();
+            $ticketparent->getFromDB($ticket_metademand->fields['parent_tickets_id']);
+            Metademand::changeMetademandGlobalStatus($ticketparent);
+
         } else {
             $ticket_parent_id  = self::getTicketIDOfMetademand($ticket->getID());
             $meta_to_not_close = self::childTicketsOpen($ticket_parent_id);
             if ($ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $ticket_parent_id])) {
                 $validationmeta = new MetademandValidation();
                 $validation     = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket_parent_id]);
-                $validation_ok  = false;
+                $validation_todo  = false;
                 if ($validation) {
                     if (in_array(
                         $validationmeta->fields['validate'],
                         [MetademandValidation::TO_VALIDATE, MetademandValidation::TO_VALIDATE_WITHOUTTASK]
                     )) {
-                        $validation_ok = true;
+                        $validation_todo = true;
                     }
                 }
 
-                if (!$meta_to_not_close && !$validation_ok) {
+                if (!$meta_to_not_close && !$validation_todo) {
                     $ticket_metademand->update(['id' => $ticket_metademand->getID(),
                         'status' => Ticket_Metademand::TO_CLOSED]);
-                } elseif ($meta_to_not_close || $validation_ok) {
+                } elseif ($meta_to_not_close || $validation_todo) {
                     $ticket_metademand->update(['id' => $ticket_metademand->getID(),
                         'status' => Ticket_Metademand::RUNNING]);
                 }

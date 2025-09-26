@@ -101,6 +101,25 @@ class Tools extends CommonDBTM
 
         echo "<div class='left'>";
         echo "<table class='tab_cadre_fixe'>";
+        echo "<th class='left'>";
+        echo __('Metademands global status', 'metademands');
+        echo "</th>";
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_2'>";
+        echo "<td class='left'>";
+        echo Html::getSimpleForm(
+            self::getFormURL(),
+            'change_global_status',
+            _x('button', 'Verify metademands global status', 'metademands'),
+        );
+        echo "</td>";
+        echo "</tr>";
+        echo "</table>";
+        echo "</div>";
+
+        echo "<div class='left'>";
+        echo "<table class='tab_cadre_fixe'>";
 
         $query = "SELECT plugin_metademands_fields_id, COUNT(plugin_metademands_fields_id),
                         check_value, COUNT(check_value) as nbr_doublon

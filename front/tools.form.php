@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,9 +28,11 @@
  --------------------------------------------------------------------------
  */
 
-use GlpiPlugin\Metademands\FieldOption;
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Ticket_Metademand;
 
 Session::checkRight("plugin_metademands", UPDATE);
 
@@ -44,7 +47,22 @@ if (isset($_POST["purge_emptyoptions"])) {
     $field->delete($_POST, 1);
     Session::addMessageAfterRedirect(__('Empty option has been deleted', 'metademands'));
     Html::back();
-} else if (isset($_POST["fix_emptycustomvalues"])) {
+} elseif (isset($_POST["change_global_status"])) {
+
+    $ticket_metademand = new Ticket_Metademand();
+    if ($notclosedmetademands = $ticket_metademand->find(['NOT' => ['status' => Ticket_Metademand::CLOSED]])) {
+        foreach ($notclosedmetademands as $notclosedmetademand) {
+            $ticket = new Ticket();
+            if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
+                if ($ticket->fields['status'] != Ticket::CLOSED) {
+                    Metademand::changeMetademandGlobalStatus($ticket);
+                }
+            }
+        }
+    }
+    Session::addMessageAfterRedirect(__('Metademands statuses updated', 'metademands'));
+    Html::back();
+} elseif (isset($_POST["fix_emptycustomvalues"])) {
     $itil = $_POST["id"];
     $field = new FieldParameter();
     $field->getfromDB($itil);

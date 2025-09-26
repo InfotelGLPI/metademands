@@ -718,7 +718,7 @@ class Form extends CommonDBTM
                 echo "<td>";
                 $rand = mt_rand();
                 echo "<button form='' class='submit btn btn-info btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
-                echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx(
+                echo "<i class='ti ti-cloud-download pointer' style='font-size:2em' title='" . _sx(
                     'button',
                     'Load form',
                     'metademands'
@@ -809,7 +809,7 @@ class Form extends CommonDBTM
                 echo "<td>";
                 $rand = mt_rand();
                 echo "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm$rand(" . $forms_metademand['id'] . ", " . $forms_metademand['plugin_metademands_metademands_id'] . ")\">";
-                echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx(
+                echo "<i class='ti ti-cloud-download pointer' style='font-size:2em' title='" . _sx(
                     'button',
                     'Load form',
                     'metademands'
