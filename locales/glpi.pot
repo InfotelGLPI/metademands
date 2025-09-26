@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 12:59+0000\n"
+"POT-Creation-Date: 2025-09-26 09:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: setup.php:296 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
-#: src/Config.php:74 src/Metademand.php:129 src/Menu.php:48 src/Tools.php:138
-#: src/Tools.php:215 src/Tools.php:310 src/Tools.php:473
+#: src/Config.php:74 src/Metademand.php:129 src/Menu.php:48 src/Tools.php:157
+#: src/Tools.php:234 src/Tools.php:329 src/Tools.php:492
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -92,11 +92,15 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
-#: front/tools.form.php:45
+#: front/tools.form.php:48
 msgid "Empty option has been deleted"
 msgstr ""
 
-#: front/tools.form.php:56
+#: front/tools.form.php:63
+msgid "Metademands statuses updated"
+msgstr ""
+
+#: front/tools.form.php:74
 msgid "Empty custom value has been cleaned"
 msgstr ""
 
@@ -156,19 +160,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1704 src/Metademand.php:7866
+#: hook.php:1704 src/Metademand.php:7912
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1722 src/Metademand.php:7995
+#: hook.php:1722 src/Metademand.php:8041
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1739 src/Metademand.php:8052
+#: hook.php:1739 src/Metademand.php:8098
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1756 src/Metademand.php:7924
+#: hook.php:1756 src/Metademand.php:7970
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -644,7 +648,7 @@ msgstr ""
 msgid "Make a change request"
 msgstr ""
 
-#: src/Wizard.php:1126 src/Metademand.php:8448
+#: src/Wizard.php:1126 src/Metademand.php:8494
 msgid "Find a form"
 msgstr ""
 
@@ -1487,73 +1491,77 @@ msgstr ""
 msgid "List of tickets / tasks which be created after validation"
 msgstr ""
 
-#: src/Metademand.php:6896
+#: src/Metademand.php:6930
 msgid "Demand followup"
 msgstr ""
 
-#: src/Metademand.php:6912
-msgid "Existing tickets"
+#: src/Metademand.php:6950
+msgid "Parent ticket"
 msgstr ""
 
-#: src/Metademand.php:6923 src/Metademand.php:7063
+#: src/Metademand.php:6952
+msgid "Existing childs tickets"
+msgstr ""
+
+#: src/Metademand.php:6965 src/Metademand.php:7109
 msgid "Due date"
 msgstr ""
 
-#: src/Metademand.php:7053
+#: src/Metademand.php:7099
 msgid "Next tickets"
 msgstr ""
 
-#: src/Metademand.php:7139
+#: src/Metademand.php:7185
 msgid "Coming"
 msgstr ""
 
-#: src/Metademand.php:7160
+#: src/Metademand.php:7206
 msgid "There is no childs tickets"
 msgstr ""
 
-#: src/Metademand.php:7577 src/Export.php:164 src/Export.php:191
+#: src/Metademand.php:7623 src/Export.php:164 src/Export.php:191
 msgid "Export XML"
 msgstr ""
 
-#: src/Metademand.php:7579 src/Export.php:202
+#: src/Metademand.php:7625 src/Export.php:202
 msgid "Export JSON"
 msgstr ""
 
-#: src/Metademand.php:7613
+#: src/Metademand.php:7659
 msgid "Start the download"
 msgstr ""
 
-#: src/Metademand.php:7617
+#: src/Metademand.php:7663
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: src/Metademand.php:7666
+#: src/Metademand.php:7712
 msgid "This action requires PHP extension zip"
 msgstr ""
 
-#: src/Metademand.php:7725
+#: src/Metademand.php:7771
 msgid "Configure demands"
 msgstr ""
 
-#: src/Metademand.php:8356
+#: src/Metademand.php:8402
 msgid "Progression of your demand"
 msgstr ""
 
-#: src/Metademand.php:8405
+#: src/Metademand.php:8451
 msgid "Done on"
 msgstr ""
 
-#: src/Metademand.php:8407
+#: src/Metademand.php:8453
 msgid "In progress"
 msgstr ""
 
-#: src/Metademand.php:8420
+#: src/Metademand.php:8466
 msgid "Not yet completed"
 msgstr ""
 
-#: src/Metademand.php:8537
+#: src/Metademand.php:8583
 msgid "Choose a template"
 msgstr ""
 
@@ -1693,7 +1701,7 @@ msgid ""
 "The ranks are not ordered correctly, you will not be able to order them!"
 msgstr ""
 
-#: src/Fieldcustomvalue.php:345 src/Fieldcustomvalue.php:352 src/Tools.php:493
+#: src/Fieldcustomvalue.php:345 src/Fieldcustomvalue.php:352 src/Tools.php:512
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -1771,44 +1779,53 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: src/Tools.php:121
+#: src/Tools.php:105
+msgid "Metademands global status"
+msgstr ""
+
+#: src/Tools.php:114
+msgctxt "button"
+msgid "Verify metademands global status"
+msgstr ""
+
+#: src/Tools.php:140
 msgid "Duplicates fields options"
 msgstr ""
 
-#: src/Tools.php:141
+#: src/Tools.php:160
 msgid "Number of duplicates"
 msgstr ""
 
-#: src/Tools.php:164
+#: src/Tools.php:183
 msgid "No duplicates founded"
 msgstr ""
 
-#: src/Tools.php:197
+#: src/Tools.php:216
 msgid "Empty fields options"
 msgstr ""
 
-#: src/Tools.php:246
+#: src/Tools.php:265
 msgid "No empty field options founded"
 msgstr ""
 
-#: src/Tools.php:278
+#: src/Tools.php:297
 msgid "Empty custom values"
 msgstr ""
 
-#: src/Tools.php:338
+#: src/Tools.php:357
 msgctxt "button"
 msgid "Fix empty custom values"
 msgstr ""
 
-#: src/Tools.php:350
+#: src/Tools.php:369
 msgid "No empty custom values founded"
 msgstr ""
 
-#: src/Tools.php:457
+#: src/Tools.php:476
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Tools.php:504
+#: src/Tools.php:523
 msgid "No problems with ranks found"
 msgstr ""
 
@@ -1816,7 +1833,7 @@ msgstr ""
 msgid "Linked ticket"
 msgstr ""
 
-#: src/Ticket.php:318
+#: src/Ticket.php:323
 msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
