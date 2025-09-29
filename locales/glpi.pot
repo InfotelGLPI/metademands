@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-26 09:43+0000\n"
+"POT-Creation-Date: 2025-09-29 15:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,15 +92,15 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
-#: front/tools.form.php:48
+#: front/tools.form.php:47
 msgid "Empty option has been deleted"
 msgstr ""
 
-#: front/tools.form.php:63
+#: front/tools.form.php:62
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: front/tools.form.php:74
+#: front/tools.form.php:73
 msgid "Empty custom value has been cleaned"
 msgstr ""
 
@@ -160,19 +160,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1704 src/Metademand.php:7912
+#: hook.php:1704 src/Metademand.php:7916
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1722 src/Metademand.php:8041
+#: hook.php:1722 src/Metademand.php:8045
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1739 src/Metademand.php:8098
+#: hook.php:1739 src/Metademand.php:8102
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1756 src/Metademand.php:7970
+#: hook.php:1756 src/Metademand.php:7974
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -648,7 +648,7 @@ msgstr ""
 msgid "Make a change request"
 msgstr ""
 
-#: src/Wizard.php:1126 src/Metademand.php:8494
+#: src/Wizard.php:1126 src/Metademand.php:8498
 msgid "Find a form"
 msgstr ""
 
@@ -1503,65 +1503,65 @@ msgstr ""
 msgid "Existing childs tickets"
 msgstr ""
 
-#: src/Metademand.php:6965 src/Metademand.php:7109
+#: src/Metademand.php:6965 src/Metademand.php:7113
 msgid "Due date"
 msgstr ""
 
-#: src/Metademand.php:7099
+#: src/Metademand.php:7103
 msgid "Next tickets"
 msgstr ""
 
-#: src/Metademand.php:7185
+#: src/Metademand.php:7189
 msgid "Coming"
 msgstr ""
 
-#: src/Metademand.php:7206
+#: src/Metademand.php:7210
 msgid "There is no childs tickets"
 msgstr ""
 
-#: src/Metademand.php:7623 src/Export.php:164 src/Export.php:191
+#: src/Metademand.php:7627 src/Export.php:164 src/Export.php:191
 msgid "Export XML"
 msgstr ""
 
-#: src/Metademand.php:7625 src/Export.php:202
+#: src/Metademand.php:7629 src/Export.php:202
 msgid "Export JSON"
 msgstr ""
 
-#: src/Metademand.php:7659
+#: src/Metademand.php:7663
 msgid "Start the download"
 msgstr ""
 
-#: src/Metademand.php:7663
+#: src/Metademand.php:7667
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: src/Metademand.php:7712
+#: src/Metademand.php:7716
 msgid "This action requires PHP extension zip"
 msgstr ""
 
-#: src/Metademand.php:7771
+#: src/Metademand.php:7775
 msgid "Configure demands"
 msgstr ""
 
-#: src/Metademand.php:8402
+#: src/Metademand.php:8406
 msgid "Progression of your demand"
 msgstr ""
 
-#: src/Metademand.php:8451
+#: src/Metademand.php:8455
 msgid "Done on"
 msgstr ""
 
-#: src/Metademand.php:8453
+#: src/Metademand.php:8457
 msgid "In progress"
 msgstr ""
 
-#: src/Metademand.php:8466
+#: src/Metademand.php:8470
 msgid "Not yet completed"
 msgstr ""
 
-#: src/Metademand.php:8583
+#: src/Metademand.php:8587
 msgid "Choose a template"
 msgstr ""
 
