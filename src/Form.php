@@ -758,7 +758,7 @@ class Form extends CommonDBTM
             echo "</tr>";
             echo "</table>";
         } else {
-            //         echo "<div class='alert alert-important alert-info center'>" . __('No item found') . "</div>";
+            //         echo "<div class='alert alert-important alert-info center'>" . __s('No results found') . "</div>";
         }
     }
 
@@ -844,7 +844,7 @@ class Form extends CommonDBTM
             echo "</tr>";
             echo "</table>";
         } else {
-            echo "<div class='alert alert-important alert-info center'>" . __('No item found') . "</div>";
+            echo "<div class='alert alert-important alert-info center'>" . __s('No results found') . "</div>";
         }
     }
 }

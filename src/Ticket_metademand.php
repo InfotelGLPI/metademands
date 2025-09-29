@@ -1418,4 +1418,111 @@ class Ticket_Metademand extends CommonDBTM
             }
         }
     }
+
+    /**
+     * Check Tool for change Status of metademands without opened tickets
+     * @param $ticket
+     * @return void
+     */
+    static function changeMetademandGlobalStatus($ticket) {
+
+        $ticket_metademand = new self();
+        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
+        $tickets_founded = [];
+        $metademands_id = 0;
+        // If ticket is Parent : Check if all sons ticket are closed
+        if (count($ticket_metademand_data)) {
+            $ticket_metademand_data = reset($ticket_metademand_data);
+            $tickets_founded = Ticket::getSonTickets(
+                $ticket->fields['id'],
+                $ticket_metademand_data['plugin_metademands_metademands_id'],
+                [],
+                true,
+                true
+            );
+            $metademands_id = $ticket_metademand_data['plugin_metademands_metademands_id'];
+        } else {
+            $ticket_task = new Ticket_Task();
+            $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);
+
+            if (count($ticket_task_data)) {
+                $tickets_founded = Ticket::getAncestorTickets($ticket->fields['id'], true);
+            }
+        }
+
+        $tickets_list = [];
+        $tickets_next = [];
+
+        $statuses = [];
+        if (is_array($tickets_founded)
+            && count($tickets_founded)
+            && $metademands_id > 0) {
+            foreach ($tickets_founded as $tickets) {
+                if (!empty($tickets['tickets_id'])) {
+                    $tickets_list[] = $tickets;
+                } else {
+                    if (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
+                        $tickets_next[] = $tickets;
+                    }
+                }
+            }
+            if (count($tickets_list)) {
+                foreach ($tickets_list as $values) {
+                    $childticket = new \Ticket();
+                    $childticket->getFromDB($values['tickets_id']);
+
+                    $statuses[] = $childticket->fields['status'];
+                }
+            }
+        }
+        if (count($tickets_next) == 0) {
+            $not_change_status = 0;
+            foreach ($statuses as $status) {
+                if (!in_array($status, [\Ticket::CLOSED])) {
+                    $not_change_status++;
+                }
+            }
+            $metaStatus = new self();
+            if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
+                && Session::haveRight('plugin_metademands', READ)
+                && Session::getCurrentInterface() == 'central') {
+                if ($not_change_status == 0) {
+                    $validationmeta = new MetademandValidation();
+                    $validation = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket->fields['id']]);
+                    $validation_todo = false;
+                    if ($validation) {
+                        if (in_array(
+                            $validationmeta->fields['validate'],
+                            [
+                                MetademandValidation::TO_VALIDATE,
+                                MetademandValidation::TO_VALIDATE_WITHOUTTASK
+                            ]
+                        )) {
+                            $validation_todo = true;
+                        }
+                    }
+
+                    if (!$validation_todo) {
+                        $metaStatus->update(
+                            [
+                                'id' => $metaStatus->fields['id'],
+                                'status' => self::TO_CLOSED
+                            ]
+                        );
+                    } elseif ($validation_todo) {
+                        $metaStatus->update(
+                            [
+                                'id' => $metaStatus->fields['id'],
+                                'status' => self::RUNNING
+                            ]
+                        );
+                    }
+                } else {
+                    $metaStatus->update(
+                        ['id' => $metaStatus->fields['id'], 'status' => self::RUNNING]
+                    );
+                }
+            }
+        }
+    }
 }

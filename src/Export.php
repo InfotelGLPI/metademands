@@ -796,7 +796,7 @@ class Export extends CommonDBTM
         $metademands_id = $metademands->getID();
         $prefix = self::generateCustomCode();
         if (!$metademands_id) {
-            die(json_encode(["error" => __('No item found')]));
+            die(json_encode(["error" =>__s('No results found')]));
         }
         $entity_name = "";
 

@@ -31,7 +31,6 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
-use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Ticket_Metademand;
 
 Session::checkRight("plugin_metademands", UPDATE);
@@ -55,7 +54,7 @@ if (isset($_POST["purge_emptyoptions"])) {
             $ticket = new Ticket();
             if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
                 if ($ticket->fields['status'] != Ticket::CLOSED) {
-                    Metademand::changeMetademandGlobalStatus($ticket);
+                    Ticket_Metademand::changeMetademandGlobalStatus($ticket);
                 }
             }
         }

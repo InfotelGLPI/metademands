@@ -155,7 +155,7 @@ class Ticket extends CommonDBTM
 
             $ticketparent = new \Ticket();
             $ticketparent->getFromDB($ticket_metademand->fields['parent_tickets_id']);
-            Metademand::changeMetademandGlobalStatus($ticketparent);
+            Ticket_Metademand::changeMetademandGlobalStatus($ticketparent);
 
         } else {
             $ticket_parent_id  = self::getTicketIDOfMetademand($ticket->getID());
