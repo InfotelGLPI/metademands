@@ -48,6 +48,7 @@ use GlpiPlugin\Metademands\Stepform;
 use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\Ticket_Metademand;
 use GlpiPlugin\Metademands\Ticket_Task;
+use GlpiPlugin\Resources\Resource;
 
 /**
  * @return bool
@@ -203,7 +204,7 @@ function plugin_metademands_install()
             $f["type"] = "dropdown_meta";
             $field->update($f);
         }
-        $fields = $field->find(['type' => "dropdown", "item" => "PluginResourcesResource"]);
+        $fields = $field->find(['type' => "dropdown", "item" => Resource::class]);
         foreach ($fields as $f) {
             $f["type"] = "dropdown_object";
             $field->update($f);

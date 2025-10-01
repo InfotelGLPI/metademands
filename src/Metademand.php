@@ -41,6 +41,7 @@ use DbUtils;
 use Dropdown;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
+use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Category as ServicecatalogCategory;
 use Group_Ticket;
 use Group_User;
@@ -49,7 +50,6 @@ use ITILCategory;
 use Log;
 use Override;
 use Plugin;
-use PluginResourcesResource;
 use ProblemTask;
 use Search;
 use Session;
@@ -2374,7 +2374,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
 
                     // Resources id
                     if (!empty($options['resources_id'])) {
-                        $parent_fields['items_id'] = ['PluginResourcesResource' => [$options['resources_id']]];
+                        $parent_fields['items_id'] = [Resource::class => [$options['resources_id']]];
                     }
 
                     // Requester user field
@@ -2680,9 +2680,9 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                             }
                         }
 
-                        if (isset($input['items_id']['PluginResourcesResource'])) {
-                            $resource = new PluginResourcesResource();
-                            foreach ($input['items_id']['PluginResourcesResource'] as $resource_id) {
+                        if (isset($input['items_id'][Resource::class])) {
+                            $resource = new Resource();
+                            foreach ($input['items_id'][Resource::class] as $resource_id) {
                                 if ($resource->getFromDB($resource_id)) {
                                     $input['name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
                                 }
@@ -4159,13 +4159,13 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                                         //replace #id# in title with the value
                                         do {
                                             if (isset($resource_id)) {
-                                                $resource = new PluginResourcesResource();
+                                                $resource = new Resource();
                                                 if ($resource->getFromDB($resource_id)) {
                                                     $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField(
                                                         'name'
                                                     ) . " " . $resource->getField('firstname');
                                                 }
-                                                $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                                $line['tasks'][$key]['items_id'] = [Resource::class => [$resource_id]];
                                             }
                                             $match = self::getBetween($l['tickettasks_name'], '[', ']');
                                             if (empty($match)) {
@@ -4707,10 +4707,10 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                                             $tasks[$key]['tickettasks_name'] = addslashes(
                                                 urlencode($val['tickettasks_name'])
                                             );
-                                            if (isset($input['items_id']['PluginResourcesResource'])) {
+                                            if (isset($input['items_id'][Resource::class])) {
                                                 if ($resource->getFromDB($resource_id)) {
                                                     $tasks[$key]['tickettasks_name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
-                                                    $tasks[$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                                    $tasks[$key]['items_id'] = [Resource::class => [$resource_id]];
                                                 }
                                             }
                                             if ($val['tasks_completename'] != null) {
@@ -5021,8 +5021,8 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                 }
 
                 if ($field['type'] == "dropdown_meta"
-                    && $field['item'] == "PluginResourcesResource") {
-                    $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
+                    && $field['item'] == Resource::class) {
+                    $result['items_id'] = [Resource::class => [$field['value']]];
                 }
 
                 if (!isset($options['formatastable'])
@@ -7098,7 +7098,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
 
                 if (count($tickets_next) && Session::getCurrentInterface() == 'central') {
                     $color_class = "metademand_metademandfollowup_grey";
-                    echo "<div align='center'><table class='tab_cadre_fixe'>";
+                    echo "<div class='center'><table class='tab_cadre_fixe'>";
                     echo "<tr class='center'>";
                     echo "<td colspan='6'><h3>" . __('Next tickets', 'metademands') . "</h3></td></tr>";
 
@@ -8582,7 +8582,7 @@ HTML;
             $colsup = 0;
         }
 
-        echo "<div align='center'><table class='tab_cadre'>";
+        echo "<div class='center'><table class='tab_cadre'>";
         if ($add) {
             echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Choose a template', 'metademands') . " - " . self::getTypeName(
                 2

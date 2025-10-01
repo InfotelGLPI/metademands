@@ -33,6 +33,7 @@ use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Stepform;
+use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Main;
 use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Metademands\Config;
@@ -80,7 +81,7 @@ if (empty($_GET['resources_id'])) {
             if (!is_array($field) && is_int($field)) {
                 $metademandsField = new Field();
                 $metademandsField->getFromDB($fieldKey);
-                if ($metademandsField->getField('item') == 'PluginResourcesResource') {
+                if ($metademandsField->getField('item') == Resource::class) {
                     $_GET['resources_id'] = $field;
                     $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'] = $field;
                 }

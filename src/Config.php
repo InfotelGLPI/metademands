@@ -152,7 +152,7 @@ class Config extends CommonDBTM
 
         echo "<form name='form' method='post' action='" . Toolbox::getItemTypeFormURL(Config::class) . "'>";
 
-        echo "<div align='center'><table class='tab_cadre_fixe'>";
+        echo "<div class='center'><table class='tab_cadre_fixe'>";
 
         echo "<tr><th colspan='6'>" . __('Configuration of the meta-demand plugin', 'metademands') . "</th></tr>";
 

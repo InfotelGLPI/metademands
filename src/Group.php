@@ -196,7 +196,7 @@ class Group extends CommonDBChild
         echo "<form name='form' method='post' action='" .
             Toolbox::getItemTypeFormURL(Group::class) . "'>";
 
-        echo "<div align='center'><table class='tab_cadre_fixe'>";
+        echo "<div class='center'><table class='tab_cadre_fixe'>";
         echo "<tr><th>" . __('Define visibility', 'metademands') . "</th></tr>";
 
         echo "<tr class='tab_bg_1'>";
@@ -270,7 +270,7 @@ class Group extends CommonDBChild
             echo "<form name='form' method='post' action='" .
                 Toolbox::getItemTypeFormURL(Group::class) . "'>";
 
-            echo "<div align='center'><table class='tab_cadre_fixe'>";
+            echo "<div class='center'><table class='tab_cadre_fixe'>";
             echo "<tr><th>" . __('Add a group', 'metademands') . "</th></tr>";
 
             echo "<tr class='tab_bg_1'>";

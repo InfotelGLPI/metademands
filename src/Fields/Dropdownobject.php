@@ -32,6 +32,7 @@ use Ajax;
 use CommonDBTM;
 use DbUtils;
 use Entity;
+use GlpiPlugin\Resources\Resource;
 use Group_User;
 use Html;
 use GlpiPlugin\Metademands\Field;
@@ -557,7 +558,7 @@ class Dropdownobject extends CommonDBTM
                         $field            .= Entity::dropdown($options);
                     }
                 } else {
-                    if ($data['item'] == "PluginResourcesResource") {
+                    if ($data['item'] == Resource::class) {
                         $opt['showHabilitations'] = true;
                     }
 

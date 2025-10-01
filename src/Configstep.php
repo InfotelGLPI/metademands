@@ -148,7 +148,7 @@ class Configstep extends CommonDBTM
         }
 
         echo "<form name = 'form' method='post' action='".Toolbox::getItemTypeFormURL(Configstep::class)."'>";
-        echo "<div align='center'><table class='tab_cadre_fixe'>";
+        echo "<div class='center'><table class='tab_cadre_fixe'>";
         echo "<tr><th colspan='6'>".self::getTypeName()."</th></tr>";
 
         echo "<tr class='tab_bg_1'>";

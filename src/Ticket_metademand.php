@@ -33,13 +33,13 @@ namespace GlpiPlugin\Metademands;
 use CommonDBTM;
 use CommonITILObject;
 use Glpi\RichText\RichText;
+use GlpiPlugin\Resources\Resource;
 use Group_User;
 use Search;
 use Session;
 use CommonGLPI;
 use User;
 use UserEmail;
-use PluginResourcesResource;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -1045,11 +1045,11 @@ class Ticket_Metademand extends CommonDBTM
                     //replace #id# in title with the value
                     do {
                         if (isset($resource_id)) {
-                            $resource = new PluginResourcesResource();
+                            $resource = new Resource();
                             if ($resource->getFromDB($resource_id)) {
                                 $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
                             }
-                            $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                            $line['tasks'][$key]['items_id'] = [Resource::class => [$resource_id]];
                         }
                         $match = Metademand::getBetween($l['tickettasks_name'], '[', ']');
                         if (empty($match)) {
@@ -1375,10 +1375,10 @@ class Ticket_Metademand extends CommonDBTM
                 foreach ($tasks as $key => $val) {
                     if (Ticket_Field::checkTicketCreation($val['tasks_id'], $parent_tickets_id)) {
                         $tasks[$key]['tickettasks_name'] = addslashes(urlencode($val['tickettasks_name']));
-                        if (isset($input['items_id']['PluginResourcesResource'])) {
+                        if (isset($input['items_id'][Resource::class])) {
                             if ($resource->getFromDB($resource_id)) {
                                 $tasks[$key]['tickettasks_name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
-                                $tasks[$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                $tasks[$key]['items_id'] = [Resource::class => [$resource_id]];
                             }
                         }
                         if ($val['tasks_completename'] != null) {

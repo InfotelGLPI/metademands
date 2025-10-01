@@ -37,6 +37,7 @@ use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTask;
+use GlpiPlugin\Resources\Resource;
 use Html;
 use ITILCategory;
 use Plugin;
@@ -659,7 +660,7 @@ class Dropdownmeta extends CommonDBTM
                 && $itemtype != "Line"
                 && $itemtype != "PDU"
                 && $itemtype != Badge::class
-                && $itemtype != "PluginResourcesResource"
+                && $itemtype != Resource::class
             ) {
                 $where = [];
                 $itemtable = getTableForItemType($itemtype);
@@ -953,7 +954,7 @@ class Dropdownmeta extends CommonDBTM
                             && $itemtype_groups != "Line"
                             && $itemtype_groups != "PDU"
                             && $itemtype_groups != Badge::class
-                            && $itemtype_groups != "PluginResourcesResource"
+                            && $itemtype_groups != Resource::class
                             && in_array($itemtype_groups, $objects)
                         ) {
                             foreach ($list_items_id as $key => $items_id) {

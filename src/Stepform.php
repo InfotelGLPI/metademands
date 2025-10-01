@@ -82,7 +82,7 @@ class Stepform extends CommonDBTM
     //        $forms = $self->find($condition, ['date DESC']);
     //
     //        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
-    //            $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) ?? '';
+    //            $formname = htmlescape(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) ?? '';
     //        } else {
     //            $formname = '';
     //        }

@@ -49,6 +49,9 @@ use GlpiPlugin\Metademands\Servicecatalog;
 use GlpiPlugin\Metademands\Stepform;
 use GlpiPlugin\Metademands\Ticket;
 use GlpiPlugin\Metademands\TicketField;
+use GlpiPlugin\Resources\ContractType;
+
+use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
@@ -104,7 +107,7 @@ function plugin_init_metademands()
         Plugin::registerClass(Metademand::class, ['addtabon' => 'Ticket']);
         Plugin::registerClass(MetaForm::class, ['addtabon' => ['Ticket', 'Problem', 'Change', 'User']]);
         Plugin::registerClass(Profile::class, ['addtabon' => 'Profile']);
-        Plugin::registerClass(Metademand_Resource::class, ['addtabon' => 'PluginResourcesContractType']);
+        Plugin::registerClass(Metademand_Resource::class, ['addtabon' => ContractType::class]);
 
         Plugin::registerClass(
             BasketobjectTranslation::class,
@@ -124,7 +127,7 @@ function plugin_init_metademands()
             ['notificationtemplates_types' => true]
         );
         $PLUGIN_HOOKS['item_show']['metademands'] = [
-            'PluginResourcesResource'
+            Resource::class
                 => [Metademand_Resource::class, 'redirectFormForResource'],
         ];
         $PLUGIN_HOOKS['item_empty']['metademands'] = [

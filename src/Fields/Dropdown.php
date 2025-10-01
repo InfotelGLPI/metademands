@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use DbUtils;
 use DropdownTranslation;
+use GlpiPlugin\Resources\Resource;
 use Html;
 use Location;
 use GlpiPlugin\Metademands\Field;
@@ -427,7 +428,7 @@ class Dropdown extends CommonDBTM
                         $field .= "</div>";
                     }
                 } else {
-                    if ($data['item'] == "PluginResourcesResource") {
+                    if ($data['item'] == Resource::class) {
                         $opt['showHabilitations'] = true;
                     }
                     if ($item = getItemForItemtype($data['item'])) {
