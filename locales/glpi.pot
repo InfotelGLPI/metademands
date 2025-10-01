@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 15:43+0000\n"
+"POT-Creation-Date: 2025-10-01 09:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:296 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
+#: setup.php:299 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
 #: src/Config.php:74 src/Metademand.php:129 src/Menu.php:48 src/Tools.php:157
 #: src/Tools.php:234 src/Tools.php:329 src/Tools.php:492
 msgid "Meta-Demand"
@@ -128,51 +128,51 @@ msgid_plural "forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: front/wizard.form.php:130
+#: front/wizard.form.php:131
 msgid "This metademand cannot be used with this entity"
 msgstr ""
 
-#: front/wizard.form.php:201
+#: front/wizard.form.php:202
 msgid "There is a problem with the basket"
 msgstr ""
 
-#: front/wizard.form.php:287 src/Menu.php:62 src/Menu.php:67
+#: front/wizard.form.php:288 src/Menu.php:62 src/Menu.php:67
 msgid "Create a metademand"
 msgstr ""
 
-#: hook.php:1123
+#: hook.php:1124
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:1136
+#: hook.php:1137
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:1152
+#: hook.php:1153
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:1163
+#: hook.php:1164
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:1175
+#: hook.php:1176
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1704 src/Metademand.php:7916
+#: hook.php:1705 src/Metademand.php:7916
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1722 src/Metademand.php:8045
+#: hook.php:1723 src/Metademand.php:8045
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1739 src/Metademand.php:8102
+#: hook.php:1740 src/Metademand.php:8102
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1756 src/Metademand.php:7974
+#: hook.php:1757 src/Metademand.php:7974
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -183,9 +183,9 @@ msgid ""
 msgstr ""
 
 #: ajax/viewtypefields.php:56 src/Fields/Tel.php:125
-#: src/Fields/Dropdownmeta.php:1378 src/Fields/Dropdown.php:468
-#: src/Fields/Text.php:123 src/Fields/Dropdownobject.php:606
-#: src/Fields/Dropdownobject.php:701 src/Fields/Email.php:122
+#: src/Fields/Dropdownmeta.php:1379 src/Fields/Dropdown.php:469
+#: src/Fields/Text.php:123 src/Fields/Dropdownobject.php:607
+#: src/Fields/Dropdownobject.php:702 src/Fields/Email.php:122
 msgid "Link this to a user field"
 msgstr ""
 
@@ -402,9 +402,9 @@ msgstr ""
 
 #: src/Field.php:1415 src/Condition.php:372 src/Condition.php:510
 #: src/Condition.php:612 src/Condition.php:938 src/Fields/Ldapdropdown.php:293
-#: src/Fields/Dropdownmeta.php:1471 src/Fields/Dropdown.php:557
+#: src/Fields/Dropdownmeta.php:1472 src/Fields/Dropdown.php:558
 #: src/Fields/Checkbox.php:442 src/Fields/Radio.php:446
-#: src/Fields/Dropdownobject.php:777 src/Fields/Dropdownmultiple.php:739
+#: src/Fields/Dropdownobject.php:778 src/Fields/Dropdownmultiple.php:739
 #: src/Fields/Yesno.php:221 src/Fields/Basket.php:566 src/Fieldoption.php:378
 msgid "Value to check"
 msgstr ""
@@ -661,10 +661,10 @@ msgstr[1] ""
 
 #: src/Wizard.php:1239 src/Wizard.php:1482 src/Wizard.php:1597
 #: src/Wizard.php:1606 src/Wizard.php:1640 src/Wizard.php:1646
-#: src/Wizard.php:2148 src/Fields/Tel.php:346 src/Fields/Dropdownmeta.php:1783
-#: src/Fields/Dropdown.php:812 src/Fields/Text.php:345
+#: src/Wizard.php:2148 src/Fields/Tel.php:346 src/Fields/Dropdownmeta.php:1784
+#: src/Fields/Dropdown.php:813 src/Fields/Text.php:345
 #: src/Fields/Checkbox.php:694 src/Fields/Radio.php:681 src/Fields/Url.php:345
-#: src/Fields/Dropdownobject.php:1070 src/Fields/Dropdownmultiple.php:1118
+#: src/Fields/Dropdownobject.php:1071 src/Fields/Dropdownmultiple.php:1118
 #: src/Fields/Dropdownmultiple.php:1255 src/Fields/Yesno.php:392
 #: src/Fields/Basket.php:840 src/Fields/Email.php:342
 #: src/Fields/Textarea.php:301 src/Fieldoption.php:1967
@@ -682,9 +682,9 @@ msgid "Validate your basket"
 msgstr ""
 
 #: src/Wizard.php:1479 src/Wizard.php:1636 src/Fields/Tel.php:344
-#: src/Fields/Dropdownmeta.php:1781 src/Fields/Dropdown.php:811
+#: src/Fields/Dropdownmeta.php:1782 src/Fields/Dropdown.php:812
 #: src/Fields/Text.php:343 src/Fields/Checkbox.php:692 src/Fields/Radio.php:679
-#: src/Fields/Url.php:343 src/Fields/Dropdownobject.php:1069
+#: src/Fields/Url.php:343 src/Fields/Dropdownobject.php:1070
 #: src/Fields/Dropdownmultiple.php:1116 src/Fields/Dropdownmultiple.php:1253
 #: src/Fields/Yesno.php:390 src/Fields/Basket.php:839 src/Fields/Email.php:340
 #: src/Fields/Textarea.php:299 src/Fieldoption.php:1965
@@ -786,7 +786,7 @@ msgstr[1] ""
 msgid "Text"
 msgstr ""
 
-#: src/Freetablefield.php:142 src/Fields/Dropdownmeta.php:82
+#: src/Freetablefield.php:142 src/Fields/Dropdownmeta.php:83
 msgid "Dropdown"
 msgstr ""
 
@@ -803,7 +803,7 @@ msgid "(6 fields maximum)"
 msgstr ""
 
 #: src/Freetablefield.php:345 src/Fieldcustomvalue.php:553
-#: src/Fields/Dropdownmeta.php:1135 src/Fields/Checkbox.php:263
+#: src/Fields/Dropdownmeta.php:1136 src/Fields/Checkbox.php:263
 #: src/Fields/Radio.php:267 src/Fields/Freetable.php:860
 #: src/Fields/Dropdownmultiple.php:566
 msgid "Rank"
@@ -1337,7 +1337,7 @@ msgstr ""
 msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
-#: src/Fieldparameter.php:809 src/Fields/Dropdownobject.php:678
+#: src/Fieldparameter.php:809 src/Fields/Dropdownobject.php:679
 #: src/Fields/Dropdownmultiple.php:713
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -1720,7 +1720,7 @@ msgid ""
 "sorted by display order"
 msgstr ""
 
-#: src/Fieldcustomvalue.php:572 src/Fields/Dropdownmeta.php:1188
+#: src/Fieldcustomvalue.php:572 src/Fields/Dropdownmeta.php:1189
 #: src/Fields/Checkbox.php:288 src/Fields/Radio.php:292
 #: src/Fields/Dropdownmultiple.php:504 src/Fields/Dropdownmultiple.php:591
 #: src/Fields/Yesno.php:165
@@ -1733,45 +1733,45 @@ msgstr[1] ""
 msgid "You can't add a custom value without name"
 msgstr ""
 
-#: src/Metademand_resource.php:64
+#: src/Metademand_resource.php:66
 msgid "Link with a metademand"
 msgid_plural "Link with metademands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Metademand_resource.php:189
+#: src/Metademand_resource.php:204
 msgid "Meta-demands linked"
 msgstr ""
 
-#: src/Metademand_resource.php:282
+#: src/Metademand_resource.php:300
 msgid "Firstname"
 msgstr ""
 
-#: src/Metademand_resource.php:286
+#: src/Metademand_resource.php:304
 msgid "Lastname"
 msgstr ""
 
-#: src/Metademand_resource.php:290
+#: src/Metademand_resource.php:308
 msgid "ContractType"
 msgstr ""
 
-#: src/Metademand_resource.php:294
+#: src/Metademand_resource.php:312
 msgid "Service"
 msgstr ""
 
-#: src/Metademand_resource.php:299
+#: src/Metademand_resource.php:317
 msgid "Secondaries services"
 msgstr ""
 
-#: src/Metademand_resource.php:309
+#: src/Metademand_resource.php:327
 msgid "Arrival date"
 msgstr ""
 
-#: src/Metademand_resource.php:313
+#: src/Metademand_resource.php:331
 msgid "Departure date"
 msgstr ""
 
-#: src/Metademand_resource.php:317
+#: src/Metademand_resource.php:335
 msgid "Resource manager"
 msgstr ""
 
@@ -2011,14 +2011,14 @@ msgid "Attribute"
 msgstr ""
 
 #: src/Fields/Ldapdropdown.php:342 src/Fields/Ldapdropdown.php:378
-#: src/Fields/Dropdownmeta.php:1559 src/Fields/Dropdownmeta.php:1569
-#: src/Fields/Dropdownmeta.php:1590 src/Fields/Dropdown.php:606
-#: src/Fields/Dropdown.php:642 src/Fields/Checkbox.php:477
+#: src/Fields/Dropdownmeta.php:1560 src/Fields/Dropdownmeta.php:1570
+#: src/Fields/Dropdownmeta.php:1591 src/Fields/Dropdown.php:607
+#: src/Fields/Dropdown.php:643 src/Fields/Checkbox.php:477
 #: src/Fields/Checkbox.php:490 src/Fields/Radio.php:481
-#: src/Fields/Radio.php:494 src/Fields/Dropdownobject.php:856
-#: src/Fields/Dropdownobject.php:859 src/Fields/Dropdownobject.php:869
-#: src/Fields/Dropdownobject.php:891 src/Fields/Dropdownobject.php:907
-#: src/Fields/Dropdownobject.php:918 src/Fields/Dropdownmultiple.php:869
+#: src/Fields/Radio.php:494 src/Fields/Dropdownobject.php:857
+#: src/Fields/Dropdownobject.php:860 src/Fields/Dropdownobject.php:870
+#: src/Fields/Dropdownobject.php:892 src/Fields/Dropdownobject.php:908
+#: src/Fields/Dropdownobject.php:919 src/Fields/Dropdownmultiple.php:869
 #: src/Fields/Basket.php:567
 msgid "Not null value"
 msgstr ""
@@ -2036,47 +2036,47 @@ msgstr ""
 msgid "If field empty"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:342
+#: src/Fields/Dropdownmeta.php:343
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:851
+#: src/Fields/Dropdownmeta.php:852
 msgid "No equipment founded"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1352 src/Fields/Datetime.php:101
-#: src/Fields/Dropdown.php:455 src/Fields/Dropdownobject.php:640
-#: src/Fields/Dropdownobject.php:720 src/Fields/Date.php:101
+#: src/Fields/Dropdownmeta.php:1353 src/Fields/Datetime.php:101
+#: src/Fields/Dropdown.php:456 src/Fields/Dropdownobject.php:641
+#: src/Fields/Dropdownobject.php:721 src/Fields/Date.php:101
 msgid "Use this field for child ticket field"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1360 src/Fields/Dropdownmeta.php:1421
-#: src/Fields/Dropdown.php:490 src/Fields/Dropdown.php:507
+#: src/Fields/Dropdownmeta.php:1361 src/Fields/Dropdownmeta.php:1422
+#: src/Fields/Dropdown.php:491 src/Fields/Dropdown.php:508
 #: src/Fields/Checkbox.php:394 src/Fields/Radio.php:397
 #: src/Fields/Dropdownmultiple.php:666 src/Fields/Yesno.php:196
 msgid "Classic display"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1361
+#: src/Fields/Dropdownmeta.php:1362
 msgid "Icon display"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1364 src/Fields/Dropdownmeta.php:1425
-#: src/Fields/Dropdown.php:494 src/Fields/Dropdown.php:511
+#: src/Fields/Dropdownmeta.php:1365 src/Fields/Dropdownmeta.php:1426
+#: src/Fields/Dropdown.php:495 src/Fields/Dropdown.php:512
 #: src/Fields/Checkbox.php:398 src/Fields/Radio.php:401
 #: src/Fields/Dropdownmultiple.php:670 src/Fields/Yesno.php:200
 msgid "Display type of the field"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1402 src/Fields/Dropdownobject.php:671
+#: src/Fields/Dropdownmeta.php:1403 src/Fields/Dropdownobject.php:672
 msgid "Read-Only"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1409
+#: src/Fields/Dropdownmeta.php:1410
 msgid "Hidden field"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1422 src/Fields/Dropdown.php:508
+#: src/Fields/Dropdownmeta.php:1423 src/Fields/Dropdown.php:509
 #: src/Fields/Checkbox.php:395 src/Fields/Radio.php:398
 msgid "Block display"
 msgstr ""
@@ -2085,7 +2085,7 @@ msgstr ""
 msgid "Date & Hour"
 msgstr ""
 
-#: src/Fields/Dropdown.php:491
+#: src/Fields/Dropdown.php:492
 msgid "Splitted display"
 msgstr ""
 
@@ -2149,23 +2149,23 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:67
+#: src/Fields/Dropdownobject.php:68
 msgid "Glpi Object"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:623
+#: src/Fields/Dropdownobject.php:624
 msgid "Show a identity card of user"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:632 src/Fields/Dropdownmultiple.php:684
+#: src/Fields/Dropdownobject.php:633 src/Fields/Dropdownmultiple.php:684
 msgid "Only users of my groups"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:652 src/Fields/Dropdownmultiple.php:694
+#: src/Fields/Dropdownobject.php:653 src/Fields/Dropdownmultiple.php:694
 msgid "Use id of requester by default"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:659 src/Fields/Dropdownmultiple.php:701
+#: src/Fields/Dropdownobject.php:660 src/Fields/Dropdownmultiple.php:701
 msgid "Use id of supervisor requester by default"
 msgstr ""
 
