@@ -295,8 +295,8 @@ class MetaDemandPdf extends Fpdf
             $percentage = ($target / $height);
         }
 
-        $width = round($width * $percentage);
-        $height = round($height * $percentage);
+        $width = round($width * $percentage, 0,PHP_ROUND_HALF_UP);
+        $height = round($height * $percentage, 0,PHP_ROUND_HALF_UP);
 
         return [$width, $height];
     }
