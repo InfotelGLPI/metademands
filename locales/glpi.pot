@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-01 09:06+0000\n"
+"POT-Creation-Date: 2025-10-02 10:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -190,12 +190,12 @@ msgid "Link this to a user field"
 msgstr ""
 
 #: ajax/viewfieldinfos.php:44 src/Freetablefield.php:203
-#: src/Fieldparameter.php:222 src/Fieldcustomvalue.php:244
+#: src/FieldParameter.php:222 src/FieldCustomvalue.php:244
 msgid "Field informations"
 msgstr ""
 
 #: ajax/viewfieldinfos.php:55 src/Freetablefield.php:214
-#: src/Fieldparameter.php:233 src/Fieldcustomvalue.php:255
+#: src/FieldParameter.php:233 src/FieldCustomvalue.php:255
 msgid "Example"
 msgstr ""
 
@@ -241,7 +241,7 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: ajax/displayGroupField.php:43 src/Metademandvalidation.php:493
+#: ajax/displayGroupField.php:43 src/MetademandValidation.php:493
 msgid "Attribute ticket to "
 msgstr ""
 
@@ -266,45 +266,87 @@ msgstr ""
 msgid "No existing forms founded"
 msgstr ""
 
-#: src/Tickettask.php:69 src/Mailtask.php:65 src/Metademandtask.php:61
-#: src/Task.php:77 src/Ticket_metademand.php:68 src/Ticket_task.php:58
+#: src/TicketField.php:90
+msgid "Ticket field"
+msgid_plural "Ticket fields"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/TicketField.php:176
+msgid "Requester login"
+msgstr ""
+
+#: src/TicketField.php:180
+msgid "Requester name"
+msgstr ""
+
+#: src/TicketField.php:184
+msgid "Requester firstname"
+msgstr ""
+
+#: src/TicketField.php:188
+msgid "Requester email"
+msgstr ""
+
+#: src/TicketField.php:288 src/TicketField.php:297
+msgid "Synchronise with ticket template"
+msgstr ""
+
+#: src/Ticket_Metademand.php:68 src/MailTask.php:65 src/Ticket_Task.php:58
+#: src/Task.php:77 src/TicketTask.php:69 src/MetademandTask.php:61
 msgid "Task creation"
 msgstr ""
 
-#: src/Tickettask.php:161 src/Mailtask.php:141 src/Task.php:566
-msgid "Use block"
+#: src/Ticket_Metademand.php:111 src/Ticket_Metademand.php:115
+msgid "Linked opened tickets"
 msgstr ""
 
-#: src/Tickettask.php:166 src/Mailtask.php:152 src/Task.php:565
-msgid "Block to use"
+#: src/Ticket_Metademand.php:296
+msgctxt "status"
+msgid "In progress"
 msgstr ""
 
-#: src/Tickettask.php:173 src/Mailtask.php:160 src/Task.php:786
-#: src/Task.php:1183 src/Step.php:358 src/Step.php:636 src/Step.php:650
-#: src/Fieldoption.php:1415
-#, php-format
-msgid "Block %s"
+#: src/Ticket_Metademand.php:299
+msgctxt "status"
+msgid "To close"
 msgstr ""
 
-#: src/Tickettask.php:193 src/Mailtask.php:180 src/Task.php:567
-msgid "Format the description of the childs ticket as a table"
+#: src/Ticket_Metademand.php:302
+msgctxt "status"
+msgid "Closed"
 msgstr ""
 
-#: src/Tickettask.php:198 src/Task.php:568
-msgid "Block parent ticket resolution"
+#: src/Ticket_Metademand.php:679 src/Metademand.php:3622
+#: src/Metademand.php:6005
+msgid "Child Ticket"
 msgstr ""
 
-#: src/Tickettask.php:207
-msgid "Create after the task"
+#: src/Ticket_Metademand.php:691 src/Metademand.php:3640
+#: src/Metademand.php:6021
+msgid "Parent tickets"
+msgid_plural "Parent tickets"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/NotificationTargetInterticketfollowup.php:126
+msgid "New inter ticket followup"
 msgstr ""
 
-#: src/Tickettask.php:316 src/Mailtask.php:202
-msgid "Actors"
+#: src/NotificationTargetInterticketfollowup.php:140
+msgid "Ticket technician of target tickets"
 msgstr ""
 
-#: src/Tickettask.php:722 src/Task.php:1025 src/Metademand.php:421
-#: src/Metademand.php:527
-msgid "The category is related to a demand. Thank you to select another"
+#: src/NotificationTargetInterticketfollowup.php:141
+msgid "Ticket group technician of target tickets"
+msgstr ""
+
+#: src/NotificationTargetInterticketfollowup.php:1041
+msgid "Target ticket(s)"
+msgstr ""
+
+#: src/NotificationTargetInterticketfollowup.php:1044
+msgctxt "quantity"
+msgid "Number of inter ticket followups"
 msgstr ""
 
 #: src/Basketobject.php:59
@@ -335,7 +377,101 @@ msgstr ""
 msgid "Reference"
 msgstr ""
 
-#: src/Field.php:230 src/Ticket_field.php:60
+#: src/MetademandValidation.php:71 src/MetademandValidation.php:416
+#: src/MetademandValidation.php:425 src/MetademandValidation.php:448
+#: src/Metademand.php:6783 src/Metademand.php:6791
+msgid "Metademand validation"
+msgstr ""
+
+#: src/MetademandValidation.php:130
+msgid "Add a field"
+msgstr ""
+
+#: src/MetademandValidation.php:383 src/MetademandValidation.php:507
+msgid "Tasks are created"
+msgstr ""
+
+#: src/MetademandValidation.php:388 src/MetademandValidation.php:511
+msgid "Sub-tickets are created"
+msgstr ""
+
+#: src/MetademandValidation.php:393
+msgid "The metademand is validated and affected"
+msgstr ""
+
+#: src/MetademandValidation.php:458
+msgid "Create sub-tickets"
+msgstr ""
+
+#: src/MetademandValidation.php:461 src/MetademandValidation.php:465
+msgid "Create tasks"
+msgstr ""
+
+#: src/MetademandValidation.php:518
+#, php-format
+msgid "Validated by %s on %s"
+msgstr ""
+
+#: src/MetademandValidation.php:531
+msgid "Validate metademands"
+msgstr ""
+
+#: src/MetademandValidation.php:635
+msgid "To validate"
+msgstr ""
+
+#: src/MetademandValidation.php:637
+msgid "Child tickets created"
+msgstr ""
+
+#: src/MetademandValidation.php:639
+msgid "Tasks created"
+msgstr ""
+
+#: src/MetademandValidation.php:641
+msgid "To validate without child"
+msgstr ""
+
+#: src/MetademandValidation.php:643
+msgid "Validate without child"
+msgstr ""
+
+#: src/MetademandValidation.php:646
+msgid "Not subject to validation"
+msgstr ""
+
+#: src/MailTask.php:141 src/Task.php:566 src/TicketTask.php:161
+msgid "Use block"
+msgstr ""
+
+#: src/MailTask.php:152 src/Task.php:565 src/TicketTask.php:166
+msgid "Block to use"
+msgstr ""
+
+#: src/MailTask.php:160 src/FieldOption.php:1415 src/Task.php:786
+#: src/Task.php:1183 src/TicketTask.php:173 src/Step.php:358 src/Step.php:636
+#: src/Step.php:650
+#, php-format
+msgid "Block %s"
+msgstr ""
+
+#: src/MailTask.php:180 src/Task.php:567 src/TicketTask.php:193
+msgid "Format the description of the childs ticket as a table"
+msgstr ""
+
+#: src/MailTask.php:202 src/TicketTask.php:316
+msgid "Actors"
+msgstr ""
+
+#: src/MailTask.php:302
+msgid "Fail to send email"
+msgstr ""
+
+#: src/MailTask.php:307
+msgid "Email sent"
+msgstr ""
+
+#: src/Field.php:230 src/Ticket_Field.php:60
 msgid "Wizard creation"
 msgstr ""
 
@@ -400,24 +536,25 @@ msgstr ""
 msgid "Mandatory"
 msgstr ""
 
-#: src/Field.php:1415 src/Condition.php:372 src/Condition.php:510
-#: src/Condition.php:612 src/Condition.php:938 src/Fields/Ldapdropdown.php:293
-#: src/Fields/Dropdownmeta.php:1472 src/Fields/Dropdown.php:558
-#: src/Fields/Checkbox.php:442 src/Fields/Radio.php:446
-#: src/Fields/Dropdownobject.php:778 src/Fields/Dropdownmultiple.php:739
-#: src/Fields/Yesno.php:221 src/Fields/Basket.php:566 src/Fieldoption.php:378
+#: src/Field.php:1415 src/FieldOption.php:378 src/Condition.php:372
+#: src/Condition.php:510 src/Condition.php:612 src/Condition.php:938
+#: src/Fields/Ldapdropdown.php:293 src/Fields/Dropdownmeta.php:1472
+#: src/Fields/Dropdown.php:558 src/Fields/Checkbox.php:442
+#: src/Fields/Radio.php:446 src/Fields/Dropdownobject.php:778
+#: src/Fields/Dropdownmultiple.php:739 src/Fields/Yesno.php:221
+#: src/Fields/Basket.php:566
 msgid "Value to check"
 msgstr ""
 
-#: src/Field.php:1417 src/Fieldparameter.php:393
+#: src/Field.php:1417 src/FieldParameter.php:393
 msgid "Display into the basket"
 msgstr ""
 
-#: src/Field.php:1419 src/Fieldparameter.php:427
+#: src/Field.php:1419 src/FieldParameter.php:427
 msgid "Use this field as object field"
 msgstr ""
 
-#: src/Field.php:1420 src/Fieldoption.php:379 src/Fieldoption.php:1036
+#: src/Field.php:1420 src/FieldOption.php:379 src/FieldOption.php:1036
 msgid "Launch a task with the field"
 msgstr ""
 
@@ -476,107 +613,6 @@ msgstr ""
 
 #: src/Field.php:4641 src/Condition.php:370 src/Condition.php:936
 msgid "Field type"
-msgstr ""
-
-#: src/Mailtask.php:302
-msgid "Fail to send email"
-msgstr ""
-
-#: src/Mailtask.php:307
-msgid "Email sent"
-msgstr ""
-
-#: src/Metademandvalidation.php:71 src/Metademandvalidation.php:416
-#: src/Metademandvalidation.php:425 src/Metademandvalidation.php:448
-#: src/Metademand.php:6783 src/Metademand.php:6791
-msgid "Metademand validation"
-msgstr ""
-
-#: src/Metademandvalidation.php:130
-msgid "Add a field"
-msgstr ""
-
-#: src/Metademandvalidation.php:383 src/Metademandvalidation.php:507
-msgid "Tasks are created"
-msgstr ""
-
-#: src/Metademandvalidation.php:388 src/Metademandvalidation.php:511
-msgid "Sub-tickets are created"
-msgstr ""
-
-#: src/Metademandvalidation.php:393
-msgid "The metademand is validated and affected"
-msgstr ""
-
-#: src/Metademandvalidation.php:458
-msgid "Create sub-tickets"
-msgstr ""
-
-#: src/Metademandvalidation.php:461 src/Metademandvalidation.php:465
-msgid "Create tasks"
-msgstr ""
-
-#: src/Metademandvalidation.php:518
-#, php-format
-msgid "Validated by %s on %s"
-msgstr ""
-
-#: src/Metademandvalidation.php:531
-msgid "Validate metademands"
-msgstr ""
-
-#: src/Metademandvalidation.php:635
-msgid "To validate"
-msgstr ""
-
-#: src/Metademandvalidation.php:637
-msgid "Child tickets created"
-msgstr ""
-
-#: src/Metademandvalidation.php:639
-msgid "Tasks created"
-msgstr ""
-
-#: src/Metademandvalidation.php:641
-msgid "To validate without child"
-msgstr ""
-
-#: src/Metademandvalidation.php:643
-msgid "Validate without child"
-msgstr ""
-
-#: src/Metademandvalidation.php:646
-msgid "Not subject to validation"
-msgstr ""
-
-#: src/Metademandtask.php:112
-msgid "This demand is already used in"
-msgstr ""
-
-#: src/Ticketfield.php:90
-msgid "Ticket field"
-msgid_plural "Ticket fields"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Ticketfield.php:176
-msgid "Requester login"
-msgstr ""
-
-#: src/Ticketfield.php:180
-msgid "Requester name"
-msgstr ""
-
-#: src/Ticketfield.php:184
-msgid "Requester firstname"
-msgstr ""
-
-#: src/Ticketfield.php:188
-msgid "Requester email"
-msgstr ""
-
-#: src/Ticketfield.php:288 src/Ticketfield.php:297
-msgid "Synchronise with ticket template"
 msgstr ""
 
 #: src/Wizard.php:93
@@ -661,13 +697,13 @@ msgstr[1] ""
 
 #: src/Wizard.php:1239 src/Wizard.php:1482 src/Wizard.php:1597
 #: src/Wizard.php:1606 src/Wizard.php:1640 src/Wizard.php:1646
-#: src/Wizard.php:2148 src/Fields/Tel.php:346 src/Fields/Dropdownmeta.php:1784
-#: src/Fields/Dropdown.php:813 src/Fields/Text.php:345
-#: src/Fields/Checkbox.php:694 src/Fields/Radio.php:681 src/Fields/Url.php:345
-#: src/Fields/Dropdownobject.php:1071 src/Fields/Dropdownmultiple.php:1118
-#: src/Fields/Dropdownmultiple.php:1255 src/Fields/Yesno.php:392
-#: src/Fields/Basket.php:840 src/Fields/Email.php:342
-#: src/Fields/Textarea.php:301 src/Fieldoption.php:1967
+#: src/Wizard.php:2148 src/FieldOption.php:1967 src/Fields/Tel.php:346
+#: src/Fields/Dropdownmeta.php:1784 src/Fields/Dropdown.php:813
+#: src/Fields/Text.php:345 src/Fields/Checkbox.php:694 src/Fields/Radio.php:681
+#: src/Fields/Url.php:345 src/Fields/Dropdownobject.php:1071
+#: src/Fields/Dropdownmultiple.php:1118 src/Fields/Dropdownmultiple.php:1255
+#: src/Fields/Yesno.php:392 src/Fields/Basket.php:840 src/Fields/Email.php:342
+#: src/Fields/Textarea.php:301
 msgid "Next"
 msgstr ""
 
@@ -681,13 +717,14 @@ msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: src/Wizard.php:1479 src/Wizard.php:1636 src/Fields/Tel.php:344
-#: src/Fields/Dropdownmeta.php:1782 src/Fields/Dropdown.php:812
-#: src/Fields/Text.php:343 src/Fields/Checkbox.php:692 src/Fields/Radio.php:679
-#: src/Fields/Url.php:343 src/Fields/Dropdownobject.php:1070
-#: src/Fields/Dropdownmultiple.php:1116 src/Fields/Dropdownmultiple.php:1253
-#: src/Fields/Yesno.php:390 src/Fields/Basket.php:839 src/Fields/Email.php:340
-#: src/Fields/Textarea.php:299 src/Fieldoption.php:1965
+#: src/Wizard.php:1479 src/Wizard.php:1636 src/FieldOption.php:1965
+#: src/Fields/Tel.php:344 src/Fields/Dropdownmeta.php:1782
+#: src/Fields/Dropdown.php:812 src/Fields/Text.php:343
+#: src/Fields/Checkbox.php:692 src/Fields/Radio.php:679 src/Fields/Url.php:343
+#: src/Fields/Dropdownobject.php:1070 src/Fields/Dropdownmultiple.php:1116
+#: src/Fields/Dropdownmultiple.php:1253 src/Fields/Yesno.php:390
+#: src/Fields/Basket.php:839 src/Fields/Email.php:340
+#: src/Fields/Textarea.php:299
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
@@ -802,7 +839,7 @@ msgstr ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/Freetablefield.php:345 src/Fieldcustomvalue.php:553
+#: src/Freetablefield.php:345 src/FieldCustomvalue.php:553
 #: src/Fields/Dropdownmeta.php:1136 src/Fields/Checkbox.php:263
 #: src/Fields/Radio.php:267 src/Fields/Freetable.php:860
 #: src/Fields/Dropdownmultiple.php:566
@@ -842,6 +879,38 @@ msgstr ""
 msgid "You can't add a field without type"
 msgstr ""
 
+#: src/FieldParameter.php:95
+msgid "Parameter"
+msgid_plural "Parameters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/FieldParameter.php:373 src/Metademand.php:1365
+msgid "Hide title"
+msgstr ""
+
+#: src/FieldParameter.php:385
+msgid "Takes the whole row"
+msgstr ""
+
+#: src/FieldParameter.php:627
+msgid "Link this to a plugin \"fields\" field"
+msgstr ""
+
+#: src/FieldParameter.php:809 src/Fields/Dropdownobject.php:679
+#: src/Fields/Dropdownmultiple.php:713
+msgid "Informations to display in ticket and PDF"
+msgstr ""
+
+#: src/BasketobjecttypeTranslation.php:167 src/FieldTranslation.php:189
+#: src/MetademandTranslation.php:176 src/BasketobjectTranslation.php:177
+msgid "List of translations"
+msgstr ""
+
+#: src/BasketobjecttypeTranslation.php:280 src/BasketobjectTranslation.php:315
+msgid "Translation"
+msgstr ""
+
 #: src/Draft.php:185 src/Draft.php:557 src/Draft.php:639
 msgctxt "button"
 msgid "Save as draft"
@@ -855,15 +924,6 @@ msgstr ""
 #: src/Draft.php:237
 msgctxt "button"
 msgid "Save draft"
-msgstr ""
-
-#: src/Basketobjecttranslation.php:177 src/Metademandtranslation.php:176
-#: src/Basketobjecttypetranslation.php:167 src/Fieldtranslation.php:189
-msgid "List of translations"
-msgstr ""
-
-#: src/Basketobjecttranslation.php:315 src/Basketobjecttypetranslation.php:280
-msgid "Translation"
 msgstr ""
 
 #: src/Basketline.php:72
@@ -898,11 +958,169 @@ msgstr ""
 msgid "The line has been deleted"
 msgstr ""
 
+#: src/CheckSchema.php:52
+msgid "Schema check"
+msgstr ""
+
+#: src/CheckSchema.php:148
+msgid "Failed to check the sanity of the tables!"
+msgstr ""
+
+#: src/CheckSchema.php:166
+msgid "The plugin schema is good"
+msgstr ""
+
 #: src/Basketobjecttype.php:51
 msgid "Object type"
 msgid_plural "Object types"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/NotificationTargetStepform.php:60
+msgid "A new form has been created"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:61
+msgid "A form has been completed"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:62
+msgid "A form has been cancelled"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:74 src/Stepform.php:403
+msgid "Next group in charge of demand"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:75 src/Stepform.php:404
+msgid "Next user in charge of demand"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:76
+msgid "Form requester"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:172 src/Stepform.php:402
+msgid "Publisher"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:173 src/Stepformread.php:99
+#: src/Stepformread.php:198
+msgid "Group in charge of the next step"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:174 src/Stepformread.php:100
+#: src/Stepformread.php:205
+msgid "User in charge of the next step"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:175
+msgid "Date of the last step"
+msgstr ""
+
+#: src/NotificationTargetStepform.php:176
+msgid "Date of the next reminder"
+msgstr ""
+
+#: src/FieldOption.php:88
+msgid "Option"
+msgid_plural "Options"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/FieldOption.php:144 src/FieldOption.php:380 src/FieldOption.php:1054
+msgid "Make this field mandatory"
+msgstr ""
+
+#: src/FieldOption.php:153 src/FieldOption.php:381 src/FieldOption.php:1087
+msgid "Display this hidden field"
+msgstr ""
+
+#: src/FieldOption.php:293
+msgid "No options are allowed for this field type"
+msgstr ""
+
+#: src/FieldOption.php:302
+msgid ""
+"Options aren't available for a field whose value is linked to a user field"
+msgstr ""
+
+#: src/FieldOption.php:352
+msgid "Add a new option"
+msgstr ""
+
+#: src/FieldOption.php:371
+msgid "List of options"
+msgstr ""
+
+#: src/FieldOption.php:382 src/FieldOption.php:1129
+msgid "Display this hidden block"
+msgstr ""
+
+#: src/FieldOption.php:383 src/FieldOption.php:1179
+msgid "Display this hidden block in the same block"
+msgstr ""
+
+#: src/FieldOption.php:384 src/FieldOption.php:1219
+msgid "Childs blocks"
+msgstr ""
+
+#: src/FieldOption.php:385 src/FieldOption.php:1249
+msgid "Launch a validation"
+msgstr ""
+
+#: src/FieldOption.php:386 src/FieldOption.php:1294
+msgid "Bind to the value of this checkbox"
+msgstr ""
+
+#: src/FieldOption.php:1038
+msgid "If the value selected equals the value to check, the task is created"
+msgstr ""
+
+#: src/FieldOption.php:1056
+msgid ""
+"If the value selected equals the value to check, the field becomes mandatory"
+msgstr ""
+
+#: src/FieldOption.php:1089
+msgid ""
+"If the value selected equals the value to check, the field becomes visible"
+msgstr ""
+
+#: src/FieldOption.php:1131
+msgid ""
+"If the value selected equals the value to check, the block becomes visible"
+msgstr ""
+
+#: src/FieldOption.php:1157
+msgid ""
+"This block is already used by another field. You can have some problems if "
+"the save value to check is used"
+msgstr ""
+
+#: src/FieldOption.php:1181
+msgid ""
+"If the value selected equals the value to check, the block becomes visible "
+"on the same block"
+msgstr ""
+
+#: src/FieldOption.php:1221
+msgid ""
+"If child blocks exist, these blocks are hidden when you deselect the option "
+"configured"
+msgstr ""
+
+#: src/FieldOption.php:1251
+msgid ""
+"If the value selected equals the value to check, the validation is sent to "
+"the user"
+msgstr ""
+
+#: src/FieldOption.php:1296
+msgid ""
+"If the selected value is equal to the value to check, the checkbox value is "
+"set"
+msgstr ""
 
 #: src/Profile.php:55
 msgid "Right management"
@@ -951,52 +1169,6 @@ msgstr[1] ""
 
 #: src/Profile.php:278
 msgid "Cancel / delete a form"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:60
-msgid "A new form has been created"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:61
-msgid "A form has been completed"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:62
-msgid "A form has been cancelled"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:74 src/Stepform.php:403
-msgid "Next group in charge of demand"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:75 src/Stepform.php:404
-msgid "Next user in charge of demand"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:76
-msgid "Form requester"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:172 src/Stepform.php:402
-msgid "Publisher"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:173 src/Stepformread.php:99
-#: src/Stepformread.php:198
-msgid "Group in charge of the next step"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:174 src/Stepformread.php:100
-#: src/Stepformread.php:205
-msgid "User in charge of the next step"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:175
-msgid "Date of the last step"
-msgstr ""
-
-#: src/Notificationtargetstepform.php:176
-msgid "Date of the next reminder"
 msgstr ""
 
 #: src/Interticketfollowup.php:156
@@ -1051,12 +1223,21 @@ msgstr ""
 msgid "Level"
 msgstr ""
 
+#: src/Task.php:568 src/TicketTask.php:198
+msgid "Block parent ticket resolution"
+msgstr ""
+
 #: src/Task.php:739
 msgid "Recipients"
 msgstr ""
 
 #: src/Task.php:765 src/Task.php:774
 msgid "Root"
+msgstr ""
+
+#: src/Task.php:1025 src/Metademand.php:421 src/Metademand.php:527
+#: src/TicketTask.php:722
+msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
 #: src/Task.php:1160
@@ -1319,29 +1500,6 @@ msgstr ""
 msgid "No conditions founded"
 msgstr ""
 
-#: src/Fieldparameter.php:95
-msgid "Parameter"
-msgid_plural "Parameters"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Fieldparameter.php:373 src/Metademand.php:1365
-msgid "Hide title"
-msgstr ""
-
-#: src/Fieldparameter.php:385
-msgid "Takes the whole row"
-msgstr ""
-
-#: src/Fieldparameter.php:627
-msgid "Link this to a plugin \"fields\" field"
-msgstr ""
-
-#: src/Fieldparameter.php:809 src/Fields/Dropdownobject.php:679
-#: src/Fields/Dropdownmultiple.php:713
-msgid "Informations to display in ticket and PDF"
-msgstr ""
-
 #: src/Metademand.php:193
 msgid "Child ticket"
 msgid_plural "Child tickets"
@@ -1448,18 +1606,6 @@ msgstr ""
 msgid "There is a problem on object creation"
 msgstr ""
 
-#: src/Metademand.php:3622 src/Metademand.php:6005
-#: src/Ticket_metademand.php:679
-msgid "Child Ticket"
-msgstr ""
-
-#: src/Metademand.php:3640 src/Metademand.php:6021
-#: src/Ticket_metademand.php:691
-msgid "Parent tickets"
-msgid_plural "Parent tickets"
-msgstr[0] ""
-msgstr[1] ""
-
 #: src/Metademand.php:4801
 msgid "Demand add failed"
 msgstr ""
@@ -1565,25 +1711,8 @@ msgstr ""
 msgid "Choose a template"
 msgstr ""
 
-#: src/Notificationtargetinterticketfollowup.php:126
-msgid "New inter ticket followup"
-msgstr ""
-
-#: src/Notificationtargetinterticketfollowup.php:140
-msgid "Ticket technician of target tickets"
-msgstr ""
-
-#: src/Notificationtargetinterticketfollowup.php:141
-msgid "Ticket group technician of target tickets"
-msgstr ""
-
-#: src/Notificationtargetinterticketfollowup.php:1041
-msgid "Target ticket(s)"
-msgstr ""
-
-#: src/Notificationtargetinterticketfollowup.php:1044
-msgctxt "quantity"
-msgid "Number of inter ticket followups"
+#: src/GroupConfig.php:58
+msgid "Groups visibility"
 msgstr ""
 
 #: src/Menu.php:81
@@ -1594,6 +1723,53 @@ msgstr ""
 msgid "View progress of current forms"
 msgstr ""
 
+#: src/FieldCustomvalue.php:82
+msgid "Custom value"
+msgid_plural "Custom values"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/FieldCustomvalue.php:331
+msgid "You have duplicates rank!"
+msgstr ""
+
+#: src/FieldCustomvalue.php:341
+msgid ""
+"The ranks are not ordered correctly, you will not be able to order them!"
+msgstr ""
+
+#: src/FieldCustomvalue.php:345 src/FieldCustomvalue.php:352 src/Tools.php:512
+msgctxt "button"
+msgid "Do you want to fix them ? Warning you must check your options after!"
+msgstr ""
+
+#: src/FieldCustomvalue.php:510
+msgid "Reset and import custom values"
+msgstr ""
+
+#: src/FieldCustomvalue.php:521
+msgid "Are you sure ? Custom values will be deleted !"
+msgstr ""
+
+#: src/FieldCustomvalue.php:522
+msgid ""
+"Please respect this format : name; display by default(0|1); comment; - "
+"sorted by display order"
+msgstr ""
+
+#: src/FieldCustomvalue.php:572 src/Fields/Dropdownmeta.php:1189
+#: src/Fields/Checkbox.php:288 src/Fields/Radio.php:292
+#: src/Fields/Dropdownmultiple.php:504 src/Fields/Dropdownmultiple.php:591
+#: src/Fields/Yesno.php:165
+msgid "Default value"
+msgid_plural "Default values"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/FieldCustomvalue.php:656
+msgid "You can't add a custom value without name"
+msgstr ""
+
 #: src/Servicecatalog.php:76
 msgid "Create a"
 msgstr ""
@@ -1602,20 +1778,8 @@ msgstr ""
 msgid "advanced request"
 msgstr ""
 
-#: src/Checkschema.php:52
-msgid "Schema check"
-msgstr ""
-
-#: src/Checkschema.php:148
-msgid "Failed to check the sanity of the tables!"
-msgstr ""
-
-#: src/Checkschema.php:166
-msgid "The plugin schema is good"
-msgstr ""
-
-#: src/Groupconfig.php:58
-msgid "Groups visibility"
+#: src/TicketTask.php:207
+msgid "Create after the task"
 msgstr ""
 
 #: src/Export.php:86
@@ -1686,95 +1850,6 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: src/Fieldcustomvalue.php:82
-msgid "Custom value"
-msgid_plural "Custom values"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Fieldcustomvalue.php:331
-msgid "You have duplicates rank!"
-msgstr ""
-
-#: src/Fieldcustomvalue.php:341
-msgid ""
-"The ranks are not ordered correctly, you will not be able to order them!"
-msgstr ""
-
-#: src/Fieldcustomvalue.php:345 src/Fieldcustomvalue.php:352 src/Tools.php:512
-msgctxt "button"
-msgid "Do you want to fix them ? Warning you must check your options after!"
-msgstr ""
-
-#: src/Fieldcustomvalue.php:510
-msgid "Reset and import custom values"
-msgstr ""
-
-#: src/Fieldcustomvalue.php:521
-msgid "Are you sure ? Custom values will be deleted !"
-msgstr ""
-
-#: src/Fieldcustomvalue.php:522
-msgid ""
-"Please respect this format : name; display by default(0|1); comment; - "
-"sorted by display order"
-msgstr ""
-
-#: src/Fieldcustomvalue.php:572 src/Fields/Dropdownmeta.php:1189
-#: src/Fields/Checkbox.php:288 src/Fields/Radio.php:292
-#: src/Fields/Dropdownmultiple.php:504 src/Fields/Dropdownmultiple.php:591
-#: src/Fields/Yesno.php:165
-msgid "Default value"
-msgid_plural "Default values"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Fieldcustomvalue.php:656
-msgid "You can't add a custom value without name"
-msgstr ""
-
-#: src/Metademand_resource.php:66
-msgid "Link with a metademand"
-msgid_plural "Link with metademands"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Metademand_resource.php:204
-msgid "Meta-demands linked"
-msgstr ""
-
-#: src/Metademand_resource.php:300
-msgid "Firstname"
-msgstr ""
-
-#: src/Metademand_resource.php:304
-msgid "Lastname"
-msgstr ""
-
-#: src/Metademand_resource.php:308
-msgid "ContractType"
-msgstr ""
-
-#: src/Metademand_resource.php:312
-msgid "Service"
-msgstr ""
-
-#: src/Metademand_resource.php:317
-msgid "Secondaries services"
-msgstr ""
-
-#: src/Metademand_resource.php:327
-msgid "Arrival date"
-msgstr ""
-
-#: src/Metademand_resource.php:331
-msgid "Departure date"
-msgstr ""
-
-#: src/Metademand_resource.php:335
-msgid "Resource manager"
-msgstr ""
-
 #: src/Tools.php:52
 msgid "Tools"
 msgstr ""
@@ -1829,6 +1904,48 @@ msgstr ""
 msgid "No problems with ranks found"
 msgstr ""
 
+#: src/Metademand_Resource.php:66
+msgid "Link with a metademand"
+msgid_plural "Link with metademands"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Metademand_Resource.php:204
+msgid "Meta-demands linked"
+msgstr ""
+
+#: src/Metademand_Resource.php:300
+msgid "Firstname"
+msgstr ""
+
+#: src/Metademand_Resource.php:304
+msgid "Lastname"
+msgstr ""
+
+#: src/Metademand_Resource.php:308
+msgid "ContractType"
+msgstr ""
+
+#: src/Metademand_Resource.php:312
+msgid "Service"
+msgstr ""
+
+#: src/Metademand_Resource.php:317
+msgid "Secondaries services"
+msgstr ""
+
+#: src/Metademand_Resource.php:327
+msgid "Arrival date"
+msgstr ""
+
+#: src/Metademand_Resource.php:331
+msgid "Departure date"
+msgstr ""
+
+#: src/Metademand_Resource.php:335
+msgid "Resource manager"
+msgstr ""
+
 #: src/Ticket.php:64
 msgid "Linked ticket"
 msgstr ""
@@ -1837,6 +1954,10 @@ msgstr ""
 msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
+msgstr ""
+
+#: src/MetademandTask.php:112
+msgid "This demand is already used in"
 msgstr ""
 
 #: src/Group.php:66
@@ -2342,123 +2463,4 @@ msgstr ""
 
 #: src/Fields/Information.php:130
 msgid "Alert"
-msgstr ""
-
-#: src/Ticket_metademand.php:111 src/Ticket_metademand.php:115
-msgid "Linked opened tickets"
-msgstr ""
-
-#: src/Ticket_metademand.php:296
-msgctxt "status"
-msgid "In progress"
-msgstr ""
-
-#: src/Ticket_metademand.php:299
-msgctxt "status"
-msgid "To close"
-msgstr ""
-
-#: src/Ticket_metademand.php:302
-msgctxt "status"
-msgid "Closed"
-msgstr ""
-
-#: src/Fieldoption.php:88
-msgid "Option"
-msgid_plural "Options"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Fieldoption.php:144 src/Fieldoption.php:380 src/Fieldoption.php:1054
-msgid "Make this field mandatory"
-msgstr ""
-
-#: src/Fieldoption.php:153 src/Fieldoption.php:381 src/Fieldoption.php:1087
-msgid "Display this hidden field"
-msgstr ""
-
-#: src/Fieldoption.php:293
-msgid "No options are allowed for this field type"
-msgstr ""
-
-#: src/Fieldoption.php:302
-msgid ""
-"Options aren't available for a field whose value is linked to a user field"
-msgstr ""
-
-#: src/Fieldoption.php:352
-msgid "Add a new option"
-msgstr ""
-
-#: src/Fieldoption.php:371
-msgid "List of options"
-msgstr ""
-
-#: src/Fieldoption.php:382 src/Fieldoption.php:1129
-msgid "Display this hidden block"
-msgstr ""
-
-#: src/Fieldoption.php:383 src/Fieldoption.php:1179
-msgid "Display this hidden block in the same block"
-msgstr ""
-
-#: src/Fieldoption.php:384 src/Fieldoption.php:1219
-msgid "Childs blocks"
-msgstr ""
-
-#: src/Fieldoption.php:385 src/Fieldoption.php:1249
-msgid "Launch a validation"
-msgstr ""
-
-#: src/Fieldoption.php:386 src/Fieldoption.php:1294
-msgid "Bind to the value of this checkbox"
-msgstr ""
-
-#: src/Fieldoption.php:1038
-msgid "If the value selected equals the value to check, the task is created"
-msgstr ""
-
-#: src/Fieldoption.php:1056
-msgid ""
-"If the value selected equals the value to check, the field becomes mandatory"
-msgstr ""
-
-#: src/Fieldoption.php:1089
-msgid ""
-"If the value selected equals the value to check, the field becomes visible"
-msgstr ""
-
-#: src/Fieldoption.php:1131
-msgid ""
-"If the value selected equals the value to check, the block becomes visible"
-msgstr ""
-
-#: src/Fieldoption.php:1157
-msgid ""
-"This block is already used by another field. You can have some problems if "
-"the save value to check is used"
-msgstr ""
-
-#: src/Fieldoption.php:1181
-msgid ""
-"If the value selected equals the value to check, the block becomes visible "
-"on the same block"
-msgstr ""
-
-#: src/Fieldoption.php:1221
-msgid ""
-"If child blocks exist, these blocks are hidden when you deselect the option "
-"configured"
-msgstr ""
-
-#: src/Fieldoption.php:1251
-msgid ""
-"If the value selected equals the value to check, the validation is sent to "
-"the user"
-msgstr ""
-
-#: src/Fieldoption.php:1296
-msgid ""
-"If the selected value is equal to the value to check, the checkbox value is "
-"set"
 msgstr ""
