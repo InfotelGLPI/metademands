@@ -2845,7 +2845,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                                 }
 
                                 $comm = \Dropdown::getDropdownName("glpi_entities", $_SESSION['glpiactive_entity']);
-                                $docPdf = new MetaDemandPdf($n, $comm, $parent_tickets_id);
+                                $docPdf = new MetademandPdf($n, $comm, $parent_tickets_id);
                                 if ($metademand->fields['is_order'] == 0) {
                                     $values_form['0'] = $values ?? [];
                                     $docPdf->drawPdf(
@@ -2879,7 +2879,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                                 }
                                 $docPdf->Close();
                                 //TODO TO Tranlate
-                                $name = MetaDemandPdf::cleanTitle($comm . " " . $n);
+                                $name = MetademandPdf::cleanTitle($comm . " " . $n);
                                 $docitem = $docPdf->addDocument(
                                     $name,
                                     $object_class,

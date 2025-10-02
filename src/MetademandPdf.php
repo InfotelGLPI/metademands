@@ -53,7 +53,7 @@ define('EURO', chr(128));
  * Class Pdf
  */
 #[AllowDynamicProperties]
-class MetaDemandPdf extends Fpdf
+class MetademandPdf extends Fpdf
 {
 
     /* Constantes pour paramétrer certaines données. */
@@ -79,7 +79,7 @@ class MetaDemandPdf extends Fpdf
     var $subtitle;
 
     /**
-     * PluginMetaDemandsMetaDemandPdf constructor.
+     * MetademandPdf constructor.
      *
      * @param $title
      * @param $subtitle
