@@ -24,9 +24,14 @@
     </authors>
     <versions>
         <version>
+            <num>3.5.3</num>
+            <compatibility>~11.0</compatibility>
+            <download_url>https://github.com/InfotelGLPI/metademands/releases/download/3.5.3/glpi-metademands-3.5.3.tar.bz2</download_url>
+        </version>
+        <version>
             <num>3.5.2</num>
             <compatibility>~11.0</compatibility>
-            <download_url>https://github.com/InfotelGLPI/metademands/releases/download/3.5.1/glpi-metademands-3.5.1.tar.bz2</download_url>
+            <download_url>https://github.com/InfotelGLPI/metademands/releases/download/3.5.2/glpi-metademands-3.5.2.tar.bz2</download_url>
         </version>
         <version>
             <num>3.5.1</num>

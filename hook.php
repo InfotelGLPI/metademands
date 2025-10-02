@@ -59,7 +59,7 @@ function plugin_metademands_install()
     global $DB;
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.5.1.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.5.3.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -732,6 +732,8 @@ function plugin_metademands_install()
     if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_pinned", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.5.0.sql");
     }
+
+    $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.5.3.sql");
 
     //Displayprefs
     $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
