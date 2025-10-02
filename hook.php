@@ -59,7 +59,7 @@ function plugin_metademands_install()
     global $DB;
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.5.0.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.5.1.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
