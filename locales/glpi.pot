@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-02 10:59+0000\n"
+"POT-Creation-Date: 2025-10-02 15:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -290,6 +290,26 @@ msgstr ""
 
 #: src/TicketField.php:288 src/TicketField.php:297
 msgid "Synchronise with ticket template"
+msgstr ""
+
+#: src/MetademandPdf.php:273
+msgid "Created on"
+msgstr ""
+
+#: src/MetademandPdf.php:429 src/MetademandPdf.php:522
+#: src/Fields/Freetable.php:788 src/Fields/Freetable.php:1200
+#: src/Fields/Basket.php:1821 src/Fields/Basket.php:2305
+msgid "Grand total (HT)"
+msgstr ""
+
+#: src/MetademandPdf.php:513 src/Fields/Freetable.php:787
+#: src/Fields/Freetable.php:1199
+msgid "Grand total (TTC)"
+msgstr ""
+
+#: src/MetademandPdf.php:522 src/Fields/Freetable.php:788
+#: src/Fields/Freetable.php:1200
+msgid "(if VAT 20%)"
 msgstr ""
 
 #: src/Ticket_Metademand.php:68 src/MailTask.php:65 src/Ticket_Task.php:58
@@ -1177,26 +1197,6 @@ msgstr ""
 
 #: src/Interticketfollowup.php:304
 msgid "Target followup"
-msgstr ""
-
-#: src/Metademandpdf.php:273
-msgid "Created on"
-msgstr ""
-
-#: src/Metademandpdf.php:429 src/Metademandpdf.php:522
-#: src/Fields/Freetable.php:788 src/Fields/Freetable.php:1200
-#: src/Fields/Basket.php:1821 src/Fields/Basket.php:2305
-msgid "Grand total (HT)"
-msgstr ""
-
-#: src/Metademandpdf.php:513 src/Fields/Freetable.php:787
-#: src/Fields/Freetable.php:1199
-msgid "Grand total (TTC)"
-msgstr ""
-
-#: src/Metademandpdf.php:522 src/Fields/Freetable.php:788
-#: src/Fields/Freetable.php:1200
-msgid "(if VAT 20%)"
 msgstr ""
 
 #: src/Task.php:244
