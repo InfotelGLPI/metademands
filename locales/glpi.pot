@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-02 16:31+0000\n"
+"POT-Creation-Date: 2025-10-04 14:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -261,7 +261,7 @@ msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
-#: ajax/deleteform.php:75 src/Wizard.php:777 src/Wizard.php:988
+#: ajax/deleteform.php:75 src/Wizard.php:784 src/Wizard.php:995
 #: src/Stepformread.php:134 src/Stepformread.php:232 src/Stepform.php:622
 msgid "No existing forms founded"
 msgstr ""
@@ -501,7 +501,7 @@ msgid "Field"
 msgstr ""
 
 #: src/Field.php:460 src/Field.php:846 src/Field.php:1261 src/Field.php:3352
-#: src/Field.php:4631 src/Wizard.php:1999 src/Step.php:397 src/Step.php:482
+#: src/Field.php:4631 src/Wizard.php:2006 src/Step.php:397 src/Step.php:482
 #: src/Step.php:624
 msgid "Block"
 msgstr ""
@@ -672,52 +672,52 @@ msgstr ""
 msgid "Click here for more informations"
 msgstr ""
 
-#: src/Wizard.php:627
+#: src/Wizard.php:634
 msgid "What you want to do ?"
 msgstr ""
 
-#: src/Wizard.php:658
+#: src/Wizard.php:665
 msgid "Form choice"
 msgstr ""
 
-#: src/Wizard.php:701
+#: src/Wizard.php:708
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: src/Wizard.php:707
+#: src/Wizard.php:714
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: src/Wizard.php:875
+#: src/Wizard.php:882
 msgid "Report an incident"
 msgstr ""
 
-#: src/Wizard.php:877
+#: src/Wizard.php:884
 msgid "Make a request"
 msgstr ""
 
-#: src/Wizard.php:881
+#: src/Wizard.php:888
 msgid "Report a problem"
 msgstr ""
 
-#: src/Wizard.php:883
+#: src/Wizard.php:890
 msgid "Make a change request"
 msgstr ""
 
-#: src/Wizard.php:1118 src/Metademand.php:8498
+#: src/Wizard.php:1125 src/Metademand.php:8498
 msgid "Find a form"
 msgstr ""
 
-#: src/Wizard.php:1197
+#: src/Wizard.php:1204
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:1231 src/Wizard.php:1474 src/Wizard.php:1589
-#: src/Wizard.php:1598 src/Wizard.php:1632 src/Wizard.php:1638
-#: src/Wizard.php:2140 src/FieldOption.php:1967 src/Fields/Tel.php:346
+#: src/Wizard.php:1238 src/Wizard.php:1481 src/Wizard.php:1596
+#: src/Wizard.php:1605 src/Wizard.php:1639 src/Wizard.php:1645
+#: src/Wizard.php:2147 src/FieldOption.php:1967 src/Fields/Tel.php:346
 #: src/Fields/Dropdownmeta.php:1784 src/Fields/Dropdown.php:813
 #: src/Fields/Text.php:345 src/Fields/Checkbox.php:694 src/Fields/Radio.php:681
 #: src/Fields/Url.php:345 src/Fields/Dropdownobject.php:1071
@@ -727,17 +727,17 @@ msgstr[1] ""
 msgid "Next"
 msgstr ""
 
-#: src/Wizard.php:1331 src/Wizard.php:1393
+#: src/Wizard.php:1338 src/Wizard.php:1400
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: src/Wizard.php:1403
+#: src/Wizard.php:1410
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: src/Wizard.php:1471 src/Wizard.php:1628 src/FieldOption.php:1965
+#: src/Wizard.php:1478 src/Wizard.php:1635 src/FieldOption.php:1965
 #: src/Fields/Tel.php:344 src/Fields/Dropdownmeta.php:1782
 #: src/Fields/Dropdown.php:812 src/Fields/Text.php:343
 #: src/Fields/Checkbox.php:692 src/Fields/Radio.php:679 src/Fields/Url.php:343
@@ -749,86 +749,86 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: src/Wizard.php:1478
+#: src/Wizard.php:1485
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: src/Wizard.php:1577 src/Wizard.php:2235
+#: src/Wizard.php:1584 src/Wizard.php:2242
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
-#: src/Wizard.php:1591
+#: src/Wizard.php:1598
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: src/Wizard.php:1592
+#: src/Wizard.php:1599
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: src/Wizard.php:1599
+#: src/Wizard.php:1606
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: src/Wizard.php:1736
+#: src/Wizard.php:1743
 msgid "You do not have access to the form"
 msgstr ""
 
-#: src/Wizard.php:1833
+#: src/Wizard.php:1840
 msgid "You have items on your basket"
 msgstr ""
 
-#: src/Wizard.php:2129
+#: src/Wizard.php:2136
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: src/Wizard.php:2137
+#: src/Wizard.php:2144
 msgid "Previous"
 msgstr ""
 
-#: src/Wizard.php:2179
+#: src/Wizard.php:2186
 msgid "Previous user"
 msgstr ""
 
-#: src/Wizard.php:2189
+#: src/Wizard.php:2196
 msgid "Previous data edited"
 msgstr ""
 
-#: src/Wizard.php:2231
+#: src/Wizard.php:2238
 msgid "Confirmation"
 msgstr ""
 
-#: src/Wizard.php:2250
+#: src/Wizard.php:2257
 msgid "Update the draft"
 msgstr ""
 
-#: src/Wizard.php:2254
+#: src/Wizard.php:2261
 msgid "Delete the draft"
 msgstr ""
 
-#: src/Wizard.php:2259 src/Draft.php:570
+#: src/Wizard.php:2266 src/Draft.php:570
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
 
-#: src/Wizard.php:3386
+#: src/Wizard.php:3393
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: src/Wizard.php:3397
+#: src/Wizard.php:3404
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: src/Wizard.php:3439
+#: src/Wizard.php:3446
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: src/Wizard.php:3451
+#: src/Wizard.php:3458
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
