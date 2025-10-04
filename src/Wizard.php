@@ -623,7 +623,14 @@ class Wizard extends CommonDBTM
                 echo "<div class=\"col-md-12\">";
                 echo "<h3><div class='alert alert-light' role='alert'>";
                 $icon = "ti-share";
-                echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
+                if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+                    $icon = $meta->fields['icon'];
+                }
+                if (str_contains($icon, 'fa-')) {
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                } else {
+                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
+                }
                 echo __('What you want to do ?', 'metademands');
                 echo "</div></h3></div></div>";
             } elseif ($parameters['step'] == Metademand::STEP_LIST) {

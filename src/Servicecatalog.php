@@ -104,11 +104,7 @@ class Servicecatalog extends CommonGLPI
         $config = new Config();
         $config->getFromDB(1);
         if (!empty($config->getField('fa_servicecatalog'))) {
-            if (str_contains($config->getField('fa_servicecatalog'), 'fa-')) {
-                return "fas " . $config->getField('fa_servicecatalog');
-            } else {
-                return "ti " . $config->getField('fa_servicecatalog');
-            }
+            return $config->getField('fa_servicecatalog');
         }
         return Metademand::getIcon();
     }
