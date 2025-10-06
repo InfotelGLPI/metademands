@@ -486,10 +486,10 @@ class Condition extends CommonDBChild
         $allConditions = [];
         $allConditions = $self->find(['plugin_metademands_metademands_id' => $item->fields['id']], ['order', 'id']);
         if (count($allConditions) > 0) {
-            html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
+            html::openMassiveActionsForm('massMetaCondition' . $rand);
             $params = [
                 'item' => __CLASS__,
-                'container' => 'mass' . __CLASS__ . $rand,
+                'container' => 'massMetaCondition' . $rand,
             ];
             Html::showMassiveActions($params);
 
