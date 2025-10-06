@@ -4096,18 +4096,18 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $criteria = [
                             'SELECT' => "$itemtable.*",
                             'DISTINCT' => true,
-                            'FROM' => 'glpi_computers_items',
+                            'FROM' => 'glpi_assets_assets_peripheralassets',
                             'LEFT JOIN' => [
                                 $itemtable => [
                                     'ON' => [
-                                        'glpi_computers_items' => 'items_id',
+                                        'glpi_assets_assets_peripheralassets' => 'itemtype_peripheral',
                                         $itemtable => 'id',
                                     ],
                                 ],
                             ],
                             'WHERE' => [
-                                'glpi_computers_items.itemtype' => $itemtype,
-                                'glpi_computers_items.computers_id' => $already_add['Computer'],
+                                'glpi_assets_assets_peripheralassets.itemtype_asset' => $itemtype,
+                                'glpi_assets_assets_peripheralassets.items_id_asset' => $already_add['Computer'],
                             ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
                             'ORDERBY' => "$itemtable.name",
                         ];
@@ -4449,18 +4449,18 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $criteria = [
                             'SELECT' => "$itemtable.*",
                             'DISTINCT' => true,
-                            'FROM' => 'glpi_computers_items',
+                            'FROM' => 'glpi_assets_assets_peripheralassets',
                             'LEFT JOIN' => [
                                 $itemtable => [
                                     'ON' => [
-                                        'glpi_computers_items' => 'items_id',
+                                        'glpi_assets_assets_peripheralassets' => 'itemtype_peripheral',
                                         $itemtable => 'id',
                                     ],
                                 ],
                             ],
                             'WHERE' => [
-                                'glpi_computers_items.itemtype' => $itemtype,
-                                'glpi_computers_items.computers_id' => $already_add['Computer'],
+                                'glpi_assets_assets_peripheralassets.itemtype_asset' => $itemtype,
+                                'glpi_assets_assets_peripheralassets.items_id_asset' => $already_add['Computer'],
                             ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
                             'ORDERBY' => "$itemtable.name",
                         ];
