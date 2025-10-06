@@ -1389,10 +1389,10 @@ class Field extends CommonDBChild
 
             if (is_array($data) && count($data) > 0) {
                 if ($canedit) {
-                    Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
+                    Html::openMassiveActionsForm('massMetaFields'  . $rand);
                     $massiveactionparams = [
                         'item' => __CLASS__,
-                        'container' => 'mass' . __CLASS__ . $rand,
+                        'container' => 'massMetaFields' . $rand,
                     ];
                     Html::showMassiveActions($massiveactionparams);
                 }
