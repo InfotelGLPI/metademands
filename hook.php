@@ -28,6 +28,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\DBAL\QueryExpression;
+use Glpi\DBAL\QueryFunction;
 use GlpiPlugin\Metademands\BasketobjectInjection;
 use GlpiPlugin\Metademands\Basketobjecttype;
 use GlpiPlugin\Metademands\Condition;
@@ -1299,16 +1301,69 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
     switch ($new_table) {
         //
         case "glpi_plugin_metademands_tickets_tasks":
-            return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id`
-          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
-          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
-          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id`
-          AND `glpi_tickets_metademands`.`is_deleted` = 0)
-          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id`
-          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
-          LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
-            break;
+
+            $out['LEFT JOIN'] = [
+                'glpi_plugin_metademands_tickets_tasks'.$AS => [
+                    'ON' => [
+                        $ref_table   => 'id',
+                        'glpi_plugin_metademands_tickets_tasks'                  => 'parent_tickets_id'
+                    ],
+                ],
+                'glpi_groups_tickets AS glpi_groups_tickets_metademands' => [
+                    'ON' => [
+                        $new_table   => 'tickets_id',
+                        'glpi_groups_tickets_metademands'                  => 'tickets_id', [
+                            'AND' => [
+                                'glpi_groups_tickets_metademands.type' => CommonITILActor::ASSIGN,
+                            ],
+                        ],
+                    ],
+                ],
+                'glpi_groups AS glpi_groups_metademands' => [
+                    'ON' => [
+                        'glpi_groups_tickets_metademands'   => 'groups_id',
+                        'glpi_groups_metademands'                  => 'id'
+                    ],
+                ],
+                'glpi_tickets AS glpi_tickets_metademands' => [
+                    'ON' => [
+                        $new_table   => 'tickets_id',
+                        'glpi_tickets_metademands'                  => 'id', [
+                            'AND' => [
+                                'glpi_tickets_metademands.is_deleted' => 0,
+                            ],
+                        ],
+                    ],
+                ],
+                'glpi_tickets_users AS glpi_users_tickets_metademands' => [
+                    'ON' => [
+                        $new_table   => 'tickets_id',
+                        'glpi_users_tickets_metademands'                  => 'tickets_id', [
+                            'AND' => [
+                                'glpi_users_tickets_metademands.type' => CommonITILActor::ASSIGN,
+                            ],
+                        ],
+                    ],
+                ],
+                'glpi_users AS glpi_users_metademands' => [
+                    'ON' => [
+                        'glpi_users_tickets_metademands'   => 'users_id',
+                        'glpi_users_metademands'                  => 'id'
+                    ],
+                ],
+            ];
+            return $out;
+//
+//            return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
+//          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id`
+//          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
+//          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
+//          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id`
+//          AND `glpi_tickets_metademands`.`is_deleted` = 0)
+//          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id`
+//          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
+//          LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
+//            break;
     }
     return "";
 }
@@ -1322,23 +1377,44 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
  */
 function plugin_metademands_addSelect($type, $ID, $num)
 {
+    global $DB;
     $searchopt = Search::getOptions($type);
     $table     = $searchopt[$ID]["table"];
     $field     = $searchopt[$ID]["field"];
 
     if ($table == "glpi_plugin_metademands_tickets_tasks"
         && $type == "Ticket") {
-        //      if($ID == 9502)
         if ($ID == 9504) {
-            return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_users_metademands`.`id`, '__NULL__'))
-      ORDER BY `glpi_users_metademands`.`id` SEPARATOR '$$##$$') AS `ITEM_$num`, ";
-            //         return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_users_metademands`.`name`, '__NULL__'), '$#$',`glpi_users_metademands`.`id`)
-            //      ORDER BY `glpi_users_metademands`.`id` SEPARATOR '$$##$$') AS `ITEM_$num`, ";
-        }
-        return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_groups_metademands`.`completename`, '__NULL__'), '$#$',`glpi_groups_metademands`.`id`)
-      ORDER BY `glpi_groups_metademands`.`id` SEPARATOR '$$##$$') AS `ITEM_$num`, ";
 
-        //      return "$table.$field, ";
+            //Prepare 11.0.1
+            $concat = QueryFunction::groupConcat(
+                expression: QueryFunction::concat([
+                    QueryFunction::ifnull('glpi_users_metademands.id', new QueryExpression($DB::quoteValue(Search::NULLVALUE))),
+                ]),
+                separator: Search::LONGSEP,
+                distinct: true,
+                order_by: 'glpi_users_metademands.id',
+                alias: "ITEM_{$num}"
+            );
+//            return $concat;
+
+            return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_users_metademands`.`id`, '__NULL__')) ORDER BY `glpi_users_metademands`.`id` SEPARATOR '$$##$$') AS `ITEM_$num` ";
+
+        }
+        //Prepare 11.0.1
+        $concat = QueryFunction::groupConcat(
+            expression: QueryFunction::concat([
+                QueryFunction::ifnull('glpi_groups_metademands.completename', new QueryExpression($DB::quoteValue(Search::NULLVALUE))),
+            ]),
+            separator: Search::LONGSEP,
+            distinct: true,
+            order_by: 'glpi_groups_metademands.completename',
+            alias: "ITEM_{$num}"
+        );
+
+//        return $concat;
+        return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_groups_metademands`.`completename`, '__NULL__')) ORDER BY `glpi_groups_metademands`.`completename` SEPARATOR '$$##$$') AS `ITEM_$num` ";
+
     } else {
         return "";
     }
