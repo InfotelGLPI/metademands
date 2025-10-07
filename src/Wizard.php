@@ -1088,12 +1088,15 @@ class Wizard extends CommonDBTM
                 echo "<div style='margin-right: 5px;'>";
                 echo "<h6>";
                 echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;'>";
+                $stylespan = "md-fav-icon-stack fa-1x";
+                $sizespan = "0.5em";
+                echo "<span class='$stylespan'><i class='ti ti-circle'></i>";
                 if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fas $icon fa-1x' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                    echo "<i class='fas $icon fa-1x' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size:$sizespan;\"></i>";//$style
                 } else {
-                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
+                    echo "<i class='ti $icon' style=\"font-size:$sizespan;\"></i>";//$style
                 }
-                echo "&nbsp;";
+                echo "</span>&nbsp;";
                 echo  $row['name'];
                 echo "</div>";
                 echo "</h6>";
@@ -1133,7 +1136,9 @@ class Wizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
 
+                echo "<div class='row'>";
                 foreach ($metademands as $id => $name) {
+
                     $meta = new Metademand();
                     if ($meta->getFromDB($id)) {
                         $icon = "ti-share";
@@ -1174,43 +1179,60 @@ class Wizard extends CommonDBTM
                             $icon = $meta->fields['icon'];
                         }
 
-                        echo "<a class='bt-buttons' title=\"" . RichText::getTextFromHtml($comment_meta) . "\" href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW . "'>";
-                        echo '<div class="btnsc-normal" >';
-                        $fasize = "fa-3x";
-                        echo "<div class='center'>";
-                        if (str_contains($icon, 'fa-')) {
-                            echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
-                        } else {
-                            echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:3em;\"></i>";//$style
-                        }
-                        echo "</div>";
-                        echo "<br><p style='font-size: 14px;'>";
-                        echo Html::resume_text($name_meta, 40);
+                        $fasize = "fa-1x";
 
-                        if (!empty($comment_meta)) {
-                            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                            echo Html::resume_text($comment_meta, 50);
-                            echo "</span></em>";
-                        }
+                        echo "<div class='col-12 col-sm-6 col-md-4 d-flex'>";
+                        echo "<a class='card mx-1 my-2 flex-grow-1' title=\"" . RichText::getTextFromHtml($comment_meta) . "\" href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW . "'>";
+                        echo "<section class='card-body'>";
+                        echo "<div class='d-flex'>";
 
-                        if ($config['use_draft']) {
-                            $count_drafts = Draft::countDraftsForUserMetademand(
-                                Session::getLoginUserID(),
-                                $id
-                            );
-                            if ($count_drafts > 0) {
-                                echo "<br><em><span class='mydraft-comment'>";
-                                echo sprintf(
-                                    _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                    $count_drafts
-                                );
+                            echo "<div class='aspect-ratio-1' style='margin-top: 40px;margin-left: 10px;width: 70px;height: 70px;'>";
+                                $stylespan = "md-cat-icon-stack fa-2x";
+                                $sizespan = "1em";
+                                $color = "color:color-mix(in srgb, transparent, var(--tblr-link-color) var(--tblr-link-opacity, 100%))";
+                                echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
+
+                                if (str_contains($icon, 'fa-')) {
+                                    echo "<i class='fas $icon $fasize' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>";//$style
+                                } else {
+                                    echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>";//$style
+                                }
                                 echo "</span>";
-                            }
-                        }
+                            echo "</div>";
+                            echo "<div class='ms-4'>";
+                                echo "<h2 class='card-title mb-2 text-break'>";
+                                echo Html::resume_text($name_meta, 30);
+                                echo "</h2>";
+                                echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
+                                if (!empty($comment_meta)) {
+                                    echo Html::resume_text($comment_meta, 100);
+                                } else {
+                                    echo Html::resume_text($name_meta, 100);
+                                }
 
-                        echo "</p></div></a>";
+                                if ($config['use_draft']) {
+                                    $count_drafts = Draft::countDraftsForUserMetademand(
+                                        Session::getLoginUserID(),
+                                        $id
+                                    );
+                                    if ($count_drafts > 0) {
+                                        echo "<br>";
+                                        echo sprintf(
+                                            _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                            $count_drafts
+                                        );
+                                    }
+                                }
+                            echo "</div>";
+
+                        echo "</div>";
+                        echo "</section>";
+                        echo "</a>";
+                        echo "</div>";
                     }
                 }
+                echo "</div>";
+
                 echo "</div>";
             } elseif (count($metademands) == 1) {
                 foreach ($metademands as $id => $name) {

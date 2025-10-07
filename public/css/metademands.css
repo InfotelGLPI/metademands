@@ -743,3 +743,41 @@ select.chained-select {
 .modal-buttons { margin-top: 15px; }
 
 .modal-buttons button { margin: 0 10px; padding: 6px 16px; }
+
+.md-cat-icon-stack {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    width: 1.3em;
+
+    i {
+        font-size: 3em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        &.sm-size {
+            font-size: 1em;
+        }
+    }
+}
+
+.md-fav-icon-stack {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    /*width: 1.3em;*/
+
+    i {
+        font-size: 2em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        &.sm-size {
+            font-size: 1em;
+        }
+    }
+}
