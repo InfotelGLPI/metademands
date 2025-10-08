@@ -253,9 +253,9 @@ class Wizard extends CommonDBTM
 
         echo "<div class='col-md-12 md-title'>";
         echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
-        echo "<section class='card-body' style='width: 100%;height: 100px;'>";
+        echo "<section class='card-body' style='width: 100%;height: 80px;'>";
         echo "<div class='d-flex'>";
-        echo "<div class='aspect-ratio-1' style='margin-top: 20px;margin-left: 10px;width: 70px;height: 70px;'>";
+        echo "<div class='aspect-ratio-1' style='margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;'>";
 
         $meta = new Metademand();
         if ($meta->getFromDB($parameters['metademands_id'])) {
@@ -263,10 +263,10 @@ class Wizard extends CommonDBTM
                 $icon = $meta->fields['icon'];
             }
         }
-        $stylespan = "md-cat-icon-stack fa-2x";
+        $stylespan = "md-cat-icon-stack";
         $sizespan = "1em";
         $color = "color:color-mix(in srgb, transparent, var(--tblr-link-color) var(--tblr-link-opacity, 100%))";
-        echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
+        echo "<span class='$stylespan' style='font-size:1.5em'><i class='ti ti-circle' style='$color;'></i>";
         if (!empty($icon)) {
             if (str_contains($icon, 'fa-')) {
                 echo "<i class='fa-1x fas $icon' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>&nbsp;";
@@ -375,7 +375,7 @@ class Wizard extends CommonDBTM
         echo "</div>";
 
 
-        echo "</div>";
+        echo "</div><br>";
     }
 
     public function showmodelsAndDrafts($parameters, $with_title = 1)
@@ -387,7 +387,7 @@ class Wizard extends CommonDBTM
             $class = "mydraft-withouttitle";
         }
         if (!$parameters['preview'] && !$parameters['seeform']) {
-            echo "<div class='$class' style='margin-top: 20px;margin-left: 10px;width: 70px;height: 70px;'>";
+            echo "<div class='$class' style='margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;'>";
             echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx(
                 'button',
                 'Your forms',
@@ -1231,13 +1231,13 @@ class Wizard extends CommonDBTM
                             echo "</div>";
                             echo "<div class='ms-4'>";
                                 echo "<h2 class='card-title mb-2 text-break'>";
-                                echo Html::resume_text($name_meta, 30);
+                                echo $name_meta;
                                 echo "</h2>";
                                 echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
                                 if (!empty($comment_meta)) {
-                                    echo Html::resume_text($comment_meta, 100);
+                                    echo $comment_meta;
                                 } else {
-                                    echo Html::resume_text($name_meta, 100);
+                                    echo $name_meta;
                                 }
 
                                 if ($config['use_draft']) {
