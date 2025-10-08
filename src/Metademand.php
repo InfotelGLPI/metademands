@@ -476,7 +476,7 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
         $cat_already_store = false;
 
         if (isset($input['itilcategories_id'])) {
-            if (count($input['itilcategories_id']) > 0) {
+            if (is_array($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
                 //retrieve all multiple cats from all metademands
 
                 if ($input['object_to_create'] != 'Ticket') {
@@ -8527,6 +8527,11 @@ HTML;
                         $icon = "fa-share-alt";
                         if (!empty($meta->fields['icon'])) {
                             $icon = $meta->fields['icon'];
+                        }
+                        if (str_contains($icon, 'fa-')) {
+                            $icon = "fas " . $icon;
+                        } else {
+                            $icon = "ti " . $icon;
                         }
                         if (empty($n = self::displayField($meta->getID(), 'name'))) {
                             $name = $meta->getName();

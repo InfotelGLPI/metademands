@@ -31,12 +31,12 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use Glpi\RichText\RichText;
 use Glpi\Toolbox\FrontEnd;
-use Html;
+use Glpi\UI\ThemeManager;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\MetademandTask;
+use Html;
 use Session;
-use Glpi\UI\ThemeManager;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -71,6 +71,9 @@ class Textarea extends CommonDBTM
         }
         $self = new self();
         $required = "";
+        $cols = 20;
+        $rows = 10;
+
         if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
             $rand = mt_rand();
             $name = 'field[' . $data['id'] . ']';
@@ -91,8 +94,8 @@ class Textarea extends CommonDBTM
                 'enable_richtext' => true,
                 //                'enable_images' => true,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
-                'cols' => 80,
-                'rows' => 6,
+                'cols' => $cols,
+                'rows' => $rows,
                 'uploads' => $self->uploads,
             ]);
 
@@ -111,7 +114,7 @@ class Textarea extends CommonDBTM
             if (!empty($comment)) {
                 $comment = RichText::getTextFromHtml($comment);
             }
-            $field = "<textarea $required class='form-control' rows='6' cols='80'
+            $field = "<textarea $required class='form-control' rows='$rows' cols='$cols'
                placeholder=\"" . $comment . "\"
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             echo $field;
@@ -232,13 +235,13 @@ class Textarea extends CommonDBTM
                         if (isset($idc) && $idc == 1) {
                             $onchange .= "if ($(this).val().trim().length < 1) {
                                      sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                      " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                      " . FieldOption::resetMandatoryFieldsByField($name) . "
                                   } else {
                                      $('#metademands_wizard_red" . $fields_link . "').html('*');
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                   }
                                 ";
                         } else {
@@ -247,11 +250,11 @@ class Textarea extends CommonDBTM
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                  } else {
                                     $('#metademands_wizard_red" . $fields_link . "').html('');
                                     sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                     " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                     " . FieldOption::resetMandatoryFieldsByField($name) . "
                                  }";
                         }
                         if (isset($data['value']) && $idc == $data['value']) {
@@ -261,7 +264,7 @@ class Textarea extends CommonDBTM
                 }
 
                 if ($display > 0) {
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
                 }
 
                 $onchange .= "});";
@@ -416,7 +419,7 @@ class Textarea extends CommonDBTM
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                  $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                  sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                  " . Fieldoption::resetMandatoryFieldsByField($name);
+                                  " . FieldOption::resetMandatoryFieldsByField($name);
 
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -447,7 +450,7 @@ class Textarea extends CommonDBTM
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                 $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                 sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                 " . Fieldoption::resetMandatoryFieldsByField($name);
+                                 " . FieldOption::resetMandatoryFieldsByField($name);
 
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -474,7 +477,7 @@ class Textarea extends CommonDBTM
                 }
                 if ($display > 0) {
                     $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
                 }
 
                 $onchange .= "});";
@@ -528,9 +531,9 @@ class Textarea extends CommonDBTM
                 $script .= "var tohide = {};";
 
                 //by default - hide all
-                $script2 .= Fieldoption::hideAllblockbyDefault($data);
+                $script2 .= FieldOption::hideAllblockbyDefault($data);
                 if (!isset($data['value'])) {
-                    $script2 .= Fieldoption::emptyAllblockbyDefault($check_values);
+                    $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
                 }
                 $display = 0;
                 foreach ($check_values as $idc => $check_value) {
@@ -543,22 +546,24 @@ class Textarea extends CommonDBTM
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                         $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                         $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
-                            $script .= Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            $script .= FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                     if ($idc == $k) {
                                         foreach ($childs_blocks as $childs) {
-                                            $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs]);
+                                            $options = getAllDataFromTable(
+                                                'glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]
+                                            );
                                             if (count($options) == 0) {
                                                 $script .= "if (document.getElementById('ablock" . $childs . "'))
                                                     document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                     $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . Fieldoption::setMandatoryBlockFields(
-                                                        $metaid,
-                                                        $childs
-                                                    );
+                                                     " . FieldOption::setMandatoryBlockFields(
+                                                    $metaid,
+                                                    $childs
+                                                );
                                             }
                                         }
                                     }
@@ -572,7 +577,7 @@ class Textarea extends CommonDBTM
                             $script .= " } else {";
 
                             //specific - one value
-                            $script .= Fieldoption::hideAllblockbyDefault($data);
+                            $script .= FieldOption::hideAllblockbyDefault($data);
 
                             $script .= " }";
 
@@ -718,8 +723,8 @@ class Textarea extends CommonDBTM
         $p['enable_images'] = true;
         $p['enable_fileupload'] = false;
         $p['display'] = true;
-        $p['cols'] = 100;
-        $p['rows'] = 15;
+        $p['cols'] = 20;
+        $p['rows'] = 5;
         $p['multiple'] = true;
         $p['required'] = false;
         $p['uploads'] = [];
@@ -730,16 +735,18 @@ class Textarea extends CommonDBTM
         $required = $p['required'] ? 'required' : '';
         $display = '';
         $display .= "<textarea class='form-control' name='" . $p['name'] . "' id='" . $p['editor_id'] . "'
-                             rows='" . $p['rows'] . "' cols='" . $p['cols'] . "' $required>" .
-            $p['value'] . "</textarea>";
+                             rows='" . $p['rows'] . "' cols='" . $p['cols'] . "' $required>"
+            . $p['value'] . "</textarea>";
 
         if ($p['enable_richtext']) {
+            $height = $p['rows'] * 24;
             $display .= self::initEditorSystem(
                 $p['editor_id'],
                 $p['rand'],
                 false,
                 false,
                 $p['enable_images'],
+                $height,
                 $p['placeholder']
             );
         }
@@ -788,6 +795,7 @@ class Textarea extends CommonDBTM
         $display = true,
         $readonly = false,
         $enable_images = true,
+        int $editor_height = 150,
         $placeholder_comment = ''
     ) {
         global $CFG_GLPI, $DB;
@@ -886,7 +894,8 @@ class Textarea extends CommonDBTM
                content_css: '{$content_css}',
                highlight_on_focus: false,
 
-               min_height: 250,
+               min_height: $editor_height,
+                height: $editor_height, // Must be used with min_height to prevent "height jump" when the page is loaded
                resize: true,
 
                // disable path indicator in bottom bar

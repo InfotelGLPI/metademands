@@ -164,7 +164,7 @@ $(function() {
          //console.log(el);
           var finaltitle = el.item.title;
        $("#mt-fuzzysearch .results")
-           .append("<li class='list-group-item'><i class='fa-1x fas "+el.item.icon+"' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i> <a href='"+ el.item.url+"'>"+finaltitle+"</a><div><i style='color: #666565;'>"+el.item.comment+"</i></div></li></li>");
+           .append("<li class='list-group-item'><i class='fa-1x "+el.item.icon+"' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i> <a href='"+ el.item.url+"'>"+finaltitle+"</a><div><i style='color: #666565;'>"+el.item.comment+"</i></div></li></li>");
    });
        //$('.plugin_mydashboard_menuDashboardListItem').click(function () {
        //    var widgetId = $(this).attr('data-widgetid');

@@ -63,9 +63,9 @@ class Titleblock extends CommonDBTM
     {
         $debug = isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
-        $color = Wizard::hex2rgba($data['color'], "0.03");
+        $color = "#FFF"; //Wizard::hex2rgba($data['color'], "0.03");
         $rank = $data['rank'];
-        $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
+        $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;border-top:none;margin-bottom: 10px;'";
 
         if ($preview || $debug) {
             echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";

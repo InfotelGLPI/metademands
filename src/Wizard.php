@@ -238,20 +238,24 @@ class Wizard extends CommonDBTM
     {
 
         echo "<div class=\"row\">";
-        echo "<div class=\"col-md-12 md-title\">";
-        echo "<div style='background-color: #FFF'>";
 
         $background_color = $title_color = "#000";
+        $style_title_color = "";
         if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
             $title_color = $meta->fields['title_color'];
+            $style_title_color = "style='color: $title_color;'";
         }
         if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
         }
 
-        //        $background_color = self::hex2rgba($title_color, "0.03");
-        $style_background = "style='background-color: $background_color!important;border-radius: 0;padding: 20px;'";
-        echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";
+        $style_background = "style='background-color: $background_color!important;'";
+
+        echo "<div class='col-md-12 md-title'>";
+        echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
+        echo "<section class='card-body' style='width: 100%;height: 100px;'>";
+        echo "<div class='d-flex'>";
+        echo "<div class='aspect-ratio-1' style='margin-top: 20px;margin-left: 10px;width: 70px;height: 70px;'>";
 
         $meta = new Metademand();
         if ($meta->getFromDB($parameters['metademands_id'])) {
@@ -259,15 +263,22 @@ class Wizard extends CommonDBTM
                 $icon = $meta->fields['icon'];
             }
         }
-
-        echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+        $stylespan = "md-cat-icon-stack fa-2x";
+        $sizespan = "1em";
+        $color = "color:color-mix(in srgb, transparent, var(--tblr-link-color) var(--tblr-link-opacity, 100%))";
+        echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
         if (!empty($icon)) {
             if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
+                echo "<i class='fa-1x fas $icon' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>&nbsp;";
             } else {
-                echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
+                echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>&nbsp;";
             }
         }
+        echo "</span>";
+        echo "</div>";
+        echo "<div class='ms-4' style='width: 90%;'>";
+        echo "<h2 class='card-title mb-2 text-break' $style_title_color>";
+
         if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
             echo $meta->getName();
         } else {
@@ -310,9 +321,9 @@ class Wizard extends CommonDBTM
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
                     echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                        'More informations',
-                        'servicecatalog'
-                    ) . "\"> ";
+                            'More informations',
+                            'servicecatalog'
+                        ) . "\"> ";
                     //                            echo __('More informations of this category ? click here', 'servicecatalog');
                     echo "</i>";
                     //                            echo "</div>";
@@ -334,28 +345,36 @@ class Wizard extends CommonDBTM
             && Session::haveRight('plugin_metademands', UPDATE)
             && !$parameters['seeform']) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Metademand::class
-            ) . "?id=" . $parameters['metademands_id'] . "'>
+                    Metademand::class
+                ) . "?id=" . $parameters['metademands_id'] . "'>
                             <i class='ti ti-settings'></i></a>";
         }
-        echo "</h2>";
 
-        self::showmodelsAndDrafts($parameters, true);
-        echo "</div>";
+        echo "</h2>";
+        echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
         if (!empty($meta->fields['comment'])) {
             if (empty($comment = Metademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
             }
-            echo "<div class='center' style='background: #fbf9f9;padding: 10px;'><i>" . nl2br(
-                $comment
-            ) . "</i></div>";
+            echo nl2br($comment);
         } else {
-            echo "<span style='margin-bottom: 10px'>&nbsp;";
-            echo "</span>";
+            if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
+                echo $meta->getName();
+            } else {
+                echo $n;
+            }
         }
+        echo "</div>";
+        echo "</div>";
 
+        self::showmodelsAndDrafts($parameters, true);
 
         echo "</div>";
+        echo "</section>";
+        echo "</div>";
+        echo "</div>";
+
+
         echo "</div>";
     }
 
@@ -368,7 +387,7 @@ class Wizard extends CommonDBTM
             $class = "mydraft-withouttitle";
         }
         if (!$parameters['preview'] && !$parameters['seeform']) {
-            echo "<div class='$class'>";
+            echo "<div class='$class' style='margin-top: 20px;margin-left: 10px;width: 70px;height: 70px;'>";
             echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx(
                 'button',
                 'Your forms',
@@ -620,8 +639,10 @@ class Wizard extends CommonDBTM
             if ($parameters['step'] == Metademand::STEP_INIT) {
                 // Wizard title
                 echo "<div class=\"row\">";
-                echo "<div class=\"col-md-12\">";
-                echo "<h3><div class='alert alert-light' role='alert'>";
+                echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
+                echo "<div class='col-12 align-self-center'>";
+
+                echo "<section class='card-body' style='width: 100%;'>";
                 $icon = "ti-share";
                 if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
@@ -632,12 +653,18 @@ class Wizard extends CommonDBTM
                     echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
                 }
                 echo __('What you want to do ?', 'metademands');
-                echo "</div></h3></div></div>";
+                echo "</section>";
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
+
             } elseif ($parameters['step'] == Metademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
-                echo "<div class=\"col-md-12\">";
-                echo "<h3><div class='alert alert-light' role='alert'>";
+                echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
+                echo "<div class='col-12 align-self-center'>";
+
+                echo "<section class='card-body' style='width: 100%;'>";
                 $icon = "ti-share";
 
                 $config = Config::getInstance();
@@ -663,7 +690,10 @@ class Wizard extends CommonDBTM
                     echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
                 }
                 echo __('Form choice', 'metademands');
-                echo "</div></h3></div></div>";
+                echo "</section>";
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
             } elseif ($parameters['step'] > Metademand::STEP_LIST) {
                 if ($title == 1) {
                     self::showMetademandTitle($meta, $parameters);
@@ -961,8 +991,8 @@ class Wizard extends CommonDBTM
 
             foreach ($data as $type => $typename) {
                 echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . Metademand::STEP_LIST . "&meta_type=$type'>";
-                echo '<div class="btnsc-normal-type" >';
-                $fasize = "fa-6x";
+                echo '<div class="btnsc-normal-type" style="min-height: 190px;">';
+                $fasize = "fa-5x";
                 echo "<div class='center'>";
                 $config = Config::getInstance();
                 $icon = "ti-share";
@@ -981,7 +1011,7 @@ class Wizard extends CommonDBTM
                 if (str_contains($icon, 'fa-')) {
                     echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
                 } else {
-                    echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:3em;\"></i>";//$style
+                    echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:6em;\"></i>";//$style
                 }
                 echo "</div>";
                 echo "<br><p style='font-weight: normal;font-size: 13px;'>";
@@ -1216,13 +1246,15 @@ class Wizard extends CommonDBTM
                                         $id
                                     );
                                     if ($count_drafts > 0) {
-                                        echo "<br>";
+                                        echo "<br><br><span style='$color;'>";
                                         echo sprintf(
                                             _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
                                             $count_drafts
                                         );
+                                        echo "</span>";
                                     }
                                 }
+
                             echo "</div>";
 
                         echo "</div>";
