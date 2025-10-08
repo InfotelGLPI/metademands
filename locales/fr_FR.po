@@ -1734,7 +1734,7 @@ msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 #: /c/wamp/www/glpi11symfony/marketplace/metademands/templates/interticketfollowup_form.html.twig:97
 msgctxt "button"
 msgid "Save"
-msgstr "SAuver"
+msgstr "Sauver"
 
 #: src/FieldOption.php:1965 src/Fields/Basket.php:839
 #: src/Fields/Checkbox.php:692 src/Fields/Dropdown.php:812
