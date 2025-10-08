@@ -759,7 +759,7 @@ class Dropdown extends CommonDBTM
                             var id = '#metademands_wizard_red'+ key;
                             $(id).html('');
                             sessionStorage.setItem('hiddenlink$name', key);
-                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                            " . FieldOption::resetMandatoryFieldsByField($name) . "
                             $('[name =\"field['+ key +']\"]').removeAttr('required');
                         } else {
                              var id = '#metademands_wizard_red'+ key;
@@ -769,14 +769,14 @@ class Dropdown extends CommonDBTM
                              $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                              //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });
               ";
                 }
 
                 if ($display > 0) {
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
                 }
 
                 $onchange .= "});";
@@ -974,7 +974,7 @@ class Dropdown extends CommonDBTM
                             sessionStorage.setItem('hiddenlink$name', key);
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                             $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                            " . Fieldoption::resetMandatoryFieldsByField($name);
+                            " . FieldOption::resetMandatoryFieldsByField($name);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -999,7 +999,7 @@ class Dropdown extends CommonDBTM
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
             $onchange .= "});";
 
@@ -1045,9 +1045,9 @@ class Dropdown extends CommonDBTM
         if (count($check_values) > 0) {
 
             //by default - hide all
-            $script2 .= Fieldoption::hideAllblockbyDefault($data);
+            $script2 .= FieldOption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
-                $script2 .= Fieldoption::emptyAllblockbyDefault($check_values);
+                $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
             }
 
             //Si la valeur est en session
@@ -1068,13 +1068,13 @@ class Dropdown extends CommonDBTM
                     $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
                     //specific for radio / dropdowns - one value
-                    $script .= Fieldoption::hideAllblockbyDefault($data);
+                    $script .= FieldOption::hideAllblockbyDefault($data);
 
                     $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
                 $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                 $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
-                    $script .= Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $script .= FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1086,7 +1086,7 @@ class Dropdown extends CommonDBTM
                                         $script .= "if (document.getElementById('ablock" . $childs . "'))
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . Fieldoption::setMandatoryBlockFields(
+                                                     " . FieldOption::setMandatoryBlockFields(
                                                 $metaid,
                                                 $childs
                                             );
@@ -1114,7 +1114,7 @@ class Dropdown extends CommonDBTM
                     $script .= " }";
 
                     $script .= "if ($(this).val() == 0 ) {";
-                    $script .= Fieldoption::hideAllblockbyDefault($data);
+                    $script .= FieldOption::hideAllblockbyDefault($data);
                     $script .= " }";
                 }
             }

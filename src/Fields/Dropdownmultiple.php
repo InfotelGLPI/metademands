@@ -987,7 +987,7 @@ class Dropdownmultiple extends CommonDBTM
                             var id = '#metademands_wizard_red'+ key;
                             $(id).html('');
                             sessionStorage.setItem('hiddenlink$name', key);
-                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                            " . FieldOption::resetMandatoryFieldsByField($name) . "
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                             $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                         } else {
@@ -998,7 +998,7 @@ class Dropdownmultiple extends CommonDBTM
                              $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                              //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });";
                     }
@@ -1041,14 +1041,14 @@ class Dropdownmultiple extends CommonDBTM
                                  $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                  //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                             }
                         } else if (index === 2) {
                             id = $('#multiselect" . $data['id'] . "').val();
                             if (id == $idc) {
                                 $('#metademands_wizard_red" . $fields_link . "').html('');
                                   sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                " . FieldOption::resetMandatoryFieldsByField($name) . "
                             }
                         }
                     }, 50);
@@ -1062,7 +1062,7 @@ class Dropdownmultiple extends CommonDBTM
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                 }
                             }, 50);
                             });";
@@ -1073,7 +1073,7 @@ class Dropdownmultiple extends CommonDBTM
                                 if (id == $idc) {
                                     $('#metademands_wizard_red" . $fields_link . "').html('');
                                     sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                    " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
                                 }
                             }, 50);
                             });";
@@ -1472,7 +1472,7 @@ class Dropdownmultiple extends CommonDBTM
                                 sessionStorage.setItem('hiddenlink$name', key);
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                                 $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                                " . Fieldoption::resetMandatoryFieldsByField($name);
+                                " . FieldOption::resetMandatoryFieldsByField($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1498,7 +1498,7 @@ class Dropdownmultiple extends CommonDBTM
                     foreach ($display as $see) {
                         $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
                         $pre_onchange .= "$('[id-field =\"field" . $see . "-2\"]').show();";
-                        $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $see);
+                        $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $see);
                     }
                 }
                 $onchange .= "});";
@@ -1601,7 +1601,7 @@ class Dropdownmultiple extends CommonDBTM
                         //                            $('[id-field =\"field'+key+'\"]').hide();
 //                                                    $('[id-field =\"field'+key+'-2\"]').hide();
                         //                            sessionStorage.setItem('hiddenlink$name', key);
-                        //                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                        //                            " . FieldOption::resetMandatoryFieldsByField($name) . "
                         //                            $('[name =\"field['+key+']\"]').removeAttr('required');
 //                                                    $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                         //                        } else {
@@ -1624,7 +1624,7 @@ class Dropdownmultiple extends CommonDBTM
                             if (id == $idc) {
                                 $('[id-field =\"field'+ $hidden_link +'\"]').hide();
                                 sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                 " . Fieldoption::resetMandatoryFieldsByField($name);
+                                 " . FieldOption::resetMandatoryFieldsByField($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1658,7 +1658,7 @@ class Dropdownmultiple extends CommonDBTM
                                 if (id == $idc) {
                                     $('[id-field =\"field'+ $hidden_link +'\"]').hide();
                                     sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                     " . Fieldoption::resetMandatoryFieldsByField($name);
+                                     " . FieldOption::resetMandatoryFieldsByField($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1683,7 +1683,7 @@ class Dropdownmultiple extends CommonDBTM
                     foreach ($display as $see) {
                         $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
                         $pre_onchange .= "$('[id-field =\"field" . $see . "-2\"]').show();";
-                        $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $see);
+                        $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $see);
                     }
                 }
 
@@ -1743,9 +1743,9 @@ class Dropdownmultiple extends CommonDBTM
                 $script .= "var tohide = {};";
 
                 //by default - hide all
-                $script2 .= Fieldoption::hideAllblockbyDefault($data);
+                $script2 .= FieldOption::hideAllblockbyDefault($data);
                 if (!isset($data['value'])) {
-                    $script2 .= Fieldoption::emptyAllblockbyDefault($check_values);
+                    $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
                 }
 
                 //multiple value at each time
@@ -1776,8 +1776,8 @@ class Dropdownmultiple extends CommonDBTM
                         $('[bloc-id =\"bloc'+ key +'\"]').hide();
                         $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                         sessionStorage.setItem('hiddenbloc$name', key);
-                        " . Fieldoption::setEmptyBlockFields($name) . "";
-                        $hidden = Fieldoption::resetMandatoryBlockFields($name);
+                        " . FieldOption::setEmptyBlockFields($name) . "";
+                        $hidden = FieldOption::resetMandatoryBlockFields($name);
                         $script .= "$hidden";
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1799,7 +1799,7 @@ class Dropdownmultiple extends CommonDBTM
                         $('[bloc-id =\"subbloc'+ key +'\"]').show();
                         ";
 
-                        $hidden = Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        $hidden = FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                         $script .= "$hidden";
 
@@ -1862,9 +1862,9 @@ class Dropdownmultiple extends CommonDBTM
                 $script .= "var tohide = {};";
 
                 //by default - hide all
-                $script2 .= Fieldoption::hideAllblockbyDefault($data);
+                $script2 .= FieldOption::hideAllblockbyDefault($data);
                 if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                    $script2 .= Fieldoption::emptyAllblockbyDefault($check_values);
+                    $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
                 }
 
                 //multiple value at each time
@@ -1888,8 +1888,8 @@ class Dropdownmultiple extends CommonDBTM
                         //                        $('[bloc-id =\"bloc'+ key +'\"]').hide();
                         //                        $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                         //                        sessionStorage.setItem('hiddenbloc$name', key);
-                        //                        " . Fieldoption::setEmptyBlockFields($name) . "";
-                        //                    $hidden = Fieldoption::resetMandatoryBlockFields($name);
+                        //                        " . FieldOption::setEmptyBlockFields($name) . "";
+                        //                    $hidden = FieldOption::resetMandatoryBlockFields($name);
                         //                    $script .= "$hidden";
                         //                    if (is_array($childs_by_checkvalue)) {
                         //                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1911,7 +1911,7 @@ class Dropdownmultiple extends CommonDBTM
                         //                        $('[bloc-id =\"subbloc'+ key +'\"]').show();
                         //                        ";
                         //
-                        //                    $hidden = Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        //                    $hidden = FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
                         //
                         //                    $script .= "$hidden";
                         //                    $script .= "}
@@ -2014,8 +2014,8 @@ class Dropdownmultiple extends CommonDBTM
             //                        $('[bloc-id =\"bloc'+ key +'\"]').hide();
             //                        $('[bloc-id =\"subbloc'+ key +'\"]').hide();
             //                        sessionStorage.setItem('hiddenbloc$name', key);
-            //                        " . Fieldoption::setEmptyBlockFields($name) . "";
-            //                    $hidden = Fieldoption::resetMandatoryBlockFields($name);
+            //                        " . FieldOption::setEmptyBlockFields($name) . "";
+            //                    $hidden = FieldOption::resetMandatoryBlockFields($name);
             //                    $script3 .= "$hidden";
             //                    if (is_array($childs_by_checkvalue)) {
             //                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {

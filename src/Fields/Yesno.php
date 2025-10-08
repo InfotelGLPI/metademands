@@ -340,11 +340,11 @@ class Yesno extends CommonDBTM
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                    } else {
                                       $('#metademands_wizard_red" . $fields_link . "').html('');
                                       sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                    " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
                                    }";
 
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -355,7 +355,7 @@ class Yesno extends CommonDBTM
             $onchange .= "});";
 
             if ($display > 0) {
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
 
             echo Html::scriptBlock(
@@ -586,7 +586,7 @@ class Yesno extends CommonDBTM
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                            " . Fieldoption::resetMandatoryFieldsByField($name);
+                            " . FieldOption::resetMandatoryFieldsByField($name);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -612,7 +612,7 @@ class Yesno extends CommonDBTM
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
 
             echo Html::scriptBlock(
@@ -660,9 +660,9 @@ class Yesno extends CommonDBTM
 
         if (count($check_values) > 0) {
             //by default - hide all
-            $pre_onchange .= Fieldoption::hideAllblockbyDefault($data);
+            $pre_onchange .= FieldOption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
-                $pre_onchange .= Fieldoption::emptyAllblockbyDefault($check_values);
+                $pre_onchange .= FieldOption::emptyAllblockbyDefault($check_values);
             }
 
             //Si la valeur est en session
@@ -694,7 +694,7 @@ class Yesno extends CommonDBTM
                             $post_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         if (document.getElementById('ablock" . $hidden_block . "'))
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                                " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                                " . FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -708,7 +708,7 @@ class Yesno extends CommonDBTM
                                                 $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
                                         if (document.getElementById('ablock" . $childs . "'))
                                         document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                                 " . Fieldoption::setMandatoryBlockFields(
+                                                 " . FieldOption::setMandatoryBlockFields(
                                                     $metaid,
                                                     $childs
                                                 );
@@ -726,14 +726,14 @@ class Yesno extends CommonDBTM
                         $onchange .= " if (this.checked) {";
                     }
                     //specific for radio / dropdowns - one value
-                    //            $script .= Fieldoption::hideAllblockbyDefault($data);
+                    //            $script .= FieldOption::hideAllblockbyDefault($data);
 
                     //Prepare subblocks
                     $onchange .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
                 $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                 if (document.getElementById('ablock" . $hidden_block . "'))
                 document.getElementById('ablock" . $hidden_block . "').style.display = 'block';";
-                    $onchange .= Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $onchange .= FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -747,7 +747,7 @@ class Yesno extends CommonDBTM
                                         $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
                                 if (document.getElementById('ablock" . $childs . "'))
                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                                     " . Fieldoption::setMandatoryBlockFields(
+                                                     " . FieldOption::setMandatoryBlockFields(
                                             $metaid,
                                             $childs
                                         );
@@ -766,7 +766,7 @@ class Yesno extends CommonDBTM
                 sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
 
                     //specific - one value
-                    $onchange .= Fieldoption::setEmptyBlockFields($name);
+                    $onchange .= FieldOption::setEmptyBlockFields($name);
                     $onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
                 $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();
                 if (document.getElementById('ablock" . $hidden_block . "'))

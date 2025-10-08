@@ -226,7 +226,7 @@ class Radio extends CommonDBTM
                         if ($customvalue != $key) {
                             foreach ($childs as $k => $v) {
                                 $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
-                                $script .= Fieldoption::resetMandatoryBlockFields($namefield);
+                                $script .= FieldOption::resetMandatoryBlockFields($namefield);
                                 $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
                             }
                         }
@@ -605,7 +605,7 @@ class Radio extends CommonDBTM
                                     var id = '#metademands_wizard_red'+ key;
                                     $(id).html('');
                                     sessionStorage.setItem('hiddenlink$name', key);
-                                    " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                                 } else {
@@ -616,7 +616,7 @@ class Radio extends CommonDBTM
                                      $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                      //Special case Upload field
                                           sessionStorage.setItem('mandatoryfile$name', key);
-                                         " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                         " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                 }
                             });";
                 }
@@ -624,7 +624,7 @@ class Radio extends CommonDBTM
 
             if (is_array($display) && count($display) > 0) {
                 foreach ($display as $see) {
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $see);
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $see);
                 }
             }
 
@@ -887,7 +887,7 @@ class Radio extends CommonDBTM
                             sessionStorage.setItem('hiddenlink$name', key);
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                             $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                            " . Fieldoption::resetMandatoryFieldsByField($name);
+                            " . FieldOption::resetMandatoryFieldsByField($name);
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                             if ($idc == $k) {
@@ -912,7 +912,7 @@ class Radio extends CommonDBTM
                 foreach ($display as $see) {
                     $pre_onchange .= "$('[id-field =\"field" . $see . "\"]').show();";
                     $pre_onchange .= "$('[id-field =\"field" . $see . "-2\"]').show();";
-                    $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $see);
+                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $see);
                 }
             }
             $onchange .= "});";
@@ -993,7 +993,7 @@ class Radio extends CommonDBTM
                                                 $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                                 $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                             " . Fieldoption::setMandatoryBlockFields(
+                                                             " . FieldOption::setMandatoryBlockFields(
                                                                     $metaid,
                                                                     $childs
                                                                 );
@@ -1008,9 +1008,9 @@ class Radio extends CommonDBTM
             }
 
             //by default - hide all
-            $pre_onchange .= Fieldoption::hideAllblockbyDefault($data);
+            $pre_onchange .= FieldOption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
-                $pre_onchange .= Fieldoption::emptyAllblockbyDefault($check_values);
+                $pre_onchange .= FieldOption::emptyAllblockbyDefault($check_values);
             }
 
             //Si la valeur est en session
@@ -1060,8 +1060,8 @@ class Radio extends CommonDBTM
                         $('[bloc-id =\"bloc'+ key +'\"]').hide();
                         $('[bloc-id =\"subbloc'+ key +'\"]').hide();
                         sessionStorage.setItem('hiddenbloc$name', key);
-                        " . Fieldoption::setEmptyBlockFields($name) . "";
-                    $hidden = Fieldoption::resetMandatoryBlockFields($name);
+                        " . FieldOption::setEmptyBlockFields($name) . "";
+                    $hidden = FieldOption::resetMandatoryBlockFields($name);
                     $onchange .= "$hidden";
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1084,7 +1084,7 @@ class Radio extends CommonDBTM
                          sessionStorage.setItem('showbloc$name', key);
                         ";
 
-                    $hidden = Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                    $hidden = FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                     $onchange .= "$hidden";
                     if (is_array($childs_by_checkvalue)) {
@@ -1131,7 +1131,7 @@ class Radio extends CommonDBTM
                         if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
                             $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
-                          " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                          " . FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
                         }
                     }
                 }

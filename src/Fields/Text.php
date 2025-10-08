@@ -281,13 +281,13 @@ class Text extends CommonDBTM
                     if (isset($idc) && $idc == 1) {
                         $onchange .= "if ($(this).val().trim().length < 1) {
                                      sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                      " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                      " . FieldOption::resetMandatoryFieldsByField($name) . "
                                   } else {
                                      $('#metademands_wizard_red" . $fields_link . "').html('*');
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                   }
                                 ";
                     } else {
@@ -296,11 +296,11 @@ class Text extends CommonDBTM
                                      $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
                                      //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
                                  } else {
                                     $('#metademands_wizard_red" . $fields_link . "').html('');
                                     sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                     " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                     " . FieldOption::resetMandatoryFieldsByField($name) . "
                                  }";
                     }
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -310,7 +310,7 @@ class Text extends CommonDBTM
             }
 
             if ($display > 0) {
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
 
             $onchange .= "});";
@@ -459,7 +459,7 @@ class Text extends CommonDBTM
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                  $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                  sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                  " . Fieldoption::resetMandatoryFieldsByField($name);
+                                  " . FieldOption::resetMandatoryFieldsByField($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -487,7 +487,7 @@ class Text extends CommonDBTM
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                 $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                 sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                 " . Fieldoption::resetMandatoryFieldsByField($name);
+                                 " . FieldOption::resetMandatoryFieldsByField($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -515,7 +515,7 @@ class Text extends CommonDBTM
 
             if ($display > 0) {
                 $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= Fieldoption::setMandatoryFieldsByField($id, $display);
+                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
 
             $onchange .= "});";
@@ -565,9 +565,9 @@ class Text extends CommonDBTM
             $script .= "var tohide = {};";
 
             //by default - hide all
-            $script2 .= Fieldoption::hideAllblockbyDefault($data);
+            $script2 .= FieldOption::hideAllblockbyDefault($data);
             if (!isset($data['value'])) {
-                $script2 .= Fieldoption::emptyAllblockbyDefault($check_values);
+                $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
             }
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
@@ -579,7 +579,7 @@ class Text extends CommonDBTM
                     $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();
                     if (document.getElementById('ablock" . $hidden_block . "'))
                         document.getElementById('ablock" . $hidden_block . "').style.display = 'block';";
-                        $script .= Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                        $script .= FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -591,7 +591,7 @@ class Text extends CommonDBTM
                                             $script .= "if (document.getElementById('ablock" . $childs . "'))
                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                                     $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . Fieldoption::setMandatoryBlockFields(
+                                                     " . FieldOption::setMandatoryBlockFields(
                                                     $metaid,
                                                     $childs
                                                 );
@@ -608,7 +608,7 @@ class Text extends CommonDBTM
                         $script .= " } else {";
 
                         //specific - one value
-                        $script .= Fieldoption::hideAllblockbyDefault($data);
+                        $script .= FieldOption::hideAllblockbyDefault($data);
 
                         $script .= " }";
                         //                $script .= " }";
