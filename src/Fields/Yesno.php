@@ -208,6 +208,12 @@ class Yesno extends CommonDBTM
         );
         echo "</td>";
         echo "</tr>";
+        if ($params["display_type"] == self::SWITCH_DISPLAY) {
+            echo "<div class='alert alert-warning mt-2'>";
+            echo __("Warning: switch mode don't support mandatory field check", 'metademands');
+            echo "</div>";
+        }
+
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

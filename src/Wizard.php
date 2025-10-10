@@ -265,7 +265,7 @@ class Wizard extends CommonDBTM
         }
         $stylespan = "md-cat-icon-stack";
         $sizespan = "1em";
-        $color = "color:color-mix(in srgb, transparent, var(--tblr-link-color) var(--tblr-link-opacity, 100%))";
+        $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
         echo "<span class='$stylespan' style='font-size:1.5em'><i class='ti ti-circle' style='$color;'></i>";
         if (!empty($icon)) {
             if (str_contains($icon, 'fa-')) {
@@ -321,9 +321,9 @@ class Wizard extends CommonDBTM
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
                     echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                            'More informations',
-                            'servicecatalog'
-                        ) . "\"> ";
+                        'More informations',
+                        'servicecatalog'
+                    ) . "\"> ";
                     //                            echo __('More informations of this category ? click here', 'servicecatalog');
                     echo "</i>";
                     //                            echo "</div>";
@@ -345,13 +345,13 @@ class Wizard extends CommonDBTM
             && Session::haveRight('plugin_metademands', UPDATE)
             && !$parameters['seeform']) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                    Metademand::class
-                ) . "?id=" . $parameters['metademands_id'] . "'>
+                Metademand::class
+            ) . "?id=" . $parameters['metademands_id'] . "'>
                             <i class='ti ti-settings'></i></a>";
         }
 
         echo "</h2>";
-        echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
+        echo "<div class='text-secondary remove-last-tinymce-margin' style='color:#7B7B7B;font-size:0.8rem;'>";
         if (!empty($meta->fields['comment'])) {
             if (empty($comment = Metademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
@@ -657,7 +657,6 @@ class Wizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
-
             } elseif ($parameters['step'] == Metademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
@@ -1168,7 +1167,6 @@ class Wizard extends CommonDBTM
 
                 echo "<div class='row'>";
                 foreach ($metademands as $id => $name) {
-
                     $meta = new Metademand();
                     if ($meta->getFromDB($id)) {
                         $icon = "ti-share";
@@ -1219,14 +1217,14 @@ class Wizard extends CommonDBTM
                             echo "<div class='aspect-ratio-1' style='margin-top: 40px;margin-left: 10px;width: 70px;height: 70px;'>";
                                 $stylespan = "md-cat-icon-stack fa-2x";
                                 $sizespan = "1em";
-                                $color = "color:color-mix(in srgb, transparent, var(--tblr-link-color) var(--tblr-link-opacity, 100%))";
+                                $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
                                 echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
 
-                                if (str_contains($icon, 'fa-')) {
-                                    echo "<i class='fas $icon $fasize' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>";//$style
-                                } else {
-                                    echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>";//$style
-                                }
+                        if (str_contains($icon, 'fa-')) {
+                            echo "<i class='fas $icon $fasize' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>";//$style
+                        } else {
+                            echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>";//$style
+                        }
                                 echo "</span>";
                             echo "</div>";
                             echo "<div class='ms-4'>";
@@ -1234,26 +1232,26 @@ class Wizard extends CommonDBTM
                                 echo $name_meta;
                                 echo "</h2>";
                                 echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
-                                if (!empty($comment_meta)) {
-                                    echo $comment_meta;
-                                } else {
-                                    echo $name_meta;
-                                }
+                        if (!empty($comment_meta)) {
+                            echo $comment_meta;
+                        } else {
+                            echo $name_meta;
+                        }
 
-                                if ($config['use_draft']) {
-                                    $count_drafts = Draft::countDraftsForUserMetademand(
-                                        Session::getLoginUserID(),
-                                        $id
-                                    );
-                                    if ($count_drafts > 0) {
-                                        echo "<br><br><span style='$color;'>";
-                                        echo sprintf(
-                                            _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                            $count_drafts
-                                        );
-                                        echo "</span>";
-                                    }
-                                }
+                        if ($config['use_draft']) {
+                            $count_drafts = Draft::countDraftsForUserMetademand(
+                                Session::getLoginUserID(),
+                                $id
+                            );
+                            if ($count_drafts > 0) {
+                                echo "<br><br><span style='$color;'>";
+                                echo sprintf(
+                                    _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                    $count_drafts
+                                );
+                                echo "</span>";
+                            }
+                        }
 
                             echo "</div>";
 

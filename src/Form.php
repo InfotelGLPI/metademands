@@ -216,7 +216,7 @@ class Form extends CommonDBTM
         $title = _sx('button', 'Clean form', 'metademands');
         $return .= Html::submit($title, [
             'name' => 'clean_form',
-            'icon' => 'ti ti-brush pointer',
+            'icon' => 'ti ti-playlist-x pointer',
             'class' => 'btn btn-warning btn-sm',
         ]);
         $return .= "</td></tr>";

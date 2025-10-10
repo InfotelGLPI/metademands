@@ -137,7 +137,7 @@ class Dropdownmeta extends CommonDBTM
                                     if (str_contains($icon, 'fa-')) {
                                         $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
                                     } else {
-                                        $field .= "<i class='ti $icon text-secondary'></i>";
+                                        $field .= "<i class='ti $icon text-secondary' style='font-size: 2em'></i>";
                                     }
                                     $field .= "</span>";
                                 }

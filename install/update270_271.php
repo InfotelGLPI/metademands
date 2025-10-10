@@ -37,19 +37,11 @@ ini_set("memory_limit", "-1");
 ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
-if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', realpath('../../..'));
-}
+//chdir(dirname($_SERVER["argv"][0]));
 
-include_once (GLPI_ROOT."/inc/autoload.function.php");
-include_once (GLPI_ROOT."/inc/db.function.php");
-include_once (GLPI_ROOT."/inc/based_config.php");
-include_once (GLPI_CONFIG_DIR."/config_db.php");
-include_once (GLPI_ROOT."/inc/define.php");
-
-$GLPI = new GLPI();
-$GLPI->initLogger();
-Config::detectRootDoc();
+define("GLPI_DIR_ROOT", realpath(dirname($_SERVER["SCRIPT_FILENAME"]) . "/../../.."));
+require_once GLPI_DIR_ROOT . '/vendor/autoload.php';
+$kernel = new \Glpi\Kernel\Kernel($options['env'] ?? null);
 
 if (is_writable(GLPI_SESSION_DIR)) {
    Session::setPath();

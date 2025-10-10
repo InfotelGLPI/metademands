@@ -72,7 +72,7 @@ class Textarea extends CommonDBTM
         $self = new self();
         $required = "";
         $cols = 20;
-        $rows = 10;
+        $rows = 5;
 
         if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
             $rand = mt_rand();
