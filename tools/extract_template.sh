@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 # --- Étape 1 : Extraction des chaînes PHP ---
 find . -name '*.php' > php_files.list
