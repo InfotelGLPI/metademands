@@ -970,6 +970,7 @@ class Dropdownmultiple extends CommonDBTM
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
+
                         $onchange .= "$.each($(this).val(), function( keys, values ) {
 
                             if ($fields_link in tohide) {
@@ -981,6 +982,11 @@ class Dropdownmultiple extends CommonDBTM
                             }";
 
                         $onchange .= "});";
+                    }
+                }
+
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['fields_link'] as $fields_link) {
 
                         $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
@@ -1440,13 +1446,17 @@ class Dropdownmultiple extends CommonDBTM
 
                 $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-                $onchange .= "var tohide = {};";
+                $onchange .= "var tohide = {};  var iswrittemul = false;";
                 $display = [];
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
+
                         //                    $onchange .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( keys, values ) {";
-                        $onchange .= "$.each($(this).val(), function( keys, values ) {
+                        $onchange .= "
+
+                       $.each($(this).val(), function( keys, values ) {
+                       iswrittemul = true;
                             if ($hidden_link in tohide) {
                             } else {
                                 tohide[$hidden_link] = true;
@@ -1455,7 +1465,20 @@ class Dropdownmultiple extends CommonDBTM
                                 tohide[$hidden_link] = false;
                             }";
 
-                        $onchange .= "});";
+                        $onchange .= "});
+                        if(!iswrittemul) {
+                            tohide[$hidden_link] = true;
+                        }
+
+                        ";
+
+                    }
+                }
+
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['hidden_link'] as $hidden_link) {
+                        //                    $onchange .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( keys, values ) {";
+
                         if (isset($data['value']) && is_array($data['value'])) {
                             $values = $data['value'];
                             foreach ($values as $value) {

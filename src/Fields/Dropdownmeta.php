@@ -1980,14 +1980,21 @@ class Dropdownmeta extends CommonDBTM
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $onchange .= "if ($hidden_link in tohide) {
-                        } else {
-                            tohide[$hidden_link] = true;
-                        }
-                        if (parseInt($(this).val()) == $idc || $idc == -1) {
+                    $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
+                    ";
+                }
+            }
+
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    $onchange .= " if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$hidden_link] = false;
                         }";
+                }
+            }
 
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
 
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_link;
