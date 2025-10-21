@@ -304,7 +304,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 } else {
@@ -549,7 +549,7 @@ class PluginMetademandsYesno extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 } else {
@@ -654,7 +654,7 @@ class PluginMetademandsYesno extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
                 } else {

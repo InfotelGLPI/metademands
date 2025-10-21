@@ -76,7 +76,7 @@ class PluginMetademandsRadio extends CommonDBTM
             $nbr = 0;
             $inline = "";
             if ($data['row_display'] == 1) {
-                $inline = 'custom-control-inline';
+                $inline = 'form-check-inline';
             }
 
             if ($data["display_type"] == self::BLOCK_DISPLAY) {
@@ -99,14 +99,14 @@ class PluginMetademandsRadio extends CommonDBTM
                     }
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-                        $field .= "<div class='custom-control custom-radio $inline'>";
+                        $field .= "<div class='form-check $inline'>";
 
                         $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
 
                         if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
                             $name = $label['name'];
                         }
-                        $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name . "</label>";
+                        $field .= "<label class='form-check-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name . "</label>";
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             $field .= "&nbsp;<span style='vertical-align: bottom;'>";
                             if (empty(
@@ -531,7 +531,7 @@ JAVASCRIPT
             //Si la valeur est en session
             //specific
 
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";

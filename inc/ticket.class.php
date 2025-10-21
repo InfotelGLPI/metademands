@@ -127,6 +127,9 @@ class PluginMetademandsTicket extends CommonDBTM
         //parent or child
         if (count($ticket_metademand->fields) > 0) {
             $parent_ticket = true;
+            $ticketparent = new \Ticket();
+            $ticketparent->getFromDB($ticket_metademand->fields['parent_tickets_id']);
+            PluginMetademandsMetademand::changeMetademandGlobalStatus($ticketparent);
         } else {
             $ticket_parent_id  = self::getTicketIDOfMetademand($ticket->getID());
             $meta_to_not_close = self::childTicketsOpen($ticket_parent_id);

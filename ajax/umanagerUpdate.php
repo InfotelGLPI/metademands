@@ -29,9 +29,9 @@
 
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
-   include('../../../inc/includes.php');
-   header("Content-Type: text/html; charset=UTF-8");
-   Html::header_nocache();
+    include('../../../inc/includes.php');
+    header("Content-Type: text/html; charset=UTF-8");
+    Html::header_nocache();
 }
 
 Session::checkLoginUser();
@@ -40,33 +40,31 @@ $fieldUser = new PluginMetademandsField();
 $readonly = 0;
 $default_use_id_requester_supervisor  = 0;
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-   if (!isset($_POST['field'])) {
-      if ($fields = $fieldUser->find(['type'         => "dropdown_object",
+    if (!isset($_POST['field'])) {
+        if ($fields = $fieldUser->find(['type'         => "dropdown_object",
                                        'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                        'item'         => User::getType()])) {
-
-          foreach ($fields as $f) {
-              $fieldparameter = new PluginMetademandsFieldParameter();
-              if ($fieldparameter->getFromDBByCrit([
+            foreach ($fields as $f) {
+                $fieldparameter = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit([
                   'plugin_metademands_fields_id' => $f['id'],
                   'link_to_user' => $_POST['id_fielduser']
-              ])) {
-
-                  if ($fieldparameter->fields['readonly'] == 1) {
-                      $readonly = 1;
-                  }
-                  if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
-                      $default_use_id_requester_supervisor = 1;
-                  }
-                  $_POST["field"] = "field[" . $f['id'] . "]";
-              }
-          }
-      }
-   } else {
-      if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-         $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-      }
-   }
+                ])) {
+                    if ($fieldparameter->fields['readonly'] == 1) {
+                        $readonly = 1;
+                    }
+                    if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
+                        $default_use_id_requester_supervisor = 1;
+                    }
+                    $_POST["field"] = "field[" . $f['id'] . "]";
+                }
+            }
+        }
+    } else {
+        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
+            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
+        }
+    }
 }
 
 $users_id_supervisor = 0;
@@ -75,10 +73,10 @@ if (isset($_POST['value'])
     && isset($_POST['id_fielduser'])
     && $_POST["id_fielduser"] > 0
 && $default_use_id_requester_supervisor == 1) {
-   $user = new User();
-   if ($user->getFromDB($_POST["value"])) {
-       $users_id_supervisor = $user->fields['users_id_supervisor'];
-   }
+    $user = new User();
+    if ($user->getFromDB($_POST["value"])) {
+        $users_id_supervisor = $user->fields['users_id_supervisor'];
+    }
 }
 
 if (isset($_POST['fields_id'])
@@ -103,7 +101,7 @@ if ($readonly == 1) {
 
 
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
-   $opt['specific_tags'] = ['required' => 'required'];
+    $opt['specific_tags'] = ['required' => 'required'];
 }
 
 if ($readonly == 1) {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -44,8 +45,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
 
         if ($fields = $fieldGroup->find(['type'                              => "dropdown_object",
-                                          'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                                          'item'                              => Group::getType()])) {
+            'plugin_metademands_metademands_id' => $_POST['metademands_id'],
+            'item'                              => Group::getType()])) {
             foreach ($fields as $field) {
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id'],
                     'link_to_user' => $_POST['id_fielduser']])) {
@@ -62,7 +63,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         }
 
         $fieldGroup->getFromDB($_POST['fields_id']);
-        $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' =>$_POST['fields_id']]);
+        $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST['fields_id']]);
 
     }
 
@@ -121,11 +122,11 @@ if (is_array($groups_id)) {
 
 $rand = mt_rand();
 $opt  = ['name'      => $_POST["field"],
-         'entity'    => $_SESSION['glpiactiveentities'],
-         'value'     => $groups_id,
-         'condition' => $cond,
-         'rand'      => $rand,
-    'width' => '200px'
+    'entity'    => $_SESSION['glpiactiveentities'],
+    'value'     => $groups_id,
+    'condition' => $cond,
+    'rand'      => $rand,
+    'width' => '200px',
 ];
 
 $fieldparameter            = new PluginMetademandsFieldParameter();

@@ -2604,8 +2604,7 @@ JAVASCRIPT
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                    else {
+                                                    } else {
                                                         $val_f = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                     }
                                                 }
@@ -2739,7 +2738,7 @@ JAVASCRIPT
                                                                         }
                                                                     }
                                                                 }
-                                                            }else {
+                                                            } else {
                                                                 $val_f = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                             }
                                                         }
@@ -6822,6 +6821,8 @@ JAVASCRIPT
             }
         }
 
+        self::changeMetademandGlobalStatus($ticket);
+
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
         $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
         $tickets_founded = [];
@@ -6846,14 +6847,52 @@ JAVASCRIPT
         }
         $tickets_list = [];
         $tickets_next = [];
-
+        $parent_ticket = false;
         if ($tovalidate == 0) {
             if (is_array($tickets_founded)
                 && count($tickets_founded)) {
-                echo "<div align='center'><table class='tab_cadre_fixe'>";
-                echo "<tr><th colspan='6'>" . __('Demand followup', 'metademands') . "</th></tr>";
-                echo "</table></div>";
 
+                if (isset($tickets_founded[0]['parent_tickets_id']) && $tickets_founded[0]['parent_tickets_id'] > 0) {
+                    $parent_ticket = true;
+                }
+                if ($parent_ticket == true) {
+                    $metaStatus = new PluginMetademandsTicket_Metademand();
+
+                    $style = '';
+
+                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
+
+                        if (in_array($metaStatus->fields['status'], [PluginMetademandsTicket_Metademand::TO_CLOSED])) {
+                            $icon = "ti ti-circle-check";
+                            $icon_color = "forestgreen";
+                        }
+
+                        if (in_array($metaStatus->fields['status'], [PluginMetademandsTicket_Metademand::CLOSED])) {
+                            $icon = "ti ti-circle-check";
+                            $icon_color = "black";
+                        }
+
+                        if (in_array($metaStatus->fields['status'], [PluginMetademandsTicket_Metademand::RUNNING])) {
+                            $icon = "ti ti-clock";
+                            $icon_color = "orange";
+                        }
+                        $style = 'border-color:' . $icon_color;
+                    }
+                    echo "<br><div style='display:flex;align-items: center;$style' class='center alert alert-dismissible fade show informations'>";
+
+                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
+                        echo "<div style='margin-right: 20px;'>";
+                        echo "<i class='$icon' style='vertical-align: top;font-size:2em;color:$icon_color'></i> ";
+                        echo "</div>";
+                    }
+
+                    echo __('Demand followup', 'metademands');
+
+                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
+                        echo " - " . PluginMetademandsTicket_Metademand::getStatusName($metaStatus->fields['status']);
+                    }
+                    echo "</div>";
+                }
                 foreach ($tickets_founded as $tickets) {
                     if (!empty($tickets['tickets_id'])) {
                         $tickets_list[] = $tickets;
@@ -6865,9 +6904,13 @@ JAVASCRIPT
                 }
 
                 if (count($tickets_list)) {
-                    echo "<div align='center'><table class='tab_cadre_fixe'>";
+                    echo "<div class='center'><table class='tab_cadre_fixe'>";
                     echo "<tr class='center'>";
-                    echo "<td colspan='7'><h3>" . __('Existing tickets', 'metademands') . "</h3></td></tr>";
+                    $title = __('Parent ticket', 'metademands');
+                    if ($parent_ticket == true) {
+                        $title = __('Existing childs tickets', 'metademands');
+                    }
+                    echo "<td colspan='7'><h3>" . $title . "</h3></td></tr>";
 
                     echo "<tr>";
                     echo "<th>" . __('Ticket') . "</th>";
@@ -6975,12 +7018,16 @@ JAVASCRIPT
                         }
                         //status
                         echo "<td class='center'>";
-                        if (in_array($childticket->fields['status'], $status)) {
-                            echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
+                        if (in_array($childticket->fields['status'], [\Ticket::SOLVED])) {
+                            echo "<i class='ti ti-circle-check' style='font-size:2em;color:forestgreen'></i> ";
+                        }
+
+                        if (in_array($childticket->fields['status'], [\Ticket::CLOSED])) {
+                            echo "<i class='ti ti-circle-check' style='font-size:2em;color:black'></i> ";
                         }
 
                         if (!in_array($childticket->fields['status'], $status)) {
-                            echo "<i class='fas fa-cog fa-2x' style='color:orange'></i> ";
+                            echo "<i class='ti ti-clock' style='font-size:2em;color:orange'></i> ";
                         }
                         echo Ticket::getStatus($childticket->fields['status']);
                         echo "</td>";
@@ -7817,7 +7864,7 @@ JAVASCRIPT
     //    }
 
 
-    public static function getRunningMetademands (array $params = []): array
+    public static function getRunningMetademands(array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
@@ -7856,8 +7903,8 @@ JAVASCRIPT
                     'link'       => 'AND',
                     'field'      => 12, // status
                     'searchtype' => 'equals',
-                    'value'      => 'notold'
-                ]
+                    'value'      => 'notold',
+                ],
             ],
             'reset' => 'reset',
         ];
@@ -8798,5 +8845,113 @@ HTML;
                 return ($formValue && in_array($optionValue, $formValue));
         }
         return false;
+    }
+
+    /**
+     * Check Tool for change Status of metademands without opened tickets
+     * @param $ticket
+     * @return void
+     */
+    public static function changeMetademandGlobalStatus($ticket)
+    {
+
+        $ticket_metademand = new PluginMetademandsTicket_Metademand();
+        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
+        $tickets_founded = [];
+        $metademands_id = 0;
+        // If ticket is Parent : Check if all sons ticket are closed
+        if (count($ticket_metademand_data)) {
+            $ticket_metademand_data = reset($ticket_metademand_data);
+            $tickets_founded = PluginMetademandsTicket::getSonTickets(
+                $ticket->fields['id'],
+                $ticket_metademand_data['plugin_metademands_metademands_id'],
+                [],
+                true,
+                true
+            );
+            $metademands_id = $ticket_metademand_data['plugin_metademands_metademands_id'];
+        } else {
+            $ticket_task = new PluginMetademandsTicket_Task();
+            $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);
+
+            if (count($ticket_task_data)) {
+                $tickets_founded = PluginMetademandsTicket::getAncestorTickets($ticket->fields['id'], true);
+            }
+        }
+
+        $tickets_list = [];
+        $tickets_next = [];
+
+        $statuses = [];
+        if (is_array($tickets_founded)
+            && count($tickets_founded)
+            && $metademands_id > 0) {
+            foreach ($tickets_founded as $tickets) {
+                if (!empty($tickets['tickets_id'])) {
+                    $tickets_list[] = $tickets;
+                } else {
+                    if (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
+                        $tickets_next[] = $tickets;
+                    }
+                }
+            }
+            if (count($tickets_list)) {
+                foreach ($tickets_list as $values) {
+                    $childticket = new \Ticket();
+                    $childticket->getFromDB($values['tickets_id']);
+
+                    $statuses[] = $childticket->fields['status'];
+                }
+            }
+        }
+        if (count($tickets_next) == 0) {
+            $not_change_status = 0;
+            foreach ($statuses as $status) {
+                if (!in_array($status, [\Ticket::CLOSED])) {
+                    $not_change_status++;
+                }
+            }
+            $metaStatus = new PluginMetademandsTicket_Metademand();
+            if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
+                && Session::haveRight('plugin_metademands', READ)
+                && Session::getCurrentInterface() == 'central') {
+                if ($not_change_status == 0) {
+                    $validationmeta = new PluginMetademandsMetademandValidation();
+                    $validation = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket->fields['id']]);
+                    $validation_todo = false;
+                    if ($validation) {
+                        if (in_array(
+                            $validationmeta->fields['validate'],
+                            [
+                                PluginMetademandsMetademandValidation::TO_VALIDATE,
+                                PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK,
+                            ]
+                        )) {
+                            $validation_todo = true;
+                        }
+                    }
+
+                    if (!$validation_todo) {
+                        $metaStatus->update(
+                            [
+                                'id' => $metaStatus->fields['id'],
+                                'status' => PluginMetademandsTicket_Metademand::TO_CLOSED,
+                            ]
+                        );
+                    } elseif ($validation_todo) {
+                        $metaStatus->update(
+                            [
+                                'id' => $metaStatus->fields['id'],
+                                'status' => PluginMetademandsTicket_Metademand::RUNNING,
+                            ]
+                        );
+                    }
+                } else {
+                    $metaStatus->update(
+                        ['id' => $metaStatus->fields['id'], 'status' => PluginMetademandsTicket_Metademand::RUNNING]
+                    );
+                }
+            }
+        }
     }
 }

@@ -779,9 +779,22 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
                         echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
                         echo $data[$item->getNameField()] . "&nbsp;";
+//                        Toolbox::logInfo($data);
                         $comment = "";
+                        $obj = new $itemtype();
+                        if ($obj->getFromDB($items_id)) {
+                            $className = strtolower(get_class($obj));
+                            $typeforeign = $className . "types";
+                            if (isset($obj->fields[$typeforeign . "_id"]) && !empty($obj->fields[$typeforeign . "_id"])) {
+                                if ($itemselfType = getItemForItemtype($itemtype . 'Type')) {
+                                    $itemselfType->getFromDB($obj->fields[$typeforeign . "_id"]);
+                                    $comment .= __('Type') . " : " . $itemselfType->getName();
+                                    $comment .= "<br>";
+                                }
+                            }
+                        }
                         if (isset($data['serial']) && !empty($data['serial'])) {
-                            $comment = __('Serial number') . " : " . $data['serial'];
+                            $comment .= __('Serial number') . " : " . $data['serial'];
                         }
                         if (!empty($comment)) {
                             echo "&nbsp;";
@@ -1665,7 +1678,7 @@ JAVASCRIPT
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
@@ -1742,7 +1755,7 @@ JAVASCRIPT
         }
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').prop('checked', true).trigger('change');";
@@ -1927,7 +1940,7 @@ JAVASCRIPT
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
@@ -2081,7 +2094,7 @@ JAVASCRIPT
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value'])  &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";

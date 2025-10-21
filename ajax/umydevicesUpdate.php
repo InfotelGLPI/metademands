@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -46,16 +47,26 @@ if (isset($_POST["fields_id"])
 
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
+
+    $fieldparameter = new PluginMetademandsFieldParameter();
+    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["id_fielduser"]])) {
+        if ($_POST['value'] == $_POST['id_fielduser']) {
+            $_POST['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
+                && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+        }
+
+    }
+
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find([
             'type' => "dropdown_meta",
             'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-            'item' => "mydevices"
+            'item' => "mydevices",
         ])) {
             foreach ($fields as $field) {
                 if ($fieldparameter->getFromDBByCrit([
                     'plugin_metademands_fields_id' => $field['id'],
-                    'link_to_user' => $_POST['id_fielduser']
+                    'link_to_user' => $_POST['id_fielduser'],
                 ])) {
                     $id = $field['id'];
                     $_POST["field"] = "field[$id]";
@@ -98,8 +109,11 @@ $rand = mt_rand();
 $p = [
     'rand' => $rand,
     'name' => $_POST["field"],
-    'value' => $val
+    'value' => $val,
+    'users_id' => $users_id,
 ];
+
+
 
 if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
 
@@ -124,4 +138,3 @@ if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
 
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);
-

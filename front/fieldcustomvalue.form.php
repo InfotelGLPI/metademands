@@ -75,7 +75,7 @@ if (isset($_POST["add"])) {
         }
         $input['comment'] = $value['comment'];
         $input['is_default'] = $value['is_default'];
-        $input['icon'] = $value['icon'];
+        $input['icon'] = $value['icon'] ?? "";
         $input['plugin_metademands_fields_id'] = $_POST['fields_id'];
         // Check update rights for fields
         $fieldcustom->check(-1, CREATE, $input);

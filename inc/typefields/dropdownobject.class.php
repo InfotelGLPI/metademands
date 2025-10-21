@@ -215,10 +215,12 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 echo "});</script>";
 
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+
+
                 $paramsdev
                     = ['value' => '__VALUE__',
-                        'id_fielduser' => $data['id'],
-                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+                    'id_fielduser' => $data['id'],
+                    'metademands_id' => $data['plugin_metademands_metademands_id']];
 
                 $toupdate[] = ['value_fieldname'
                 => 'value',
@@ -230,7 +232,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 echo "<script type='text/javascript'>";
                 echo "$(function() {";
                 Ajax::updateItemJsCode(
-                    "mydevices_user" . $data['id'],
+                    "title_user" . $data['id'],
                     PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
                     $paramsdev,
                     $namefield . "[" . $data['id'] . "]",

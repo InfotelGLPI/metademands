@@ -42,6 +42,21 @@ if (isset($_POST["purge_emptyoptions"])) {
     $field->delete($_POST, 1);
     Session::addMessageAfterRedirect(__('Empty option has been deleted', 'metademands'));
     Html::back();
+} elseif (isset($_POST["change_global_status"])) {
+
+    $ticket_metademand = new PluginMetademandsTicket_Metademand();
+    if ($notclosedmetademands = $ticket_metademand->find(['NOT' => ['status' => PluginMetademandsTicket_Metademand::CLOSED]])) {
+        foreach ($notclosedmetademands as $notclosedmetademand) {
+            $ticket = new \Ticket();
+            if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
+                if ($ticket->fields['status'] != \Ticket::CLOSED) {
+                    PluginMetademandsMetademand::changeMetademandGlobalStatus($ticket);
+                }
+            }
+        }
+    }
+    Session::addMessageAfterRedirect(__('Metademands statuses updated', 'metademands'));
+    Html::back();
 } else if (isset($_POST["fix_emptycustomvalues"])) {
     $itil = $_POST["id"];
     $field = new PluginMetademandsFieldParameter();
