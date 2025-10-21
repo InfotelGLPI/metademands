@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 12:30+0000\n"
+"POT-Creation-Date: 2025-10-21 13:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1266,9 +1266,9 @@ msgstr ""
 #: src/Wizard.php:1679 src/Wizard.php:1713 src/Wizard.php:1719
 #: src/Wizard.php:2223 src/FieldOption.php:1967 src/Fields/Tel.php:346
 #: src/Fields/Dropdownmeta.php:1788 src/Fields/Dropdown.php:813
-#: src/Fields/Text.php:345 src/Fields/Checkbox.php:694 src/Fields/Radio.php:681
+#: src/Fields/Text.php:345 src/Fields/Checkbox.php:710 src/Fields/Radio.php:681
 #: src/Fields/Url.php:345 src/Fields/Dropdownobject.php:1071
-#: src/Fields/Dropdownmultiple.php:1118 src/Fields/Dropdownmultiple.php:1255
+#: src/Fields/Dropdownmultiple.php:1124 src/Fields/Dropdownmultiple.php:1261
 #: src/Fields/Yesno.php:398 src/Fields/Basket.php:840 src/Fields/Email.php:342
 #: src/Fields/Textarea.php:304
 msgid "Next"
@@ -1692,9 +1692,9 @@ msgstr ""
 #: src/Wizard.php:1546 src/Wizard.php:1709 src/FieldOption.php:1965
 #: src/Fields/Tel.php:344 src/Fields/Dropdownmeta.php:1786
 #: src/Fields/Dropdown.php:812 src/Fields/Text.php:343
-#: src/Fields/Checkbox.php:692 src/Fields/Radio.php:679 src/Fields/Url.php:343
-#: src/Fields/Dropdownobject.php:1070 src/Fields/Dropdownmultiple.php:1116
-#: src/Fields/Dropdownmultiple.php:1253 src/Fields/Yesno.php:396
+#: src/Fields/Checkbox.php:708 src/Fields/Radio.php:679 src/Fields/Url.php:343
+#: src/Fields/Dropdownobject.php:1070 src/Fields/Dropdownmultiple.php:1122
+#: src/Fields/Dropdownmultiple.php:1259 src/Fields/Yesno.php:396
 #: src/Fields/Basket.php:839 src/Fields/Email.php:340
 #: src/Fields/Textarea.php:302
 msgctxt "button"
