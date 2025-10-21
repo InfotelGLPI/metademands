@@ -1958,15 +1958,21 @@ JAVASCRIPT
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $onchange .= "if ($hidden_link in tohide) {
-                        } else {
-                            tohide[$hidden_link] = true;
-                        }
-                        if (parseInt($(this).val()) == $idc || $idc == -1) {
+                    $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
+                    ";
+                }
+            }
+
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    $onchange .= " if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$hidden_link] = false;
                         }";
+                }
+            }
 
-
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_link;
                     }
@@ -2073,8 +2079,8 @@ JAVASCRIPT
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                                    $metaid,
-                                                    $childs
+                                                $metaid,
+                                                $childs
                                                 );
                                             }
                                         }
@@ -2107,6 +2113,8 @@ JAVASCRIPT
 
             $onchange .= "var tohide = {};";
             $display = 0;
+
+
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_block'] as $hidden_block) {
                     $onchange .= "if ($hidden_block in tohide) {
@@ -2118,7 +2126,9 @@ JAVASCRIPT
                     }";
 
 
-                    $onchange .= "$.each( tohide, function( key, value ) {
+                    $onchange .= "
+                    console.log(tohide);
+                    $.each( tohide, function( key, value ) {
                     if (value == true) {
                        var id = 'ablock'+ key;
                         if (document.getElementById(id))

@@ -1227,15 +1227,32 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
                 $onchange .= "var tohide = {};";
                 $display = 0;
+
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
-                        $onchange .= "if ($hidden_link in tohide) {
-                        } else {
-                            tohide[$hidden_link] = true;
-                        }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1 )) {
+                        $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
+                    ";
+                    }
+                }
+
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['hidden_link'] as $hidden_link) {
+                        $onchange .= " if (parseInt($(this).val()) == $idc || $idc == -1 || $idc == 0) {
                             tohide[$hidden_link] = false;
                         }";
+                    }
+                }
+
+
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['hidden_link'] as $hidden_link) {
+//                        $onchange .= "if ($hidden_link in tohide) {
+//                        } else {
+//                            tohide[$hidden_link] = true;
+//                        }
+//                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1 )) {
+//                            tohide[$hidden_link] = false;
+//                        }";
 
                         //if reload form
                         if (isset($data['value']) && $idc == $data['value']) {
