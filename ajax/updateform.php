@@ -104,7 +104,7 @@ if (isset($_POST['save_model'])) {
             'itemtype' => '',
             'date' => date('Y-m-d H:i:s'),
             'is_model' => 1,
-            'is_private' => 1,
+//            'is_private' => 1,
             'id' => $_POST['plugin_metademands_forms_id']];
 
         $form->update($input);

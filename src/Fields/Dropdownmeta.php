@@ -1692,10 +1692,12 @@ class Dropdownmeta extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                    if ($values) {
+                        $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                    }
                 } else {
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
                 }
@@ -1770,10 +1772,12 @@ class Dropdownmeta extends CommonDBTM
         }
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
-                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').prop('checked', true).trigger('change');";
+                    if ($values) {
+                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').prop('checked', true).trigger('change');";
+                    }
                 } else {
                     $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 }
@@ -1956,10 +1960,12 @@ class Dropdownmeta extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
-                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
+                    if ($values) {
+                        $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
+                    }
                 } else {
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 }
@@ -2113,10 +2119,12 @@ class Dropdownmeta extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                    if ($values) {
+                        $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                    }
                 } else {
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
                 }

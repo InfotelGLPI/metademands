@@ -118,7 +118,7 @@ class Wizard extends CommonDBTM
      * @param CommonGLPI $item
      * @param int $withtemplate
      *
-     * @return array|string
+     * @return string
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
@@ -147,6 +147,7 @@ class Wizard extends CommonDBTM
      * @param int $withtemplate
      *
      * @return bool|true
+     * @throws \GlpitestSQLError
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
@@ -211,7 +212,7 @@ class Wizard extends CommonDBTM
     }
 
     /**
-     * @param \User $user
+     * @param User $user
      */
     public static function showUserInformations(User $user)
     {
@@ -265,11 +266,16 @@ class Wizard extends CommonDBTM
         }
         $stylespan = "md-cat-icon-stack";
         $sizespan = "1em";
-        $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+        if (!empty($title_color)) {
+            $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
+        } else {
+            $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+        }
+
         echo "<span class='$stylespan' style='font-size:1.5em'><i class='ti ti-circle' style='$color;'></i>";
         if (!empty($icon)) {
             if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-1x fas $icon' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>&nbsp;";
+                echo "<i class='fa-1x fas $icon' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: $sizespan;\"></i>&nbsp;";
             } else {
                 echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>&nbsp;";
             }
@@ -648,7 +654,7 @@ class Wizard extends CommonDBTM
                     $icon = $meta->fields['icon'];
                 }
                 if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;\"></i>";//$style
                 } else {
                     echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
                 }
@@ -684,7 +690,7 @@ class Wizard extends CommonDBTM
                 }
 
                 if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;\"></i>&nbsp;";
                 } else {
                     echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
                 }
@@ -774,7 +780,9 @@ class Wizard extends CommonDBTM
      * @param int $metademands_id
      * @param bool $preview
      * @param array $options
-     *
+     * @param bool $seeform
+     * @param int $current_ticket
+     * @param int $meta_validated
      * @throws \GlpitestSQLError
      */
     public static function showWizardSteps(
@@ -1008,7 +1016,7 @@ class Wizard extends CommonDBTM
                     $icon = $config['icon_change'];
                 }
                 if (str_contains($icon, 'fa-')) {
-                    echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
+                    echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;\"></i>";//$style
                 } else {
                     echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:6em;\"></i>";//$style
                 }
@@ -1121,7 +1129,7 @@ class Wizard extends CommonDBTM
                 $sizespan = "0.5em";
                 echo "<span class='$stylespan'><i class='ti ti-circle'></i>";
                 if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fas $icon fa-1x' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size:$sizespan;\"></i>";//$style
+                    echo "<i class='fas $icon fa-1x' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size:$sizespan;\"></i>";//$style
                 } else {
                     echo "<i class='ti $icon' style=\"font-size:$sizespan;\"></i>";//$style
                 }
@@ -1214,24 +1222,32 @@ class Wizard extends CommonDBTM
                         echo "<section class='card-body'>";
                         echo "<div class='d-flex'>";
 
-                            echo "<div class='aspect-ratio-1' style='margin-top: 40px;margin-left: 10px;width: 70px;height: 70px;'>";
-                                $stylespan = "md-cat-icon-stack fa-2x";
-                                $sizespan = "1em";
-                                $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
-                                echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
+                        echo "<div class='aspect-ratio-1' style='margin-top: 40px;margin-left: 10px;width: 70px;height: 70px;'>";
+                        $stylespan = "md-cat-icon-stack fa-2x";
+                        $sizespan = "1em";
+                        $title_color = "";
+                        if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+                            $title_color = $meta->fields['title_color'];
+                        }
+                        if (!empty($title_color)) {
+                            $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
+                        } else {
+                            $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+                        }
+                        echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
 
                         if (str_contains($icon, 'fa-')) {
-                            echo "<i class='fas $icon $fasize' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';font-size: $sizespan;\"></i>";//$style
+                            echo "<i class='fas $icon $fasize' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: $sizespan;\"></i>";//$style
                         } else {
                             echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>";//$style
                         }
-                                echo "</span>";
-                            echo "</div>";
-                            echo "<div class='ms-4'>";
-                                echo "<h2 class='card-title mb-2 text-break'>";
-                                echo $name_meta;
-                                echo "</h2>";
-                                echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
+                        echo "</span>";
+                        echo "</div>";
+                        echo "<div class='ms-4'>";
+                        echo "<h2 class='card-title mb-2 text-break'>";
+                        echo $name_meta;
+                        echo "</h2>";
+                        echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
                         if (!empty($comment_meta)) {
                             echo $comment_meta;
                         } else {
@@ -1253,7 +1269,7 @@ class Wizard extends CommonDBTM
                             }
                         }
 
-                            echo "</div>";
+                        echo "</div>";
 
                         echo "</div>";
                         echo "</section>";
@@ -1501,7 +1517,7 @@ class Wizard extends CommonDBTM
                 && $metademands->fields['step_by_step_mode']  == 0
                 && $see_summary == 0) {
                 echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
-                echo "<i style='font-size:2em;' class='ti fa-printer' style='color:#e3e0e0;'></i>";
+                echo "<i style='font-size:2em;color:#e3e0e0;' class='ti fa-printer' ></i>";
                 echo "</a>";
             }
         } else {
@@ -1540,6 +1556,10 @@ class Wizard extends CommonDBTM
         $submittitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . $title;
 
         $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
+
+        $edit_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['edit_model'] ?? 0;
+
+        $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
 
         $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 99999999;
 
@@ -1632,13 +1652,15 @@ class Wizard extends CommonDBTM
         $metaparams['root_doc'] = $root_doc;
         $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
+        $metaparams['edit_model'] = $edit_model;
+        $metaparams['use_model'] = $use_model;
         $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
         $metaparams['confirmmsg'] = addslashes(__("You have not entered any values. Is this normal?", 'metademands'));
         $metaparams['nameform']
             = addslashes($metademands->fields['name'])
          . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
         $metaparams['paramUrl'] = $paramUrl;
-        if ($metademands->fields['can_update'] == 1) {
+        if ($metademands->fields['can_update'] == 1 && !$meta_validated) {
             $metaparams['seeform'] = 0;
         } else {
             $metaparams['seeform'] = $seeform;
@@ -1966,7 +1988,7 @@ class Wizard extends CommonDBTM
                         metademandparams.id = '$ID';
                         metademandparams.nameform = '$nameform';
                         metademandparams.block_id = '$block_id';
-
+                        metademandparams.edit_model = '$edit_model';
                         metademandparams.nexttitle = '$nexttitle';
                         metademandparams.submittitle = '$submittitle';
                         metademandparams.msg = '$alert';
@@ -2122,6 +2144,7 @@ class Wizard extends CommonDBTM
                     );
                 }
             }
+            $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
 
             foreach ($allfields as $block => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -2131,7 +2154,7 @@ class Wizard extends CommonDBTM
                     }
                 }
 
-                self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id);
+                self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id, $use_model);
 
 
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -2155,7 +2178,8 @@ class Wizard extends CommonDBTM
                         || ($meta_validated
                             && !$metademands->fields['can_clone']))
                     || !Session::haveRight('plugin_metademands_updatemeta', READ))) {
-                    return false;
+                    Session::addMessageAfterRedirect(__("You don't have the right to modify this form or the metademand don't accept form modifications", 'metademands'), false, ERROR);
+                    Html::back();
                 }
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
@@ -2383,18 +2407,18 @@ class Wizard extends CommonDBTM
                                         drafts_id: draft_id,
                                         self_delete: self_delete
                                       },
-                                    success: function(response){
+                                    success: function (response) {
                                         $('#bodyDraft').html(response);
                                         $('#ajax_loader').hide();
                                         window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.php'
                                      },
-                                    error: function(xhr, status, error) {
+                                    error: function (xhr, status, error) {
                                        console.log(xhr);
                                        console.log(status);
                                        console.log(error);
                                      }
-                                 });
-                           };
+                                 })
+                           }
 
                         var check_free_table = document.querySelector('#freetable_table');
                         if(check_free_table){
@@ -2409,7 +2433,7 @@ class Wizard extends CommonDBTM
     }
 
 
-    public static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id)
+    public static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id, $use_model)
     {
 
 
@@ -2527,6 +2551,13 @@ class Wizard extends CommonDBTM
             echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "'>";
         } else {
             echo "<div class=\"row\" style='$style;padding: 0.5rem 0.5rem;padding-top: initial;'>";
+        }
+
+        if ($block == 1 && $use_model == 1) {
+            echo "<div class='alert alert-warning'>";
+            echo __('You are using a public template. This allows you to automatically pre-fill form fields, making your life easier :)', 'metademands');
+            echo "</div>";
+
         }
 
         foreach ($line as $key => $data) {
@@ -2769,6 +2800,7 @@ class Wizard extends CommonDBTM
 
         // Title field
         if ($data['type'] != 'title-block') {
+
             // end wrapper div classes
             //see fields
             Field::displayFieldByType(
@@ -2884,6 +2916,7 @@ class Wizard extends CommonDBTM
                     metademandparams.confirmmsg = '$confirmmsg';
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
+                    metademandparams.edit_model = '$edit_model';
                     metademandparams.seeform = '$seeform';
                     metademandparams.token = '$token';
                     metademandparams.id = '$ID';
@@ -3605,5 +3638,6 @@ class Wizard extends CommonDBTM
                 }
             }
         }
+        return false;
     }
 }

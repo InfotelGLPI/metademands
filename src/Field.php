@@ -36,6 +36,7 @@ use Budget;
 use CartridgeItem;
 use CommonDBChild;
 use CommonDBTM;
+use CommonGLPI;
 use Computer;
 use ConsumableItem;
 use Contact;
@@ -44,12 +45,13 @@ use DbUtils;
 use Document;
 use Entity;
 use Glpi\DBAL\QueryExpression;
+use Glpi\Features\Clonable;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Checkbox;
 use GlpiPlugin\Metademands\Fields\Date;
-use GlpiPlugin\Metademands\Fields\Datetime;
 use GlpiPlugin\Metademands\Fields\Dateinterval;
+use GlpiPlugin\Metademands\Fields\Datetime;
 use GlpiPlugin\Metademands\Fields\Datetimeinterval;
 use GlpiPlugin\Metademands\Fields\Dropdown;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
@@ -90,13 +92,11 @@ use Reminder;
 use RSSFeed;
 use Search;
 use Session;
-use CommonGLPI;
 use Software;
 use Supplier;
 use TicketRecurrent;
 use Toolbox;
 use User;
-use Glpi\Features\Clonable;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -1043,10 +1043,10 @@ class Field extends CommonDBChild
         $canedit = $item->can($item->getID(), UPDATE);
 
         if ($canedit) {
-            echo "<div id='viewfieldmeta"  . $item->getID() . "$rand'></div>\n";
+            echo "<div id='viewfieldmeta" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addFieldmeta"  . $item->getID() . "$rand() {\n";
+            echo "function addFieldmeta" . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
@@ -1054,7 +1054,7 @@ class Field extends CommonDBChild
                 'id' => -1,
             ];
             Ajax::updateItemJsCode(
-                "viewfieldmeta"  . $item->getID() . "$rand",
+                "viewfieldmeta" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                 $params
             );
@@ -1072,7 +1072,7 @@ class Field extends CommonDBChild
             echo "<div id='viewexistingfieldmeta" . $item->getType() . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addExistingFieldmeta"  . $item->getID() . "$rand() {\n";
+            echo "function addExistingFieldmeta" . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
@@ -1080,7 +1080,7 @@ class Field extends CommonDBChild
                 'id' => -1,
             ];
             Ajax::updateItemJsCode(
-                "viewexistingfieldmeta"  . $item->getID() . "$rand",
+                "viewexistingfieldmeta" . $item->getID() . "$rand",
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewexistingsubitem.php",
                 $params
             );
@@ -1389,7 +1389,7 @@ class Field extends CommonDBChild
 
             if (is_array($data) && count($data) > 0) {
                 if ($canedit) {
-                    Html::openMassiveActionsForm('massMetaFields'  . $rand);
+                    Html::openMassiveActionsForm('massMetaFields' . $rand);
                     $massiveactionparams = [
                         'item' => __CLASS__,
                         'container' => 'massMetaFields' . $rand,
@@ -1760,7 +1760,7 @@ border-style: none !important; border-color: initial !important;border-image: in
      * @param  $name
      * @param array $param
      *
-     * @return dropdown of types
+     * @return Dropdown of types
      * @throws \GlpitestSQLError
      */
     public static function dropdownFieldTypes($type_fields, $param = [])
@@ -2700,11 +2700,11 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $count++;
                         break;
                     case 'datetime_interval':
-                        DateTimeinterval::showWizardField($data, $namefield, $value2, $end);
+                        Datetimeinterval::showWizardField($data, $namefield, $value2, $end);
                         $count++;
                         break;
                 }
-//                echo "</div>";
+                //                echo "</div>";
             }
         }
         echo "</div>";
@@ -3801,7 +3801,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 Computer::class => Computer::getTypeName(2),
                 Monitor::class => Monitor::getTypeName(2),
                 Software::class => Software::getTypeName(2),
-                Networkequipment::class => Networkequipment::getTypeName(2),
+                NetworkEquipment::class => NetworkEquipment::getTypeName(2),
                 Peripheral::class => Peripheral::getTypeName(2),
                 Printer::class => Printer::getTypeName(2),
                 CartridgeItem::class => CartridgeItem::getTypeName(2),
@@ -3838,17 +3838,17 @@ border-style: none !important; border-color: initial !important;border-image: in
             // Does not exists in GLPI 9.4
             $optgroup[__("Assets")][PassiveDCEquipment::class] = PassiveDCEquipment::getTypeName(2);
         }
-//TODO replace by GLPI
-//        $plugin = new Plugin();
-//        if ($plugin->isActivated("genericobject")) {
-//            foreach (PluginGenericobjectType::getTypes() as $id => $objecttype) {
-//                $itemtype = $objecttype['itemtype'];
-//                if (class_exists($itemtype)) {
-//                    $item = new $itemtype();
-//                    $optgroup[__("Assets")][$item::class] = $item::getTypeName(2);
-//                }
-//            }
-//        }
+        //TODO replace by GLPI
+        //        $plugin = new Plugin();
+        //        if ($plugin->isActivated("genericobject")) {
+        //            foreach (PluginGenericobjectType::getTypes() as $id => $objecttype) {
+        //                $itemtype = $objecttype['itemtype'];
+        //                if (class_exists($itemtype)) {
+        //                    $item = new $itemtype();
+        //                    $optgroup[__("Assets")][$item::class] = $item::getTypeName(2);
+        //                }
+        //            }
+        //        }
 
         return $optgroup;
     }

@@ -30,10 +30,12 @@
 
 namespace GlpiPlugin\Metademands;
 
+use Change;
 use CommonDBTM;
-use Html;
-use Session;
 use CommonGLPI;
+use Html;
+use Problem;
+use Session;
 use User;
 
 /**
@@ -41,10 +43,9 @@ use User;
  */
 class Form extends CommonDBTM
 {
-
     public static function getIcon()
     {
-        return "ti ti-eye";
+        return "ti ti-file-spark";
     }
 
     public static $rightname = 'plugin_metademands';
@@ -135,7 +136,8 @@ class Form extends CommonDBTM
                       function loadForm(form_id) {
                          $('#ajax_loader').show();
                          var data_send = $('#wizard_form').serializeArray();
-                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
+                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id},
+                         {name: 'metademands_id', value: meta_id});
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
                                 type: 'POST',
@@ -149,7 +151,7 @@ class Form extends CommonDBTM
                                     }
                                  }
                              });
-                       };
+                       }
                      </script>";
 
         $return .= "</span>";
@@ -291,7 +293,7 @@ class Form extends CommonDBTM
                 $return .= "</td>";
                 if ($form_id == $form_private['id']) {
                     $return .= "<td>";
-                    $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateForm(" . $form_private['id'] . ", '" . $form_private['name'] . "')\">";
+                    $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();updateForm(" . $form_private['id'] . ", '" . $form_private['name'] . "')\">";
                     $return .= "<i class='ti ti-device-floppy pointer' title='" . _sx(
                         'button',
                         'Save model',
@@ -345,8 +347,8 @@ class Form extends CommonDBTM
                                     document.location.reload();
                                 }
                              },
-                         });
-                   };
+                         })
+                   }
                  </script>";
 
         $return .= "<script>
@@ -379,7 +381,7 @@ class Form extends CommonDBTM
                     </script>";
 
         $return .= "<script>
-                      function udpateForm(form_id, form_name) {
+                      function updateForm(form_id, form_name) {
 
                          if(typeof tinyMCE !== 'undefined'){
                             tinyMCE.triggerSave();
@@ -407,7 +409,7 @@ class Form extends CommonDBTM
                                   console.log(error);
                                 }
                             });
-                      };
+                      }
                     </script>";
         $return .= "<script>
                       function changeVisibility(form_id, is_private) {
@@ -438,7 +440,7 @@ class Form extends CommonDBTM
                                   console.log(error);
                                 }
                             });
-                      };
+                      }
                     </script>";
 
         $itilcategories_id = 0 ;
@@ -470,7 +472,7 @@ class Form extends CommonDBTM
                                     }
                                  }
                              });
-                       };
+                       }
                      </script>";
 
         $return .= "</span>";
@@ -481,7 +483,6 @@ class Form extends CommonDBTM
 
 
     /**
-     * @param $users_id
      * @param $plugin_metademands_metademands_id
      *
      * @return string
@@ -514,7 +515,7 @@ class Form extends CommonDBTM
                 $meta->getFromDB($form['plugin_metademands_metademands_id']);
                 $itemtype = $form['itemtype'];
 
-                $return .= "<td>" .$meta->getName() . "</td>";
+                $return .= "<td>" . $form['name']. " (".$meta->getName() . ")</td>";
 
                 $content = __("Name") . " : " . $form['name'];
                 $content .= "<br>" . __("Date") . " : " . Html::convDateTime($form['date']);
@@ -578,12 +579,127 @@ class Form extends CommonDBTM
                                     }
                                  }
                              });
-                       };
+                       }
                      </script>";
 
         $return .= "</span>";
 
         return $return;
+    }
+
+    /**
+     * @param $plugin_metademands_metademands_id
+     *
+     * @return string
+     */
+    public static function showPublicFormsForMetademand($plugin_metademands_metademands_id)
+    {
+        $self = new self();
+        $condition = [
+            'is_model' => 1,
+            'is_private' => 0,
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
+        ];
+        $forms = $self->find($condition, ['date DESC'], 20);
+
+        if (count($forms) > 0) {
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr class=''>";
+            echo "<th colspan='4'>";
+            echo __('Public models', 'metademands');
+            echo "</th>";
+            echo "</tr>";
+
+            echo "<tr class=''>";
+            echo "<th>";
+            echo __('Name');
+            echo "</th>";
+            echo "<th>";
+            echo __('Creation date');
+            echo "</th>";
+            echo "<th>";
+            echo __('Created by', 'metademands');
+            echo "</th>";
+            echo "<th>";
+            echo _sx(
+                'button',
+                'Load form',
+                'metademands'
+            );
+            echo "</th>";
+            echo "</tr>";
+            echo "<p class='card-text'>";
+            echo "<tbody id='bodyForm'>";
+
+            foreach ($forms as $form) {
+                echo "<tr class=''>";
+                $meta = new Metademand();
+                $meta->getFromDB($form['plugin_metademands_metademands_id']);
+
+                echo "<td>";
+                echo $form['name'];
+                echo "</td>";
+
+                echo "<td>";
+                echo Html::convDateTime($form['date']);
+                echo "</td>";
+
+                echo "<td>";
+                echo getUserName($form['users_id']);
+                echo "</td>";
+
+                echo "<td>";
+                echo "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
+                echo "<i class='ti ti-cloud-download pointer' title='" . _sx(
+                    'button',
+                    'Load form',
+                    'metademands'
+                ) . "'
+                           data-hasqtip='0' aria-hidden='true'></i>";
+                echo "</button>";
+                echo "</td>";
+
+                echo "</tr>";
+            }
+
+            echo "</tbody>";
+            echo "</table>";
+        }
+
+        $itilcategories_id = 0 ;
+        if (isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+            $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+            if (is_array($cats) && count($cats) == 1) {
+                $itilcategories_id = $cats[0];
+            }
+        }
+        $step = Metademand::STEP_SHOW;
+        echo "<script>
+                      var meta_id = {$plugin_metademands_metademands_id};
+                      var step = {$step};
+                      var itilcategories_id = {$itilcategories_id};
+                      function loadForm(form_id) {
+                         $('#ajax_loader').show();
+                         var data_send = $('#wizard_form').serializeArray();
+                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id},
+                         {name: 'metademands_id', value: meta_id},
+                         {name: 'edit_model', value: 1});
+                          $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
+                                type: 'POST',
+                                data: data_send,
+                                success: function(response){
+                                    $('#ajax_loader').hide();
+                                    if (response == 1) {
+                                       document.location.reload();
+                                    } else {
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=' + itilcategories_id + '&metademands_id=' + meta_id + '&step=' + step;
+                                    }
+                                 }
+                             });
+                       }
+                     </script>";
+        return true;
     }
 
     /**
@@ -596,9 +712,9 @@ class Form extends CommonDBTM
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if (($item->getType() == 'Ticket' && $_SESSION['glpiactiveprofile']['interface'] == 'helpdesk')
-            || $item->getType() == 'Problem'
-            || $item->getType() == 'Change') {
+        if (($item->getType() == \Ticket::class && $_SESSION['glpiactiveprofile']['interface'] == 'helpdesk')
+            || $item->getType() == Problem::class
+            || $item->getType() == Change::class) {
             if ($this->canView()
                 && !$withtemplate
                 && countElementsInTable("glpi_plugin_metademands_forms", [
@@ -616,13 +732,26 @@ class Form extends CommonDBTM
                     $total
                 );
             }
-        } elseif ($item->getType() == 'User') {
+        } elseif ($item->getType() == User::class) {
             if ($this->canView()
                 && !$withtemplate
                 && countElementsInTable("glpi_plugin_metademands_forms", ["users_id" => $item->fields['id']])) {
                 $form_metademand_data = $this->find(['users_id' => $item->fields['id']]);
                 $total = count($form_metademand_data);
                 $name = _n('Associated form', 'Associated forms', $total, 'metademands');
+
+                return self::createTabEntry(
+                    $name,
+                    $total
+                );
+            }
+        } elseif ($item->getType() == Metademand::class) {
+            if ($this->canView()
+                && !$withtemplate
+                && $total = countElementsInTable("glpi_plugin_metademands_forms", ["plugin_metademands_metademands_id" => $item->fields['id'],
+                    "is_model" => 1,
+                    "is_private" => 0])) {
+                $name = _n('Public model form', 'Public model forms', $total, 'metademands');
 
                 return self::createTabEntry(
                     $name,
@@ -650,13 +779,16 @@ class Form extends CommonDBTM
         $form = new self();
 
         switch ($item->getType()) {
-            case 'Ticket':
-            case 'Problem':
-            case 'Change':
+            case \Ticket::class:
+            case Problem::class:
+            case Change::class:
                 $form->showFormsForItilObject($item);
                 break;
-            case 'User':
+            case User::class:
                 $form->showFormsForUser($item);
+                break;
+            case Metademand::class:
+                $form->showPublicFormsForMetademand($item->getID());
                 break;
         }
 
@@ -739,7 +871,7 @@ class Form extends CommonDBTM
                                          metademands_id: meta_id,
                                          _users_id_requester: $users_id,
                                          items_id: $items_id,
-                                         itemtype: '$itemtype'};
+                                         itemtype: '$itemtype'}
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
                                 type: 'POST',
@@ -751,7 +883,7 @@ class Form extends CommonDBTM
                                     }
                                 }
                              });
-                       };
+                       }
                      </script>";
             }
             echo "</td>";
@@ -825,7 +957,7 @@ class Form extends CommonDBTM
                                          metademands_id: meta_id,
                                          _users_id_requester: $users_id,
                                          items_id: $items_id,
-                                         itemtype: '$itemtype'};
+                                         itemtype: '$itemtype'}
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
                                 type: 'POST',
@@ -837,7 +969,7 @@ class Form extends CommonDBTM
                                     }
                                 }
                              });
-                       };
+                       }
                      </script>";
             }
             echo "</td>";

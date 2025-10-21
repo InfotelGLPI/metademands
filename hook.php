@@ -51,6 +51,7 @@ use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\Ticket_Metademand;
 use GlpiPlugin\Metademands\Ticket_Task;
 use GlpiPlugin\Resources\Resource;
+use function Safe\mkdir;
 
 /**
  * @return bool

@@ -195,8 +195,8 @@ class Metademand_Resource extends CommonDBTM
             $rand = mt_rand();
             echo "<div class='left'>";
             if ($canedit) {
-                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-                $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
+                Html::openMassiveActionsForm('massResources' . $rand);
+                $massiveactionparams = ['item' => __CLASS__, 'container' => 'massResources'  . $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
             echo "<table class='tab_cadre_fixe'>";
@@ -205,7 +205,7 @@ class Metademand_Resource extends CommonDBTM
             echo "</tr>";
             echo "<tr>";
             if ($canedit) {
-                echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
+                echo "<th width='10'>" . Html::getCheckAllAsCheckbox('massResources' . $rand) . "</th>";
             }
             echo "<th>" . __('Name') . "</th>";
             echo "<th>" . __('Entity') . "</th>";
