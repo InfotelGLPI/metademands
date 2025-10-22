@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 13:08+0000\n"
+"POT-Creation-Date: 2025-10-22 14:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -216,7 +216,7 @@ msgid "Bind to the value of this checkbox"
 msgstr ""
 
 #: src/Field.php:460 src/Field.php:846 src/Field.php:1261 src/Field.php:3352
-#: src/Field.php:4631 src/Wizard.php:2080 src/Step.php:397 src/Step.php:482
+#: src/Field.php:4644 src/Wizard.php:2080 src/Step.php:397 src/Step.php:482
 #: src/Step.php:624
 msgid "Block"
 msgstr ""
@@ -801,7 +801,7 @@ msgstr ""
 msgid "Field informations"
 msgstr ""
 
-#: src/Field.php:4641 src/Condition.php:370 src/Condition.php:936
+#: src/Field.php:4654 src/Condition.php:370 src/Condition.php:936
 msgid "Field type"
 msgstr ""
 
@@ -809,7 +809,7 @@ msgstr ""
 msgid "Fill out a form"
 msgstr ""
 
-#: src/Field.php:4612 src/Fields/Ldapdropdown.php:267
+#: src/Field.php:4625 src/Fields/Ldapdropdown.php:267
 msgid "Filter"
 msgstr ""
 
@@ -1400,7 +1400,7 @@ msgid "OR"
 msgstr ""
 
 #: ajax/reloaditem.php:41 src/Field.php:877 src/Field.php:885
-#: src/Field.php:1413 src/Field.php:3287 src/Field.php:4651
+#: src/Field.php:1413 src/Field.php:3287 src/Field.php:4664
 msgid "Object"
 msgstr ""
 
