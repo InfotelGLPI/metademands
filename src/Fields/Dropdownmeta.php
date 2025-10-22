@@ -898,6 +898,7 @@ class Dropdownmeta extends CommonDBTM
                     ) {
                         $itemtable = getTableForItemType($itemtype_groups);
                         $criteria = [
+                            'SELECT' => $itemtable.'.id',
                             'FROM' => $itemtable,
                             'LEFT JOIN'       => [
                                 'glpi_groups_items' => [
@@ -905,7 +906,7 @@ class Dropdownmeta extends CommonDBTM
                                         'glpi_groups_items' => 'items_id',
                                         $itemtable          => 'id', [
                                             'AND' => [
-                                                'glpi_groups_items.itemtype' => $itemtype,
+                                                'glpi_groups_items.itemtype' => $itemtype_groups,
                                                 'glpi_groups_items.type' => 1,
                                             ],
                                         ],
