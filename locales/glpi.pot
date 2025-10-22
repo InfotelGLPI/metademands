@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 14:58+0000\n"
+"POT-Creation-Date: 2025-10-22 15:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,7 +228,7 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1423 src/Fields/Dropdown.php:509
+#: src/Fields/Dropdownmeta.php:1436 src/Fields/Dropdown.php:509
 #: src/Fields/Checkbox.php:395 src/Fields/Radio.php:398
 msgid "Block display"
 msgstr ""
@@ -310,7 +310,7 @@ msgstr ""
 msgid "Choose a template"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1361 src/Fields/Dropdownmeta.php:1422
+#: src/Fields/Dropdownmeta.php:1374 src/Fields/Dropdownmeta.php:1435
 #: src/Fields/Dropdown.php:491 src/Fields/Dropdown.php:508
 #: src/Fields/Checkbox.php:394 src/Fields/Radio.php:397
 #: src/Fields/Dropdownmultiple.php:666 src/Fields/Yesno.php:196
@@ -484,7 +484,7 @@ msgstr ""
 msgid "Day greater or equal to now"
 msgstr ""
 
-#: src/FieldCustomvalue.php:572 src/Fields/Dropdownmeta.php:1189
+#: src/FieldCustomvalue.php:572 src/Fields/Dropdownmeta.php:1202
 #: src/Fields/Checkbox.php:288 src/Fields/Radio.php:292
 #: src/Fields/Dropdownmultiple.php:504 src/Fields/Dropdownmultiple.php:591
 #: src/Fields/Yesno.php:165
@@ -613,7 +613,7 @@ msgstr ""
 msgid "Display this hidden field"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1365 src/Fields/Dropdownmeta.php:1426
+#: src/Fields/Dropdownmeta.php:1378 src/Fields/Dropdownmeta.php:1439
 #: src/Fields/Dropdown.php:495 src/Fields/Dropdown.php:512
 #: src/Fields/Checkbox.php:398 src/Fields/Radio.php:401
 #: src/Fields/Dropdownmultiple.php:670 src/Fields/Yesno.php:200
@@ -902,7 +902,7 @@ msgstr ""
 msgid "Groups visibility"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1410
+#: src/Fields/Dropdownmeta.php:1423
 msgid "Hidden field"
 msgstr ""
 
@@ -922,7 +922,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1362
+#: src/Fields/Dropdownmeta.php:1375
 msgid "Icon display"
 msgstr ""
 
@@ -1086,7 +1086,7 @@ msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
 #: ajax/viewtypefields.php:56 src/Fields/Tel.php:125
-#: src/Fields/Dropdownmeta.php:1379 src/Fields/Dropdown.php:469
+#: src/Fields/Dropdownmeta.php:1392 src/Fields/Dropdown.php:469
 #: src/Fields/Text.php:123 src/Fields/Dropdownobject.php:607
 #: src/Fields/Dropdownobject.php:702 src/Fields/Email.php:122
 msgid "Link this to a user field"
@@ -1265,7 +1265,7 @@ msgstr ""
 #: src/Wizard.php:1306 src/Wizard.php:1549 src/Wizard.php:1670
 #: src/Wizard.php:1679 src/Wizard.php:1713 src/Wizard.php:1719
 #: src/Wizard.php:2223 src/FieldOption.php:1967 src/Fields/Tel.php:346
-#: src/Fields/Dropdownmeta.php:1788 src/Fields/Dropdown.php:813
+#: src/Fields/Dropdownmeta.php:1801 src/Fields/Dropdown.php:813
 #: src/Fields/Text.php:345 src/Fields/Checkbox.php:710 src/Fields/Radio.php:681
 #: src/Fields/Url.php:345 src/Fields/Dropdownobject.php:1071
 #: src/Fields/Dropdownmultiple.php:1124 src/Fields/Dropdownmultiple.php:1261
@@ -1358,8 +1358,8 @@ msgid "Not empty"
 msgstr ""
 
 #: src/Fields/Ldapdropdown.php:342 src/Fields/Ldapdropdown.php:378
-#: src/Fields/Dropdownmeta.php:1560 src/Fields/Dropdownmeta.php:1570
-#: src/Fields/Dropdownmeta.php:1591 src/Fields/Dropdown.php:607
+#: src/Fields/Dropdownmeta.php:1573 src/Fields/Dropdownmeta.php:1583
+#: src/Fields/Dropdownmeta.php:1604 src/Fields/Dropdown.php:607
 #: src/Fields/Dropdown.php:643 src/Fields/Checkbox.php:477
 #: src/Fields/Checkbox.php:490 src/Fields/Radio.php:481
 #: src/Fields/Radio.php:494 src/Fields/Dropdownobject.php:857
@@ -1578,7 +1578,7 @@ msgid "Range"
 msgstr ""
 
 #: src/Freetablefield.php:345 src/FieldCustomvalue.php:553
-#: src/Fields/Dropdownmeta.php:1136 src/Fields/Checkbox.php:263
+#: src/Fields/Dropdownmeta.php:1149 src/Fields/Checkbox.php:263
 #: src/Fields/Radio.php:267 src/Fields/Freetable.php:860
 #: src/Fields/Dropdownmultiple.php:566
 msgid "Rank"
@@ -1588,7 +1588,7 @@ msgstr ""
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1403 src/Fields/Dropdownobject.php:672
+#: src/Fields/Dropdownmeta.php:1416 src/Fields/Dropdownobject.php:672
 msgid "Read-Only"
 msgstr ""
 
@@ -1690,7 +1690,7 @@ msgid "Save"
 msgstr ""
 
 #: src/Wizard.php:1546 src/Wizard.php:1709 src/FieldOption.php:1965
-#: src/Fields/Tel.php:344 src/Fields/Dropdownmeta.php:1786
+#: src/Fields/Tel.php:344 src/Fields/Dropdownmeta.php:1799
 #: src/Fields/Dropdown.php:812 src/Fields/Text.php:343
 #: src/Fields/Checkbox.php:708 src/Fields/Radio.php:679 src/Fields/Url.php:343
 #: src/Fields/Dropdownobject.php:1070 src/Fields/Dropdownmultiple.php:1122
@@ -2208,7 +2208,7 @@ msgstr ""
 msgid "Use this field as object field"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1353 src/Fields/Datetime.php:101
+#: src/Fields/Dropdownmeta.php:1366 src/Fields/Datetime.php:101
 #: src/Fields/Dropdown.php:456 src/Fields/Dropdownobject.php:641
 #: src/Fields/Dropdownobject.php:721 src/Fields/Date.php:101
 msgid "Use this field for child ticket field"
@@ -2260,7 +2260,7 @@ msgstr ""
 
 #: src/Field.php:1415 src/FieldOption.php:378 src/Condition.php:372
 #: src/Condition.php:510 src/Condition.php:612 src/Condition.php:938
-#: src/Fields/Ldapdropdown.php:293 src/Fields/Dropdownmeta.php:1472
+#: src/Fields/Ldapdropdown.php:293 src/Fields/Dropdownmeta.php:1485
 #: src/Fields/Dropdown.php:558 src/Fields/Checkbox.php:442
 #: src/Fields/Radio.php:446 src/Fields/Dropdownobject.php:778
 #: src/Fields/Dropdownmultiple.php:739 src/Fields/Yesno.php:227
