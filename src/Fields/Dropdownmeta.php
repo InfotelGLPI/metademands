@@ -899,8 +899,21 @@ class Dropdownmeta extends CommonDBTM
                         $itemtable = getTableForItemType($itemtype_groups);
                         $criteria = [
                             'FROM' => $itemtable,
+                            'LEFT JOIN'       => [
+                                'glpi_groups_items' => [
+                                    'ON' => [
+                                        'glpi_groups_items' => 'items_id',
+                                        $itemtable          => 'id', [
+                                            'AND' => [
+                                                'glpi_groups_items.itemtype' => $itemtype,
+                                                'glpi_groups_items.type' => 1,
+                                            ],
+                                        ],
+                                    ]
+                                ]
+                            ],
                             'WHERE' => [
-                                'groups_id' => $groups,
+                                'glpi_groups_items.groups_id' => $groups,
                             ] + getEntitiesRestrictCriteria(
                                 $itemtable,
                                 '',
