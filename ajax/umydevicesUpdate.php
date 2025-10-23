@@ -110,6 +110,7 @@ if ($_POST['display_type'] == Dropdownmeta::ICON_DISPLAY) {
     $p['selected_itemtype'] = $_POST['selected_itemtype'] ?? "";
     $p['is_mandatory'] = $_POST['is_mandatory'] ?? 0;
     $p['limit'] = $_POST['limit'] ? $limit : [];
+    $p['users_id'] = 0;
     if ((isset($_POST['value']) && ($_POST["value"] > 0))) {
         $p['users_id'] = $_POST['value'] ?? Session::getLoginUserID();
     }
