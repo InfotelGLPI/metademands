@@ -323,7 +323,7 @@ class Dropdownmeta extends CommonDBTM
                             $selected_itemtype = "";
 
                             $users_id = $_POST['value'];
-                            echo "<div id='mydevices_user$users_id' class=\"input-group\">";
+                            echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
 
                             if (isset($value) && !empty($value)) {
                                 $splitter = explode("_", $value);
