@@ -92,7 +92,7 @@ class Basketline extends CommonDBTM
                     echo "</table>";
                 }
 
-                echo "<div class=\"row\">";
+                echo "<div class='row'>";
                 echo "<div class=\"bt-feature col-md-12 \">";
                 echo Html::submit(__('Previous'), ['name' => 'clean_form', 'class' => 'btn btn-primary']);
 
@@ -252,13 +252,22 @@ class Basketline extends CommonDBTM
     {
         global $DB;
 
-        $query = "SELECT MAX(`line`)
-                FROM `" . $this->getTable() . "`
-                WHERE `plugin_metademands_metademands_id` = $plugin_metademands_metademands_id
-                AND `users_id` = " . Session::getLoginUserID() . "";
-        $result = $DB->doQuery($query);
+        $line = 0;
 
-        $line = $DB->result($result, 0, 0) + 1;
+        $criteria = [
+            'SELECT' => ['MAX' => 'line'],
+            'FROM' => $this->getTable(),
+            'WHERE' => [
+                'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
+                'users_id' => Session::getLoginUserID(),
+            ],
+        ];
+        $iterator = $DB->request($criteria);
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
+                $line = $data['line'] + 1;
+            }
+        }
 
         foreach ($content as $values) {
 

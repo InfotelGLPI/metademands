@@ -103,11 +103,10 @@ class TicketTask extends CommonDBChild
         $values = [
             'tickettask_id' => 0,
             'itilcategories_id' => 0,
-            'type' => \Ticket::DEMAND_TYPE,
             'parent_tasks_id' => 0,
             'plugin_metademands_tasks_id' => 0,
-            'content' => '',
-            'name' => '',
+            'content' => " ",
+            'name' => " ",
             'block_use' => 1,
             'useBlock' => 1,
             'block_parent_ticket_resolution' => 1,
@@ -739,17 +738,35 @@ class TicketTask extends CommonDBChild
         global $DB;
 
         if ($tasks_id > 0) {
-            $query = "SELECT `glpi_plugin_metademands_metademands`.*
-                  FROM `glpi_plugin_metademands_tickettasks`
-                  LEFT JOIN `glpi_plugin_metademands_tasks`
-                    ON (`glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
-                  LEFT JOIN `glpi_plugin_metademands_metademands`
-                    ON (`glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
-                  WHERE `glpi_plugin_metademands_tickettasks`.`id` = " . $tasks_id;
-            $result = $DB->doQuery($query);
 
-            if ($DB->numrows($result)) {
-                $metademands->fields = $DB->fetchAssoc($result);
+            $criteria = [
+                'SELECT' => [
+                    'glpi_plugin_metademands_metademands.*',
+                ],
+                'FROM' => 'glpi_plugin_metademands_tickettasks',
+                'LEFT JOIN' => [
+                    'glpi_plugin_metademands_tasks' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_tickettasks' => 'plugin_metademands_tasks_id',
+                            'glpi_plugin_metademands_tasks' => 'id'
+                        ]
+                    ],
+                    'glpi_plugin_metademands_metademands' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_tasks' => 'plugin_metademands_metademands_id',
+                            'glpi_plugin_metademands_metademands' => 'id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                    'glpi_plugin_metademands_tickettasks.id' => $tasks_id,
+                ],
+            ];
+            $iterator = $DB->request($criteria);
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
+                    $metademands->fields = $data;
+                }
             } else {
                 $metademands->getEmpty();
             }

@@ -582,7 +582,7 @@ class Dropdownobject extends CommonDBTM
 
                     $container_class = new $data['item']();
                     $field           = "";
-                    $field           .= $container_class::dropdown($opt);
+                    $field           .= \Dropdown::show($data['item'], $opt);
                 }
                 break;
         }

@@ -75,6 +75,7 @@ use GlpiPlugin\Metademands\Fields\Titleblock;
 use GlpiPlugin\Metademands\Fields\Upload;
 use GlpiPlugin\Metademands\Fields\Url;
 use GlpiPlugin\Metademands\Fields\Yesno;
+use Group_Item;
 use Html;
 use Line;
 use MassiveAction;
@@ -2525,11 +2526,20 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         if (isset($data['row_display'])
             && $data['row_display'] == 1) {
-            echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+            if ($data['type'] == 'basket') {
+                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
+            } else {
+                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+            }
             $count++;
         } else {
             if ($data['type'] != 'title-block' && $data['type'] != 'title') {
-                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+
+                if ($data['type'] == 'basket') {
+                    echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
+                } else {
+                    echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+                }
             } else {
                 echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-12 $bottomclass $class\">";
             }
@@ -2620,6 +2630,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     }
 
 
+                    echo "</span>";
+
                     //use plugin fields types
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -2639,6 +2651,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                 if ($preview) {
                     echo $config_link;
                 }
+            }
+            if ($data['type'] == 'basket') {
+                echo "</h4>";
             }
         }
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
@@ -4307,7 +4322,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                                             $itemtable          => 'id', [
                                                 'AND' => [
                                                     'glpi_groups_items.itemtype' => $itemtype,
-                                                    'glpi_groups_items.type' => 1,
+                                                    'glpi_groups_items.type' => Group_Item::GROUP_TYPE_NORMAL,
                                                 ],
                                             ],
                                         ]

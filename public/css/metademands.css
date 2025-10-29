@@ -458,8 +458,8 @@ textarea.invalid,
 
 #wizard_form.formCustomDraft .boutons_draft .update_draft,
 #wizard_form.formCustomDraft .boutons_draft .delete_draft{
-    margin: 10px 20px;
-    font-size: 15px;
+    margin: 5px;
+    /*font-size: 15px;*/
 }
 
 #wizard_form .addlineFI:hover{

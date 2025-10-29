@@ -434,17 +434,34 @@ class Draft extends CommonDBTM
         $draft_name = $datas['plugin_metademands_drafts_name'];
 
 
-        $query_type = " SELECT itil.name
-                        FROM glpi_plugin_metademands_drafts_values as dvalue
-                        JOIN glpi_itilcategories as itil ON itil.id = dvalue.value
-                        JOIN glpi_plugin_metademands_fields as field ON field.id = dvalue.plugin_metademands_fields_id
-                        WHERE field.item = 'ITILCategory_Metademands' and dvalue.plugin_metademands_drafts_id  = '$draft_id'";
-
-        $result = $DB->doQuery($query_type);
-        $type_achat = "";
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
-                $type_achat = " - " . $data['name'];
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_itilcategories.name',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_drafts_values',
+            'LEFT JOIN'       => [
+                'glpi_itilcategories' => [
+                    'ON' => [
+                        'glpi_itilcategories' => 'id',
+                        'glpi_plugin_metademands_drafts_values'          => 'value'
+                    ]
+                ],
+                'glpi_plugin_metademands_fields' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields' => 'id',
+                        'glpi_plugin_metademands_drafts_values'          => 'plugin_metademands_fields_id'
+                    ]
+                ]
+            ],
+            'WHERE'     => [
+                'glpi_plugin_metademands_fields.item'  => 'ITILCategory_Metademands',
+                'glpi_plugin_metademands_drafts_values.plugin_metademands_drafts_id'  => $draft_id
+            ]
+        ]);
+        $cat_name = "";
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
+                $cat_name = " - " . $data['name'];
             }
         }
 
@@ -457,39 +474,12 @@ class Draft extends CommonDBTM
 
         echo "<div id='meta-form' class='bt-block'> ";
 
-        echo "<div class=\"row\">";
+        echo "<div class='row'>";
 
-        echo "<div class=\"col-md-12 md-title\">";
-        echo "<div style='background-color: #FFF'>";
-        $title_color = "#000";
-        if (isset($metademands->fields['title_color']) && !empty($metademands->fields['title_color'])) {
-            $title_color = $metademands->fields['title_color'];
-        }
-
-        $color = Wizard::hex2rgba($title_color, "0.03");
-        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;padding: 20px;'";
-        echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
-
-        if (isset($metademands->fields['icon']) && !empty($metademands->fields['icon'])) {
-            $icon = $metademands->fields['icon'];
-        }
-
-        echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-        if (!empty($icon)) {
-            if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
-            } else {
-                echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
-            }
-        }
-        if (empty($n = Metademand::displayField($metademands->getID(), 'name'))) {
-            echo $metademands->getName() . $type_achat;
-        } else {
-            echo $n . $type_achat;
-        }
-        echo "</h2>";
-        echo "</div>";
-        echo "</div>";
+        $parameters['metademands_id'] = $metademands_id;
+        $parameters['from_draft'] = 1;
+        $parameters['cat_name'] = $cat_name;
+        Wizard::showMetademandTitle($metademands, $parameters);
 
         echo "<div class='md-basket-wizard'>";
         echo "</div>";
@@ -497,7 +487,6 @@ class Draft extends CommonDBTM
         echo "<div class='md-wizard'>";
 
         $userid = Session::getLoginUserID();
-
 
         if (count($metademands_data)) {
             $see_summary = 0;
@@ -535,16 +524,23 @@ class Draft extends CommonDBTM
         } else {
             echo "</div>";
             echo "<div class='center first-bloc'>";
-            echo "<div class=\"row\">";
+            echo "<div class='row'>";
             echo "<div class=\"bt-feature col-md-12 \">";
             echo __('No results found');
-            echo "</div></div>";
-            echo "<div class=\"row\">";
+            echo "</div>";
+            echo "</div>";
+
+            echo "<div class='row'>";
             echo "<div class=\"bt-feature col-md-12 \">";
             echo Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
             echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
-            echo "</div></div>";
+            echo "</div>";
+            echo "</div>";
         }
+        echo "</div>";
+        echo "</div>";
+
+        echo "</div>";
         echo "</div>";
         echo "</div>";
     }

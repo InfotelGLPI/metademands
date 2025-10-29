@@ -35,6 +35,7 @@ use CommonDBTM;
 use CommonGLPI;
 use CommonITILActor;
 use DbUtils;
+use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Servicecatalog\Category;
 use GlpiPlugin\Servicecatalog\Config as ServiceCatalogConfig;
@@ -235,10 +236,9 @@ class Wizard extends CommonDBTM
      * @param $parameters
      * @return void
      */
-    public function showMetademandTitle($meta, $parameters)
+    public static function showMetademandTitle($meta, $parameters)
     {
-
-        echo "<div class=\"row\">";
+        echo "<div class='row'>";
 
         $background_color = $title_color = "#000";
         $style_title_color = "";
@@ -258,12 +258,11 @@ class Wizard extends CommonDBTM
         echo "<div class='d-flex'>";
         echo "<div class='aspect-ratio-1' style='margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;'>";
 
-        $meta = new Metademand();
-        if ($meta->getFromDB($parameters['metademands_id'])) {
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
+
+        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+            $icon = $meta->fields['icon'];
         }
+
         $stylespan = "md-cat-icon-stack";
         $sizespan = "1em";
         if (!empty($title_color)) {
@@ -290,6 +289,9 @@ class Wizard extends CommonDBTM
         } else {
             echo $n;
         }
+        if (isset($parameters['cat_name'])) {
+            echo $parameters['cat_name'];
+        }
         if (isset($parameters['itilcategories_id'])
             && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
             $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
@@ -300,8 +302,7 @@ class Wizard extends CommonDBTM
                 }
             }
         }
-        if ($meta->getFromDB($parameters['metademands_id'])
-            && Plugin::isPluginActive('servicecatalog')) {
+        if (Plugin::isPluginActive('servicecatalog')) {
             $configsc = new ServiceCatalogConfig();
             $seedetail = 1;
             if (method_exists("GlpiPlugin\\Servicecatalog\\Config", "getDetailBeforeFormRedirect")) {
@@ -327,9 +328,9 @@ class Wizard extends CommonDBTM
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
                     echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                        'More informations',
-                        'servicecatalog'
-                    ) . "\"> ";
+                            'More informations',
+                            'servicecatalog'
+                        ) . "\"> ";
                     //                            echo __('More informations of this category ? click here', 'servicecatalog');
                     echo "</i>";
                     //                            echo "</div>";
@@ -351,8 +352,8 @@ class Wizard extends CommonDBTM
             && Session::haveRight('plugin_metademands', UPDATE)
             && !$parameters['seeform']) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Metademand::class
-            ) . "?id=" . $parameters['metademands_id'] . "'>
+                    Metademand::class
+                ) . "?id=" . $meta->getID() . "'>
                             <i class='ti ti-settings'></i></a>";
         }
 
@@ -373,7 +374,12 @@ class Wizard extends CommonDBTM
         echo "</div>";
         echo "</div>";
 
-        self::showmodelsAndDrafts($parameters, true);
+        if (!isset($parameters['from_draft'])) {
+            $parameters['from_draft'] = 0;
+        }
+        if ($parameters['from_draft'] == 0) {
+            self::showmodelsAndDrafts($parameters, true);
+        }
 
         echo "</div>";
         echo "</section>";
@@ -384,7 +390,7 @@ class Wizard extends CommonDBTM
         echo "</div><br>";
     }
 
-    public function showmodelsAndDrafts($parameters, $with_title = 1)
+    public static function showmodelsAndDrafts($parameters, $with_title = 1)
     {
         $config = Config::getInstance();
 
@@ -644,7 +650,7 @@ class Wizard extends CommonDBTM
 
             if ($parameters['step'] == Metademand::STEP_INIT) {
                 // Wizard title
-                echo "<div class=\"row\">";
+                echo "<div class='row'>";
                 echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
                 echo "<div class='col-12 align-self-center'>";
 
@@ -665,7 +671,7 @@ class Wizard extends CommonDBTM
                 echo "</div>";
             } elseif ($parameters['step'] == Metademand::STEP_LIST) {
                 // Wizard title
-                echo "<div class=\"row\">";
+                echo "<div class='row'>";
                 echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
                 echo "<div class='col-12 align-self-center'>";
 
@@ -853,48 +859,51 @@ class Wizard extends CommonDBTM
     {
         global $DB;
 
+        $criteria = [
+            'SELECT' => ['id','name','comment'],
+            'FROM' => 'glpi_plugin_metademands_metademands',
+            'WHERE' => [
+                'is_template' => 0,
+                'is_deleted' => 0,
+                'is_active' => 1,
+                ['OR'          => [
+                    'is_order'  => 1,
+                    'NOT'       => ['itilcategories_id' => null]
+                    ]
+                ]
+            ],
+            'ORDERBY' => 'name',
+            'LIMIT' => $limit,
+        ];
+
         if ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE) {
-            $crit = "`type` = '$type'";
+            $criteria['WHERE'] = $criteria['WHERE'] + ['type' => $type];
             if ($all == true) {
-                $crit = "`type` IS NOT NULL ";
+                $criteria['WHERE'] = $criteria['WHERE'] + ['NOT'       => ['type' => null]];
             }
         } else {
-            $crit = "`object_to_create` = '$type'";
+            $criteria['WHERE'] = $criteria['WHERE'] + ['object_to_create' => $type];
             if ($all == true) {
-                $crit = "`object_to_create` IS NOT NULL ";
+                $criteria['WHERE'] = $criteria['WHERE'] + ['NOT'       => ['object_to_create' => null]];
             }
         }
 
+        $criteria['WHERE'] = $criteria['WHERE'] + ['NOT'       => ['id' => new QuerySubQuery(
+                [
+                    'SELECT' => 'plugin_metademands_metademands_id',
+                    'FROM'   => 'glpi_plugin_metademands_metademands_resources',
+                ]
+            )]];
 
-        $dbu = new DbUtils();
-        $query = "SELECT `id`,`name`, 'comment'
-                   FROM `glpi_plugin_metademands_metademands`
-                   WHERE (is_order = 1  OR `itilcategories_id` <> '')
-                   AND $crit
-                        AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
-            . $dbu->getEntitiesRestrictRequest(
-                " AND ",
-                'glpi_plugin_metademands_metademands',
-                '',
-                $_SESSION['glpiactive_entity'],
-                true
+        $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_plugin_metademands_metademands'
             );
 
-        //Type can be deleted
-        $meta = new Metademand();
-        if ($meta->maybeDeleted()) {
-            $query .= " AND `is_deleted` = '0' ";
-        }
-        if ($meta->maybeTemplate()) {
-            $query .= " AND `is_template` = '0' ";
-        }
-
-        $query .= "AND `is_active` = 1 ORDER BY `name` $limit";
-
         $metademands = [];
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
+        $iterator = $DB->request($criteria);
+
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
                 $canuse = Group::isUserHaveRight($data['id']);
                 $canuse_step = Step::isUserHaveRight($data['id']);
                 if ($canuse && $canuse_step) {
@@ -1523,11 +1532,11 @@ class Wizard extends CommonDBTM
         } else {
             echo "</div>";
             echo "<div class='center first-bloc'>";
-            echo "<div class=\"row\">";
+            echo "<div class='row'>";
             echo "<div class=\"bt-feature col-md-12 \">";
             echo __('No results found');
             echo "</div></div>";
-            echo "<div class=\"row\">";
+            echo "<div class='row'>";
             echo "<div class=\"bt-feature col-md-12 \">";
             echo Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
             echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
@@ -2329,11 +2338,11 @@ class Wizard extends CommonDBTM
 
             if ($draft_id != 0) {
                 echo "<div class='boutons_draft' >";
-                echo "<button form='' id='button_save_mydraft' class='submit btn btn-success btn-sm update_draft' onclick=\"updateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
+                echo "<button form='' id='button_save_mydraft' class='submit btn btn-success update_draft' onclick=\"updateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
                 echo __('Update the draft', 'metademands');
                 echo "</button>";
 
-                echo "<button form='' class='submit btn btn-danger btn-sm delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
+                echo "<button form='' class='submit btn btn-danger delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
                 echo __('Delete the draft', 'metademands');
                 echo "</button>";
                 echo "</div>";

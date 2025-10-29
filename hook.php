@@ -923,7 +923,7 @@ function plugin_metademands_uninstall()
         "glpi_plugin_metademands_fieldcustomvalues",
         "glpi_plugin_metademands_freetablefields"];
     foreach ($tables as $table) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
+        $DB->dropTable($table, true);
     }
 
 

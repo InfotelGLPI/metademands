@@ -123,7 +123,7 @@ class Servicecatalog extends CommonGLPI
         }
 
         $list        = "";
-        $metademands = Wizard::selectMetademands(true, " LIMIT 3");
+        $metademands = Wizard::selectMetademands(true, "3");
 
         foreach ($metademands as $id => $name) {
             $list .= $name . '<br>';
