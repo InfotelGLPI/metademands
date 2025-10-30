@@ -30,10 +30,12 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
+use DBConnection;
 use DbUtils;
 use Glpi\DBAL\QueryExpression;
 use Group_User;
 use Html;
+use Migration;
 use Session;
 use CommonGLPI;
 use Toolbox;
@@ -87,6 +89,49 @@ class Group extends CommonDBChild
     {
         return "ti ti-users";
     }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `groups_id`                         int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY (`plugin_metademands_metademands_id`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY (`groups_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!$DB->fieldExists($table, "entities_id")) {
+            $migration->addField($table, "entities_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            if (!isIndex($table, "entities_id")) {
+                $migration->addKey($table, "entities_id");
+            }
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
+
+
     /**
      * Display tab for each users
      *

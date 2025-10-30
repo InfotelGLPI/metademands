@@ -32,10 +32,12 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
 use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Freetable;
 use Html;
+use Migration;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -70,6 +72,41 @@ class Freetablefield extends CommonDBChild
     public static function getIcon()
     {
         return Metademand::getIcon();
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `internal_name`                VARCHAR(255) NOT NULL           DEFAULT '0',
+                        `type`                         VARCHAR(255)                    DEFAULT NULL,
+                        `name`                         VARCHAR(255) NOT NULL           DEFAULT '0',
+                        `dropdown_values`              text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `is_mandatory`                 int          NOT NULL           DEFAULT '0',
+                        `comment`                      text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `rank`                         int          NOT NULL           DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
 

@@ -31,7 +31,9 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
 use Html;
+use Migration;
 use Session;
 use Toolbox;
 
@@ -49,6 +51,130 @@ class Draft extends CommonDBTM
     public static function getIcon()
     {
         return "ti-copy";
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `name`                              VARCHAR(255) NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `users_id`                          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `date`                              timestamp    NOT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        //Displayprefs
+        $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
+        foreach ($prefs as $num => $rank) {
+            if (!countElementsInTable(
+                "glpi_displaypreferences",
+                [
+                    'itemtype' => self::class,
+                    'num' => $num,
+                    'users_id' => 0,
+                    'interface' => 'central',
+                ]
+            )
+            ) {
+                $query = $DB->buildUpdate(
+                    'glpi_displaypreferences',
+                    [
+                        'itemtype' => self::class,
+                    ],
+                    [
+                        'itemtype' => 'PluginMetademandsDraft',
+                        'users_id' => 0,
+                        'num' => $num,
+                        'interface' => 'central',
+                    ]
+                );
+                $DB->doQuery($query);
+            }
+        }
+
+        $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
+        foreach ($prefs as $num => $rank) {
+            if (!countElementsInTable(
+                "glpi_displaypreferences",
+                ['itemtype' => self::class,
+                    'num' => $num,
+                    'users_id' => 0,
+                    'interface' => 'central',
+                ]
+            )
+            ) {
+                $DB->insert(
+                    "glpi_displaypreferences",
+                    ['itemtype' => self::class,
+                        'num' => $num,
+                        'rank' => $rank,
+                        'users_id' => 0,
+                        'interface' => 'central']
+                );
+            }
+        }
+
+        $query = $DB->buildUpdate(
+            'glpi_savedsearches',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsDraft'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_savedsearches_users',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsDraft'
+            ]
+        );
+        $DB->doQuery($query);
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+
+        $itemtypes = ['Alert',
+            'DisplayPreference',
+            'Document_Item',
+            'ImpactItem',
+            'Item_Ticket',
+            'Link_Itemtype',
+            'Notepad',
+            'SavedSearch',
+            'DropdownTranslation',
+            'NotificationTemplate',
+            'Notification'];
+        foreach ($itemtypes as $itemtype) {
+            $item = new $itemtype;
+            $item->deleteByCriteria(['itemtype' => self::class]);
+        }
     }
 
     public static function getMenuContent()

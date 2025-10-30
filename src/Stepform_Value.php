@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -30,6 +31,8 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
+use Migration;
 
 /**
  * Class Stepform_Value
@@ -37,6 +40,48 @@ use CommonDBTM;
 class Stepform_Value extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands';
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_stepforms_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `plugin_metademands_fields_id`    int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `value`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `value2`                          text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_stepforms_id` (`plugin_metademands_stepforms_id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_stepforms_id")) {
+            $migration->addKey($table, "plugin_metademands_stepforms_id");
+        }
+        if (!isIndex($table, "plugin_metademands_fields_id")) {
+            $migration->addKey($table, "plugin_metademands_fields_id");
+        }
+        $migration->migrationOneTable($table);
+
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param $parent_fields
@@ -92,7 +137,7 @@ class Stepform_Value extends CommonDBTM
 
                             $field['value'] = 'filename';
 
-                        } else if ($field['type'] == "textarea" && $field['use_richtext'] == 1) {
+                        } elseif ($field['type'] == "textarea" && $field['use_richtext'] == 1) {
 
                             if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_filename'])) {
                                 $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_filename'];
@@ -112,7 +157,7 @@ class Stepform_Value extends CommonDBTM
                                 [
                                     'force_update' => false,
                                     'content_field' => $fieldname,
-                                    '_add_link' => false
+                                    '_add_link' => false,
                                 ]
                             );
 
@@ -124,7 +169,7 @@ class Stepform_Value extends CommonDBTM
                     }
                     $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $field['value'];
 
-                } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
+                } elseif (isset($values[$fields_id]) && is_array($values[$fields_id])) {
 
                     $metafield = new Field();
                     if ($metafield->getFromDB($fields_id)) {
@@ -153,15 +198,15 @@ class Stepform_Value extends CommonDBTM
                 if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = $values[$fields_id . "-2"];
                     $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
-                } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
+                } elseif (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = json_encode($values[$fields_id . "-2"]);
                     $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
                 }
                 $form_value->add([
-                                     'value'                        => $field['value'],
-                                     'value2'                       => $field['value2'],
-                                     'plugin_metademands_stepforms_id' => $form_id,
-                                     'plugin_metademands_fields_id' => $fields_id]);
+                    'value'                        => $field['value'],
+                    'value2'                       => $field['value2'],
+                    'plugin_metademands_stepforms_id' => $form_id,
+                    'plugin_metademands_fields_id' => $fields_id]);
             }
         }
     }
@@ -183,7 +228,7 @@ class Stepform_Value extends CommonDBTM
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
             }
-            $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = json_decode($values['value'], true)?? $values['value'];
+            $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = json_decode($values['value'], true) ?? $values['value'];
             if (!empty($values['value2'])) {
                 $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = json_decode($values['value2'], true) ?? $values['value2'];
             }

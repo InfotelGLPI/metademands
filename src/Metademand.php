@@ -55,6 +55,7 @@ use Html;
 use ITILCategory;
 use Log;
 use MassiveAction;
+use Migration;
 use Override;
 use Plugin;
 use PluginFieldsContainer;
@@ -148,6 +149,330 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `name`                             varchar(255)                             DEFAULT NULL,
+                        `entities_id`                      int {$default_key_sign}                    NOT NULL DEFAULT '0',
+                        `is_recursive`                     int                             NOT NULL DEFAULT '0',
+                        `is_template`                      tinyint                         NOT NULL DEFAULT '0',
+                        `template_name`                    varchar(255)                             DEFAULT NULL,
+                        `is_active`                        tinyint                         NOT NULL DEFAULT '1',
+                        `maintenance_mode`                 tinyint                         NOT NULL DEFAULT '0',
+                        `can_update`                       tinyint                         NOT NULL DEFAULT '0',
+                        `can_clone`                        tinyint                         NOT NULL DEFAULT '0',
+                        `comment`                          text COLLATE utf8mb4_unicode_ci          DEFAULT NULL,
+                        `object_to_create`                 varchar(255) collate utf8mb4_unicode_ci  DEFAULT NULL,
+                        `type`                             int                             NOT NULL DEFAULT '0',
+                        `itilcategories_id`                text COLLATE utf8mb4_unicode_ci NOT NULL,
+                        `forms_categories_id`              int {$default_key_sign}         NOT NULL DEFAULT '0',
+                        `icon`                             varchar(255)                             DEFAULT NULL,
+                        `is_order`                         tinyint                                  DEFAULT 0,
+                        `create_one_ticket`                tinyint                         NOT NULL DEFAULT '0',
+                        `force_create_tasks`               tinyint                         NOT NULL DEFAULT '0',
+                        `date_creation`                    timestamp                       NULL     DEFAULT NULL,
+                        `date_mod`                         timestamp                       NULL     DEFAULT NULL,
+                        `validation_subticket`             tinyint                         NOT NULL DEFAULT '0',
+                        `is_deleted`                       tinyint                         NOT NULL DEFAULT '0',
+                        `hide_no_field`                    tinyint                                  DEFAULT '0',
+                        `hide_title`                       tinyint                                  DEFAULT '0',
+                        `title_color`                      varchar(255)                             DEFAULT '#000000',
+                        `background_color`                 varchar(255)                             DEFAULT '#FFFFFF',
+                        `step_by_step_mode`                tinyint                         NOT NULL DEFAULT '0',
+                        `show_rule`                        tinyint                         NOT NULL DEFAULT '1',
+                        `initial_requester_childs_tickets` tinyint                         NOT NULL DEFAULT '1',
+                        `is_basket`                        tinyint                                  DEFAULT 0,
+                        `use_confirm`                      tinyint                         NOT NULL DEFAULT '0',
+                        `illustration`                     varchar(255)                             DEFAULT NULL,
+                        `is_pinned`                        tinyint                         NOT NULL DEFAULT '0',
+                        `usage_count`                      int {$default_key_sign}         NOT NULL DEFAULT '0',
+                        `description`                      longtext,
+                        PRIMARY KEY (`id`),
+                        KEY `name` (`name`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY `is_recursive` (`is_recursive`),
+                        KEY `is_template` (`is_template`),
+                        KEY `is_deleted` (`is_deleted`),
+                        KEY `forms_categories_id` (`forms_categories_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        if (!$DB->fieldExists($table, "is_active")) {
+            $migration->addField($table, "is_active", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "icon")) {
+            $migration->addField($table, "icon", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 2.7.1
+        if (($DB->tableExists("glpi_plugin_metademands_fields", false)
+            && !$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket", false)
+            && !$DB->fieldExists($table, "is_order", false))
+            || !$DB->fieldExists($table, "create_one_ticket", false)) {
+            $metademands = new Metademand();
+            $metademands = $metademands->find();
+            $transient_metademands = [];
+
+            foreach ($metademands as $metademand) {
+                $itilcat = [$metademand['itilcategories_id']];
+                $transient_metademands[$metademand['id']]['itil_categories'] = json_encode($itilcat);
+                $transient_metademands[$metademand['id']]['metademands_id'] = $metademand['id'];
+            }
+            $migration->changeField($table, 'itilcategories_id', 'itilcategories_id', "VARCHAR(255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table);
+
+            foreach ($transient_metademands as $transient_metademand) {
+                $query = $DB->buildUpdate(
+                    $table,
+                    [
+                        'itilcategories_id' => $transient_metademand['itil_categories'],
+                    ],
+                    [ 'id' => $transient_metademand['metademands_id']]
+                );
+                $DB->doQuery($query);
+            }
+
+            $field = new Field();
+            $fields = $field->find();
+            foreach ($fields as $f) {
+                if (!empty($f["hidden_link"])) {
+                    $array = [];
+                    $array[] = $f["hidden_link"];
+                    $update["id"] = $f["id"];
+                    $update["hidden_link"] = json_encode($array);
+                    $field->update($update);
+                }
+            }
+        }
+
+        if (!$DB->fieldExists($table, "is_order")) {
+            $migration->addField($table, "is_order", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "date_creation")) {
+            $migration->addField($table, "date_creation", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "date_mod")) {
+            $migration->addField($table, "date_mod", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        //version 2.7.2
+        if (!$DB->fieldExists($table, "create_one_ticket")) {
+            $migration->addField($table, "create_one_ticket", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+        //version 2.7.5
+        if (!$DB->fieldExists($table, "validation_subticket")) {
+            $migration->addField($table, "validation_subticket", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 2.7.6
+        if (!$DB->fieldExists($table, "is_deleted")) {
+            $migration->addField($table, "is_deleted", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "object_to_create")) {
+            $migration->addField($table, "object_to_create", "varchar(255) COLLATE utf8mb4_unicode_ci default NULL");
+            $migration->migrationOneTable($table);
+            $query = $DB->buildUpdate(
+                $table,
+                [
+                    'object_to_create' => 'Ticket',
+                ],
+                [1]
+            );
+            $DB->doQuery($query);
+        }
+        if (!$DB->fieldExists($table, "hide_no_field")) {
+            $migration->addField($table, "hide_no_field", "tinyint DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "background_color")) {
+            $migration->addField($table, "background_color", "varchar(255) COLLATE utf8mb4_unicode_ci default '#FFFFFF'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "title_color")) {
+            $migration->addField($table, "title_color", "varchar(255) COLLATE utf8mb4_unicode_ci default '#000000'");
+            $migration->migrationOneTable($table);
+        }
+        //version 2.7.8
+        if (!$DB->fieldExists($table, "maintenance_mode")) {
+            $migration->addField($table, "maintenance_mode", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.1.0
+        if (!$DB->fieldExists($table, "can_update")) {
+            $migration->addField($table, "can_update", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "can_clone")) {
+            $migration->addField($table, "can_clone", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.2.0
+        if (!$DB->fieldExists($table, "force_create_tasks")) {
+            $migration->addField($table, "force_create_tasks", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.2.8
+        if (!$DB->fieldExists($table, "step_by_step_mode")) {
+            $migration->addField($table, "step_by_step_mode", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.2.19
+        $migration->changeField($table, 'create_one_ticket', 'create_one_ticket', "tinyint NOT NULL DEFAULT '0'");
+
+        //version 3.3.0
+        if (!$DB->fieldExists($table, "is_template")) {
+            $migration->addField($table, "is_template", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "template_name")) {
+            $migration->addField($table, "template_name", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!isIndex($table, "name")) {
+            $migration->addKey($table, "name");
+        }
+        if (!isIndex($table, "entities_id")) {
+            $migration->addKey($table, "entities_id");
+        }
+        if (!isIndex($table, "is_recursive")) {
+            $migration->addKey($table, "is_recursive");
+        }
+        if (!isIndex($table, "is_template")) {
+            $migration->addKey($table, "is_template");
+        }
+        if (!isIndex($table, "is_deleted")) {
+            $migration->addKey($table, "is_deleted");
+        }
+        //version 3.3.3
+        if (!$DB->fieldExists($table, "show_rule")) {
+            $migration->addField($table, "show_rule", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.3.7
+        if (!$DB->fieldExists($table, "initial_requester_childs_tickets")) {
+            $migration->addField($table, "initial_requester_childs_tickets", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.3.8
+        if (!$DB->fieldExists($table, "is_basket")) {
+            $migration->addField($table, "is_basket", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.3.9
+        $migration->changeField($table, 'itilcategories_id', 'itilcategories_id', "text COLLATE utf8mb4_unicode_ci NOT NULL");
+        $migration->dropKey($table, "itilcategories_id");
+        //version 3.3.23
+        if (!$DB->fieldExists($table, "hide_title")) {
+            $migration->addField($table, "hide_title", "tinyint DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.4.0
+        if (!$DB->fieldExists($table, "use_confirm")) {
+            $migration->addField($table, "use_confirm", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.5.0
+        if (!$DB->fieldExists($table, "forms_categories_id")) {
+            $migration->addField($table, "forms_categories_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!isIndex($table, "forms_categories_id")) {
+            $migration->addKey($table, "forms_categories_id");
+        }
+        if (!$DB->fieldExists($table, "illustration")) {
+            $migration->addField($table, "illustration", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "is_pinned")) {
+            $migration->addField($table, "is_pinned", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "usage_count")) {
+            $migration->addField($table, "usage_count", "int unsigned NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "description")) {
+            $migration->addField($table, "description", "longtext");
+            $migration->migrationOneTable($table);
+        }
+
+        $query = $DB->buildUpdate(
+            'glpi_displaypreferences',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsMetademand'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_savedsearches',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsMetademand'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_savedsearches_users',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsMetademand'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $migration->migrationOneTable($table);
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+
+        $itemtypes = ['Alert',
+            'DisplayPreference',
+            'Document_Item',
+            'ImpactItem',
+            'Item_Ticket',
+            'Link_Itemtype',
+            'Notepad',
+            'SavedSearch',
+            'DropdownTranslation',
+            'NotificationTemplate',
+            'Notification'];
+        foreach ($itemtypes as $itemtype) {
+            $item = new $itemtype;
+            $item->deleteByCriteria(['itemtype' => self::class]);
+        }
     }
 
     /**
@@ -1438,7 +1763,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
      */
     public function showDuplication($metademands_id)
     {
-        echo "<h3><div class='alert alert-warning' role='alert'>";
+        echo "<div class='alert alert-warning' role='alert'>";
         echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
         echo __(
             'Tasks tree cannot be changed as unresolved related tickets exist or activate maintenance mode',
@@ -1454,7 +1779,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
 
         Html::closeForm();
         echo "</div>";
-        echo "</h3>";
     }
 
     /**
@@ -1778,41 +2102,47 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         if (isset($options['empty_value'])) {
             $meta_data[0] = Dropdown::EMPTY_VALUE;
         }
-        $type = \Ticket::DEMAND_TYPE;
-        if (isset($options['type'])) {
-            $type = $options['type'];
-        }
-        if ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE) {
-            $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type'
-                        AND `is_active` = 1
-                        AND `is_deleted` = 0
-                        AND `is_template` = 0 ";
-        } else {
-            $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type'
-                        AND `is_active` = 1
-                        AND `is_deleted` = 0
-                        AND `is_template` = 0 ";
-        }
-
-        $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
-
-        if (!empty($params['condition'])) {
-            $condition .= $params['condition'];
-        }
 
         if (!empty($type) || $forceview) {
-            $query = "SELECT `" . $this->getTable() . "`.`name`,
-                          `" . $this->getTable() . "`.`id`,
-                          `glpi_entities`.`completename` as entities_name
-                   FROM " . $this->getTable() . "
-                   INNER JOIN `glpi_entities`
-                      ON (`" . $this->getTable() . "`.`entities_id` = `glpi_entities`.`id`)
-                   WHERE $condition
-                   ORDER BY `" . $this->getTable() . "`.`name`";
 
-            $result = $DB->doQuery($query);
-            if ($DB->numrows($result)) {
-                while ($data = $DB->fetchAssoc($result)) {
+            $query
+                = [
+                'SELECT' => [$this->getTable().".name",
+                    $this->getTable().".id",
+                    "glpi_entities.completename AS entities_name"],
+                'FROM' => $this->getTable(),
+                'INNER JOIN'       => [
+                    'glpi_entities' => [
+                        'ON' => [
+                            $this->getTable() => 'entities_id',
+                            'glpi_entities'          => 'id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [$this->getTable().".is_active" => 1,
+                    $this->getTable().".is_deleted" => 0,
+                    $this->getTable().".is_template" => 0],
+                'ORDERBY' => $this->getTable().".name"
+            ];
+
+            $type = \Ticket::DEMAND_TYPE;
+            if (isset($options['type'])) {
+                $type = $options['type'];
+            }
+            if ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE) {
+                $query['WHERE'] = $query['WHERE'] + [$this->getTable() . ".type" => $type];
+            } else {
+                $query['WHERE'] = $query['WHERE'] + [$this->getTable() . ".object_to_create" => $type];
+            }
+
+            $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
+                    $this->getTable()
+                );
+
+            $iterator = $DB->request($query);
+
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
                     if ($this->canCreate() || Group::isUserHaveRight($data['id'])) {
                         if (!$dbu->countElementsInTable(
                             "glpi_plugin_metademands_metademands_resources",
@@ -1835,26 +2165,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     {
         global $DB;
 
-        $dbu = new DbUtils();
-        $params['condition'] = '';
-
         $meta_data = [];
 
         if (isset($options['empty_value'])) {
             $meta_data[0] = Dropdown::EMPTY_VALUE;
         }
 
-        $condition = "  `is_active` = 1
-                        AND `is_deleted` = 0
-                        AND `is_template` = 0 ";
-
-        $query_cat = "SELECT id,name FROM glpi_itilcategories";
-
         $itil_cat = [];
-        $result = $DB->doQuery($query_cat);
 
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
+        $query_cat = [
+            'SELECT' => ["name", "id"],
+            'FROM' => "glpi_itilcategories"
+        ];
+
+        $iterator_cat = $DB->request($query_cat);
+
+        if (count($iterator_cat) > 0) {
+            foreach ($iterator_cat as $data) {
                 $itil_cat[$data['id']] = [
                     "id" => $data['id'],
                     "name" => $data['name'],
@@ -1862,22 +2189,36 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             }
         }
 
+        $query
+            = [
+            'SELECT' => [$this->getTable().".name",
+                $this->getTable().".id",
+                $this->getTable().".itilcategories_id",
+                "glpi_entities.completename AS entities_name"],
+            'FROM' => $this->getTable(),
+            'INNER JOIN'       => [
+                'glpi_entities' => [
+                    'ON' => [
+                        $this->getTable() => 'entities_id',
+                        'glpi_entities'          => 'id'
+                    ]
+                ]
+            ],
+            'WHERE' => [$this->getTable().".is_active" => 1,
+                $this->getTable().".is_deleted" => 0,
+                $this->getTable().".is_template" => 0],
+            'ORDERBY' => $this->getTable().".name"
+        ];
 
-        $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
 
-        $query = "SELECT `" . $this->getTable() . "`.`name`,
-                          `" . $this->getTable() . "`.`id`,
-                          `" . $this->getTable() . "`.`itilcategories_id`,
-                          `glpi_entities`.`completename` as entities_name
-                   FROM " . $this->getTable() . "
-                   INNER JOIN `glpi_entities`
-                   ON (`" . $this->getTable() . "`.`entities_id` = `glpi_entities`.`id`)
-                   WHERE $condition
-                   ORDER BY `" . $this->getTable() . "`.`name`";
+        $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
+                $this->getTable()
+            );
 
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
+        $iterator = $DB->request($query);
+
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
                 if ($this->canCreate() || Group::isUserHaveRight($data['id'])) {
                     $name = $data['name'];
 
@@ -2016,7 +2357,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             //                        RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
             //                          ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
             //                        WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-            //                $result = $DB->doQuery($query);
+            //                $result = $DB->query($query);
             //                if ($DB->numrows($result)) {
             //                    while ($data = $DB->fetchAssoc($result)) {
             //                        $step++;
@@ -2539,7 +2880,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     //                           WHERE `glpi_groups_users`.`users_id` = " . $parent_fields['_users_id_requester'] . "
                     //                           AND `glpi_groups`.`is_requester` = 1
                     //                           LIMIT 1";
-                    //                  $result = $DB->doQuery($query);
+                    //                  $result = $DB->query($query);
                     //                  if ($DB->numrows($result)) {
                     //                     $groups_id_requester                   = $DB->result($result, 0, '_groups_id_requester');
                     //                     $parent_fields['_groups_id_requester'] = $groups_id_requester;
@@ -6156,19 +6497,35 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         $search_ticket = $ticket_task->find(['parent_tickets_id' => $tickets_data['id']]);
         if (!count($search_ticket)) {
             $task = new Task();
-            $query = "SELECT `glpi_plugin_metademands_tickettasks`.*,
-                             `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id`,
-                             `glpi_plugin_metademands_tasks`.`id` AS tasks_id,
-                             `glpi_plugin_metademands_tickets_tasks`.`level` AS parent_level
-                        FROM `glpi_plugin_metademands_tickettasks`
-                        LEFT JOIN `glpi_plugin_metademands_tasks`
-                           ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id`)
-                        LEFT JOIN `glpi_plugin_metademands_tickets_tasks`
-                           ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id`)
-                        WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = " . $tickets_data['id'];
-            $result = $DB->doQuery($query);
 
-            if ($DB->numrows($result)) {
+            $iterator = $DB->request([
+                'SELECT'    => [
+                    'glpi_plugin_metademands_tickettasks.*',
+                    'glpi_plugin_metademands_tasks.plugin_metademands_metademands_id',
+                    'glpi_plugin_metademands_tasks.is AS tasks_id',
+                    'glpi_plugin_metademands_tickets_tasks.level AS parent_level',
+                ],
+                'FROM'      => 'glpi_plugin_metademands_tickettasks',
+                'LEFT JOIN'       => [
+                    'glpi_plugin_metademands_tasks' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_tasks' => 'id',
+                            'glpi_plugin_metademands_tickettasks'          => 'plugin_metademands_tasks_id'
+                        ]
+                    ],
+                    'glpi_plugin_metademands_tickets_tasks' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_tasks' => 'id',
+                            'glpi_plugin_metademands_tickets_tasks'          => 'plugin_metademands_tasks_id'
+                        ]
+                    ]
+                ],
+                'WHERE'     => [
+                    'glpi_plugin_metademands_tickets_tasks.tickets_id'  => $tickets_data['id']
+                ],
+            ]);
+
+            if (count($iterator) > 0) {
                 $values = [];
                 $ticket_field = new Ticket_Field();
                 $ticket_id = Ticket_Task::getFirstTicket($tickets_data['id']);
@@ -6179,7 +6536,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                         $values['fields'][$f['plugin_metademands_fields_id']] = $f['value'];
                     }
                 }
-                while ($data = $DB->fetchAssoc($result)) {
+                foreach ($iterator as $data) {
                     // If child task exists : son ticket creation
                     $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
 
@@ -7863,7 +8220,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     public static function getRunningMetademands(array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
-        $dbu = new DbUtils();
 
         $default_params = [
             'label' => __("Running metademands", 'metademands'),
@@ -7871,18 +8227,31 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             'apply_filters' => [],
         ];
 
-        $get_running_parents_tickets_meta
-            = "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_plugin_metademands_tickets_metademands`
-                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . \Ticket::CLOSED . "','" . \Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =
-                                    " . Ticket_Metademand::RUNNING . " "
-            . $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+        $get_running_parents_tickets_meta = [
+            'SELECT' => ['COUNT' => 'glpi_plugin_metademands_tickets_metademands.id AS total_running'],
+            'FROM' => 'glpi_plugin_metademands_tickets_metademands',
+            'LEFT JOIN'       => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_tickets.is_deleted' => 0,
+                'glpi_tickets.status' => ['NOT IN', [\Ticket::SOLVED, \Ticket::CLOSED]],
+                'glpi_plugin_metademands_tickets_metademands.status' => Ticket_Metademand::RUNNING,
+            ],
+        ];
+        $get_running_parents_tickets_meta['WHERE'] = $get_running_parents_tickets_meta['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_tickets'
+            );
 
-
-        $total_running_parents_meta = $DB->doQuery($get_running_parents_tickets_meta);
+        $total_running_parents_meta = $DB->request($get_running_parents_tickets_meta);
 
         $total_running = 0;
-        while ($row = $DB->fetchArray($total_running_parents_meta)) {
+        foreach ($total_running_parents_meta as $row) {
             $total_running = $row['total_running'];
         }
 
@@ -7921,7 +8290,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     public static function getRunningMetademandsAndMygroups(array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
-        $dbu = new DbUtils();
 
         $default_params = [
             'label' => __("Running metademands with tickets of my groups", "metademands"),
@@ -7929,24 +8297,50 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             'apply_filters' => [],
         ];
 
-        $get_running_parents_tickets_meta
-            = "SELECT COUNT(DISTINCT(`glpi_plugin_metademands_tickets_metademands`.`id`)) as 'total_running' FROM `glpi_tickets`
-                        LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
-                         LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands
-                             ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '" . CommonITILActor::ASSIGN . "')
-                         LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =
-                                    " . Ticket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode(
-                "','",
-                $_SESSION['glpigroups']
-            ) . "'))  "
-            . $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+        $get_running_parents_tickets_meta  = [
+            'SELECT' => ['COUNT' => 'glpi_plugin_metademands_tickets_metademands.id AS total_running'],
+            'DISTINCT'        => true,
+            'FROM' => 'glpi_tickets',
+            'LEFT JOIN'       => [
+                'glpi_plugin_metademands_tickets_metademands' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
+                    ]
+                ],
+                'glpi_plugin_metademands_tickets_tasks' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id'
+                    ]
+                ],
+                'glpi_groups_tickets AS glpi_groups_tickets_metademands' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_tickets_tasks' => 'tickets_id',
+                        'glpi_groups_tickets_metademands'          => 'tickets_id'
+                    ]
+                ],
+                'glpi_groups AS glpi_groups_metademands' => [
+                    'ON' => [
+                        'glpi_groups_tickets_metademands' => 'groups_id',
+                        'glpi_groups_metademands'          => 'id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_tickets.is_deleted' => 0,
+                'glpi_plugin_metademands_tickets_metademands.status' => Ticket_Metademand::RUNNING,
+                'glpi_groups_metademands.id' => $_SESSION['glpigroups'],
+            ],
+        ];
+        $get_running_parents_tickets_meta['WHERE'] = $get_running_parents_tickets_meta['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_tickets'
+            );
 
-        $total_running_parents_meta = $DB->doQuery($get_running_parents_tickets_meta);
+        $total_running_parents_meta = $DB->request($get_running_parents_tickets_meta);
 
         $total_running = 0;
-        while ($row = $DB->fetchArray($total_running_parents_meta)) {
+        foreach ($total_running_parents_meta as $row) {
             $total_running = $row['total_running'];
         }
 
@@ -7992,7 +8386,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     public static function getMetademandsToBeClosed(array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
-        $dbu = new DbUtils();
 
         $default_params = [
             'label' => __("Metademands to be closed", 'metademands'),
@@ -8000,18 +8393,38 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             'apply_filters' => [],
         ];
 
-        $get_closed_parents_tickets_meta
-            = "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_to_closed' FROM `glpi_plugin_metademands_tickets_metademands`
-                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . \Ticket::CLOSED . "','" . \Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =
-                                    " . Ticket_Metademand::TO_CLOSED . " "
-            . $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+        $get_closed_parents_tickets_meta = [
+            'SELECT' => ['COUNT' => 'glpi_plugin_metademands_tickets_metademands.id AS total_to_closed'],
+            'FROM' => 'glpi_plugin_metademands_tickets_metademands',
+            'LEFT JOIN'       => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
+                    ]
+                ],
+                'glpi_plugin_metademands_metademandvalidations' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_metademandvalidations'          => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_tickets.is_deleted' => 0,
+                'glpi_tickets.status' => ['NOT IN', [\Ticket::SOLVED, \Ticket::CLOSED]],
+                'glpi_plugin_metademands_tickets_metademands.status' => Ticket_Metademand::TO_CLOSED,
+                'glpi_plugin_metademands_metademandvalidations.validate' => [MetademandValidation::TICKET_CREATION],
+            ],
+        ];
+        $get_closed_parents_tickets_meta['WHERE'] = $get_closed_parents_tickets_meta['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_tickets'
+            );
 
-
-        $results_closed_parents = $DB->doQuery($get_closed_parents_tickets_meta);
+        $results_closed_parents = $DB->request($get_closed_parents_tickets_meta);
 
         $total_closed = 0;
-        while ($row = $DB->fetchArray($results_closed_parents)) {
+        foreach ($results_closed_parents as $row) {
             $total_closed = $row['total_to_closed'];
         }
 
@@ -8029,6 +8442,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     'field' => 12, // status
                     'searchtype' => 'equals',
                     'value' => "notold",
+                ],
+                [
+                    'link' => 'AND',
+                    'field' => 9501, // validation
+                    'searchtype' => 'equals',
+                    'value' => MetademandValidation::TICKET_CREATION,
                 ],
             ],
             'reset' => 'reset',
@@ -8057,19 +8476,31 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             'apply_filters' => [],
         ];
 
-        $get_to_validated_meta
-            = "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated'
-          FROM `glpi_plugin_metademands_metademandvalidations`
-         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id`
-         WHERE  `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . \Ticket::CLOSED . "','" . \Ticket::SOLVED . "')
-           AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (" . MetademandValidation::TO_VALIDATE . "," . MetademandValidation::TO_VALIDATE_WITHOUTTASK . ")"
-            . $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+        $get_to_validated_meta = [
+            'SELECT' => ['COUNT' => 'glpi_plugin_metademands_metademandvalidations.id AS total_to_validated'],
+            'FROM' => 'glpi_plugin_metademands_metademandvalidations',
+            'LEFT JOIN'       => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_metademandvalidations'          => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_tickets.is_deleted' => 0,
+                'glpi_tickets.status' => ['NOT IN', [\Ticket::SOLVED, \Ticket::CLOSED]],
+                'glpi_plugin_metademands_metademandvalidations.validate' => [MetademandValidation::TO_VALIDATE, MetademandValidation::TO_VALIDATE_WITHOUTTASK],
+            ],
+        ];
+        $get_to_validated_meta['WHERE'] = $get_to_validated_meta['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_tickets'
+            );
 
-
-        $results_meta_to_validated = $DB->doQuery($get_to_validated_meta);
+        $results_meta_to_validated = $DB->request($get_to_validated_meta);
 
         $total_to_validated = 0;
-        while ($row = $DB->fetchArray($results_meta_to_validated)) {
+        foreach ($results_meta_to_validated as $row) {
             $total_to_validated = $row['total_to_validated'];
         }
 

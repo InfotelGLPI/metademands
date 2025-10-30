@@ -32,8 +32,10 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use Html;
+use Migration;
 use Session;
 use Toolbox;
 
@@ -93,6 +95,159 @@ class Config extends CommonDBTM
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `simpleticket_to_metademand`        tinyint               DEFAULT '0',
+                        `parent_ticket_tag`                 varchar(255)          DEFAULT NULL,
+                        `son_ticket_tag`                    varchar(255)          DEFAULT NULL,
+                        `create_pdf`                        tinyint               DEFAULT '0',
+                        `show_requester_informations`       tinyint               DEFAULT 0,
+                        `childs_parent_content`             tinyint               DEFAULT 0,
+                        `display_type`                      tinyint               DEFAULT 1,
+                        `display_buttonlist_servicecatalog` tinyint               DEFAULT 1,
+                        `title_servicecatalog`              varchar(255)          DEFAULT NULL,
+                        `comment_servicecatalog`            text                  DEFAULT NULL,
+                        `fa_servicecatalog`                 varchar(100) NOT NULL DEFAULT 'ti ti-share',
+                        `languageTech`                      varchar(100)          DEFAULT NULL,
+                        `use_draft`                         tinyint               DEFAULT 0,
+                        `show_form_changes`                 tinyint      NOT NULL DEFAULT '0',
+                        `add_groups_with_regex`             tinyint      NOT NULL DEFAULT '0',
+                        `icon_request`                      varchar(255)          DEFAULT NULL,
+                        `icon_incident`                     varchar(255)          DEFAULT NULL,
+                        `icon_problem`                      varchar(255)          DEFAULT NULL,
+                        `icon_change`                       varchar(255)          DEFAULT NULL,
+                        `see_top`                           tinyint      NOT NULL DEFAULT '1',
+                        PRIMARY KEY (`id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+
+            $DB->insert(
+                $table,
+                ['id' => 1,
+                    'simpleticket_to_metademand' => 1,
+                    'childs_parent_content' => 1]
+            );
+        }
+        if (!$DB->fieldExists($table, "parent_ticket_tag")) {
+            $migration->addField($table, "parent_ticket_tag", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "son_ticket_tag")) {
+            $migration->addField($table, "son_ticket_tag", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "show_requester_informations")) {
+            $migration->addField($table, "show_requester_informations", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "create_pdf")) {
+            $migration->addField($table, "create_pdf", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "childs_parent_content")) {
+            $migration->addField($table, "childs_parent_content", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        //version 2.7.4
+        if (!$DB->fieldExists($table, "display_buttonlist_servicecatalog")) {
+            $migration->addField($table, "display_buttonlist_servicecatalog", "tinyint DEFAULT 1");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "title_servicecatalog")) {
+            $migration->addField($table, "title_servicecatalog", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "comment_servicecatalog")) {
+            $migration->addField($table, "comment_servicecatalog", "TEXT DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "fa_servicecatalog")) {
+            $migration->addField($table, "fa_servicecatalog", "varchar(100) NOT NULL DEFAULT 'ti ti-share'");
+            $migration->migrationOneTable($table);
+        }
+        $migration->dropField($table, 'enable_application_environment');
+        $migration->dropField($table, 'enable_families');
+        //version 2.7.9
+        if (!$DB->fieldExists($table, "languageTech")) {
+            $migration->addField($table, "languageTech", "varchar(100) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.0.0
+        if (!$DB->fieldExists($table, "use_draft")) {
+            $migration->addField($table, "use_draft", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.1.0
+        if (!$DB->fieldExists($table, "show_form_changes")) {
+            $migration->addField($table, "show_form_changes", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.3.8
+        if (!$DB->fieldExists($table, "add_groups_with_regex")) {
+            $migration->addField($table, "add_groups_with_regex", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.2.19
+        $migration->changeField($table, 'use_draft', 'use_draft', "tinyint DEFAULT 0");
+        //version 3.3.0
+        $migration->changeField($table, 'show_form_changes', 'show_form_changes', "tinyint NOT NULL DEFAULT 0");
+        //version 3.3.20
+        if (!$DB->fieldExists($table, "icon_request")) {
+            $migration->addField($table, "icon_request", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "icon_incident")) {
+            $migration->addField($table, "icon_incident", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "icon_problem")) {
+            $migration->addField($table, "icon_problem", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "icon_change")) {
+            $migration->addField($table, "icon_change", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "see_top")) {
+            $migration->addField($table, "see_top", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.5.0
+        $query = $DB->buildUpdate(
+            $table,
+            [
+                'show_form_changes' => 0,
+            ],
+            [1]
+        );
+        $DB->doQuery($query);
+
+        //version 3.5.4
+        if ($DB->fieldExists($table, "fa_servicecatalog")) {
+            $migration->changeField($table, 'fa_servicecatalog', 'fa_servicecatalog', "varchar(100) NOT NULL DEFAULT 'ti ti-share'");
+            $migration->migrationOneTable($table);
+        }
+
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param CommonGLPI $item

@@ -31,9 +31,15 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
 use Group_User;
 use Html;
+use Migration;
+use Notification;
+use Notification_NotificationTemplate;
 use NotificationEvent;
+use NotificationTemplate;
+use NotificationTemplateTranslation;
 use Session;
 use CommonGLPI;
 use User;
@@ -61,6 +67,298 @@ class Stepform extends CommonDBTM
     public static function getIcon()
     {
         return "ti ti-eye";
+    }
+
+    public static function addNotifications()
+    {
+        global $DB;
+
+        // Notification
+        $options_notif = [
+            'itemtype' => self::class,
+            'name' => 'New form completed'
+        ];
+
+        if (!countElementsInTable(
+            "glpi_notificationtemplates",
+            $options_notif
+        )) {
+
+            $DB->insert(
+                "glpi_notificationtemplates",
+                $options_notif
+            );
+
+            foreach (
+                $DB->request([
+                    'FROM' => 'glpi_notificationtemplates',
+                    'WHERE' => $options_notif
+                ]) as $data
+            ) {
+                $templates_id = $data['id'];
+
+                if ($templates_id) {
+                    $DB->insert(
+                        "glpi_notificationtemplatetranslations",
+                        [
+                            'notificationtemplates_id' => $templates_id,
+                            'subject' => '##pluginmetademandsstepform.action##',
+                            'content_text' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##',
+                            'content_html' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##'
+                        ]
+                    );
+
+                    $DB->insert(
+                        "glpi_notifications",
+                        [
+                            'name' => 'New form completed',
+                            'entities_id' => 0,
+                            'itemtype' => self::class,
+                            'event' => 'new_step_form',
+                            'is_recursive' => 1
+                        ]
+                    );
+
+                    $options_notif = [
+                        'itemtype' => self::class,
+                        'name' => 'New form completed',
+                        'event' => 'new_step_form'
+                    ];
+
+                    foreach (
+                        $DB->request([
+                            'FROM' => 'glpi_notifications',
+                            'WHERE' => $options_notif
+                        ]) as $data_notif
+                    ) {
+                        $notification = $data_notif['id'];
+                        if ($notification) {
+                            $DB->insert(
+                                "glpi_notifications_notificationtemplates",
+                                [
+                                    'notifications_id' => $notification,
+                                    'mode' => 'mailing',
+                                    'notificationtemplates_id' => $templates_id
+                                ]
+                            );
+                        }
+                    }
+                }
+            }
+
+            // Update
+            $options_notif = [
+                'itemtype' => self::class,
+                'name' => 'Form completed'
+            ];
+            // Request
+            $DB->insert(
+                "glpi_notificationtemplates",
+                $options_notif
+            );
+
+            foreach (
+                $DB->request([
+                    'FROM' => 'glpi_notificationtemplates',
+                    'WHERE' => $options_notif
+                ]) as $data
+            ) {
+                $templates_id = $data['id'];
+
+                if ($templates_id) {
+                    $DB->insert(
+                        "glpi_notificationtemplatetranslations",
+                        [
+                            'notificationtemplates_id' => $templates_id,
+                            'subject' => '##pluginmetademandsstepform.action##',
+                            'content_text' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##',
+                            'content_html' => '##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##'
+                        ]
+                    );
+
+                    $DB->insert(
+                        "glpi_notifications",
+                        [
+                            'name' => 'Form completed',
+                            'entities_id' => 0,
+                            'itemtype' => self::class,
+                            'event' => 'update_step_form',
+                            'is_recursive' => 1
+                        ]
+                    );
+
+                    $options_notif = [
+                        'itemtype' => self::class,
+                        'name' => 'New form completed',
+                        'event' => 'update_step_form'
+                    ];
+
+                    foreach (
+                        $DB->request([
+                            'FROM' => 'glpi_notifications',
+                            'WHERE' => $options_notif
+                        ]) as $data_notif
+                    ) {
+                        $notification = $data_notif['id'];
+                        if ($notification) {
+                            $DB->insert(
+                                "glpi_notifications_notificationtemplates",
+                                [
+                                    'notifications_id' => $notification,
+                                    'mode' => 'mailing',
+                                    'notificationtemplates_id' => $templates_id
+                                ]
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `name`                              VARCHAR(255) NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `items_id`                          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `users_id`                          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `groups_id_dest`                    int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `users_id_dest`                     int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `date`                              timestamp    NULL     DEFAULT NULL,
+                        `reminder_date`                     timestamp    NULL     DEFAULT NULL,
+                        `block_id`                          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!$DB->fieldExists($table, "users_id_dest")) {
+            $migration->addField($table, "users_id_dest", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            if (!isIndex($table, "plugin_metademands_metademands_id")) {
+                $migration->addKey($table, "plugin_metademands_metademands_id");
+            }
+            $migration->migrationOneTable($table);
+        }
+
+        self::addNotifications();
+
+
+        $query = $DB->buildUpdate(
+            'glpi_notifications',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsStepform'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_notificationtemplates',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsStepform'
+            ]
+        );
+        $DB->doQuery($query);
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+
+        //for step forms
+
+        $options = ['itemtype' => Stepform::class,
+            'event'    => 'new_step_form'];
+
+        $notif = new Notification();
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications',
+            'WHERE' => $options]) as $data) {
+            $notif->delete($data);
+        }
+
+        $options = ['itemtype' => Stepform::class,
+            'event'    => 'update_step_form'];
+
+        $notif = new Notification();
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications',
+            'WHERE' => $options]) as $data) {
+            $notif->delete($data);
+        }
+
+        $options = ['itemtype' => Stepform::class,
+            'event'    => 'delete_step_form'];
+
+        $notif = new Notification();
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications',
+            'WHERE' => $options]) as $data) {
+            $notif->delete($data);
+        }
+
+        //templates
+        $template       = new NotificationTemplate();
+        $translation    = new NotificationTemplateTranslation();
+        $notif_template = new Notification_NotificationTemplate();
+        $options        = ['itemtype' => Stepform::class];
+
+        foreach ($DB->request([
+            'FROM' => 'glpi_notificationtemplates',
+            'WHERE' => $options]) as $data) {
+            $options_template = [
+                'notificationtemplates_id' => $data['id']
+            ];
+
+            foreach ($DB->request([
+                'FROM' => 'glpi_notificationtemplatetranslations',
+                'WHERE' => $options_template]) as $data_template) {
+                $translation->delete($data_template);
+            }
+            $template->delete($data);
+
+            foreach ($DB->request([
+                'FROM' => 'glpi_notifications_notificationtemplates',
+                'WHERE' => $options_template]) as $data_template) {
+                $notif_template->delete($data_template);
+            }
+        }
     }
 
     /**

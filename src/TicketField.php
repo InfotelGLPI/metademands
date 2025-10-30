@@ -32,9 +32,11 @@ namespace GlpiPlugin\Metademands;
 use Ajax;
 use ChangeTemplate;
 use CommonDBChild;
+use DBConnection;
 use DbUtils;
 use Html;
 use ITILCategory;
+use Migration;
 use ProblemTemplate;
 use Search;
 use Session;
@@ -109,6 +111,49 @@ class TicketField extends CommonDBChild
     static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `num`                               int                             DEFAULT NULL,
+                        `value`                             text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `entities_id`                       int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `is_recursive`                      int          NOT NULL           DEFAULT '0',
+                        `is_mandatory`                      int          NOT NULL           DEFAULT '0',
+                        `is_deletable`                      int          NOT NULL           DEFAULT '1',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "entities_id")) {
+            $migration->addKey($table, "entities_id");
+        }
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**
@@ -503,12 +548,11 @@ class TicketField extends CommonDBChild
     /**
      * Get predefined fields for a template
      *
-     * @param $ID the template ID
+     * @param $ID
      * @param $withtypeandcategory bool with type and category
      *
-     * @return an array of predefined fields
+     * @return array array of predefined fields
      **@throws \GlpitestSQLError
-     * @throws \GlpitestSQLError
      * @since version 0.83
      *
      */
@@ -529,18 +573,22 @@ class TicketField extends CommonDBChild
             $tt = new ChangeTemplate();
         }
 
-        $sql = "SELECT *
-              FROM `" . $this->getTable() . "`
-              WHERE `" . self::$items_id . "` = '$ID'
-              ORDER BY `id`";
-        $result = $DB->doQuery($sql);
+        $sql = $DB->request([
+            'SELECT'    => '*',
+            'FROM'      => $this->getTable(),
+            'WHERE'     => [
+                self::$items_id  => $ID
+            ],
+            'ORDERBY'   => 'id',
+        ]);
 
         $allowed_fields = $tt->getAllowedFields($withtypeandcategory, true);
         $fields = [];
-
-        while ($rule = $DB->fetchAssoc($result)) {
-            if (isset($allowed_fields[$rule['num']])) {
-                $fields[$allowed_fields[$rule['num']]] = $rule['value'];
+        if (count($sql) > 0) {
+            foreach ($sql as $rule) {
+                if (isset($allowed_fields[$rule['num']])) {
+                    $fields[$allowed_fields[$rule['num']]] = $rule['value'];
+                }
             }
         }
 

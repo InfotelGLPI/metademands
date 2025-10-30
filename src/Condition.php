@@ -32,14 +32,16 @@ namespace GlpiPlugin\Metademands;
 
 use Ajax;
 use CommonDBChild;
+use CommonGLPI;
 use CommonITILObject;
+use DBConnection;
 use DbUtils;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Yesno;
 use Html;
 use ITILCategory;
+use Migration;
 use Session;
-use CommonGLPI;
 use Toolbox;
 
 if (!defined('GLPI_ROOT')) {
@@ -112,8 +114,49 @@ class Condition extends CommonDBChild
     }
 
 
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_fields_id`      int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `items_id`                          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `item`                              varchar(255)          DEFAULT NULL,
+                        `check_value`                       varchar(255) NULL     DEFAULT NULL,
+                        `show_logic`                        int(11)      NOT NULL DEFAULT '1',
+                        `show_condition`                    int(11)      NOT NULL DEFAULT '0',
+                        `order`                             int(11)      NOT NULL DEFAULT '0',
+                        `type`                              varchar(255)          DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.4
+        $migration->changeField($table, 'order', 'order', "int(11) NOT NULL DEFAULT '0'");
+        $migration->migrationOneTable($table);
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
+
     /**
-     * @param \CommonGLPI $item
+     * @param CommonGLPI $item
      * @param int $withtemplate
      *
      * @return array|string
@@ -486,7 +529,7 @@ class Condition extends CommonDBChild
         $allConditions = [];
         $allConditions = $self->find(['plugin_metademands_metademands_id' => $item->fields['id']], ['order', 'id']);
         if (count($allConditions) > 0) {
-            html::openMassiveActionsForm('massMetaCondition' . $rand);
+            Html::openMassiveActionsForm('massMetaCondition' . $rand);
             $params = [
                 'item' => __CLASS__,
                 'container' => 'massMetaCondition' . $rand,
@@ -516,7 +559,7 @@ class Condition extends CommonDBChild
                     $onhover = '';
                     if ($canedit) {
                         $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditcondition"  . $condition['id'] . "$rand();\"";
+                           onClick=\"viewEditcondition" . $condition['id'] . "$rand();\"";
                     }
 
                     echo "<tr class = 'tab_bg_1'>";
@@ -537,7 +580,7 @@ class Condition extends CommonDBChild
                             'id' => $condition["id"],
                         ];
                         Ajax::updateItemJsCode(
-                            "viewcondition"  . $item->getID() . "$rand",
+                            "viewcondition" . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                             $params
                         );

@@ -30,7 +30,9 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
 use DbUtils;
+use Migration;
 use Session;
 use CommonGLPI;
 use User;
@@ -73,6 +75,51 @@ class Ticket_Task extends CommonDBTM {
    {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_tasks_id`       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        $migration->dropForeignKeyContraint($table, 'glpi_plugin_metademands_tickets_tasks_ibfk_1');
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        if (!isIndex($table, "entities_id")) {
+            $migration->addKey($table, "entities_id");
+        }
+        if (!isIndex($table, "plugin_metademands_tasks_id")) {
+            $migration->addKey($table, "plugin_metademands_tasks_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
    /**
     * Display tab for each users

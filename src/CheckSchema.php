@@ -101,16 +101,8 @@ class CheckSchema extends CommonDBTM {
      * @return string|null
      */
     function getSchemaPath(string $version = null): ?string {
-        if ($version === null) {
-            $version = PLUGIN_METADEMANDS_VERSION;
-        }
 
-        // Drop suffixes for alpha, beta, rc versions
-        $matches = [];
-        preg_match('/^(\d+\.\d+\.\d+)/', $version, $matches);
-        $version = $matches[1];
-
-        return Plugin::getPhpDir('metademands') . "/install/sql/empty-{$version}.sql";
+        return Plugin::getPhpDir('metademands') . "/install/sql/empty.sql";
     }
 
     /**

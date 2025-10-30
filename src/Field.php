@@ -41,6 +41,7 @@ use Computer;
 use ConsumableItem;
 use Contact;
 use Contract;
+use DBConnection;
 use DbUtils;
 use Document;
 use Entity;
@@ -75,10 +76,12 @@ use GlpiPlugin\Metademands\Fields\Titleblock;
 use GlpiPlugin\Metademands\Fields\Upload;
 use GlpiPlugin\Metademands\Fields\Url;
 use GlpiPlugin\Metademands\Fields\Yesno;
+use GlpiPlugin\Resources\Resource;
 use Group_Item;
 use Html;
 use Line;
 use MassiveAction;
+use Migration;
 use Monitor;
 use NetworkEquipment;
 use PassiveDCEquipment;
@@ -248,6 +251,134 @@ class Field extends CommonDBChild
     }
 
 
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign}         NOT NULL DEFAULT '0',
+                        `is_recursive`                      int                             NOT NULL DEFAULT '0',
+                        `comment`                           text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `rank`                              int                             NOT NULL DEFAULT '0',
+                        `order`                             int                             NOT NULL DEFAULT '0',
+                        `name`                              varchar(255)                             DEFAULT NULL,
+                        `label2`                            text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `type`                              varchar(255)                             DEFAULT NULL,
+                        `item`                              varchar(255)                             DEFAULT NULL,
+                        `plugin_metademands_fields_id`      int {$default_key_sign}        NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign}        NOT NULL DEFAULT '0',
+                        `date_creation`                     timestamp                       NULL     DEFAULT NULL,
+                        `date_mod`                          timestamp                       NULL     DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        if (!$DB->fieldExists($table, "comment")) {
+            $migration->addField($table, "comment", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        if (!$DB->fieldExists($table, "label2")) {
+            $migration->addField($table, "label2", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        $migration->changeField($table, 'comment', 'comment', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->migrationOneTable($table);
+        $migration->changeField($table, 'label2', 'label2', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->migrationOneTable($table);
+
+        if (!$DB->fieldExists($table, "order")) {
+            $migration->addField($table, "order", "int NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "plugin_metademands_fields_id")) {
+            $migration->addField($table, "plugin_metademands_fields_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            if (!isIndex($table, "plugin_metademands_fields_id")) {
+                $migration->addKey($table, "plugin_metademands_fields_id");
+            }
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "date_creation")) {
+            $migration->addField($table, "date_creation", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "date_mod")) {
+            $migration->addField($table, "date_mod", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //Version 2.7.4
+        $field  = new Field();
+        $fields = $field->find(['type' => "dropdown", "item" => "user"]);
+        foreach ($fields as $f) {
+            $f["item"] = "User";
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "usertitle"]);
+        foreach ($fields as $f) {
+            $f["item"] = "UserTitle";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "usercategory"]);
+        foreach ($fields as $f) {
+            $f["item"] = "UserCategory";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "group"]);
+        foreach ($fields as $f) {
+            $f["item"] = "Group";
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "location"]);
+        foreach ($fields as $f) {
+            $f["item"] = "Location";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "appliance"]);
+        foreach ($fields as $f) {
+            $f["item"] = "Appliance";
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "itilcategory"]);
+        foreach ($fields as $f) {
+            $f["item"] = "ITILCategory_Metademands";
+            $f["type"] = "dropdown_meta";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "other"]);
+        foreach ($fields as $f) {
+            $f["item"] = "other";
+            $f["type"] = "dropdown_meta";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => Resource::class]);
+        foreach ($fields as $f) {
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     public function getCloneRelations(): array
     {

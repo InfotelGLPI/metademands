@@ -30,10 +30,12 @@ namespace GlpiPlugin\Metademands;
 
 use Ajax;
 use CommonDBChild;
+use DBConnection;
 use DbUtils;
 use Glpi\RichText\RichText;
 use Group_User;
 use Html;
+use Migration;
 use Session;
 use CommonGLPI;
 use User;
@@ -96,6 +98,52 @@ class Step extends CommonDBChild
     public static function getIcon()
     {
         return "ti ti-device-ipad-pause";
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `block_id`                          int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `groups_id`                         int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `only_by_supervisor`                tinyint      NOT NULL           DEFAULT '0',
+                        `reminder_delay`                    text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `message`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        $migration->migrationOneTable($table);
+
+        //version 3.3.24
+        if (!$DB->fieldExists($table, "only_by_supervisor")) {
+            $migration->addField($table, "only_by_supervisor", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**

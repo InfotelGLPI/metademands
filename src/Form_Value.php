@@ -30,6 +30,8 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
+use Migration;
 
 /**
  * Class Form_Value
@@ -38,6 +40,46 @@ class Form_Value extends CommonDBTM
 {
 
     static $rightname = 'plugin_metademands';
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_forms_id`  int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `value`                        text         NOT NULL,
+                        `value2`                       text         NOT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_forms_id` (`plugin_metademands_forms_id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_forms_id")) {
+            $migration->addKey($table, "plugin_metademands_forms_id");
+        }
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param $parent_fields

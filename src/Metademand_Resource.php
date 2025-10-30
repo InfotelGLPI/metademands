@@ -32,12 +32,14 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use GlpiPlugin\Resources\Config;
 use GlpiPlugin\Resources\ContractType;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Resources\Service;
 use Html;
+use Migration;
 use Session;
 use Toolbox;
 use UserCategory;
@@ -80,6 +82,50 @@ class Metademand_Resource extends CommonDBTM
     public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_resources_contracttypes_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY `plugin_resources_contracttypes_id` (`plugin_resources_contracttypes_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "entities_id")) {
+            $migration->addKey($table, "entities_id");
+        }
+        if (!isIndex($table, "plugin_resources_contracttypes_id")) {
+            $migration->addKey($table, "plugin_resources_contracttypes_id");
+        }
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**

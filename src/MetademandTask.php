@@ -30,6 +30,8 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
+use DBConnection;
+use Migration;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -76,6 +78,47 @@ class MetademandTask extends CommonDBChild
     static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_tasks_id`       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!$DB->fieldExists($table, "entities_id")) {
+            $migration->addField($table, "entities_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            if (!isIndex($table, "entities_id")) {
+                $migration->addKey($table, "entities_id");
+            }
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**
@@ -193,58 +236,9 @@ class MetademandTask extends CommonDBChild
                 }
             }
         }
+        return false;
     }
 
-    /**
-     * @param $metademands_id
-     *
-     * @return mixed
-     * @throws \GlpitestSQLError
-     */
-//   static function getSonMetademandTaskId($metademands_id) {
-//      global $DB;
-//
-//      $res    = [];
-//      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
-//                       `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id
-//               FROM `glpi_plugin_metademands_metademandtasks`
-//               LEFT JOIN `glpi_plugin_metademands_tasks`
-//                  ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id`)
-//               WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-//      $result = $DB->doQuery($query);
-//
-//      if ($DB->numrows($result)) {
-//         while ($data = $DB->fetchAssoc($result)) {
-//            $res[$data['metademands_id']] = $data['tasks_id'];
-//         }
-//         return $res;
-//      }
-//   }
-
-    /**
-     * @param $metademands_id
-     *
-     * @return mixed
-     * @throws \GlpitestSQLError
-     */
-//    static function getMetademandTask_TaskId($metademands_id)
-//    {
-//        global $DB;
-//
-//        $return = [];
-//
-//        $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
-//               FROM `glpi_plugin_metademands_metademandtasks`
-//               WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-//        $result = $DB->doQuery($query);
-//
-//        if ($DB->numrows($result)) {
-//            while ($data = $DB->fetchAssoc($result)) {
-//                $return['tasks_id'][] = $data['tasks_id'];
-//            }
-//        }
-//        return $return['tasks_id'];
-//    }
 
     /**
      * @param       $metademands_id

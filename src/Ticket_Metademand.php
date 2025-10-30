@@ -31,13 +31,16 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use CommonGLPI;
 use CommonITILObject;
+use DBConnection;
+use DbUtils;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Resources\Resource;
 use Group_User;
+use Migration;
 use Search;
 use Session;
-use CommonGLPI;
 use User;
 use UserEmail;
 
@@ -89,6 +92,68 @@ class Ticket_Metademand extends CommonDBTM
         return "ti ti-link";
     }
 
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `tickets_id`                        int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `parent_tickets_id`                 int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `tickettemplates_id`                int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `status`                            tinyint      NOT NULL DEFAULT '1',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `tickets_id` (`tickets_id`),
+                        KEY `parent_tickets_id` (`parent_tickets_id`),
+                        KEY `tickettemplates_id` (`tickettemplates_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        if (!$DB->fieldExists($table, "tickettemplates_id")) {
+            $migration->addField($table, "tickettemplates_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+
+        $migration->dropForeignKeyContraint($table, 'glpi_plugin_metademands_tickets_metademands_ibfk_1');
+
+        //version 2.7.5
+        if (!$DB->fieldExists($table, "status")) {
+            $migration->addField($table, "status", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        if (!isIndex($table, "tickets_id")) {
+            $migration->addKey($table, "tickets_id");
+        }
+        if (!isIndex($table, "parent_tickets_id")) {
+            $migration->addKey($table, "parent_tickets_id");
+        }
+        if (!isIndex($table, "tickettemplates_id")) {
+            $migration->addKey($table, "tickettemplates_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
+
     /**
      * Display tab for each users
      *
@@ -104,8 +169,8 @@ class Ticket_Metademand extends CommonDBTM
             if ($item->getType() == Metademand::class) {
                 if ($_SESSION['glpishow_count_on_tabs']) {
                     $query = self::countTicketsInTable($item->getID());
-                    $result  = $DB->doQuery($query);
-                    $numrows = $DB->numrows($result);
+                    $iterator  = $DB->request($query);
+                    $numrows = count($iterator);
 
                     return self::createTabEntry(
                         __('Linked opened tickets', 'metademands'),
@@ -122,28 +187,50 @@ class Ticket_Metademand extends CommonDBTM
     /**
      * @param $meta_id
      *
-     * @return string
+     * @return array
      */
     public static function countTicketsInTable($meta_id)
     {
 
-        $status  = CommonITILObject::INCOMING . ", " . CommonITILObject::PLANNED . ", "
-                 . CommonITILObject::ASSIGNED . ", " . CommonITILObject::WAITING;
+        $status  = [CommonITILObject::INCOMING,
+            CommonITILObject::PLANNED,
+            CommonITILObject::ASSIGNED,
+            CommonITILObject::WAITING];
 
-        $query = "SELECT DISTINCT `glpi_tickets`.`id`
-                FROM `glpi_tickets`
-                LEFT JOIN `glpi_tickets_users`
-                  ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id`)
-                LEFT JOIN `glpi_plugin_metademands_tickets_metademands`
-                  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_metademands`.`tickets_id`)
-                LEFT JOIN `glpi_groups_tickets`
-                  ON (`glpi_tickets`.`id` = `glpi_groups_tickets`.`tickets_id`)";
-
-        $query .= "WHERE `glpi_tickets`.`is_deleted` = 0
-      AND `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id` = $meta_id
-      AND (`glpi_tickets`.`status` IN ($status)) "
-                . getEntitiesRestrictRequest("AND", "glpi_tickets");
-        $query .= " ORDER BY id DESC";
+        $query = [
+            'SELECT' => 'glpi_tickets.id',
+            'DISTINCT'        => true,
+            'FROM' => 'glpi_tickets',
+            'LEFT JOIN'       => [
+                'glpi_tickets_users' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_tickets_users'          => 'tickets_id',
+                    ],
+                ],
+                'glpi_plugin_metademands_tickets_metademands' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id',
+                    ],
+                ],
+                'glpi_groups_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_groups_tickets'          => 'tickets_id',
+                    ],
+                ],
+            ],
+            'WHERE' => [
+                'glpi_tickets.is_deleted' => 0,
+                'glpi_tickets.status' => $status,
+                'glpi_plugin_metademands_tickets_metademands.plugin_metademands_metademands_id' => $meta_id,
+            ],
+            'ORDERBY'   => 'id DESC',
+        ];
+        $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
+            'glpi_tickets'
+        );
 
         return $query;
     }
@@ -170,8 +257,8 @@ class Ticket_Metademand extends CommonDBTM
         }
 
         $query = self::countTicketsInTable($item->getID());
-        $result  = $DB->doQuery($query);
-        $numrows = $DB->numrows($result);
+        $iterator  = $DB->request($query);
+        $numrows = count($iterator);
 
         if ($numrows > 0) {
             $rand = mt_rand();
@@ -179,9 +266,11 @@ class Ticket_Metademand extends CommonDBTM
             echo "<table class='tab_cadre_fixe'>";
 
             \Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
-            for ($i = 0; $i < $numrows; $i++) {
-                $ID = $DB->result($result, $i, "id");
 
+            $i = 0;
+            foreach ($iterator as $data) {
+                $ID = $data['id'];
+                $i++;
                 \Ticket::showShort(
                     $ID,
                     [
@@ -1424,7 +1513,8 @@ class Ticket_Metademand extends CommonDBTM
      * @param $ticket
      * @return void
      */
-    static function changeMetademandGlobalStatus($ticket) {
+    public static function changeMetademandGlobalStatus($ticket)
+    {
 
         $ticket_metademand = new self();
         $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
@@ -1495,7 +1585,7 @@ class Ticket_Metademand extends CommonDBTM
                             $validationmeta->fields['validate'],
                             [
                                 MetademandValidation::TO_VALIDATE,
-                                MetademandValidation::TO_VALIDATE_WITHOUTTASK
+                                MetademandValidation::TO_VALIDATE_WITHOUTTASK,
                             ]
                         )) {
                             $validation_todo = true;
@@ -1506,14 +1596,14 @@ class Ticket_Metademand extends CommonDBTM
                         $metaStatus->update(
                             [
                                 'id' => $metaStatus->fields['id'],
-                                'status' => self::TO_CLOSED
+                                'status' => self::TO_CLOSED,
                             ]
                         );
                     } elseif ($validation_todo) {
                         $metaStatus->update(
                             [
                                 'id' => $metaStatus->fields['id'],
-                                'status' => self::RUNNING
+                                'status' => self::RUNNING,
                             ]
                         );
                     }
@@ -1524,5 +1614,157 @@ class Ticket_Metademand extends CommonDBTM
                 }
             }
         }
+    }
+
+
+    static function migrateAllRunningAndToBeClosedMetademands()
+    {
+        global $DB;
+
+        $ticket_metademand = new Ticket_Metademand();
+        $get_running_parents_tickets_meta = [
+            'SELECT' => 'glpi_plugin_metademands_tickets_metademands.parent_tickets_id AS ticket_id',
+            'FROM' => 'glpi_plugin_metademands_tickets_metademands',
+            'LEFT JOIN' => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                ['glpi_tickets.status' => ['NOT IN', [\Ticket::SOLVED, \Ticket::CLOSED]]],
+                'glpi_tickets.is_deleted' => 0,
+            ]
+        ];
+
+        $results_running_parents = $DB->request($get_running_parents_tickets_meta);
+
+        $running_parents_meta = [];
+
+        foreach ($results_running_parents as $row) {
+            $running_parents_meta[$row['ticket_id']] = $row['ticket_id'];
+        }
+
+
+        if (count($running_parents_meta) > 0) {
+            foreach ($running_parents_meta as $running_parent) {
+                $ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $running_parent]);
+
+                $get_running_sons_ticket = self::getSonsQuery($running_parent);
+
+                $results_sons_ticket = $DB->request($get_running_sons_ticket);
+
+                $counterClosed = 0;
+
+                if (count($results_sons_ticket) > 0) {
+                    foreach ($results_sons_ticket as $row) {
+                        if ($row['status'] == \Ticket::CLOSED || $row['status'] == \Ticket::SOLVED) {
+                            $counterClosed++;
+                        }
+                    }
+
+                    if ($counterClosed == count($results_sons_ticket)) {
+                        $ticket_metademand->update(
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED]
+                        );
+                    } elseif ($counterClosed < count($results_sons_ticket)) {
+                        $ticket_metademand->update(
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                        );
+                    }
+                } else {
+                    $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                    );
+                }
+            }
+        }
+    }
+
+    static function migrateAllClosedMetademands()
+    {
+        global $DB;
+
+        $ticket_metademand = new Ticket_Metademand();
+
+        $get_closed_meta = [
+            'SELECT' => 'glpi_plugin_metademands_tickets_metademands.parent_tickets_id AS ticket_id',
+            'FROM' => 'glpi_plugin_metademands_tickets_metademands',
+            'LEFT JOIN' => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                ['glpi_tickets.status' => [\Ticket::SOLVED, \Ticket::CLOSED]],
+                'glpi_tickets.is_deleted' => 0,
+            ]
+        ];
+
+        $results_closed_parents = $DB->request($get_closed_meta);
+
+        $closed_parents_meta = [];
+
+        foreach ($results_closed_parents as $row) {
+            $closed_parents_meta[$row['ticket_id']] = $row['ticket_id'];
+        }
+
+
+        if (count($closed_parents_meta) > 0) {
+            foreach ($closed_parents_meta as $closed_parent) {
+                $ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $closed_parent]);
+
+                $get_closed_sons_ticket = self::getSonsQuery($closed_parent);
+
+                $results_sons_ticket = $DB->request($get_closed_sons_ticket);
+
+                $counterClosed = 0;
+
+                if (count($results_sons_ticket) > 0) {
+                    foreach ($results_sons_ticket as $row) {
+                        if ($row['status'] == \Ticket::CLOSED || $row['status'] == \Ticket::SOLVED) {
+                            $counterClosed++;
+                        }
+                    }
+
+
+                    if ($counterClosed == count($results_sons_ticket)) {
+                        $ticket_metademand->update(
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED]
+                        );
+                    } elseif ($counterClosed < count($results_sons_ticket)) {
+                        $ticket_metademand->update(
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                        );
+                    }
+                } else {
+                    $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::CLOSED]
+                    );
+                }
+            }
+        }
+    }
+
+    static function getSonsQuery($parent_id)
+    {
+        return [
+            'SELECT' => ['glpi_plugin_metademands_tickets_tasks.tickets_id AS sons_ticket', 'glpi_tickets.status'],
+            'FROM' => 'glpi_plugin_metademands_tickets_tasks',
+            'LEFT JOIN' => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets' => 'id',
+                        'glpi_plugin_metademands_tickets_tasks' => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_plugin_metademands_tickets_tasks.parent_tickets_id' => $parent_id,
+            ]
+        ];
     }
 }

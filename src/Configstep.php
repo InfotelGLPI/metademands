@@ -28,7 +28,9 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
 use Html;
+use Migration;
 use Session;
 use CommonGLPI;
 use Toolbox;
@@ -45,6 +47,7 @@ if (!defined('GLPI_ROOT')) {
 class Configstep extends CommonDBTM
 {
     static $rightname = 'plugin_metademands';
+
     public static $itemtype = Metademand::class;
     public static $items_id = 'plugin_metademands_metademands_id';
 
@@ -52,25 +55,8 @@ class Configstep extends CommonDBTM
     const ONLY_HELPDESK_INTERFACE = 1;
     const ONLY_CENTRAL_INTERFACE = 2;
 
-
-
     public static $disableAutoEntityForwarding   = true;
-    static function canView(): bool
-    {
-        return Session::haveRight(self::$rightname, UPDATE);
-    }
 
-    public static function getIcon()
-    {
-        return "ti ti-adjustments-pause";
-    }
-    /**
-     * @return bool
-     */
-    static function canCreate(): bool
-    {
-        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-    }
     /**
      * @param int $nb
      *
@@ -79,6 +65,77 @@ class Configstep extends CommonDBTM
     public static function getTypeName($nb = 0)
     {
         return __('Step by step settings', 'metademands');
+    }
+
+    public static function getIcon()
+    {
+        return "ti ti-adjustments-pause";
+    }
+
+    static function canView(): bool
+    {
+        return Session::haveRight(self::$rightname, UPDATE);
+    }
+
+
+    /**
+     * @return bool
+     */
+    static function canCreate(): bool
+    {
+        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `see_blocks_as_tab`                 tinyint      NOT NULL DEFAULT '0',
+                        `link_user_block`                   tinyint      NOT NULL DEFAULT '0',
+                        `multiple_link_groups_blocks`       tinyint      NOT NULL DEFAULT '0',
+                        `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',
+                        `supervisor_validation`             tinyint      NOT NULL DEFAULT '0',
+                        `step_by_step_interface`            tinyint      NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.8
+        if (!$DB->fieldExists($table, "step_by_step_interface")) {
+            $migration->addField($table, "step_by_step_interface", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.3.23
+        if (!$DB->fieldExists($table, "see_blocks_as_tab")) {
+            $migration->addField($table, "see_blocks_as_tab", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.3.24
+        if (!$DB->fieldExists($table, "supervisor_validation")) {
+            $migration->addField($table, "supervisor_validation", " tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     public static function getEnumInterface()

@@ -31,9 +31,11 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
+use DBConnection;
 use DbUtils;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
 use Html;
+use Migration;
 use Session;
 use CommonGLPI;
 
@@ -87,22 +89,45 @@ class FieldCustomvalue extends CommonDBChild
     {
         return Metademand::getIcon();
     }
-    //
-    //
-    //    static function canView()
-    //    {
-    //        return Session::haveRight(self::$rightname, READ);
-    //    }
-    //
-    //    /**
-    //     * @return bool
-    //     */
-    //    static function canCreate()
-    //    {
-    //        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-    //    }
 
+    public static function install(Migration $migration)
+    {
+        global $DB;
 
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_fields_id` int {$default_key_sign}    NOT NULL           DEFAULT '0',
+                        `name`                         VARCHAR(255) NOT NULL           DEFAULT '0',
+                        `is_default`                   int          NOT NULL           DEFAULT '0',
+                        `comment`                      text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `rank`                         int          NOT NULL           DEFAULT '0',
+                        `icon`                         VARCHAR(255)                    DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.4.0
+        if (!$DB->fieldExists($table, "icon")) {
+            $migration->addField($table, "icon", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param CommonGLPI $item

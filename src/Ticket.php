@@ -28,15 +28,14 @@
  --------------------------------------------------------------------------
  */
 
-
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use Glpi\Form\Form;
 use Group_Ticket;
 use Html;
 use RequestType;
 use Session;
-use Glpi\Form\Form;
 use Ticket_User;
 use TicketTemplate;
 
@@ -348,24 +347,42 @@ class Ticket extends CommonDBTM
 
         if (isset($tickets_id) && $tickets_id > 0) {
             // Search metademand son ticket : if found recursive call
-            $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id,
-                       `glpi_plugin_metademands_tickets_metademands`.`tickets_id`,
-                       `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id`
-               FROM `glpi_plugin_metademands_tickets_metademands`
-               RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
-                 ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id`)
-               LEFT JOIN `glpi_tickets` ON (`glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id`)
-               WHERE `glpi_tickets`.`is_deleted` = 0
-                 AND `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` = " . $tickets_id . "
-               AND `glpi_plugin_metademands_tickets_metademands`.`tickets_id` != " . $tickets_id;
 
+            $criteria = [
+                'SELECT' => ['glpi_plugin_metademands_metademandtasks.plugin_metademands_metademands_id AS metademands_id',
+                    'glpi_plugin_metademands_tickets_metademands.tickets_id',
+                    'glpi_plugin_metademands_tickets_metademands.parent_tickets_id'],
+                'FROM' => 'glpi_plugin_metademands_tickets_metademands',
+                'RIGHT JOIN'       => [
+                    'glpi_plugin_metademands_metademandtasks' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_metademands_id',
+                            'glpi_plugin_metademands_tickets_metademands'          => 'plugin_metademands_metademands_id'
+                        ]
+                    ],
+                ],
+                'LEFT JOIN'       => [
+                    'glpi_tickets' => [
+                        'ON' => [
+                            'glpi_tickets' => 'id',
+                            'glpi_plugin_metademands_tickets_metademands'          => 'parent_tickets_id'
+                        ]
+                    ],
+                ],
+                'WHERE' => [
+                    'glpi_tickets.is_deleted' => 0,
+                    'glpi_plugin_metademands_tickets_metademands.parent_tickets_id' => $tickets_id,
+                    'NOT' => ['glpi_plugin_metademands_tickets_metademands.tickets_id' => $tickets_id],
+                ],
+            ];
             if ($seesolved == false) {
-                $query .= " AND `glpi_tickets`.`status` NOT IN (" . \Ticket::SOLVED . ", " . \Ticket::CLOSED . ") ";
+                $criteria['WHERE'] = $criteria['WHERE'] + ['NOT' => ['glpi_tickets.status' => [\Ticket::SOLVED, \Ticket::CLOSED]]];
             }
-            $result = $DB->doQuery($query);
 
-            if ($DB->numrows($result)) {
-                while ($data = $DB->fetchAssoc($result)) {
+            $iterator = $DB->request($criteria);
+
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
                     $data['type']  = Task::METADEMAND_TYPE;
                     $data['level'] = 1;
                     $used          = false;
@@ -392,22 +409,33 @@ class Ticket extends CommonDBTM
             }
 
             // Get direct son ticket
-            $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
-                       `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
-                       `glpi_plugin_metademands_tickets_tasks`.`level`,
-                       `glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id` as tasks_id
-                  FROM glpi_plugin_metademands_tickets_tasks
-                  LEFT JOIN `glpi_tickets` ON (`glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`)
-                  WHERE `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = " . $tickets_id . "
-                  AND `glpi_tickets`.`is_deleted` = 0";
-
+            $criteria = [
+                'SELECT' => ['glpi_plugin_metademands_tickets_tasks.tickets_id',
+                    'glpi_plugin_metademands_tickets_tasks.parent_tickets_id',
+                    'glpi_plugin_metademands_tickets_tasks.level',
+                    'glpi_plugin_metademands_tickets_tasks.plugin_metademands_tasks_id AS tasks_id'],
+                'FROM' => 'glpi_plugin_metademands_tickets_tasks',
+                'LEFT JOIN'       => [
+                    'glpi_tickets' => [
+                        'ON' => [
+                            'glpi_tickets' => 'id',
+                            'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id'
+                        ]
+                    ],
+                ],
+                'WHERE' => [
+                    'glpi_tickets.is_deleted' => 0,
+                    'glpi_plugin_metademands_tickets_tasks.parent_tickets_id' => $tickets_id,
+                ],
+            ];
             if ($seesolved == false) {
-                $query .= " AND `glpi_tickets`.`status` NOT IN (" . \Ticket::SOLVED . ", " . \Ticket::CLOSED . ") ";
+                $criteria['WHERE'] = $criteria['WHERE'] + ['NOT' => ['glpi_tickets.status' => [\Ticket::SOLVED, \Ticket::CLOSED]]];
             }
-            $result = $DB->doQuery($query);
 
-            if ($DB->numrows($result)) {
-                while ($data = $DB->fetchAssoc($result)) {
+            $iterator = $DB->request($criteria);
+
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
                     $data['type']       = Task::TICKET_TYPE;
                     $ticket_task_data[] = $data;
                     $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive, $seesolved);
@@ -439,7 +467,7 @@ class Ticket extends CommonDBTM
             //                     AND `glpi_plugin_metademands_tickets_tasks`.`tickets_id` IN ('" . implode("','", $parent_tickets_id) . "')
             //                     ORDER BY tasks_id";
             //
-            //                $result = $DB->doQuery($query);
+            //                $result = $DB->query($query);
             //                $count  = 0;
             //
             //                if ($DB->numrows($result)) {
@@ -501,26 +529,32 @@ class Ticket extends CommonDBTM
         global $DB;
         $ticket_task_data = [];
         // Search metademand parent ticket
-        //        $query  = "SELECT `tickets_id`,`parent_tickets_id`
-        //                  FROM glpi_plugin_metademands_tickets_tasks
-        //                  WHERE `tickets_id` = " . $tickets_id . "";
-        //        $result = $DB->doQuery($query);
-        //        if ($DB->numrows($result)) {
-        //            while ($data = $DB->fetchAssoc($result)) {
+        //        $iterator = $DB->request([
+        //            'SELECT' => ['tickets_id', 'parent_tickets_id'],
+        //            'FROM' => 'glpi_plugin_metademands_tickets_tasks',
+        //            'WHERE' => [
+        //                'tickets_id' => $tickets_id
+        //            ],
+        //        ]);
+        //        if (count($iterator) > 0) {
+        //            foreach ($iterator as $data) {
         //                if (!$only_metademand) {
-        //                    $data['type']       = Task::TICKET_TYPE;
+        //                    $data['type'] = Task::TICKET_TYPE;
         //                    $ticket_task_data[] = $data;
         //                }
         //            }
         //        }
 
         // Search metademand parent ticket
-        $query  = "SELECT `parent_tickets_id` as tickets_id
-               FROM `glpi_plugin_metademands_tickets_metademands`
-               WHERE `tickets_id` = " . $tickets_id;
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
+        $iterator = $DB->request([
+            'SELECT'    => 'parent_tickets_id AS tickets_id',
+            'FROM'      => 'glpi_plugin_metademands_tickets_metademands',
+            'WHERE'     => [
+                'tickets_id'  => $tickets_id,
+            ],
+        ]);
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
                 $data['type']               = Task::METADEMAND_TYPE;
                 $data['level']              = 1;
                 $data['tasks_completename'] = '';

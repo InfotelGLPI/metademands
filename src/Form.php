@@ -33,7 +33,9 @@ namespace GlpiPlugin\Metademands;
 use Change;
 use CommonDBTM;
 use CommonGLPI;
+use DBConnection;
 use Html;
+use Migration;
 use Problem;
 use Session;
 use User;
@@ -50,6 +52,66 @@ class Form extends CommonDBTM
 
     public static $rightname = 'plugin_metademands';
 
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `name`                              VARCHAR(255) NOT NULL                   DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `items_id`                          int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `itemtype`                          varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `users_id`                          int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `date`                              timestamp    NOT NULL,
+                        `is_model`                          tinyint      NOT NULL                   DEFAULT '0',
+                        `resources_id`                      int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `is_private`                        tinyint      NOT NULL                   DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.1.0
+        if (!$DB->fieldExists($table, "resources_id")) {
+            $migration->addField($table, "resources_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        //version 3.4.0
+        if (!$DB->fieldExists($table, "is_private")) {
+            $migration->addField($table, "is_private", "tinyint NOT NULL DEFAULT 0");
+            $migration->migrationOneTable($table);
+
+            $query = $DB->buildUpdate(
+                $table,
+                [
+                    'is_private' => 1,
+                ],
+                []
+            );
+            $DB->doQuery($query);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     public function cleanDBonPurge()
     {

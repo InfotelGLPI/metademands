@@ -30,7 +30,9 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
 use Html;
+use Migration;
 use Session;
 use Toolbox;
 
@@ -41,6 +43,61 @@ class Basketline extends CommonDBTM
 {
 
     static $rightname = 'plugin_metademands';
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `users_id`                          int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `plugin_metademands_fields_id`      int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `line`                              int          NOT NULL                   DEFAULT '0',
+                        `name`                              varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `value`                             text COLLATE utf8mb4_unicode_ci,
+                        `value2`                            text COLLATE utf8mb4_unicode_ci,
+                        PRIMARY KEY (`id`),
+                        UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`, `plugin_metademands_fields_id`, `line`, `name`,
+                                              `users_id`),
+                        KEY `users_id` (`users_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        $migration->dropKey($table, 'unicity');
+        $migration->addKey($table, ['plugin_metademands_metademands_id','plugin_metademands_fields_id','line','name','users_id'], 'unicity');
+
+        //version 3.3.0
+        if (!isIndex($table, "users_id")) {
+            $migration->addKey($table, "users_id");
+        }
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        if (!isIndex($table, "plugin_metademands_fields_id")) {
+            $migration->addKey($table, "plugin_metademands_fields_id");
+        }
+    }
+
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
+
 
     /**
      * @param array $line
