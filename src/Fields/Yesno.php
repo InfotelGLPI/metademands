@@ -774,9 +774,9 @@ class Yesno extends CommonDBTM
                     //specific - one value
                     $onchange .= FieldOption::setEmptyBlockFields($name);
                     $onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();
-                if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';";
+                                    $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();
+                                    if (document.getElementById('ablock" . $hidden_block . "'))
+                                    document.getElementById('ablock" . $hidden_block . "').style.display = 'none';";
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {

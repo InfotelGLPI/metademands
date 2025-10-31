@@ -4010,7 +4010,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             $devices = [];
 
             // My items
-            foreach ($CFG_GLPI["linkuser_types"] as $itemtype) {
+            foreach ($CFG_GLPI["assignable_types"] as $itemtype) {
                 if (($item = getItemForItemtype($itemtype))
                     && \Ticket::isPossibleToAssignType($itemtype)) {
                     $itemtable = getTableForItemType($itemtype);
@@ -4349,7 +4349,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             $my_devices = ['' => \Dropdown::EMPTY_VALUE];
             $devices = [];
 
-            $itemtypes = $CFG_GLPI["linkuser_types"];
+            $itemtypes = $CFG_GLPI["assignable_types"];
             if (count($limit) > 0) {
                 $itemtypes = $limit;
             }

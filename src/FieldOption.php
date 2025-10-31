@@ -2102,6 +2102,8 @@ class FieldOption extends CommonDBChild
                                             case 'radio':
                                                  this.checked = false;
                                         }
+                                         jQuery(this).removeAttr('required');
+                                        jQuery(this).removeClass('invalid');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);
@@ -2136,6 +2138,8 @@ class FieldOption extends CommonDBChild
                                             case 'radio':
                                                  this.checked = false;
                                         }
+                                         jQuery(this).removeAttr('required');
+                                        jQuery(this).removeClass('invalid');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);

@@ -633,7 +633,7 @@ class Dropdownmeta extends CommonDBTM
 
         $objects_items_id = [];
 
-        $objects = $CFG_GLPI["linkuser_types"];
+        $objects = $CFG_GLPI["assignable_types"];
         if (count($values['limit']) > 0) {
             $objects = $values['limit'];
         }
@@ -1321,7 +1321,7 @@ class Dropdownmeta extends CommonDBTM
 
                 $list = [];
 
-                foreach ($CFG_GLPI['linkuser_types'] as $itemtype) {
+                foreach ($CFG_GLPI['assignable_types'] as $itemtype) {
                     if (!($item = getItemForItemtype($itemtype))) {
                         continue;
                     }
