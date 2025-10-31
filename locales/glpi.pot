@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-30 14:28+0000\n"
+"POT-Creation-Date: 2025-10-31 17:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "Actors"
 msgstr ""
 
-#: /home/runner/work/metademands/metademands/templates/interticketfollowup_form.html.twig:90
+#: templates/interticketfollowup_form.html.twig:90
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -344,6 +344,10 @@ msgstr ""
 msgid "Coming"
 msgstr ""
 
+#: templates/interticketfollowup_form.html.twig:47
+msgid "Comment"
+msgstr ""
+
 #: src/Config.php:543
 msgid "Comment for Service Catalog widget"
 msgstr ""
@@ -374,7 +378,7 @@ msgstr ""
 msgid "Configure demands"
 msgstr ""
 
-#: /home/runner/work/metademands/metademands/templates/interticketfollowup_form.html.twig:102
+#: templates/interticketfollowup_form.html.twig:102
 msgid "Confirm the final deletion?"
 msgstr ""
 
@@ -446,8 +450,11 @@ msgid "Data imported successfully"
 msgstr ""
 
 #: src/Freetablefield.php:181 src/Fields/Date.php:56
+#: templates/interticketfollowup_form.html.twig:64
 msgid "Date"
-msgstr ""
+msgid_plural "Dates"
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/Wizard.php:3498
 #, php-format
@@ -535,7 +542,7 @@ msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
-#: /home/runner/work/metademands/metademands/templates/interticketfollowup_form.html.twig:104
+#: templates/interticketfollowup_form.html.twig:104
 msgctxt "button"
 msgid "Delete permanently"
 msgstr ""
@@ -1684,7 +1691,7 @@ msgstr ""
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: /home/runner/work/metademands/metademands/templates/interticketfollowup_form.html.twig:97
+#: templates/interticketfollowup_form.html.twig:97
 msgctxt "button"
 msgid "Save"
 msgstr ""
