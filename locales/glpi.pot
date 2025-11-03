@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-31 17:59+0000\n"
+"POT-Creation-Date: 2025-11-03 10:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1179,7 +1179,7 @@ msgstr ""
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: setup.php:299 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
+#: setup.php:304 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
 #: src/Config.php:76 src/Metademand.php:130 src/Menu.php:48 src/Tools.php:157
 #: src/Tools.php:234 src/Tools.php:329 src/Tools.php:492
 msgid "Meta-Demand"
@@ -1215,6 +1215,11 @@ msgstr ""
 
 #: src/Tools.php:105
 msgid "Metademands global status"
+msgstr ""
+
+#: src/Helpdesk/Tile/MetademandPageTile.php:68
+#: src/Helpdesk/Tile/MetademandPageTile.php:86
+msgid "Metademands list"
 msgstr ""
 
 #: front/tools.form.php:62
