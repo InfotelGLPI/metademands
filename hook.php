@@ -51,6 +51,7 @@ use GlpiPlugin\Metademands\Form_Value;
 use GlpiPlugin\Metademands\Freetablefield;
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\GroupConfig;
+use GlpiPlugin\Metademands\Helpdesk\Tile\MetademandPageTile;
 use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\MailTask;
 use GlpiPlugin\Metademands\Metademand;
@@ -69,7 +70,7 @@ use GlpiPlugin\Metademands\Ticket_Metademand;
 use GlpiPlugin\Metademands\Ticket_Task;
 use GlpiPlugin\Metademands\TicketField;
 use GlpiPlugin\Metademands\TicketTask;
-use GlpiPlugin\Resources\Resource;
+
 use function Safe\mkdir;
 
 /**
@@ -112,6 +113,7 @@ function plugin_metademands_install()
         Interticketfollowup::install($migration);
         MailTask::install($migration);
         Metademand::install($migration);
+        MetademandPageTile::install($migration);
         Metademand_Resource::install($migration);
         MetademandTask::install($migration);
         MetademandTranslation::install($migration);
@@ -152,6 +154,7 @@ function plugin_metademands_install()
         Interticketfollowup::install($migration);
         MailTask::install($migration);
         Metademand::install($migration);
+        MetademandPageTile::install($migration);
         Metademand_Resource::install($migration);
         MetademandTask::install($migration);
         MetademandTranslation::install($migration);
@@ -249,6 +252,7 @@ function plugin_metademands_uninstall()
     Interticketfollowup::uninstall();
     MailTask::uninstall();
     Metademand::uninstall();
+    MetademandPageTile::uninstall();
     Metademand_Resource::uninstall();
     MetademandTask::uninstall();
     MetademandTranslation::uninstall();

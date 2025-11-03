@@ -36,6 +36,7 @@ namespace GlpiPlugin\Metademands\Helpdesk\Tile;
 
 use CommonDBTM;
 use CommonITILValidation;
+use DBConnection;
 use Glpi\Helpdesk\HelpdeskTranslation;
 use Glpi\Helpdesk\Tile\Item_Tile;
 use Glpi\Helpdesk\Tile\TileInterface;
@@ -44,6 +45,7 @@ use Glpi\ItemTranslation\Context\TranslationHandler;
 use Glpi\Session\SessionInfo;
 use Glpi\UI\IllustrationManager;
 use Html;
+use Migration;
 use Override;
 use Session;
 
@@ -174,5 +176,36 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
     public function getPage(): string
     {
         return $this->fields['page'] ?? "";
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = "glpi_plugin_metademands_helpdesks_tiles_metademandpagetiles";
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `title` varchar(255) DEFAULT NULL,
+                        `description` text DEFAULT null,
+                        `illustration` varchar(255) DEFAULT NULL,
+                        `url` text DEFAULT NULL,
+                        PRIMARY KEY (`id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $table  = "glpi_plugin_metademands_helpdesks_tiles_metademandpagetiles";
+        $DB->dropTable($table, true);
     }
 }
