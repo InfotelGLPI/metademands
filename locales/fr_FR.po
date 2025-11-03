@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-31 17:59+0000\n"
+"POT-Creation-Date: 2025-11-03 10:21+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -1222,7 +1222,7 @@ msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 "Message affiché avant l'envoi au superviseur ou à l'utilisateur suivant"
 
-#: setup.php:299 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
+#: setup.php:304 src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
 #: src/Config.php:76 src/Metademand.php:130 src/Menu.php:48 src/Tools.php:157
 #: src/Tools.php:234 src/Tools.php:329 src/Tools.php:492
 msgid "Meta-Demand"
@@ -1260,6 +1260,11 @@ msgstr "Validation de la métademande"
 #: src/Tools.php:105
 msgid "Metademands global status"
 msgstr "Statut global des métademandes"
+
+#: src/Helpdesk/Tile/MetademandPageTile.php:68
+#: src/Helpdesk/Tile/MetademandPageTile.php:86
+msgid "Metademands list"
+msgstr "Liste des métademandes"
 
 #: front/tools.form.php:62
 msgid "Metademands statuses updated"
