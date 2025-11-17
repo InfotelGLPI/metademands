@@ -173,7 +173,7 @@ class Text extends CommonDBTM
     public static function getParamsValueToCheck($fieldoption, $item, $params)
     {
         echo "<tr>";
-        echo "<td>";
+        echo "<td colspan='2'>";
         echo __('If field empty', 'metademands');
         echo "</td>";
         echo "<td class = 'dropdown-valuetocheck'>";
@@ -191,7 +191,8 @@ class Text extends CommonDBTM
                          $('select[name=\"hidden_block\"]').val(),
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val()
+                         $('select[name=\"checkbox_id\"]').val(),
+                         0
                   ];
 
                      reloadviewOption(formOption);

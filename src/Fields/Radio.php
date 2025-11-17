@@ -442,7 +442,7 @@ class Radio extends CommonDBTM
     public static function getParamsValueToCheck($fieldoption, $item, $params)
     {
         echo "<tr>";
-        echo "<td>";
+        echo "<td colspan='2'>";
         echo __('Value to check', 'metademands');
         //        echo " ( " . \Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
@@ -461,7 +461,8 @@ class Radio extends CommonDBTM
                          $('select[name=\"hidden_block\"]').val(),
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val()
+                         $('select[name=\"checkbox_id\"]').val(),
+                         0
                   ];
 
                      reloadviewOption(formOption);

@@ -1955,7 +1955,12 @@ class Metademand extends CommonDBTM  implements ServiceCatalogLeafInterface
                     if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
                         foreach ($opts as $opt) {
                             $check_value = $opt["check_value"];
+                            if ($opt["check_type_value"] == 2) {
+                                $check_value = $opt["check_value_regex"];
+                            }
+
                             if ($id > 0) {
+                                $fields_data[$id]["options"][$check_value]['check_type_value'] = $opt['check_type_value'] ?? 0;
                                 $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'][] = $opt['plugin_metademands_tasks_id'] ?? 0;
                                 $fields_data[$id]["options"][$check_value]['fields_link'][] = $opt['fields_link'] ?? 0;
                                 $fields_data[$id]["options"][$check_value]['hidden_link'][] = $opt['hidden_link'] ?? 0;

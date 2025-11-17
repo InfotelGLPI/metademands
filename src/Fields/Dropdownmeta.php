@@ -1472,29 +1472,59 @@ class Dropdownmeta extends CommonDBTM
         echo __('Value to check', 'metademands');
         //        echo " ( " . \Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
-        echo "<td class = 'dropdown-valuetocheck'>";
-        self::showValueToCheck($fieldoption, $params);
+        FieldOption::showRegexDropdown($params['check_type_value'], $params['ID']);
+        echo "<td class = 'dropdown-valuetocheck' style='display: flex'>";
+        switch ($params['check_type_value']) {
+            case 1:
+                self::showValueToCheck($fieldoption, $params);
+                echo "<script type = \"text/javascript\">
+                 $('td.dropdown-valuetocheck select').on('change', function() {
+                 let formOption = [
+                     " . $params['ID'] . ",
+                         $(this).val(),
+                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
+                         $('select[name=\"fields_link\"]').val(),
+                         $('select[name=\"hidden_link\"]').val(),
+                         $('select[name=\"hidden_block\"]').val(),
+                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
+                         $('select[name=\"users_id_validate\"]').val(),
+                         $('select[name=\"checkbox_id\"]').val(),
+                         $('select[name=\"check_type_value\"]').val()
+                  ];
+
+                     reloadviewOption(formOption);
+                 });";
+                echo " </script>";
+                break;
+            case 2:
+                FieldOption::showRegexInput($params['check_value_regex']);
+                echo "<script type = \"text/javascript\">
+                 $('td.dropdown-valuetocheck button.btn-success').on('click', function() {
+                 let formOption = [
+                     " . $params['ID'] . ",
+                         $('td.dropdown-valuetocheck input[name=check_value]').val(),
+                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
+                         $('select[name=\"fields_link\"]').val(),
+                         $('select[name=\"hidden_link\"]').val(),
+                         $('select[name=\"hidden_block\"]').val(),
+                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
+                         $('select[name=\"users_id_validate\"]').val(),
+                         $('select[name=\"checkbox_id\"]').val(),
+                         $('select[name=\"check_type_value\"]').val()
+                  ];
+
+                     reloadviewOption(formOption);
+                 });
+
+                 ";
+
+
+                echo " </script>";
+                break;
+            default:
+                echo '';
+        }
         echo "</td>";
-
-        echo "<script type = \"text/javascript\">
-                $('td.dropdown-valuetocheck select').on('change', function() {
-                let formOption = [
-                    " . $params['ID'] . ",
-                        $(this).val(),
-                        $('select[name=\"plugin_metademands_tasks_id\"]').val(),
-                        $('select[name=\"fields_link\"]').val(),
-                        $('select[name=\"hidden_link\"]').val(),
-                        $('select[name=\"hidden_block\"]').val(),
-                        JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
-                        $('select[name=\"users_id_validate\"]').val(),
-                        $('select[name=\"checkbox_id\"]').val()
-                 ];
-
-                    reloadviewOption(formOption);
-                });";
-
-
-        echo " </script>";
         echo FieldOption::showLinkHtml($item->getID(), $params);
     }
 
@@ -1701,7 +1731,7 @@ class Dropdownmeta extends CommonDBTM
                 }
             }
 
-            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "$('[name=\"$name\"]').change(async function() {";
 
             $onchange .= "var tohide = {};";
 
@@ -1711,10 +1741,28 @@ class Dropdownmeta extends CommonDBTM
                     $onchange .= "if ($fields_link in tohide) {
                         } else {
                             tohide[$fields_link] = true;
-                        }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
+                        }";
+
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $onchange .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$fields_link] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                             tohide[$fields_link] = false;
                         }";
+                    }
 
 
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -1803,7 +1851,7 @@ class Dropdownmeta extends CommonDBTM
                 $name = "field_plugin_servicecatalog_itilcategories_id";
             }
 
-            $script .= "$('[name=\"$name\"]').change(function() {";
+            $script .= "$('[name=\"$name\"]').change(async function() {";
             $script .= "var tohide = {};";
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -1811,9 +1859,28 @@ class Dropdownmeta extends CommonDBTM
                         } else {
                             tohide[$tasks_id] = true;
                         }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
+                        ";
+
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $script .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$tasks_id] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $script .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                             tohide[$tasks_id] = false;
                         }";
+                    }
 
                     //            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
                     //
@@ -1966,7 +2033,7 @@ class Dropdownmeta extends CommonDBTM
             }
 
 
-            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "$('[name=\"$name\"]').change(async function() {";
 
             $onchange .= "var tohide = {};";
 
@@ -1974,13 +2041,33 @@ class Dropdownmeta extends CommonDBTM
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $onchange .= "if ($hidden_link in tohide) {
-                        } else {
-                            tohide[$hidden_link] = true;
-                        }
-                        if (parseInt($(this).val()) == $idc || $idc == -1) {
+                    $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
+                    ";
+                }
+            }
+
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $onchange .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$hidden_link] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $onchange .= " if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$hidden_link] = false;
                         }";
+                    }
 
 
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -2122,7 +2209,7 @@ class Dropdownmeta extends CommonDBTM
                 }
             }
 
-            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "$('[name=\"$name\"]').change(async function() {";
 
             $onchange .= "var tohide = {};";
             $display = 0;
@@ -2131,11 +2218,28 @@ class Dropdownmeta extends CommonDBTM
                     $onchange .= "if ($hidden_block in tohide) {
                       } else {
                         tohide[$hidden_block] = true;
-                      }
-                    if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
+                      }";
+
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $onchange .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$hidden_block] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                         tohide[$hidden_block] = false;
                     }";
-
+                    }
 
                     $onchange .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
