@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-03 10:21+0000\n"
+"POT-Creation-Date: 2025-11-17 08:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -888,7 +888,7 @@ msgstr ""
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: hook.php:485
+#: hook.php:489
 msgid "Group child ticket"
 msgstr ""
 
@@ -1099,7 +1099,7 @@ msgstr ""
 msgid "Link this to a user field"
 msgstr ""
 
-#: hook.php:496
+#: hook.php:500
 msgid "Link to metademands"
 msgstr ""
 
@@ -1191,7 +1191,7 @@ msgstr[1] ""
 msgid "Meta-demands linked"
 msgstr ""
 
-#: hook.php:456
+#: hook.php:460
 msgid "Metademand approver"
 msgstr ""
 
@@ -1203,7 +1203,7 @@ msgstr ""
 msgid "Metademand need a validation"
 msgstr ""
 
-#: hook.php:469
+#: hook.php:473
 msgid "Metademand status"
 msgstr ""
 
@@ -1217,8 +1217,8 @@ msgstr ""
 msgid "Metademands global status"
 msgstr ""
 
-#: src/Helpdesk/Tile/MetademandPageTile.php:68
-#: src/Helpdesk/Tile/MetademandPageTile.php:86
+#: src/Helpdesk/Tile/MetademandPageTile.php:70
+#: src/Helpdesk/Tile/MetademandPageTile.php:88
 msgid "Metademands list"
 msgstr ""
 
@@ -1226,11 +1226,11 @@ msgstr ""
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: hook.php:914 src/Metademand.php:8391
+#: hook.php:918 src/Metademand.php:8391
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:931 src/Metademand.php:8474
+#: hook.php:935 src/Metademand.php:8474
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -1688,11 +1688,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: hook.php:896 src/Metademand.php:8225
+#: hook.php:900 src/Metademand.php:8225
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:948 src/Metademand.php:8295
+#: hook.php:952 src/Metademand.php:8295
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1907,7 +1907,7 @@ msgid ""
 "maintenance mode"
 msgstr ""
 
-#: hook.php:508
+#: hook.php:512
 msgid "Technician child ticket"
 msgstr ""
 
