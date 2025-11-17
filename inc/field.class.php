@@ -1485,6 +1485,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 $datao['id'] = $value['id'];
                                 $datao['check_value'] = $opt['check_value'];
                                 $datao['parent_field_id'] = $opt['parent_field_id'];
+                                $datao['check_type_value'] = $opt['check_type_value'];
+                                $datao['check_value_regex'] = $opt['check_value_regex'];
 
                                 $metademand_custom = new PluginMetademandsFieldCustomvalue();
                                 $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;

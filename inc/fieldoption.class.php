@@ -331,6 +331,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         childs_blocks : value[6],
                         users_id_validate : value[7],
                         checkbox_id : value[8],
+                        check_type_value : value[9],
                         }
                     );";
 
@@ -363,6 +364,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo "</th>";
             }
             echo "<th>" . __("ID") . "</th>";
+            echo "<th>" . __('Type of value to check', 'metademands') . "</th>";
             echo "<th>" . __('Value to check', 'metademands') . "</th>";
             echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
             echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
@@ -439,6 +441,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     echo "</script>\n";
                 }
                 echo $data['id'];
+                echo "</td>";
+                echo "<td $onhover>";
+                echo self::getTypeOValueToCheck($data);
                 echo "</td>";
                 echo "<td $onhover>";
                 echo self::getValueToCheck($data);
@@ -643,6 +648,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
             'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
+            'check_type_value' => $this->fields['check_type_value'] ?? 0,
+            'check_value_regex' => $this->fields['check_value_regex'] ?? '',
         ];
 
 
@@ -674,7 +681,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         if (isset($_POST['check_value'])) {
             $params['check_value'] = $_POST['check_value'];
-
+            $params['check_type_value'] = $_POST['check_type_value'];
             if ($ID == -1) {
                 if (isset($_POST['plugin_metademands_tasks_id']) && empty($params['plugin_metademands_tasks_id'])) {
                     $params['plugin_metademands_tasks_id'] = $_POST['plugin_metademands_tasks_id'];
@@ -697,6 +704,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if (isset($_POST['checkbox_id']) && empty($params['checkbox_id'])) {
                     $params['checkbox_id'] = $_POST['checkbox_id'];
                 }
+                if (isset($_POST['check_type_value']) && empty($params['check_type_value'])) {
+                    $params['check_type_value'] = $_POST['check_type_value'];
+                }
+                if (isset($_POST['check_value_regex']) && empty($params['check_value_regex'])) {
+                    $params['check_value_regex'] = $_POST['check_value_regex'];
+                }
+            }
+            if ($params['check_type_value'] == 2) {
+                $params['check_value_regex'] = $params['check_value'];
             }
         }
 
@@ -922,57 +938,117 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $class = PluginMetademandsField::getClassFromType($params['type']);
 
-        switch ($params['type']) {
-            case 'title-block':
-            case 'informations':
-            case 'range':
-            case 'number':
-            case 'freetable':
-            case 'date':
-            case 'time':
-            case 'datetime':
-            case 'datetime_interval':
-            case 'date_interval':
-            case 'upload':
-            case 'link':
-            case 'title':
-                break;
-            case 'yesno':
-            case 'radio':
-            case 'checkbox':
-            case 'dropdown_multiple':
-            case 'dropdown':
-            case 'dropdown_object':
-            case 'dropdown_ldap':
-            case 'dropdown_meta':
-            case 'textarea':
-            case 'url':
-            case 'email':
-            case 'tel':
-            case 'text':
-                $class::showParamsValueToCheck($params);
-                break;
-            case 'basket':
-                PluginMetademandsBasket::showParamsValueToCheck($params);
-                break;
-            case 'parent_field':
-                $field = new PluginMetademandsField();
-                if ($field->getFromDB($params['parent_field_id'])) {
-                    if (empty(trim($field->fields['name']))) {
-                        echo "ID - " . $params['parent_field_id'];
-                    } else {
-                        echo $field->fields['name'];
+        if ($params['check_type_value'] == 2) {
+            echo $params['check_value_regex'];
+        } else {
+            switch ($params['type']) {
+                case 'title-block':
+                case 'informations':
+                case 'range':
+                case 'number':
+                case 'freetable':
+                case 'date':
+                case 'time':
+                case 'datetime':
+                case 'datetime_interval':
+                case 'date_interval':
+                case 'upload':
+                case 'link':
+                case 'title':
+                    break;
+                case 'yesno':
+                case 'radio':
+                case 'checkbox':
+                case 'dropdown_multiple':
+                case 'dropdown':
+                case 'dropdown_object':
+                case 'dropdown_ldap':
+                case 'dropdown_meta':
+                case 'textarea':
+                case 'url':
+                case 'email':
+                case 'tel':
+                case 'text':
+                    $class::showParamsValueToCheck($params);
+                    break;
+                case 'basket':
+                    PluginMetademandsBasket::showParamsValueToCheck($params);
+                    break;
+                case 'parent_field':
+                    $field = new PluginMetademandsField();
+                    if ($field->getFromDB($params['parent_field_id'])) {
+                        if (empty(trim($field->fields['name']))) {
+                            echo "ID - " . $params['parent_field_id'];
+                        } else {
+                            echo $field->fields['name'];
+                        }
                     }
-                }
+                    break;
+                default:
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            echo self::showPluginParamsValueToCheck($plug, $params);
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    public static function getTypeOValueToCheck($params)
+    {
+        switch ($params['check_type_value']) {
+            case 2 :
+                return  __('Regex', 'metademands');
                 break;
             default:
-                if (isset($PLUGIN_HOOKS['metademands'])) {
-                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        echo self::showPluginParamsValueToCheck($plug, $params);
-                    }
-                }
-                break;
+                return  __('Value', 'metademands');
         }
+    }
+
+    public static function showRegexDropdown($value, $paramID){
+        echo "<td style='text-align: right'>";
+        Dropdown::showFromArray(
+            "check_type_value",
+            [Dropdown::EMPTY_VALUE, __('Value', 'metademands'), __('Regex', 'metademands')],
+            ['value' => $value]
+        );
+        echo "<script type = \"text/javascript\">
+                 $('td select[name=check_type_value]').on('change', function() {
+                 let formOption = [
+                     " . $paramID . ",";
+        switch ($value) {
+            case 1:
+                echo "$('td.dropdown-valuetocheck select[name=check_value]').val(),";
+                break;
+            case 2:
+                echo " $('td.dropdown-valuetocheck input[name=check_value]').val(),";
+                break;
+            case 0:
+            default:
+                 echo "0,";
+        }
+        echo" $('select[name=\"plugin_metademands_tasks_id\"]').val(),
+                     $('select[name=\"fields_link\"]').val(),
+                     $('select[name=\"hidden_link\"]').val(),
+                     $('select[name=\"hidden_block\"]').val(),
+                     JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
+                     $('select[name=\"users_id_validate\"]').val(),
+                     $('select[name=\"checkbox_id\"]').val(),
+                     $('select[name=\"check_type_value\"]').val()
+              ];
+                 console.log(formOption);
+                 reloadviewOption(formOption);
+             });";
+        echo " </script>";
+        echo "</td>";
+    }
+
+    public static function showRegexInput($value){
+        echo Html::input('check_value', ['value'=>$value]);
+        echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\" onclick=\"validregex()\">";
+        echo        "<i class=\"fas fa-check\"></i>";
+        echo    "</button>";
     }
 
     /**
@@ -1021,7 +1097,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         // Show task link
         if ($task) {
-            echo '<tr><td>';
+            echo '<tr><td colspan="2">';
             echo __('Launch a task with the field', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the task is created',
@@ -1039,7 +1115,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
         // Show field link
         if ($field) {
-            echo "<tr><td>";
+            echo "<tr><td colspan='2'>";
             echo __('Make this field mandatory', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the field becomes mandatory',
@@ -1072,7 +1148,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "</td></tr>";
         }
         if ($hidden) {
-            echo "<tr><td>";
+            echo "<tr><td colspan='2'>";
             echo __('Display this hidden field', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the field becomes visible',
@@ -1114,7 +1190,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
 
             echo "<tr>";
-            echo "<td>";
+            echo "<td colspan='2'>";
             echo __('Display this hidden block', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the block becomes visible',
@@ -1164,7 +1240,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "</td></tr>";
 
             echo "<tr>";
-            echo "<td>";
+            echo "<td colspan='2'>";
             echo __('Display this hidden block in the same block', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the block becomes visible on the same block',
@@ -1204,7 +1280,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 ($params['check_value'] == "" || count($childsblockarray) == 0 ||
                     (!empty($params['childs_blocks']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))
             ) {
-                echo "<tr><td>";
+                echo "<tr><td colspan='2'>";
                 echo __('Childs blocks', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
                     'If child blocks exist, these blocks are hidden when you deselect the option configured',
@@ -1234,7 +1310,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     || $field_class->getField("type") == "dropdown_meta"
                 || ($field_class->getField("type") == "dropdown_multiple"
                         &&  $field_class->getField("item") == "Group")) {
-                    echo "<tr><td>";
+                    echo "<tr><td colspan='2'>";
                     echo __('Launch a validation', 'metademands');
                     echo '</br><span class="metademands_wizard_comments">' . __(
                         'If the value selected equals the value to check, the validation is sent to the user',
@@ -1279,7 +1355,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             &&  $field_class->getField("item") == "Appliance" &&
                 ($params['check_value'] == "" || count($checkboxarray) == 0 ||
                     (!empty($params['checkbox_id']) && !$hasdifference && isset($params['ID']) && $params['ID'] > 0))) {
-                echo "<tr><td>";
+                echo "<tr><td colspan='2'>";
                 echo __('Bind to the value of this checkbox', 'metademands');
                 echo '</br><span class="metademands_wizard_comments">' . __(
                     'If the selected value is equal to the value to check, the checkbox value is set',
@@ -1734,7 +1810,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         foreach ($check_values as $idc => $check_value) {
             foreach ($check_value['hidden_block'] as $hidden_block) {
-                if ($hidden_block > 0) {
+                if ($hidden_block > 0 && !in_array($hidden_block, $hidden_blocks)) {
                     $hidden_blocks[] = $hidden_block;
                 }
             }
@@ -1824,9 +1900,18 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     var tohideblock = {};";
 
         //Prepare subblocks
-        $script .= "$.each( hidden_blocks, function( key, value ) {
-                        tohideblock[value] = true;
-                    });
+        $script .= "
+        
+                    if (typeof answer === 'undefined') {
+                        answer = false;
+                    }
+                    
+                    if(answer === false){
+                         $.each( hidden_blocks, function( key, value ) {
+                            tohideblock[value] = true;
+                        });
+                    }
+        
                     $.each( child_blocks, function( key, value ) {
                         tohideblock[value] = true;
                     });

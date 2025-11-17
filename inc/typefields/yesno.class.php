@@ -207,7 +207,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
         // Value to check
         echo "<tr>";
-        echo "<td>";
+        echo "<td colspan='2'>";
         echo __('Value to check', 'metademands');
         echo "</td>";
         echo "<td class = 'dropdown-valuetocheck'>";
@@ -225,7 +225,7 @@ class PluginMetademandsYesno extends CommonDBTM
                          $('select[name=\"hidden_block\"]').val(),
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val()
+                         $('select[name=\"checkbox_id\"]').val(),0
                   ];
                      
                      reloadviewOption(formOption);
