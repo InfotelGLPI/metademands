@@ -759,7 +759,7 @@ class Dropdown extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
@@ -853,7 +853,7 @@ class Dropdown extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
@@ -1012,7 +1012,7 @@ class Dropdown extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
@@ -1020,6 +1020,7 @@ class Dropdown extends CommonDBTM
 
             $onchange .= "var tohide = {};";
             $display = 0;
+
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     $onchange .= "if ($hidden_link in tohide) {

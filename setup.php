@@ -30,6 +30,7 @@
 
 use Glpi\Form\ServiceCatalog\HomeSearchManager;
 use Glpi\Form\ServiceCatalog\ServiceCatalogManager;
+use Glpi\Helpdesk\Tile\TilesManager;
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Metademands\Basketobject;
 use GlpiPlugin\Metademands\BasketobjectTranslation;
@@ -39,6 +40,7 @@ use GlpiPlugin\Metademands\Export;
 use GlpiPlugin\Metademands\Form as MetaForm;
 use Glpi\Form\Form;
 use GlpiPlugin\Metademands\Form\MetademandProvider;
+use GlpiPlugin\Metademands\Helpdesk\Tile\MetademandPageTile;
 use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
@@ -79,6 +81,9 @@ function plugin_init_metademands()
     // Register custom home page search provider
     $home_manager = HomeSearchManager::getInstance();
     $home_manager->registerPluginProvider(new MetademandProvider());
+
+    $tiles_manager = TilesManager::getInstance();
+    $tiles_manager->registerPluginTileType(new MetademandPageTile());
 
     $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
     $PLUGIN_HOOKS['change_profile']['metademands'] = [Profile::class, 'initProfile'];

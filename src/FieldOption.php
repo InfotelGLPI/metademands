@@ -31,11 +31,13 @@ namespace GlpiPlugin\Metademands;
 use Ajax;
 use CommonDBChild;
 use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use Dropdown;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Dropdownmultiple;
 use Html;
+use Migration;
 use Plugin;
 use Session;
 use User;
@@ -106,6 +108,57 @@ class FieldOption extends CommonDBChild
     public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `check_value`                  int          NOT NULL DEFAULT '0',
+                        `plugin_metademands_tasks_id`  int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `fields_link`                  int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `hidden_link`                  int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `hidden_block`                 int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `hidden_block_same_block`      tinyint      NOT NULL DEFAULT '0',
+                        `users_id_validate`            int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
+                        `checkbox_value`               int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `checkbox_id`                  int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `parent_field_id`              int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.3
+        $migration->changeField($table, 'check_value', 'check_value', "int NOT NULL DEFAULT '0'");
+        $migration->migrationOneTable($table);
+
+        //version 3.3.24
+        if (!$DB->fieldExists($table, "hidden_block_same_block")) {
+            $migration->addField($table, "hidden_block_same_block", " tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**
@@ -281,7 +334,7 @@ class FieldOption extends CommonDBChild
                 if (Plugin::isPluginActive($plug)) {
                     $new_fields = Field::addPluginFieldItems($plug);
                     if (is_array($new_fields) && count($new_fields) > 0) {
-                        $allowed_options_types = array_merge($allowed_options_types, $new_fields);
+                        $allowed_options_items = array_merge($allowed_options_items, $new_fields);
                     }
                 }
             }
@@ -1429,21 +1482,21 @@ class FieldOption extends CommonDBChild
         }
 
         //Hook to print new options from plugins
-        //        if (isset($PLUGIN_HOOKS['metademands'])) {
-        //            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-        //                $p = $params;
-        //                $p["plugin_metademands_fields_id"] = $field_id;
-        //                $p["plugin_metademands_metademands_id"] = $metademands_id;
-        //                $p["hidden"] = $hidden;
-        //
-        //
-        //                $new_res = self::getPluginShowOptions($plug, $p);
-        //                if (Plugin::isPluginActive($plug)
-        //                    && !empty($new_res)) {
-        //                    echo $new_res;
-        //                }
-        //            }
-        //        }
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $p = $params;
+                $p["plugin_metademands_fields_id"] = $field_id;
+                $p["plugin_metademands_metademands_id"] = $metademands_id;
+                $p["hidden"] = $hidden;
+
+
+                $new_res = self::getPluginShowOptions($plug, $p);
+                if (Plugin::isPluginActive($plug)
+                    && !empty($new_res)) {
+                    echo $new_res;
+                }
+            }
+        }
     }
 
 
@@ -1452,26 +1505,26 @@ class FieldOption extends CommonDBChild
      *
      * @param $plug
      */
-    //    public static function getPluginShowOptions($plug, $params)
-    //    {
-    //        global $PLUGIN_HOOKS;
-    //
-    //        $dbu = new DbUtils();
-    //        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-    //            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-    //
-    //            foreach ($pluginclasses as $pluginclass) {
-    //                if (!class_exists($pluginclass)) {
-    //                    continue;
-    //                }
-    //                $form[$pluginclass] = [];
-    //                $item = $dbu->getItemForItemtype($pluginclass);
-    //                if ($item && is_callable([$item, 'showOptions'])) {
-    //                    return $item->showOptions($params);
-    //                }
-    //            }
-    //        }
-    //    }
+        public static function getPluginShowOptions($plug, $params)
+        {
+            global $PLUGIN_HOOKS;
+
+            $dbu = new DbUtils();
+            if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+                $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+                foreach ($pluginclasses as $pluginclass) {
+                    if (!class_exists($pluginclass)) {
+                        continue;
+                    }
+                    $form[$pluginclass] = [];
+                    $item = $dbu->getItemForItemtype($pluginclass);
+                    if ($item && is_callable([$item, 'showOptions'])) {
+                        return $item->showOptions($params);
+                    }
+                }
+            }
+        }
 
 
     /**
@@ -2134,6 +2187,8 @@ class FieldOption extends CommonDBChild
                                             case 'radio':
                                                  this.checked = false;
                                         }
+                                         jQuery(this).removeAttr('required');
+                                        jQuery(this).removeClass('invalid');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);
@@ -2168,6 +2223,8 @@ class FieldOption extends CommonDBChild
                                             case 'radio':
                                                  this.checked = false;
                                         }
+                                         jQuery(this).removeAttr('required');
+                                        jQuery(this).removeClass('invalid');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);
@@ -2504,5 +2561,574 @@ class FieldOption extends CommonDBChild
                 }
             }
         }
+    }
+
+    static function preMigrateFieldsOptions($migration)
+    {
+        global $DB;
+
+        $table_fields = "glpi_plugin_metademands_fields";
+
+        if (!$DB->fieldExists($table_fields, "fields_link")) {
+            $migration->addField($table_fields, "fields_link", "int(11) default 0");
+            if (!isIndex($table_fields, "fields_link")) {
+                $migration->addKey($table_fields, "fields_link");
+            }
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "display_type")) {
+            $migration->addField($table_fields, "display_type", "int(11) NOT NULL default 0 AFTER date_mod");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "used_by_ticket")) {
+            $migration->addField($table_fields, "used_by_ticket", "int(11) NOT NULL default 0 AFTER display_type");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "hide_title")) {
+            $migration->addField($table_fields, "hide_title", "TINYINT(1) NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "used_by_child")) {
+            $migration->addField($table_fields, "used_by_child", "TINYINT(1) NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "default_use_id_requester")) {
+            $migration->addField($table_fields, "default_use_id_requester", "TINYINT(1) NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "additional_number_day")) {
+            $migration->addField($table_fields, "additional_number_day", "int(11) NOT NULL default 0 AFTER default_use_id_requester");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "use_date_now")) {
+            $migration->addField($table_fields, "use_date_now", "TINYINT(1) NOT NULL default 0 AFTER additional_number_day");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "link_to_user")) {
+            $migration->addField($table_fields, "link_to_user", "INT(11) NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        //version 2.7.5 ++
+        if (!$DB->fieldExists($table_fields, "informations_to_display")) {
+            $migration->addField($table_fields, "informations_to_display", "varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL default '[]'");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "use_richtext")) {
+            $migration->addField($table_fields, "use_richtext", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table_fields);
+        }
+        if (!$DB->fieldExists($table_fields, "users_id_validate")) {
+            $migration->addField($table_fields, "users_id_validate", "varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL default '0'");
+            $migration->migrationOneTable($table_fields);
+        }
+        $migration->changeField($table_fields, 'default_use_id_requester', 'default_use_id_requester', "int unsigned default 0");
+        $migration->migrationOneTable($table_fields);
+
+        if (!$DB->fieldExists($table_fields, "childs_blocks")) {
+            $migration->addField($table_fields, "childs_blocks", "VARCHAR (255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        if (!$DB->fieldExists($table_fields, "checkbox_value")) {
+            $migration->addField($table_fields, "checkbox_value", "VARCHAR (255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        if (!$DB->fieldExists($table_fields, "checkbox_id")) {
+            $migration->addField($table_fields, "checkbox_id", "VARCHAR (255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        $migration->changeField($table_fields, 'additional_number_day', 'additional_number_day', "int DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'display_type', 'display_type', "int DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'fields_link', 'fields_link', "varchar(255) NOT NULL DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'hidden_link', 'hidden_link', "varchar(255) NOT NULL DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'hidden_block', 'hidden_block', "varchar(255) NOT NULL DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'link_to_user', 'link_to_user', "int DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'use_date_now', 'use_date_now', "tinyint DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'used_by_child', 'used_by_child', "tinyint DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField($table_fields, 'default_use_id_requester', 'default_use_id_requester', "int unsigned DEFAULT 0");
+        $migration->migrationOneTable($table_fields);
+
+        if (!$DB->fieldExists($table_fields, "use_future_date")) {
+            $migration->addField($table_fields, "use_future_date", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        if (!$DB->fieldExists($table_fields, "icon")) {
+            $migration->addField($table_fields, "icon", "varchar(255) DEFAULT NULL");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        if (!$DB->fieldExists($table_fields, "readonly")) {
+            $migration->addField($table_fields, "readonly", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        if (!$DB->fieldExists($table_fields, "hidden")) {
+            $migration->addField($table_fields, "hidden", "tinyint DEFAULT 0");
+            $migration->migrationOneTable($table_fields);
+        }
+
+        $sql    = "SHOW COLUMNS FROM `$table_fields`";
+        $result = $DB->doQuery($sql);
+        while ($data = $DB->fetchArray($result)) {
+            if ($data['Field'] == 'fields_link') {
+                $fieldsclass           = new Field();
+                $fields                = $fieldsclass->find();
+                $transient_metademands = [];
+
+                foreach ($fields as $field) {
+                    $fields_link                                        = [$field['fields_link']];
+                    $transient_metademands[$field['id']]['fields_link'] = json_encode($fields_link);
+                    $transient_metademands[$field['id']]['fields_id']   = $field['id'];
+                }
+                $migration->changeField($table_fields, 'fields_link', 'fields_link', "VARCHAR(255) NOT NULL DEFAULT '[]'");
+                $migration->migrationOneTable($table_fields);
+
+                foreach ($transient_metademands as $transient_metademand) {
+                    $query_update = "UPDATE `glpi_plugin_metademands_fields`
+                                       SET `glpi_plugin_metademands_fields`.`fields_link` = '" . $transient_metademand['fields_link'] . "'
+                                                   WHERE `id` = '" . $transient_metademand['fields_id'] . "';";
+                    $DB->doQuery($query_update);
+                }
+            }
+        }
+        //Migrate existing metademands status for mini-dashboards
+        Ticket_Metademand::migrateAllRunningAndToBeClosedMetademands();
+        Ticket_Metademand::migrateAllClosedMetademands();
+
+    }
+    static function migrateFieldsOptions($migration)
+    {
+        global $DB;
+
+        $table_fields = "glpi_plugin_metademands_fields";
+
+        $input = [];
+        $field = new Field();
+        $fields = $field->find();
+        foreach ($fields as $f) {
+
+            if ($f["plugin_metademands_metademands_id"] > 0) {
+
+                $fieldopt = new FieldOption();
+                $input["plugin_metademands_fields_id"] = $f["id"];
+                $input["parent_field_id"] = $f['parent_field_id'];
+
+                $check_values = FieldParameter::_unserialize($f['check_value']);
+                if (is_array($check_values)) {
+                    foreach ($check_values as $k => $check_value) {
+
+                        if (($f["type"] == 'date' ||
+                                $f["type"] == 'datetime' ||
+                                $f["type"] == 'date_interval' ||
+                                $f["type"] == 'datetime_interval'
+                            ) && $check_value == 1) {
+                            $field->update(["id" => $f["id"], "use_future_date" => 1]);
+                        }
+
+                        if ($f["type"] != 'date' &&
+                            $f["type"] != 'datetime' &&
+                            $f["type"] != 'date_interval' &&
+                            $f["type"] != 'datetime_interval') {
+
+
+                            $input["check_value"] = $check_value;
+
+                            $plugin_metademands_tasks_id = FieldParameter::_unserialize($f['plugin_metademands_tasks_id']);
+
+                            if (is_array($plugin_metademands_tasks_id)) {
+                                if (isset($plugin_metademands_tasks_id[$check_value])) {
+                                    $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[$check_value];
+                                } else {
+                                    if (isset($plugin_metademands_tasks_id[0])) {
+                                        $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[0];
+                                    } else {
+                                        $input["plugin_metademands_tasks_id"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+                            }
+
+                            $users_id_validate = FieldParameter::_unserialize($f['users_id_validate']);
+                            if (is_array($users_id_validate)) {
+                                if (isset($users_id_validate[$check_value])) {
+                                    $input["users_id_validate"] = $users_id_validate[$check_value];
+                                } else {
+                                    if (isset($users_id_validate[0])) {
+                                        $input["users_id_validate"] = $users_id_validate[0];
+                                    } else {
+                                        $input["users_id_validate"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["users_id_validate"] = $users_id_validate;
+                            }
+
+                            $fields_link = FieldParameter::_unserialize($f['fields_link']);
+                            if (is_array($fields_link)) {
+                                if (isset($fields_link[$check_value])) {
+                                    $input["fields_link"] = $fields_link[$check_value];
+                                } else {
+                                    if (isset($fields_link[0])) {
+                                        $input["fields_link"] = $fields_link[0];
+                                    } else {
+                                        $input["fields_link"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["fields_link"] = $fields_link;
+                            }
+
+                            $hidden_link = FieldParameter::_unserialize($f['hidden_link']);
+                            if (is_array($hidden_link)) {
+                                if (isset($hidden_link[$check_value])) {
+                                    $input["hidden_link"] = $hidden_link[$check_value];
+                                } else {
+                                    if (isset($hidden_link[0])) {
+                                        $input["hidden_link"] = $hidden_link[0];
+                                    } else {
+                                        $input["hidden_link"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["hidden_link"] = $hidden_link;
+                            }
+
+                            $hidden_block = FieldParameter::_unserialize($f['hidden_block']);
+                            if (is_array($hidden_block)) {
+                                if (isset($hidden_block[$check_value])) {
+                                    $input["hidden_block"] = $hidden_block[$check_value];
+                                } else {
+                                    if (isset($hidden_block[0])) {
+                                        $input["hidden_block"] = $hidden_block[0];
+                                    } else {
+                                        $input["hidden_block"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["hidden_block"] = $hidden_block;
+                            }
+
+
+                            $childs_blocks = json_decode($f['childs_blocks'], true);
+
+                            if (is_array($childs_blocks)) {
+                                if (isset($childs_blocks[$check_value])) {
+                                    $input["childs_blocks"] = json_encode($childs_blocks[$check_value]);
+                                } else {
+                                    $input["childs_blocks"] = json_encode([]);
+                                }
+                            } else {
+                                $input["childs_blocks"] = json_encode($childs_blocks);
+                            }
+
+
+                            $checkbox_value = FieldParameter::_unserialize($f['checkbox_value']);
+                            if (is_array($checkbox_value)) {
+                                if (isset($checkbox_value[$check_value])) {
+                                    $input["checkbox_value"] = $checkbox_value[$check_value];
+                                } else {
+                                    if (isset($checkbox_value[0])) {
+                                        $input["checkbox_value"] = $checkbox_value[0];
+                                    } else {
+                                        $input["checkbox_value"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["checkbox_value"] = $checkbox_value;
+                            }
+
+                            $checkbox_id = FieldParameter::_unserialize($f['checkbox_id']);
+                            if (is_array($checkbox_id)) {
+                                if (isset($checkbox_id[$check_value])) {
+                                    $input["checkbox_id"] = $checkbox_id[$check_value];
+                                } else {
+                                    if (isset($checkbox_id[0])) {
+                                        $input["checkbox_id"] = $checkbox_id[0];
+                                    } else {
+                                        $input["checkbox_id"] = 0;
+                                    }
+                                }
+                            } else {
+                                $input["checkbox_id"] = $checkbox_id;
+                            }
+
+                            if (empty($input["check_value"])) {
+                                $input["check_value"] = 0;
+                            }
+                            if ($input["check_value"] == -1) {
+                                $input["check_value"] = 0;
+                            }
+                            if ($input["check_value"] == 'NOT_NULL') {
+                                $input["check_value"] = 0;
+                            }
+                            if ($input["plugin_metademands_tasks_id"] == 'NULL') {
+                                $input["plugin_metademands_tasks_id"] = 0;
+                            }
+                            if (empty($input["plugin_metademands_tasks_id"])) {
+                                $input["plugin_metademands_tasks_id"] = 0;
+                            }
+                            if (empty($input["fields_link"])) {
+                                $input["fields_link"] = 0;
+                            }
+                            if (empty($input["hidden_link"])) {
+                                $input["hidden_link"] = 0;
+                            }
+                            if (empty($input["hidden_block"])) {
+                                $input["hidden_block"] = 0;
+                            }
+                            if (empty($input["users_id_validate"])) {
+                                $input["users_id_validate"] = 0;
+                            }
+                            if (empty($input["checkbox_value"])) {
+                                $input["checkbox_value"] = 0;
+                            }
+                            if (empty($input["checkbox_id"])) {
+                                $input["checkbox_id"] = 0;
+                            }
+                            if (empty($input["parent_field_id"])) {
+                                $input["parent_field_id"] = 0;
+                            }
+
+
+                            $fieldopt->add($input);
+                        }
+                    }
+
+                } else {
+
+                    if ($f["type"] != 'date' &&
+                        $f["type"] != 'datetime' &&
+                        $f["type"] != 'date_interval' &&
+                        $f["type"] != 'datetime_interval') {
+                        $input["check_value"] = $check_value = $f["check_value"];
+
+                        $plugin_metademands_tasks_id = FieldParameter::_unserialize($f['plugin_metademands_tasks_id']);
+
+                        if (is_array($plugin_metademands_tasks_id)) {
+                            if (isset($plugin_metademands_tasks_id[$check_value])) {
+                                $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[$check_value];
+                            } else {
+                                if (isset($plugin_metademands_tasks_id[0])) {
+                                    $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[0];
+                                } else {
+                                    $input["plugin_metademands_tasks_id"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+                        }
+
+                        $users_id_validate = FieldParameter::_unserialize($f['users_id_validate']);
+                        if (is_array($users_id_validate)) {
+                            if (isset($users_id_validate[$check_value])) {
+                                $input["users_id_validate"] = $users_id_validate[$check_value];
+                            } else {
+                                if (isset($users_id_validate[0])) {
+                                    $input["users_id_validate"] = $users_id_validate[0];
+                                } else {
+                                    $input["users_id_validate"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["users_id_validate"] = $users_id_validate;
+                        }
+
+                        $fields_link = FieldParameter::_unserialize($f['fields_link']);
+                        if (is_array($fields_link)) {
+                            if (isset($fields_link[$check_value])) {
+                                $input["fields_link"] = $fields_link[$check_value];
+                            } else {
+                                if (isset($fields_link[0])) {
+                                    $input["fields_link"] = $fields_link[0];
+                                } else {
+                                    $input["fields_link"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["fields_link"] = $fields_link;
+                        }
+
+                        $hidden_link = FieldParameter::_unserialize($f['hidden_link']);
+                        if (is_array($hidden_link)) {
+                            if (isset($hidden_link[$check_value])) {
+                                $input["hidden_link"] = $hidden_link[$check_value];
+                            } else {
+                                if (isset($hidden_link[0])) {
+                                    $input["hidden_link"] = $hidden_link[0];
+                                } else {
+                                    $input["hidden_link"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["hidden_link"] = $hidden_link;
+                        }
+
+                        $hidden_block = FieldParameter::_unserialize($f['hidden_block']);
+                        if (is_array($hidden_block)) {
+                            if (isset($hidden_block[$check_value])) {
+                                $input["hidden_block"] = $hidden_block[$check_value];
+                            } else {
+                                if (isset($hidden_block[0])) {
+                                    $input["hidden_block"] = $hidden_block[0];
+                                } else {
+                                    $input["hidden_block"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["hidden_block"] = $hidden_block;
+                        }
+
+
+                        $childs_blocks = json_decode($f['childs_blocks'], true);
+
+                        if (is_array($childs_blocks)) {
+                            if (isset($childs_blocks[$check_value])) {
+                                $input["childs_blocks"] = json_encode($childs_blocks[$check_value]);
+                            } else {
+                                $input["childs_blocks"] = json_encode([]);
+                            }
+                        } else {
+                            $input["childs_blocks"] = json_encode($childs_blocks);
+                        }
+
+
+                        $checkbox_value = FieldParameter::_unserialize($f['checkbox_value']);
+                        if (is_array($checkbox_value)) {
+                            if (isset($checkbox_value[$check_value])) {
+                                $input["checkbox_value"] = $checkbox_value[$check_value];
+                            } else {
+                                if (isset($checkbox_value[0])) {
+                                    $input["checkbox_value"] = $checkbox_value[0];
+                                } else {
+                                    $input["checkbox_value"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["checkbox_value"] = $checkbox_value;
+                        }
+
+                        $checkbox_id = FieldParameter::_unserialize($f['checkbox_id']);
+                        if (is_array($checkbox_id)) {
+                            if (isset($checkbox_id[$check_value])) {
+                                $input["checkbox_id"] = $checkbox_id[$check_value];
+                            } else {
+                                if (isset($checkbox_id[0])) {
+                                    $input["checkbox_id"] = $checkbox_id[0];
+                                } else {
+                                    $input["checkbox_id"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["checkbox_id"] = $checkbox_id;
+                        }
+
+                        if (empty($input["check_value"])) {
+                            $input["check_value"] = 0;
+                        }
+                        if ($input["check_value"] == -1) {
+                            $input["check_value"] = 0;
+                        }
+                        if ($input["check_value"] == 'NOT_NULL') {
+                            $input["check_value"] = 0;
+                        }
+                        if ($input["plugin_metademands_tasks_id"] == 'NULL') {
+                            $input["plugin_metademands_tasks_id"] = 0;
+                        }
+                        if (empty($input["plugin_metademands_tasks_id"])) {
+                            $input["plugin_metademands_tasks_id"] = 0;
+                        }
+                        if (empty($input["fields_link"])) {
+                            $input["fields_link"] = 0;
+                        }
+                        if (empty($input["hidden_link"])) {
+                            $input["hidden_link"] = 0;
+                        }
+                        if (empty($input["hidden_block"])) {
+                            $input["hidden_block"] = 0;
+                        }
+                        if (empty($input["users_id_validate"])) {
+                            $input["users_id_validate"] = 0;
+                        }
+                        if (empty($input["checkbox_value"])) {
+                            $input["checkbox_value"] = 0;
+                        }
+                        if (empty($input["checkbox_id"])) {
+                            $input["checkbox_id"] = 0;
+                        }
+                        if (empty($input["parent_field_id"])) {
+                            $input["parent_field_id"] = 0;
+                        }
+
+                        $fieldopt->add($input);
+                    }
+                }
+            }
+        }
+
+        //delete empty options
+        $fieldopt = new FieldOption();
+        $fieldemptyopts = $fieldopt->find(["plugin_metademands_tasks_id" => 0,
+            "fields_link" => 0,
+            "hidden_link" => 0,
+            "hidden_block" => 0,
+            "childs_blocks" => "[]",
+            "checkbox_value" => 0,
+            "checkbox_id" => 0]);
+        foreach ($fieldemptyopts as $opt) {
+            $fieldopt->delete(["id" => $opt["id"]], 1);
+        }
+
+        $query = $DB->buildUpdate(
+            "glpi_plugin_metademands_fieldoptions",
+            [
+                'childs_blocks' => '[]',
+            ],
+            [
+                'childs_blocks' => '\"\"',
+            ],
+        );
+        $DB->doQuery($query);
+
+        $migration->dropField($table_fields, "check_value");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "plugin_metademands_tasks_id");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "fields_link");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "hidden_link");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "hidden_block");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "users_id_validate");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "childs_blocks");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "parent_field_id");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "checkbox_value");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "checkbox_id");
+        $migration->migrationOneTable($table_fields);
     }
 }

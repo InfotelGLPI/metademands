@@ -463,7 +463,7 @@ function plugin_metademands_wizard_validateForm(metademandparams)
         }
     }
 
-    if (ko > 0) {
+    if (ko > 0 && metademandparams.edit_model == 0) {
         valid = false;
 
         const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);
@@ -758,7 +758,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
         return false;
     }
 
-    if (metademandparams.useconfirm > 0) {
+    if (metademandparams.useconfirm > 0 && metademandparams.edit_model == 0) {
         const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
         const inputs = div.querySelectorAll('input, select, textarea');
 

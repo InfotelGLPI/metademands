@@ -30,6 +30,8 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
+use DBConnection;
+use Migration;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -73,4 +75,35 @@ class GroupConfig extends CommonDBChild {
    {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `visibility`                        int          NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY (`plugin_metademands_metademands_id`),
+                        KEY `entities_id` (`entities_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 }

@@ -30,9 +30,11 @@ namespace GlpiPlugin\Metademands;
 
 use Ajax;
 use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use DropdownTranslation;
 use Html;
+use Migration;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -69,6 +71,50 @@ class BasketobjecttypeTranslation extends DropdownTranslation {
     static function getIcon() {
         return Metademand::getIcon();
     }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `items_id` int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `itemtype` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `field`    varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `language` varchar(5) COLLATE utf8mb4_unicode_ci   DEFAULT NULL,
+                        `value`    text COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
+                        PRIMARY KEY (`id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        $query = $DB->buildUpdate(
+            $table,
+            [
+                'itemtype' => Basketobjecttype::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsBasketobjecttype'
+            ]
+        );
+        $DB->doQuery($query);
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
+
+
     /**
      * Get the standard massive actions which are forbidden
      *

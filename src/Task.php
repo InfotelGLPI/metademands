@@ -32,9 +32,11 @@ namespace GlpiPlugin\Metademands;
 use Ajax;
 use CommonDBChild;
 use CommonDBTM;
+use DBConnection;
 use DbUtils;
 use Html;
 use MassiveAction;
+use Migration;
 use Session;
 use CommonGLPI;
 use Toolbox;
@@ -105,6 +107,98 @@ class Task extends CommonDBChild {
     public static function canPurge(): bool
     {
         return Session::haveRight(self::$rightname, PURGE);
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `name`                              varchar(255)                    DEFAULT NULL,
+                        `completename`                      varchar(255)                    DEFAULT NULL,
+                        `comment`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `entities_id`                       int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `is_recursive`                      int                     NOT NULL           DEFAULT '0',
+                        `level`                             int                     NOT NULL           DEFAULT '0',
+                        `type`                              int                     NOT NULL           DEFAULT '0',
+                        `ancestors_cache`                   text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `sons_cache`                        text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `plugin_metademands_tasks_id`       int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `block_use`                         varchar(255)            NOT NULL           DEFAULT '[]',
+                        `useBlock`                          tinyint                 NOT NULL           DEFAULT '1',
+                        `formatastable`                     tinyint                 NOT NULL           DEFAULT '1',
+                        `block_parent_ticket_resolution`    tinyint                 NOT NULL           DEFAULT '1',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+                        KEY `entities_id` (`entities_id`),
+                        KEY `type` (`type`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        $migration->dropForeignKeyContraint($table, 'glpi_plugin_metademands_tasks_ibfk_1');
+
+        //version 2.7.5
+        if (!$DB->fieldExists($table, "block_use")) {
+            $migration->addField($table, "block_use", "varchar(255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table);
+        }
+        //version 2.7.9
+        if (!$DB->fieldExists($table, "hideTable")) {
+            $migration->addField($table, "hideTable", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "useBlock")) {
+            $migration->addField($table, "useBlock", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.0.0
+        if ($DB->fieldExists($table, "hideTable")) {
+            $migration->changeField($table, 'hideTable', 'formatastable', "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+            $query = $DB->buildUpdate(
+                $table,
+                [
+                    'formatastable' => 1,
+                ],
+                [1],
+            );
+            $DB->doQuery($query);
+        }
+
+        //version 3.2.19
+        $migration->changeField($table, 'formatastable', 'formatastable', "tinyint NOT NULL DEFAULT '1'");
+
+        //version 3.3.0
+        if (!$DB->fieldExists($table, "is_recursive")) {
+            $migration->addField($table, "is_recursive", "int NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.3.7
+        if (!$DB->fieldExists($table, "block_parent_ticket_resolution")) {
+            $migration->addField($table, "block_parent_ticket_resolution", "tinyint NOT NULL DEFAULT '1'");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**
@@ -384,11 +478,10 @@ class Task extends CommonDBChild {
             $this->showFormButtons(['colspan' => 3]);
 
         } else {
-            echo "<h3><div class='alert alert-warning' role='alert'>";
+            echo "<div class='alert alert-warning' role='alert'>";
             echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
             echo __('You cannot add new tasks if linked tickets are not solved', 'metademands');
             echo "</div>";
-            echo "</h3>";
         }
 
         /*echo "<tr class='tab_bg_1'>";
@@ -846,63 +939,69 @@ class Task extends CommonDBChild {
         global $DB;
 
         $params['condition'] = [];
-        $params['join']      = '';
         foreach ($options as $key => $val) {
             $params[$key] = $val;
         }
 
         $tasks = [];
 
-        $query = "SELECT `glpi_plugin_metademands_tickettasks`.`id` as tickettasks_id,
-                       `glpi_plugin_metademands_tasks`.`name` as tickettasks_name,
-                       `glpi_plugin_metademands_metademandtasks`.`id` as metademandtask_id,
-                       `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as link_metademands_id,
-                       `glpi_plugin_metademands_tasks`.`type`,
-                       `glpi_plugin_metademands_tasks`.`plugin_metademands_tasks_id` as parent_task,
-                       `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` as parent_metademand,
-                       `glpi_plugin_metademands_tasks`.`id` as tasks_id,
-                       `glpi_plugin_metademands_tasks`.`completename` as tasks_completename,
-                       `glpi_plugin_metademands_tasks`.`level`,
-                       `glpi_plugin_metademands_tasks`.`block_use`,
-                       `glpi_plugin_metademands_tasks`.`formatastable`,
-                       `glpi_plugin_metademands_tasks`.`useBlock`,
-                       `glpi_plugin_metademands_tasks`.`block_parent_ticket_resolution`,
-                       `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
-                       `glpi_plugin_metademands_tickettasks`.`content`,
-                       `glpi_plugin_metademands_tickettasks`.`status`,
-                       `glpi_plugin_metademands_tickettasks`.`actiontime`,
-                       `glpi_plugin_metademands_tickettasks`.`requesttypes_id`,
-                       `glpi_plugin_metademands_tickettasks`.`groups_id_assign`,
-                       `glpi_plugin_metademands_tickettasks`.`users_id_assign`,
-                       `glpi_plugin_metademands_tickettasks`.`groups_id_observer`,
-                       `glpi_plugin_metademands_tickettasks`.`users_id_observer`,
-                       `glpi_plugin_metademands_tickettasks`.`groups_id_requester`,
-                       `glpi_plugin_metademands_tickettasks`.`users_id_requester`,
-                       `glpi_plugin_metademands_tasks`.`entities_id`
-                  FROM `glpi_plugin_metademands_tasks`
-                  LEFT JOIN `glpi_plugin_metademands_tickettasks`
-                    ON (`glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
-                  LEFT JOIN `glpi_plugin_metademands_metademandtasks`
-                    ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`) " .
-                 $params['join'] . "
-                  WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "";
+        $criteria = [
+            'SELECT'    => [
+                'glpi_plugin_metademands_tickettasks.id AS tickettasks_id',
+                'glpi_plugin_metademands_tasks.name AS tickettasks_name',
+                'glpi_plugin_metademands_metademandtasks.id AS metademandtask_id',
+                'glpi_plugin_metademands_metademandtasks.plugin_metademands_metademands_id AS link_metademands_id',
+                'glpi_plugin_metademands_tasks.type',
+                'glpi_plugin_metademands_tasks.plugin_metademands_tasks_id AS parent_task',
+                'glpi_plugin_metademands_tasks.plugin_metademands_metademands_id AS parent_metademand',
+                'glpi_plugin_metademands_tasks.id AS tasks_id',
+                'glpi_plugin_metademands_tasks.completename AS tasks_completename',
+                'glpi_plugin_metademands_tasks.level',
+                'glpi_plugin_metademands_tasks.block_use',
+                'glpi_plugin_metademands_tasks.formatastable',
+                'glpi_plugin_metademands_tasks.useBlock',
+                'glpi_plugin_metademands_tasks.block_parent_ticket_resolution',
+                'glpi_plugin_metademands_tickettasks.itilcategories_id',
+                'glpi_plugin_metademands_tickettasks.content',
+                'glpi_plugin_metademands_tickettasks.status',
+                'glpi_plugin_metademands_tickettasks.actiontime',
+                'glpi_plugin_metademands_tickettasks.requesttypes_id',
+                'glpi_plugin_metademands_tickettasks.groups_id_assign',
+                'glpi_plugin_metademands_tickettasks.users_id_assign',
+                'glpi_plugin_metademands_tickettasks.groups_id_observer',
+                'glpi_plugin_metademands_tickettasks.users_id_observer',
+                'glpi_plugin_metademands_tickettasks.groups_id_requester',
+                'glpi_plugin_metademands_tickettasks.users_id_requester',
+                'glpi_plugin_metademands_tasks.entities_id'
+            ],
+            'FROM'      => 'glpi_plugin_metademands_tasks',
+            'LEFT JOIN'       => [
+                'glpi_plugin_metademands_tickettasks' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_tickettasks' => 'plugin_metademands_tasks_id',
+                        'glpi_plugin_metademands_tasks'          => 'id'
+                    ]
+                ],
+                'glpi_plugin_metademands_metademandtasks' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_tasks_id',
+                        'glpi_plugin_metademands_tasks'          => 'id'
+                    ]
+                ]
+            ],
+            'WHERE'       => ['glpi_plugin_metademands_tasks.plugin_metademands_metademands_id' => $metademands_id],
+            'ORDERBY'       => ['glpi_plugin_metademands_tasks.id', 'glpi_plugin_metademands_tasks.completename']
+        ];
 
         if (count($params['condition']) > 0) {
             foreach ($params['condition'] as $cond => $value) {
-                if (is_array($value)) {
-                    $query .= " AND " . $cond . " IN ( " . implode(",", $value) . ")";
-                } else {
-                    $query .= " AND " . $cond . " = " . $value;
-                }
-
+                $criteria['WHERE'] = $criteria['WHERE'] + [$cond => $value];
             }
         }
 
-        $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`id`, `glpi_plugin_metademands_tasks`.`completename`";
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
+        $iterator = $DB->request($criteria);
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
                 $tasks[$data['tasks_id']] = $data;
             }
         }

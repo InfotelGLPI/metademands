@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -32,10 +33,12 @@ namespace GlpiPlugin\Metademands;
 use Ajax;
 use CommonDBChild;
 use CommonITILActor;
+use DBConnection;
 use DbUtils;
 use Entity;
 use Html;
 use ITILCategory;
+use Migration;
 use Session;
 use Toolbox;
 use User;
@@ -50,7 +53,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class TicketTask extends CommonDBChild
 {
-
     public static $rightname = 'plugin_metademands';
 
     public static $itemtype = Task::class;
@@ -85,12 +87,70 @@ class TicketTask extends CommonDBChild
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                 int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `content`                     text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `itilcategories_id`           int {$default_key_sign}                    DEFAULT '0',
+                        `type`                        int          NOT NULL           DEFAULT '0',
+                        `status`                      varchar(255)                    DEFAULT NULL,
+                        `actiontime`                  int          NOT NULL           DEFAULT '0',
+                        `requesttypes_id`             int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `groups_id_assign`            int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `users_id_assign`             int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `groups_id_requester`         int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `users_id_requester`          int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `groups_id_observer`          int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `users_id_observer`           int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `plugin_metademands_tasks_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+                        KEY `itilcategories_id` (`itilcategories_id`),
+                        KEY `groups_id_assign` (`groups_id_assign`),
+                        KEY `users_id_assign` (`users_id_assign`),
+                        KEY `groups_id_requester` (`groups_id_requester`),
+                        KEY `users_id_requester` (`users_id_requester`),
+                        KEY `groups_id_observer` (`groups_id_observer`),
+                        KEY `users_id_observer` (`users_id_observer`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        $migration->dropField($table, 'plugin_metademands_itilapplications_id');
+        $migration->dropField($table, 'plugin_metademands_itilenvironments_id');
+
+        //version 3.3.4
+        if (!$DB->fieldExists($table, "entities_id")) {
+            $migration->addField($table, "entities_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
+
+
     /**
      * @param       $metademands_id
      * @param       $canchangeorder
      * @param array $input
      *
-     * @throws \GlpitestSQLError
      * @throws \GlpitestSQLError
      */
     public static function showTicketTaskForm($metademands_id, $canchangeorder, $tasktype, $input = [])
@@ -103,11 +163,10 @@ class TicketTask extends CommonDBChild
         $values = [
             'tickettask_id' => 0,
             'itilcategories_id' => 0,
-            'type' => \Ticket::DEMAND_TYPE,
             'parent_tasks_id' => 0,
             'plugin_metademands_tasks_id' => 0,
-            'content' => '',
-            'name' => '',
+            'content' => " ",
+            'name' => " ",
             'block_use' => 1,
             'useBlock' => 1,
             'block_parent_ticket_resolution' => 1,
@@ -224,7 +283,7 @@ class TicketTask extends CommonDBChild
 
             echo "<th>" . __('Entity') . "</th>";
             echo "<td>";
-//            Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"]]);
+            //            Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"]]);
 
             $rand = Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"], 'on_change' => 'entity_cat()']);
             echo "<script type='text/javascript'>";
@@ -233,44 +292,44 @@ class TicketTask extends CommonDBChild
                 'entities_id' => '__VALUE__',
                 'type' => $values['type'],
                 'itilcategories_id' => $values['itilcategories_id'] ?? 0];
-            Ajax::updateItemJsCode('ticket_category', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_category', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
 
             $params = ['action' => 'users_id_requester',
                 'entities_id' => '__VALUE__',
                 'type' => $values['type'],
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
                 'users_id_requester' => $values['users_id_requester'] ?? 0];
-            Ajax::updateItemJsCode('ticket_users_id_requester', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_users_id_requester', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
 
             $params = ['action' => 'users_id_observer',
                 'entities_id' => '__VALUE__',
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
                 'users_id_observer' => $values['users_id_observer'] ?? 0];
-            Ajax::updateItemJsCode('ticket_users_id_observer', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_users_id_observer', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
 
             $params = ['action' => 'users_id_assign',
                 'entities_id' => '__VALUE__',
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
                 'users_id_assign' => $values['users_id_assign'] ?? 0];
-            Ajax::updateItemJsCode('ticket_users_id_assign', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_users_id_assign', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
 
             $params = ['action' => 'groups_id_requester',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_requester' => 1],
                 'groups_id_requester' => $values['groups_id_requester'] ?? 0];
-            Ajax::updateItemJsCode('ticket_groups_id_requester', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_groups_id_requester', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
 
             $params = ['action' => 'groups_id_observer',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_watcher' => 1],
                 'groups_id_observer' => $values['groups_id_observer'] ?? 0];
-            Ajax::updateItemJsCode('ticket_groups_id_observer', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_groups_id_observer', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
 
             $params = ['action' => 'groups_id_assign',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_assign' => 1],
                 'groups_id_assign' => $values['groups_id_assign'] ?? 0];
-            Ajax::updateItemJsCode('ticket_groups_id_assign', PLUGIN_METADEMANDS_WEBDIR.'/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id'.$rand);
+            Ajax::updateItemJsCode('ticket_groups_id_assign', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo "}";
             echo "</script>";
             echo "</td>";
@@ -279,10 +338,10 @@ class TicketTask extends CommonDBChild
             echo "</td>";
 
             echo "<th>" . sprintf(
-                    __('%1$s%2$s'),
-                    __('Category'),
-                    $tt->getMandatoryMark('itilcategories_id')
-                ) . "</th>";
+                __('%1$s%2$s'),
+                __('Category'),
+                $tt->getMandatoryMark('itilcategories_id')
+            ) . "</th>";
             echo "<td>";
 
             echo "<span id='ticket_category'>";
@@ -340,7 +399,7 @@ class TicketTask extends CommonDBChild
                 echo "<span id='ticket_users_id_requester'>";
                 echo $tt->getMandatoryMark('_users_id_requester');
                 User::dropdown(['name' => 'users_id_requester',
-                    'value' => isset($values['users_id_requester']) ? $values['users_id_requester'] : 0,
+                    'value' => $values['users_id_requester'] ?? 0,
                     'entity' => $metademands->fields["entities_id"],
                     'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
                 echo "</span>";
@@ -356,7 +415,7 @@ class TicketTask extends CommonDBChild
                 echo "<span id='ticket_users_id_observer'>";
                 echo $tt->getMandatoryMark('_users_id_observer');
                 User::dropdown(['name' => 'users_id_observer',
-                    'value' => isset($values['users_id_observer']) ? $values['users_id_observer'] : 0,
+                    'value' => $values['users_id_observer'] ?? 0,
                     'entity' => $metademands->fields["entities_id"],
                     'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)]);
                 echo "</span>";
@@ -374,7 +433,7 @@ class TicketTask extends CommonDBChild
         }
         echo "<span id='ticket_users_id_assign'>";
         User::dropdown(['name' => 'users_id_assign',
-            'value' => isset($values['users_id_assign']) ? $values['users_id_assign'] : 0,
+            'value' => $values['users_id_assign'] ?? 0,
             'entity' => $metademands->fields["entities_id"],
             'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)]);
         echo "</span>";
@@ -390,7 +449,7 @@ class TicketTask extends CommonDBChild
                 echo "<span id='ticket_groups_id_requester'>";
                 echo $tt->getMandatoryMark('_groups_id_requester');
                 \Dropdown::show('Group', ['name' => 'groups_id_requester',
-                    'value' => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
+                    'value' => $values['groups_id_requester'] ?? 0,
                     'entity' => $metademands->fields["entities_id"],
                     'condition' => ['is_requester' => 1]]);
                 echo "</span>";
@@ -407,7 +466,7 @@ class TicketTask extends CommonDBChild
                 echo "<span id='ticket_groups_id_observer'>";
                 echo $tt->getMandatoryMark('_groups_id_observer');
                 \Dropdown::show('Group', ['name' => 'groups_id_observer',
-                    'value' => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
+                    'value' => $values['groups_id_observer'] ?? 0,
                     'entity' => $metademands->fields["entities_id"],
                     'condition' => ['is_watcher' => 1]]);
                 echo "</span>";
@@ -426,7 +485,7 @@ class TicketTask extends CommonDBChild
             echo $tt->getMandatoryMark('_groups_id_assign');
         }
         \Dropdown::show('Group', ['name' => 'groups_id_assign',
-            'value' => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
+            'value' => $values['groups_id_assign'] ?? 0,
             'entity' => $metademands->fields["entities_id"],
             'condition' => ['is_assign' => 1]]);
         echo "</span>";
@@ -442,7 +501,7 @@ class TicketTask extends CommonDBChild
                     echo "<th width='$colsize1%'>" . __('Status') . '&nbsp;:' . $tt->getMandatoryMark('status') . "</th>";
                     echo "<td>";
 
-                    \Ticket::dropdownStatus(['value' => isset($values['status']) ? $values['status'] : \Ticket::INCOMING]);
+                    \Ticket::dropdownStatus(['value' => $values['status'] ?? \Ticket::INCOMING]);
                     echo "</td>";
                 } else {
                     echo "<td colspan = '2'>";
@@ -454,7 +513,7 @@ class TicketTask extends CommonDBChild
                 if ($tt->isMandatoryField('requesttypes_id')) {
                     echo "<th width='$colsize1%'>" . __('Request source') . '&nbsp;:' . $tt->getMandatoryMark('requesttypes_id') . "</th>";
                     echo "<td>";
-                    \Dropdown::show('RequestType', ['value' => isset($values['requesttypes_id']) ? $values['requesttypes_id'] : '']);
+                    \Dropdown::show('RequestType', ['value' => $values['requesttypes_id'] ?? '']);
                     echo "</td>";
                 } else {
                     echo "<td colspan = '2'>";
@@ -463,42 +522,42 @@ class TicketTask extends CommonDBChild
                 echo "</tr>";
             }
 
-//            if ($tt->isMandatoryField('actiontime') || $tt->isMandatoryField('itemtype')) {
-//                // Actiontime
-//                echo "<tr class='tab_bg_1'>";
-//                if ($tt->isMandatoryField('actiontime')) {
-//                    echo "<th width='$colsize1%'>" . __('Total duration') . '&nbsp;:' . $tt->getMandatoryMark('actiontime') . "</th>";
-//                    echo "<td>";
-//                    Dropdown::showTimeStamp('actiontime', ['addfirstminutes' => true,
-//                                                           'value'           => isset($values['actiontime']) ? $values['actiontime'] : '']);
-//                    echo "</td>";
-//                } else {
-//                    echo "<td colspan = '2'>";
-//                    echo "</td>";
-//                }
-//
-//                // Itemtype
-//                if ($tt->isMandatoryField('itemtype')) {
-//                    echo "<th width='$colsize1%'>" . __('Associated element') . '&nbsp;:' . $tt->getMandatoryMark('itemtype') . "</th>";
-//                    echo "<td>";
-//                    $dev_user_id  = 0;
-//                    $dev_itemtype = 0;
-//                    $dev_items_id = isset($values['itemtype']) ? $values['itemtype'] : '';
-//                    Ticket::dropdownAllDevices(
-//                        'itemtype',
-//                        $dev_itemtype,
-//                        $dev_items_id,
-//                        1,
-//                        $dev_user_id,
-//                        $metademands->fields["entities_id"]
-//                    );
-//                    echo "</td>";
-//                } else {
-//                    echo "<td colspan = '2'>";
-//                    echo "</td>";
-//                }
-//                echo "</tr>";
-//            }
+            //            if ($tt->isMandatoryField('actiontime') || $tt->isMandatoryField('itemtype')) {
+            //                // Actiontime
+            //                echo "<tr class='tab_bg_1'>";
+            //                if ($tt->isMandatoryField('actiontime')) {
+            //                    echo "<th width='$colsize1%'>" . __('Total duration') . '&nbsp;:' . $tt->getMandatoryMark('actiontime') . "</th>";
+            //                    echo "<td>";
+            //                    Dropdown::showTimeStamp('actiontime', ['addfirstminutes' => true,
+            //                                                           'value'           => isset($values['actiontime']) ? $values['actiontime'] : '']);
+            //                    echo "</td>";
+            //                } else {
+            //                    echo "<td colspan = '2'>";
+            //                    echo "</td>";
+            //                }
+            //
+            //                // Itemtype
+            //                if ($tt->isMandatoryField('itemtype')) {
+            //                    echo "<th width='$colsize1%'>" . __('Associated element') . '&nbsp;:' . $tt->getMandatoryMark('itemtype') . "</th>";
+            //                    echo "<td>";
+            //                    $dev_user_id  = 0;
+            //                    $dev_itemtype = 0;
+            //                    $dev_items_id = isset($values['itemtype']) ? $values['itemtype'] : '';
+            //                    Ticket::dropdownAllDevices(
+            //                        'itemtype',
+            //                        $dev_itemtype,
+            //                        $dev_items_id,
+            //                        1,
+            //                        $dev_user_id,
+            //                        $metademands->fields["entities_id"]
+            //                    );
+            //                    echo "</td>";
+            //                } else {
+            //                    echo "<td colspan = '2'>";
+            //                    echo "</td>";
+            //                }
+            //                echo "</tr>";
+            //            }
             echo "</table>";
         }
         echo "<table class='tab_cadre_fixe'>";
@@ -511,7 +570,7 @@ class TicketTask extends CommonDBChild
         }
 
         echo "<td width='$colsize3%'>";
-        $name = isset($values['name']) ? $values['name'] : '';
+        $name = $values['name'] ?? '';
         echo Html::input('name', ['value' => $name, 'size' => 90]);
         echo "</td>";
         echo "</tr>";
@@ -659,8 +718,8 @@ class TicketTask extends CommonDBChild
             if (count($tt->mandatory)) {
                 $fieldsname = $tt->getAllowedFieldsNames(true);
                 foreach ($tt->mandatory as $key => $val) {
-                    if (isset($input[$key]) &&
-                        (empty($input[$key]) || $input[$key] == 'NULL')
+                    if (isset($input[$key])
+                        && (empty($input[$key]) || $input[$key] == 'NULL')
                         && (!in_array($key, TicketField::$used_fields))) {
                         $mandatory_missing[$key] = $fieldsname[$val];
                     }
@@ -739,17 +798,35 @@ class TicketTask extends CommonDBChild
         global $DB;
 
         if ($tasks_id > 0) {
-            $query = "SELECT `glpi_plugin_metademands_metademands`.*
-                  FROM `glpi_plugin_metademands_tickettasks`
-                  LEFT JOIN `glpi_plugin_metademands_tasks`
-                    ON (`glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
-                  LEFT JOIN `glpi_plugin_metademands_metademands`
-                    ON (`glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
-                  WHERE `glpi_plugin_metademands_tickettasks`.`id` = " . $tasks_id;
-            $result = $DB->doQuery($query);
 
-            if ($DB->numrows($result)) {
-                $metademands->fields = $DB->fetchAssoc($result);
+            $criteria = [
+                'SELECT' => [
+                    'glpi_plugin_metademands_metademands.*',
+                ],
+                'FROM' => 'glpi_plugin_metademands_tickettasks',
+                'LEFT JOIN' => [
+                    'glpi_plugin_metademands_tasks' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_tickettasks' => 'plugin_metademands_tasks_id',
+                            'glpi_plugin_metademands_tasks' => 'id',
+                        ],
+                    ],
+                    'glpi_plugin_metademands_metademands' => [
+                        'ON' => [
+                            'glpi_plugin_metademands_tasks' => 'plugin_metademands_metademands_id',
+                            'glpi_plugin_metademands_metademands' => 'id',
+                        ],
+                    ],
+                ],
+                'WHERE' => [
+                    'glpi_plugin_metademands_tickettasks.id' => $tasks_id,
+                ],
+            ];
+            $iterator = $DB->request($criteria);
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
+                    $metademands->fields = $data;
+                }
             } else {
                 $metademands->getEmpty();
             }

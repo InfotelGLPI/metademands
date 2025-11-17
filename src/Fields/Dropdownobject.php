@@ -582,7 +582,7 @@ class Dropdownobject extends CommonDBTM
 
                     $container_class = new $data['item']();
                     $field           = "";
-                    $field           .= $container_class::dropdown($opt);
+                    $field           .= \Dropdown::show($data['item'], $opt);
                 }
                 break;
         }
@@ -1013,7 +1013,7 @@ class Dropdownobject extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
@@ -1307,7 +1307,7 @@ class Dropdownobject extends CommonDBTM
 
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
@@ -1316,6 +1316,7 @@ class Dropdownobject extends CommonDBTM
 
                 $onchange .= "var tohide = {};";
                 $display = 0;
+
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
                         $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
@@ -1345,7 +1346,6 @@ class Dropdownobject extends CommonDBTM
                             tohide[$hidden_link] = false;
                         }";
                         }
-
 
                         //if reload form
                         if (isset($data['value']) && $idc == $data['value']) {

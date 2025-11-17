@@ -31,19 +31,24 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonITILObject;
+use DBConnection;
 use Document;
 use Document_Item;
-use ITILFollowup;
-use Log;
-use NotificationEvent;
-use Session;
-
-/**
- * Class Interticketfollowup
- */
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\ContentTemplates\Parameters\CommonITILObjectParameters;
 use Glpi\DBAL\QuerySubQuery;
+use ITILFollowup;
+use Log;
+use Migration;
+use Notification;
+use Notification_NotificationTemplate;
+use NotificationEvent;
+/**
+ * Class Interticketfollowup
+ */
+use NotificationTemplate;
+use NotificationTemplateTranslation;
+use Session;
 
 class Interticketfollowup extends CommonITILObject
 {
@@ -63,6 +68,253 @@ class Interticketfollowup extends CommonITILObject
         return _n('Inter ticket followup', 'Inter ticket followups', $nb, 'metademands');
     }
 
+    public static function addNotifications() {
+        global $DB;
+
+        // Notification
+        $options_notif        = ['itemtype' => self::class,
+            'name' => 'New inter ticket Followup'];
+
+        if (!countElementsInTable(
+            "glpi_notificationtemplates",
+            $options_notif
+        )) {
+            $DB->insert(
+                "glpi_notificationtemplates",
+                $options_notif
+            );
+
+            foreach (
+                $DB->request([
+                    'FROM' => 'glpi_notificationtemplates',
+                    'WHERE' => $options_notif
+                ]) as $data
+            ) {
+                $templates_id = $data['id'];
+
+                if ($templates_id) {
+                    $DB->insert(
+                        "glpi_notificationtemplatetranslations",
+                        [
+                            'notificationtemplates_id' => $templates_id,
+                            'subject' => '##ticket.action##Ticket : ##ticket.title##',
+                            'content_text' => '##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
+    ##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate##
+    ##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
+    ##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors##
+    ##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups##
+    ##IFticket.assigntousers####lang.ticket.assigntousers## : ##ticket.assigntousers## ##ENDIFticket.assigntousers##
+    <!-- Suivis
+    ##ticket.action## -->
+    ##FOREACH LAST 1 followups_intern##
+    ##lang.followup_intern.author## : ##followup_intern.author## - ##followup_intern.date####followup_intern.description##
+    ##ENDFOREACHfollowups_intern##
+    ##lang.ticket.numberoffollowups## : ##ticket.numberoffollowups##
+    ##lang.ticket.description##
+    ##ticket.description##
+    ##lang.ticket.category## :
+    ##ticket.category##
+    ##lang.ticket.urgency## :
+    ##ticket.urgency##
+    ##lang.ticket.location## :
+    ##ticket.location####FOREACHitems##
+    ##lang.ticket.item.name## :##ENDFOREACHitems####FOREACHitems##
+    ##ticket.item.name####ENDFOREACHitems####FOREACHdocuments##
+    Documents :##ENDFOREACHdocuments####FOREACHdocuments##
+    ##document.filename####ENDFOREACHdocuments##
+    Ticket ###ticket.id##',
+                            'content_html' => '',
+                        ]
+                    );
+
+                    $DB->insert(
+                        "glpi_notifications",
+                        [
+                            'name' => 'New inter ticket Followup',
+                            'entities_id' => 0,
+                            'itemtype' => self::class,
+                            'event' => 'add_interticketfollowup',
+                            'is_recursive' => 1,
+                        ]
+                    );
+
+                    $options_notif = [
+                        'itemtype' => self::class,
+                        'name' => 'New inter ticket Followup',
+                        'event' => 'add_interticketfollowup'
+                    ];
+
+                    foreach (
+                        $DB->request([
+                            'FROM' => 'glpi_notifications',
+                            'WHERE' => $options_notif
+                        ]) as $data_notif
+                    ) {
+                        $notification = $data_notif['id'];
+                        if ($notification) {
+                            $DB->insert(
+                                "glpi_notifications_notificationtemplates",
+                                [
+                                    'notifications_id' => $notification,
+                                    'mode' => 'mailing',
+                                    'notificationtemplates_id' => $templates_id,
+                                ]
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `tickets_id`        int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `targets_id`        int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `date`              timestamp    NULL     DEFAULT NULL,
+                        `users_id`          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `users_id_editor`   int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `content`           longtext COLLATE utf8mb4_unicode_ci,
+                        `is_private`        tinyint      NOT NULL DEFAULT '0',
+                        `requesttypes_id`   int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `date_mod`          timestamp    NULL     DEFAULT NULL,
+                        `date_creation`     timestamp    NULL     DEFAULT NULL,
+                        `timeline_position` tinyint      NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        self::addNotifications();
+
+        $query = $DB->buildUpdate(
+            'glpi_notifications',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsInterticketfollowup'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_notificationtemplates',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsInterticketfollowup'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_displaypreferences',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsMetademand'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_savedsearches',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsMetademand'
+            ]
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildUpdate(
+            'glpi_savedsearches_users',
+            [
+                'itemtype' => self::class,
+            ],
+            [
+                'itemtype' => 'PluginMetademandsMetademand'
+            ]
+        );
+        $DB->doQuery($query);
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+
+        $itemtypes = ['Alert',
+            'DisplayPreference',
+            'Document_Item',
+            'ImpactItem',
+            'Item_Ticket',
+            'Link_Itemtype',
+            'Notepad',
+            'SavedSearch',
+            'DropdownTranslation',
+            'NotificationTemplate',
+            'Notification'];
+        foreach ($itemtypes as $itemtype) {
+            $item = new $itemtype();
+            $item->deleteByCriteria(['itemtype' => self::class]);
+        }
+
+        $options = ['itemtype' => Interticketfollowup::class,
+            'event'    => 'add_interticketfollowup'];
+
+        $notif = new Notification();
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications',
+            'WHERE' => $options]) as $data) {
+            $notif->delete($data);
+        }
+
+        //templates
+        $template       = new NotificationTemplate();
+        $translation    = new NotificationTemplateTranslation();
+        $notif_template = new Notification_NotificationTemplate();
+
+        $options        = ['itemtype' => Interticketfollowup::class];
+
+        foreach ($DB->request([
+            'FROM' => 'glpi_notificationtemplates',
+            'WHERE' => $options]) as $data) {
+            $options_template = [
+                'notificationtemplates_id' => $data['id'],
+            ];
+
+            foreach ($DB->request([
+                'FROM' => 'glpi_notificationtemplatetranslations',
+                'WHERE' => $options_template]) as $data_template) {
+                $translation->delete($data_template);
+            }
+            $template->delete($data);
+
+            foreach ($DB->request([
+                'FROM' => 'glpi_notifications_notificationtemplates',
+                'WHERE' => $options_template]) as $data_template) {
+                $notif_template->delete($data_template);
+            }
+        }
+    }
 
     /**
      * @param $options

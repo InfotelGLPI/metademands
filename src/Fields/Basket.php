@@ -102,7 +102,6 @@ class Basket extends CommonDBTM
         $criteria = [
             'FROM' => [Basketobject::getTable()],
             'SELECT' => [Basketobject::getTable() => '*'],
-            'WHERE' => [],
             'ORDER' => ['name', 'description'],
         ];
 
@@ -196,18 +195,11 @@ class Basket extends CommonDBTM
             if ($ordermaterialmeta->getFromDBByCrit(
                 ['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']]
             )) {
-                if (isset($custom_values[1]) && $custom_values[1] == 1) {
+                if (isset($custom_values[0]) && $custom_values[0] == 1) {
                     $field .= "<th style='text-align: right;$background_color'>" . __(
                         'Total (HT)',
                         'orderfollowup'
                     ) . "</th>";
-                } else {
-                    if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                        $field .= "<th style='text-align: right;$background_color'>" . __(
-                            'Total',
-                            'metademands'
-                        ) . "</th>";
-                    }
                 }
             } else {
                 if (isset($custom_values[0]) && $custom_values[0] == 1) {
@@ -2326,7 +2318,7 @@ class Basket extends CommonDBTM
             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                 $total_final = $total;
             } else {
-                $total_final = Html::formatNumber($total, false, 0);
+                $total_final = Html::formatNumber($total, false, 2);
             }
             if (Plugin::isPluginActive('ordermaterial')) {
                 $ordermaterialmeta = new PluginOrdermaterialMetademand();

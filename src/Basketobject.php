@@ -28,8 +28,10 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
 use GlpiPlugin\Orderfollowup\Material;
 use Html;
+use Migration;
 use Plugin;
 use Session;
 use PluginOrdermaterialMaterial;
@@ -46,6 +48,37 @@ class Basketobject extends CommonDBTM
 
     public $dohistory = true;
     static $rightname = "plugin_metademands";
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `name`                                    varchar(255) collate utf8mb4_unicode_ci default NULL,
+                        `description`                             longtext,
+                        `reference`                               varchar(255) collate utf8mb4_unicode_ci,
+                        `plugin_metademands_basketobjecttypes_id` int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param array $input

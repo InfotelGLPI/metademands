@@ -36,20 +36,23 @@ use Budget;
 use CartridgeItem;
 use CommonDBChild;
 use CommonDBTM;
+use CommonGLPI;
 use Computer;
 use ConsumableItem;
 use Contact;
 use Contract;
+use DBConnection;
 use DbUtils;
 use Document;
 use Entity;
 use Glpi\DBAL\QueryExpression;
+use Glpi\Features\Clonable;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Checkbox;
 use GlpiPlugin\Metademands\Fields\Date;
-use GlpiPlugin\Metademands\Fields\Datetime;
 use GlpiPlugin\Metademands\Fields\Dateinterval;
+use GlpiPlugin\Metademands\Fields\Datetime;
 use GlpiPlugin\Metademands\Fields\Datetimeinterval;
 use GlpiPlugin\Metademands\Fields\Dropdown;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
@@ -73,9 +76,12 @@ use GlpiPlugin\Metademands\Fields\Titleblock;
 use GlpiPlugin\Metademands\Fields\Upload;
 use GlpiPlugin\Metademands\Fields\Url;
 use GlpiPlugin\Metademands\Fields\Yesno;
+use GlpiPlugin\Resources\Resource;
+use Group_Item;
 use Html;
 use Line;
 use MassiveAction;
+use Migration;
 use Monitor;
 use NetworkEquipment;
 use PassiveDCEquipment;
@@ -90,13 +96,11 @@ use Reminder;
 use RSSFeed;
 use Search;
 use Session;
-use CommonGLPI;
 use Software;
 use Supplier;
 use TicketRecurrent;
 use Toolbox;
 use User;
-use Glpi\Features\Clonable;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -247,6 +251,134 @@ class Field extends CommonDBChild
     }
 
 
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `entities_id`                       int {$default_key_sign}         NOT NULL DEFAULT '0',
+                        `is_recursive`                      int                             NOT NULL DEFAULT '0',
+                        `comment`                           text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `rank`                              int                             NOT NULL DEFAULT '0',
+                        `order`                             int                             NOT NULL DEFAULT '0',
+                        `name`                              varchar(255)                             DEFAULT NULL,
+                        `label2`                            text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `type`                              varchar(255)                             DEFAULT NULL,
+                        `item`                              varchar(255)                             DEFAULT NULL,
+                        `plugin_metademands_fields_id`      int {$default_key_sign}        NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign}        NOT NULL DEFAULT '0',
+                        `date_creation`                     timestamp                       NULL     DEFAULT NULL,
+                        `date_mod`                          timestamp                       NULL     DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        if (!$DB->fieldExists($table, "comment")) {
+            $migration->addField($table, "comment", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        if (!$DB->fieldExists($table, "label2")) {
+            $migration->addField($table, "label2", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        $migration->changeField($table, 'comment', 'comment', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->migrationOneTable($table);
+        $migration->changeField($table, 'label2', 'label2', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->migrationOneTable($table);
+
+        if (!$DB->fieldExists($table, "order")) {
+            $migration->addField($table, "order", "int NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "plugin_metademands_fields_id")) {
+            $migration->addField($table, "plugin_metademands_fields_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            if (!isIndex($table, "plugin_metademands_fields_id")) {
+                $migration->addKey($table, "plugin_metademands_fields_id");
+            }
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "date_creation")) {
+            $migration->addField($table, "date_creation", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "date_mod")) {
+            $migration->addField($table, "date_mod", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //Version 2.7.4
+        $field  = new Field();
+        $fields = $field->find(['type' => "dropdown", "item" => "user"]);
+        foreach ($fields as $f) {
+            $f["item"] = "User";
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "usertitle"]);
+        foreach ($fields as $f) {
+            $f["item"] = "UserTitle";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "usercategory"]);
+        foreach ($fields as $f) {
+            $f["item"] = "UserCategory";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "group"]);
+        foreach ($fields as $f) {
+            $f["item"] = "Group";
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "location"]);
+        foreach ($fields as $f) {
+            $f["item"] = "Location";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "appliance"]);
+        foreach ($fields as $f) {
+            $f["item"] = "Appliance";
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "itilcategory"]);
+        foreach ($fields as $f) {
+            $f["item"] = "ITILCategory_Metademands";
+            $f["type"] = "dropdown_meta";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => "other"]);
+        foreach ($fields as $f) {
+            $f["item"] = "other";
+            $f["type"] = "dropdown_meta";
+            $field->update($f);
+        }
+        $fields = $field->find(['type' => "dropdown", "item" => Resource::class]);
+        foreach ($fields as $f) {
+            $f["type"] = "dropdown_object";
+            $field->update($f);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     public function getCloneRelations(): array
     {
@@ -1043,10 +1175,10 @@ class Field extends CommonDBChild
         $canedit = $item->can($item->getID(), UPDATE);
 
         if ($canedit) {
-            echo "<div id='viewfieldmeta"  . $item->getID() . "$rand'></div>\n";
+            echo "<div id='viewfieldmeta" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addFieldmeta"  . $item->getID() . "$rand() {\n";
+            echo "function addFieldmeta" . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
@@ -1054,7 +1186,7 @@ class Field extends CommonDBChild
                 'id' => -1,
             ];
             Ajax::updateItemJsCode(
-                "viewfieldmeta"  . $item->getID() . "$rand",
+                "viewfieldmeta" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                 $params
             );
@@ -1072,7 +1204,7 @@ class Field extends CommonDBChild
             echo "<div id='viewexistingfieldmeta" . $item->getType() . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addExistingFieldmeta"  . $item->getID() . "$rand() {\n";
+            echo "function addExistingFieldmeta" . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
@@ -1080,7 +1212,7 @@ class Field extends CommonDBChild
                 'id' => -1,
             ];
             Ajax::updateItemJsCode(
-                "viewexistingfieldmeta"  . $item->getID() . "$rand",
+                "viewexistingfieldmeta" . $item->getID() . "$rand",
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewexistingsubitem.php",
                 $params
             );
@@ -1389,7 +1521,7 @@ class Field extends CommonDBChild
 
             if (is_array($data) && count($data) > 0) {
                 if ($canedit) {
-                    Html::openMassiveActionsForm('massMetaFields'  . $rand);
+                    Html::openMassiveActionsForm('massMetaFields' . $rand);
                     $massiveactionparams = [
                         'item' => __CLASS__,
                         'container' => 'massMetaFields' . $rand,
@@ -1762,7 +1894,7 @@ border-style: none !important; border-color: initial !important;border-image: in
      * @param  $name
      * @param array $param
      *
-     * @return dropdown of types
+     * @return Dropdown of types
      * @throws \GlpitestSQLError
      */
     public static function dropdownFieldTypes($type_fields, $param = [])
@@ -2527,11 +2659,20 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         if (isset($data['row_display'])
             && $data['row_display'] == 1) {
-            echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+            if ($data['type'] == 'basket') {
+                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
+            } else {
+                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+            }
             $count++;
         } else {
             if ($data['type'] != 'title-block' && $data['type'] != 'title') {
-                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+
+                if ($data['type'] == 'basket') {
+                    echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
+                } else {
+                    echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
+                }
             } else {
                 echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-12 $bottomclass $class\">";
             }
@@ -2622,6 +2763,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     }
 
 
+                    echo "</span>";
+
                     //use plugin fields types
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -2641,6 +2784,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                 if ($preview) {
                     echo $config_link;
                 }
+            }
+            if ($data['type'] == 'basket') {
+                echo "</h4>";
             }
         }
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
@@ -2702,11 +2848,11 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $count++;
                         break;
                     case 'datetime_interval':
-                        DateTimeinterval::showWizardField($data, $namefield, $value2, $end);
+                        Datetimeinterval::showWizardField($data, $namefield, $value2, $end);
                         $count++;
                         break;
                 }
-//                echo "</div>";
+                //                echo "</div>";
             }
         }
         echo "</div>";
@@ -3803,7 +3949,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 Computer::class => Computer::getTypeName(2),
                 Monitor::class => Monitor::getTypeName(2),
                 Software::class => Software::getTypeName(2),
-                Networkequipment::class => Networkequipment::getTypeName(2),
+                NetworkEquipment::class => NetworkEquipment::getTypeName(2),
                 Peripheral::class => Peripheral::getTypeName(2),
                 Printer::class => Printer::getTypeName(2),
                 CartridgeItem::class => CartridgeItem::getTypeName(2),
@@ -3840,17 +3986,17 @@ border-style: none !important; border-color: initial !important;border-image: in
             // Does not exists in GLPI 9.4
             $optgroup[__("Assets")][PassiveDCEquipment::class] = PassiveDCEquipment::getTypeName(2);
         }
-//TODO replace by GLPI
-//        $plugin = new Plugin();
-//        if ($plugin->isActivated("genericobject")) {
-//            foreach (PluginGenericobjectType::getTypes() as $id => $objecttype) {
-//                $itemtype = $objecttype['itemtype'];
-//                if (class_exists($itemtype)) {
-//                    $item = new $itemtype();
-//                    $optgroup[__("Assets")][$item::class] = $item::getTypeName(2);
-//                }
-//            }
-//        }
+        //TODO replace by GLPI
+        //        $plugin = new Plugin();
+        //        if ($plugin->isActivated("genericobject")) {
+        //            foreach (PluginGenericobjectType::getTypes() as $id => $objecttype) {
+        //                $itemtype = $objecttype['itemtype'];
+        //                if (class_exists($itemtype)) {
+        //                    $item = new $itemtype();
+        //                    $optgroup[__("Assets")][$item::class] = $item::getTypeName(2);
+        //                }
+        //            }
+        //        }
 
         return $optgroup;
     }
@@ -3866,7 +4012,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             $devices = [];
 
             // My items
-            foreach ($CFG_GLPI["linkuser_types"] as $itemtype) {
+            foreach ($CFG_GLPI["assignable_types"] as $itemtype) {
                 if (($item = getItemForItemtype($itemtype))
                     && \Ticket::isPossibleToAssignType($itemtype)) {
                     $itemtable = getTableForItemType($itemtype);
@@ -4205,7 +4351,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             $my_devices = ['' => \Dropdown::EMPTY_VALUE];
             $devices = [];
 
-            $itemtypes = $CFG_GLPI["linkuser_types"];
+            $itemtypes = $CFG_GLPI["assignable_types"];
             if (count($limit) > 0) {
                 $itemtypes = $limit;
             }
@@ -4302,8 +4448,21 @@ border-style: none !important; border-color: initial !important;border-image: in
                             $itemtable = getTableForItemType($itemtype);
                             $criteria = [
                                 'FROM' => $itemtable,
+                                'LEFT JOIN'       => [
+                                    'glpi_groups_items' => [
+                                        'ON' => [
+                                            'glpi_groups_items' => 'items_id',
+                                            $itemtable          => 'id', [
+                                                'AND' => [
+                                                    'glpi_groups_items.itemtype' => $itemtype,
+                                                    'glpi_groups_items.type' => Group_Item::GROUP_TYPE_NORMAL,
+                                                ],
+                                            ],
+                                        ]
+                                    ]
+                                ],
                                 'WHERE' => [
-                                    'groups_id' => $groups,
+                                    'glpi_groups_items.groups_id' => $groups,
                                 ] + getEntitiesRestrictCriteria(
                                     $itemtable,
                                     '',

@@ -31,10 +31,12 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
 use CommonITILActor;
+use DBConnection;
 use GLPIMailer;
 use GLPINetwork;
 use Html;
 use ITILCategory;
+use Migration;
 use Session;
 use User;
 
@@ -79,6 +81,42 @@ class MailTask extends CommonDBChild
     public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `content`                     text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `users_id_recipient`          int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `groups_id_recipient`         int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `plugin_metademands_tasks_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `itilcategories_id`           int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `email`                       varchar(255)                    DEFAULT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+                        KEY `users_id_recipient` (`users_id_recipient`),
+                        KEY `groups_id_recipient` (`groups_id_recipient`),
+                        KEY `itilcategories_id` (`itilcategories_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     public static function showMailTaskForm($metademands_id, $tasktype, $input = [])

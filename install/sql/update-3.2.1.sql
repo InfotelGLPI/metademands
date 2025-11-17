@@ -1,1 +1,0 @@
-ALTER TABLE `glpi_plugin_metademands_tickets_fields` ADD `value2` text COLLATE utf8mb4_unicode_ci default NULL;

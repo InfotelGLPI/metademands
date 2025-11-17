@@ -144,7 +144,7 @@ class Stepformread extends CommonDBTM
         $stepforms = self::getWaitingFormsByMaker();
 
         if (!empty($stepforms)) {
-            echo "<div class=\"row\">";
+            echo "<div class='row'>";
             echo "<div class=\"col-md-12\">";
             echo "<h4><div class='alert alert-dark' role='alert'>";
             $icon = "ti-share";

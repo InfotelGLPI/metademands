@@ -32,7 +32,9 @@ namespace GlpiPlugin\Metademands;
 use Ajax;
 use CommonDBTM;
 use CommonITILActor;
+use DBConnection;
 use Html;
+use Migration;
 use Plugin;
 use Session;
 use Ticket_User;
@@ -87,6 +89,52 @@ class MetademandValidation extends CommonDBTM
         return Session::haveRight(self::$rightname, READ);
     }
 
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `tickets_id`                        int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `users_id`                          int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `validate`                          tinyint      NOT NULL DEFAULT '0',
+                        `date`                              timestamp    NOT NULL,
+                        `tickets_to_create`                 text         NOT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `users_id` (`users_id`),
+                        KEY `tickets_id` (`tickets_id`),
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "users_id")) {
+            $migration->addKey($table, "users_id");
+        }
+        if (!isIndex($table, "tickets_id")) {
+            $migration->addKey($table, "tickets_id");
+        }
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param       $ID

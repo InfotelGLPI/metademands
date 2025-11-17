@@ -32,16 +32,18 @@ namespace GlpiPlugin\Metademands;
 
 use ChangeTemplate;
 use CommonDBChild;
+use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use Html;
+use Migration;
 use Plugin;
+use PluginFieldsContainer;
+use PluginFieldsField;
 use ProblemTemplate;
 use Search;
 use Session;
-use CommonGLPI;
 use TicketTemplate;
-use PluginFieldsContainer;
-use PluginFieldsField;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -100,20 +102,79 @@ class FieldParameter extends CommonDBChild
     {
         return "ti ti-settings-bolt";
     }
-    //
-    //
-    //    static function canView()
-    //    {
-    //        return Session::haveRight(self::$rightname, READ);
-    //    }
-    //
-    //    /**
-    //     * @return bool
-    //     */
-    //    static function canCreate()
-    //    {
-    //        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-    //    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_fields_id`        int {$default_key_sign} NOT NULL  DEFAULT '0',
+                        `custom`                              text COLLATE utf8mb4_unicode_ci   DEFAULT NULL,
+                        `default`                             text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `hide_title`                          tinyint      NOT NULL           DEFAULT '0',
+                        `is_mandatory`                        int          NOT NULL           DEFAULT '0',
+                        `max_upload`                          int          NOT NULL           DEFAULT 0,
+                        `regex`                               varchar(255) NOT NULL           DEFAULT '',
+                        `color`                               varchar(255)                    DEFAULT NULL,
+                        `row_display`                         tinyint                         DEFAULT 0,
+                        `is_basket`                           tinyint                         DEFAULT 0,
+                        `display_type`                        int                             DEFAULT 0,
+                        `used_by_ticket`                      int          NOT NULL           DEFAULT '0',
+                        `used_by_child`                       tinyint                         DEFAULT 0,
+                        `link_to_user`                        int                             DEFAULT 0,
+                        `default_use_id_requester`            int {$default_key_sign}         DEFAULT 0,
+                        `default_use_id_requester_supervisor` int {$default_key_sign}         DEFAULT 0,
+                        `use_future_date`                     tinyint                         DEFAULT 0,
+                        `use_date_now`                        tinyint                         DEFAULT 0,
+                        `additional_number_day`               int                             DEFAULT 0,
+                        `informations_to_display`             varchar(255) NOT NULL           DEFAULT '[]',
+                        `use_richtext`                        tinyint      NOT NULL           DEFAULT '1',
+                        `icon`                                varchar(255)                    DEFAULT NULL,
+                        `readonly`                            tinyint                         DEFAULT 0,
+                        `hidden`                              tinyint                         DEFAULT 0,
+                        `authldaps_id`                        int {$default_key_sign}         DEFAULT 0,
+                        `ldap_attribute`                      int                             DEFAULT 0,
+                        `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.3.8
+        if (!$DB->fieldExists($table, "default_use_id_requester_supervisor")) {
+            $migration->addField($table, "default_use_id_requester_supervisor", "int {$default_key_sign}  DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.4.0
+        if (!$DB->fieldExists($table, "authldaps_id")) {
+            $migration->addField($table, "authldaps_id", "int {$default_key_sign} DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "ldap_attribute")) {
+            $migration->addField($table, "ldap_attribute", "int DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "ldap_filter")) {
+            $migration->addField($table, "ldap_filter", "varchar(255) NOT NULL DEFAULT ''");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
 
     /**
@@ -520,7 +581,7 @@ class FieldParameter extends CommonDBChild
                     61,
                     62,
                     63,
-                    67
+                    67,
                 ];
             }
 
@@ -982,6 +1043,324 @@ class FieldParameter extends CommonDBChild
                     return $item->getGrantedFields($params);
                 }
             }
+        }
+    }
+
+    static function migrateFieldsParameters($migration)
+    {
+        global $DB;
+
+        $table_fields = "glpi_plugin_metademands_fields";
+
+        ini_set("memory_limit", "-1");
+        ini_set("max_execution_time", 0);
+        $metademand_fields = new Field();
+        $fields = $metademand_fields->find();
+
+        $metademand_fieldparams = new FieldParameter();
+
+        if (count($fields) > 0) {
+            foreach ($fields as $k => $field) {
+                if (!$metademand_fieldparams->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id']])) {
+                    $input = [
+                        'plugin_metademands_fields_id' => $field['id'],
+                        'row_display' => $field['row_display'],
+                        'hide_title' => $field['hide_title'],
+                        'is_basket' => $field['is_basket'],
+                        'color' => $field['color'],
+                        'icon' => $field['icon'],
+                        'is_mandatory' => $field['is_mandatory'],
+                        'used_by_ticket' => $field['used_by_ticket'],
+                        'used_by_child' => $field['used_by_child'],
+                        'use_richtext' => $field['use_richtext'],
+                        'default_use_id_requester' => $field['default_use_id_requester'],
+                        'default_use_id_requester_supervisor' => $field['default_use_id_requester_supervisor'],
+                        'readonly' => $field['readonly'],
+                        'custom_values' => $field['custom_values'],
+                        'comment_values' => $field['comment_values'],
+                        'default_values' => $field['default_values'],
+                        'max_upload' => $field['max_upload'],
+                        'regex' => $field['regex'],
+                        'use_future_date' => $field['use_future_date'],
+                        'use_date_now' => $field['use_date_now'],
+                        'additional_number_day' => $field['additional_number_day'],
+                        'display_type' => $field['display_type'],
+                        'informations_to_display' => $field['informations_to_display'],
+                        'link_to_user' => $field["link_to_user"],
+                        'hidden' => $field["hidden"],
+                        'item' => $field['item'],
+                        'type' => $field['type'],
+                    ];
+
+                    if (in_array($input['type'], ['dropdown_multiple', 'dropdown_object'])
+                        && $input['item'] === 'User') {
+                        $temp =  FieldParameter::_unserialize($input['informations_to_display']);
+                        if (empty($temp)) {
+                            $input['informations_to_display'] = FieldParameter::_serialize(['full_name']);
+                        }
+                    }
+
+                    $metademand_fieldparams->add($input);
+                }
+            }
+        }
+
+        $metademand_fields = new Field();
+        $fields = $metademand_fields->find();
+
+        $metademand_fieldcustom = new FieldCustomvalue();
+        $metademand_params = new FieldParameter();
+
+        $old_new_custom_values = [];
+        if (count($fields) > 0) {
+            foreach ($fields as $key => $field) {
+                $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
+                $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+
+                if (isset($field['type'])
+                    && in_array($field['type'], $allowed_customvalues_types)
+                    || in_array($field['item'], $allowed_customvalues_items)) {
+                    $custom_values = FieldParameter::_unserialize($field['custom_values']);
+                    $default_values = FieldParameter::_unserialize($field['default_values']);
+                    $comment_values = FieldParameter::_unserialize($field['comment_values']);
+
+                    $inputs = [];
+                    $rank = 0;
+                    if (is_array($custom_values) && count($custom_values) > 0) {
+                        foreach ($custom_values as $k => $name) {
+                            $inputs[$k]['plugin_metademands_fields_id'] = $field['id'];
+                            if (isset($custom_values[$k])) {
+                                $inputs[$k]['name'] = $custom_values[$k];
+                            }
+                            if (isset($default_values[$k])) {
+                                $inputs[$k]['is_default'] = $default_values[$k];
+                            }
+                            if (isset($comment_values[$k])) {
+                                $inputs[$k]['comment'] = $comment_values[$k];
+                            }
+                            $inputs[$k]['old_check_value'] = $k;
+                            $inputs[$k]['old_translation_name'] = "custom" . $k;
+                            $inputs[$k]['rank'] = $rank;
+                            $rank++;
+                        }
+                    }
+
+                    foreach ($inputs as $key2 => $input) {
+                        if (!empty($input['name'])) {
+                            $newid = $metademand_fieldcustom->add($input);
+                        }
+                        $metademand_params->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']]);
+                        $metademand_params->update([
+                            "id" => $metademand_params->fields['id'],
+                            "custom_values" => null,
+                            "default_values" => null,
+                            "comment_values" => null,
+                        ]);
+
+                        $metademand_options = new FieldOption();
+                        $fieldoptions = $metademand_options->find(
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                        );
+                        if (count($fieldoptions) > 0) {
+                            foreach ($fieldoptions as $ko => $fieldoption) {
+                                $metademand_options->update(["id" => $fieldoption['id'], "check_value" => $newid]);
+                            }
+                        }
+
+                        $metademand_conditions = new Condition();
+                        $fieldconditions = $metademand_conditions->find(
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                        );
+                        if (count($fieldconditions) > 0) {
+                            foreach ($fieldconditions as $ko => $fieldcondition) {
+                                $metademand_conditions->update(["id" => $fieldcondition['id'], "check_value" => $newid]);
+                            }
+                        }
+
+                        $metademand_translations = new FieldTranslation();
+                        $fieldtranslations = $metademand_translations->find(
+                            ["items_id" => $field['id'], "field" => $input['old_translation_name']]
+                        );
+                        if (count($fieldtranslations) > 0) {
+                            foreach ($fieldtranslations as $k => $fieldtranslation) {
+                                $new_value = "custom" . $input['rank'];
+                                $metademand_translations->update(
+                                    ["id" => $fieldtranslation['id'], "field" => $new_value]
+                                );
+                            }
+                        }
+
+                        $old_new_custom_values[$field['id']][$input['old_check_value']] =  $newid;
+                    }
+                }
+            }
+        }
+
+        if (count($old_new_custom_values) > 0) {
+            foreach ($old_new_custom_values as $fieldid => $oldandnews) {
+                $metademand_formvalues = new Form_Value();
+                $fieldformvalues = $metademand_formvalues->find(
+                    ["plugin_metademands_fields_id" => $fieldid]
+                );
+
+                if (count($fieldformvalues) > 0) {
+                    foreach ($fieldformvalues as $key => $fieldformvalue) {
+                        $old_values = json_decode($fieldformvalue['value'], true);
+                        $new_values = [];
+                        if (is_array($old_values)) {
+                            foreach ($old_values as $k => $old_value) {
+                                if (in_array($old_value, array_keys($oldandnews))) {
+                                    $new_value = $oldandnews[$old_value];
+                                    $new_values[] = $new_value;
+                                }
+                            }
+                            $new_values = json_encode($new_values, JSON_UNESCAPED_UNICODE);
+                            $metademand_formvalues->update(
+                                ["id" => $fieldformvalue['id'], "value" => $new_values]
+                            );
+                        } else {
+                            $new_value = 0;
+                            if ($old_values > 0 && isset($oldandnews[$old_values])) {
+                                $new_value = $oldandnews[$old_values];
+                            } else {
+                                if (isset($oldandnews[1])) {
+                                    $new_value = $oldandnews[1];
+                                }
+                            }
+                            if ($new_value > 0) {
+                                $metademand_formvalues->update(
+                                    ["id" => $fieldformvalue['id'], "value" => $new_value]
+                                );
+                            }
+                        }
+                    }
+                }
+
+                $metademand_draftvalues = new Draft_Value();
+                $fielddraftvalues = $metademand_draftvalues->find(
+                    ["plugin_metademands_fields_id" => $fieldid]
+                );
+                if (count($fielddraftvalues) > 0) {
+                    foreach ($fielddraftvalues as $key => $fielddraftvalue) {
+                        $old_values = json_decode($fielddraftvalue['value'], true);
+                        $new_values = [];
+                        if (is_array($old_values)) {
+                            foreach ($old_values as $k => $old_value) {
+                                if (in_array($old_value, array_keys($oldandnews))) {
+                                    $new_value = $oldandnews[$old_value];
+                                    $new_values[] = $new_value;
+                                }
+                            }
+                            $new_values = json_encode($new_values, JSON_UNESCAPED_UNICODE);
+                            $metademand_draftvalues->update(
+                                ["id" => $fielddraftvalue['id'], "value" => $new_values]
+                            );
+                        } else {
+                            $new_value = 0;
+                            if ($old_values > 0 && isset($oldandnews[$old_values])) {
+                                $new_value = $oldandnews[$old_values];
+                            } else {
+                                if (isset($oldandnews[1])) {
+                                    $new_value = $oldandnews[1];
+                                }
+                            }
+                            if ($new_value > 0) {
+                                $metademand_formvalues->update(
+                                    ["id" => $fieldformvalue['id'], "value" => $new_value]
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $migration->dropField($table_fields, "custom_values");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "default_values");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "comment_values");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "hide_title");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "is_mandatory");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "max_upload");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "regex");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "color");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "row_display");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "is_basket");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "display_type");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "used_by_ticket");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "used_by_child");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "link_to_user");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "default_use_id_requester");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "default_use_id_requester_supervisor");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "use_future_date");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "additional_number_day");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "informations_to_display");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "use_richtext");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "icon");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "readonly");
+        $migration->migrationOneTable($table_fields);
+        $migration->dropField($table_fields, "hidden");
+        $migration->migrationOneTable($table_fields);
+
+        $migration->changeField("glpi_plugin_metademands_fieldparameters", 'custom_values', 'custom', "TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;");
+        $migration->migrationOneTable("glpi_plugin_metademands_fieldparameters");
+
+        $migration->changeField("glpi_plugin_metademands_fieldparameters", 'default_values', 'default', "TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;");
+        $migration->migrationOneTable("glpi_plugin_metademands_fieldparameters");
+
+        $migration->dropField("glpi_plugin_metademands_fieldparameters", "comment_values");
+        $migration->migrationOneTable("glpi_plugin_metademands_fieldparameters");
+
+        $migration->executeMigration();
+
+        $query = $DB->buildDelete(
+            "glpi_plugin_metademands_drafts_values",
+            [
+                'plugin_metademands_drafts_id' => 0,
+            ],
+        );
+        $DB->doQuery($query);
+
+        $query = $DB->buildDelete(
+            "glpi_plugin_metademands_forms_values",
+            [
+                'plugin_metademands_forms_id' => 0,
+            ],
+        );
+        $DB->doQuery($query);
+
+        foreach ($DB->request([
+            'SELECT'    => [
+                'profiles_id',
+            ],
+            'FROM'      => 'glpi_profilerights',
+            'WHERE'     => [
+                'name'   => ['LIKE', '%plugin_metademands%'],
+                'rights' => ['>', 10]
+            ],
+        ]) as $prof) {
+            $rights = ['plugin_metademands_validatemeta' => 1];
+            Profile::addDefaultProfileInfos($prof['profiles_id'], $rights);
         }
     }
 }

@@ -321,7 +321,7 @@ class Yesno extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 } else {
@@ -567,7 +567,7 @@ class Yesno extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                     $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
                 } else {
@@ -673,7 +673,7 @@ class Yesno extends CommonDBTM
             }
 
             //Si la valeur est en session
-            if (isset($data['value'])) {
+            if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
                 } else {
@@ -775,9 +775,9 @@ class Yesno extends CommonDBTM
                     //specific - one value
                     $onchange .= FieldOption::setEmptyBlockFields($name);
                     $onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();
-                if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';";
+                                    $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();
+                                    if (document.getElementById('ablock" . $hidden_block . "'))
+                                    document.getElementById('ablock" . $hidden_block . "').style.display = 'none';";
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {

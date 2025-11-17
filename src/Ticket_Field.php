@@ -30,6 +30,8 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use DBConnection;
+use Migration;
 use Session;
 use Toolbox;
 
@@ -74,6 +76,56 @@ class Ticket_Field extends CommonDBTM
     static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `value`                        text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `value2`                       text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `tickets_id`                   int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+                        KEY `tickets_id` (`tickets_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.2.0
+        if (!$DB->fieldExists($table, "value2")) {
+            $migration->addField($table, "value2", "text COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.3.0
+        if ($DB->fieldExists($table, "color")) {
+            $migration->dropField($table, "color");
+            if (!isIndex($table, "plugin_metademands_fields_id")) {
+                $migration->addKey($table, "plugin_metademands_fields_id");
+            }
+            if (!isIndex($table, "tickets_id")) {
+                $migration->addKey($table, "tickets_id");
+            }
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
     }
 
     /**
@@ -159,21 +211,37 @@ class Ticket_Field extends CommonDBTM
 
         $check = [];
 
-        $query = "SELECT `glpi_plugin_metademands_fieldoptions`.`check_value`,
-                       `glpi_plugin_metademands_fields`.`type`,
-                       `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_tasks_id`,
-                       `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`,
-                       `glpi_plugin_metademands_tickets_fields`.`value` as field_value
-               FROM `glpi_plugin_metademands_tickets_fields`
-               RIGHT JOIN `glpi_plugin_metademands_fields`
-                  ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`)
-              RIGHT JOIN `glpi_plugin_metademands_fieldoptions`
-                  ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`)
-               AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
-        $result = $DB->doQuery($query);
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_metademands_fieldoptions.check_value',
+                'glpi_plugin_metademands_fields.type',
+                'glpi_plugin_metademands_fieldoptions.plugin_metademands_tasks_id',
+                'glpi_plugin_metademands_tickets_fields.plugin_metademands_fields_id',
+                'glpi_plugin_metademands_tickets_fields.value AS field_value',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_tickets_fields',
+            'RIGHT JOIN'       => [
+                'glpi_plugin_metademands_fields' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields' => 'id',
+                        'glpi_plugin_metademands_tickets_fields'          => 'plugin_metademands_fields_id'
+                    ]
+                ],
+                'glpi_plugin_metademands_fieldoptions' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields' => 'id',
+                        'glpi_plugin_metademands_fieldoptions'          => 'plugin_metademands_fields_id', [
+                            'AND' => [
+                                'glpi_plugin_metademands_tickets_fields.tickets_id' => $parent_tickets_id,
+                            ],
+                        ],
+                    ]
+                ]
+            ]
+        ]);
 
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
+        if (count($iterator) > 0) {
+            foreach ($iterator as $data) {
 
                 $plugin_metademands_tasks_id = $data['plugin_metademands_tasks_id'];
                 $check_values = $data['check_value'];

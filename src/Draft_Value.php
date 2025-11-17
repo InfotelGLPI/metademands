@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -30,22 +31,68 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
-use Session;
+use DBConnection;
+use Migration;
 
 /**
  * Class Draft_Value
  */
 class Draft_Value extends CommonDBTM
 {
+    public static $rightname = 'plugin_metademands';
 
-    static $rightname = 'plugin_metademands';
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL auto_increment,
+                        `plugin_metademands_drafts_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `value`                        text         NOT NULL,
+                        `value2`                       text         NOT NULL,
+                        PRIMARY KEY (`id`),
+                        KEY `plugin_metademands_drafts_id` (`plugin_metademands_drafts_id`),
+                        KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+        }
+
+        //version 3.2.19
+        if (!$DB->fieldExists($table, "value2")) {
+            $migration->addField($table, "value2", "text NOT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_drafts_id")) {
+            $migration->addKey($table, "plugin_metademands_drafts_id");
+        }
+        if (!isIndex($table, "plugin_metademands_fields_id")) {
+            $migration->addKey($table, "plugin_metademands_fields_id");
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+    }
 
     /**
      * @param $parent_fields
      * @param $values
      * @param $draft_id
      */
-    static function setDraftValues($metademands_id, $parent_fields, $values, $draft_id)
+    public static function setDraftValues($metademands_id, $parent_fields, $values, $draft_id)
     {
         $form_value = new self();
 
@@ -93,15 +140,15 @@ class Draft_Value extends CommonDBTM
                         $linked_docs = [];
                         if ($field['type'] == "upload"
                         ) {
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
-//                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
-//                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
-//                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
-//                            }
+                            //                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
+                            //                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
+                            //                            }
+                            //                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
+                            //                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
+                            //                            }
+                            //                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
+                            //                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
+                            //                            }
 
                             $field['value'] = 'filename';
                         } elseif ($field['type'] == "textarea" && $field['use_richtext'] == 1) {
@@ -123,7 +170,7 @@ class Draft_Value extends CommonDBTM
                                 [
                                     'force_update' => false,
                                     'content_field' => $fieldname,
-                                    '_add_link' => false
+                                    '_add_link' => false,
                                 ]
                             );
 
@@ -184,7 +231,7 @@ class Draft_Value extends CommonDBTM
                     'value' => $field['value'],
                     'value2' => $field['value2'],
                     'plugin_metademands_drafts_id' => $draft_id,
-                    'plugin_metademands_fields_id' => $fields_id
+                    'plugin_metademands_fields_id' => $fields_id,
                 ]);
             }
         }
@@ -195,7 +242,7 @@ class Draft_Value extends CommonDBTM
      * @param $values
      * @param $draft_id
      */
-    static function updateDraftValues($metademands_id, $parent_fields, $values, $draft_id)
+    public static function updateDraftValues($metademands_id, $parent_fields, $values, $draft_id)
     {
         $form_value = new self();
 
@@ -243,15 +290,15 @@ class Draft_Value extends CommonDBTM
                         $linked_docs = [];
                         if ($field['type'] == "upload"
                         ) {
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
-//                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
-//                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
-//                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
-//                            }
+                            //                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
+                            //                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
+                            //                            }
+                            //                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
+                            //                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
+                            //                            }
+                            //                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
+                            //                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
+                            //                            }
 
                             $field['value'] = 'filename';
                         } elseif ($field['type'] == "textarea" && $field['use_richtext'] == 1) {
@@ -273,7 +320,7 @@ class Draft_Value extends CommonDBTM
                                 [
                                     'force_update' => false,
                                     'content_field' => $fieldname,
-                                    '_add_link' => false
+                                    '_add_link' => false,
                                 ]
                             );
 
@@ -341,7 +388,7 @@ class Draft_Value extends CommonDBTM
                         'value' => $field['value'],
                         'value2' => $field['value2'],
                         'plugin_metademands_drafts_id' => $draft_id,
-                        'plugin_metademands_fields_id' => $fields_id
+                        'plugin_metademands_fields_id' => $fields_id,
                     ]);
                 }
 
@@ -354,7 +401,7 @@ class Draft_Value extends CommonDBTM
      * @param $plugin_metademands_drafts_id
      * @param $plugin_metademands_metademands_id
      */
-    static function loadDraftValues($plugin_metademands_metademands_id, $plugin_metademands_drafts_id)
+    public static function loadDraftValues($plugin_metademands_metademands_id, $plugin_metademands_drafts_id)
     {
         $draft_value = new self();
         $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);

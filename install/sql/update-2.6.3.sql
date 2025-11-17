@@ -1,1 +1,0 @@
-ALTER TABLE glpi_plugin_metademands_configs ADD `display_type` tinyint(1) default 1;
