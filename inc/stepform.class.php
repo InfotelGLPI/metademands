@@ -326,10 +326,8 @@ class PluginMetademandsStepform extends CommonDBTM
         if ($item->getType() == 'PluginMetademandsMetademand') {
             $form_metademand_data = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
 
-            if (
-                $this->canView()
+            if ($this->canView()
                 && !$withtemplate) {
-
                 $total                = count($form_metademand_data);
                 $name                 = _n('Form in progress', 'Forms in progress', $total, 'metademands');
 
@@ -360,7 +358,6 @@ class PluginMetademandsStepform extends CommonDBTM
         global $DB;
 
         switch ($item->getType()) {
-
             case 'PluginMetademandsMetademand':
                 self::listFormFromMetademand($item);
                 break;
@@ -391,7 +388,6 @@ class PluginMetademandsStepform extends CommonDBTM
             echo "<th></th>";
             echo "</tr>";
             foreach ($stepforms as $id => $form) {
-
                 echo "<tr>";
                 echo "<td>";
                 echo $id;
@@ -479,10 +475,10 @@ class PluginMetademandsStepform extends CommonDBTM
 
         $stepform   = new PluginMetademandsStepform();
         $waitingForms = [];
-        $stepforms  = $stepform->find([], ["date DESC"] );
+        $stepforms  = $stepform->find([], ["date DESC"]);
 
         foreach ($stepforms as $id => $form) {
-            if((in_array($form['groups_id_dest'], $groups)
+            if ((in_array($form['groups_id_dest'], $groups)
                     && $form['users_id_dest'] == 0)
                 || Session::getLoginUserID() == $form['users_id_dest']) {
                 $waitingForms[$id] = $form;
@@ -491,7 +487,8 @@ class PluginMetademandsStepform extends CommonDBTM
         return $waitingForms;
     }
 
-    public static function showWaitingWarning() {
+    public static function showWaitingWarning()
+    {
 
         $stepforms = self::getWaitingForms();
         if (count($stepforms) > 0) {
@@ -518,27 +515,35 @@ class PluginMetademandsStepform extends CommonDBTM
         }
     }
 
-    public function showWaitingForm()
+    public function showPendingForm()
+    {
+        self::showWaitingForm();
+        self::showWaitingFormReadOnly();
+    }
+
+    private function showWaitingForm()
     {
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
         $rand         = mt_rand();
 
         $stepforms = self::getWaitingForms();
 
-        if (!empty($stepforms)) {
+
             echo "<div class=\"row\">";
             echo "<div class=\"col-md-12\">";
             echo "<h4><div class='alert alert-dark' role='alert'>";
             $icon = "fa-share-alt";
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
+        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+            $icon = $meta->fields['icon'];
+        }
             $cnt = count($stepforms);
             echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-            echo _n('Your form to complete', 'Your forms to complete', $cnt, 'metademands');
+            echo _n('Your form to complete', 'Your forms to complete', $cnt, 'metademands') . '   (' . $cnt . ')';
+        ;
             echo "</div></h4></div></div>";
 
-            echo "<div id='listmeta'>";
+        if (!empty($stepforms)) {
+            echo "<div id='listmeta' class='row' style='padding-left: 20px;'>";
 
             foreach ($stepforms as $id => $name) {
                 $meta = new PluginMetademandsMetademand();
@@ -595,10 +600,6 @@ class PluginMetademandsStepform extends CommonDBTM
                 }
             }
             echo "</div>";
-        } else {
-            echo "<br><div class='alert alert-important alert-info center'>";
-            echo __("No existing forms founded", 'metademands');
-            echo "</div>";
         }
 
         $users_id = Session::getLoginUserID();
@@ -633,8 +634,121 @@ class PluginMetademandsStepform extends CommonDBTM
                      </script>";
     }
 
+    public static function getWaitingFormsByMaker()
+    {
+        $stepform   = new PluginMetademandsStepform();
+        $stepformActors = new PluginMetademandsStepform_Actor();
 
-    function deleteAfterCreate($stepformID, $sendmail = false) {
+        $waitingForms = [];
+        $stepforms  = [];
+
+        $stepforms  = $stepform->find();
+
+        foreach ($stepforms as $id => $form) {
+            if (Session::getLoginUserID() == $form['users_id']) {
+                $waitingForms[$id] = $form;
+            }
+
+            foreach ($stepformActors->find(['plugin_metademands_stepforms_id' => $id]) as $idformactor => $formActor) {
+                if (Session::getLoginUserID() == $formActor['users_id']) {
+                    $waitingForms[$id] = $form;
+                }
+            }
+        }
+        return $waitingForms;
+    }
+
+    private function showWaitingFormReadOnly()
+    {
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
+
+        $stepforms = self::getWaitingFormsByMaker();
+
+
+        echo "<div class=\"row\" style='display: ruby-text; margin-bottom: 15px; margin-top: 60px;'>";
+        echo "<div class=\"col-md-12\">";
+        echo "<h4><div class='alert alert-dark' role='alert'>";
+        $icon = "fa-share-alt";
+        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+            $icon = $meta->fields['icon'];
+        }
+        $cnt = count($stepforms);
+        echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+        echo _n('Form in progress', 'Forms in progress', $cnt, 'metademands') . '   (' . $cnt . ')';
+        echo "</div></h4></div></div>";
+        if (!empty($stepforms)) {
+            echo "<div id='listmeta' class='row' style='padding-left: 20px;'>";
+
+            foreach ($stepforms as $id => $name) {
+                $meta = new PluginMetademandsMetademand();
+                if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
+                    $metaID = $name['plugin_metademands_metademands_id'];
+                    $block_id = $name['block_id'];
+                    echo '<div class="btnsc-normal" style="min-height: 300px" >';
+                    $fasize = "fa-4x";
+                    echo "<div class='center'>";
+                    $icon = "fa-share-alt";
+                    if (!empty($meta->fields['icon'])) {
+                        $icon = $meta->fields['icon'];
+                    }
+                    echo "<i class='sc-colorform bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
+                    echo "</div>";
+
+                    echo "<br><p> <span class='sc-colorform'>";
+                    if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                        echo $meta->getName();
+                    } else {
+                        echo $n;
+                    }
+
+                    echo "</span><br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                    printf(__('Created on %s'), Html::convDate($name['date']));
+                    echo "</span></em>";
+
+                    echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                    echo __('Step', 'metademands');
+                    echo $block_id;
+                    echo "</span></em>";
+                    if ($name['groups_id_dest'] > 0) {
+                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                        echo __('Group in charge of the next step', 'metademands');
+                        echo "<br>";
+                        echo Group::getFriendlyNameById($name['groups_id_dest']);
+                        echo "</span></em>";
+                    }
+                    if ($name['users_id_dest'] > 0) {
+                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                        echo __('User in charge of the next step', 'metademands');
+                        echo "<br>";
+                        echo getUserName($name['users_id_dest']);
+                        echo "</span></em>";
+                    }
+
+
+                    ;
+                    //TODO Change to new right
+                    if (Session::haveRight("plugin_metademands_cancelform", READ)) {
+                        $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                        echo "<br><span style='color:darkred'>";
+                        Html::showSimpleForm(
+                            $target,
+                            'delete_form_from_list',
+                            _sx('button', 'Delete form', 'metademands'),
+                            ['plugin_metademands_stepforms_id' => $id],
+                            'fa-trash-alt fa-1x'
+                        );
+                        echo "</span>";
+                    }
+                    echo "</p></div>";
+                }
+            }
+            echo "</div>";
+        }
+    }
+
+
+    function deleteAfterCreate($stepformID, $sendmail = false)
+    {
 
         $self = new self();
         $self->getFromDB($stepformID);
