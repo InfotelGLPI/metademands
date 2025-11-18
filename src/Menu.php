@@ -84,14 +84,8 @@ class Menu extends CommonDBTM
 
         if ((Session::haveRight("plugin_metademands", READ)
             || Session::haveRight("plugin_metademands_fillform", READ))) {
-            $image                 = "<i class='ti ti-edit' title='" . __('Continue metademand', 'metademands') . "'></i>&nbsp;" . __('Continue metademand', 'metademands');
+            $image                 = "<i class='ti ti-edit' title='" . __('My metademands', 'metademands') . "'></i>&nbsp;" . __('My metademands', 'metademands');
             $menu['links'][$image] = Stepform::getSearchURL(false);
-        }
-
-        if ((Session::haveRight("plugin_metademands", READ)
-            || Session::haveRight("plugin_metademands_fillform", READ))) {
-            $image                 = "<i class='" . Stepformread::getIcon() . "' title='" . __('View progress of current forms', 'metademands') . "'></i>&nbsp;" . __('View progress of current forms', 'metademands');
-            $menu['links'][$image] = Stepformread::getSearchURL(false) . "?standard=1";
         }
 
         $menu['icon'] = self::getIcon();
