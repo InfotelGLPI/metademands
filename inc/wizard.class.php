@@ -1735,6 +1735,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
                     if ($type > 0) {
