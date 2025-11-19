@@ -203,38 +203,6 @@ function plugin_metademands_install()
             FieldParameter::migrateFieldsParameters($migration);
 
         }
-
-        if (!$DB->tableExists("glpi_plugin_metademands_freetablefields", false)) {
-            //version 3.3.20
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.20.sql");
-        }
-
-        //version 3.3.23
-        if (!$DB->fieldExists("glpi_plugin_metademands_configsteps", "see_blocks_as_tab")) {
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.23.sql");
-        }
-
-        //version 3.3.24
-        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "hidden_block_same_block")) {
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.24.sql");
-        }
-
-        //version 3.4.0
-        if (!$DB->fieldExists("glpi_plugin_metademands_fieldcustomvalues", "icon", false)) {
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.4.0.sql");
-        }
-
-        //version 3.4.1
-        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "check_type_value", false)) {
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.4.1.sql");
-        }
-
-        //version 3.5.0
-        if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_pinned", false)) {
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.5.0.sql");
-        }
-
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.5.3.sql");
     }
 
     Interticketfollowup::addNotifications();

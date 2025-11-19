@@ -152,6 +152,12 @@ class FieldOption extends CommonDBChild
             $migration->addField($table, "hidden_block_same_block", " tinyint NOT NULL DEFAULT '0'");
             $migration->migrationOneTable($table);
         }
+
+        if (!$DB->fieldExists($table, "check_type_value")) {
+            $migration->addField($table, "check_type_value", " int unsigned NOT NULL DEFAULT '1'");
+            $migration->addField($table, "check_value_regex", " TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
     }
 
     public static function uninstall()
