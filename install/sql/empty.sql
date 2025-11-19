@@ -46,6 +46,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `is_pinned`                        tinyint                         NOT NULL DEFAULT '0',
     `usage_count`                      int unsigned                    NOT NULL DEFAULT '0',
     `description`                      longtext,
+    `change_step_by_step_option`       tinyint                         NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `name` (`name`),
     KEY `entities_id` (`entities_id`),
