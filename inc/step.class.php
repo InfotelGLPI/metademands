@@ -142,6 +142,34 @@ class PluginMetademandsStep extends CommonDBChild
         return true;
     }
 
+    public static function cleanListBlock($listBlock, $blockIdNow, $metademandId)
+    {
+        $step = new PluginMetademandsStep();
+        $steps = $step->find(['plugin_metademands_metademands_id'=>$metademandId, 'block_id' => $blockIdNow]);
+        $groupBlockIdNow = 0;
+        foreach ($steps as $s) {
+            if ($s['groups_id'] > 0) {
+                $groupBlockIdNow = $s['groups_id'];
+            }
+        }
+
+        if ($groupBlockIdNow > 0) {
+            $finalListBlock = [];
+            foreach ($listBlock as $key => $block) {
+                $steps = $step->find(['plugin_metademands_metademands_id'=>$metademandId, 'block_id' => $block]);
+
+                foreach ($steps as $st) {
+                    if ($st['groups_id'] == $groupBlockIdNow) {
+                        $finalListBlock[] = $block;
+                    }
+                }
+            }
+            return $finalListBlock;
+        }
+
+        return $listBlock;
+    }
+
 
     public static function defineStepblocks($plugin_metademands_metademands_id)
     {
