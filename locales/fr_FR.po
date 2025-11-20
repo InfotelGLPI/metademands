@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-03 10:21+0000\n"
+"POT-Creation-Date: 2025-11-17 08:24+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -911,7 +911,7 @@ msgstr "Total général (HT)"
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
-#: hook.php:485
+#: hook.php:489
 msgid "Group child ticket"
 msgstr "Groupe des tickets enfants"
 
@@ -1140,7 +1140,7 @@ msgstr "Lier ce champ à un champ du plugin \"fields\""
 msgid "Link this to a user field"
 msgstr "Lier ce champ à un champ utilisateur"
 
-#: hook.php:496
+#: hook.php:500
 msgid "Link to metademands"
 msgstr "Lié à une métademande"
 
@@ -1235,7 +1235,7 @@ msgstr[2] "Meta-Demandes"
 msgid "Meta-demands linked"
 msgstr "Meta-Demandes associées"
 
-#: hook.php:456
+#: hook.php:460
 msgid "Metademand approver"
 msgstr "Valideur de la métademande"
 
@@ -1247,7 +1247,7 @@ msgstr "Fichier Métademande à importer"
 msgid "Metademand need a validation"
 msgstr "La métademande nécessite une validation"
 
-#: hook.php:469
+#: hook.php:473
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
@@ -1261,8 +1261,8 @@ msgstr "Validation de la métademande"
 msgid "Metademands global status"
 msgstr "Statut global des métademandes"
 
-#: src/Helpdesk/Tile/MetademandPageTile.php:68
-#: src/Helpdesk/Tile/MetademandPageTile.php:86
+#: src/Helpdesk/Tile/MetademandPageTile.php:70
+#: src/Helpdesk/Tile/MetademandPageTile.php:88
 msgid "Metademands list"
 msgstr "Liste des métademandes"
 
@@ -1270,11 +1270,11 @@ msgstr "Liste des métademandes"
 msgid "Metademands statuses updated"
 msgstr "Statuts des métademandes mis à jour"
 
-#: hook.php:914 src/Metademand.php:8391
+#: hook.php:918 src/Metademand.php:8391
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: hook.php:931 src/Metademand.php:8474
+#: hook.php:935 src/Metademand.php:8474
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
@@ -1744,11 +1744,11 @@ msgstr "Racine"
 msgid "Rule"
 msgstr "Règle"
 
-#: hook.php:896 src/Metademand.php:8225
+#: hook.php:900 src/Metademand.php:8225
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: hook.php:948 src/Metademand.php:8295
+#: hook.php:952 src/Metademand.php:8295
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
@@ -1969,7 +1969,7 @@ msgstr ""
 "L'arborescence des tickets ne peut pas être modifié car des tickets enfants "
 "existent ou activer le mode maintenance"
 
-#: hook.php:508
+#: hook.php:512
 msgid "Technician child ticket"
 msgstr "Techniciens des tickets enfants"
 
@@ -2052,7 +2052,7 @@ msgstr "Le schéma du plugin est bon"
 msgid ""
 "The ranks are not ordered correctly, you will not be able to order them!"
 msgstr ""
-"Les rangs ne sont pas ordonnés correctement., vous ne pourrez pas les "
+"Les rangs ne sont pas ordonnés correctement, vous ne pourrez pas les "
 "ordonner correctement !"
 
 #: src/Ticket.php:322
