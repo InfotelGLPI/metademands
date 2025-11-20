@@ -49,7 +49,7 @@ $meta = new Metademand();
 $stepform = new Stepform();
 
 if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
-    $stepform->showWaitingForm();
+    $stepform->showPendingForm();
 } else {
     throw new AccessDeniedHttpException();
 }
