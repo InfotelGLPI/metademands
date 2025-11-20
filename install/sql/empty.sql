@@ -834,3 +834,12 @@ CREATE TABLE `glpi_plugin_metademands_basketobjecttypetranslations`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
+
+CREATE TABLE `glpi_plugin_metademands_helpdesks_tiles_metademandpagetiles` (
+    `id` int unsigned NOT NULL auto_increment,
+    `title` varchar(255) DEFAULT NULL,
+    `description` text DEFAULT null,
+    `illustration` varchar(255) DEFAULT NULL,
+    `url` text DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;

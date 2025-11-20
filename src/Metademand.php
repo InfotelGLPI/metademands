@@ -8905,7 +8905,7 @@ HTML;
                 foreach ($metademands as $id => $values) {
                     $meta = new Metademand();
                     if ($meta->getFromDB($id)) {
-                        $icon = "fa-share-alt";
+                        $icon = "ti-share";
                         if (!empty($meta->fields['icon'])) {
                             $icon = $meta->fields['icon'];
                         }

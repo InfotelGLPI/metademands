@@ -889,8 +889,10 @@ class Wizard extends CommonDBTM
                 ]
             ],
             'ORDERBY' => 'name',
-            'LIMIT' => $limit,
         ];
+        if (!empty($limit)) {
+            $criteria['LIMIT'] = $limit;
+        }
 
         if ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE) {
             $criteria['WHERE'] = $criteria['WHERE'] + ['type' => $type];
@@ -1149,7 +1151,7 @@ class Wizard extends CommonDBTM
                 echo "<a href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $row['plugin_metademands_metademands_id'] . "&step=" . Metademand::STEP_SHOW . "'>";
                 echo "<div style='margin-right: 5px;'>";
                 echo "<h6>";
-                echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;'>";
+                echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;background-color: white;'>";
                 $stylespan = "md-fav-icon-stack fa-1x";
                 $sizespan = "0.5em";
                 echo "<span class='$stylespan'><i class='ti ti-circle'></i>";

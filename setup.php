@@ -57,7 +57,7 @@ use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
-define('PLUGIN_METADEMANDS_VERSION', '3.5.3');
+define('PLUGIN_METADEMANDS_VERSION', '3.5.4');
 
 global $CFG_GLPI;
 
@@ -99,7 +99,7 @@ function plugin_init_metademands()
 
     if (Session::getLoginUserID()) {
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/fuse.js';
-        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/fuzzysearch.js.php';
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/md_fuzzysearch.js.php';
         //        $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/lib/fuse.js"];
         //        $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/lib/fuzzysearch.js.php"];
 

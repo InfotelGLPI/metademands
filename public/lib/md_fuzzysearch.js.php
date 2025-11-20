@@ -35,7 +35,7 @@ $(function() {
         // remove old fuzzy modal
         //removeFuzzy();
         currentType = $('#meta_type').val();
-
+console.log(currentType);
         // retrieve current menu data
         $.getJSON(root_mt_doc+'/ajax/fuzzysearch.php', {
             'action': 'getList',
