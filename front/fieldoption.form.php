@@ -38,48 +38,54 @@ if (empty($_GET["id"])) {
 
 $field = new FieldOption();
 
-if (isset($_POST["add"])) {
-
-    if (isset($_POST["childs_blocks"])) {
-        $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
-    } else {
-        $_POST["childs_blocks"] = json_encode([]);
+if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
+    if ($_POST['check_type_value'] == 2) {
+        $_POST['check_value_regex'] = $_POST['check_value'];
+        $_POST['check_value'] = 0;
     }
+    if (isset($_POST["add"])) {
+
+        if (isset($_POST["childs_blocks"])) {
+            $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
+        } else {
+            $_POST["childs_blocks"] = json_encode([]);
+        }
 //   // Check update rights for fields
-    $field->check(-1, CREATE, $_POST);
-    $field->add($_POST);
-    Html::back();
+        $field->check(-1, CREATE, $_POST);
+        $field->add($_POST);
+        Html::back();
 
-} else if (isset($_POST["update"])) {
+    } else if (isset($_POST["update"])) {
 
-    if (isset($_POST["childs_blocks"])) {
-        $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
-    } else {
-        $_POST["childs_blocks"] = json_encode([]);
-    }
+        if (isset($_POST["childs_blocks"])) {
+            $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
+        } else {
+            $_POST["childs_blocks"] = json_encode([]);
+        }
 
-    //    Check update rights for fields
-    $field->check(-1, UPDATE, $_POST);
+        //    Check update rights for fields
+        $field->check(-1, UPDATE, $_POST);
 
-    if ($field->update($_POST)) {
+        if ($field->update($_POST)) {
 
-        //Hook to add and update values add from plugins
-        if (isset($PLUGIN_HOOKS['metademands'])) {
-            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                $p = $_POST;
-                $new_res = Field::getPluginSaveOptions($plug, $p);
+            //Hook to add and update values add from plugins
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                    $p = $_POST;
+                    $new_res = Field::getPluginSaveOptions($plug, $p);
+                }
             }
         }
+
+        Html::back();
+
+    } else if (isset($_POST["purge"])) {
+
+        // Check update rights for fields
+        $field->check(-1, DELETE, $_POST);
+        $field->delete($_POST, 1);
+        Html::back();
+
     }
-
-    Html::back();
-
-} else if (isset($_POST["purge"])) {
-
-    // Check update rights for fields
-    $field->check(-1, DELETE, $_POST);
-    $field->delete($_POST, 1);
-    Html::back();
-
 }
 

@@ -558,11 +558,12 @@ class Dropdown extends CommonDBTM
         echo __('Value to check', 'metademands');
         //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
-        echo "<td class = 'dropdown-valuetocheck'>";
-        self::showValueToCheck($fieldoption, $params);
-        echo "</td>";
-
-        echo "<script type = \"text/javascript\">
+        FieldOption::showRegexDropdown($params['check_type_value'], $params['ID']);
+        echo "<td class = 'dropdown-valuetocheck' style='display: flex'>";
+        switch ($params['check_type_value']) {
+            case 1:
+                self::showValueToCheck($fieldoption, $params);
+                echo "<script type = \"text/javascript\">
                  $('td.dropdown-valuetocheck select').on('change', function() {
                  let formOption = [
                      " . $params['ID'] . ",
@@ -573,14 +574,43 @@ class Dropdown extends CommonDBTM
                          $('select[name=\"hidden_block\"]').val(),
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val()
+                         $('select[name=\"checkbox_id\"]').val(),
+                         $('select[name=\"check_type_value\"]').val()
                   ];
 
                      reloadviewOption(formOption);
                  });";
+                echo " </script>";
+                break;
+            case 2:
+                FieldOption::showRegexInput($params['check_value_regex']);
+                echo "<script type = \"text/javascript\">
+                 $('td.dropdown-valuetocheck button.btn-success').on('click', function() {
+                 let formOption = [
+                     " . $params['ID'] . ",
+                         $('td.dropdown-valuetocheck input[name=check_value]').val(),
+                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
+                         $('select[name=\"fields_link\"]').val(),
+                         $('select[name=\"hidden_link\"]').val(),
+                         $('select[name=\"hidden_block\"]').val(),
+                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
+                         $('select[name=\"users_id_validate\"]').val(),
+                         $('select[name=\"checkbox_id\"]').val(),
+                         $('select[name=\"check_type_value\"]').val()
+                  ];
+
+                     reloadviewOption(formOption);
+                 });
+
+                 ";
 
 
-        echo " </script>";
+                echo " </script>";
+                break;
+            default:
+                echo '';
+        }
+        echo "</td>";
 
         echo FieldOption::showLinkHtml($item->getID(), $params);
     }
@@ -734,7 +764,7 @@ class Dropdown extends CommonDBTM
             }
 
 
-            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "$('[name=\"$name\"]').change(async function() {";
 
             $onchange .= "var tohide = {};";
 
@@ -742,12 +772,30 @@ class Dropdown extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
                     $onchange .= "if ($fields_link in tohide) {
-                            } else {
-                                tohide[$fields_link] = true;
-                            }
-                            if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
-                                tohide[$fields_link] = false;
-                            }";
+                        } else {
+                            tohide[$fields_link] = true;
+                        }";
+
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $onchange .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$fields_link] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0)) {
+                            tohide[$fields_link] = false;
+                        }";
+                    }
 
 
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -779,8 +827,8 @@ class Dropdown extends CommonDBTM
                     $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
                 }
 
-                $onchange .= "});";
             }
+            $onchange .= "});";
             echo Html::scriptBlock(
                 '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
             );
@@ -826,7 +874,7 @@ class Dropdown extends CommonDBTM
             }
 
             $name = "field[" . $data["id"] . "]";
-            $script .= "$('[name=\"$name\"]').change(function() {";
+            $script .= "$('[name=\"$name\"]').change(async function() {";
             $script .= "var tohide = {};";
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -834,9 +882,28 @@ class Dropdown extends CommonDBTM
                         } else {
                             tohide[$tasks_id] = true;
                         }
-                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                       ";
+
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $script .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$tasks_id] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $script .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
                             tohide[$tasks_id] = false;
                         }";
+                    }
 
                     $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
@@ -949,29 +1016,43 @@ class Dropdown extends CommonDBTM
                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
             }
 
-            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "$('[name=\"$name\"]').change(async function() {";
 
             $onchange .= "var tohide = {};";
             $display = 0;
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
-                    ";
+                    $onchange .= "if ($hidden_link in tohide) {
+                        } else {
+                            tohide[$hidden_link] = true;
+                        }
+                        ";
                 }
             }
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $onchange .= " if (parseInt($(this).val()) == $idc || $idc == -1) {
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $onchange .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$hidden_link] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $onchange .= "if ( ($(this).val() == $idc ||  ($(this).val() != 0 && $idc == -1 ))) {
                             tohide[$hidden_link] = false;
                         }";
-                }
-            }
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-
+                    }
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_link;
                     }
@@ -1023,6 +1104,9 @@ class Dropdown extends CommonDBTM
         $id = $data["id"];
 
         $name = "field[" . $data["id"] . "]";
+        if ($data["item"] == "ITILCategory_Metademands") {
+            $name = "field_plugin_servicecatalog_itilcategories_id";
+        }
 
         //add childs by idc
         $childs_by_checkvalue = [];
@@ -1043,101 +1127,185 @@ class Dropdown extends CommonDBTM
             }
         }
 
-        $script = "";
-        $script2 = "";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('blocksHiddenScript-dropdown $id');";
+            $onchange = "console.log('blocksHiddenScript-dropdownmeta $id');";
         }
 
         if (count($check_values) > 0) {
-
-            //by default - hide all
-            $script2 .= FieldOption::hideAllblockbyDefault($data);
-            if (!isset($data['value'])) {
-                $script2 .= FieldOption::emptyAllblockbyDefault($check_values);
-            }
-
-            //Si la valeur est en session
-            if (isset($data['value']) &&  $data['value'] > 0) {
-                $script .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
-            }
-
-
-            $script .= "$('[name=\"$name\"]').change(function() {";
-
-            $script .= "var tohide = {};";
-
-            $display = 0;
+            //Initialize default value - force change after onchange fonction
             foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_block'] as $hidden_block) {
-                    $blocks_idc = [];
+                //Default values
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
+                    $custom_values = $data['custom_values'];
+                    foreach ($custom_values as $k => $custom_value) {
+                        if ($k == $idc && $custom_value['is_default'] == 1) {
+                            $post_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
 
-                    $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
-
-                    //specific for radio / dropdowns - one value
-                    $script .= FieldOption::hideAllblockbyDefault($data);
-
-                    $script .= "if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'block';
-                $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
-                $('[bloc-id =\"subbloc'+$hidden_block+'\"]').show();";
-                    $script .= FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
-
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]);
-                                    if (count($options) == 0) {
-                                        $script .= "if (document.getElementById('ablock" . $childs . "'))
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $options = getAllDataFromTable(
+                                                'glpi_plugin_metademands_fieldoptions',
+                                                ['hidden_block' => $childs]
+                                            );
+                                            if (count($options) == 0) {
+                                                $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . FieldOption::setMandatoryBlockFields(
-                                                $metaid,
-                                                $childs
-                                            );
+                                                             " . Fieldoption::setMandatoryBlockFields(
+                                                        $metaid,
+                                                        $childs
+                                                    );
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+
+
+            //by default - hide all
+            $pre_onchange .= Fieldoption::hideAllblockbyDefault($data);
+            if (!isset($data['value'])) {
+                $pre_onchange .= Fieldoption::emptyAllblockbyDefault($check_values);
+            }
+
+            //Si la valeur est en session
+            if (isset($data['value']) &&  $data['value'] > 0) {
+                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                    $values = $data['value'];
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                } else {
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                }
+            }
+
+
+            $onchange .= "$('[name=\"$name\"]').change(async function() {";
+
+            $onchange .= "var tohide = {};";
+            $display = 0;
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_block'] as $hidden_block) {
+                    $onchange .= "if ($hidden_block in tohide) {
+                      } else {
+                        tohide[$hidden_block] = true;
+                      }";
+
+                    if ($check_value['check_type_value'] == 2) {
+                        $regex = str_replace('\\', '\\\\', $idc);
+                        $onchange .= "
+                            await $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                type: 'POST',
+                                datatype: 'HTML',
+                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
+                                success: function (response) {
+                                    if(response == 'true') {
+                                        tohide[$hidden_block] = false;
+                                    }
+                                }
+                            });
+                            ";
+                    } else {
+                        $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
+                        tohide[$hidden_block] = false;
+                    }";
+                    }
+
+
+                    $onchange .= "$.each( tohide, function( key, value ) {
+                    if (value == true) {
+                       var id = 'ablock'+ key;
+                        if (document.getElementById(id))
+                        document.getElementById(id).style.display = 'none';
+                        $('[bloc-id =\"bloc'+ key +'\"]').hide();
+                        $('[bloc-id =\"subbloc'+ key +'\"]').hide();
+                        sessionStorage.setItem('hiddenbloc$name', key);
+                        " . Fieldoption::setEmptyBlockFields($name) . "";
+                    $hidden = Fieldoption::resetMandatoryBlockFields($name);
+                    $onchange .= "$hidden";
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'none';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                                $('[bloc-id =\"subbloc" . $childs . "\"]').hide();";
+                                }
+                            }
+                        }
+                    }
+                    $onchange .= "} else {
+                        var id = 'ablock'+ key;
+                        if (document.getElementById(id))
+                        document.getElementById(id).style.display = 'block';
+                        $('[bloc-id =\"bloc'+ key +'\"]').show();
+                        $('[bloc-id =\"subbloc'+ key +'\"]').show();
+                        ";
+
+                    $hidden = Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
+                    $onchange .= "$hidden";
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $options = getAllDataFromTable(
+                                        'glpi_plugin_metademands_fieldoptions',
+                                        ['hidden_block' => $childs]
+                                    );
+                                    if (count($options) == 0) {
+                                        $onchange .= "if (document.getElementById('ablock" . $childs . "'))
+                                document.getElementById('ablock" . $childs . "').style.display = 'block';
+                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $onchange .= "}
+                });
+          ";
 
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_block;
                     }
 
-                    $script .= " }";
-
-                    $script .= "if ($(this).val() != $idc) {";
-                    if (is_array($blocks_idc) && count($blocks_idc) > 0) {
-                        foreach ($blocks_idc as $k => $block_idc) {
-                            $script .= "if (document.getElementById('ablock" . $block_idc . "'))
-                                    document.getElementById('ablock" . $block_idc . "').style.display = 'none';
-                                    $('[bloc-id =\"bloc" . $block_idc . "\"]').hide();
-                                    $('[bloc-id =\"subbloc" . $block_idc . "\"]').hide();";
+                    if ($data["item"] == "ITILCategory_Metademands") {
+                        if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                            $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                        $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
+                          " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                         }
                     }
-                    $script .= " }";
-
-                    $script .= "if ($(this).val() == 0 ) {";
-                    $script .= FieldOption::hideAllblockbyDefault($data);
-                    $script .= " }";
                 }
             }
-
             if ($display > 0) {
-                $script2 .= "if (document.getElementById('ablock" . $display . "'))
-                document.getElementById('ablock" . $display . "').style.display = 'block';
-                $('[bloc-id =\"bloc" . $display . "\"]').show();
-                $('[bloc-id =\"subbloc" . $display . "\"]').show();";
+                $pre_onchange .= "if (document.getElementById('ablock" . $display . "'))
+                        document.getElementById('ablock" . $display . "').style.display = 'block';
+                        $('[bloc-id =\"bloc" . $display . "\"]').show();
+                        $('[bloc-id =\"subbloc" . $display . "\"]').show();";
             }
 
-            $script .= "});";
+            $onchange .= "});";
 
-            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+            );
         }
     }
 
