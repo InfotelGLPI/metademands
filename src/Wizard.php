@@ -35,6 +35,7 @@ use CommonDBTM;
 use CommonGLPI;
 use CommonITILActor;
 use DbUtils;
+use Glpi\Application\View\Extension\IllustrationExtension;
 use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Servicecatalog\Category;
@@ -254,32 +255,47 @@ class Wizard extends CommonDBTM
 
         echo "<div class='col-md-12 md-title'>";
         echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
-        echo "<section class='card-body' style='width: 100%;height: 80px;'>";
+        echo "<section class='card-body' style='width: 100%;height: 90px;'>";
         echo "<div class='d-flex'>";
-        echo "<div class='aspect-ratio-1' style='margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;'>";
-
 
         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
             $icon = $meta->fields['icon'];
         }
-
-        $stylespan = "md-cat-icon-stack";
-        $sizespan = "1em";
-        if (!empty($title_color)) {
-            $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
-        } else {
-            $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+        if (isset($meta->fields['illustration']) && !empty($meta->fields['illustration'])) {
+            $illustration = $meta->fields['illustration'];
+        }
+        $margintop = "margin-top: -45px";
+        if (empty($illustration)) {
+            $margintop = "margin-top: 5px";
         }
 
-        echo "<span class='$stylespan' style='font-size:1.5em'><i class='ti ti-circle' style='$color;'></i>";
-        if (!empty($icon)) {
+        echo "<div class='aspect-ratio-1' style='$margintop;margin-left: 10px;width: 70px;height: 70px;'>";
+
+        if (!empty($icon) && empty($illustration)) {
+
+            $stylespan = "md-cat-icon-stack";
+            $sizespan = "1em";
+            if (!empty($title_color)) {
+                $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
+            } else {
+                $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+            }
+
+            echo "<span class='$stylespan' style='font-size:1.5em'><i class='ti ti-circle' style='$color;'></i>";
+
             if (str_contains($icon, 'fa-')) {
                 echo "<i class='fa-1x fas $icon' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: $sizespan;\"></i>&nbsp;";
             } else {
                 echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>&nbsp;";
             }
+
+            echo "</span>";
+
+        } else {
+            $ill = new IllustrationExtension();
+            echo $ill->renderIllustration($illustration);
         }
-        echo "</span>";
+
         echo "</div>";
         echo "<div class='ms-4' style='width: 90%;'>";
         echo "<h2 class='card-title mb-2 text-break' $style_title_color>";
@@ -1804,6 +1820,8 @@ class Wizard extends CommonDBTM
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
                     if ($type > 0) {
@@ -3132,6 +3150,8 @@ class Wizard extends CommonDBTM
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
                     if ($type > 0) {

@@ -35,7 +35,6 @@
 namespace GlpiPlugin\Metademands\Helpdesk\Tile;
 
 use CommonDBTM;
-use CommonITILValidation;
 use DBConnection;
 use Glpi\Helpdesk\HelpdeskTranslation;
 use Glpi\Helpdesk\Tile\Item_Tile;
