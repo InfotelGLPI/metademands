@@ -550,7 +550,9 @@ function plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metade
 
     if (metademandparams.updatestepform == 1) {
         document.getElementById('prevBtn').style.display = 'none';
-        document.getElementById('button_save_draft').style.display = 'none';
+        if (document.getElementById('button_save_draft') != null) {
+            document.getElementById('button_save_draft').style.display = 'none';
+        }
     }
 
     if (metademandparams.currentTab == 0) {
