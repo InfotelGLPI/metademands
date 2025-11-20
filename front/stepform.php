@@ -45,7 +45,7 @@ $meta = new PluginMetademandsMetademand();
 $stepform = new PluginMetademandsStepform();
 
 if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
-    $stepform->showWaitingForm();
+    $stepform->showPendingForm();
 } else {
    Html::displayRightError();
 }
