@@ -712,11 +712,6 @@ function plugin_metademands_install() {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.4.0.sql");
     }
 
-    //version 3.4.2
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "change_step_by_step_option")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.4.2.sql");
-    }
-
     //Displayprefs
     $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
     foreach ($prefs as $num => $rank) {
