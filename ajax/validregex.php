@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2025 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -26,38 +27,15 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
+
 include('../../../inc/includes.php');
 
+Session::checkLoginUser();
 
 
-if (Session::getCurrentInterface() == 'central') {
-    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+if (isset($_POST['regex']) && isset($_POST['valeur']) && preg_match($_POST['regex'], $_POST['valeur'])) {
+    echo 'true';
 } else {
-    if (Plugin::isPluginActive('servicecatalog')) {
-        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
-    } else {
-        Html::helpHeader(__('Continue metademand', 'metademands'));
-    }
-}
-
-$meta = new PluginMetademandsMetademand();
-$stepform = new PluginMetademandsStepform();
-
-if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
-    $stepform->showPendingForm();
-} else {
-   Html::displayRightError();
-}
-
-if (Session::getCurrentInterface() != 'central'
-    && Plugin::isPluginActive('servicecatalog')) {
-
-    PluginServicecatalogMain::showNavBarFooter('metademands');
-}
-
-if (Session::getCurrentInterface() == 'central') {
-    Html::footer();
-} else {
-    Html::helpFooter();
+    echo 'false';
 }

@@ -1181,7 +1181,10 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo "<div class='aspect-ratio-1' style='margin-top: 40px;margin-left: 10px;width: 70px;height: 70px;'>";
                         $stylespan = "md-cat-icon-stack fa-2x";
                         $sizespan = "1em";
-                        $color = "color:color-mix(in srgb, transparent, var(--tblr-link-color) var(--tblr-link-opacity, 100%))";
+                        if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+                            $title_color = $meta->fields['title_color'];
+                        }
+                        $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
                         echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
 
                         if (str_contains($icon, 'fa-')) {
@@ -1743,6 +1746,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
                     if ($type > 0) {
@@ -3063,6 +3068,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
                     if ($type > 0) {

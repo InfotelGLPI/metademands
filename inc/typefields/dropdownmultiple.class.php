@@ -725,11 +725,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         echo __('Value to check', 'metademands');
         //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
-        echo "<td class = 'dropdown-valuetocheck'>";
-        self::showValueToCheck($fieldoption, $params);
-        echo "</td>";
-
-        echo "<script type = \"text/javascript\">
+        PluginMetademandsFieldOption::showRegexDropdown($params['check_type_value'], $params['ID']);
+        echo "<td class = 'dropdown-valuetocheck' style='display: flex'>";
+        switch ($params['check_type_value']) {
+            case 1:
+                self::showValueToCheck($fieldoption, $params);
+                echo "<script type = \"text/javascript\">
                  $('td.dropdown-valuetocheck select').on('change', function() {
                  let formOption = [
                      " . $params['ID'] . ",
@@ -740,14 +741,43 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                          $('select[name=\"hidden_block\"]').val(),
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val()
+                         $('select[name=\"checkbox_id\"]').val(),
+                         $('select[name=\"check_type_value\"]').val()
                   ];
                      
                      reloadviewOption(formOption);
                  });";
+                echo " </script>";
+                break;
+            case 2:
+                PluginMetademandsFieldOption::showRegexInput($params['check_value_regex']);
+                echo "<script type = \"text/javascript\">
+                 $('td.dropdown-valuetocheck button.btn-success').on('click', function() {
+                 let formOption = [
+                     " . $params['ID'] . ",
+                         $('td.dropdown-valuetocheck input[name=check_value]').val(),
+                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
+                         $('select[name=\"fields_link\"]').val(),
+                         $('select[name=\"hidden_link\"]').val(),
+                         $('select[name=\"hidden_block\"]').val(),
+                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
+                         $('select[name=\"users_id_validate\"]').val(),
+                         $('select[name=\"checkbox_id\"]').val(),
+                         $('select[name=\"check_type_value\"]').val()
+                  ];
+                     
+                     reloadviewOption(formOption);
+                 });
+                 
+                 ";
 
 
-        echo " </script>";
+                echo " </script>";
+                break;
+            default:
+                echo '';
+        }
+        echo "</td>";
         $params['use_richtext'] = 0;
         echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params);
     }
@@ -960,23 +990,62 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
 
-                        $onchange .= "$.each($(this).val(), function( keys, values ) {
-    
-                            if ($fields_link in tohide) {
+                        $onchange .= "
+                        if ($fields_link in tohide) {
                             } else {
                                 tohide[$fields_link] = true;
-                            }
-                            if (values != 0 && (values == $idc || $idc == 0 )) {
-                                tohide[$fields_link] = false;
-                            }";
-
-                        $onchange .= "});";
+                            } ";
                     }
                 }
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
 
+
+                        if ($check_value['check_type_value'] == 2) {
+                            $regex = str_replace('\\', '\\\\', $idc);
+                            $onchange .= "
+                            var answerresponse = false;
+                            let promises = [];
+                             $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                let p = $.ajax({
+                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                    type: 'POST',
+                                    datatype: 'HTML',
+                                    data: { valeur: $(this).text(), regex: '$regex' },
+                                    success: function (response) {
+                                        if(response == 'true') {
+                                            answerresponse = true;
+                                        }
+                                    }
+                                });
+                                promises.push(p);
+                             });
+                             
+                             
+                             
+                             
+                        
+                            ";
+                        } else {
+
+                            $onchange .= "
+                                $.each($(this).val(), function( keys, values ) {
+                                    if (values != 0 && (values == $idc || $idc == 0 )) {
+                                        tohide[$fields_link] = false;   
+                                    }
+                                });
+                            ";
+                        }
+
+                        if ($check_value['check_type_value'] == 2) {
+                            $onchange .= "
+                            $.when.apply($, promises).done(function() {
+                            if(answerresponse == true){
+                                tohide[$fields_link] = false;
+                             }";
+
+                        }
                         $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             var id = '#metademands_wizard_red'+ key;
@@ -994,6 +1063,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                  " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
                         }
                     });";
+                        if ($check_value['check_type_value'] == 2) {
+                            $onchange .= " });";
+                        }
 
                     }
                 }
@@ -1138,32 +1210,69 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                              } else {
                                 tohide[$tasks_id] = true;
                              }";
+                        }
+                    }
+
+                    foreach ($check_values as $idc => $check_value) {
+                        foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
                             $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
-                            if ($data["item"] == "other") {
-                                if (isset($data['custom_values'])
-                                    && is_array($data['custom_values'])
-                                    && count($data['custom_values']) > 0) {
-                                    $custom_values = $data['custom_values'];
-                                    foreach ($custom_values as $k => $custom_value) {
-                                        if ($k == $idc) {
-                                            $val = Toolbox::addslashes_deep($custom_value['name']);
-                                            //Pas compris
-                                            $script .= "if ($(value).attr('title') == '$val') {
+                            if ($check_value['check_type_value'] == 2) {
+                                $regex = str_replace('\\', '\\\\', $idc);
+                                $script .= "
+                                    var answerresponse = false;
+                                    let promises = [];
+                                     $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                        let p = $.ajax({
+                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                            type: 'POST',
+                                            datatype: 'HTML',
+                                            data: { valeur: $(this).text(), regex: '$regex' },
+                                            success: function (response) {
+                                                if(response == 'true') {
+                                                    answerresponse = true;
+                                                }
+                                            }
+                                        });
+                                        promises.push(p);
+                                     });";
+                            } else {
+                                if ($data["item"] == "other") {
+                                    if (isset($data['custom_values'])
+                                        && is_array($data['custom_values'])
+                                        && count($data['custom_values']) > 0) {
+                                        $custom_values = $data['custom_values'];
+                                        foreach ($custom_values as $k => $custom_value) {
+                                            if ($k == $idc) {
+                                                $val = Toolbox::addslashes_deep($custom_value['name']);
+                                                //Pas compris
+                                                $script .= "if ($(value).attr('title') == '$val') {
                                         tohide[" . $tasks_id . "] = false;
                                     }";
+                                            }
                                         }
                                     }
-                                }
-                            } else {
-                                $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById(
-                                        $tasks_id
-                                    ) . "') {
+                                } else {
+                                    $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById(
+                                            $tasks_id
+                                        ) . "') {
                                     tohide[" . $tasks_id . "] = false;
                                 }";
+                                }
                             }
 
+
                             $script .= "});";
+
+                            if ($check_value['check_type_value'] == 2) {
+                                $script .= "
+                                    $.when.apply($, promises).done(function() {
+                                    if(answerresponse == true){
+                                        tohide[" . $tasks_id . "] = false;
+                                     }";
+
+                            }
+
                             $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
@@ -1190,8 +1299,10 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                 });
 
                         }
-                    });
-              ";
+                    });";
+                            if ($check_value['check_type_value'] == 2) {
+                                $script .= " });";
+                            }
                         }
                     }
                     $script .= "});";
@@ -1452,15 +1563,55 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             } else {
                                 tohide[$hidden_link] = true;
                             }
-                            if (values != 0 && (values == $idc || $idc == 0 )) {
-                                tohide[$hidden_link] = false;
-                            }";
+                            });
+                           ";
+                    }
+                }
 
-                        $onchange .= "});
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['hidden_link'] as $hidden_link) {
+
+                        if ($check_value['check_type_value'] == 2) {
+                            $regex = str_replace('\\', '\\\\', $idc);
+                            $onchange .= "
+                            var answerresponse = false;
+                            let promises = [];
+                            
+                             $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                let p = $.ajax({
+                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                    type: 'POST',
+                                    datatype: 'HTML',
+                                    data: { valeur: $(this).text(), regex: '$regex' },
+                                    success: function (response) {
+                                        if(response == 'true') {
+                                            answerresponse = true;
+                                        }
+                                    }
+                                });
+                                promises.push(p);
+                                
+                             });
+                             
+                        
+                            ";
+                        } else {
+
+                            $onchange .= "
+                               $.each($(this).val(), function( keys, values ) {
+                                    if (values != 0 && (values == $idc || $idc == 0 )) {
+                                        tohide[$hidden_link] = false;   
+                                    }
+                                });
+                            ";
+                        }
+
+
+                        $onchange .= "
                         if(!iswrittemul) {
                             tohide[$hidden_link] = true;
                         }
-                        
+
                         ";
 
                     }
@@ -1478,7 +1629,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }
                         }
 
-                        $onchange .= "$.each( tohide, function( key, value ) {
+                        if ($check_value['check_type_value'] == 2) {
+                            $onchange .= "$.when.apply($, promises).done(function() {
+                            if(answerresponse == true){
+                                tohide[$hidden_link] = false;
+                                }";
+                        }
+                        $onchange .= "
+                       $.each( tohide, function( key, value ) {
                             if (value == true) {
                                 $('[id-field =\"field'+key+'\"]').hide();
                                 sessionStorage.setItem('hiddenlink$name', key);
@@ -1501,6 +1659,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                 $('[id-field =\"field'+key+'\"]').show();
                             }
                         });";
+                        if ($check_value['check_type_value'] == 2) {
+                            $onchange .= " });";
+                        }
                     }
                 }
 
@@ -1762,18 +1923,56 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         } else {
                             tohide[$hidden_block] = true;
                         }";
+                    }
+                }
 
+
+                foreach ($check_values as $idc => $check_value) {
+                    foreach ($check_value['hidden_block'] as $hidden_block) {
                         //                    $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
-                        $script .= "$.each($(this).val(), function( keys, values ) {
-                        if ($hidden_block in tohide) {
-                        } else {
-                            tohide[$hidden_block] = true;
-                        }
-                        if (values != 0 && (values == $idc || $idc == 0 )) {
-                            tohide[$hidden_block] = false;
-                        }";
 
-                        $script .= "});";
+                        if ($check_value['check_type_value'] == 2) {
+                            $regex = str_replace('\\', '\\\\', $idc);
+                            $script .= "
+                            var answerresponse = false;
+                            let promises = [];
+                             $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                let p = $.ajax({
+                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
+                                    type: 'POST',
+                                    datatype: 'HTML',
+                                    data: { valeur: $(this).text(), regex: '$regex' },
+                                    success: function (response) {
+                                        if(response == 'true') {
+                                            answerresponse = true;
+                                        }
+                                    }
+                                });
+                                promises.push(p);
+                             });
+                             
+                             
+                        
+                            ";
+                        } else {
+
+                            $script .= "
+                                $.each($(this).val(), function( keys, values ) {
+                                    if (values != 0 && (values == $idc || $idc == 0 )) {
+                                        tohide[$hidden_block] = false;   
+                                    }
+                                });
+                            ";
+                        }
+
+                        if ($check_value['check_type_value'] == 2) {
+                            $script .= "
+                            $.when.apply($, promises).done(function() {
+                            if(answerresponse == true){
+                                tohide[$hidden_block] = false;
+                             }";
+                        }
+
                         $script .= "$.each( tohide, function( key, value ) {
                     if (value == true) {
                        var id = 'ablock'+ key;
@@ -1829,6 +2028,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                         $script .= "}
                 });";
+                        if ($check_value['check_type_value'] == 2) {
+                            $script .= "});";
+                        }
 
                         if (isset($data['value']) && is_array($data['value'])) {
                             $values = $data['value'];
