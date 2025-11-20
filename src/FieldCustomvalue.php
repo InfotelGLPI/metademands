@@ -346,7 +346,11 @@ class FieldCustomvalue extends CommonDBChild
                 || in_array($params['item'], $allowed_customvalues_items)) {
                 $ranks = [];
                 foreach ($params['custom_values'] as $key => $value) {
-                    $ranks[] = $value['rank'];
+                    if ($params['item'] != 'Appliance') {
+                        $ranks[] = $value['rank'];
+                    } else {
+                        $ranks[] = $key;
+                    }
                 }
                 if (count($ranks) > 0) {
                     $hasDuplicates = count($ranks) > count(array_unique($ranks));
@@ -359,7 +363,8 @@ class FieldCustomvalue extends CommonDBChild
                         echo "</div>";
                     }
 
-                    if (self::isSequentialFromZero($ranks) == false) {
+                    if (self::isSequentialFromZero($ranks) == false
+                    && $params["item"] != "Appliance") {
                         echo "<div class='alert alert-warning flex'>";
                         echo "<div class='left'>";
                         echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
