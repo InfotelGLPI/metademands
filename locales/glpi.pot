@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 08:24+0000\n"
+"POT-Creation-Date: 2025-11-20 08:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,7 +167,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: src/FieldCustomvalue.php:546
+#: src/FieldCustomvalue.php:551
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
@@ -491,7 +491,7 @@ msgstr ""
 msgid "Day greater or equal to now"
 msgstr ""
 
-#: src/FieldCustomvalue.php:597 src/Fields/Dropdownmeta.php:1203
+#: src/FieldCustomvalue.php:602 src/Fields/Dropdownmeta.php:1203
 #: src/Fields/Checkbox.php:288 src/Fields/Radio.php:292
 #: src/Fields/Dropdownmultiple.php:504 src/Fields/Dropdownmultiple.php:591
 #: src/Fields/Yesno.php:165
@@ -640,7 +640,7 @@ msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr ""
 
-#: src/FieldCustomvalue.php:370 src/FieldCustomvalue.php:377 src/Tools.php:512
+#: src/FieldCustomvalue.php:375 src/FieldCustomvalue.php:382 src/Tools.php:512
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -1526,7 +1526,7 @@ msgstr ""
 msgid "Please come back later"
 msgstr ""
 
-#: src/FieldCustomvalue.php:547
+#: src/FieldCustomvalue.php:552
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1589,7 +1589,7 @@ msgstr ""
 msgid "Range"
 msgstr ""
 
-#: src/Freetablefield.php:382 src/FieldCustomvalue.php:578
+#: src/Freetablefield.php:382 src/FieldCustomvalue.php:583
 #: src/Fields/Dropdownmeta.php:1150 src/Fields/Checkbox.php:263
 #: src/Fields/Radio.php:267 src/Fields/Freetable.php:860
 #: src/Fields/Dropdownmultiple.php:566
@@ -1662,7 +1662,7 @@ msgstr ""
 msgid "Requester name"
 msgstr ""
 
-#: src/FieldCustomvalue.php:535
+#: src/FieldCustomvalue.php:540
 msgid "Reset and import custom values"
 msgstr ""
 
@@ -1980,7 +1980,7 @@ msgstr ""
 msgid "The plugin schema is good"
 msgstr ""
 
-#: src/FieldCustomvalue.php:366
+#: src/FieldCustomvalue.php:371
 msgid ""
 "The ranks are not ordered correctly, you will not be able to order them!"
 msgstr ""
@@ -2347,7 +2347,7 @@ msgid ""
 "form fields, making your life easier :)"
 msgstr ""
 
-#: src/FieldCustomvalue.php:681
+#: src/FieldCustomvalue.php:686
 msgid "You can't add a custom value without name"
 msgstr ""
 
@@ -2409,7 +2409,7 @@ msgstr[1] ""
 msgid "You have %s"
 msgstr ""
 
-#: src/FieldCustomvalue.php:356
+#: src/FieldCustomvalue.php:360
 msgid "You have duplicates rank!"
 msgstr ""
 
