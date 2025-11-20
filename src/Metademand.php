@@ -450,6 +450,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         $DB->doQuery($query);
 
         $migration->migrationOneTable($table);
+
+        if (!$DB->fieldExists($table, "change_step_by_step_option")) {
+            $migration->addField($table, "change_step_by_step_option", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
     }
 
     public static function uninstall()
@@ -1738,6 +1743,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         Dropdown::showYesNo("use_confirm", $this->fields['use_confirm']);
         echo "</td>";
 
+        echo "<td>" . __('Move to the next group even if you can continue (only with step by step mode)', 'metademands') . "</td><td>";
+        Dropdown::showYesNo("change_step_by_step_option", $this->fields['change_step_by_step_option']);
+        echo "</td>";
+
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
         echo "<td rowspan='2'>" . __('Comments') . "</td>";
         echo "<td rowspan='2'>";
         Html::textarea([
@@ -1749,6 +1761,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             'enable_fileupload' => false,
         ]);
         echo "</td>";
+        echo "<td colspan='2'></td>";
 
         echo "</tr>";
 
