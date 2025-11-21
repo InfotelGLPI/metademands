@@ -1117,7 +1117,7 @@ class FieldOption extends CommonDBChild
 
     public static function showRegexInput($value){
         echo Html::input('check_value', ['value'=>$value]);
-        echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\" onclick=\"validregex()\">";
+        echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\">";
         echo        "<i class=\"fas fa-check\"></i>";
         echo    "</button>";
     }
@@ -1176,7 +1176,7 @@ class FieldOption extends CommonDBChild
             ) . '</span>';
             echo '</td><td>';
             $tasksusedarray = [];
-            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'], 'check_value' => $params['check_value']]) as $tasksused) {
+            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'], $params['check_type_value'] == 2 ? 'check_value_regex' : 'check_value' => $params['check_value']]) as $tasksused) {
                 if ($tasksused['plugin_metademands_tasks_id'] > 0) {
                     $tasksusedarray[] = $tasksused['plugin_metademands_tasks_id'];
                 }
@@ -1252,7 +1252,7 @@ class FieldOption extends CommonDBChild
             if ($params['check_value'] != "") {
                 foreach ($fieldoptions->find([
                     'plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'],
-                    'check_value' => $params['check_value'],
+                    $params['check_type_value'] == 2 ? 'check_value_regex' : 'check_value' => $params['check_value'],
                 ]) as $hiddenblock) {
                     if ($hiddenblock['hidden_block'] > 0) {
                         $hiddenblockarray[] = $hiddenblock['hidden_block'];
