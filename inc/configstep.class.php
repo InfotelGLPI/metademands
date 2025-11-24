@@ -188,6 +188,18 @@ class PluginMetademandsConfigstep extends CommonDBTM
         echo "</td>";
         echo "</tr>";
 
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Move to the next group even if you can continue (only with step by step mode)', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showYesNo("change_step_by_step_option", $confStep->fields['change_step_by_step_option']);
+        echo "</td>";
+        echo "<td colspan='2'>";
+        echo "</td>";
+        echo "</tr>";
+
+
         echo "<tr><td class='tab_bg_2 center' colspan='6'>";
         echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
         echo Html::submit(_sx('button', 'Update'), ['name' => 'update_configstep', 'class' => 'btn btn-primary']);
