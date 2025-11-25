@@ -2789,6 +2789,28 @@ border-style: none !important; border-color: initial !important;border-image: in
                 echo "</h4>";
             }
         }
+
+        if (!empty($data['label2'])
+            && $data['type'] != 'link'
+            && $data['type'] != "title-block"
+            && $data['type'] != "title") {
+            if (empty($label2 = self::displayField($data['id'], 'label2'))) {
+                $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
+            }
+            $style = "";
+            if ($data['type'] != 'informations') {
+                $style = "style='padding: 10px;'";
+            }
+
+            if ($data['type'] != 'informations') {
+                if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
+                    echo "<div class='alert alert-secondary' $style>";
+                    echo RichText::getSafeHtml($label2);
+                    echo "</div>";
+                }
+            }
+        }
+
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
 
         if ($data['type'] != "title"
@@ -2825,9 +2847,9 @@ border-style: none !important; border-color: initial !important;border-image: in
 
             if ($data['type'] != 'informations') {
                 if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                    echo "<div class='alert alert-secondary' $style>";
-                    echo RichText::getSafeHtml($label2);
-                    echo "</div>";
+//                    echo "<div class='alert alert-secondary' $style>";
+//                    echo RichText::getSafeHtml($label2);
+//                    echo "</div>";
                 } else {
                     echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
                         $label2

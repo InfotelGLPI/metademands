@@ -39,7 +39,8 @@ if (empty($_GET["id"])) {
 $field = new FieldOption();
 
 if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
-    if ($_POST['check_type_value'] == 2) {
+    if (isset($_POST['check_type_value'])
+        && $_POST['check_type_value'] == 2) {
         $_POST['check_value_regex'] = $_POST['check_value'];
         $_POST['check_value'] = 0;
     }

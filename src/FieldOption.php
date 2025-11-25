@@ -34,7 +34,6 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Dropdown;
-use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Dropdownmultiple;
 use Html;
 use Migration;
@@ -153,8 +152,9 @@ class FieldOption extends CommonDBChild
             $migration->migrationOneTable($table);
         }
 
+        //version 3.4.5
         if (!$DB->fieldExists($table, "check_type_value")) {
-            $migration->addField($table, "check_type_value", " int unsigned NOT NULL DEFAULT '1'");
+            $migration->addField($table, "check_type_value", " int {$default_key_sign} NOT NULL DEFAULT '1'");
             $migration->addField($table, "check_value_regex", " TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
@@ -422,8 +422,8 @@ class FieldOption extends CommonDBChild
         $options = $self->find(['plugin_metademands_fields_id' => $item->getID()]);
         if (is_array($options) && count($options) > 0) {
             if ($canedit) {
-                Html::openMassiveActionsForm('mass' . FieldOption::class . $rand);
-                $massiveactionparams = ['container' => 'mass' . FieldOption::class . $rand];
+                Html::openMassiveActionsForm('massfieldoption'  . $rand);
+                $massiveactionparams = ['container' => 'massfieldoption' . $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
             echo "<div class='left'>";
@@ -431,7 +431,7 @@ class FieldOption extends CommonDBChild
             echo "<th colspan='11'>" . __("List of options", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
                 echo "<th width='11'>";
-                echo Html::getCheckAllAsCheckbox('mass' . FieldOption::class . $rand);
+                echo Html::getCheckAllAsCheckbox('massfieldoption' . $rand);
                 echo "</th>";
             }
             echo "<th>" . __("ID") . "</th>";
@@ -1077,7 +1077,8 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    public static function showRegexDropdown($value, $paramID){
+    public static function showRegexDropdown($value, $paramID)
+    {
         echo "<td style='text-align: right'>";
         Dropdown::showFromArray(
             "check_type_value",
@@ -1108,15 +1109,15 @@ class FieldOption extends CommonDBChild
                      $('select[name=\"checkbox_id\"]').val(),
                      $('select[name=\"check_type_value\"]').val()
               ];
-                 console.log(formOption);
                  reloadviewOption(formOption);
              });";
         echo " </script>";
         echo "</td>";
     }
 
-    public static function showRegexInput($value){
-        echo Html::input('check_value', ['value'=>$value]);
+    public static function showRegexInput($value)
+    {
+        echo Html::input('check_value', ['value' => $value]);
         echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\" onclick=\"validregex()\">";
         echo        "<i class=\"fas fa-check\"></i>";
         echo    "</button>";
@@ -1511,26 +1512,26 @@ class FieldOption extends CommonDBChild
      *
      * @param $plug
      */
-        public static function getPluginShowOptions($plug, $params)
-        {
-            global $PLUGIN_HOOKS;
+    public static function getPluginShowOptions($plug, $params)
+    {
+        global $PLUGIN_HOOKS;
 
-            $dbu = new DbUtils();
-            if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-                $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
 
-                foreach ($pluginclasses as $pluginclass) {
-                    if (!class_exists($pluginclass)) {
-                        continue;
-                    }
-                    $form[$pluginclass] = [];
-                    $item = $dbu->getItemForItemtype($pluginclass);
-                    if ($item && is_callable([$item, 'showOptions'])) {
-                        return $item->showOptions($params);
-                    }
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'showOptions'])) {
+                    return $item->showOptions($params);
                 }
             }
         }
+    }
 
 
     /**
@@ -2569,7 +2570,7 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    static function preMigrateFieldsOptions($migration)
+    public static function preMigrateFieldsOptions($migration)
     {
         global $DB;
 
@@ -2722,7 +2723,7 @@ class FieldOption extends CommonDBChild
         Ticket_Metademand::migrateAllClosedMetademands();
 
     }
-    static function migrateFieldsOptions($migration)
+    public static function migrateFieldsOptions($migration)
     {
         global $DB;
 
@@ -2743,18 +2744,19 @@ class FieldOption extends CommonDBChild
                 if (is_array($check_values)) {
                     foreach ($check_values as $k => $check_value) {
 
-                        if (($f["type"] == 'date' ||
-                                $f["type"] == 'datetime' ||
-                                $f["type"] == 'date_interval' ||
-                                $f["type"] == 'datetime_interval'
-                            ) && $check_value == 1) {
+                        if ((
+                            $f["type"] == 'date'
+                                || $f["type"] == 'datetime'
+                                || $f["type"] == 'date_interval'
+                                || $f["type"] == 'datetime_interval'
+                        ) && $check_value == 1) {
                             $field->update(["id" => $f["id"], "use_future_date" => 1]);
                         }
 
-                        if ($f["type"] != 'date' &&
-                            $f["type"] != 'datetime' &&
-                            $f["type"] != 'date_interval' &&
-                            $f["type"] != 'datetime_interval') {
+                        if ($f["type"] != 'date'
+                            && $f["type"] != 'datetime'
+                            && $f["type"] != 'date_interval'
+                            && $f["type"] != 'datetime_interval') {
 
 
                             $input["check_value"] = $check_value;
@@ -2923,10 +2925,10 @@ class FieldOption extends CommonDBChild
 
                 } else {
 
-                    if ($f["type"] != 'date' &&
-                        $f["type"] != 'datetime' &&
-                        $f["type"] != 'date_interval' &&
-                        $f["type"] != 'datetime_interval') {
+                    if ($f["type"] != 'date'
+                        && $f["type"] != 'datetime'
+                        && $f["type"] != 'date_interval'
+                        && $f["type"] != 'datetime_interval') {
                         $input["check_value"] = $check_value = $f["check_value"];
 
                         $plugin_metademands_tasks_id = FieldParameter::_unserialize($f['plugin_metademands_tasks_id']);

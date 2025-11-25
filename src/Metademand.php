@@ -450,16 +450,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         $DB->doQuery($query);
 
         $migration->migrationOneTable($table);
-
-        if (!$DB->fieldExists($table, "change_step_by_step_option")) {
-            $migration->addField($table, "change_step_by_step_option", "tinyint NOT NULL DEFAULT '0'");
-            $migration->migrationOneTable($table);
-        }
-
-        if ($DB->fieldExists($table, "change_step_by_step_option")) {
-            $migration->dropField($table, "change_step_by_step_option");
-            $migration->migrationOneTable($table);
-        }
     }
 
     public static function uninstall()

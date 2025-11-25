@@ -203,6 +203,16 @@ function plugin_metademands_install()
             FieldParameter::migrateFieldsParameters($migration);
 
         }
+
+        //version 3.4.5
+        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "check_type_value")) {
+            FieldOption::install($migration);
+        }
+
+        //version 3.5.5
+        if (!$DB->fieldExists("glpi_plugin_metademands_configsteps", "change_step_by_step_option")) {
+            Configstep::install($migration);
+        }
     }
 
     Interticketfollowup::addNotifications();

@@ -106,6 +106,7 @@ class Configstep extends CommonDBTM
                         `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',
                         `supervisor_validation`             tinyint      NOT NULL DEFAULT '0',
                         `step_by_step_interface`            tinyint      NOT NULL DEFAULT '0',
+                        `change_step_by_step_option`        tinyint      NOT NULL DEFAULT '0',
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
@@ -129,7 +130,7 @@ class Configstep extends CommonDBTM
             $migration->addField($table, "supervisor_validation", " tinyint NOT NULL DEFAULT '0'");
             $migration->migrationOneTable($table);
         }
-
+        //version 3.5.5
         if (!$DB->fieldExists($table, "change_step_by_step_option")) {
             $migration->addField($table, "change_step_by_step_option", "tinyint NOT NULL DEFAULT '0'");
             $migration->migrationOneTable($table);
