@@ -46,7 +46,6 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `is_pinned`                        tinyint                         NOT NULL DEFAULT '0',
     `usage_count`                      int unsigned                    NOT NULL DEFAULT '0',
     `description`                      longtext,
-    `change_step_by_step_option`       tinyint                         NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `name` (`name`),
     KEY `entities_id` (`entities_id`),
@@ -726,6 +725,7 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
     `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',
     `supervisor_validation`             tinyint      NOT NULL DEFAULT '0',
     `step_by_step_interface`            tinyint      NOT NULL DEFAULT '0',
+    `change_step_by_step_option`        tinyint      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB

@@ -1640,13 +1640,18 @@ class Wizard extends CommonDBTM
             }
         }
 
-        if ($metademands->fields['change_step_by_step_option'] == 1) {
-            $block_id_now = $block_id == 0 ? 1 : $block_id;
-            $listStepBlocks = Step::cleanListBlock(
-                $listStepBlocks,
-                $block_id_now,
-                $metademands->fields['id']
-            );
+        if ($metademands->fields['step_by_step_mode'] == 1) {
+            $metademandsconfigsteps = new Configstep();
+            foreach ($metademandsconfigsteps->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]) as $row) {
+                if ($row['change_step_by_step_option'] == 1) {
+                    $block_id_now = $block_id == 0 ? 1 : $block_id;
+                    $listStepBlocks = Step::cleanListBlock(
+                        $listStepBlocks,
+                        $block_id_now,
+                        $metademands->fields['id']
+                    );
+                }
+            }
         }
 
         $fields = new Field();
