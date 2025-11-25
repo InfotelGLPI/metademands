@@ -129,6 +129,11 @@ class Configstep extends CommonDBTM
             $migration->addField($table, "supervisor_validation", " tinyint NOT NULL DEFAULT '0'");
             $migration->migrationOneTable($table);
         }
+
+        if (!$DB->fieldExists($table, "change_step_by_step_option")) {
+            $migration->addField($table, "change_step_by_step_option", "tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
     }
 
     public static function uninstall()
@@ -257,6 +262,17 @@ class Configstep extends CommonDBTM
         $step_by_step = $confStep->fields['step_by_step_interface'] ?? self::BOTH_INTERFACE;
         \Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $step_by_step]);
         echo "</td>";
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo  __('Move to the next group even if you can continue (only with step by step mode)', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        \Dropdown::showYesNo("change_step_by_step_option", $confStep->fields['change_step_by_step_option']);
+        echo "</td>";
+        echo "<td colspan='2'>";
+        echo "</td>";;
         echo "</tr>";
 
         echo "<tr><td class='tab_bg_2 center' colspan='6'>";
