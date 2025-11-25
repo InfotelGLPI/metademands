@@ -53,7 +53,7 @@ class PluginMetademandsDropdown extends CommonDBTM
     }
 
     public static function getLocations(
-        $entities_id = 0,
+        $entities_id = 0
     ) {
         /** @var DBmysql $DB */
         global $DB;

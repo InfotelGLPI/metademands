@@ -231,7 +231,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
         echo "<div class='col-md-12 md-title'>";
         echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
-        echo "<section class='card-body' style='width: 100%;height: 80px;'>";
+        echo "<section class='card-body' style='width: 100%;'>";//height: 80px;
         echo "<div class='d-flex'>";
         echo "<div class='aspect-ratio-1' style='margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;'>";
 
@@ -1200,7 +1200,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo "</h2>";
                         echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
                         if (!empty($comment_meta)) {
-                            echo $comment_meta;
+                            echo nl2br($comment_meta);
                         } else {
                             echo $name_meta;
                         }
