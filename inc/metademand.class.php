@@ -1369,8 +1369,7 @@ JAVASCRIPT
         Dropdown::showYesNo("use_confirm", $this->fields['use_confirm']);
         echo "</td>";
 
-        echo "<td>" . __('Move to the next group even if you can continue (only with step by step mode)', 'metademands') . "</td><td>";
-        Dropdown::showYesNo("change_step_by_step_option", $this->fields['change_step_by_step_option']);
+        echo "<td>";
         echo "</td>";
         echo "</tr>";
 
