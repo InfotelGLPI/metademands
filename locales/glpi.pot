@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 10:18+0000\n"
+"POT-Creation-Date: 2025-11-26 11:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -406,7 +406,7 @@ msgstr ""
 msgid "Create a meta-demand"
 msgstr ""
 
-#: front/wizard.form.php:288 src/Menu.php:62 src/Menu.php:67
+#: front/wizard.form.php:289 src/Menu.php:62 src/Menu.php:67
 msgid "Create a metademand"
 msgstr ""
 
@@ -550,7 +550,7 @@ msgstr ""
 msgid "Delete the draft"
 msgstr ""
 
-#: src/Basketline.php:304
+#: src/Basketline.php:316
 msgctxt "button"
 msgid "Delete this line"
 msgstr ""
@@ -1232,7 +1232,7 @@ msgstr ""
 msgid "Metademands to be validated"
 msgstr ""
 
-#: src/Fields/Number.php:131 src/Fields/Range.php:183
+#: src/Fields/Number.php:133 src/Fields/Range.php:183
 msgid "Minimal mandatory"
 msgstr ""
 
@@ -1793,7 +1793,7 @@ msgstr ""
 msgid "Select the next group"
 msgstr ""
 
-#: src/Basketline.php:167 src/Fields/Basket.php:1835
+#: src/Basketline.php:168 src/Fields/Basket.php:1835
 msgctxt "button"
 msgid "Send order"
 msgstr ""
@@ -1840,7 +1840,7 @@ msgstr[1] ""
 msgid "Step by step settings"
 msgstr ""
 
-#: src/Fields/Number.php:125 src/Fields/Range.php:177
+#: src/Fields/Number.php:127 src/Fields/Range.php:177
 msgid "Step for number"
 msgstr ""
 
@@ -1962,11 +1962,11 @@ msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
 msgstr ""
 
-#: src/Basketline.php:448
+#: src/Basketline.php:471
 msgid "The line has been deleted"
 msgstr ""
 
-#: src/Basketline.php:437
+#: src/Basketline.php:460
 msgid "The line has been updated"
 msgstr ""
 
@@ -2193,7 +2193,7 @@ msgstr ""
 msgid "Update the draft"
 msgstr ""
 
-#: src/Basketline.php:298
+#: src/Basketline.php:306
 msgctxt "button"
 msgid "Update this line"
 msgstr ""
