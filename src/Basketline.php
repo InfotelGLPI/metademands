@@ -128,11 +128,20 @@ class Basketline extends CommonDBTM
                 echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
                 echo __('Your basket', 'metademands');
 
-                echo "<div class='mydraft right' style='display: inline;float: right;'>";
-                echo "&nbsp;<button type='submit' class='pointer btn btn-light' name='clear_basket' title='"
-                    . _sx('button', 'Clear the basket', 'metademands') . "'>";
-                echo "<i class='ti ti-trash' data-hasqtip='0' aria-hidden='true'></i>";
-                echo "</button>";
+                echo "<div class='mydraft right' style='display: inline;'><br>";
+                
+                $target = Toolbox::getItemTypeFormURL(Wizard::class);
+                Html::showSimpleForm(
+                    $target,
+                    'clear_basket',
+                    _sx('button', 'Clear the basket', 'metademands'),
+                    [
+                        'metademands_id' => $metademands_id,
+                    ],
+                    'ti-trash',
+                    "class='btn btn-primary'"
+                );
+
                 echo "</div>";
                 echo Html::hidden('metademands_id', ['value' => $metademands_id]);
                 echo Html::hidden('form_metademands_id', ['value' => $metademands_id]);

@@ -291,7 +291,7 @@ class Wizard extends CommonDBTM
 
             echo "</span>";
 
-        } else {
+        } elseif (!empty($illustration)) {
             $ill = new IllustrationExtension();
             echo $ill->renderIllustration($illustration);
         }
