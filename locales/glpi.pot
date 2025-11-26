@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 08:16+0000\n"
+"POT-Creation-Date: 2025-11-26 10:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Add attachment"
 msgstr ""
 
-#: src/Wizard.php:1433 src/Wizard.php:1495
+#: src/Wizard.php:1432 src/Wizard.php:1494
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
@@ -550,7 +550,7 @@ msgstr ""
 msgid "Delete the draft"
 msgstr ""
 
-#: src/Basketline.php:294
+#: src/Basketline.php:295
 msgctxt "button"
 msgid "Delete this line"
 msgstr ""
@@ -582,8 +582,8 @@ msgid "Departure date"
 msgstr ""
 
 #: src/Basketobject.php:141 src/Basketobject.php:239 src/Fields/Basket.php:160
-#: src/Fields/Basket.php:1508 src/Fields/Basket.php:2022
-#: src/Fields/Basket.php:2373
+#: src/Fields/Basket.php:1508 src/Fields/Basket.php:2023
+#: src/Fields/Basket.php:2374
 msgid "Designation"
 msgstr ""
 
@@ -743,7 +743,7 @@ msgid "Error when creating export archive"
 msgstr ""
 
 #: src/Fields/Basket.php:169 src/Fields/Basket.php:1539
-#: src/Fields/Basket.php:2049
+#: src/Fields/Basket.php:2050
 msgid "Estimated unit price"
 msgstr ""
 
@@ -878,7 +878,7 @@ msgstr ""
 
 #: src/MetademandPdf.php:429 src/MetademandPdf.php:522
 #: src/Fields/Freetable.php:788 src/Fields/Freetable.php:1200
-#: src/Fields/Basket.php:1814 src/Fields/Basket.php:2298
+#: src/Fields/Basket.php:1814 src/Fields/Basket.php:2299
 msgid "Grand total (HT)"
 msgstr ""
 
@@ -1341,7 +1341,7 @@ msgstr ""
 msgid "No file specified"
 msgstr ""
 
-#: src/Fields/Basket.php:1908
+#: src/Fields/Basket.php:1909
 msgid "No items on basket"
 msgstr ""
 
@@ -1435,13 +1435,13 @@ msgid_plural "Object types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Fields/Basket.php:2155
+#: src/Fields/Basket.php:2156
 msgid "On catalog"
 msgstr ""
 
 #: src/Fields/Basket.php:273 src/Fields/Basket.php:429
 #: src/Fields/Basket.php:526 src/Fields/Basket.php:1657
-#: src/Fields/Basket.php:1750 src/Fields/Basket.php:2147
+#: src/Fields/Basket.php:1750 src/Fields/Basket.php:2148
 msgid "On quotation"
 msgstr ""
 
@@ -1490,7 +1490,7 @@ msgstr ""
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: src/Fields/Basket.php:2030
+#: src/Fields/Basket.php:2031
 msgid "Order type"
 msgstr ""
 
@@ -1581,8 +1581,8 @@ msgid "Publisher"
 msgstr ""
 
 #: src/Fields/Basket.php:187 src/Fields/Basket.php:1559
-#: src/Fields/Basket.php:2043 src/Fields/Basket.php:2379
-#: src/Fields/Basket.php:2422
+#: src/Fields/Basket.php:2044 src/Fields/Basket.php:2380
+#: src/Fields/Basket.php:2423
 msgid "Quantity"
 msgstr ""
 
@@ -1614,8 +1614,8 @@ msgid "Recipients"
 msgstr ""
 
 #: src/Basketobject.php:158 src/Basketobject.php:263 src/Fields/Basket.php:158
-#: src/Fields/Basket.php:1507 src/Fields/Basket.php:2020
-#: src/Fields/Basket.php:2371
+#: src/Fields/Basket.php:1507 src/Fields/Basket.php:2021
+#: src/Fields/Basket.php:2372
 msgid "Reference"
 msgstr ""
 
@@ -1724,7 +1724,7 @@ msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: src/Draft.php:311 src/Draft.php:679 src/Draft.php:761
+#: src/Draft.php:311 src/Draft.php:679 src/Draft.php:760
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
@@ -1962,11 +1962,11 @@ msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
 msgstr ""
 
-#: src/Basketline.php:438
+#: src/Basketline.php:439
 msgid "The line has been deleted"
 msgstr ""
 
-#: src/Basketline.php:427
+#: src/Basketline.php:428
 msgid "The line has been updated"
 msgstr ""
 
@@ -2143,13 +2143,13 @@ msgstr ""
 
 #: src/Fields/Basket.php:206 src/Fields/Basket.php:211
 #: src/Fields/Basket.php:1573 src/Fields/Basket.php:1579
-#: src/Fields/Basket.php:1585 src/Fields/Basket.php:2303
-#: src/Fields/Basket.php:2310
+#: src/Fields/Basket.php:1585 src/Fields/Basket.php:2304
+#: src/Fields/Basket.php:2311
 msgid "Total"
 msgstr ""
 
 #: src/Fields/Basket.php:200 src/Fields/Basket.php:1568
-#: src/Fields/Basket.php:2072 src/Fields/Basket.php:2401
+#: src/Fields/Basket.php:2073 src/Fields/Basket.php:2402
 msgid "Total (HT)"
 msgstr ""
 
@@ -2171,12 +2171,12 @@ msgid "Type of value to check"
 msgstr ""
 
 #: src/Fields/Basket.php:178 src/Fields/Basket.php:1549
-#: src/Fields/Basket.php:2039 src/Fields/Basket.php:2385
+#: src/Fields/Basket.php:2040 src/Fields/Basket.php:2386
 msgid "Unit"
 msgstr ""
 
 #: src/Fields/Basket.php:181 src/Fields/Basket.php:1552
-#: src/Fields/Basket.php:2061 src/Fields/Basket.php:2397
+#: src/Fields/Basket.php:2062 src/Fields/Basket.php:2398
 msgid "Unit price (HT)"
 msgstr ""
 
@@ -2193,7 +2193,7 @@ msgstr ""
 msgid "Update the draft"
 msgstr ""
 
-#: src/Basketline.php:288
+#: src/Basketline.php:289
 msgctxt "button"
 msgid "Update this line"
 msgstr ""
@@ -2269,7 +2269,7 @@ msgstr ""
 msgid "Validate without child"
 msgstr ""
 
-#: src/Wizard.php:1505
+#: src/Wizard.php:1504
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
