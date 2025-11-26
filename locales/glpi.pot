@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 10:08+0000\n"
+"POT-Creation-Date: 2025-11-26 10:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -326,7 +326,7 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: src/Basketline.php:133
+#: src/Basketline.php:137
 msgctxt "button"
 msgid "Clear the basket"
 msgstr ""
@@ -550,7 +550,7 @@ msgstr ""
 msgid "Delete the draft"
 msgstr ""
 
-#: src/Basketline.php:295
+#: src/Basketline.php:304
 msgctxt "button"
 msgid "Delete this line"
 msgstr ""
@@ -1793,7 +1793,7 @@ msgstr ""
 msgid "Select the next group"
 msgstr ""
 
-#: src/Basketline.php:158 src/Fields/Basket.php:1835
+#: src/Basketline.php:167 src/Fields/Basket.php:1835
 msgctxt "button"
 msgid "Send order"
 msgstr ""
@@ -1962,11 +1962,11 @@ msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
 msgstr ""
 
-#: src/Basketline.php:439
+#: src/Basketline.php:448
 msgid "The line has been deleted"
 msgstr ""
 
-#: src/Basketline.php:428
+#: src/Basketline.php:437
 msgid "The line has been updated"
 msgstr ""
 
@@ -2193,7 +2193,7 @@ msgstr ""
 msgid "Update the draft"
 msgstr ""
 
-#: src/Basketline.php:289
+#: src/Basketline.php:298
 msgctxt "button"
 msgid "Update this line"
 msgstr ""
