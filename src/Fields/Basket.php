@@ -1832,11 +1832,12 @@ class Basket extends CommonDBTM
                 $content .= Draft::createDraftInput(Draft::BASKET_MODE);
             }
             $content .= "<span style='float:right'>";
-            $title = "<i class='ti ti-shopping-bag'></i> " . _sx('button', 'Send order', 'metademands');
+            $title = _sx('button', 'Send order', 'metademands');
 
             $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
             $content .= Html::submit($title, [
                 'name' => 'send_order',
+                'icon' => 'ti ti-shopping-bag',
                 'form' => '',
                 'id' => 'submitOrder',
                 'class' => 'btn btn-success right',

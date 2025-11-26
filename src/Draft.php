@@ -757,10 +757,10 @@ class Draft extends CommonDBTM
             'placeholder' => __('Draft name', 'metademands'),
         ]);
 
-        $titl_submit_button = "<i class='ti ti-cloud-upload pointer'></i>&nbsp;";
-        $titl_submit_button .= _sx('button', 'Save as draft', 'metademands');
+        $titl_submit_button = _sx('button', 'Save as draft', 'metademands');
         $submit_button = Html::submit($titl_submit_button, [
             'name' => 'save_draft',
+            'icon' => 'ti ti-cloud-upload pointer',
             'form' => '',
             'id' => 'submitSave',
             'class' => 'btn btn-success btn-sm',

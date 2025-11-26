@@ -1429,10 +1429,10 @@ class Wizard extends CommonDBTM
                                 )
                             ) {
                                 echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-                                $title = "<i class='ti ti-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                                $title .= _sx('button', 'Add to basket', 'metademands');
+                                $title = _sx('button', 'Add to basket', 'metademands');
                                 echo Html::submit($title, [
                                     'name' => 'add_to_basket',
+                                    'icon' => 'ti ti-plus',
                                     'id' => 'add_to_basket',
                                     'class' => 'btn btn-primary',
                                 ]);
@@ -1491,22 +1491,22 @@ class Wizard extends CommonDBTM
                         "users_id" => Session::getLoginUserID(),
                     ]
                 )) {
-                    $title = "<i class='ti ti-plus'></i>&nbsp;";
-                    $title .= _sx('button', 'Add to basket', 'metademands');
+                    $title = _sx('button', 'Add to basket', 'metademands');
                     echo Html::submit($title, [
                         'name' => 'add_to_basket',
                         'id' => 'add_to_basket',
+                        'icon' => 'ti ti-plus',
                         'class' => 'metademand_next_button btn btn-primary',
                     ]);
                 } else {
                     echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                     echo "</div>";
-                    $title = "<i class='ti ti-device-floppy'></i>&nbsp;";
-                    $title .= _sx('button', 'Validate your basket', 'metademands');
+                    $title = _sx('button', 'Validate your basket', 'metademands');
                     echo Html::hidden('see_basket_summary', ['value' => 1]);
                     echo Html::submit($title, [
                         'name' => 'next_button',
                         'form' => '',
+                        'icon' => 'ti ti-device-floppy',
                         'id' => 'submitjob',
                         'class' => 'metademand_next_button btn btn-success',
                     ]);

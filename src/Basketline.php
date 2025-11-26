@@ -155,11 +155,12 @@ class Basketline extends CommonDBTM
 
 
                 echo "<span style='float:right'>";
-                $title = "<i class='ti ti-shopping-bag'></i> " . _sx('button', 'Send order', 'metademands');
+                $title = _sx('button', 'Send order', 'metademands');
 
                 $current_ticket = $post["current_ticket_id"] = $post["tickets_id"];
                 echo Html::submit($title, ['name' => 'send_order',
                     'form' => '',
+                    'icon' => 'ti ti-shopping-bag',
                     'id' => 'submitOrder',
                     'class' => 'btn btn-success right']);
                 echo "</span>";
