@@ -204,10 +204,11 @@ if (isset($_POST['add_to_basket'])) {
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
 } elseif (isset($_POST['update_basket_line'])) {
     $line = $_POST['update_basket_line'];
-    if (isset($_POST['field_basket_' . $line])) {
-        $KO = false;
+    $KO = false;
+    $checks = [];
 
-        $checks = [];
+    if (isset($_POST['field_basket_' . $line])) {
+
         $content = [];
         $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
 

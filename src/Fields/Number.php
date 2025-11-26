@@ -89,7 +89,9 @@ class Number extends CommonDBTM
                 ];
             }
         }
-
+        if ($opt['value'] == 'null') {
+            $opt['value'] = 0;
+        }
         $field = \Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
 
         echo $field;
