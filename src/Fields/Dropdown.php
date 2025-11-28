@@ -282,6 +282,7 @@ class Dropdown extends CommonDBTM
                 if ($data['link_to_user'] > 0) {
                     echo "<div id='title_user" . $data['link_to_user'] . "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                    $_POST['fields_id']    = $data['id'];
                     $_POST['usertitles_id'] = $value;
                     $fieldUser             = new Field();
                     $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],

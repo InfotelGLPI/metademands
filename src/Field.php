@@ -108,12 +108,12 @@ if (!defined('GLPI_ROOT')) {
 
 
 /**
-/**
  * Class Field
  */
 class Field extends CommonDBChild
 {
     use Clonable;
+
     public static $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
@@ -255,10 +255,10 @@ class Field extends CommonDBChild
     {
         global $DB;
 
-        $default_charset   = DBConnection::getDefaultCharset();
+        $default_charset = DBConnection::getDefaultCharset();
         $default_collation = DBConnection::getDefaultCollation();
-        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
-        $table  = self::getTable();
+        $default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
+        $table = self::getTable();
 
         if (!$DB->tableExists($table)) {
             $query = "CREATE TABLE `$table` (
@@ -304,7 +304,11 @@ class Field extends CommonDBChild
             $migration->migrationOneTable($table);
         }
         if (!$DB->fieldExists($table, "plugin_metademands_fields_id")) {
-            $migration->addField($table, "plugin_metademands_fields_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            $migration->addField(
+                $table,
+                "plugin_metademands_fields_id",
+                "int {$default_key_sign} NOT NULL DEFAULT '0'"
+            );
             if (!isIndex($table, "plugin_metademands_fields_id")) {
                 $migration->addKey($table, "plugin_metademands_fields_id");
             }
@@ -320,7 +324,7 @@ class Field extends CommonDBChild
         }
 
         //Version 2.7.4
-        $field  = new Field();
+        $field = new Field();
         $fields = $field->find(['type' => "dropdown", "item" => "user"]);
         foreach ($fields as $f) {
             $f["item"] = "User";
@@ -709,9 +713,9 @@ class Field extends CommonDBChild
         if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
             echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;" . __(
-                'Please add a type category field',
-                'metademands'
-            );
+                    'Please add a type category field',
+                    'metademands'
+                );
             echo "</div>";
         }
 
@@ -1150,9 +1154,9 @@ class Field extends CommonDBChild
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
                     echo "<div class='alert alert-important alert-warning d-flex'>";
                     echo "<b>" . __(
-                        'Warning : there is no custom values for this object',
-                        'metademands'
-                    ) . "</b></div>";
+                            'Warning : there is no custom values for this object',
+                            'metademands'
+                        ) . "</b></div>";
                 }
             }
         }
@@ -1412,7 +1416,8 @@ class Field extends CommonDBChild
             echo "<button class='scroll-btn scroll-right'><i class='ti ti-chevron-right'></i></button>";
             echo "</div>";
 
-            echo Html::scriptBlock('
+            echo Html::scriptBlock(
+                '
                 setTimeout(() => {
                     const scrollContainer = document.querySelector(".scrollable-tabs");
                     const scrollLeftBtn = document.querySelector(".scroll-left");
@@ -1428,7 +1433,8 @@ class Field extends CommonDBChild
                         });
                     }
                 }, 500);
-            ');
+            '
+            );
 
             foreach ($blocks as $idblock => $block) {
                 foreach ($data as $value) {
@@ -1457,9 +1463,9 @@ class Field extends CommonDBChild
                 echo "<div class='alert alert-warning flex'>";
                 echo "<div class='left'>";
                 echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
-                    'The fields are not ordered correctly, you will not be able to order them!',
-                    'metademands'
-                );
+                        'The fields are not ordered correctly, you will not be able to order them!',
+                        'metademands'
+                    );
                 echo "<br><br>";
                 echo _x('button', 'Do you want to fix them ?', 'metademands');
                 echo "</div>";
@@ -1487,15 +1493,15 @@ class Field extends CommonDBChild
 
                 if (isset($value['type'])
                     && (in_array(
-                        $value['type'],
-                        $allowed_customvalues_types
-                    ) && ($value['item'] != "ITILCategory_Metademands"
+                            $value['type'],
+                            $allowed_customvalues_types
+                        ) && ($value['item'] != "ITILCategory_Metademands"
                             && !in_array($value["item"], self::$field_specificobjects))
                         && !in_array($value['item'], $new_types))
                     || (in_array(
-                        $value['item'],
-                        $allowed_customvalues_items
-                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
+                            $value['item'],
+                            $allowed_customvalues_items
+                        ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
                     $field_custom = new FieldCustomvalue();
                     if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
                         $kocustom++;
@@ -1505,16 +1511,16 @@ class Field extends CommonDBChild
             if ($koparams > 0) {
                 echo "<div class='alert alert-important alert-warning d-flex'>";
                 echo "<b>" . __(
-                    'Warning : there are fields without parameters, please check',
-                    'metademands'
-                ) . "</b></div>";
+                        'Warning : there are fields without parameters, please check',
+                        'metademands'
+                    ) . "</b></div>";
             }
             if ($kocustom > 0) {
                 echo "<div class='alert alert-important alert-warning d-flex'>";
                 echo "<b>" . __(
-                    'Warning : there are fields without custom values, please check',
-                    'metademands'
-                ) . "</b></div>";
+                        'Warning : there are fields without custom values, please check',
+                        'metademands'
+                    ) . "</b></div>";
             }
 
             $fieldopt = new FieldOption();
@@ -1586,20 +1592,20 @@ class Field extends CommonDBChild
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                     if (!$fieldparameter->find(
-                        ["plugin_metademands_fields_id" => $value['id']]
-                    ) || ((
-                        isset($value['type'])
+                            ["plugin_metademands_fields_id" => $value['id']]
+                        ) || ((
+                                isset($value['type'])
                                 && (in_array(
-                                    $value['type'],
-                                    $allowed_customvalues_types
-                                ) && ($value['item'] != "ITILCategory_Metademands"
+                                        $value['type'],
+                                        $allowed_customvalues_types
+                                    ) && ($value['item'] != "ITILCategory_Metademands"
                                         && !in_array($value["item"], self::$field_specificobjects))
                                     && !in_array($value['item'], $new_types))
                                 || (in_array(
-                                    $value['item'],
-                                    $allowed_customvalues_items
-                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
-                    )
+                                        $value['item'],
+                                        $allowed_customvalues_items
+                                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
+                            )
                             && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                         echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                     }
@@ -1802,8 +1808,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $form,
                         'purge',
                         "",
-                        ["id" => $value['id'],
-                            "plugin_metademands_metademands_id" => $value['plugin_metademands_metademands_id']],
+                        [
+                            "id" => $value['id'],
+                            "plugin_metademands_metademands_id" => $value['plugin_metademands_metademands_id']
+                        ],
                         "fa-times-circle fa-1x",
                         "",
                         __('Are you sure you want to delete this field ?', 'metademands')
@@ -1825,7 +1833,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                 echo "$(document).ready(function() {
                 plugin_metademands_orderredipsInit($rand, $plugin_metademands_metademands_id )});";
                 echo "\n</script>";
-
             } else {
                 echo "<div class='center first-bloc'>";
                 echo "<table class='tab_cadre_fixe'>";
@@ -1841,7 +1848,7 @@ border-style: none !important; border-color: initial !important;border-image: in
         echo "</h3>";
 
         if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
-        || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
+            || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
             $id = $item->getID();
             $url = PLUGIN_METADEMANDS_WEBDIR;
             echo "<script type='text/javascript'>";
@@ -2477,92 +2484,100 @@ border-style: none !important; border-color: initial !important;border-image: in
         $field_custom = new FieldCustomvalue();
         $freetablefield = new Freetablefield();
 
-        $metademand_params->getFromDBByCrit(
-            ["plugin_metademands_fields_id" => $field->getID()]
-        );
-        $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
+        $params = [];
 
-        $default_values = [];
-        if (isset($metademand_params->fields['default'])) {
-            $default_values = FieldParameter::_unserialize($metademand_params->fields['default']);
-        }
+        $id = $field->getID();
+        if (isset($id) && $id > 0) {
 
-        $custom_values = [];
-        if (isset($metademand_params->fields['custom'])) {
-            $custom_values = FieldParameter::_unserialize($metademand_params->fields['custom']);
-        }
-
-        $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-        $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-        if (isset($field->fields['type'])
-            && (in_array($field->fields['type'], $allowed_customvalues_types)
-                || in_array($field->fields['item'], $allowed_customvalues_items))
-            && !in_array($field->fields["item"], self::$field_specificobjects)
-            && $field->fields['item'] != "Appliance"
-            && $field->fields['item'] != "Group") {
-            $custom_values = [];
-            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
-                if (count($customs) > 0) {
-                    $custom_values = $customs;
-                }
-                $default_values = [];
+            $metademand_params->getFromDBByCrit(
+                ["plugin_metademands_fields_id" => $field->getID()]
+            );
+            if (isset($field->fields['plugin_metademands_metademands_id'])) {
+                $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
             }
-        }
 
-        if (isset($field->fields['type'])
-            && $field->fields['type'] == "freetable") {
-            $custom_values = [];
-            if ($customs = $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
-                if (count($customs) > 0) {
-                    $custom_values = $customs;
-                }
-                $default_values = [];
+
+            $default_values = [];
+            if (isset($metademand_params->fields['default'])) {
+                $default_values = FieldParameter::_unserialize($metademand_params->fields['default']);
             }
+
+            $custom_values = [];
+            if (isset($metademand_params->fields['custom'])) {
+                $custom_values = FieldParameter::_unserialize($metademand_params->fields['custom']);
+            }
+
+            $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
+            $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+
+            if (isset($field->fields['type'])
+                && (in_array($field->fields['type'], $allowed_customvalues_types)
+                    || in_array($field->fields['item'], $allowed_customvalues_items))
+                && !in_array($field->fields["item"], self::$field_specificobjects)
+                && $field->fields['item'] != "Appliance"
+                && $field->fields['item'] != "Group") {
+                $custom_values = [];
+                if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
+                    if (count($customs) > 0) {
+                        $custom_values = $customs;
+                    }
+                    $default_values = [];
+                }
+            }
+
+            if (isset($field->fields['type'])
+                && $field->fields['type'] == "freetable") {
+                $custom_values = [];
+                if ($customs = $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
+                    if (count($customs) > 0) {
+                        $custom_values = $customs;
+                    }
+                    $default_values = [];
+                }
+            }
+
+            $params = [
+                'id' => $field->fields['id'],
+                'object_to_create' => $metademand->fields['object_to_create'] ?? 0,
+                'is_order' => $metademand->fields['is_order'] ?? 0,
+                'name' => $field->fields['name'],
+                'comment' => $field->fields['comment'],
+                'label2' => $field->fields['label2'],
+                'rank' => $field->fields['rank'],
+                'order' => $field->fields['order'],
+                'plugin_metademands_metademands_id' => $field->fields["plugin_metademands_metademands_id"],
+                'plugin_metademands_fields_id' => $field->getID(),
+                'item' => $field->fields['item'],
+                'type' => $field->fields['type'],
+                'row_display' => $metademand_params->fields['row_display'] ?? 0,
+                'display_type' => $metademand_params->fields['display_type'] ?? 0,
+                'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
+                'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
+                'color' => $metademand_params->fields['color'] ?? "",
+                'icon' => $metademand_params->fields['icon'] ?? "",
+                'is_mandatory' => $metademand_params->fields['is_mandatory'] ?? 0,
+                'used_by_ticket' => $metademand_params->fields['used_by_ticket'] ?? 0,
+                'used_by_child' => $metademand_params->fields['used_by_child'] ?? 0,
+                'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
+                'default_use_id_requester' => $metademand_params->fields['default_use_id_requester'] ?? 0,
+                'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor'] ?? 0,
+                'readonly' => $metademand_params->fields['readonly'] ?? 0,
+                'max_upload' => $metademand_params->fields['max_upload'] ?? 0,
+                'regex' => $metademand_params->fields['regex'] ?? 0,
+                'use_future_date' => $metademand_params->fields['use_future_date'] ?? 0,
+                'use_date_now' => $metademand_params->fields['use_date_now'] ?? 0,
+                'additional_number_day' => $metademand_params->fields['additional_number_day'] ?? 0,
+                'display_type' => $metademand_params->fields['display_type'] ?? 0,
+                'informations_to_display' => $metademand_params->fields['informations_to_display'] ?? ['fullname'],
+                'link_to_user' => $metademand_params->fields["link_to_user"] ?? 0,
+                'hidden' => $metademand_params->fields["hidden"] ?? 0,
+                'authldaps_id' => $metademand_params->fields["authldaps_id"] ?? 0,
+                'ldap_filter' => $metademand_params->fields["ldap_filter"] ?? "",
+                'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
+                'custom_values' => $custom_values,
+                'default_values' => $default_values,
+            ];
         }
-
-        $params = [
-            'id' => $field->fields['id'],
-            'object_to_create' => $metademand->fields['object_to_create'],
-            'is_order' => $metademand->fields['is_order'],
-            'name' => $field->fields['name'],
-            'comment' => $field->fields['comment'],
-            'label2' => $field->fields['label2'],
-            'rank' => $field->fields['rank'],
-            'order' => $field->fields['order'],
-            'plugin_metademands_metademands_id' => $field->fields["plugin_metademands_metademands_id"],
-            'plugin_metademands_fields_id' => $field->getID(),
-            'item' => $field->fields['item'],
-            'type' => $field->fields['type'],
-            'row_display' => $metademand_params->fields['row_display'] ?? 0,
-            'display_type' => $metademand_params->fields['display_type'] ?? 0,
-            'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
-            'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
-            'color' => $metademand_params->fields['color'] ?? "",
-            'icon' => $metademand_params->fields['icon'] ?? "",
-            'is_mandatory' => $metademand_params->fields['is_mandatory'] ?? 0,
-            'used_by_ticket' => $metademand_params->fields['used_by_ticket'] ?? 0,
-            'used_by_child' => $metademand_params->fields['used_by_child'] ?? 0,
-            'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
-            'default_use_id_requester' => $metademand_params->fields['default_use_id_requester'] ?? 0,
-            'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor'] ?? 0,
-            'readonly' => $metademand_params->fields['readonly'] ?? 0,
-            'max_upload' => $metademand_params->fields['max_upload'] ?? 0,
-            'regex' => $metademand_params->fields['regex'] ?? 0,
-            'use_future_date' => $metademand_params->fields['use_future_date'] ?? 0,
-            'use_date_now' => $metademand_params->fields['use_date_now'] ?? 0,
-            'additional_number_day' => $metademand_params->fields['additional_number_day'] ?? 0,
-            'display_type' => $metademand_params->fields['display_type'] ?? 0,
-            'informations_to_display' => $metademand_params->fields['informations_to_display'] ?? ['fullname'],
-            'link_to_user' => $metademand_params->fields["link_to_user"] ?? 0,
-            'hidden' => $metademand_params->fields["hidden"] ?? 0,
-            'authldaps_id' => $metademand_params->fields["authldaps_id"] ?? 0,
-            'ldap_filter' => $metademand_params->fields["ldap_filter"] ?? "",
-            'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
-            'custom_values' => $custom_values,
-            'default_values' => $default_values,
-        ];
-
         return $params;
     }
 
@@ -2573,8 +2588,14 @@ border-style: none !important; border-color: initial !important;border-image: in
      * @param string $config_link
      * @param int $itilcategories_id
      */
-    public static function displayFieldByType($metademands, $metademands_data, $data, $preview = false, $itilcategories_id = 0, $count = 0)
-    {
+    public static function displayFieldByType(
+        $metademands,
+        $metademands_data,
+        $data,
+        $preview = false,
+        $itilcategories_id = 0,
+        $count = 0
+    ) {
         global $PLUGIN_HOOKS;
 
         $fieldparameter = new FieldParameter();
@@ -2616,7 +2637,6 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         // If values are saved in session we retrieve it
         if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
-
             foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
                 if (strval($data['id']) === strval($id)) {
                     $data['value'] = $value;
@@ -2667,7 +2687,6 @@ border-style: none !important; border-color: initial !important;border-image: in
             $count++;
         } else {
             if ($data['type'] != 'title-block' && $data['type'] != 'title') {
-
                 if ($data['type'] == 'basket') {
                     echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
                 } else {
@@ -2681,8 +2700,8 @@ border-style: none !important; border-color: initial !important;border-image: in
         $config_link = "";
         if (Session::getCurrentInterface() == 'central' && $preview) {
             $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Field::class
-            ) . "?id=" . $data['id'] . "'>";
+                    Field::class
+                ) . "?id=" . $data['id'] . "'>";
             $config_link .= "<i class='ti ti-settings'></i></a>";
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -2698,9 +2717,9 @@ border-style: none !important; border-color: initial !important;border-image: in
             $max = "";
             if ($data["max_upload"] > 0) {
                 $max = "( " . sprintf(
-                    __("Maximum number of documents : %s ", "metademands"),
-                    $data["max_upload"]
-                ) . ")";
+                        __("Maximum number of documents : %s ", "metademands"),
+                        $data["max_upload"]
+                    ) . ")";
             }
 
             $upload = "$max (" . Document::getMaxUploadSize() . ")";
@@ -2852,8 +2871,8 @@ border-style: none !important; border-color: initial !important;border-image: in
 //                    echo "</div>";
                 } else {
                     echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
-                        $label2
-                    ) . "<span $required>" . $required_icon . "</span>";
+                            $label2
+                        ) . "<span $required>" . $required_icon . "</span>";
                     echo "</div>";
                 }
             }
@@ -2882,7 +2901,6 @@ border-style: none !important; border-color: initial !important;border-image: in
 
     public static function getClassFromType($type)
     {
-
         switch ($type) {
             case 'title':
                 return Title::class;
@@ -3101,10 +3119,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     );
                                                     foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
                                                         if (!empty(
-                                                            $ret = self::displayField(
-                                                                $line_data['form'][$parent_field_id]["id"],
-                                                                "custom" . $k
-                                                            )
+                                                        $ret = self::displayField(
+                                                            $line_data['form'][$parent_field_id]["id"],
+                                                            "custom" . $k
+                                                        )
                                                         )) {
                                                             $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
                                                         }
@@ -3131,10 +3149,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     );
                                                     foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
                                                         if (!empty(
-                                                            $ret = self::displayField(
-                                                                $line_data['form'][$parent_field_id]["id"],
-                                                                "custom" . $k
-                                                            )
+                                                        $ret = self::displayField(
+                                                            $line_data['form'][$parent_field_id]["id"],
+                                                            "custom" . $k
+                                                        )
                                                         )) {
                                                             $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
                                                         }
@@ -3177,8 +3195,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     $value2 = 0;
                                                 }
                                                 $value_parent_field .= Html::convDate($value) . " - " . Html::convDate(
-                                                    $value2
-                                                );
+                                                        $value2
+                                                    );
                                                 break;
 
                                             case 'datetime_interval':
@@ -3194,8 +3212,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     $value2 = 0;
                                                 }
                                                 $value_parent_field .= Html::convDateTime(
-                                                    $value
-                                                ) . " - " . Html::convDateTime($value2);
+                                                        $value
+                                                    ) . " - " . Html::convDateTime($value2);
                                                 break;
                                             case 'yesno':
                                                 $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
@@ -3275,9 +3293,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                 ],
             ],
             'WHERE' => [
-                'users_id' => $userid,
-                $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
-            ] + $where,
+                    'users_id' => $userid,
+                    $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
+                ] + $where,
         ];
 
         $rep = [];
@@ -3418,7 +3436,6 @@ border-style: none !important; border-color: initial !important;border-image: in
 
         $temp = new Condition();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
-
     }
 
     /**
@@ -3600,7 +3617,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 return true;
             case 'change_icon':
                 $icon_selector_id = 'icon_' . mt_rand();
-                $return =  Html::select(
+                $return = Html::select(
                     'icon',
                     [],
                     [
@@ -3611,14 +3628,16 @@ border-style: none !important; border-color: initial !important;border-image: in
                 );
 
                 $return .= Html::script('js/modules/Form/WebIconSelector.js');
-                $return .= Html::scriptBlock("$(
+                $return .= Html::scriptBlock(
+                    "$(
             function() {
             import('/js/modules/Form/WebIconSelector.js').then((m) => {
                var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
                });
             }
-         );");
+         );"
+                );
 
                 echo $return;
                 echo "&nbsp;"
@@ -3630,7 +3649,6 @@ border-style: none !important; border-color: initial !important;border-image: in
 
     public function getSpecificMassiveActions($checkitem = null)
     {
-
         $isadmin = static::canUpdate();
         $actions = parent::getSpecificMassiveActions($checkitem);
 
@@ -3666,7 +3684,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                             $ma->addMessage(__('You cannot do this for this field', 'metademands'));
                             $msg = MassiveAction::ACTION_KO;
                         }
-
                     }
                     $item->getFromDB($id);
                     $ma->itemDone($item->getType(), $id, $msg);
@@ -3687,7 +3704,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                             $ma->addMessage(__('You cannot do this for this field', 'metademands'));
                             $msg = MassiveAction::ACTION_KO;
                         }
-
                     }
                     $item->getFromDB($id);
                     $ma->itemDone($item->getType(), $id, $msg);
@@ -3739,8 +3755,10 @@ border-style: none !important; border-color: initial !important;border-image: in
         if (empty($params['rank'])) {
             $params['rank'] = 1;
         }
-        $restrict = ['rank' => $params['rank'],
-            'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']];
+        $restrict = [
+            'rank' => $params['rank'],
+            'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+        ];
         if (!empty($fields['id'])) {
             $restrict += ['NOT' => ['id' => $params['id']]];
         }
@@ -3758,9 +3776,11 @@ border-style: none !important; border-color: initial !important;border-image: in
             && $params['order'] > 0) {
             $previous_order = $params['order'] - 1;
             $field = new Field();
-            if ($field->getFromDBByCrit(['rank' => $params['rank'],
+            if ($field->getFromDBByCrit([
+                'rank' => $params['rank'],
                 'order' => $previous_order,
-                'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']])) {
+                'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id']
+            ])) {
                 $previous_fields_id = $field->fields['id'];
             }
         }
@@ -4042,8 +4062,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     $criteria = [
                         'FROM' => $itemtable,
                         'WHERE' => [
-                            'users_id' => $userID,
-                        ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
+                                'users_id' => $userID,
+                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
                         'ORDER' => $item->getNameField(),
                     ];
 
@@ -4106,8 +4126,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                         ],
                     ],
                     'WHERE' => [
-                        'glpi_groups_users.users_id' => $userID,
-                    ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
+                            'glpi_groups_users.users_id' => $userID,
+                        ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
                 ]);
 
                 $devices = [];
@@ -4126,13 +4146,13 @@ border-style: none !important; border-color: initial !important;border-image: in
                             $criteria = [
                                 'FROM' => $itemtable,
                                 'WHERE' => [
-                                    'groups_id' => $groups,
-                                ] + getEntitiesRestrictCriteria(
-                                    $itemtable,
-                                    '',
-                                    $entity_restrict,
-                                    $item->maybeRecursive()
-                                ),
+                                        'groups_id' => $groups,
+                                    ] + getEntitiesRestrictCriteria(
+                                        $itemtable,
+                                        '',
+                                        $entity_restrict,
+                                        $item->maybeRecursive()
+                                    ),
                                 'ORDER' => 'name',
                             ];
 
@@ -4209,10 +4229,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 ],
                             ],
                             'WHERE' => [
-                                'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
-                                'glpi_items_softwareversions.itemtype' => $itemtype,
-                                'glpi_softwares.is_helpdesk_visible' => 1,
-                            ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
+                                    'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
+                                    'glpi_items_softwareversions.itemtype' => $itemtype,
+                                    'glpi_softwares.is_helpdesk_visible' => 1,
+                                ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
                             'ORDERBY' => 'glpi_softwares.name',
                         ]);
 
@@ -4276,9 +4296,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 ],
                             ],
                             'WHERE' => [
-                                'glpi_assets_assets_peripheralassets.itemtype_asset' => $itemtype,
-                                'glpi_assets_assets_peripheralassets.items_id_asset' => $already_add['Computer'],
-                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
+                                    'glpi_assets_assets_peripheralassets.itemtype_asset' => $itemtype,
+                                    'glpi_assets_assets_peripheralassets.items_id_asset' => $already_add['Computer'],
+                                ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
                             'ORDERBY' => "$itemtable.name",
                         ];
 
@@ -4387,8 +4407,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     $criteria = [
                         'FROM' => $itemtable,
                         'WHERE' => [
-                            'users_id' => $userID,
-                        ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
+                                'users_id' => $userID,
+                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
                         'ORDER' => $item->getNameField(),
                     ];
 
@@ -4451,8 +4471,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                         ],
                     ],
                     'WHERE' => [
-                        'glpi_groups_users.users_id' => $userID,
-                    ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
+                            'glpi_groups_users.users_id' => $userID,
+                        ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
                 ]);
 
                 $devices = [];
@@ -4470,11 +4490,12 @@ border-style: none !important; border-color: initial !important;border-image: in
                             $itemtable = getTableForItemType($itemtype);
                             $criteria = [
                                 'FROM' => $itemtable,
-                                'LEFT JOIN'       => [
+                                'LEFT JOIN' => [
                                     'glpi_groups_items' => [
                                         'ON' => [
                                             'glpi_groups_items' => 'items_id',
-                                            $itemtable          => 'id', [
+                                            $itemtable => 'id',
+                                            [
                                                 'AND' => [
                                                     'glpi_groups_items.itemtype' => $itemtype,
                                                     'glpi_groups_items.type' => Group_Item::GROUP_TYPE_NORMAL,
@@ -4484,13 +4505,13 @@ border-style: none !important; border-color: initial !important;border-image: in
                                     ]
                                 ],
                                 'WHERE' => [
-                                    'glpi_groups_items.groups_id' => $groups,
-                                ] + getEntitiesRestrictCriteria(
-                                    $itemtable,
-                                    '',
-                                    $entity_restrict,
-                                    $item->maybeRecursive()
-                                ),
+                                        'glpi_groups_items.groups_id' => $groups,
+                                    ] + getEntitiesRestrictCriteria(
+                                        $itemtable,
+                                        '',
+                                        $entity_restrict,
+                                        $item->maybeRecursive()
+                                    ),
                                 'ORDER' => 'name',
                             ];
 
@@ -4568,10 +4589,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 ],
                             ],
                             'WHERE' => [
-                                'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
-                                'glpi_items_softwareversions.itemtype' => $itemtype,
-                                'glpi_softwares.is_helpdesk_visible' => 1,
-                            ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
+                                    'glpi_items_softwareversions.items_id' => $already_add[$itemtype],
+                                    'glpi_items_softwareversions.itemtype' => $itemtype,
+                                    'glpi_softwares.is_helpdesk_visible' => 1,
+                                ] + getEntitiesRestrictCriteria('glpi_softwares', '', $entity_restrict),
                             'ORDERBY' => 'glpi_softwares.name',
                         ]);
 
@@ -4616,7 +4637,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                 // Direct Connection
                 $types = ['Monitor', 'Peripheral', 'Phone', 'Printer'];
                 foreach ($types as $itemtype) {
-
                     if (count($limit) > 0) {
                         if (!in_array($itemtype, $limit)) {
                             continue;
@@ -4642,9 +4662,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 ],
                             ],
                             'WHERE' => [
-                                'glpi_assets_assets_peripheralassets.itemtype_asset' => $itemtype,
-                                'glpi_assets_assets_peripheralassets.items_id_asset' => $already_add['Computer'],
-                            ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
+                                    'glpi_assets_assets_peripheralassets.itemtype_asset' => $itemtype,
+                                    'glpi_assets_assets_peripheralassets.items_id_asset' => $already_add['Computer'],
+                                ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict),
                             'ORDERBY' => "$itemtable.name",
                         ];
 
@@ -4797,10 +4817,10 @@ border-style: none !important; border-color: initial !important;border-image: in
 
         echo "<td class='center'>";
         $iterator = $DB->request([
-            'SELECT'    => ['MAX' => 'rank AS maxrank'],
-            'FROM'      => 'glpi_plugin_metademands_fields',
-            'WHERE'     => [
-                'plugin_metademands_metademands_id'  => $item->getID(),
+            'SELECT' => ['MAX' => 'rank AS maxrank'],
+            'FROM' => 'glpi_plugin_metademands_fields',
+            'WHERE' => [
+                'plugin_metademands_metademands_id' => $item->getID(),
             ],
         ]);
 
@@ -4824,7 +4844,11 @@ border-style: none !important; border-color: initial !important;border-image: in
         echo __('Field type', 'metademands') . "&nbsp;";
         $mrand = self::dropdownFieldTypes(
             self::$field_types,
-            ['value' => $p['type'], 'metademands_id' => $item->getID(), 'on_change' => 'plugin_metademands_reloaditem();']
+            [
+                'value' => $p['type'],
+                'metademands_id' => $item->getID(),
+                'on_change' => 'plugin_metademands_reloaditem();'
+            ]
         );
         echo "</td>";
 
@@ -4839,8 +4863,9 @@ border-style: none !important; border-color: initial !important;border-image: in
 
         echo "<script type='text/javascript'>";
         echo "function plugin_metademands_reloaditem() {";
-        $params = ['action'            => 'reloaditem',
-            'type'              => '__VALUE__',
+        $params = [
+            'action' => 'reloaditem',
+            'type' => '__VALUE__',
         ];
         Ajax::updateItemJsCode(
             'plugin_metademands_item',

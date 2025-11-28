@@ -37,7 +37,14 @@ if (strpos($_SERVER['PHP_SELF'], "ucategoryUpdate.php")) {
 }
 
 Session::checkLoginUser();
+
+if (!isset($_POST['fieldname'])) {
+    $_POST['fieldname'] = "field";
+}
+
 $fieldUser = new Field();
+
+$fields_id = 0;
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
@@ -51,7 +58,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                   ['plugin_metademands_fields_id' => $f['id'],
                       'link_to_user' => $_POST['id_fielduser']]
               )) {
-                  $_POST["field"] = "field[" . $f['id'] . "]";
+                  $_POST["field"] = $_POST['fieldname'] . "[" . $f['id'] . "]";
+                  $name = $_POST['field'];
+                  $fields_id = $f['id'];
               }
           }
       }
@@ -59,7 +68,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
       if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
          $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
       }
+       $name = $_POST['field'];
    }
+}  else {
+    $name = $_POST['field'] ?? "";
 }
 
 $usercategories_id = 0;
@@ -76,7 +88,7 @@ if (isset($_POST['fields_id'])
     $usercategories_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
-$opt = ['name'  => $_POST["field"],
+$opt = ['name'  => $name,
         'value' => $usercategories_id,
     'width' => '200px'];
 
@@ -86,6 +98,8 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 
 UserCategory::dropdown($opt);
 
-$_POST['name'] = "category_user";
+$_POST['name'] = "category_user".$_POST["id_fielduser"];
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);
+
+$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $usercategories_id;

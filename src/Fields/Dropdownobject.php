@@ -83,36 +83,36 @@ class Dropdownobject extends CommonDBTM
                 $userrand = mt_rand();
                 $field    = "";
 
-                if ($on_order == false) {
-                    if ($data['display_type'] == 1) {
-                        $paramstooltip
-                            = ['value'          => '__VALUE__',
-                            'id_fielduser'   => $data['id'],
-                            'display_type' => $data['display_type'],
-                            'metademands_id' => $data['plugin_metademands_metademands_id']];
+                if ($data['display_type'] == 1) {
+                    $paramstooltip
+                        = ['value'          => '__VALUE__',
+                        'fieldname' => $namefield,
+                        'id_fielduser'   => $data['id'],
+                        'display_type' => $data['display_type'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                        $toupdate[] = ['value_fieldname'
-                        => 'value',
-                            'id_fielduser' => $data['id'],
-                            'to_update'    => "tooltip_user" . $data['id'],
-                            'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
-                            'moreparams'   => $paramstooltip];
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update'    => "tooltip_user" . $data['id'],
+                        'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
+                        'moreparams'   => $paramstooltip];
 
-                        echo "<script type='text/javascript'>";
-                        echo "$(function() {";
-                        Ajax::updateItemJsCode(
-                            "tooltip_user" . $data['id'],
-                            PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
-                            $paramstooltip,
-                            $namefield . "[" . $data['id'] . "]",
-                            false
-                        );
-                        echo "});</script>";
-                    }
+                    echo "<script type='text/javascript'>";
+                    echo "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "tooltip_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
+                        $paramstooltip,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    echo "});</script>";
                 }
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramsloc
                     = ['value' => '__VALUE__',
+                        'fieldname' => $namefield,
                         'id_fielduser' => $data['id'],
                         'display_type' => $data['display_type'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
@@ -138,6 +138,7 @@ class Dropdownobject extends CommonDBTM
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramstit
                     = ['value' => '__VALUE__',
+                    'fieldname' => $namefield,
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
@@ -162,6 +163,7 @@ class Dropdownobject extends CommonDBTM
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramscat
                     = ['value' => '__VALUE__',
+                    'fieldname' => $namefield,
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
@@ -186,6 +188,7 @@ class Dropdownobject extends CommonDBTM
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramsgroup
                     = ['value' => '__VALUE__',
+                    'fieldname' => $namefield,
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
@@ -198,18 +201,19 @@ class Dropdownobject extends CommonDBTM
 
                 echo "<script type='text/javascript'>";
                 echo "$(function() {";
-                Ajax::updateItemJsCode(
-                    "group_user" . $data['id'],
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                    $paramsgroup,
-                    $namefield . "[" . $data['id'] . "]",
-                    false
-                );
+                    Ajax::updateItemJsCode(
+                        "group_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
+                        $paramsgroup,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
                 echo "});</script>";
 
                 //                }
                 $paramsentity
                     = ['value'          => '__VALUE__',
+                    'fieldname' => $namefield,
                         'id_fielduser'   => $data['id'],
                         'readonly' => $data['readonly'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
@@ -235,6 +239,7 @@ class Dropdownobject extends CommonDBTM
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramsdev
                     = ['value' => '__VALUE__',
+                    'fieldname' => $namefield,
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
@@ -259,6 +264,7 @@ class Dropdownobject extends CommonDBTM
                 //                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                 $paramsman
                     = ['value' => '__VALUE__',
+                    'fieldname' => $namefield,
                         'id_fielduser' => $data['id'],
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
@@ -393,17 +399,19 @@ class Dropdownobject extends CommonDBTM
                         )) {
                             foreach ($fields as $f) {
                                 if (!empty($f['used_by_ticket'])) {
-                                    $updateJs .= "let field{$textField['id']} = $(\"[id-field='field{$textField['id']}'] input\");
-                        field{$textField['id']}.val(response[{$f['used_by_ticket']}] ?? '');
-                        field{$textField['id']}.trigger('input');
-                        ";
+                                    $idfield = $namefield.$textField['id'];
+                                    $updateJs .= "let field{$textField['id']} = $(\"[id-field='$idfield'] input\");
+                                                    field{$textField['id']}.val(response[{$f['used_by_ticket']}] ?? '');
+                                                    field{$textField['id']}.trigger('input');
+                                                ";
                                 }
                             }
                         }
                     }
+                    $ID = $namefield.$data['id'];
                     echo "<script type='text/javascript'>
                         $(function() {
-                            $(\"[id-field='field{$data['id']}'] select\").on('change', function(e) {
+                            $(\"[id-field='$ID'] select\").on('change', function(e) {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
                                      data: {

@@ -865,6 +865,27 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                     // console.log(error);
                 }
             });
+            //add to basket
+        } else if (metademandparams.is_order == 1) {
+
+            $.ajax({
+                url: metademandparams.root_doc + '/ajax/addtobasket.php?metademands_id=' + metademandparams.id + '&step=2' + metademandparams.paramUrl,
+                type: 'POST',
+                datatype: 'html',
+                data: $('#wizard_form').serializeArray(),
+                success: function (response) {
+                    if (response != 1) {
+                        window.location.href = metademandparams.root_doc + '/front/wizard.form.php?metademands_id=' + metademandparams.id + '&step=2';
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // console.log(xhr);
+                    // console.log(status);
+                    // console.log(error);
+                }
+            });
         } else {
             $.ajax({
                 url: metademandparams.root_doc + '/ajax/addform.php',

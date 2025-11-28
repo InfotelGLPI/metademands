@@ -39,6 +39,10 @@ if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
 
 Session::checkLoginUser();
 
+if (!isset($_POST['fieldname'])) {
+    $_POST['fieldname'] = "field";
+}
+
 $fieldUser = new Field();
 $fieldparameter = new FieldParameter();
 
@@ -61,10 +65,11 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     'link_to_user' => $_POST['id_fielduser']
                 ])) {
                     $id = $field['id'];
-                    $_POST["field"] = "field[$id]";
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                     $_POST['limit'] = $fieldparameter->fields['default'];
                     $_POST['display_type'] = $fieldparameter->fields['display_type'];
+                    $name = $_POST['field'];
                 }
             }
         }
@@ -72,8 +77,12 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
             $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
         }
+        $name = $_POST['field'];
     }
+}  else {
+    $name = $_POST['field'] ?? "";
 }
+
 
 $users_id = 0;
 
@@ -100,7 +109,7 @@ $rand = mt_rand();
 
 $p = [
     'rand' => $rand,
-    'name' => $_POST["field"],
+    'name' => $name,
     'value' => $val
 ];
 
