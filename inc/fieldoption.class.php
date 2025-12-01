@@ -1036,7 +1036,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                      $('select[name=\"checkbox_id\"]').val(),
                      $('select[name=\"check_type_value\"]').val()
               ];
-                 console.log(formOption);
+//                 console.log(formOption);
                  reloadviewOption(formOption);
              });";
         echo " </script>";
