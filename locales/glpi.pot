@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 12:07+0000\n"
+"POT-Creation-Date: 2025-12-01 08:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,7 +211,7 @@ msgid ""
 "last assigned group"
 msgstr ""
 
-#: src/FieldOption.php:447 src/FieldOption.php:1431
+#: src/FieldOption.php:447 src/FieldOption.php:1430
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgstr ""
 msgid "Block"
 msgstr ""
 
-#: src/MailTask.php:198 src/FieldOption.php:1552 src/Task.php:879
+#: src/MailTask.php:198 src/FieldOption.php:1551 src/Task.php:879
 #: src/Task.php:1282 src/TicketTask.php:232 src/Step.php:434 src/Step.php:712
 #: src/Step.php:726
 #, php-format
@@ -298,7 +298,7 @@ msgstr[1] ""
 msgid "Child tickets created"
 msgstr ""
 
-#: src/FieldOption.php:445 src/FieldOption.php:1356
+#: src/FieldOption.php:445 src/FieldOption.php:1355
 msgid "Childs blocks"
 msgstr ""
 
@@ -607,15 +607,15 @@ msgstr ""
 msgid "Display name"
 msgstr ""
 
-#: src/FieldOption.php:443 src/FieldOption.php:1266
+#: src/FieldOption.php:443 src/FieldOption.php:1265
 msgid "Display this hidden block"
 msgstr ""
 
-#: src/FieldOption.php:444 src/FieldOption.php:1316
+#: src/FieldOption.php:444 src/FieldOption.php:1315
 msgid "Display this hidden block in the same block"
 msgstr ""
 
-#: src/FieldOption.php:212 src/FieldOption.php:442 src/FieldOption.php:1224
+#: src/FieldOption.php:212 src/FieldOption.php:442 src/FieldOption.php:1223
 msgid "Display this hidden field"
 msgstr ""
 
@@ -951,7 +951,7 @@ msgstr ""
 msgid "Icon for requests"
 msgstr ""
 
-#: src/FieldOption.php:1358
+#: src/FieldOption.php:1357
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
@@ -962,38 +962,38 @@ msgstr ""
 msgid "If field empty"
 msgstr ""
 
-#: src/FieldOption.php:1433
+#: src/FieldOption.php:1432
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: src/FieldOption.php:1268
+#: src/FieldOption.php:1267
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: src/FieldOption.php:1318
+#: src/FieldOption.php:1317
 msgid ""
 "If the value selected equals the value to check, the block becomes visible "
 "on the same block"
 msgstr ""
 
-#: src/FieldOption.php:1193
+#: src/FieldOption.php:1192
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: src/FieldOption.php:1226
+#: src/FieldOption.php:1225
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: src/FieldOption.php:1175
+#: src/FieldOption.php:1174
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: src/FieldOption.php:1388
+#: src/FieldOption.php:1387
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
@@ -1062,11 +1062,11 @@ msgstr ""
 msgid "Lastname"
 msgstr ""
 
-#: src/Field.php:1558 src/FieldOption.php:440 src/FieldOption.php:1173
+#: src/Field.php:1558 src/FieldOption.php:440 src/FieldOption.php:1172
 msgid "Launch a task with the field"
 msgstr ""
 
-#: src/FieldOption.php:446 src/FieldOption.php:1386
+#: src/FieldOption.php:446 src/FieldOption.php:1385
 msgid "Launch a validation"
 msgstr ""
 
@@ -1160,7 +1160,7 @@ msgstr ""
 msgid "Make a request"
 msgstr ""
 
-#: src/FieldOption.php:203 src/FieldOption.php:441 src/FieldOption.php:1191
+#: src/FieldOption.php:203 src/FieldOption.php:441 src/FieldOption.php:1190
 msgid "Make this field mandatory"
 msgstr ""
 
@@ -1282,7 +1282,7 @@ msgstr ""
 
 #: src/Wizard.php:1333 src/Wizard.php:1578 src/Wizard.php:1720
 #: src/Wizard.php:1729 src/Wizard.php:1768 src/Wizard.php:1774
-#: src/Wizard.php:2329 src/FieldOption.php:2112 src/Fields/Tel.php:348
+#: src/Wizard.php:2329 src/FieldOption.php:2111 src/Fields/Tel.php:348
 #: src/Fields/Dropdownmeta.php:1850 src/Fields/Dropdown.php:862
 #: src/Fields/Text.php:347 src/Fields/Checkbox.php:711 src/Fields/Radio.php:682
 #: src/Fields/Url.php:346 src/Fields/Dropdownobject.php:1131
@@ -1708,7 +1708,7 @@ msgid "Save"
 msgstr ""
 
 #: src/Wizard.php:1573 src/Wizard.php:1759 src/Basketline.php:196
-#: src/FieldOption.php:2110 src/Fields/Tel.php:346
+#: src/FieldOption.php:2109 src/Fields/Tel.php:346
 #: src/Fields/Dropdownmeta.php:1848 src/Fields/Dropdown.php:861
 #: src/Fields/Text.php:345 src/Fields/Checkbox.php:709 src/Fields/Radio.php:680
 #: src/Fields/Url.php:344 src/Fields/Dropdownobject.php:1130
@@ -2059,7 +2059,7 @@ msgstr ""
 msgid "This action requires PHP extension zip"
 msgstr ""
 
-#: src/FieldOption.php:1294
+#: src/FieldOption.php:1293
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
