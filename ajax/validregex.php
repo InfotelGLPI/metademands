@@ -28,11 +28,7 @@
  --------------------------------------------------------------------------
  */
 
-
-include('../../../inc/includes.php');
-
 Session::checkLoginUser();
-
 
 if (isset($_POST['regex']) && isset($_POST['valeur']) && preg_match($_POST['regex'], $_POST['valeur'])) {
     echo 'true';

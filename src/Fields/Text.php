@@ -86,19 +86,20 @@ class Text extends CommonDBTM
         }
         $updateJs = '';
         if (!empty($data['used_by_ticket'])) {
-            $updateJs .= "let field{$data['id']} = $(\"[id-field='field{$data['id']}'] input\");
+            $idfield = $namefield . $data['id'];
+            $updateJs .= "let field{$data['id']} = $(\"[id-field='$idfield'] input\");
                         field{$data['id']}.val(response[{$data['used_by_ticket']}] ?? '');
                         field{$data['id']}.trigger('input');
                         ";
         }
-        $ID = $data['link_to_user'];
+        $ID = $namefield . "[" . $data['link_to_user'] . "]";
         echo "<script type='text/javascript'>
                         $(function() {
-                            $(\"[name='field[$ID]']\").ready(function() {
+                            $(\"[name='$ID']\").ready(function() {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
                                      data: {
-                                         id : $(\"[name='field[$ID]']\").val()
+                                         id : $(\"[name='$ID']\").val()
                                      },
                                   success: function(response){
                                        response = JSON.parse(response);

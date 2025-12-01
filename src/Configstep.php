@@ -106,6 +106,7 @@ class Configstep extends CommonDBTM
                         `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',
                         `supervisor_validation`             tinyint      NOT NULL DEFAULT '0',
                         `step_by_step_interface`            tinyint      NOT NULL DEFAULT '0',
+                        `change_step_by_step_option`        tinyint      NOT NULL DEFAULT '0',
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
@@ -127,6 +128,11 @@ class Configstep extends CommonDBTM
         //version 3.3.24
         if (!$DB->fieldExists($table, "supervisor_validation")) {
             $migration->addField($table, "supervisor_validation", " tinyint NOT NULL DEFAULT '0'");
+            $migration->migrationOneTable($table);
+        }
+        //version 3.5.5
+        if (!$DB->fieldExists($table, "change_step_by_step_option")) {
+            $migration->addField($table, "change_step_by_step_option", "tinyint NOT NULL DEFAULT '0'");
             $migration->migrationOneTable($table);
         }
     }
@@ -257,6 +263,17 @@ class Configstep extends CommonDBTM
         $step_by_step = $confStep->fields['step_by_step_interface'] ?? self::BOTH_INTERFACE;
         \Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $step_by_step]);
         echo "</td>";
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo  __('Move to the next group even if you can continue', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        \Dropdown::showYesNo("change_step_by_step_option", $confStep->fields['change_step_by_step_option']);
+        echo "</td>";
+        echo "<td colspan='2'>";
+        echo "</td>";;
         echo "</tr>";
 
         echo "<tr><td class='tab_bg_2 center' colspan='6'>";

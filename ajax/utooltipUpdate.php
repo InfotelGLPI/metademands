@@ -39,7 +39,8 @@ if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
 Session::checkLoginUser();
 $fieldUser = new Field();
 
-if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']]) && !isset($_POST['value'])) {
+if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])
+    && !isset($_POST['value'])) {
     $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
 }
 
@@ -62,6 +63,6 @@ if (isset($_POST['value']) && $_POST["value"] > 0) {
     }
 }
 
-$_POST['name'] = "tooltip_user";
+$_POST['name'] = "tooltip_user".$_POST["id_fielduser"];
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);

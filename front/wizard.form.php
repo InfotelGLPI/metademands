@@ -142,72 +142,14 @@ if (isset($_GET['metademands_id'])) {
     }
 }
 
+if (isset($_POST['update_basket_line'])) {
 
-if (isset($_POST['add_to_basket'])) {
-    $KO = false;
-    $step = Metademand::STEP_SHOW;
-
-    $checks = [];
-    $content = [];
-    $data = $fields->find([
-        'plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-//        'is_basket' => 1
-    ]);
-
-
-    //Clean $post & $data & $_POST
-    $dataOld = $data;
-    $post = $_POST['field'];
-    // Double appel for prevent order fields
-    FieldOption::unsetHidden($data, $post);
-    FieldOption::unsetHidden($dataOld, $post);
-    $_POST['field'] = $post;
-
-
-    foreach ($data as $id => $value) {
-        if ($value['type'] == 'radio') {
-            if (!isset($_POST['field'][$id])) {
-                $_POST['field'][$id] = null;
-            }
-        }
-        if ($value['type'] == 'checkbox') {
-            if (!isset($_POST['field'][$id])) {
-                $_POST['field'][$id] = 0;
-            }
-        }
-        if ($value['type'] == 'informations'
-            || $value['type'] == 'title') {
-            if (!isset($_POST['field'][$id])) {
-                $_POST['field'][$id] = 0;
-            }
-        }
-        if ($value['item'] == 'ITILCategory_Metademands') {
-            $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
-            $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field'][$id];
-        }
-
-        $checks[] = Wizard::checkvalues($value, $id, $_POST, 'field');
-    }
-    foreach ($checks as $check) {
-        if ($check['result'] == true) {
-            $KO = true;
-        }
-        $content = array_merge($content, $check['content']);
-    }
-
-    if ($KO === false && count($content) > 0) {
-        $basketline = new Basketline();
-        $basketline->addToBasket($content, $_POST['form_metademands_id']);
-    } else {
-        Session::addMessageAfterRedirect(__("There is a problem with the basket", "metademands"), false, ERROR);
-    }
-    Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
-} elseif (isset($_POST['update_basket_line'])) {
     $line = $_POST['update_basket_line'];
-    if (isset($_POST['field_basket_' . $line])) {
-        $KO = false;
+    $KO = false;
+    $checks = [];
 
-        $checks = [];
+    if (isset($_POST['field_basket_' . $line])) {
+
         $content = [];
         $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
 

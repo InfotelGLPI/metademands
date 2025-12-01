@@ -121,45 +121,83 @@ class Basketline extends CommonDBTM
                     }
                 }
 
-                $color = Wizard::hex2rgba($title_color, "0.03");
-                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
-                echo "<div class='card-header' $style_background>";
+//                $color = Wizard::hex2rgba($title_color, "0.03");
+//                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+//                echo "<div class='card-header' $style_background>";
+//
+//                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+//                echo __('Your basket', 'metademands');
+//
 
-                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+//                echo "</h2>";
+//                echo "</div>";
+
+                echo "<div class='row'>";
+                echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
+                echo "<div class='col-12 align-self-center'>";
+
+                echo "<section class='card-body' style='width: 100%;'>";
+
+                echo "<h2 class='card-title mb-2 text-break' style='color: $title_color;'>";
                 echo __('Your basket', 'metademands');
+                echo "</h2>";
 
-                echo "<div class='mydraft right' style='display: inline;float: right;'>";
-                echo "&nbsp;<button type='submit' class='pointer btn btn-light' name='clear_basket' title='"
-                    . _sx('button', 'Clear the basket', 'metademands') . "'>";
-                echo "<i class='ti ti-trash' data-hasqtip='0' aria-hidden='true'></i>";
-                echo "</button>";
+                echo "<div class='mydraft right' style='position: absolute;top: 0;margin-top: 10px;;right: 0;'>";
+
+                $target = Toolbox::getItemTypeFormURL(Wizard::class);
+                Html::showSimpleForm(
+                    $target,
+                    'clear_basket',
+                    _sx('button', 'Clear the basket', 'metademands'),
+                    [
+                        'metademands_id' => $metademands_id,
+                    ],
+                    'ti-trash',
+                    "class='btn btn-primary'"
+                );
+
                 echo "</div>";
                 echo Html::hidden('metademands_id', ['value' => $metademands_id]);
                 echo Html::hidden('form_metademands_id', ['value' => $metademands_id]);
-                echo "</h2>";
+                echo "</section>";
+                echo "</div>";
+                echo "</div>";
                 echo "</div>";
 
                 $basketLines = [];
                 foreach ($basketlinesFind as $basketLine) {
                     $basketLines[$basketLine['line']][] = $basketLine;
                 }
+
                 foreach ($basketLines as $idline => $fieldlines) {
-                    echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
-                    self::retrieveDatasByType($idline, $fieldlines, $line);
-                    echo "</table>";
+//                    echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
+                    self::retrieveDatasByType($metademands_id, $idline, $fieldlines, $line);
+//                    echo "</table>";
                 }
 
                 echo "<div class='row'>";
                 echo "<div class=\"bt-feature col-md-12 \">";
-                echo Html::submit(__('Previous'), ['name' => 'clean_form', 'class' => 'btn btn-primary']);
 
+                $target = Toolbox::getItemTypeFormURL(Wizard::class);
+                Html::showSimpleForm(
+                    $target,
+                    'clean_form',
+                    __('Previous'),
+                    [
+                        'metademands_id' => $metademands_id,
+                        'step' => Metademand::STEP_SHOW,
+                    ],
+                    '',
+                    "class='btn btn-primary'"
+                );
 
                 echo "<span style='float:right'>";
-                $title = "<i class='ti ti-shopping-bag'></i> " . _sx('button', 'Send order', 'metademands');
-
+//                $title = _sx('button', 'Send order', 'metademands');
+                $title = _sx('button', 'Save & Post', 'metademands');
                 $current_ticket = $post["current_ticket_id"] = $post["tickets_id"];
                 echo Html::submit($title, ['name' => 'send_order',
                     'form' => '',
+                    'icon' => 'ti ti-shopping-bag',
                     'id' => 'submitOrder',
                     'class' => 'btn btn-success right']);
                 echo "</span>";
@@ -213,8 +251,15 @@ class Basketline extends CommonDBTM
      * @param $values
      * @param $fields
      */
-    public static function retrieveDatasByType($idline, $values, $fields)
+    public static function retrieveDatasByType($metademands_id, $idline, $values, $fields)
     {
+
+        $target = Toolbox::getItemTypeFormURL(Wizard::class);
+        echo "<form method='post' action=\"$target\">";
+        echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
+        echo Html::hidden('metademands_id', ['value' => $metademands_id]);
+        echo Html::hidden('form_metademands_id', ['value' => $metademands_id]);
+
 
         foreach ($fields as $k => $v) {
 
@@ -230,11 +275,12 @@ class Basketline extends CommonDBTM
             }
 
 
-            if (isset($v['is_basket']) && $v['is_basket'] == 0) {
+            if (isset($v['is_basket']) && $v['is_basket'] == 0
+                && isset($v['is_order']) && $v['is_order'] == 0) {
                 continue;
             }
 
-            echo "<tr class='tab_bg_1'>";
+            echo "<tr class='tab_bg_1' id-field='field_basket_".$idline . $v["id"] . "'>";
 
             echo "<td>";
 
@@ -259,6 +305,7 @@ class Basketline extends CommonDBTM
             echo "</td>";
 
             echo "<td>";
+
             foreach ($values as $key => $value) {
 
                 if ($v['id'] == $value['plugin_metademands_fields_id']) {
@@ -284,18 +331,30 @@ class Basketline extends CommonDBTM
 
         echo "<tr class='tab_bg_1'>";
         echo "<td class='center'>";
+
         echo "<button type='submit' class='submit btn btn-primary' name='update_basket_line' value='$idline' title='"
             . _sx('button', 'Update this line', 'metademands') . "'>";
         echo "<i class='ti ti-device-floppy' data-hasqtip='0' aria-hidden='true'></i>";
         echo "</button>";
+
         echo "</td>";
         echo "<td class='center'>";
-        echo "<button type='submit' class='submit btn btn-danger' name='delete_basket_line' value='$idline' title='"
-            . _sx('button', 'Delete this line', 'metademands') . "'>";
-        echo "<i class='ti ti-trash' data-hasqtip='0' aria-hidden='true'></i>";
-        echo "</button>";
+        $target = Toolbox::getItemTypeFormURL(Wizard::class);
+        Html::showSimpleForm(
+            $target,
+            'delete_basket_line',
+            _sx('button', 'Delete this line', 'metademands'),
+            [
+                'metademands_id' => $metademands_id,
+                'delete_basket_line' => $idline,
+            ],
+            'ti-trash',
+            "class='btn btn-danger'"
+        );
+
         echo "</td>";
-        echo "</tr>";
+        echo "</tr></table>";
+        Html::closeForm();
     }
 
 
@@ -312,7 +371,7 @@ class Basketline extends CommonDBTM
         $line = 0;
 
         $criteria = [
-            'SELECT' => ['MAX' => 'line'],
+            'SELECT' => ['MAX' => 'line AS line'],
             'FROM' => $this->getTable(),
             'WHERE' => [
                 'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
@@ -320,9 +379,12 @@ class Basketline extends CommonDBTM
             ],
         ];
         $iterator = $DB->request($criteria);
+
         if (count($iterator) > 0) {
             foreach ($iterator as $data) {
-                $line = $data['line'] + 1;
+                if (isset($data['line'])) {
+                    $line = $data['line'] + 1;
+                }
             }
         }
 
@@ -370,49 +432,51 @@ class Basketline extends CommonDBTM
                 $new_files[$key]['_filename'] = $input['_filename'][$key];
             }
         }
+        if (isset($input['field_basket_' . $line])) {
+            foreach ($input['field_basket_' . $line] as $fields_id => $value) {
 
-        foreach ($input['field_basket_' . $line] as $fields_id => $value) {
+                //get id from form_metademands_id & $id
+                $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
+                    'plugin_metademands_fields_id' => $fields_id,
+                    'line' => $input['update_basket_line']]);
 
-            //get id from form_metademands_id & $id
-            $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
-                'plugin_metademands_fields_id' => $fields_id,
-                'line' => $input['update_basket_line']]);
+                $value2 = "";
+                if ($this->fields['name'] != "ITILCategory_Metademands") {
+                    if ($this->fields['name'] == "upload") {
 
-            $value2 = "";
-            if ($this->fields['name'] != "ITILCategory_Metademands") {
-                if ($this->fields['name'] == "upload") {
+                        $old_files = [];
+                        if (isset($this->fields['value']) && !empty($this->fields['value'])) {
+                            $old_files = json_decode($this->fields['value'], 1);
+                        }
+                        if (is_array($new_files) && count($new_files) > 0
+                            && is_array($old_files) && count($old_files) > 0) {
+                            $files = array_merge($old_files, $new_files);
+                            $newvalue = json_encode($files);
+                        } else {
+                            $newvalue = json_encode($new_files);
+                        }
 
-                    $old_files = [];
-                    if (isset($this->fields['value']) && !empty($this->fields['value'])) {
-                        $old_files = json_decode($this->fields['value'], 1);
-                    }
-                    if (is_array($new_files) && count($new_files) > 0
-                        && is_array($old_files) && count($old_files) > 0) {
-                        $files = array_merge($old_files, $new_files);
-                        $newvalue = json_encode($files);
                     } else {
-                        $newvalue = json_encode($new_files);
+                        $newvalue = is_array($value) ? FieldParameter::_serialize($value) : $value;
                     }
 
-                } else {
-                    $newvalue = is_array($value) ? FieldParameter::_serialize($value) : $value;
-                }
-
-                if (!str_ends_with($fields_id, "-2")) {
-                    $this->update(['plugin_metademands_fields_id' => $fields_id,
-                        'value' => $newvalue,
-                        'id' => $this->fields['id']]);
-                }
-                //date-interval
-                if (str_ends_with($fields_id, "-2")) {
-                    $value2 = $value;
-                    $fields_id = rtrim($fields_id, '-2');
-                    $this->update(['plugin_metademands_fields_id' => $fields_id,
-                        'value2' => $value2,
-                        'id' => $this->fields['id']]);
+                    if (!str_ends_with($fields_id, "-2")) {
+                        $this->update(['plugin_metademands_fields_id' => $fields_id,
+                            'value' => $newvalue,
+                            'id' => $this->fields['id']]);
+                    }
+                    //date-interval
+                    if (str_ends_with($fields_id, "-2")) {
+                        $value2 = $value;
+                        $fields_id = rtrim($fields_id, '-2');
+                        $this->update(['plugin_metademands_fields_id' => $fields_id,
+                            'value2' => $value2,
+                            'id' => $this->fields['id']]);
+                    }
                 }
             }
         }
+
         if (isset($input['basket_plugin_servicecatalog_itilcategories_id'])) {
 
             $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],

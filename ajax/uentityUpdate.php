@@ -39,7 +39,13 @@ if (strpos($_SERVER['PHP_SELF'], "uentityUpdate.php")) {
 Session::checkLoginUser();
 
 $fieldEntity = new Field();
+$fields_id = 0;
+
 $cond       = [];
+
+if (!isset($_POST['fieldname'])) {
+    $_POST['fieldname'] = "field";
+}
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
@@ -55,7 +61,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     ]
                 )) {
                     $id = $f['id'];
-                    $_POST["field"] = "field[$id]";
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
+                    $name = $_POST['field'];
+                    $fields_id = $f['id'];
                 }
             }
         }
@@ -65,7 +73,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         }
 
         $fieldEntity->getFromDB($_POST['fields_id']);
+        $name = $_POST['field'];
     }
+}  else {
+    $name = $_POST['field'] ?? "";
 }
 
 ////chercher les champs de la meta avec param : updatefromthisfield
@@ -103,7 +114,7 @@ if (isset($_POST['entities_id']) && $_POST['entities_id'] > 0) {
 }
 
 $rand = mt_rand();
-$opt  = ['name'      => $_POST["field"],
+$opt  = ['name'      => $name,
          'entity'    => $_SESSION['glpiactiveentities'],
          'value'     => $entities_id,
          'condition' => $cond,
@@ -121,6 +132,8 @@ if ($fieldEntity->fields['readonly'] == 1) {
     Entity::dropdown($opt);
 }
 
-$_POST['name'] = "entity_user";
+$_POST['name'] = "entity_user".$_POST["id_fielduser"];
 $_POST['rand'] = $rand;
 Ajax::commonDropdownUpdateItem($_POST);
+
+$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $entities_id;

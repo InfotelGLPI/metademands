@@ -50,7 +50,7 @@ class Draft extends CommonDBTM
 
     public static function getIcon()
     {
-        return "ti-copy";
+        return "ti ti-copy";
     }
 
     public static function install(Migration $migration)
@@ -691,7 +691,8 @@ class Draft extends CommonDBTM
 
         $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
 
-        $content = "<br><div id='div_save_draft'  style='{$style}'>
+        // $content = "<br>";
+        $content = "<div id='div_save_draft'  style='{$style}'>
                         <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>" . $input_name . "
                         </button>
                         <script>
@@ -757,10 +758,10 @@ class Draft extends CommonDBTM
             'placeholder' => __('Draft name', 'metademands'),
         ]);
 
-        $titl_submit_button = "<i class='ti ti-cloud-upload pointer'></i>&nbsp;";
-        $titl_submit_button .= _sx('button', 'Save as draft', 'metademands');
+        $titl_submit_button = _sx('button', 'Save as draft', 'metademands');
         $submit_button = Html::submit($titl_submit_button, [
             'name' => 'save_draft',
+            'icon' => 'ti ti-cloud-upload pointer',
             'form' => '',
             'id' => 'submitSave',
             'class' => 'btn btn-success btn-sm',

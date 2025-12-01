@@ -1490,14 +1490,27 @@ class Basket extends CommonDBTM
                 $title_color = $meta->fields['title_color'];
             }
 
-            $color = Wizard::hex2rgba($title_color, "0.03");
-            $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;padding: 20px;'";
-            echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
+//            $color = Wizard::hex2rgba($title_color, "0.03");
+//            $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;padding: 20px;'";
+//            echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
+//
+//            echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+//            echo __('Basket summary', 'metademands');
+//            echo "</h2>";
+//
+//            echo "</div>";
 
-            echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+            echo "<div class='row'>";
+            echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
+            echo "<div class='col-12 align-self-center'>";
+
+            echo "<section class='card-body' style='width: 100%;'>";
+            echo "<h2 class='card-title mb-2 text-break' style='color: $title_color;'>";
             echo __('Basket summary', 'metademands');
             echo "</h2>";
-
+            echo "</section>";
+            echo "</div>";
+            echo "</div>";
             echo "</div>";
         }
 
@@ -1832,11 +1845,12 @@ class Basket extends CommonDBTM
                 $content .= Draft::createDraftInput(Draft::BASKET_MODE);
             }
             $content .= "<span style='float:right'>";
-            $title = "<i class='ti ti-shopping-bag'></i> " . _sx('button', 'Send order', 'metademands');
-
+//            $title = _sx('button', 'Send order', 'metademands');
+            $title = _sx('button', 'Save & Post', 'metademands');
             $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
             $content .= Html::submit($title, [
                 'name' => 'send_order',
+                'icon' => 'ti ti-shopping-bag',
                 'form' => '',
                 'id' => 'submitOrder',
                 'class' => 'btn btn-success right',

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -39,24 +40,31 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 Session::checkLoginUser();
 
 $fieldGroup = new Field();
+$fields_id = 0;
+
 $fieldparameter = new FieldParameter();
 $cond       = [];
 
+if (!isset($_POST['fieldname'])) {
+    $_POST['fieldname'] = "field";
+}
+
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-    if (!isset($_POST['field'])) {
+    if (!isset($_POST["field"])) {
 
         if ($fields = $fieldGroup->find(['type'                              => "dropdown_object",
-                                          'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                                          'item'                              => Group::getType()])) {
+            'plugin_metademands_metademands_id' => $_POST['metademands_id'],
+            'item'                              => Group::getType()])) {
             foreach ($fields as $field) {
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id'],
                     'link_to_user' => $_POST['id_fielduser']])) {
                     $id             = $field['id'];
-                    $_POST["field"] = "field[$id]";
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $fieldGroup->getFromDB($fieldparameter->fields['plugin_metademands_fields_id']);
+                    $name = $_POST['field'];
+                    $fields_id = $id;
                 }
             }
-
         }
     } else {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
@@ -64,8 +72,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         }
 
         $fieldGroup->getFromDB($_POST['fields_id']);
-        $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' =>$_POST['fields_id']]);
+        $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST['fields_id']]);
 
+        $name = $_POST['field'];
     }
 
     if (!empty($fieldparameter->fields['custom']) && isset($_POST["value"])) {
@@ -89,7 +98,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             }
         }
     }
+} else {
+    $name = $_POST['field'] ?? "";
 }
+
 unset($cond['user_group']);
 //chercher les champs de la meta avec param : updatefromthisfield
 $groups_id = 0;
@@ -121,12 +133,12 @@ if (is_array($groups_id)) {
 }
 
 $rand = mt_rand();
-$opt  = ['name'      => $_POST["field"],
-         'entity'    => $_SESSION['glpiactiveentities'],
-         'value'     => $groups_id,
-         'condition' => $cond,
-         'rand'      => $rand,
-    'width' => '200px'
+$opt  = ['name'      => $name,
+    'entity'    => $_SESSION['glpiactiveentities'],
+    'value'     => $groups_id,
+    'condition' => $cond,
+    'rand'      => $rand,
+    'width' => '200px',
 ];
 
 $fieldparameter            = new FieldParameter();
@@ -138,8 +150,10 @@ if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldGr
 }
 
 
-\Group::dropdown($opt);
+Group::dropdown($opt);
 
-$_POST['name'] = "group_user";
+$_POST['name'] = "group_user".$_POST["id_fielduser"];
 $_POST['rand'] = $rand;
 Ajax::commonDropdownUpdateItem($_POST);
+
+$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $groups_id;

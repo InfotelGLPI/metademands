@@ -255,7 +255,7 @@ class Wizard extends CommonDBTM
 
         echo "<div class='col-md-12 md-title'>";
         echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
-        echo "<section class='card-body' style='width: 100%;height: 90px;'>";
+        echo "<section class='card-body' style='width: 100%;'>";//height: 90px;
         echo "<div class='d-flex'>";
 
         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -291,7 +291,7 @@ class Wizard extends CommonDBTM
 
             echo "</span>";
 
-        } else {
+        } elseif (!empty($illustration)) {
             $ill = new IllustrationExtension();
             echo $ill->renderIllustration($illustration);
         }
@@ -1276,7 +1276,7 @@ class Wizard extends CommonDBTM
                         echo "</h2>";
                         echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
                         if (!empty($comment_meta)) {
-                            echo $comment_meta;
+                            echo nl2br($comment_meta);
                         } else {
                             echo $name_meta;
                         }
@@ -1417,29 +1417,29 @@ class Wizard extends CommonDBTM
                             unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
                         }
 
-                        if (isset($metademands->fields['is_order'])
-                            && $metademands->fields['is_order'] == 1) {
-                            if (!$preview
-                                && countElementsInTable(
-                                    "glpi_plugin_metademands_basketlines",
-                                    [
-                                        "plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                        "users_id" => Session::getLoginUserID(),
-                                    ]
-                                )
-                            ) {
-                                echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-                                $title = "<i class='ti ti-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                                $title .= _sx('button', 'Add to basket', 'metademands');
-                                echo Html::submit($title, [
-                                    'name' => 'add_to_basket',
-                                    'id' => 'add_to_basket',
-                                    'class' => 'btn btn-primary',
-                                ]);
-
-                                echo "</div>";
-                            }
-                        }
+//                        if (isset($metademands->fields['is_order'])
+//                            && $metademands->fields['is_order'] == 1) {
+//                            if (!$preview
+//                                && countElementsInTable(
+//                                    "glpi_plugin_metademands_basketlines",
+//                                    [
+//                                        "plugin_metademands_metademands_id" => $metademands->fields['id'],
+//                                        "users_id" => Session::getLoginUserID(),
+//                                    ]
+//                                )
+//                            ) {
+//                                echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
+//                                $title = _sx('button', 'Add to basket', 'metademands');
+//                                echo Html::submit($title, [
+//                                    'name' => 'add_to_basket',
+//                                    'icon' => 'ti ti-plus',
+//                                    'id' => 'add_to_basket',
+//                                    'class' => 'btn btn-primary',
+//                                ]);
+//
+//                                echo "</div>";
+//                            }
+//                        }
                         echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
                         echo Html::hidden('is_private', ['value' => 1]);
                     }
@@ -1491,52 +1491,52 @@ class Wizard extends CommonDBTM
                         "users_id" => Session::getLoginUserID(),
                     ]
                 )) {
-                    $title = "<i class='ti ti-plus'></i>&nbsp;";
-                    $title .= _sx('button', 'Add to basket', 'metademands');
-                    echo Html::submit($title, [
-                        'name' => 'add_to_basket',
-                        'id' => 'add_to_basket',
-                        'class' => 'metademand_next_button btn btn-primary',
-                    ]);
+//                    $title = _sx('button', 'Add to basket', 'metademands');
+//                    echo Html::submit($title, [
+//                        'name' => 'add_to_basket',
+//                        'id' => 'add_to_basket',
+//                        'icon' => 'ti ti-plus',
+//                        'class' => 'metademand_next_button btn btn-primary',
+//                    ]);
                 } else {
-                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-                    echo "</div>";
-                    $title = "<i class='ti ti-device-floppy'></i>&nbsp;";
-                    $title .= _sx('button', 'Validate your basket', 'metademands');
-                    echo Html::hidden('see_basket_summary', ['value' => 1]);
-                    echo Html::submit($title, [
-                        'name' => 'next_button',
-                        'form' => '',
-                        'id' => 'submitjob',
-                        'class' => 'metademand_next_button btn btn-success',
-                    ]);
-                    $ID = $metademands->fields['id'];
-                    echo "<script>
-                          $('#submitjob').click(function() {
-                             var meta_id = {$ID};
-                             if(typeof tinyMCE !== 'undefined'){
-                                tinyMCE.triggerSave();
-                             }
-                             jQuery('.resume_builder_input').trigger('change');
-                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                             $('#ajax_loader').show();
-                             $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
-                                   type: 'POST',
-                                   datatype: 'html',
-                                   data: $('#wizard_form').serializeArray(),
-                                   success: function (response) {
-                                      $('#ajax_loader').hide();
-                                      $('.md-wizard').replaceWith(response);
-                                   },
-                                   error: function (xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                   }
-                                });
-                          });
-                        </script>";
+//                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+//                    echo "</div>";
+//                    $title = _sx('button', 'See your basket', 'metademands');
+//                    echo Html::hidden('see_basket_summary', ['value' => 1]);
+//                    echo Html::submit($title, [
+//                        'name' => 'next_button',
+//                        'form' => '',
+//                        'icon' => 'ti ti-device-floppy',
+//                        'id' => 'submitjob',
+//                        'class' => 'metademand_next_button btn btn-success',
+//                    ]);
+//                    $ID = $metademands->fields['id'];
+//                    echo "<script>
+//                          $('#submitjob').click(function() {
+//                             var meta_id = {$ID};
+//                             if(typeof tinyMCE !== 'undefined'){
+//                                tinyMCE.triggerSave();
+//                             }
+//                             jQuery('.resume_builder_input').trigger('change');
+//                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+//                             $('#ajax_loader').show();
+//                             $.ajax({
+//                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
+//                                   type: 'POST',
+//                                   datatype: 'html',
+//                                   data: $('#wizard_form').serializeArray(),
+//                                   success: function (response) {
+//                                      $('#ajax_loader').hide();
+//                                      $('.md-wizard').replaceWith(response);
+//                                   },
+//                                   error: function (xhr, status, error) {
+//                                      console.log(xhr);
+//                                      console.log(status);
+//                                      console.log(error);
+//                                   }
+//                                });
+//                          });
+//                        </script>";
                 }
             }
             if (!$preview
@@ -1571,16 +1571,24 @@ class Wizard extends CommonDBTM
         $token = Session::getNewCSRFToken();
 
         $title = _sx('button', 'Save & Post', 'metademands');
+        $icon = "ti ti-device-floppy";
+
         $childs_meta = MetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
         if (count($childs_meta) > 0) {
             $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         }
+
         $see_summary = 0;
+        if ($metademands->fields['is_order'] == 1) {
+            $title = _sx('button', 'Add to basket', 'metademands');
+            $icon = "ti ti-plus";
+        }
+
         if ($metademands->fields['is_basket'] == 1) {
             $title = _sx('button', 'See basket summary & send it', 'metademands');
             $see_summary = 1;
         }
-        $submittitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . $title;
+        $submittitle = "<i class=\"$icon\"></i>&nbsp;" . $title;
 
         $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
 
@@ -1640,13 +1648,18 @@ class Wizard extends CommonDBTM
             }
         }
 
-        if ($metademands->fields['change_step_by_step_option'] == 1) {
-            $block_id_now = $block_id == 0 ? 1 : $block_id;
-            $listStepBlocks = Step::cleanListBlock(
-                $listStepBlocks,
-                $block_id_now,
-                $metademands->fields['id']
-            );
+        if ($metademands->fields['step_by_step_mode'] == 1) {
+            $metademandsconfigsteps = new Configstep();
+            foreach ($metademandsconfigsteps->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]) as $row) {
+                if ($row['change_step_by_step_option'] == 1) {
+                    $block_id_now = $block_id == 0 ? 1 : $block_id;
+                    $listStepBlocks = Step::cleanListBlock(
+                        $listStepBlocks,
+                        $block_id_now,
+                        $metademands->fields['id']
+                    );
+                }
+            }
         }
 
         $fields = new Field();
@@ -1691,6 +1704,7 @@ class Wizard extends CommonDBTM
         $metaparams['edit_model'] = $edit_model;
         $metaparams['use_model'] = $use_model;
         $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
+        $metaparams['is_order'] = $metademands->fields['is_order'];
         $metaparams['confirmmsg'] = addslashes(__("You have not entered any values. Is this normal?", 'metademands'));
         $metaparams['nameform']
             = addslashes($metademands->fields['name'])
@@ -1743,12 +1757,17 @@ class Wizard extends CommonDBTM
         $metaparams['root_doc'] = $root_doc;
 
         $title = _sx('button', 'Save & Post', 'metademands');
+        $icon = "ti ti-device-floppy";
+        if ($metademands->fields['is_order'] == 1) {
+            $title = _sx('button', 'Add to basket', 'metademands');
+            $icon = "ti ti-plus";
+        }
 
         $childs_meta = MetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
         if (count($childs_meta) > 0) {
             $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
         }
-        $submittitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . $title;
+        $submittitle = "<i class=\"$icon\"></i>&nbsp;" . $title;
 
 
         $metaparams['submittitle'] = $submittitle;
@@ -1904,6 +1923,12 @@ class Wizard extends CommonDBTM
 
         $use_as_step = 0;
         $stepConfig = new Configstep();
+        if (countElementsInTable("glpi_plugin_metademands_configsteps", ['plugin_metademands_metademands_id' => $metademands_id]) > 1) {
+            $stepConfig->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id]);
+            $stepConfig->add(['plugin_metademands_metademands_id' => $metademands_id]);
+            echo "<div class='alert alert-warning d-flex'>";
+            echo "<b>".__('There was a problem. The step-by-step mode configuration was reset', 'metademands')."</b></div>";
+        }
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
 
         if (isset($metademands->fields['step_by_step_mode'])
@@ -1947,9 +1972,49 @@ class Wizard extends CommonDBTM
         if ($basketlinesFind = $basketline->find([
             'plugin_metademands_metademands_id' => $metademands_id,
             'users_id' => Session::getLoginUserID(),
-        ])) {
+        ]) && !$preview) {
             echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>" . __('You have items on your basket', 'metademands') . "</b></div>";
+            echo "<b>" . __('You have items on your basket', 'metademands') . "</b>";
+
+            echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+            echo "</div>";
+            $title = _sx('button', 'See your basket', 'metademands');
+            echo Html::hidden('see_basket_summary', ['value' => 1]);
+            echo Html::submit($title, [
+                'name' => 'next_button',
+                'form' => '',
+                'icon' => 'ti ti-shopping-bag',
+                'id' => 'submitjob',
+                'class' => 'metademand_next_button btn btn-success',
+            ]);
+            $ID = $metademands->fields['id'];
+            echo "<script>
+                          $('#submitjob').click(function() {
+                             var meta_id = {$ID};
+                             if(typeof tinyMCE !== 'undefined'){
+                                tinyMCE.triggerSave();
+                             }
+                             jQuery('.resume_builder_input').trigger('change');
+                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                             $('#ajax_loader').show();
+                             $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
+                                   type: 'POST',
+                                   datatype: 'html',
+                                   data: $('#wizard_form').serializeArray(),
+                                   success: function (response) {
+                                      $('#ajax_loader').hide();
+                                      $('.md-wizard').replaceWith(response);
+                                   },
+                                   error: function (xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                   }
+                                });
+                          });
+                        </script>";
+            echo "</div>";
         }
 
         if (count($lines)) {
@@ -2185,7 +2250,7 @@ class Wizard extends CommonDBTM
             $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
 
             foreach ($allfields as $block => $line) {
-                if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
+                if ($use_as_step == 1 ) {//&& $metademands->fields['is_order'] == 0
                     if (!in_array($block, $all_hidden_blocks)) {
                         echo "<div class='tab-step'>";
                         $cpt++;
@@ -2195,7 +2260,7 @@ class Wizard extends CommonDBTM
                 self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id, $use_model);
 
 
-                if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
+                if ($use_as_step == 1 ) {//&& $metademands->fields['is_order'] == 0
                     if (!in_array($block, $all_hidden_blocks)) {
                         echo "</div>";
                     }
@@ -2205,8 +2270,9 @@ class Wizard extends CommonDBTM
                 echo "</div>";
             }
 
-            if ($metademands->fields['is_order'] == 0
-                && !$preview) {
+            if (!$preview) {
+                //$metademands->fields['is_order'] == 0
+                //                &&
                 //TO DROP ?
                 //                (isset($options['resources_id'])
                 //                    && $options['resources_id'] > 0)
@@ -2222,10 +2288,12 @@ class Wizard extends CommonDBTM
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
 
-                echo "<div style='overflow:auto;'>";
+                echo "<div style='overflow:auto;margin-top:10px'>";
 
                 if ($use_as_step == 1) {
-                    echo "<br><div id='nextMsg' class='alert alert-info center'>";
+
+//                    echo "<br>";
+                    echo "<div id='nextMsg' class='alert alert-info center'>";
                     echo "</div>";
                 }
 
@@ -2952,6 +3020,7 @@ class Wizard extends CommonDBTM
                     window.metademandparams = {};
                     metademandparams.useconfirm = '$useconfirm';
                     metademandparams.confirmmsg = '$confirmmsg';
+                    metademandparams.is_order = '$is_order';
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
                     metademandparams.edit_model = '$edit_model';
@@ -3230,6 +3299,16 @@ class Wizard extends CommonDBTM
         if (!isset($post[$fieldname][$id])) {
             $post[$fieldname][$id] = "";
         }
+
+//        $content[$id]['plugin_metademands_fields_id'] = $id;
+//        $content[$id]['value'] = (isset($post[$fieldname][$id])) ? $post[$fieldname][$id] : "";
+//        $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
+//        $content[$id]['item'] = $value['item'];
+//        $content[$id]['type'] = $value['type'];
+//
+//        return ['result' => $KO, 'content' => $content];
+
+
         if ($value['is_mandatory'] == 1
             && $value['type'] != 'title'
             && $value['type'] != 'title-block'
@@ -3367,8 +3446,9 @@ class Wizard extends CommonDBTM
                     if (is_array($post[$fieldname][$id])) {
                         $content[$id]['value'] = FieldParameter::_serializeArray($post[$fieldname][$id]);
                     } else {
-                        $content[$id]['value'] = FieldParameter::_serialize($post[$fieldname][$id]);
+                        $content[$id]['value'] = $post[$fieldname][$id];
                     }
+
                 }
             }
             $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
