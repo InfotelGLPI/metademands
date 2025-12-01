@@ -165,9 +165,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         switch ($field) {
             case 'fields_link':
             case 'hidden_link':
-
                 if (isset($_POST['initial_items'])) {
-
                     $items = reset($_POST['initial_items']);
                     $item = array_key_last($items);
                     $fieldoption = new self();
@@ -998,7 +996,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     public static function getTypeOValueToCheck($params)
     {
         switch ($params['check_type_value']) {
-            case 2 :
+            case 2:
                 return  __('Regex', 'metademands');
                 break;
             default:
@@ -1006,7 +1004,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function showRegexDropdown($value, $paramID){
+    public static function showRegexDropdown($value, $paramID)
+    {
         echo "<td style='text-align: right'>";
         Dropdown::showFromArray(
             "check_type_value",
@@ -1044,9 +1043,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
         echo "</td>";
     }
 
-    public static function showRegexInput($value){
+    public static function showRegexInput($value)
+    {
         echo Html::input('check_value', ['value'=>$value]);
-        echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\" onclick=\"validregex()\">";
+        echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\">";
         echo        "<i class=\"fas fa-check\"></i>";
         echo    "</button>";
     }
@@ -1105,7 +1105,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             ) . '</span>';
             echo '</td><td>';
             $tasksusedarray = [];
-            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'], 'check_value' => $params['check_value']]) as $tasksused) {
+            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'], $params['check_type_value'] == 2 ? 'check_value_regex' : 'check_value' => $params['check_value']]) as $tasksused) {
                 if ($tasksused['plugin_metademands_tasks_id'] > 0) {
                     $tasksusedarray[] = $tasksused['plugin_metademands_tasks_id'];
                 }
@@ -1137,7 +1137,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
-                    && $value['item'] != "informations" ) {
+                    && $value['item'] != "informations") {
                     $data[$id] = $value['rank'] . " - " . urldecode(
                         html_entity_decode(Toolbox::stripslashes_deep($value['name']))
                     );
@@ -1181,7 +1181,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             if ($params['check_value'] != "") {
                 foreach ($fieldoptions->find([
                     'plugin_metademands_fields_id' => $params['plugin_metademands_fields_id'],
-                    'check_value' => $params['check_value'],
+                    $params['check_type_value'] == 2 ? 'check_value_regex' : 'check_value' => $params['check_value'],
                 ]) as $hiddenblock) {
                     if ($hiddenblock['hidden_block'] > 0) {
                         $hiddenblockarray[] = $hiddenblock['hidden_block'];
@@ -1859,7 +1859,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     }
                 }
             } elseif (is_array($session_value)) {
-
                 foreach ($session_value as $k => $fieldSession) {
                     if (isset($check_values[$fieldSession])) {
                         if (($key = array_search($check_values[$fieldSession]['hidden_block'], $hidden_blocks)) !== false) {
@@ -2047,13 +2046,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
             $fields = new PluginMetademandsField();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $blockid]);
             if (is_array($fields_data) && count($fields_data) > 0) {
-
                 foreach ($fields_data as $data) {
                     $fieldparameter = new PluginMetademandsFieldParameter();
                     if ($fieldparameter->getFromDBByCrit(
                         ['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1]
                     )) {
-
                         $id = $data['id'];
                         if ($id > 0) {
                             $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
@@ -2193,7 +2190,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 }
                 $field =  new PluginMetademandsField();
                 if ($field->getFromDB($hidden_link) && $field->fields['type'] == 'upload') {
-
                     $script .= "
                     var div = document.getElementById('fileupload_info_ticketfield$hidden_link');
                     if (!div) return;
@@ -2205,7 +2201,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         nextElem.setAttribute('required', 'required');
                     }";
                 }
-
             }
         }
         return $script;
