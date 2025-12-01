@@ -37,6 +37,10 @@ if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
 
 Session::checkLoginUser();
 
+if (!isset($_POST['fieldname'])) {
+    $_POST['fieldname'] = "field";
+}
+
 $fieldUser = new PluginMetademandsField();
 $fieldparameter = new PluginMetademandsFieldParameter();
 
@@ -47,14 +51,12 @@ if (isset($_POST["fields_id"])
 
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-
     $fieldparameter = new PluginMetademandsFieldParameter();
     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["id_fielduser"]])) {
         if ($_POST['value'] == $_POST['id_fielduser']) {
             $_POST['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
                 && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
         }
-
     }
 
     if (!isset($_POST['field'])) {
@@ -69,10 +71,11 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     'link_to_user' => $_POST['id_fielduser'],
                 ])) {
                     $id = $field['id'];
-                    $_POST["field"] = "field[$id]";
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                     $_POST['limit'] = $fieldparameter->fields['default'];
                     $_POST['display_type'] = $fieldparameter->fields['display_type'];
+                    $name = $_POST['field'];
                 }
             }
         }
@@ -80,7 +83,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
             $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
         }
+        $name = $_POST['field'];
     }
+} else {
+    $name = $_POST['field'] ?? "";
 }
 
 $users_id = 0;
@@ -108,7 +114,7 @@ $rand = mt_rand();
 
 $p = [
     'rand' => $rand,
-    'name' => $_POST["field"],
+    'name' => $name,
     'value' => $val,
     'users_id' => $users_id,
 ];
@@ -116,7 +122,6 @@ $p = [
 
 
 if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
-
     $p['selected_items_id'] = $_POST['selected_items_id'] ?? 0;
     $p['selected_itemtype'] = $_POST['selected_itemtype'] ?? "";
     $p['is_mandatory'] = $_POST['is_mandatory'] ?? 0;
@@ -128,12 +133,9 @@ if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
 
     PluginMetademandsDropdownmeta::getItemsForUser($p);
     $_POST['name'] = "mydevices_user$users_id";
-
 } else {
-
     PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
     $_POST['name'] = "mydevices_user";
-
 }
 
 $_POST['rand'] = "";

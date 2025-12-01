@@ -36,7 +36,13 @@ if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
 
 Session::checkLoginUser();
 
+if (!isset($_POST['fieldname'])) {
+    $_POST['fieldname'] = "field";
+}
+
 $fieldUser = new PluginMetademandsField();
+$fields_id = 0;
+
 $readonly = 0;
 $default_use_id_requester_supervisor  = 0;
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
@@ -56,7 +62,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
                         $default_use_id_requester_supervisor = 1;
                     }
-                    $_POST["field"] = "field[" . $f['id'] . "]";
+                    $_POST["field"] = $_POST['fieldname'] . "[" . $f['id'] . "]";
+                    $name = $_POST['field'];
+                    $fields_id = $f['id'];
                 }
             }
         }
@@ -64,7 +72,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
             $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
         }
+        $name = $_POST['field'];
     }
+} else {
+    $name = $_POST['field'] ?? "";
 }
 
 $users_id_supervisor = 0;
@@ -85,7 +96,7 @@ if (isset($_POST['fields_id'])
 }
 
 $opt = [
-    'name' => $_POST["field"],
+    'name' => $name,
     'value' => $users_id_supervisor,
     'width' => '200px',
     'used' => [
@@ -111,6 +122,8 @@ if ($readonly == 1) {
     User::dropdown($opt);
 }
 
-$_POST['name'] = "manager_user";
+$_POST['name'] = "manager_user".$_POST["id_fielduser"];
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);
+
+$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $users_id_supervisor;

@@ -2273,92 +2273,96 @@ border-style: none !important; border-color: initial !important;border-image: in
         $field_custom = new PluginMetademandsFieldCustomvalue();
         $freetablefield = new PluginMetademandsFreetablefield();
 
-        $metademand_params->getFromDBByCrit(
-            ["plugin_metademands_fields_id" => $field->getID()]
-        );
-        $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
+        $params = [];
 
-        $default_values = [];
-        if (isset($metademand_params->fields['default'])) {
-            $default_values = PluginMetademandsFieldParameter::_unserialize($metademand_params->fields['default']);
-        }
+        $id = $field->getID();
+        if (isset($id) && $id > 0) {
+            $metademand_params->getFromDBByCrit(
+                ["plugin_metademands_fields_id" => $field->getID()]
+            );
+            $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
 
-        $custom_values = [];
-        if (isset($metademand_params->fields['custom'])) {
-            $custom_values = PluginMetademandsFieldParameter::_unserialize($metademand_params->fields['custom']);
-        }
-
-        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
-        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
-
-        if (isset($field->fields['type'])
-            && (in_array($field->fields['type'], $allowed_customvalues_types)
-                || in_array($field->fields['item'], $allowed_customvalues_items))
-            && !in_array($field->fields["item"], self::$field_specificobjects)
-            && $field->fields['item'] != "Appliance"
-            && $field->fields['item'] != "Group") {
-            $custom_values = [];
-            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
-                if (count($customs) > 0) {
-                    $custom_values = $customs;
-                }
-                $default_values = [];
+            $default_values = [];
+            if (isset($metademand_params->fields['default'])) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($metademand_params->fields['default']);
             }
-        }
 
-        if (isset($field->fields['type'])
-            && $field->fields['type'] == "freetable") {
             $custom_values = [];
-            if ($customs = $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
-                if (count($customs) > 0) {
-                    $custom_values = $customs;
-                }
-                $default_values = [];
+            if (isset($metademand_params->fields['custom'])) {
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($metademand_params->fields['custom']);
             }
+
+            $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+            $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+            if (isset($field->fields['type'])
+                && (in_array($field->fields['type'], $allowed_customvalues_types)
+                    || in_array($field->fields['item'], $allowed_customvalues_items))
+                && !in_array($field->fields["item"], self::$field_specificobjects)
+                && $field->fields['item'] != "Appliance"
+                && $field->fields['item'] != "Group") {
+                $custom_values = [];
+                if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
+                    if (count($customs) > 0) {
+                        $custom_values = $customs;
+                    }
+                    $default_values = [];
+                }
+            }
+
+            if (isset($field->fields['type'])
+                && $field->fields['type'] == "freetable") {
+                $custom_values = [];
+                if ($customs = $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
+                    if (count($customs) > 0) {
+                        $custom_values = $customs;
+                    }
+                    $default_values = [];
+                }
+            }
+
+            $params = [
+                'id' => $field->fields['id'],
+                'object_to_create' => $metademand->fields['object_to_create'],
+                'is_order' => $metademand->fields['is_order'],
+                'name' => $field->fields['name'],
+                'comment' => $field->fields['comment'],
+                'label2' => $field->fields['label2'],
+                'rank' => $field->fields['rank'],
+                'order' => $field->fields['order'],
+                'plugin_metademands_metademands_id' => $field->fields["plugin_metademands_metademands_id"],
+                'plugin_metademands_fields_id' => $field->getID(),
+                'item' => $field->fields['item'],
+                'type' => $field->fields['type'],
+                'row_display' => $metademand_params->fields['row_display'] ?? 0,
+                'display_type' => $metademand_params->fields['display_type'] ?? 0,
+                'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
+                'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
+                'color' => $metademand_params->fields['color'] ?? "",
+                'icon' => $metademand_params->fields['icon'] ?? "",
+                'is_mandatory' => $metademand_params->fields['is_mandatory'] ?? 0,
+                'used_by_ticket' => $metademand_params->fields['used_by_ticket'] ?? 0,
+                'used_by_child' => $metademand_params->fields['used_by_child'] ?? 0,
+                'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
+                'default_use_id_requester' => $metademand_params->fields['default_use_id_requester'] ?? 0,
+                'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor'] ?? 0,
+                'readonly' => $metademand_params->fields['readonly'] ?? 0,
+                'max_upload' => $metademand_params->fields['max_upload'] ?? 0,
+                'regex' => $metademand_params->fields['regex'] ?? 0,
+                'use_future_date' => $metademand_params->fields['use_future_date'] ?? 0,
+                'use_date_now' => $metademand_params->fields['use_date_now'] ?? 0,
+                'additional_number_day' => $metademand_params->fields['additional_number_day'] ?? 0,
+                'display_type' => $metademand_params->fields['display_type'] ?? 0,
+                'informations_to_display' => $metademand_params->fields['informations_to_display'] ?? ['fullname'],
+                'link_to_user' => $metademand_params->fields["link_to_user"] ?? 0,
+                'hidden' => $metademand_params->fields["hidden"] ?? 0,
+                'authldaps_id' => $metademand_params->fields["authldaps_id"] ?? 0,
+                'ldap_filter' => $metademand_params->fields["ldap_filter"] ?? "",
+                'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
+                'custom_values' => $custom_values,
+                'default_values' => $default_values,
+            ];
         }
-
-        $params = [
-            'id' => $field->fields['id'],
-            'object_to_create' => $metademand->fields['object_to_create'],
-            'is_order' => $metademand->fields['is_order'],
-            'name' => $field->fields['name'],
-            'comment' => $field->fields['comment'],
-            'label2' => $field->fields['label2'],
-            'rank' => $field->fields['rank'],
-            'order' => $field->fields['order'],
-            'plugin_metademands_metademands_id' => $field->fields["plugin_metademands_metademands_id"],
-            'plugin_metademands_fields_id' => $field->getID(),
-            'item' => $field->fields['item'],
-            'type' => $field->fields['type'],
-            'row_display' => $metademand_params->fields['row_display'] ?? 0,
-            'display_type' => $metademand_params->fields['display_type'] ?? 0,
-            'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
-            'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
-            'color' => $metademand_params->fields['color'] ?? "",
-            'icon' => $metademand_params->fields['icon'] ?? "",
-            'is_mandatory' => $metademand_params->fields['is_mandatory'] ?? 0,
-            'used_by_ticket' => $metademand_params->fields['used_by_ticket'] ?? 0,
-            'used_by_child' => $metademand_params->fields['used_by_child'] ?? 0,
-            'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
-            'default_use_id_requester' => $metademand_params->fields['default_use_id_requester'] ?? 0,
-            'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor'] ?? 0,
-            'readonly' => $metademand_params->fields['readonly'] ?? 0,
-            'max_upload' => $metademand_params->fields['max_upload'] ?? 0,
-            'regex' => $metademand_params->fields['regex'] ?? 0,
-            'use_future_date' => $metademand_params->fields['use_future_date'] ?? 0,
-            'use_date_now' => $metademand_params->fields['use_date_now'] ?? 0,
-            'additional_number_day' => $metademand_params->fields['additional_number_day'] ?? 0,
-            'display_type' => $metademand_params->fields['display_type'] ?? 0,
-            'informations_to_display' => $metademand_params->fields['informations_to_display'] ?? ['fullname'],
-            'link_to_user' => $metademand_params->fields["link_to_user"] ?? 0,
-            'hidden' => $metademand_params->fields["hidden"] ?? 0,
-            'authldaps_id' => $metademand_params->fields["authldaps_id"] ?? 0,
-            'ldap_filter' => $metademand_params->fields["ldap_filter"] ?? "",
-            'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
-            'custom_values' => $custom_values,
-            'default_values' => $default_values,
-        ];
-
         return $params;
     }
 

@@ -47,6 +47,15 @@ $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
 $nofreetable = false;
 
+//Add Ajax fields loaded by ulocationUpdate.php etc..
+if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'])) {
+    $session_fields = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'];
+    foreach ($session_fields as $name => $session_field) {
+        $_POST['field'][$name] = $session_field;
+    }
+}
+
+
 //if (isset($_POST['is_freetable'])
 //    && $_POST['is_freetable'] == 1
 //    && isset($_SESSION['plugin_orderfollowup']['freetables'])) {
