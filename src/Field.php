@@ -2746,6 +2746,12 @@ border-style: none !important; border-color: initial !important;border-image: in
             if (isset($data['hide_title']) && $data['hide_title'] == 0) {
                 if ($hidden == 0) {
                     echo "<div $required class='col-form-label metademand-label'>";
+
+                    if ($data['icon']) {
+                        $icon = $data['icon'];
+                        echo "<i class='ti $icon'></i>&nbsp;";
+                    }
+
                     echo $label . " $upload";
 
                     if ($debug) {

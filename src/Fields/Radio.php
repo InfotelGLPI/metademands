@@ -119,7 +119,7 @@ class Radio extends CommonDBTM
                         if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                             $name = $label['name'];
                         }
-                        $field .= "<label class='form-check-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name . "</label>";
+                        $field .= "<label class='form-check-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name;
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             $field .= "&nbsp;<span style='vertical-align: bottom;'>";
                             if (empty(
@@ -140,6 +140,7 @@ class Radio extends CommonDBTM
                             );
                             $field .= "</span>";
                         }
+                        $field .= "</label>";
                         $field .= "</div>";
                     } else {
                         $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
@@ -409,33 +410,34 @@ class Radio extends CommonDBTM
         );
         echo "</td>";
 
-        echo "<td>";
-        echo __('Icon') . "&nbsp;";
-        echo "</td>";
-        echo "<td>";
-        $icon_selector_id = 'icon_' . mt_rand();
-        echo Html::select(
-            'icon',
-            [$params['icon'] => $params['icon']],
-            [
-                'id' => $icon_selector_id,
-                'selected' => $params['icon'],
-                'style' => 'width:175px;',
-            ]
-        );
-
-        echo Html::script('js/modules/Form/WebIconSelector.js');
-        echo Html::scriptBlock("$(
-            function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );");
-
-        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-        echo "</td>";
+        echo "<td colspan='2'></td>";
+//        echo "<td>";
+//        echo __('Icon') . "&nbsp;";
+//        echo "</td>";
+//        echo "<td>";
+//        $icon_selector_id = 'icon_' . mt_rand();
+//        echo Html::select(
+//            'icon',
+//            [$params['icon'] => $params['icon']],
+//            [
+//                'id' => $icon_selector_id,
+//                'selected' => $params['icon'],
+//                'style' => 'width:175px;',
+//            ]
+//        );
+//
+//        echo Html::script('js/modules/Form/WebIconSelector.js');
+//        echo Html::scriptBlock("$(
+//            function() {
+//            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+//               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+//               icon_selector.init();
+//               });
+//            }
+//         );");
+//
+//        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
+//        echo "</td>";
         echo "</tr>";
     }
 

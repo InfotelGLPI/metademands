@@ -439,6 +439,36 @@ class FieldParameter extends CommonDBChild
         }
         echo "</tr>";
 
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Icon') . "&nbsp;";
+        echo "</td>";
+        echo "<td>";
+        $icon_selector_id = 'icon_' . mt_rand();
+        echo Html::select(
+            'icon',
+            [$params['icon'] => $params['icon']],
+            [
+                'id' => $icon_selector_id,
+                'selected' => $params['icon'],
+                'style' => 'width:175px;',
+            ]
+        );
+
+        echo Html::script('js/modules/Form/WebIconSelector.js');
+        echo Html::scriptBlock("$(
+            function() {
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+               });
+            }
+         );");
+        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
+        echo "</td>";
+        echo "<td colspan='2'></td>";
+        echo " </tr>";
+
         if ($params['type'] != "title"
             && $params['type'] != "title-block") {
             echo "<tr class='tab_bg_1'>";
