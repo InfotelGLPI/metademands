@@ -6514,7 +6514,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                 'SELECT'    => [
                     'glpi_plugin_metademands_tickettasks.*',
                     'glpi_plugin_metademands_tasks.plugin_metademands_metademands_id',
-                    'glpi_plugin_metademands_tasks.is AS tasks_id',
+                    'glpi_plugin_metademands_tasks.id AS tasks_id',
                     'glpi_plugin_metademands_tickets_tasks.level AS parent_level',
                 ],
                 'FROM'      => 'glpi_plugin_metademands_tickettasks',
