@@ -143,14 +143,11 @@ function plugin_init_metademands()
         $PLUGIN_HOOKS['pre_item_purge']['metademands'] = [
             'Profile'
                 => [Profile::class, 'purgeProfiles'],
+            'Ticket' => 'plugin_metademands_item_purge',
             'TicketTemplateMandatoryField'
                 => [TicketField::class, 'post_delete_mandatoryField'],
             'TicketTemplatePredefinedField'
                 => [TicketField::class, 'post_delete_predefinedField'],
-        ];
-
-        $PLUGIN_HOOKS['pre_item_purge']['metademands'] = [
-            'Ticket' => 'plugin_metademands_item_purge',
         ];
 
         $PLUGIN_HOOKS['item_update']['metademands'] = [

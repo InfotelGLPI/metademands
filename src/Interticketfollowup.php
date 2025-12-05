@@ -227,7 +227,7 @@ class Interticketfollowup extends CommonITILObject
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsMetademand'
+                'itemtype' => 'PluginMetademandsInterticketfollowup'
             ]
         );
         $DB->doQuery($query);
