@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -30,51 +31,52 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Migration;
 use Session;
-use CommonGLPI;
 use User;
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class Ticket_Task
  */
-class Ticket_Task extends CommonDBTM {
+class Ticket_Task extends CommonDBTM
+{
+    public static $rightname = 'plugin_metademands';
 
-   static $rightname = 'plugin_metademands';
+    /**
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     *
+     * @param int $nb
+     *
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
+    {
+        return __('Task creation', 'metademands');
+    }
 
-   /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    *
-    * @param int $nb
-    *
-    * @return string
-    */
-   static function getTypeName($nb = 0) {
-      return __('Task creation', 'metademands');
-   }
+    /**
+     * @return bool|int
+     */
+    public static function canView(): bool
+    {
+        return Session::haveRight(self::$rightname, READ);
+    }
 
-   /**
-    * @return bool|int
-    */
-   static function canView(): bool
-   {
-      return Session::haveRight(self::$rightname, READ);
-   }
-
-   /**
-    * @return bool
-    */
-   static function canCreate(): bool
-   {
-      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-   }
+    /**
+     * @return bool
+     */
+    public static function canCreate(): bool
+    {
+        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
 
     public static function install(Migration $migration)
     {
@@ -88,13 +90,14 @@ class Ticket_Task extends CommonDBTM {
         if (!$DB->tableExists($table)) {
             $query = "CREATE TABLE `$table` (
                         `id` int {$default_key_sign} NOT NULL auto_increment,
-                        `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
-                        `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
-                        `plugin_metademands_tasks_id`       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `plugin_metademands_tasks_id` int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `level`                       int          NOT NULL DEFAULT '0',
+                        `tickets_id`                  int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `parent_tickets_id`           int {$default_key_sign} NOT NULL DEFAULT '0',
                         PRIMARY KEY (`id`),
-                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
-                        KEY `entities_id` (`entities_id`),
-                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+                        KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+                        KEY `tickets_id` (`tickets_id`),
+                        KEY `parent_tickets_id` (`parent_tickets_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
@@ -103,11 +106,11 @@ class Ticket_Task extends CommonDBTM {
         $migration->dropForeignKeyContraint($table, 'glpi_plugin_metademands_tickets_tasks_ibfk_1');
 
         //version 3.3.0
-        if (!isIndex($table, "plugin_metademands_metademands_id")) {
-            $migration->addKey($table, "plugin_metademands_metademands_id");
+        if (!isIndex($table, "parent_tickets_id")) {
+            $migration->addKey($table, "parent_tickets_id");
         }
-        if (!isIndex($table, "entities_id")) {
-            $migration->addKey($table, "entities_id");
+        if (!isIndex($table, "tickets_id")) {
+            $migration->addKey($table, "tickets_id");
         }
         if (!isIndex($table, "plugin_metademands_tasks_id")) {
             $migration->addKey($table, "plugin_metademands_tasks_id");
@@ -121,130 +124,139 @@ class Ticket_Task extends CommonDBTM {
         $DB->dropTable(self::getTable(), true);
     }
 
-   /**
-    * Display tab for each users
-    *
-    * @param CommonGLPI $item
-    * @param int $withtemplate
-    * @return array|string
-    */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+    /**
+     * Display tab for each users
+     *
+     * @param CommonGLPI $item
+     * @param int $withtemplate
+     * @return array|string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
 
-      if (!$withtemplate) {
-         if ($item->getType() == Metademand::class) {
-            if ($_SESSION['glpishow_count_on_tabs']) {
-               $dbu = new DbUtils();
-               return self::createTabEntry(self::getTypeName(),
-                                           $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
+        if (!$withtemplate) {
+            if ($item->getType() == Metademand::class) {
+                if ($_SESSION['glpishow_count_on_tabs']) {
+                    $dbu = new DbUtils();
+                    return self::createTabEntry(
+                        self::getTypeName(),
+                        $dbu->countElementsInTable(
+                            $this->getTable(),
+                            ["plugin_metademands_metademands_id" => $item->getID()]
+                        )
+                    );
+                }
+                return self::getTypeName();
             }
-            return self::getTypeName();
-         }
-      }
-      return '';
-   }
+        }
+        return '';
+    }
 
-   /**
-    * Display content for each users
-    *
-    * @static
-    * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
-    * @return bool|true
-    */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      $field = new self();
+    /**
+     * Display content for each users
+     *
+     * @static
+     * @param CommonGLPI $item
+     * @param int $tabnum
+     * @param int $withtemplate
+     * @return bool|true
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        $field = new self();
 
-      if ($item->getType() == Metademand::class) {
-//         $field->showPluginFromItems($item);
-      }
-      return true;
-   }
+        if ($item->getType() == Metademand::class) {
+            //         $field->showPluginFromItems($item);
+        }
+        return true;
+    }
 
-   /**
-    * @param $field
-    * @param $name (default '')
-    * @param $values (default '')
-    * @param $options   array
-    *
-    * @return string
-    **@since version 0.84
-    *
-    */
-   static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
+    /**
+     * @param $field
+     * @param $name (default '')
+     * @param $values (default '')
+     * @param $options   array
+     *
+     * @return string
+     **@since version 0.84
+     *
+     */
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
 
-      if (!is_array($values)) {
-         $values = [$field => $values];
-      }
-      $options['display'] = false;
-      $options['toadd'] = ['mygroups' => __('My groups')];
-      $options['name'] = $name;
-      switch ($field) {
-         case 'id':
-           return \Group::dropdown($options);
-            break;
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        $options['display'] = false;
+        $options['toadd'] = ['mygroups' => __('My groups')];
+        $options['name'] = $name;
+        switch ($field) {
+            case 'id':
+                return \Group::dropdown($options);
+                break;
 
 
-         case 'plugin_metademands_tasks_id':
-            unset($options['toadd']);
-            $right = "own_ticket";
-            $options = [ 'display' => false,
-                         'name' => $name,
-                        'entity'      => $_SESSION['glpiactive_entity'],
-                        'right'       => $right,
-                        'ldap_import' => true];
-            return User::dropdown($options);
-            break;
+            case 'plugin_metademands_tasks_id':
+                unset($options['toadd']);
+                $right = "own_ticket";
+                $options = [ 'display' => false,
+                    'name' => $name,
+                    'entity'      => $_SESSION['glpiactive_entity'],
+                    'right'       => $right,
+                    'ldap_import' => true];
+                return User::dropdown($options);
+                break;
 
-      }
+        }
 
-      return parent::getSpecificValueToSelect($field, $name, $values, $options);
-   }
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
 
-   /**
-    * display a value according to a field
-    *
-    * @param $field     String         name of the field
-    * @param $values    String / Array with the value to display
-    * @param $options   Array          of option
-    *
-    * @return a string
-    **@since version 0.83
-    *
-    */
-   static function getSpecificValueToDisplay($field, $values, array $options = []) {
+    /**
+     * display a value according to a field
+     *
+     * @param $field     String         name of the field
+     * @param $values    String / Array with the value to display
+     * @param $options   array
+     *
+     * @return a string
+     **@since version 0.83
+     *
+     */
+    public static function getSpecificValueToDisplay($field, $values, array $options = [])
+    {
 
-      if (!is_array($values)) {
-         $values = [$field => $values];
-      }
-      switch ($field) {
-//         case 'id':
-//            return "okkk";
-//            break;
-      }
-      return parent::getSpecificValueToDisplay($field, $values, $options);
-   }
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        switch ($field) {
+            //         case 'id':
+            //            return "okkk";
+            //            break;
+        }
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
 
-   /**
-    * display a value according to a field
-    *
-    * @param $field     String         name of the field
-    * @param $values    String / Array with the value to display
-    * @param $options   Array          of option
-    *
-    * @return a string
-    **@since version 0.83
-    *
-    */
-   static function getFirstTicket($ticket_id) {
+    /**
+     * display a value according to a field
+     *
+     * @param $field     String         name of the field
+     * @param $values    String / Array with the value to display
+     * @param $options   Array          of option
+     *
+     * @return a string
+     **@since version 0.83
+     *
+     */
+    public static function getFirstTicket($ticket_id)
+    {
 
-      $self = new self();
-      if($self->getFromDBByCrit(['tickets_id' => $ticket_id])) {
-         return self::getFirstTicket($self->fields['parent_tickets_id']);
-      } else {
-         return $ticket_id;
-      }
-   }
+        $self = new self();
+        if ($self->getFromDBByCrit(['tickets_id' => $ticket_id])) {
+            return self::getFirstTicket($self->fields['parent_tickets_id']);
+        } else {
+            return $ticket_id;
+        }
+    }
 
 }

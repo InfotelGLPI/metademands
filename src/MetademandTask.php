@@ -112,6 +112,13 @@ class MetademandTask extends CommonDBChild
             }
             $migration->migrationOneTable($table);
         }
+        //version 3.3.0
+        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+            $migration->addKey($table, "plugin_metademands_metademands_id");
+        }
+        if (!isIndex($table, "plugin_metademands_tasks_id")) {
+            $migration->addKey($table, "plugin_metademands_tasks_id");
+        }
     }
 
     public static function uninstall()
