@@ -34,6 +34,7 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Dropdown;
+use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Dropdownmultiple;
 use Html;
 use Migration;
@@ -1043,10 +1044,10 @@ class FieldOption extends CommonDBChild
                     $class::showParamsValueToCheck($params);
                     break;
                 case 'basket':
-                    PluginMetademandsBasket::showParamsValueToCheck($params);
+                    Basket::showParamsValueToCheck($params);
                     break;
                 case 'parent_field':
-                    $field = new PluginMetademandsField();
+                    $field = new Field();
                     if ($field->getFromDB($params['parent_field_id'])) {
                         if (empty(trim($field->fields['name']))) {
                             echo "ID - " . $params['parent_field_id'];
