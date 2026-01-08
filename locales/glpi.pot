@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-08 12:13+0000\n"
+"POT-Creation-Date: 2026-01-08 13:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,7 +122,7 @@ msgstr ""
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:749 src/Field.php:3478 src/Field.php:3563
+#: src/Field.php:749 src/Field.php:3441 src/Field.php:3526
 msgid "Additional label"
 msgstr ""
 
@@ -215,8 +215,8 @@ msgstr ""
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: src/Field.php:596 src/Field.php:982 src/Field.php:1397 src/Field.php:3545
-#: src/Field.php:4840 src/Wizard.php:2183 src/Step.php:473 src/Step.php:558
+#: src/Field.php:596 src/Field.php:982 src/Field.php:1397 src/Field.php:3508
+#: src/Field.php:4803 src/Wizard.php:2183 src/Step.php:473 src/Step.php:558
 #: src/Step.php:700
 msgid "Block"
 msgstr ""
@@ -275,7 +275,7 @@ msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
 
-#: src/Field.php:2412
+#: src/Field.php:2407
 msgid "Category of the metademand"
 msgstr ""
 
@@ -807,7 +807,7 @@ msgstr ""
 msgid "Field informations"
 msgstr ""
 
-#: src/Field.php:4850 src/Condition.php:413 src/Condition.php:979
+#: src/Field.php:4813 src/Condition.php:413 src/Condition.php:979
 msgid "Field type"
 msgstr ""
 
@@ -815,7 +815,7 @@ msgstr ""
 msgid "Fill out a form"
 msgstr ""
 
-#: src/Field.php:4821 src/Fields/Ldapdropdown.php:267
+#: src/Field.php:4784 src/Fields/Ldapdropdown.php:267
 msgid "Filter"
 msgstr ""
 
@@ -1168,7 +1168,7 @@ msgstr ""
 msgid "Mandatory"
 msgstr ""
 
-#: src/Field.php:2720
+#: src/Field.php:2715
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
@@ -1236,11 +1236,11 @@ msgstr ""
 msgid "Minimal mandatory"
 msgstr ""
 
-#: src/Field.php:3663
+#: src/Field.php:3626
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3662
+#: src/Field.php:3625
 msgid "Modify icon"
 msgstr ""
 
@@ -1260,7 +1260,7 @@ msgstr ""
 msgid "My metademands"
 msgstr ""
 
-#: src/Field.php:2410
+#: src/Field.php:2405
 msgid "My values"
 msgstr ""
 
@@ -1417,7 +1417,7 @@ msgid "OR"
 msgstr ""
 
 #: ajax/reloaditem.php:41 src/Field.php:1013 src/Field.php:1021
-#: src/Field.php:1551 src/Field.php:3480 src/Field.php:4864
+#: src/Field.php:1551 src/Field.php:3443 src/Field.php:4827
 msgid "Object"
 msgstr ""
 
@@ -1482,7 +1482,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3554
+#: src/Field.php:3517
 msgid "Order"
 msgstr ""
 
@@ -2376,7 +2376,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:3690 src/Field.php:3710
+#: src/Field.php:3653 src/Field.php:3673
 msgid "You cannot do this for this field"
 msgstr ""
 
