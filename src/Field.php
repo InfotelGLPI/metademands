@@ -2326,7 +2326,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                     }
                 }
                 return \Dropdown::showFromArray($name, $options, $p);
-                break;
             case "dropdown":
                 $options = \Dropdown::getStandardDropdownItemTypes();
                 if (isset($p["with_empty_value"])
@@ -2336,7 +2335,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                 }
 
                 return \Dropdown::showFromArray($name, $options, $p);
-                break;
             case "dropdown_meta":
                 if (isset($p["with_empty_value"])
                     && $p["with_empty_value"] == true) {
@@ -2358,7 +2356,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                     }
                 }
                 return \Dropdown::showFromArray($name, $options, $p);
-                break;
             case "dropdown_object":
                 $options = self::getGlpiObject();
                 if (isset($p["with_empty_value"])
@@ -2367,11 +2364,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                     $options = array_merge($allowedDropdownValues, $options);
                 }
                 return \Dropdown::showFromArray($name, $options, $p);
-                break;
             case "basket":
                 $options = new Basketobjecttype();
                 return $options->Dropdown(["name" => $name, 'value' => $p['value']]);
-                break;
             default:
 
                 if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -3067,77 +3062,70 @@ border-style: none !important; border-color: initial !important;border-image: in
                                     $parent_field_id = 0;
                                     if (isset($opts[0]['parent_field_id'])) {
                                         $parent_field_id = $opts[0]['parent_field_id'];
+                                        $field_parentmeta = new Field();
+                                        $field_parentmeta->getFromDB($parent_field_id);
+                                        $parameters = Field::getAllParamsFromField($field_parentmeta);
+                                        $meta_parent_id = $field_parentmeta->fields['plugin_metademands_metademands_id'];
                                     }
 
-                                    if (isset($line_data['form'][$parent_field_id]['type'])
-                                        && isset(
-                                            $_SESSION['plugin_metademands'][$metademand->getID(
-                                            )]['fields'][$parent_field_id]
-                                        )) {
-                                        if (isset(
-                                            $_SESSION['plugin_metademands'][$metademand->getID(
-                                            )]['fields'][$parent_field_id]
-                                        )) {
-                                            $value = $_SESSION['plugin_metademands'][$metademand->getID(
-                                            )]['fields'][$parent_field_id];
+                                    if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id])) {
+                                        if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id])) {
+                                            $value = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id];
                                         } else {
                                             $value = 0;
                                         }
 
-                                        switch ($line_data['form'][$parent_field_id]['type']) {
+                                        switch ($field_parentmeta->fields['type']) {
                                             case 'dropdown_multiple':
-                                                if (!empty($line_data['form'][$parent_field_id]['custom_values'])) {
-                                                    $value_parent_field = $line_data['form'][$parent_field_id]['custom_values'][$parent_field_id];
+                                                if (!empty($parameters['custom_values'])) {
+                                                    $value_parent_field = $parameters['custom_values'][$parent_field_id];
                                                 }
                                                 break;
                                             case 'dropdown':
                                             case 'dropdown_ldap':
                                             case 'dropdown_object':
                                             case 'dropdown_meta':
-                                                if (!empty($line_data['form'][$value_parent_field]['custom_values'])
-                                                    && $line_data['form'][$value_parent_field]['item'] == 'other') {
-                                                    $value_parent_field = $line_data['form'][$parent_field_id]['custom_values'][$parent_field_id];
+                                                if (!empty($parameters['custom_values'])
+                                                    && $parameters['item'] == 'other') {
+                                                    $value_parent_field = $parameters['custom_values'][$parent_field_id];
                                                 } else {
-                                                    switch ($line_data['form'][$parent_field_id]['item']) {
+                                                    switch ($parameters['item']) {
                                                         case 'User':
                                                             $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                            $user = new User();
-                                                            $user->getFromDB($value);
-                                                            $value_parent_field .= $user->getName();
+                                                            $params['value'] = $value;
+                                                            $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
+                                                            $value_parent_field .= $class_parent::getFieldValue($params);
                                                             break;
                                                         default:
-                                                            $dbu = new DbUtils();
                                                             $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                            $value_parent_field .= Dropdown::getDropdownName(
-                                                                $dbu->getTableForItemType(
-                                                                    $line_data['form'][$parent_field_id]['item']
-                                                                ),
-                                                                $value
-                                                            );
+                                                            $params['value'] = $value;
+                                                            $params['item'] = $parameters['item'];
+                                                            $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
+                                                            $value_parent_field .= $class_parent::getFieldValue($params);
                                                             break;
                                                     }
                                                 }
                                                 break;
                                             case 'checkbox':
-                                                if (!empty($line_data['form'][$parent_field_id]['custom_values'])) {
-                                                    $line_data['form'][$parent_field_id]['custom_values'] = FieldParameter::_unserialize(
-                                                        $line_data['form'][$parent_field_id]['custom_values']
+                                                if (!empty($parameters['custom_values'])) {
+                                                    $parameters['custom_values'] = FieldParameter::_unserialize(
+                                                        $parameters['custom_values']
                                                     );
-                                                    foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
+                                                    foreach ($parameters['custom_values'] as $k => $val) {
                                                         if (!empty(
                                                         $ret = self::displayField(
-                                                            $line_data['form'][$parent_field_id]["id"],
+                                                            $parameters["id"],
                                                             "custom" . $k
                                                         )
                                                         )) {
-                                                            $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
+                                                            $parameters['custom_values'][$k] = $ret;
                                                         }
                                                     }
                                                     $checkboxes = FieldParameter::_unserialize($value);
 
                                                     $custom_checkbox = [];
                                                     $value_parent_field = "";
-                                                    foreach ($line_data['form'][$parent_field_id]['custom_values'] as $key => $label) {
+                                                    foreach ($parameters['custom_values'] as $key => $label) {
                                                         $checked = isset($checkboxes[$key]) ? 1 : 0;
                                                         if ($checked) {
                                                             $custom_checkbox[] .= $label;
@@ -3149,21 +3137,21 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                 break;
 
                                             case 'radio':
-                                                if (!empty($line_data['form'][$parent_field_id]['custom_values'])) {
-                                                    $line_data['form'][$parent_field_id]['custom_values'] = FieldParameter::_unserialize(
-                                                        $line_data['form'][$parent_field_id]['custom_values']
+                                                if (!empty($parameters['custom_values'])) {
+                                                    $parameters['custom_values'] = FieldParameter::_unserialize(
+                                                        $parameters['custom_values']
                                                     );
-                                                    foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
+                                                    foreach ($parameters['custom_values'] as $k => $val) {
                                                         if (!empty(
                                                         $ret = self::displayField(
-                                                            $line_data['form'][$parent_field_id]["id"],
+                                                            $parameters["id"],
                                                             "custom" . $k
                                                         )
                                                         )) {
-                                                            $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
+                                                            $parameters['custom_values'][$k] = $ret;
                                                         }
                                                     }
-                                                    foreach ($line_data['form'][$parent_field_id]['custom_values'] as $key => $label) {
+                                                    foreach ($parameters['custom_values'] as $key => $label) {
                                                         if ($value == $key) {
                                                             $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$key' >";
                                                             $value_parent_field .= $label;
@@ -3173,63 +3161,38 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                 }
                                                 break;
 
+                                            case 'time':
+                                            case 'datetime':
+                                            case 'yesno':
                                             case 'date':
                                                 $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                $value_parent_field .= Html::convDate($value);
+                                                $params['value'] = $value;
+                                                $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
+                                                $value_parent_field .= $class_parent::getFieldValue($params);
                                                 break;
-
-                                            case 'time':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                $value_parent_field .= $value;
-                                                break;
-
-                                            case 'datetime':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                $value_parent_field .= Html::convDateTime($value);
-                                                break;
-
+                                            case 'datetime_interval':
                                             case 'date_interval':
                                                 $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                if (isset(
-                                                    $_SESSION['plugin_metademands'][$metademand->getID(
-                                                    )]['fields'][$data['parent_field_id'] . "-2"]
-                                                )) {
-                                                    $value2 = $_SESSION['plugin_metademands'][$metademand->getID(
-                                                    )]['fields'][$parent_field_id . "-2"];
+                                                if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$data['parent_field_id'] . "-2"])) {
+                                                    $value2 = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id . "-2"];
                                                     $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value2 . "'>";
                                                 } else {
                                                     $value2 = 0;
                                                 }
-                                                $value_parent_field .= Html::convDate($value) . " - " . Html::convDate(
-                                                        $value2
-                                                    );
+                                                $params['value'] = $value;
+                                                $params['value2'] = $value2;
+                                                $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
+                                                $value_parent_field .= $class_parent::getFieldValue($params);
                                                 break;
 
-                                            case 'datetime_interval':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                if (isset(
-                                                    $_SESSION['plugin_metademands'][$metademand->getID(
-                                                    )]['fields'][$data['parent_field_id'] . "-2"]
-                                                )) {
-                                                    $value2 = $_SESSION['plugin_metademands'][$metademand->getID(
-                                                    )]['fields'][$parent_field_id . "-2"];
-                                                    $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value2 . "'>";
-                                                } else {
-                                                    $value2 = 0;
-                                                }
-                                                $value_parent_field .= Html::convDateTime(
-                                                        $value
-                                                    ) . " - " . Html::convDateTime($value2);
-                                                break;
-                                            case 'yesno':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                $value_parent_field .= \Dropdown::getYesNo($value);
-                                                break;
                                             case 'basket':
 
                                                 break;
                                             default:
                                                 $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                $params['value'] = $value;
+                                                $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
+                                                $value_parent_field .= $class_parent::getFieldValue($params);
                                         }
                                     }
                                     $field .= $value_parent_field;
