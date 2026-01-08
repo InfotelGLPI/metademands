@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-05 11:41+0000\n"
+"POT-Creation-Date: 2025-12-06 17:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1887,7 +1887,7 @@ msgstr ""
 msgid "Target ticket(s)"
 msgstr ""
 
-#: src/Ticket_Metademand.php:71 src/MailTask.php:67 src/Ticket_Task.php:60
+#: src/Ticket_Metademand.php:71 src/MailTask.php:67 src/Ticket_Task.php:62
 #: src/Task.php:79 src/TicketTask.php:71 src/MetademandTask.php:63
 msgid "Task creation"
 msgstr ""
@@ -2065,7 +2065,7 @@ msgid ""
 "the save value to check is used"
 msgstr ""
 
-#: src/MetademandTask.php:155
+#: src/MetademandTask.php:162
 msgid "This demand is already used in"
 msgstr ""
 
