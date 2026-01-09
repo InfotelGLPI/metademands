@@ -486,14 +486,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         $dbu = new DbUtils();
-        if ($dbu->countElementsInTable(
+        if ($item->getType() == 'Ticket' && ($dbu->countElementsInTable(
             "glpi_plugin_metademands_tickets_metademands",
             ["tickets_id" => $item->fields['id']]
         )
             || $dbu->countElementsInTable(
                 "glpi_plugin_metademands_tickets_tasks",
                 ["tickets_id" => $item->fields['id']]
-            )) {
+                ))) {
             if (!$withtemplate
                 && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
                 if ($item->getType() == 'Ticket' && $this->canView()) {
@@ -6396,7 +6396,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     if (!isset($son_ticket_data['locations_id']) || empty($son_ticket_data['locations_id'])) {
                         $son_ticket_data['locations_id'] = 0;
                     }
-
+                    $ticket = new \Ticket();
                     // check if son ticket already exists in case we come from an update of the parent ticket
                     if ($ticket_task->getFromDBByCrit([
                         'parent_tickets_id' => $parent_tickets_id,
