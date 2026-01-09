@@ -35,7 +35,7 @@ use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Metademands\Group;
-use PluginOrderprojectsMetademand;
+//use PluginOrderprojectsMetademand;
 
 if (isset($_POST['see_basket_summary'])) {
     header("Content-Type: text/html; charset=UTF-8");
@@ -168,11 +168,11 @@ if ($nofreetable == false) {
             $metademands->getFromDB($_POST['form_metademands_id']);
 
             $meta = [];
-            if (Plugin::isPluginActive('orderprojects')
-                && $metademands->fields['is_order'] == 1) {
-                $orderprojects = new PluginOrderprojectsMetademand();
-                $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
-            }
+//            if (Plugin::isPluginActive('orderprojects')
+//                && $metademands->fields['is_order'] == 1) {
+//                $orderprojects = new PluginOrderprojectsMetademand();
+//                $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+//            }
 
             //            if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
             //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
@@ -198,7 +198,7 @@ if ($nofreetable == false) {
                 }
             }
             if (count($meta) == 1) {
-                $orderprojects->createFromMetademands($_POST);
+//                $orderprojects->createFromMetademands($_POST);
                 Html::back();
             } else {
                 $nblines = 0;
