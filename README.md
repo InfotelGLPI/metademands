@@ -3,7 +3,7 @@
 This plugin is on Transifex - Help us to translate :
 https://www.transifex.com/infotelGLPI/GLPI_metademands/
 
-![Plugin metademands](https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/basket.png "Plugin metademands")
+![Plugin metademands](https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc2.png "Plugin metademands")
 
 Wiki : https://github.com/InfotelGLPI/metademands/wiki
 
