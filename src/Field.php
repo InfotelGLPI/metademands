@@ -4018,7 +4018,8 @@ border-style: none !important; border-color: initial !important;border-image: in
         $userID = Session::getLoginUserID();
         $entity_restrict = $_SESSION['glpiactiveentities'];
 
-        if ($_SESSION["glpiactiveprofile"]["helpdesk_hardware"] & pow(2, \Ticket::HELPDESK_MY_HARDWARE)) {
+        if ($_SESSION["glpiactiveprofile"]["helpdesk_hardware"]
+            & pow(2, \Ticket::HELPDESK_MY_HARDWARE)) {
             $my_devices = ['' => \Dropdown::EMPTY_VALUE];
             $devices = [];
 
@@ -4240,7 +4241,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                 }
             }
             // Get linked items to computers
-            if (isset($already_add['Computer']) && count($already_add['Computer'])) {
+            if (isset($already_add['Computer'])
+                && count($already_add['Computer'])) {
                 $devices = [];
 
                 // Direct Connection
@@ -4306,7 +4308,7 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         $array = explode('_', $value);
         $itemType = $array[0];
-        $item_id = $array[1];
+        $item_id = $array[1] ?? 0;
 
         $item = new $itemType();
         $item->getFromDB($item_id);

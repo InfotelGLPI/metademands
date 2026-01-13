@@ -57,7 +57,7 @@ use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
-define('PLUGIN_METADEMANDS_VERSION', '3.5.6');
+define('PLUGIN_METADEMANDS_VERSION', '3.5.7');
 
 global $CFG_GLPI;
 
@@ -87,8 +87,7 @@ function plugin_init_metademands()
 
     $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
     $PLUGIN_HOOKS['change_profile']['metademands'] = [Profile::class, 'initProfile'];
-    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'] = ['scripts/metademands.js'];
-    //    $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/scripts/metademands.js"];
+    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'] = ['scripts/metademands.js', 'scripts/metademands_freelines.js'];
     $PLUGIN_HOOKS[Hooks::ADD_CSS]['metademands'] = ['css/metademands.css'];
     //    $PLUGIN_HOOKS['add_css']['metademands'] = ['css/range.scss'];
     // add minidashboard

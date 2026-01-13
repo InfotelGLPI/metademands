@@ -34,17 +34,39 @@ Session::checkLoginUser();
 
 $data_by_free = [];
 
-$fields_id = $_POST['fields_id'];
-$linebyfield = 'lines'.$fields_id;
+$fields_id = $_POST['datas']['fields_id'];
+$metademands_id = $_POST['datas']['metademands_id'];
 
-if (isset($_POST[$linebyfield])) {
-    foreach ($_POST[$linebyfield] as $key => $data) {
-        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'][$fields_id][$data['id']] = $data;
+
+if (isset($_POST['datas']['add'])) {
+    $datas[$_POST['datas']['add']['id']] = $_POST['datas']['add'];
+    foreach ($datas as $key => $data) {
+        $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key] = $data;
+    }
+} else if (isset($_POST['datas']['update'])) {
+    $datas[$_POST['datas']['update']['id']] = $_POST['datas']['update'];
+    foreach ($datas as $key => $data) {
+        $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key] = $data;
+    }
+
+} else if (isset($_POST['type']) && $_POST['type'] == 'remove') {
+    if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$_POST['datas']['remove']])) {
+        unset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$_POST['datas']['remove']]);
+    }
+    if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id])) {
+        foreach (($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id]) as $key => $value) {
+            if ($value['id'] == $_POST['datas']['remove']) {
+                unset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key]);
+            }
+        }
+    }
+    if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id])) {
+        foreach (($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id]) as $key => $value) {
+            if ($value['id'] == $_POST['datas']['remove']) {
+                unset($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id][$key]);
+            }
+        }
     }
 }
 
-if (isset($_POST['remove'])) {
-    if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'][$fields_id])) {
-        unset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'][$fields_id][$_POST['remove']]);
-    }
-}
+

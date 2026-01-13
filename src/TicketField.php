@@ -286,8 +286,6 @@ class TicketField extends CommonDBChild
      */
     function showFromMetademand($item)
     {
-        global $CFG_GLPI;
-
         if (!$this->canview()) {
             return false;
         }

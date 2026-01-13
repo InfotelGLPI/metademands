@@ -354,6 +354,17 @@ class Dropdownobject extends CommonDBTM
                 if ($opt['readonly']) {
                     echo Html::hidden($opt['name'], ['value' => $opt['value']]);
                 }
+
+                if ($data['link_to_user'] > 0) {
+                    echo "</div>";
+                    $optAjax = $opt;
+                    $optAjax['name'] = 'manager_user';
+                    $optAjax['rand'] = '';
+                    $optAjax['id_fielduser'] = $data['link_to_user'];
+                    $optAjax['field'] = $opt['name'];
+                    $optAjax['metademands_id'] = $data['plugin_metademands_metademands_id'];
+                    Ajax::commonDropdownUpdateItem($optAjax);
+                }
                 if ($data['display_type'] == 1) {
                     $user_id = $opt['value'];
                     $field_id = $data['id'];
@@ -368,18 +379,8 @@ class Dropdownobject extends CommonDBTM
                         Wizard::showUserInformations($user_tooltip);
                         echo "</div>";
                         echo "</div>";
-                        echo "</span>";
                     }
-                }
-                if ($data['link_to_user'] > 0) {
-                    echo "</div>";
-                    $optAjax = $opt;
-                    $optAjax['name'] = 'manager_user';
-                    $optAjax['rand'] = '';
-                    $optAjax['id_fielduser'] = $data['link_to_user'];
-                    $optAjax['field'] = $opt['name'];
-                    $optAjax['metademands_id'] = $data['plugin_metademands_metademands_id'];
-                    Ajax::commonDropdownUpdateItem($optAjax);
+                    echo "</span>";
                 }
                 $relatedTextFields = new Field();
                 $relatedTextFields = $relatedTextFields->find([

@@ -493,7 +493,7 @@ textarea.invalid,
     max-width: 500px !important;
 }
 
-.buttonelt {
+.md_buttonelt {
     max-width: 200px;
     min-width: 200px;
     border: 1px solid #000;
@@ -543,14 +543,14 @@ textarea.invalid,
     font-weight: unset;
 }
 
-.buttonelt:hover,
-.buttonelt:focus,
-.buttonelt:active {
+.md_buttonelt:hover,
+.md_buttonelt:focus,
+.md_buttonelt:active {
     background-color: #CCC !important;
     color: white;
 }
 
-.buttonelt_color {
+.md_buttonelt_color {
     background-color: #CCC !important;
     color: white;
 }

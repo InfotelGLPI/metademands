@@ -427,30 +427,42 @@ class FieldOption extends CommonDBChild
                 $massiveactionparams = ['container' => 'massfieldoption' . $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
+
+            $colspan = 12;
+            if ($item->fields['type'] == "parent_field") {
+                $colspan = 3;
+            }
             echo "<div class='left'>";
             echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-            echo "<th colspan='11'>" . __("List of options", 'metademands') . "</th></tr><tr>";
+            echo "<th colspan='$colspan'>" . __("List of options", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
-                echo "<th width='11'>";
+                echo "<th width='$colspan'>";
                 echo Html::getCheckAllAsCheckbox('massfieldoption' . $rand);
                 echo "</th>";
             }
             echo "<th>" . __("ID") . "</th>";
-            echo "<th>" . __('Type of value to check', 'metademands') . "</th>";
-            echo "<th>" . __('Value to check', 'metademands') . "</th>";
-            echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
-            echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
-            echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
-            echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
-            echo "<th>" . __('Display this hidden block in the same block', 'metademands') . "</th>";
-            echo "<th>" . __('Childs blocks', 'metademands') . "</th>";
-            echo "<th>" . __('Launch a validation', 'metademands') . "</th>";
-            echo "<th>" . __('Bind to the value of this checkbox', 'metademands') . "</th>";
-            //            echo "<th>" . __('Hide submit button', 'metademands') . "</th>";
+            if ($item->fields['type'] == "parent_field") {
+                echo "<th>" . __('Type', 'metademands') . "</th>";
+                echo "<th>" . __('Field name') . "</th>";
+            } else {
+                echo "<th>" . __('Type of value to check', 'metademands') . "</th>";
+                echo "<th>" . __('Value to check', 'metademands') . "</th>";
+                echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
+                echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
+                echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
+                echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
+                echo "<th>" . __('Display this hidden block in the same block', 'metademands') . "</th>";
+                echo "<th>" . __('Childs blocks', 'metademands') . "</th>";
+                echo "<th>" . __('Launch a validation', 'metademands') . "</th>";
+                echo "<th>" . __('Bind to the value of this checkbox', 'metademands') . "</th>";
+                //            echo "<th>" . __('Hide submit button', 'metademands') . "</th>";
+            }
+
             echo "</tr>";
 
             //
             foreach ($options as $data) {
+
                 $data['item'] = $item->fields['item'];
                 $data['type'] = $item->fields['type'];
 
@@ -521,98 +533,100 @@ class FieldOption extends CommonDBChild
                 echo self::getValueToCheck($data);
                 echo "</td>";
 
-                echo "<td $onhover>";
-                $tasks = new Task();
-                if ($tasks->getFromDB($data['plugin_metademands_tasks_id'])) {
-                    if ($tasks->fields['type'] == Task::METADEMAND_TYPE) {
-                        $metatask = new MetademandTask();
-                        if ($metatask->getFromDBByCrit(
-                            ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']]
-                        )) {
-                            echo Dropdown::getDropdownName(
-                                'glpi_plugin_metademands_metademands',
-                                $metatask->fields['plugin_metademands_metademands_id']
-                            );
+                if ($item->fields['type'] != "parent_field") {
+                    echo "<td $onhover>";
+                    $tasks = new Task();
+                    if ($tasks->getFromDB($data['plugin_metademands_tasks_id'])) {
+                        if ($tasks->fields['type'] == Task::METADEMAND_TYPE) {
+                            $metatask = new MetademandTask();
+                            if ($metatask->getFromDBByCrit(
+                                ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']]
+                            )) {
+                                echo Dropdown::getDropdownName(
+                                    'glpi_plugin_metademands_metademands',
+                                    $metatask->fields['plugin_metademands_metademands_id']
+                                );
+                            }
+                        } else {
+                            echo $tasks->getName();
                         }
-                    } else {
-                        echo $tasks->getName();
-                    }
-                }
-
-                echo "</td>";
-
-                echo "<td $onhover>";
-                $fields = new Field();
-                $fields_data = $fields->find(['id' => $data['fields_link']]);
-                foreach ($fields_data as $id => $value) {
-                    echo $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
-                }
-                echo "</td>";
-
-                echo "<td $onhover>";
-                $fields = new Field();
-                $fields_data = $fields->find(['id' => $data['hidden_link']]);
-
-                foreach ($fields_data as $id => $value) {
-                    $name = $id;
-                    if (isset($value['name'])) {
-                        $name = $value['name'];
                     }
 
-                    echo $value['rank'] . " - " . urldecode(html_entity_decode($name));
-                }
-                echo "</td>";
+                    echo "</td>";
 
-                echo "<td $onhover>";
-                if ($data['hidden_block'] > 0) {
-                    echo $data['hidden_block'];
-                }
-                echo "</td>";
+                    echo "<td $onhover>";
+                    $fields = new Field();
+                    $fields_data = $fields->find(['id' => $data['fields_link']]);
+                    foreach ($fields_data as $id => $value) {
+                        echo $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
+                    }
+                    echo "</td>";
 
-                echo "<td $onhover>";
-                echo Dropdown::getYesNo($data['hidden_block_same_block']);
-                echo "</td>";
+                    echo "<td $onhover>";
+                    $fields = new Field();
+                    $fields_data = $fields->find(['id' => $data['hidden_link']]);
 
-                echo "<td $onhover>";
-                $blocks = json_decode($data["childs_blocks"], true);
-                $i = 0;
-                if (is_array($blocks)) {
-                    $nb = count($blocks);
-                    if ($nb > 0) {
-                        foreach ($blocks as $block) {
-                            if (is_array($block)) {
-                                foreach ($block as $block_number) {
-                                    $i++;
-                                    echo $block_number;
-                                    if ($i < $nb) {
-                                        echo ", ";
+                    foreach ($fields_data as $id => $value) {
+                        $name = $id;
+                        if (isset($value['name'])) {
+                            $name = $value['name'];
+                        }
+
+                        echo $value['rank'] . " - " . urldecode(html_entity_decode($name));
+                    }
+                    echo "</td>";
+
+                    echo "<td $onhover>";
+                    if ($data['hidden_block'] > 0) {
+                        echo $data['hidden_block'];
+                    }
+                    echo "</td>";
+
+                    echo "<td $onhover>";
+                    echo Dropdown::getYesNo($data['hidden_block_same_block']);
+                    echo "</td>";
+
+                    echo "<td $onhover>";
+                    $blocks = json_decode($data["childs_blocks"], true);
+                    $i = 0;
+                    if (is_array($blocks)) {
+                        $nb = count($blocks);
+                        if ($nb > 0) {
+                            foreach ($blocks as $block) {
+                                if (is_array($block)) {
+                                    foreach ($block as $block_number) {
+                                        $i++;
+                                        echo $block_number;
+                                        if ($i < $nb) {
+                                            echo ", ";
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                echo "</td>";
+                    echo "</td>";
 
-                echo "<td $onhover>";
-                echo getUserName($data["users_id_validate"], 0, true);
-                echo "</td>";
+                    echo "<td $onhover>";
+                    echo getUserName($data["users_id_validate"], 0, true);
+                    echo "</td>";
 
-                echo "<td $onhover>";
+                    echo "<td $onhover>";
 
-                $fields = new Field();
-                if ($fields->getFromDB($data['checkbox_id'])) {
-                    echo $fields->getName();
+                    $fields = new Field();
+                    if ($fields->getFromDB($data['checkbox_id'])) {
+                        echo $fields->getName();
 
-                    $field_custom = new FieldCustomvalue();
-                    if ($field_custom->getFromDB($data['checkbox_value'])) {
-                        echo "<br>";
-                        echo $field_custom->getName();
+                        $field_custom = new FieldCustomvalue();
+                        if ($field_custom->getFromDB($data['checkbox_value'])) {
+                            echo "<br>";
+                            echo $field_custom->getName();
+                        }
                     }
-                }
 
-                echo "</td>";
+                    echo "</td>";
+                }
                 echo "</tr>";
             }
             echo "</table>";

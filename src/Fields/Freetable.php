@@ -167,15 +167,68 @@ class Freetable extends CommonDBTM
         $mandatory_encoded_fields = json_encode($is_mandatory);
         $empty_value = \Dropdown::EMPTY_VALUE;
         $types_encoded_fields = json_encode($types);
-        $dropdown_values_encoded_fields = [];
         $dropdown_values_encoded_fields = json_encode($dropdown_values);
-        $field .= "<th style='text-align: right;$background_color' colspan='4' onclick='addLine$rand()'><i class='ti ti-plus btn btn-info'></i></th>";
+        $root = PLUGIN_METADEMANDS_WEBDIR;
+
+        $orderfollowup_is_active = 0;
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $orderfollowup_is_active = 1;
+        }
+
+        $existLine = __('You can\'t create a new line when there is an existing one', 'metademands');
+        $style = "style=\"\"";
+        $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
+
+
+        $lastid = 0;
+        if (is_array($values) && count($values) > 0) {
+            ksort($values);
+            $lastvalues = end($values);
+            $lastid = $lastvalues['id'];
+        }
+        $texttype = MetaFreetablefield::TYPE_TEXT;
+        $selecttype = MetaFreetablefield::TYPE_SELECT;
+        $numbertype = MetaFreetablefield::TYPE_NUMBER;
+        $readonlytype = MetaFreetablefield::TYPE_READONLY;
+        $datetype = MetaFreetablefield::TYPE_DATE;
+        $timetype = MetaFreetablefield::TYPE_TIME;
+
+        $field .= "<script>
+                    $(document).ready(function (){
+                        window.metademandfreelinesparams$rand = {};
+                        metademandfreelinesparams$rand.existLine = '$existLine';
+                        metademandfreelinesparams$rand.rand = '$rand';
+                        metademandfreelinesparams$rand.root = '$root';
+                        metademandfreelinesparams$rand.encoded_fields = $encoded_fields;
+                        metademandfreelinesparams$rand.mandatory_encoded_fields = $mandatory_encoded_fields;
+                        metademandfreelinesparams$rand.types_encoded_fields = $types_encoded_fields;
+                        metademandfreelinesparams$rand.dropdown_values_encoded_fields = $dropdown_values_encoded_fields;
+                        metademandfreelinesparams$rand.orderfollowup_is_active = $orderfollowup_is_active;
+                        metademandfreelinesparams$rand.size = $size;
+                        metademandfreelinesparams$rand.empty_value = '$empty_value';
+                        metademandfreelinesparams$rand.plugin_metademands_metademands_id = $plugin_metademands_metademands_id;
+                        metademandfreelinesparams$rand.style = '$style';
+                        metademandfreelinesparams$rand.lastid = $lastid;
+                        metademandfreelinesparams$rand.text = $texttype;
+                        metademandfreelinesparams$rand.select = $selecttype;
+                        metademandfreelinesparams$rand.number = $numbertype;
+                        metademandfreelinesparams$rand.readonly = $readonlytype;
+                        metademandfreelinesparams$rand.date = $datetype;
+                        metademandfreelinesparams$rand.time = $timetype;
+                    });
+
+               </script>";
+
+        $field .= "<th style='text-align: right;$background_color' colspan='4' onclick='addLine(window.metademandfreelinesparams$rand)'><i class='ti ti-plus btn btn-info'></i></th>";
         $field .= "</tr>";
+
 
         $style = "";
         $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
         if (is_array($values) && count($values) > 0) {
             foreach ($values as $value) {
+
+                $idline = $value['id'];
                 $l = [
                     'id' => $idline,
                 ];
@@ -197,9 +250,9 @@ class Freetable extends CommonDBTM
                             $id = $k . '_' . $idline;
                             $field .= "<td $style><select id=\"$id\" name=\"$k\">";
 
-                            foreach ($dropdown_values[$k] as $dropdown_value) {
+                            foreach ($dropdown_values[$k] as $key => $dropdown_value) {
                                 $selected = "";
-                                if ($dropdown_value == $l[$k]) {
+                                if ($key == $l[$k]) {
                                     $selected = "selected";
                                 }
                                 $field .= "<option $selected value=\"$dropdown_value\">" . $dropdown_value . "</option>";
@@ -227,10 +280,10 @@ class Freetable extends CommonDBTM
                     $field .= "<td $style id=\"linetotal\">$linetotal €</td>";
                 }
 
-                $field .= "<td><button onclick =\"editLine$rand($idline)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"ti ti-pencil\"></i></button></td>";
-                $field .= "<td><button onclick =\"removeLine$rand($idline)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"ti ti-trash\"></i></button></td>";
+                $field .= "<td><button onclick =\"editLine($idline, window.metademandfreelinesparams$rand)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"ti ti-pencil\"></i></button></td>";
+                $field .= "<td><button onclick =\"removeLine($idline, window.metademandfreelinesparams$rand)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"ti ti-trash\"></i></button></td>";
                 $field .= "</tr>";
-                $idline++;
+
             }
         }
 
@@ -240,542 +293,6 @@ class Freetable extends CommonDBTM
         if (Plugin::isPluginActive('orderfollowup')) {
             $orderfollowup_is_active = 1;
         }
-
-        $field .= "<script>
-                function getNextIndex() {
-                    const nb = localStorage.getItem('nextnb');
-                    return nb ? parseInt(nb) : 0;
-                }
-                var orderfollowup_is_active = $orderfollowup_is_active;
-
-                function addLine$rand() {
-                    var orderfollowup_is_active = $orderfollowup_is_active;
-                    var fields = $encoded_fields;
-                    var mandatory_fields = $mandatory_encoded_fields;
-                    var type_fields = $types_encoded_fields;
-                    var dropdown_values_fields = $dropdown_values_encoded_fields;
-                    const tabfields = [];
-
-                    if (!document.querySelector('#freetable_table$rand .add_item')) {
-
-                        if ($('#freetable_table$rand tr[id^=line_' + $rand + '_]:first').length > 0) {
-
-                            tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + $rand + '_' + i + '\">';
-
-                           $.each(fields,function(index, valuej){
-                               if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                   tabfields.push('<td><input id = \"' + index +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                   var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
-                                   var select_options = '';
-                                   $.each(dropdown_values_fields,function(indexv, values){
-                                       $.each(values,function(indexd, valued){
-                                            if (index == indexv) {
-                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
-                                            }
-                                      });
-                                   });
-                                   var select_close = '</select></td>';
-                                   var select = [select_open, select_options, select_close].join(' ');
-                                   tabfields.push(select);
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_READONLY . "  && orderfollowup_is_active) {
-                                   tabfields.push('<td></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"date\" name=\"' + index +'\" ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                   tabfields.push('<td><input add=0 id = \"' + index +'\" type=\"time\" name=\"' + index +'\" ></td>');
-                               }
-
-                           });
-
-                           var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
-                           tabbutton = '<td style=\"text-align: right;\" colspan=\"2\">'
-                           + str
-                           + '<i class =\"ti ti-check\"></i></button></td>'
-                           + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + i +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-                               + '<i class =\"ti ti-trash\"></i></button></td>'
-                               + '</tr>';
-
-                           var joined = [tabtr, tabfields, tabbutton].join(' ');
-
-                            $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last').after(joined);
-
-                        } else {
-
-                            tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + $rand + '_' + i + '\">';
-
-                            $.each(fields,function(index, valuej){
-                               if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                   tabfields.push('<td><input id = \"' + index +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                   var select_open = '<td><select id = \"' + index +'\" name=\"' + index +'\">';
-                                   var select_options = '';
-                                   $.each(dropdown_values_fields,function(indexv, values){
-                                       $.each(values,function(indexd, valued){
-                                            if (index == indexv) {
-                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
-                                            }
-                                      });
-                                   });
-                                   var select_close = '</select></td>';
-                                   var select = [select_open, select_options, select_close].join(' ');
-                                   tabfields.push(select);
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
-                                   tabfields.push('<td></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"date\" name=\"' + index +'\" ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                   tabfields.push('<td><input add=1 id=\"' + index +'\" value=\"0\" type=\"time\" name=\"' + index +'\" ></td>');
-                               }
-                           });
-                             var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmLine$rand(this)\">';
-                           tabbutton = '<td style=\"text-align: center;\" colspan=\"2\">'
-                           + str
-                           + '<i class =\"ti ti-check\"></i></button></td>'
-                           + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + i +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-                               + '<i class =\"ti ti-trash\"></i></button></td>'
-                               + '</tr>';
-                             var joined = [tabtr, tabfields, tabbutton].join(' ');
-
-                            $('#freetable_table$rand tr[class^=tab_bg_1]:last').after(joined);
-                        }
-
-                    } else {
-                        alert(\"$existLine\");
-                    }
-
-
-                }
-
-                function confirmLine$rand (node) {
-
-                    var orderfollowup_is_active = $orderfollowup_is_active;
-                    var fields = $encoded_fields;
-                    var type_fields = $types_encoded_fields;
-                    var dropdown_values_fields = $dropdown_values_encoded_fields;
-                    var mandatory_fields = $mandatory_encoded_fields;
-                    var empty_value = '$empty_value';
-                    var elem_parent = $(node).parent().parent();
-                    var tabfields = [];
-                    let nb = getNextIndex();
-
-                    l = {
-                        'id':nb,
-                    };
-                    $.each(fields,function(index, valuej){
-                        if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                            l[index] = elem_parent.find('input[name='+ index +']').val();
-                        } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                            l[index] = elem_parent.find('select[name='+ index +']').val();
-                        } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                            l[index] = elem_parent.find('input[name='+ index +']').val();
-                        } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                            l[index] = elem_parent.find('input[name='+ index +']').val();
-                        } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                            l[index] = elem_parent.find('input[name='+ index +']').val();
-                        }
-                        l['type'] = type_fields[index];
-                    });
-                    var unit_price = elem_parent.find('input[name=unit_price]').val();
-                    var quantity = elem_parent.find('input[name=quantity]').val();
-                    //orderfollowup
-                    if (orderfollowup_is_active) {
-                        var total = quantity * unit_price;
-                        l[4] = total;
-                    }
-
-
-                    let type = 'add';
-
-//                    $.each(data.lines$rand, function (key, datas) {
-//                        $.each(datas, function (key_data, data_lines) {
-//                            if(key_data == 'id'){
-//                                if(data_lines == ind){
-//                                   data['lines$rand'][key] = l;
-//                                   type = 'modif';
-//                                }
-//                            }
-//                        });
-//                    });
-
-                    if(type == 'add') {
-                        data['lines$rand'] = { ind : l };
-                        data['metademands_id'] = $plugin_metademands_metademands_id;
-                        data['fields_id'] = $plugin_metademands_fields_id;
-                    }
-
-                    $.ajax({
-                           url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/freetable_item.php',
-                           type: 'POST',
-                           data: data
-                        });
-                    ko = 0;
-
-                    $.each(fields,function(index, valuej){
-
-                        if (mandatory_fields.includes(index)) {
-                            if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                if (elem_parent.find('input[name='+ index +']').val() === '') {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
-                                    ko = 1;
-                                } else {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
-                                }
-                            } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                var select = document.getElementById(index);
-                                if(select.selectedIndex != undefined) {
-                                    var text = select.options[select.selectedIndex].text;
-                                    if (text == empty_value) {
-                                        select.style.borderColor = 'red';
-                                        ko = 1;
-                                    } else {
-                                        select.style.borderColor = '';
-                                    }
-                                }
-                            } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                if (elem_parent.find('input[name='+ index +']').val() == 0) {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
-                                    ko = 1;
-                                } else {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
-                                }
-                            } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                if (elem_parent.find('input[name='+ index +']').val() == 0) {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
-                                    ko = 1;
-                                } else {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
-                                }
-                            } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                if (elem_parent.find('input[name='+ index +']').val() == 0) {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', 'red');
-                                    ko = 1;
-                                } else {
-                                    elem_parent.find('input[name=' + index +']').css('border-color', '');
-                                }
-                            }
-                        }
-
-                    });
-                    //orderfollowup
-                    if (orderfollowup_is_active) {
-                        total = Math.round((total + Number.EPSILON) * 100)/100;
-                    }
-                    if (ko == 0) {
-                        if ($('[id^=line_' + $rand + '_]').length == 0) {
-
-                             tabtr = '<tr name=\"data\" $style id=\"line_' + $rand + '_' + i + '\" disabled>';
-
-                            $.each(fields,function(index, valuej){
-
-                               if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                   var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
-                                   var select_options = '';
-                                   $.each(dropdown_values_fields,function(indexv, values){
-                                       $.each(values,function(indexd, valued){
-                                            if (index == indexv) {
-                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
-                                            }
-                                      });
-                                   });
-                                   var select_close = '</select></td>';
-                                   var select = [select_open, select_options, select_close].join(' ');
-                                   tabfields.push(select);
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
-                                   //orderfollowup
-                                   tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"date\" name=\"' + index +'\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                    tabfields.push('<td $style><input add=2 id= \"' + index +'_' + i +'\" type=\"time\" name=\"' + index +'\" disabled ></td>');
-                               }
-
-                            });
-                            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + i +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
-                               + '<i class =\"ti ti-pencil\"></i></button></td>'
-                               + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + i +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-                               + '<i class =\"ti ti-trash\"></i></button></td></tr>'
-
-                            var joined = [tabtr, tabfields, tabbutton].join(' ');
-
-                            $('#freetable_table$rand tr:last').before(joined);
-                            $('#name_' + i).val(name);
-
-                            elem_parent.find('input[name=name$rand]').val('');
-                            $.each(fields,function(index, valuej){
-                                if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                    elem_parent.find('input[name='+ index + ']').val('');
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                    $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
-                                    elem_parent.find('select[name='+ index + ']').val('');
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                    elem_parent.find('input[name='+ index + ']').val(0);
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                    elem_parent.find('input[name='+ index + ']').val(0);
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                    $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                    elem_parent.find('input[name='+ index + ']').val(0);
-                                }
-                            });
-
-                        } else if (type == 'add') {
-
-                            tabtr = '<tr name=\"data\" $style id=\"line_' + $rand + '_' + i + '\" disabled>';
-
-                            $.each(fields,function(index, valuej){
-
-                               if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                   tabfields.push('<td $style><input id = \"' + index +'_' + i +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                   var select_open = '<td $style><select id = \"' + index +'_' + i +'\" name=\"' + index +'\">';
-                                   var select_options = '';
-                                   $.each(dropdown_values_fields,function(indexv, values){
-                                       $.each(values,function(indexd, valued){
-                                            if (index == indexv) {
-                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
-                                            }
-                                      });
-                                   });
-                                   var select_close = '</select></td>';
-                                   var select = [select_open, select_options, select_close].join(' ');
-                                   tabfields.push(select);
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
-                                   //orderfollowup
-                                   tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"date\" name=\"' + index +'\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                    tabfields.push('<td $style><input add=3 id=\"' + index +'_' + i +'\" type=\"time\" name=\"' + index +'\" disabled ></td>');
-                               }
-
-                            });
-                            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + i +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
-                               + '<i class =\"ti ti-pencil\"></i></button></td>'
-                           + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + i +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-                               + '<i class =\"ti ti-trash\"></i></button></td></tr>'
-
-                            var joined = [tabtr, tabfields, tabbutton].join(' ');
-
-                            $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last').after(joined);
-                               $('#name_' + i).val(name);
-                               elem_parent.find('input[name=name$rand]').val('');
-
-                               $.each(fields,function(index, valuej){
-                                    if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                        elem_parent.find('input[name='+ index + ']').val('');
-                                    } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                        $('#'+ index +'_' + i).val(elem_parent.find('select[name='+ index +']').val());
-                                        elem_parent.find('select[name='+ index + ']').val('');
-                                    } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                        elem_parent.find('input[name='+ index + ']').val(0);
-                                    } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                        elem_parent.find('input[name='+ index + ']').val(0);
-                                    } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                        $('#'+ index +'_' + i).val(elem_parent.find('input[name='+ index +']').val());
-                                        elem_parent.find('input[name='+ index + ']').val(0);
-                                    }
-                                });
-
-                        } else {
-
-                            tabtr = '<tr name=\"data\" $style id=\"line_' + $rand + '_' + ind + '\">';
-
-                            $.each(fields,function(index, valuej){
-
-                               if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                   tabfields.push('<td $style><input id = \"' + index +'_' + ind +'\" type=\"text\" name=\"' + index +'\" size=\"$size\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                   var select_open = '<td $style><select id = \"' + index +'_' + ind +'\" name=\"' + index +'\">';
-                                   var select_options = '';
-                                   $.each(dropdown_values_fields,function(indexv, values){
-                                       $.each(values,function(indexd, valued){
-                                            if (index == indexv) {
-                                                select_options += '<option value=\"' + valued +'\">' + valued +'</option>';
-                                            }
-                                      });
-                                   });
-                                   var select_close = '</select></td>';
-                                   var select = [select_open, select_options, select_close].join(' ');
-                                   tabfields.push(select);
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"number\" min=\"0\" name=\"' + index +'\" style=\"width: 7em;\" disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_READONLY . " && orderfollowup_is_active) {
-                                   //orderfollowup
-                                   tabfields.push('<td $style id=\"linetotal\">' + total.toFixed(2) +' €</td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"date\" name=\"' + index +'\"  disabled ></td>');
-                               } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                    tabfields.push('<td $style><input add=4 id=\"' + index +'_' + ind +'\" type=\"time\" name=\"' + index +'\"  disabled ></td>');
-                               }
-                            });
-                            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine$rand(' + ind +')\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
-                               + '<i class =\"ti ti-pencil\"></i></button></td>'
-                           + '<td style=\"text-align: center;\"><button onclick =\"removeLine$rand(' + ind +')\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-                               + '<i class =\"ti ti-trash\"></i></button></td></tr>'
-
-                           var joined = [tabtr, tabfields, tabbutton].join(' ');
-
-                             $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last').after(joined);
-
-                            $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #name_' + ind).val(name);
-                            $.each(fields,function(index, valuej){
-                                if (type_fields[index] == " . MetaFreetablefield::TYPE_TEXT . ") {
-                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_SELECT . ") {
-                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('select[name='+ index +']').val());
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_NUMBER . ") {
-                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_DATE . ") {
-                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
-                                } else if (type_fields[index] == " . MetaFreetablefield::TYPE_TIME . ") {
-                                    $('#freetable_table$rand tr[id^=line_' + $rand + '_]:last #' + index + '_' + ind).val(elem_parent.find('input[name='+ index +']').val());
-                                }
-                            });
-
-                       }
-                       node.parentNode.parentNode.remove();
-                       if(type == 'add'){
-                           nb++;
-                           localStorage.setItem('nextnb', nb);
-                           i++;
-                       }
-                       //orderfollowup
-                       if (orderfollowup_is_active) {
-                           showConfirmButton();
-                       }
-
-                    }
-                }
-                //orderfollowup
-                function showConfirmButton(){
-                    var tabdatas =  $('[id^=line_]');
-                    $('#nextBtn').hide();
-
-                    if(tabdatas.length == 0){
-                         $('#add_freeinputs').css('display', 'none');
-                         $('#div_save_draft').css('display', 'none');
-                         if($('#button_save_mydraft')){
-                            $('#button_save_mydraft').css('display', 'none');
-                         }
-
-                    } else {
-                         $('#add_freeinputs').css('display', 'inline-block');
-                         $('#div_save_draft').css('display', 'inline-block');
-                         if($('#button_save_mydraft')){
-                            $('#button_save_mydraft').css('display', 'inline-block');
-                         }
-                    }
-                }
-
-                function removeLine$rand (l) {
-                    $('#line_' + $rand + '_'+ l).remove();
-                    var line = {
-                        'remove': l,
-                        'metademands_id' : $plugin_metademands_metademands_id,
-                        'fields_id' : $plugin_metademands_fields_id
-                    };
-
-                    $.ajax({
-                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/freetable_item.php',
-                               type: 'POST',
-                               data: line
-                            });
-                    var tabdatas = $('[id^=line_' + $rand + '_]');
-                    if (tabdatas.length == 0) {
-                        $('#add_freetables$rand').css('display', 'none');
-                        $('#div_save_draft').css('display', 'none');
-                        if ($('#button_save_mydraft')) {
-                            $('#button_save_mydraft').css('display', 'none');
-                         }
-                    }
-                    if (document.querySelector('tr[id=\"tr_valid$rand\"]')) {
-                        document.querySelector('tr[id=\"tr_valid$rand\"]').remove();
-                    }
-                }
-
-                function editLine$rand (l) {
-
-                    let line = document.querySelector('#line_'+ $rand + '_' + l);
-
-                    let inputs = line.querySelectorAll('input');
-                    let selects = line.querySelectorAll('select');
-                    let areas = line.querySelectorAll('textarea');
-
-                    for(var i = 0; i < inputs.length; i++) {
-                        inputs[i].disabled = false;
-                    }
-
-                    for(var i = 0; i < selects.length; i++) {
-                        inputs[i].disabled = false;
-                    }
-
-                    for(var i = 0; i < areas.length; i++) {
-                        inputs[i].disabled = false;
-                    }
-
-                    line.querySelector('button[name=\"delete_item\"]').parentNode.remove();
-                    line.querySelector('button[name=\"edit_item\"]').parentNode.remove();
-
-                    let td = document.createElement('td');
-                    td.setAttribute('class', 'tbl-center');
-                    let button = document.createElement('button');
-                    button.className = 'btn btn-success';
-                    button.type = 'button';
-
-                    let ico = document.createElement('i');
-                    ico.className = 'ti ti-check';
-                    button.appendChild(ico);
-                    button.dataset.id = l;
-                    button.addEventListener('click',function() {
-                      confirmLine$rand(this, this.dataset.id);
-                    });
-                    td.appendChild(button);
-                    line.appendChild(td);
-
-                    let td1 = document.createElement('td');
-                    td1.setAttribute('class', 'tbl-center');
-                    let button1 = document.createElement('button');
-                    button1.className = 'btn btn-danger';
-                    button1.type = 'button';
-
-                    let ico1 = document.createElement('i');
-                    ico1.className = 'ti ti-trash';
-                    button1.appendChild(ico1);
-                    button1.dataset.id = l;
-                    button1.addEventListener('click',function() {
-                      removeLine$rand(this, this.dataset.id);
-                    });
-                    td1.appendChild(button1);
-                    line.appendChild(td1);
-                }
-                //orderfollowup
-                if (orderfollowup_is_active) {
-                    $(document).ready(function() {
-                        showConfirmButton();
-                    });
-                }
-
-                var data = {
-                          lines$rand:[]
-                        };
-                var i = 0;
-                </script>";
 
         $field .= "</table>";
 

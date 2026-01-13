@@ -730,24 +730,24 @@ class Dropdownmeta extends CommonDBTM
                                 foreach ($arr as $elttype => $arr2) {
                                     if (in_array($items_id, $arr2) && $elttype == $itemtype) {
                                         $checked = "checked";
-                                        $active = "active buttonelt_color";
+                                        $active = "active md_buttonelt_color";
                                     }
                                 }
                             }
                             if (is_array($objects_items_id)
                                 && count($objects_items_id) == 1 && in_array($items_id, $objects_items_id)) {
                                 $checked = "checked";
-                                $active = "active buttonelt_color";
+                                $active = "active md_buttonelt_color";
                             }
 
                             if ($values['selected_items_id'] == $items_id
                                 && $values['selected_itemtype'] == $itemtype) {
                                 $checked = "checked";
-                                $active = "active buttonelt_color";
+                                $active = "active md_buttonelt_color";
                             }
 
-                            echo "<label id='$varname' class='btn buttonelt col-md-2 center $active'
-                                            onclick='changeBackgroundColor(\"$varname\",\"buttonelt_color\")'>";
+                            echo "<label id='$varname' class='btn md_buttonelt col-md-2 center $active'
+                                            onclick='changeBackgroundColor(\"$varname\",\"md_buttonelt_color\")'>";
 
                             $value = $itemtype . "_" . $items_id;
                             echo "<input type='radio' class='my_items' name='" . $values['name'] . "' value='$value' $checked>";
@@ -830,11 +830,11 @@ class Dropdownmeta extends CommonDBTM
             //            $active = "";
             //            if (isset($elttype) && $elttype == $itemtype) {
             //                $checked = "checked";
-            //                $active = "active buttonelt_color";
+            //                $active = "active md_buttonelt_color";
             //            }
             //
-            //            echo "<label id='hardwareType_0' class='btn buttonelt col-md-2 center $active'
-            //                            onclick='changeBackgroundColor(\"hardwareType_0\",\"buttonelt_color\")'>";
+            //            echo "<label id='hardwareType_0' class='btn md_buttonelt col-md-2 center $active'
+            //                            onclick='changeBackgroundColor(\"hardwareType_0\",\"md_buttonelt_color\")'>";
             //            $value = $itemtype . "_0";
             //            echo "<input type='radio' class='my_items' name='my_items' value='$value' $checked>";
             //            $icon = "fas fa-question";
@@ -982,24 +982,24 @@ class Dropdownmeta extends CommonDBTM
                                     foreach ($arr as $elttype => $arr2) {
                                         if (in_array($items_id, $arr2) && $elttype == $itemtype_groups) {
                                             $checked = "checked";
-                                            $active = "active buttonelt_color";
+                                            $active = "active md_buttonelt_color";
                                         }
                                     }
                                 }
                                 if (is_array($objects_items_id)
                                     && count($objects_items_id) == 1 && in_array($items_id, $objects_items_id)) {
                                     $checked = "checked";
-                                    $active = "active buttonelt_color";
+                                    $active = "active md_buttonelt_color";
                                 }
 
                                 if ($values['selected_items_id'] == $items_id
                                     && $values['selected_itemtype'] == $itemtype_groups) {
                                     $checked = "checked";
-                                    $active = "active buttonelt_color";
+                                    $active = "active md_buttonelt_color";
                                 }
 
-                                echo "<label id='$varname' class='btn buttonelt col-md-2 center $active'
-                                            onclick='changeBackgroundColor(\"$varname\",\"buttonelt_color\")'>";
+                                echo "<label id='$varname' class='btn md_buttonelt col-md-2 center $active'
+                                            onclick='changeBackgroundColor(\"$varname\",\"md_buttonelt_color\")'>";
 
                                 $value = $itemtype_groups . "_" . $items_id;
                                 echo "<input type='radio' class='my_items' name='" . $values['name'] . "' value='$value' $checked>";
@@ -1096,16 +1096,16 @@ class Dropdownmeta extends CommonDBTM
                         function changeBackgroundColor(idLabel,newCss) {
 
                            hardwareType.forEach(function(item, index, array) {
-                                 document.getElementById(item).className='btn buttonelt col-md-2 center';
+                                 document.getElementById(item).className='btn md_buttonelt col-md-2 center';
                               });
-                           document.getElementById(idLabel).className='btn buttonelt col-md-2 center '+newCss;
+                           document.getElementById(idLabel).className='btn md_buttonelt col-md-2 center '+newCss;
 
-                           var buttonelt = document.getElementById('hardwareType_0');
+                           var md_buttonelt = document.getElementById('hardwareType_0');
                            var tooltip = document.querySelector('.tooltipelt');
-                           if (buttonelt.innerHTML.length > 0) {
+                           if (typeof md_buttonelt !== 'undefined' && md_buttonelt !== null && md_buttonelt.innerHTML.length > 0) {
                                tooltip.classList.remove('active');
                                $('.tooltipelt').hide();
-                               buttonelt.addEventListener('click', function() {
+                               md_buttonelt.addEventListener('click', function() {
                                  tooltip.classList.add('active');
                                  $('.tooltipelt').show();
                                });
