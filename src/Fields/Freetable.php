@@ -145,7 +145,7 @@ class Freetable extends CommonDBTM
         }
 
         $rand = $data['id'];
-        $field .= "<script>localStorage.setItem('nextnb', $nb);</script>";
+
         $field .= "<table class='tab_cadre' width='100%' id ='freetable_table$rand' style='overflow: auto;width:100%;$background_color'>";//display: block;
         $field .= "<tr class='tab_bg_1'>";
         foreach ($addfields as $k => $addfield) {
@@ -177,8 +177,6 @@ class Freetable extends CommonDBTM
 
         $existLine = __('You can\'t create a new line when there is an existing one', 'metademands');
         $style = "style=\"\"";
-        $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
-
 
         $lastid = 0;
         if (is_array($values) && count($values) > 0) {
@@ -203,7 +201,7 @@ class Freetable extends CommonDBTM
                         metademandfreelinesparams$rand.mandatory_encoded_fields = $mandatory_encoded_fields;
                         metademandfreelinesparams$rand.types_encoded_fields = $types_encoded_fields;
                         metademandfreelinesparams$rand.dropdown_values_encoded_fields = $dropdown_values_encoded_fields;
-                        metademandfreelinesparams$rand.orderfollowup_is_active = $orderfollowup_is_active;
+                        metademandfreelinesparams$rand.orderfollowupisactive = $orderfollowup_is_active;
                         metademandfreelinesparams$rand.size = $size;
                         metademandfreelinesparams$rand.empty_value = '$empty_value';
                         metademandfreelinesparams$rand.plugin_metademands_metademands_id = $plugin_metademands_metademands_id;
@@ -222,9 +220,6 @@ class Freetable extends CommonDBTM
         $field .= "<th style='text-align: right;$background_color' colspan='4' onclick='addLine(window.metademandfreelinesparams$rand)'><i class='ti ti-plus btn btn-info'></i></th>";
         $field .= "</tr>";
 
-
-        $style = "";
-        $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
         if (is_array($values) && count($values) > 0) {
             foreach ($values as $value) {
 
@@ -287,16 +282,21 @@ class Freetable extends CommonDBTM
             }
         }
 
-        $existLine = __('You can\'t create a new line when there is an existing one', 'metademands');
+        $field .= "<script>
+                    const observer$rand = new MutationObserver(() => {
+                        if (window.metademandfreelinesparams$rand) {
+                            addLine(window.metademandfreelinesparams$rand);
+                            observer$rand.disconnect(); // une seule fois
+                        }
+                    });
 
-        $orderfollowup_is_active = 0;
-        if (Plugin::isPluginActive('orderfollowup')) {
-            $orderfollowup_is_active = 1;
-        }
+                    observer$rand.observe(document.body, { childList: true, subtree: true })
+               </script>";
 
         $field .= "</table>";
 
         if (Plugin::isPluginActive('orderfollowup')) {
+            $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
             $conf = new Config();
             $conf->getFromDB(1);
             $tva = $conf->fields['use_tva'] ?? "20";

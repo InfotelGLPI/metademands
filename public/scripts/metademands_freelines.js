@@ -1,8 +1,3 @@
-function getNextIndex()
-{
-    const nb = localStorage.getItem('nextnb');
-    return nb ? parseInt(nb) : 0;
-}
 
 // metademandfreelinesparams.existLine = '$existLine';
 // metademandfreelinesparams.rand = '$rand';
@@ -154,8 +149,6 @@ function confirmUpdateLine(node, nb, typepost, newparams)
     var empty_value = params.empty_value;
     var elem_parent = $(node).parent().parent();
     var tabfields = [];
-    // var data = [];
-//                    let nb = getNextIndex();
 
     l = {
         'id': nb,
@@ -449,10 +442,9 @@ function confirmUpdateLine(node, nb, typepost, newparams)
         node.parentNode.parentNode.remove();
         if (typepost == 'add') {
             nb++;
-            localStorage.setItem('nextnb', nb);
             i++;
         }
-        //orderfollowup0
+        //orderfollowup
         if (params.orderfollowupisactive) {
             showConfirmButton();
         }
@@ -577,15 +569,3 @@ function editLine(l, newparams)
     td1.appendChild(button1);
     line.appendChild(td1);
 }
-
-// //orderfollowup1
-// if (orderfollowupisactive) {
-//     $(document).ready(function () {
-//         showConfirmButton();
-//     });
-// }
-
-// var data = {
-//     lines$rand:[]
-// };
-// var i = 0;
