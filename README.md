@@ -29,10 +29,8 @@ Characteristics :
 - [X] Save your forms as Draft
 - [X] Use tags for titles
 - [X] Bootstrap Buttons
+- [X] Add sub blocks on a form
 - [X] Export / Import forms
-
-For next version :
-- [X] add sub blocks on a form
 
 Help us to add new features
 
