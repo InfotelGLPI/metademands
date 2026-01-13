@@ -608,7 +608,9 @@ class PluginMetademandsTicketField extends CommonDBChild
      */
     static function updateMandatoryTicketFields($input)
     {
-        if (isset($input['itilcategories_id']) && isset($input['entities_id']) && isset($input['id'])) {
+        if (isset($input['itilcategories_id'])
+            && isset($input['entities_id'])
+            && isset($input['id'])) {
             $meta = new PluginMetademandsMetademand();
             $meta->getFromDB($input['id']);
             $type = $meta->getField('type');

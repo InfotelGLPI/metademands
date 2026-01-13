@@ -1792,8 +1792,8 @@ JAVASCRIPT
             $meta_data[0] = Dropdown::EMPTY_VALUE;
         }
 
-        $condition = "  `is_active` = 1 
-                        AND `is_deleted` = 0 
+        $condition = "  `is_active` = 1
+                        AND `is_deleted` = 0
                         AND `is_template` = 0 ";
 
         $query_cat = "SELECT id,name FROM glpi_itilcategories";
@@ -1813,8 +1813,8 @@ JAVASCRIPT
 
         $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
 
-        $query = "SELECT `" . $this->getTable() . "`.`name`, 
-                          `" . $this->getTable() . "`.`id`, 
+        $query = "SELECT `" . $this->getTable() . "`.`name`,
+                          `" . $this->getTable() . "`.`id`,
                           `" . $this->getTable() . "`.`itilcategories_id`,
                           `glpi_entities`.`completename` as entities_name
                    FROM " . $this->getTable() . "
@@ -6008,6 +6008,179 @@ JAVASCRIPT
                         $son_ticket_data['locations_id'] = 0;
                     }
 
+
+                    /*$son_ticket_data['_actors'] = [];
+
+                    if (isset($son_ticket_data['_users_id_requester'])) {
+
+                        if (!isset($son_ticket_data['_actors']['requester'])) {
+                            $son_ticket_data['_actors']['requester'] = [];
+                        }
+                        if (is_array($son_ticket_data['_users_id_requester'])) {
+                            foreach ($son_ticket_data['_users_id_requester'] as $k => $son) {
+                                $son_ticket_data['_actors']['requester'][] = [
+                                    'itemtype' => 'User',
+                                    'items_id' => $son,
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        } else {
+                            if ($son_ticket_data['_users_id_requester'] > 0) {
+                                $son_ticket_data['_actors']['requester'][] = [
+                                    'itemtype' => 'User',
+                                    'items_id' => $son_ticket_data['_users_id_requester'],
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        }
+                        unset($son_ticket_data['_users_id_requester']);
+                        unset($son_ticket_data['users_id_requester']);
+                    }
+
+                    if (isset($son_ticket_data['_groups_id_requester'])) {
+
+                        if (!isset($son_ticket_data['_actors']['requester'])) {
+                            $son_ticket_data['_actors']['requester'] = [];
+                        }
+                        if (is_array($son_ticket_data['_groups_id_requester'])) {
+                            foreach ($son_ticket_data['_groups_id_requester'] as $k => $son) {
+                                $son_ticket_data['_actors']['requester'][] = [
+                                    'itemtype' => 'Group',
+                                    'items_id' => $son,
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        } else {
+                            if ($son_ticket_data['_groups_id_requester'] > 0) {
+                                $son_ticket_data['_actors']['requester'][] = [
+                                    'itemtype' => 'Group',
+                                    'items_id' => $son_ticket_data['_groups_id_requester'],
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        }
+                        unset($son_ticket_data['_groups_id_requester']);
+                        unset($son_ticket_data['groups_id_requester']);
+                    }
+
+                    if (isset($son_ticket_data['_users_id_observer'])) {
+
+                        if (!isset($son_ticket_data['_actors']['observer'])) {
+                            $son_ticket_data['_actors']['observer'] = [];
+                        }
+                        if (is_array($son_ticket_data['_users_id_observer'])) {
+                            foreach ($son_ticket_data['_users_id_observer'] as $k => $son) {
+                                $son_ticket_data['_actors']['observer'][] = [
+                                    'itemtype' => 'User',
+                                    'items_id' => $son,
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        } else {
+                            if ($son_ticket_data['_users_id_observer'] > 0) {
+                                $son_ticket_data['_actors']['observer'][] = [
+                                    'itemtype' => 'User',
+                                    'items_id' => $son_ticket_data['_users_id_observer'],
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        }
+                        unset($son_ticket_data['_users_id_observer']);
+                        unset($son_ticket_data['users_id_observer']);
+                    }
+
+                    if (isset($son_ticket_data['_groups_id_observer'])) {
+
+                        if (!isset($son_ticket_data['_actors']['observer'])) {
+                            $son_ticket_data['_actors']['observer'] = [];
+                        }
+                        if (is_array($son_ticket_data['_groups_id_observer'])) {
+                            foreach ($son_ticket_data['_groups_id_observer'] as $k => $son) {
+                                $son_ticket_data['_actors']['observer'][] = [
+                                    'itemtype' => 'Group',
+                                    'items_id' => $son,
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        } else {
+                            if ($son_ticket_data['_groups_id_observer'] > 0) {
+                                $son_ticket_data['_actors']['observer'][] = [
+                                    'itemtype' => 'Group',
+                                    'items_id' => $son_ticket_data['_groups_id_observer'],
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        }
+                        unset($son_ticket_data['_groups_id_observer']);
+                        unset($son_ticket_data['groups_id_observer']);
+                    }
+
+                    if (isset($son_ticket_data['_users_id_assign'])) {
+
+                        if (!isset($son_ticket_data['_actors']['assign'])) {
+                            $son_ticket_data['_actors']['assign'] = [];
+                        }
+                        if (is_array($son_ticket_data['_users_id_assign'])) {
+                            foreach ($son_ticket_data['_users_id_assign'] as $k => $son) {
+                                $son_ticket_data['_actors']['assign'][] = [
+                                    'itemtype' => 'User',
+                                    'items_id' => $son,
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        } else {
+                            if ($son_ticket_data['_users_id_assign'] > 0) {
+                                $son_ticket_data['_actors']['assign'][] = [
+                                    'itemtype' => 'User',
+                                    'items_id' => $son_ticket_data['_users_id_assign'],
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        }
+                        unset($son_ticket_data['_users_id_assign']);
+                        unset($son_ticket_data['users_id_assign']);
+                    }
+
+                    if (isset($son_ticket_data['_groups_id_assign'])) {
+
+                        if (!isset($son_ticket_data['_actors']['assign'])) {
+                            $son_ticket_data['_actors']['assign'] = [];
+                        }
+                        if (is_array($son_ticket_data['_groups_id_assign'])) {
+                            foreach ($son_ticket_data['_groups_id_assign'] as $k => $son) {
+                                $son_ticket_data['_actors']['assign'][] = [
+                                    'itemtype' => 'Group',
+                                    'items_id' => $son,
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        } else {
+                            if ($son_ticket_data['_groups_id_assign'] > 0) {
+                                $son_ticket_data['_actors']['assign'][] = [
+                                    'itemtype' => 'Group',
+                                    'items_id' => $son_ticket_data['_groups_id_assign'],
+                                    'use_notification' => "1",
+                                    'alternative_email' => "",
+                                ];
+                            }
+                        }
+                        unset($son_ticket_data['_groups_id_assign']);
+                        unset($son_ticket_data['groups_id_assign']);
+                    }
+                    $son_ticket_data['_skip_rules'] = true;*/
+
+                    $ticket = new Ticket();
                     // check if son ticket already exists in case we come from an update of the parent ticket
                     if ($ticket_task->getFromDBByCrit([
                         'parent_tickets_id' => $parent_tickets_id,

@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.4.1');
+define('PLUGIN_METADEMANDS_VERSION', '3.4.2');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -49,8 +49,9 @@ function plugin_init_metademands()
 
     $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
     $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
-    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
-    $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_DIR_NOFULL . "/scripts/metademands.js"];
+    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js', 'scripts/metademands_freelines.js'];
+    $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_DIR_NOFULL . "/scripts/metademands.js",
+        PLUGIN_METADEMANDS_DIR_NOFULL . "/scripts/metademands_freelines.js"];
     $PLUGIN_HOOKS['add_css']['metademands'] = ['css/metademands.css'];
 //    $PLUGIN_HOOKS['add_css']['metademands'] = ['css/range.scss'];
     // add minidashboard

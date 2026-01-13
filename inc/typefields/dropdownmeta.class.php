@@ -746,7 +746,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                         if (isset($pictures) && is_array($pictures)) {
                                             foreach ($pictures as $picture) {
                                                 $picture_url = Toolbox::getPictureUrl($picture);
-                                                $icon = "<img class='user_picture' style='width: 30%;height: 30%;' 
+                                                $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
                                         alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
                                                     $picture_url . "'>";
                                                 $ok = 1;
@@ -762,7 +762,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                     if (isset($pictures) && is_array($pictures)) {
                                         foreach ($pictures as $picture) {
                                             $picture_url = Toolbox::getPictureUrl($picture);
-                                            $icon = "<img class='user_picture' style='width: 30%;height: 30%;' 
+                                            $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
                                         alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='" .
                                                 $picture_url . "'>";
                                             $ok = 1;
@@ -1061,12 +1061,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         echo Html::scriptBlock(
             "
                         function changeBackgroundColor(idLabel,newCss) {
-                        
+
                            hardwareType.forEach(function(item, index, array) {
                                  document.getElementById(item).className='btn buttonelt col-md-2 center';
                               });
                            document.getElementById(idLabel).className='btn buttonelt col-md-2 center '+newCss;
-                           
+
                            var buttonelt = document.getElementById('hardwareType_0');
                            var tooltip = document.querySelector('.tooltipelt');
                            if (buttonelt.innerHTML.length > 0) {
@@ -1477,7 +1477,7 @@ JAVASCRIPT
                          $('select[name=\"checkbox_id\"]').val(),
                          $('select[name=\"check_type_value\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
                 echo " </script>";
@@ -1498,10 +1498,10 @@ JAVASCRIPT
                          $('select[name=\"checkbox_id\"]').val(),
                          $('select[name=\"check_type_value\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });
-                 
+
                  ";
 
 
@@ -1880,7 +1880,7 @@ JAVASCRIPT
                     //                }
                     //            }
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -2225,7 +2225,7 @@ JAVASCRIPT
 
 
                     $onchange .= "
-                    console.log(tohide);
+//                    console.log(tohide);
                     $.each( tohide, function( key, value ) {
                     if (value == true) {
                        var id = 'ablock'+ key;

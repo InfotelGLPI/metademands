@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.4.1.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.4.2.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -683,8 +683,8 @@ function plugin_metademands_install() {
         $DB->doQuery($query);
 
         foreach ($DB->request("SELECT `profiles_id`
-                             FROM `glpi_profilerights` 
-                             WHERE `name` LIKE '%plugin_metademands%' 
+                             FROM `glpi_profilerights`
+                             WHERE `name` LIKE '%plugin_metademands%'
                              AND `rights` > '10'") as $prof) {
 
             $rights = ['plugin_metademands_validatemeta' => 1];
@@ -1260,13 +1260,13 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
         //
         case "glpi_plugin_metademands_tickets_tasks" :
             return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` 
-          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
+          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id`
+          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
           LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
-          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id` 
+          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id`
           AND `glpi_tickets_metademands`.`is_deleted` = 0)
-          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id` 
-          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
+          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id`
+          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
           LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
             break;
 
@@ -1367,10 +1367,10 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                     "SELECT  COUNT( DISTINCT `glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_tickets`
                         LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                          LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
+                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` )
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
-                            `glpi_tickets`.`is_deleted` = 0 
-                             AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0
+                             AND `glpi_plugin_metademands_tickets_metademands`.`status` =
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','",
                                                                                                                                              $_SESSION['glpigroups']) . "')) AND  `glpi_tickets`.`id` =  " . $data['id'] . " " .
                     $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
@@ -1435,12 +1435,12 @@ function install_notifications_metademands() {
 VALUES('" . $templates_id . "',
 '',
 '##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
-##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate## 
+##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate##
 ##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
-##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors## 
-##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups## 
+##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors##
+##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups##
 ##IFticket.assigntousers####lang.ticket.assigntousers## : ##ticket.assigntousers## ##ENDIFticket.assigntousers##
-<!-- Suivis 
+<!-- Suivis
 ##ticket.action## -->
 ##FOREACH LAST 1 followups_intern##
 ##lang.followup_intern.author## : ##followup_intern.author## - ##followup_intern.date####followup_intern.description##
@@ -1472,7 +1472,7 @@ Ticket ###ticket.id##
     $result = $DB->doQuery($query_id) or die ($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 
@@ -1523,7 +1523,7 @@ VALUES('" . $templates_id . "',
     $result = $DB->doQuery($query_id) or die ($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 
@@ -1560,7 +1560,7 @@ VALUES('" . $templates_id . "',
     $result = $DB->doQuery($query_id) or die ($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
-    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->doQuery($query);
 

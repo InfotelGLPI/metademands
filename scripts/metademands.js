@@ -784,18 +784,23 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
             } else if (input.tagName === 'SELECT') {
                 const isYesNo = input.classList.contains("yesno");
                 const value = input.value;
+
                 if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
                     uneValeurSaisie = true;
                 }
-            } else if (
-                (input.tagName === 'TEXTAREA') &&
-                input.type !== 'checkbox' &&
-                input.type !== 'radio' &&
-                input.value.trim() !== ''
-            ) {
-                uneValeurSaisie = true;
+            } else if (input.tagName === 'TEXTAREA') {
+                let value = input.value;
+
+                if (window.tinymce && tinymce.get(input.id)) {
+                    value = tinymce.get(input.id).getContent({ format: 'text' });
+                }
+
+                if (value.trim() !== '') {
+                    uneValeurSaisie = true;
+                }
             }
         });
+
 
         if (!uneValeurSaisie) {
             const confirmation = await showBootstrapConfirmationModal(metademandparams.confirmmsg);
@@ -1149,7 +1154,8 @@ function updateActiveTab(rank)
     document.getElementById('ablock' + rank)?.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
 }
 
-function plugin_metademands_changeLDAP(root_doc, ldap) {
+function plugin_metademands_changeLDAP(root_doc, ldap)
+{
     var ldap_directory = ldap.value;
 
     jQuery.ajax({
@@ -1158,7 +1164,7 @@ function plugin_metademands_changeLDAP(root_doc, ldap) {
         data: {
             value: ldap_directory,
         },
-    }).done(function(response) {
+    }).done(function (response) {
         var selector = '$slashSelector';
         document.querySelector('form [name="ldap_filter"]').value = response;
     });

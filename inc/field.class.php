@@ -1034,7 +1034,7 @@ class PluginMetademandsField extends CommonDBChild
                         function updateActiveTab(rank) {
                             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
                             document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
-                    
+
                             document.getElementById('ablock' + rank)?.classList.add('active');
                             $('div[id^=\"block\"]').hide();
                             $('#block' + rank).show();
@@ -1056,7 +1056,7 @@ class PluginMetademandsField extends CommonDBChild
                                 }
                             });
                         }
-                       
+
                         loadPreview(fieldid);
                         window.location.hash = '#block' + fieldid;
                 });";
@@ -1086,7 +1086,7 @@ class PluginMetademandsField extends CommonDBChild
                 '$(document).ready(function () {
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem("loadedblock") || "1";
-                            
+
                         function updateActiveTab(rank) {
                             $("a[id^=\"ablock\"]").removeClass("active");
                             $("div[id^=\"block\"]").removeClass("active").hide();
@@ -1105,11 +1105,11 @@ class PluginMetademandsField extends CommonDBChild
                             sessionStorage.setItem("loadedblock", "block1");
                             window.location.hash = "#block1";
                         }
-                    
+
                         $("#fieldslist a").click(function (e) {
                             e.preventDefault();
                             var tabId = $(this).attr("href").replace("#", "");
-                        
+
                             if (document.getElementById(tabId)) {
                                 var rank = tabId.replace("block", "");
                                 sessionStorage.setItem("loadedblock", tabId);
@@ -1117,22 +1117,22 @@ class PluginMetademandsField extends CommonDBChild
                                 window.location.hash = tabId;
                             }
                         });
-                        
+
                         $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
                             var id = $(e.target).attr("href").substr(1);
                             sessionStorage.setItem("loadedblock", id);
                             window.location.hash = "#" + id;
                         });
-                        
+
                         function scrollToActiveTab() {
                             const activeTab = document.querySelector(".scrollable-tabs .active");
                             const container = document.querySelector(".scrollable-tabs");
-                            
+
                             if (activeTab && container) {
                                 const offsetLeft = activeTab.offsetLeft;
                                 const containerWidth = container.clientWidth;
                                 const tabWidth = activeTab.offsetWidth;
-                        
+
                                 // Centrage de l’onglet actif
                                 const scrollTo = offsetLeft - (containerWidth / 2) + (tabWidth / 2);
                                 container.scrollTo({ left: scrollTo, behavior: "smooth" });
@@ -1213,12 +1213,12 @@ class PluginMetademandsField extends CommonDBChild
                     const scrollContainer = document.querySelector(".scrollable-tabs");
                     const scrollLeftBtn = document.querySelector(".scroll-left");
                     const scrollRightBtn = document.querySelector(".scroll-right");
-                
+
                     if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
                         scrollLeftBtn.addEventListener("click", function () {
                             scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
                         });
-                
+
                         scrollRightBtn.addEventListener("click", function () {
                             scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
                         });
@@ -1645,7 +1645,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 var meta_id = $id;
                 var urlmeta = '$url';
                 var fieldid = '1';
-            
+
                 function loadPreview(fieldid) {
                     $.ajax({
                         url: urlmeta + '/ajax/previewMetademand.php',
@@ -1662,7 +1662,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                         }
                     });
                 }
-            
+
                 if (fieldid === 1) {
                     loadPreview(fieldid);
                 }
@@ -4102,7 +4102,7 @@ JAVASCRIPT
         }
         $array = explode('_', $value);
         $itemType = $array[0];
-        $item_id = $array[1];
+        $item_id = $array[1] ?? 0;
 
         $item = new $itemType();
         $item->getFromDB($item_id);
