@@ -577,15 +577,3 @@ function editLine(l, newparams)
     td1.appendChild(button1);
     line.appendChild(td1);
 }
-
-// //orderfollowup1
-// if (orderfollowupisactive) {
-//     $(document).ready(function () {
-//         showConfirmButton();
-//     });
-// }
-
-// var data = {
-//     lines$rand:[]
-// };
-// var i = 0;

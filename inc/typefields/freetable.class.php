@@ -193,7 +193,7 @@ class PluginMetademandsFreetable extends CommonDBTM
                         metademandfreelinesparams$rand.mandatory_encoded_fields = $mandatory_encoded_fields;
                         metademandfreelinesparams$rand.types_encoded_fields = $types_encoded_fields;
                         metademandfreelinesparams$rand.dropdown_values_encoded_fields = $dropdown_values_encoded_fields;
-                        metademandfreelinesparams$rand.orderfollowup_is_active = $orderfollowup_is_active;
+                        metademandfreelinesparams$rand.orderfollowupisactive = $orderfollowup_is_active;
                         metademandfreelinesparams$rand.size = $size;
                         metademandfreelinesparams$rand.empty_value = '$empty_value';
                         metademandfreelinesparams$rand.plugin_metademands_metademands_id = $plugin_metademands_metademands_id;
@@ -276,6 +276,16 @@ class PluginMetademandsFreetable extends CommonDBTM
 
             }
         }
+        $field .= "<script>
+                    const observer$rand = new MutationObserver(() => {
+                        if (window.metademandfreelinesparams$rand) {
+                            addLine(window.metademandfreelinesparams$rand);
+                            observer$rand.disconnect(); // une seule fois
+                        }
+                    });
+
+                    observer$rand.observe(document.body, { childList: true, subtree: true })
+               </script>";
 
         $field .= "</table>";
 

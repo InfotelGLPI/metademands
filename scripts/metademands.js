@@ -793,6 +793,8 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
 
                 if (window.tinymce && tinymce.get(input.id)) {
                     value = tinymce.get(input.id).getContent({ format: 'text' });
+
+                    console.log(value);
                 }
 
                 if (value.trim() !== '') {
