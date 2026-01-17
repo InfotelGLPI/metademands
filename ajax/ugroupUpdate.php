@@ -67,11 +67,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     $id             = $field['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $fieldGroup->getFromDB($fieldparameter->fields['plugin_metademands_fields_id']);
-                    $name = $_POST['field'];
-                    $fields_id = $id;
+                    $_POST["fields_id"] = $id;
                 }
             }
-
         }
     } else {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
@@ -152,7 +150,7 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 
 Group::dropdown($opt);
 
-$_POST['name'] = "group_user".$_POST["id_fielduser"].$_POST['fields_id'];
+$_POST['name'] = "group_user" . $_POST["id_fielduser"] . $_POST['fields_id'];
 $_POST['rand'] = $rand;
 
 Ajax::commonDropdownUpdateItem($_POST);
