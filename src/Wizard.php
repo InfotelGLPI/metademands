@@ -425,14 +425,7 @@ class Wizard extends CommonDBTM
             echo "</span>";
             echo "</div>";
 
-            if ($with_title == true) {
-                echo "</div>";
-            }
-
-            $margin = "";
-            if ($with_title == false) {
-                $margin = "margin-top: 50px;";
-            }
+            $margin = "margin-top: 50px;";
             echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;position:absolute;right:0;z-index: 1000;$margin'>";
             echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
             echo "<li class='nav-item' role='presentation'>";

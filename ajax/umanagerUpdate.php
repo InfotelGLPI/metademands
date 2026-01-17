@@ -29,6 +29,9 @@
 
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Fields\Dropdownobject;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
 
 $AJAX_INCLUDE = 1;
 
@@ -44,20 +47,20 @@ if (!isset($_POST['fieldname'])) {
 }
 
 $fieldUser = new Field();
-$fields_id = 0;
-
+$fieldparameter = new FieldParameter();
 $readonly = 0;
 $default_use_id_requester_supervisor  = 0;
+
+//Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find(['type'         => "dropdown_object",
-                                       'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                                       'item'         => User::getType()])) {
+            'plugin_metademands_metademands_id' => $_POST['metademands_id'],
+            'item'         => User::getType()])) {
             foreach ($fields as $f) {
-                $fieldparameter = new FieldParameter();
                 if ($fieldparameter->getFromDBByCrit([
-                  'plugin_metademands_fields_id' => $f['id'],
-                  'link_to_user' => $_POST['id_fielduser']
+                    'plugin_metademands_fields_id' => $f['id'],
+                    'link_to_user' => $_POST['id_fielduser']
                 ])) {
                     if ($fieldparameter->fields['readonly'] == 1) {
                         $readonly = 1;
@@ -65,45 +68,34 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
                         $default_use_id_requester_supervisor = 1;
                     }
-                    if ($fieldparameter->fields['is_mandatory'] == 1) {
-                        $_POST["is_mandatory"] = 1;
-                    }
-                    $_POST["field"] = $_POST['fieldname'] . "[" . $f['id'] . "]";
-                    $name = $_POST['field'];
-                    $fields_id = $f['id'];
+                    $id = $f['id'];
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
+                    $_POST["fields_id"] = $id;
+                    $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                 }
             }
         }
-    } else {
-        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-        }
-        $name = $_POST['field'];
     }
-} else {
-    $name = $_POST['field'] ?? "";
 }
 
-$users_id_supervisor = 0;
-if (isset($_POST['value'])
-    && $_POST["value"] > 0
-    && isset($_POST['id_fielduser'])
-    && $_POST["id_fielduser"] > 0
-&& $default_use_id_requester_supervisor == 1) {
+$val = 0;
+if (isset($_POST['users_id'])
+    && $_POST["users_id"] > 0
+    && $default_use_id_requester_supervisor == 1) {
     $user = new User();
-    if ($user->getFromDB($_POST["value"])) {
-        $users_id_supervisor = $user->fields['users_id_supervisor'];
+    if ($user->getFromDB($_POST["users_id"])) {
+        $val = $user->fields['users_id_supervisor'];
     }
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $users_id_supervisor = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 $opt = [
-    'name' => $name,
-    'value' => $users_id_supervisor,
+    'name' => $_POST['field'],
+    'value' => $val,
     'width' => '200px',
     'used' => [
         Session::getLoginUserID()
@@ -116,19 +108,25 @@ if ($readonly == 1) {
     $opt['readonly'] = true;
 }
 
+
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
     $opt['specific_tags'] = ['required' => 'required'];
 }
 
 if ($readonly == 1) {
     echo User::dropdown($opt);
-    echo Html::hidden($_POST["field"], ['value' => $users_id_supervisor]);
+    echo Html::hidden($_POST["field"], ['value' => $val]);
 } else {
     User::dropdown($opt);
 }
 
-$_POST['name'] = "manager_user".$_POST["id_fielduser"];
+$_POST['name'] = "manager_user".$_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = "";
-Ajax::commonDropdownUpdateItem($_POST);
 
-$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $users_id_supervisor;
+Ajax::commonDropdownUpdateItem($_POST);
+$metademands = new Metademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = Wizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = User::getType();
+Dropdownobject::checkConditions($data, $metaconditionsparams);

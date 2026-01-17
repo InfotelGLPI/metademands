@@ -30,6 +30,8 @@
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
 
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
@@ -46,50 +48,28 @@ if (!isset($_POST['fieldname'])) {
 $fieldUser = new Field();
 $fieldparameter = new FieldParameter();
 
-if (isset($_POST["fields_id"])
-    && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["fields_id"]])) {
-    $_POST['display_type'] = $fieldparameter->fields['display_type'];
-}
-
-
+//Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find([
             'type' => "dropdown_meta",
             'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-            'item' => "mydevices"
+            'item' => "mydevices",
         ])) {
             foreach ($fields as $field) {
                 if ($fieldparameter->getFromDBByCrit([
                     'plugin_metademands_fields_id' => $field['id'],
-                    'link_to_user' => $_POST['id_fielduser']
+                    'link_to_user' => $_POST['id_fielduser'],
                 ])) {
                     $id = $field['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
+                    $_POST["fields_id"] = $id;
                     $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                     $_POST['limit'] = $fieldparameter->fields['default'];
                     $_POST['display_type'] = $fieldparameter->fields['display_type'];
-                    $name = $_POST['field'];
                 }
             }
         }
-    } else {
-        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-        }
-        $name = $_POST['field'];
-    }
-}  else {
-    $name = $_POST['field'] ?? "";
-}
-
-
-$users_id = 0;
-
-$user = new User();
-if (isset($_POST['value']) && $_POST["value"] > 0) {
-    if ($user->getFromDB($_POST["value"])) {
-        $users_id = $_POST['value'];
     }
 }
 
@@ -108,33 +88,32 @@ if (isset($_POST['fields_id'])
 $rand = mt_rand();
 
 $p = [
-    'rand' => $rand,
-    'name' => $name,
-    'value' => $val
+    'rand' => "",
+    'name' => $_POST['field'],
+    'value' => $val,
+    'users_id' => $_POST['users_id'],
 ];
 
 if ($_POST['display_type'] == Dropdownmeta::ICON_DISPLAY) {
-
     $p['selected_items_id'] = $_POST['selected_items_id'] ?? 0;
     $p['selected_itemtype'] = $_POST['selected_itemtype'] ?? "";
     $p['is_mandatory'] = $_POST['is_mandatory'] ?? 0;
     $p['limit'] = $_POST['limit'] ? $limit : [];
-    $p['users_id'] = 0;
-    if ((isset($_POST['value']) && ($_POST["value"] > 0))) {
-        $p['users_id'] = $_POST['value'] ?? Session::getLoginUserID();
-    }
-    $users_id = $p['users_id'];
 
     Dropdownmeta::getItemsForUser($p);
-    $_POST['name'] = "mydevices_user$users_id";
 
 } else {
-
-    Field::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
-    $_POST['name'] = "mydevices_user";
-
+    Field::dropdownMyDevices($p['users_id'], $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
 }
 
+$_POST['name'] = "mydevices_user".$_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = "";
+
 Ajax::commonDropdownUpdateItem($_POST);
 
+$metademands = new Metademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = Wizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = "mydevices";
+Dropdownmeta::checkConditions($data, $metaconditionsparams);

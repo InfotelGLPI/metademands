@@ -4164,7 +4164,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                         }
                     }
                     if (count($devices)) {
-                        $my_devices[__('Devices own by my groups')] = $devices;
+                        $my_devices[__('Devices own by my groups', 'metademands')] = $devices;
                     }
                 }
             }
@@ -4310,10 +4310,12 @@ border-style: none !important; border-color: initial !important;border-image: in
         $itemType = $array[0];
         $item_id = $array[1] ?? 0;
 
-        $item = new $itemType();
-        $item->getFromDB($item_id);
-        $return = $itemType . " - " . $item->fields['name'] . " (" . $item_id . ")";
-        return $return;
+        $return = "";
+        if (getItemForItemtype($itemType)) {
+            $item = new $itemType();
+            $item->getFromDB($item_id);
+            $return = $itemType . " - " . $item->fields['name'] . " (" . $item_id . ")";
+        }
     }
 
     /**

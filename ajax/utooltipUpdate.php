@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -40,15 +41,15 @@ Session::checkLoginUser();
 $fieldUser = new Field();
 
 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])
-    && !isset($_POST['value'])) {
-    $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
+    && !isset($_POST['users_id'])) {
+    $_POST['users_id'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
 }
 
 $content = " ";
 $user = new User();
-if (isset($_POST['value']) && $_POST["value"] > 0) {
+if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
 
-    $user_id = $_POST['value'];
+    $user_id = $_POST['users_id'];
     $field_id = $_POST['id_fielduser'];
     $user_tooltip = new User();
     if ($user_id > 0 && $user_tooltip->getFromDB($user_id)) {
@@ -63,6 +64,6 @@ if (isset($_POST['value']) && $_POST["value"] > 0) {
     }
 }
 
-$_POST['name'] = "tooltip_user".$_POST["id_fielduser"];
+$_POST['name'] = "tooltip_user" . $_POST["id_fielduser"];
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);

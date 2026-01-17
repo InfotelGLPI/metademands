@@ -307,13 +307,14 @@ class Dropdownmeta extends CommonDBTM
                                 'type' => "dropdown_object",
                                 'item' => User::getType(),
                             ]);
-                            $_POST['value'] = 0;
+                            //First load POST datas
                             if (!empty($fieldUser->fields)) {
                                 $params = Field::getAllParamsFromField($fieldUser);
-                                $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID(
-                                );
+                                $_POST['users_id'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                            } else {
+                                $_POST['users_id'] = 0;
                             }
-
+                            $_POST['display_type'] = $data['display_type'];
                             $_POST['id_fielduser'] = $data['link_to_user'];
                             $_POST['fields_id'] = $data['id'];
                             $_POST['limit'] = json_encode($default_values);
@@ -322,8 +323,8 @@ class Dropdownmeta extends CommonDBTM
                             $selected_items_id = 0;
                             $selected_itemtype = "";
 
-                            $users_id = $_POST['value'];
-                            echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                            $users_id = $_POST['users_id'];
+                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
 
                             if (isset($value) && !empty($value)) {
                                 $splitter = explode("_", $value);
@@ -340,12 +341,12 @@ class Dropdownmeta extends CommonDBTM
 
                             if ($data['is_mandatory']) {
                                 echo "<div class='alertelt active'><div class='alertelttext'><span>";
-                                echo __('This field is mandatory, please select your equipment', 'metamemands');
-                                echo "</span></div>";
+                                echo __('This field is mandatory, please select your equipment', 'metademands');
+                                echo "</span></div></div>";
                             }
 
                             //                        echo "<div class='tooltipelt'><div class='tooltipelttext'><span>";
-                            //                        echo __('If your equipment is not listed, thanks to add its name on ticket description', 'metamemands');
+                            //                        echo __('If your equipment is not listed, thanks to add its name on ticket description', 'metademands');
                             //                        echo "</span></div>";
                         } else {
                             $rand = mt_rand();
@@ -379,22 +380,24 @@ class Dropdownmeta extends CommonDBTM
                         $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                         //                     $users_id = 0;
                         if ($data['link_to_user'] > 0) {
-                            echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
                             $fieldUser = new Field();
                             $fieldUser->getFromDBByCrit([
                                 'id' => $data['link_to_user'],
                                 'type' => "dropdown_object",
                                 'item' => User::getType(),
                             ]);
-                            $_POST['value'] = 0;
+                            //First load POST datas
                             if (!empty($fieldUser->fields)) {
                                 $params = Field::getAllParamsFromField($fieldUser);
-                                $_POST['value'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID(
-                                );
+                                $_POST['users_id'] = ($params['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                            } else {
+                                $_POST['users_id'] = 0;
                             }
-
+                            $_POST['display_type'] = $data['display_type'];
                             $_POST['id_fielduser'] = $data['link_to_user'];
                             $_POST['fields_id'] = $data['id'];
+                            $_POST['is_mandatory'] = $data['is_mandatory'];
                             $_POST['limit'] = json_encode($default_values);
                             $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
                             include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
@@ -841,7 +844,7 @@ class Dropdownmeta extends CommonDBTM
             //            echo "<div class='center' style=''>";
             //            echo "<i style='font-size:4em' class='$icon fa-3x'></i>";
             //            echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
-            //            echo __('My equipment does not appear', 'metamemands');
+            //            echo __('My equipment does not appear', 'metademands');
             //            echo "</h5><br>";
             //            echo "</div>";
             //
@@ -949,10 +952,9 @@ class Dropdownmeta extends CommonDBTM
                 }
                 if (count($devices)) {
                     echo "<br><span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __(
-                        'Devices own by my groups'
+                        'Devices own by my groups', 'metademands'
                     ) . "</h5>";
-                    //                                $my_devices[__('Devices own by my groups')] = $devices;
-                    //                                Toolbox::loginfo($devices);
+
                     foreach ($devices as $itemtype_groups => $list_items_id) {
                         if ($item = getItemForItemtype($itemtype_groups)
                             && \Ticket::isPossibleToAssignType($itemtype_groups)

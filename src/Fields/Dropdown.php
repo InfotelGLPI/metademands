@@ -225,7 +225,7 @@ class Dropdown extends CommonDBTM
         switch ($data['item']) {
             case "Location" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    echo "<div id='location_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['locations_id'] = $value;
                     $fieldUser             = new Field();
@@ -237,13 +237,13 @@ class Dropdown extends CommonDBTM
                     if (isset($fieldUser->fields['id'])
                         && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
 
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                        $_POST['users_id']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($_POST['users_id'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $_POST['users_id'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
 
@@ -260,6 +260,7 @@ class Dropdown extends CommonDBTM
                     $options['name']    = $namefield . "[" . $data['id'] . "]";
                     $options['width']    = "400px";
                     $options['display'] = false;
+                    $options['display_type'] = $data['display_type'];
                     if ($data['is_mandatory'] == 1) {
                         $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                     }
@@ -280,7 +281,7 @@ class Dropdown extends CommonDBTM
 
             case "UserTitle" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='title_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    echo "<div id='title_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['fields_id']    = $data['id'];
                     $_POST['usertitles_id'] = $value;
@@ -291,13 +292,13 @@ class Dropdown extends CommonDBTM
 
                     $fieldparameter            = new FieldParameter();
                     if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                        $_POST['users_id']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($_POST['users_id'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $_POST['users_id'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
 
@@ -323,7 +324,7 @@ class Dropdown extends CommonDBTM
                 break;
             case "UserCategory" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='category_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    echo "<div id='category_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['usercategories_id'] = $value;
                     $fieldUser             = new Field();
@@ -333,13 +334,13 @@ class Dropdown extends CommonDBTM
 
                     $fieldparameter            = new FieldParameter();
                     if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                        $_POST['users_id']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($_POST['users_id'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $_POST['users_id'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
 
