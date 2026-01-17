@@ -58,7 +58,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     $id             = $field['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $fieldGroup->getFromDB($fieldparameter->fields['plugin_metademands_fields_id']);
-                    $name = $_POST['field'];
+                    $_POST["fields_id"] = $id;
                     $fields_id = $id;
                 }
             }
