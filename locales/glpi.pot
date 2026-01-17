@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-17 15:18+0000\n"
+"POT-Creation-Date: 2026-01-17 15:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1032,7 +1032,7 @@ msgstr ""
 msgid "Informations"
 msgstr ""
 
-#: src/FieldParameter.php:900 src/Fields/Dropdownobject.php:805
+#: src/FieldParameter.php:900 src/Fields/Dropdownobject.php:803
 #: src/Fields/Dropdownmultiple.php:714
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -1096,8 +1096,8 @@ msgstr ""
 
 #: ajax/viewtypefields.php:56 src/Fields/Tel.php:126
 #: src/Fields/Dropdownmeta.php:1395 src/Fields/Dropdown.php:469
-#: src/Fields/Text.php:124 src/Fields/Dropdownobject.php:733
-#: src/Fields/Dropdownobject.php:828 src/Fields/Email.php:123
+#: src/Fields/Text.php:124 src/Fields/Dropdownobject.php:731
+#: src/Fields/Dropdownobject.php:826 src/Fields/Email.php:123
 msgid "Link this to a user field"
 msgstr ""
 
@@ -1289,7 +1289,7 @@ msgstr ""
 #: src/Wizard.php:2322 src/FieldOption.php:2126 src/Fields/Tel.php:348
 #: src/Fields/Dropdownmeta.php:1853 src/Fields/Dropdown.php:861
 #: src/Fields/Text.php:347 src/Fields/Checkbox.php:713 src/Fields/Radio.php:684
-#: src/Fields/Url.php:346 src/Fields/Dropdownobject.php:1249
+#: src/Fields/Url.php:346 src/Fields/Dropdownobject.php:1247
 #: src/Fields/Dropdownmultiple.php:1198 src/Fields/Dropdownmultiple.php:1374
 #: src/Fields/Yesno.php:399 src/Fields/Basket.php:833 src/Fields/Email.php:344
 #: src/Fields/Textarea.php:304
@@ -1383,10 +1383,10 @@ msgstr ""
 #: src/Fields/Dropdownmeta.php:1638 src/Fields/Dropdown.php:637
 #: src/Fields/Dropdown.php:673 src/Fields/Checkbox.php:480
 #: src/Fields/Checkbox.php:493 src/Fields/Radio.php:484
-#: src/Fields/Radio.php:497 src/Fields/Dropdownobject.php:1013
-#: src/Fields/Dropdownobject.php:1016 src/Fields/Dropdownobject.php:1026
-#: src/Fields/Dropdownobject.php:1048 src/Fields/Dropdownobject.php:1064
-#: src/Fields/Dropdownobject.php:1075 src/Fields/Dropdownmultiple.php:900
+#: src/Fields/Radio.php:497 src/Fields/Dropdownobject.php:1011
+#: src/Fields/Dropdownobject.php:1014 src/Fields/Dropdownobject.php:1024
+#: src/Fields/Dropdownobject.php:1046 src/Fields/Dropdownobject.php:1062
+#: src/Fields/Dropdownobject.php:1073 src/Fields/Dropdownmultiple.php:900
 #: src/Fields/Basket.php:559
 msgid "Not null value"
 msgstr ""
@@ -1461,7 +1461,7 @@ msgstr ""
 msgid "Only these groups"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:759 src/Fields/Dropdownmultiple.php:685
+#: src/Fields/Dropdownobject.php:757 src/Fields/Dropdownmultiple.php:685
 msgid "Only users of my groups"
 msgstr ""
 
@@ -1609,7 +1609,7 @@ msgstr ""
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1419 src/Fields/Dropdownobject.php:798
+#: src/Fields/Dropdownmeta.php:1419 src/Fields/Dropdownobject.php:796
 msgid "Read-Only"
 msgstr ""
 
@@ -1715,7 +1715,7 @@ msgstr ""
 #: src/FieldOption.php:2124 src/Fields/Tel.php:346
 #: src/Fields/Dropdownmeta.php:1851 src/Fields/Dropdown.php:860
 #: src/Fields/Text.php:345 src/Fields/Checkbox.php:711 src/Fields/Radio.php:682
-#: src/Fields/Url.php:344 src/Fields/Dropdownobject.php:1248
+#: src/Fields/Url.php:344 src/Fields/Dropdownobject.php:1246
 #: src/Fields/Dropdownmultiple.php:1196 src/Fields/Dropdownmultiple.php:1372
 #: src/Fields/Yesno.php:397 src/Fields/Basket.php:832
 #: src/Fields/Basket.php:1849 src/Fields/Email.php:342
@@ -1807,7 +1807,7 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:750
+#: src/Fields/Dropdownobject.php:748
 msgid "Show a identity card of user"
 msgstr ""
 
@@ -2223,11 +2223,11 @@ msgstr ""
 msgid "Use drafts"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:779 src/Fields/Dropdownmultiple.php:695
+#: src/Fields/Dropdownobject.php:777 src/Fields/Dropdownmultiple.php:695
 msgid "Use id of requester by default"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:786 src/Fields/Dropdownmultiple.php:702
+#: src/Fields/Dropdownobject.php:784 src/Fields/Dropdownmultiple.php:702
 msgid "Use id of supervisor requester by default"
 msgstr ""
 
@@ -2240,8 +2240,8 @@ msgid "Use this field as object field"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1369 src/Fields/Datetime.php:101
-#: src/Fields/Dropdown.php:456 src/Fields/Dropdownobject.php:767
-#: src/Fields/Dropdownobject.php:847 src/Fields/Date.php:101
+#: src/Fields/Dropdown.php:456 src/Fields/Dropdownobject.php:765
+#: src/Fields/Dropdownobject.php:845 src/Fields/Date.php:101
 msgid "Use this field for child ticket field"
 msgstr ""
 
@@ -2291,7 +2291,7 @@ msgstr ""
 #: src/Condition.php:553 src/Condition.php:655 src/Condition.php:981
 #: src/Fields/Ldapdropdown.php:293 src/Fields/Dropdownmeta.php:1489
 #: src/Fields/Dropdown.php:558 src/Fields/Checkbox.php:444
-#: src/Fields/Radio.php:448 src/Fields/Dropdownobject.php:904
+#: src/Fields/Radio.php:448 src/Fields/Dropdownobject.php:902
 #: src/Fields/Dropdownmultiple.php:740 src/Fields/Yesno.php:227
 #: src/Fields/Basket.php:558
 msgid "Value to check"
