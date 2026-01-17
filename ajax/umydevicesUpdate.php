@@ -44,21 +44,8 @@ if (!isset($_POST['fieldname'])) {
 $fieldUser = new PluginMetademandsField();
 $fieldparameter = new PluginMetademandsFieldParameter();
 
-if (isset($_POST["fields_id"])
-    && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["fields_id"]])) {
-    $_POST['display_type'] = $fieldparameter->fields['display_type'];
-}
-
-
+//Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-    $fieldparameter = new PluginMetademandsFieldParameter();
-    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST["id_fielduser"]])) {
-        if ($_POST['value'] == $_POST['id_fielduser']) {
-            $_POST['value'] = (isset($fieldparameter->fields['default_use_id_requester'])
-                && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-        }
-    }
-
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find([
             'type' => "dropdown_meta",
@@ -72,29 +59,13 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                 ])) {
                     $id = $field['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
+                    $_POST["fields_id"] = $id;
                     $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                     $_POST['limit'] = $fieldparameter->fields['default'];
                     $_POST['display_type'] = $fieldparameter->fields['display_type'];
-                    $name = $_POST['field'];
                 }
             }
         }
-    } else {
-        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-        }
-        $name = $_POST['field'];
-    }
-} else {
-    $name = $_POST['field'] ?? "";
-}
-
-$users_id = 0;
-
-$user = new User();
-if (isset($_POST['value']) && $_POST["value"] > 0) {
-    if ($user->getFromDB($_POST["value"])) {
-        $users_id = $_POST['value'];
     }
 }
 
@@ -113,30 +84,32 @@ if (isset($_POST['fields_id'])
 $rand = mt_rand();
 
 $p = [
-    'rand' => $rand,
-    'name' => $name,
+    'rand' => "",
+    'name' => $_POST['field'],
     'value' => $val,
-    'users_id' => $users_id,
+    'users_id' => $_POST['users_id'],
 ];
-
-
 
 if ($_POST['display_type'] == PluginMetademandsDropdownmeta::ICON_DISPLAY) {
     $p['selected_items_id'] = $_POST['selected_items_id'] ?? 0;
     $p['selected_itemtype'] = $_POST['selected_itemtype'] ?? "";
     $p['is_mandatory'] = $_POST['is_mandatory'] ?? 0;
     $p['limit'] = $_POST['limit'] ? $limit : [];
-    if ((isset($_POST['value']) && ($_POST["value"] > 0))) {
-        $p['users_id'] = $_POST['value'] ?? Session::getLoginUserID();
-    }
-    $users_id = $p['users_id'];
 
     PluginMetademandsDropdownmeta::getItemsForUser($p);
-    $_POST['name'] = "mydevices_user$users_id";
+
 } else {
-    PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
-    $_POST['name'] = "mydevices_user";
+    PluginMetademandsField::dropdownMyDevices($p['users_id'], $_SESSION['glpiactiveentities'], 0, 0, $p, $limit);
 }
 
+$_POST['name'] = "mydevices_user".$_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = "";
+
 Ajax::commonDropdownUpdateItem($_POST);
+
+$metademands = new PluginMetademandsMetademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = "mydevices";
+PluginMetademandsDropdownmeta::checkConditions($data, $metaconditionsparams);

@@ -53,13 +53,6 @@ $nofreetable = false;
 //    }
 //}
 
-//Add Ajax fields loaded by ulocationUpdate.php etc..
-if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'])) {
-    $session_fields = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'];
-    foreach ($session_fields as $name => $session_field) {
-        $_POST['field'][$name] = $session_field;
-    }
-}
 
 //why i don't know
 if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {

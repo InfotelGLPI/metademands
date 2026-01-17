@@ -220,8 +220,7 @@ class PluginMetademandsField extends CommonDBChild
             $request = true;
         } else {
             $criteria['SELECT'][] = new \QueryExpression("'" . static::$itemtype . "' AS itemtype");
-            if (
-                ($itemtype == static::$itemtype)
+            if (($itemtype == static::$itemtype)
                 || is_subclass_of($itemtype, static::$itemtype)
             ) {
                 $request = true;
@@ -1621,7 +1620,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                 echo "$(document).ready(function() {
                 plugin_metademands_orderredipsInit($rand, $plugin_metademands_metademands_id )});";
                 echo "\n</script>";
-
             } else {
                 echo "<div class='center first-bloc'>";
                 echo "<table class='tab_cadre_fixe'>";
@@ -2162,7 +2160,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                 return $options->Dropdown(["name" => $name, 'value' => $p['value']]);
                 break;
             default:
-
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                         $newcase = self::addPluginCaseCustomFields($plug, $name, $p);
@@ -2416,7 +2413,6 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         // If values are saved in session we retrieve it
         if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
-
             foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
                 if (strval($data['id']) === strval($id)) {
                     $data['value'] = $value;
@@ -2794,7 +2790,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 $class::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'dropdown_object':
-            case 'dropdown_ldap' :
+            case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_meta':
                 $class::showWizardField(
@@ -2986,7 +2982,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                 $value_parent_field .= Dropdown::getYesNo($value);
                                                 break;
                                             case 'basket':
-
                                                 break;
                                             default:
                                                 $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
@@ -3202,7 +3197,6 @@ border-style: none !important; border-color: initial !important;border-image: in
 
         $temp = new PluginMetademandsCondition();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
-
     }
 
     /**
@@ -3451,7 +3445,6 @@ JAVASCRIPT
                             $ma->addMessage(__('You cannot do this for this field', 'metademands'));
                             $msg = MassiveAction::ACTION_KO;
                         }
-
                     }
                     $item->getFromDB($id);
                     $ma->itemDone($item->getType(), $id, $msg);
@@ -3472,7 +3465,6 @@ JAVASCRIPT
                             $ma->addMessage(__('You cannot do this for this field', 'metademands'));
                             $msg = MassiveAction::ACTION_KO;
                         }
-
                     }
                     $item->getFromDB($id);
                     $ma->itemDone($item->getType(), $id, $msg);
@@ -3570,14 +3562,13 @@ JAVASCRIPT
         }
 
         // Calculate order
-        foreach (
-            $this->find(
-                [
+        foreach ($this->find(
+            [
                     'rank' => $input['rank'],
                     'plugin_metademands_metademands_id' => $input["plugin_metademands_metademands_id"],
                 ],
-                ['order']
-            ) as $fields_id => $values
+            ['order']
+        ) as $fields_id => $values
         ) {
             if ($fields_id == $input['id']) {
                 $values['order'] = $input['order'];
@@ -3959,7 +3950,7 @@ JAVASCRIPT
                         }
                     }
                     if (count($devices)) {
-                        $my_devices[__('Devices own by my groups')] = $devices;
+                        $my_devices[__('Devices own by my groups', 'metademands')] = $devices;
                     }
                 }
             }
@@ -4104,9 +4095,13 @@ JAVASCRIPT
         $itemType = $array[0];
         $item_id = $array[1] ?? 0;
 
-        $item = new $itemType();
-        $item->getFromDB($item_id);
-        $return = $itemType . " - " . $item->fields['name'] . " (" . $item_id . ")";
+        $return = "";
+        if (getItemForItemtype($itemType)) {
+            $item = new $itemType();
+            $item->getFromDB($item_id);
+            $return = $itemType . " - " . $item->fields['name'] . " (" . $item_id . ")";
+        }
+
         return $return;
     }
 
@@ -4304,7 +4299,7 @@ JAVASCRIPT
                         }
                     }
                     if (count($devices)) {
-                        $my_devices[__('Devices own by my groups')] = $devices;
+                        $my_devices[__('Devices own by my groups', 'metademands')] = $devices;
                     }
                 }
             }
@@ -4388,7 +4383,6 @@ JAVASCRIPT
                 // Direct Connection
                 $types = ['Monitor', 'Peripheral', 'Phone', 'Printer'];
                 foreach ($types as $itemtype) {
-
                     if (count($limit) > 0) {
                         if (!in_array($itemtype, $limit)) {
                             continue;

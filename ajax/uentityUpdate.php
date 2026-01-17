@@ -36,13 +36,13 @@ if (strpos($_SERVER['PHP_SELF'], "uentityUpdate.php")) {
 
 Session::checkLoginUser();
 
-$fieldEntity = new PluginMetademandsField();
-$fields_id = 0;
-$cond       = [];
-
 if (!isset($_POST['fieldname'])) {
     $_POST['fieldname'] = "field";
 }
+
+$fieldEntity = new PluginMetademandsField();
+$fieldparameter = new PluginMetademandsFieldParameter();
+$cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
@@ -50,7 +50,6 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                                           'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                           'item'                              => Entity::getType()])) {
             foreach ($fields as $f) {
-                $fieldparameter = new PluginMetademandsFieldParameter();
                 if ($fieldparameter->getFromDBByCrit(
                     [
                         'plugin_metademands_fields_id' => $f['id'],
@@ -59,31 +58,19 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                 )) {
                     $id = $f['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
-                    $name = $_POST['field'];
-                    $fields_id = $f['id'];
+                    $_POST["fields_id"] = $id;
+                    $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                 }
             }
         }
-    } else {
-        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-        }
-        $name = $_POST['field'];
-
-        $fieldEntity->getFromDB($_POST['fields_id']);
     }
-} else {
-    $name = $_POST['field'] ?? "";
 }
 
-////chercher les champs de la meta avec param : updatefromthisfield
-$entities_id = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0
-    && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
+$val = 0;
+if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
     $user = new User();
-    if ($user->getFromDB($_POST["value"])) {
-
-        $entities_id = Profile_User::getUserEntitiesForRight(
+    if ($user->getFromDB($_POST["users_id"])) {
+        $val = Profile_User::getUserEntitiesForRight(
             $user->getID(),
             Ticket::$rightname,
             CREATE
@@ -92,28 +79,28 @@ if (isset($_POST['value']) && $_POST["value"] > 0
     }
 }
 
-if (is_array($entities_id) && count($entities_id) > 0) {
-    $entities_id = $entities_id[0];
+if (is_array($val) && count($val) > 0) {
+    $val = $val[0];
 }
 
-if (is_array($entities_id) && count($entities_id) == 0) {
-    $entities_id = 0;
+if (is_array($val) && count($val) == 0) {
+    $val = 0;
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $entities_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 
 if (isset($_POST['entities_id']) && $_POST['entities_id'] > 0) {
-    $entities_id = $_POST['entities_id'];
+    $val = $_POST['entities_id'];
 }
 
 $rand = mt_rand();
-$opt  = ['name'      => $name,
+$opt  = ['name'      => $_POST['field'],
          'entity'    => $_SESSION['glpiactiveentities'],
-         'value'     => $entities_id,
+         'value'     => $val,
          'condition' => $cond,
          'rand'      => $rand
 ];
@@ -123,14 +110,19 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 
 if ($fieldEntity->fields['readonly'] == 1) {
     $opt['readonly'] = true;
-    echo Dropdown::getDropdownName("glpi_entities", $entities_id);
-    echo Html::hidden($_POST["field"], ['value' => $entities_id]);
+    echo Dropdown::getDropdownName("glpi_entities", $val);
+    echo Html::hidden($_POST["field"], ['value' => $val]);
 } else {
     Entity::dropdown($opt);
 }
 
-$_POST['name'] = "entity_user".$_POST["id_fielduser"];
+$_POST['name'] = "entity_user".$_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = $rand;
-Ajax::commonDropdownUpdateItem($_POST);
 
-$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $entities_id;
+Ajax::commonDropdownUpdateItem($_POST);
+$metademands = new PluginMetademandsMetademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = Entity::getType();
+PluginMetademandsDropdownobject::checkConditions($data, $metaconditionsparams);

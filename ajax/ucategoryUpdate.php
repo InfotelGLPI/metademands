@@ -42,51 +42,44 @@ if (!isset($_POST['fieldname'])) {
 }
 
 $fieldUser = new PluginMetademandsField();
-$fields_id = 0;
+$fieldparameter = new PluginMetademandsFieldParameter();
 
+//Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find(['type'         => "dropdown",
             'plugin_metademands_metademands_id' => $_POST['metademands_id'],
             'item'         => UserCategory::getType()])) {
             foreach ($fields as $f) {
-                $fieldparameter = new PluginMetademandsFieldParameter();
                 if ($fieldparameter->getFromDBByCrit(
                     ['plugin_metademands_fields_id' => $f['id'],
                         'link_to_user' => $_POST['id_fielduser']]
                 )) {
-                    $_POST["field"] = $_POST['fieldname'] . "[" . $f['id'] . "]";
-                    $name = $_POST['field'];
-                    $fields_id = $f['id'];
+                    $id = $f['id'];
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
+                    $_POST["fields_id"] = $id;
+                    $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
                 }
             }
         }
-    } else {
-        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-        }
-        $name = $_POST['field'];
     }
-} else {
-    $name = $_POST['field'] ?? "";
 }
 
-$usercategories_id = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0
-    && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
+$val = 0;
+if (isset($_POST['value']) && $_POST["value"] > 0) {
     $user = new User();
     if ($user->getFromDB($_POST["value"])) {
-        $usercategories_id = $user->fields['usercategories_id'];
+        $val = $user->fields['usercategories_id'];
     }
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $usercategories_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
-$opt = ['name'  => $name,
-    'value' => $usercategories_id,
+$opt = ['name' => $_POST['field'],
+    'value' => $val,
     'width' => '200px'];
 
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
@@ -95,8 +88,13 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 
 UserCategory::dropdown($opt);
 
-$_POST['name'] = "category_user" . $_POST["id_fielduser"];
+$_POST['name'] = "category_user" . $_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = "";
-Ajax::commonDropdownUpdateItem($_POST);
 
-$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $usercategories_id;
+Ajax::commonDropdownUpdateItem($_POST);
+$metademands = new PluginMetademandsMetademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = UserCategory::getType();
+PluginMetademandsDropdown::checkConditions($data, $metaconditionsparams);

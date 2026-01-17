@@ -37,20 +37,19 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 
 Session::checkLoginUser();
 
-$fieldGroup = new PluginMetademandsField();
-$fields_id = 0;
-
-$fieldparameter = new PluginMetademandsFieldParameter();
-$cond       = [];
-
 if (!isset($_POST['fieldname'])) {
     $_POST['fieldname'] = "field";
 }
 
+$fieldGroup = new PluginMetademandsField();
+$fieldparameter = new PluginMetademandsFieldParameter();
+$cond       = [];
+
+//Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
 
-        if ($fields = $fieldGroup->find(['type'                              => "dropdown_object",
+        if ($fields = $fieldGroup->find(['type' => "dropdown_object",
             'plugin_metademands_metademands_id' => $_POST['metademands_id'],
             'item'                              => Group::getType()])) {
             foreach ($fields as $field) {
@@ -67,7 +66,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         }
     } else {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
+            $_POST['users_id'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
         }
 
         $fieldGroup->getFromDB($_POST['fields_id']);
@@ -75,10 +74,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         $name = $_POST['field'];
     }
 
-    if (!empty($fieldparameter->fields['custom']) && isset($_POST["value"])) {
+    if (!empty($fieldparameter->fields['custom']) && isset($_POST["users_id"])) {
 
         $condition = ['is_requester' => 1] + getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
-        $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
+        $group_user_data = Group_User::getUserGroups($_POST["users_id"], $condition);
 
         $requester_groups = [];
         foreach ($group_user_data as $groups) {
@@ -97,20 +96,18 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             }
         }
     }
-} else {
-    $name = $_POST['field'] ?? "";
 }
 
 unset($cond['user_group']);
 //chercher les champs de la meta avec param : updatefromthisfield
-$groups_id = 0;
-if (isset($_POST['value']) && !is_array($_POST["value"]) && $_POST["value"] > 0
+$val = 0;
+if (isset($_POST['users_id']) && !is_array($_POST["users_id"]) && $_POST["users_id"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     $user = new User();
-    if ($user->getFromDB($_POST["value"])) {
-        $groups_id = PluginMetademandsField::getUserGroup(
+    if ($user->getFromDB($_POST["users_id"])) {
+        $val = PluginMetademandsField::getUserGroup(
             $_SESSION['glpiactiveentities'],
-            $_POST["value"],
+            $_POST["users_id"],
             $cond,
             true
         );
@@ -119,40 +116,40 @@ if (isset($_POST['value']) && !is_array($_POST["value"]) && $_POST["value"] > 0
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $groups_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 
 if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
-    $groups_id = $_POST['groups_id'];
+    $val = $_POST['groups_id'];
 }
 
-if (is_array($groups_id)) {
-    $groups_id = 0;
+if (is_array($val)) {
+    $val = 0;
 }
 
 $rand = mt_rand();
-$opt  = ['name'      => $name,
+$opt  = ['name'      => $_POST['field'],
     'entity'    => $_SESSION['glpiactiveentities'],
-    'value'     => $groups_id,
+    'value'     => $val,
     'condition' => $cond,
     'rand'      => $rand,
     'width' => '200px',
 ];
 
-$fieldparameter            = new PluginMetademandsFieldParameter();
-
-if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldGroup->fields['id']])) {
-    if ($fieldparameter->fields["is_mandatory"] && $fieldparameter->fields['is_mandatory'] == 1) {
-        $opt['specific_tags'] = ['required' => 'required'];
-    }
+if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
+    $opt['specific_tags'] = ['required' => 'required'];
 }
-
 
 Group::dropdown($opt);
 
-$_POST['name'] = "group_user".$_POST["id_fielduser"];
+$_POST['name'] = "group_user".$_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = $rand;
-Ajax::commonDropdownUpdateItem($_POST);
 
-$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $groups_id;
+Ajax::commonDropdownUpdateItem($_POST);
+$metademands = new PluginMetademandsMetademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = Group::getType();
+PluginMetademandsDropdownobject::checkConditions($data, $metaconditionsparams);

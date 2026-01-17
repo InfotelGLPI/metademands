@@ -36,88 +36,76 @@ if (strpos($_SERVER['PHP_SELF'], "ulocationUpdate.php")) {
 }
 
 Session::checkLoginUser();
-$fieldUser = new PluginMetademandsField();
-
-$fields_id = 0;
-
-$display_type = $_POST['display_type'] ?? PluginMetademandsDropdown::CLASSIC_DISPLAY;
 
 if (!isset($_POST['fieldname'])) {
     $_POST['fieldname'] = "field";
 }
 
+$fieldUser = new PluginMetademandsField();
+$fieldparameter = new PluginMetademandsFieldParameter();
+
+//Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fields = $fieldUser->find(['type'         => "dropdown",
             'plugin_metademands_metademands_id' => $_POST['metademands_id'],
             'item'         => Location::getType()])) {
             foreach ($fields as $f) {
-                $fieldparameter = new PluginMetademandsFieldParameter();
                 if ($fieldparameter->getFromDBByCrit(
                     ['plugin_metademands_fields_id' => $f['id'],
                         'link_to_user' => $_POST['id_fielduser']]
                 )) {
-                    $_POST['field'] = $_POST['fieldname'] . "[" . $f['id'] . "]";
-                    $_POST['fields_id'] = $f['id'];
-                    $display_type = $fieldparameter->fields["display_type"];
-                    $name = $_POST['field'];
-                    $fields_id = $f['id'];
+                    $id = $f['id'];
+                    $_POST["field"] = $_POST['fieldname'] . "[$id]";
+                    $_POST["fields_id"] = $id;
+                    $_POST["is_mandatory"] = $fieldparameter->fields['is_mandatory'];
+                    $_POST['display_type'] = $fieldparameter->fields['display_type'];
                 }
             }
-
         }
-    } else {
-        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
-        }
-        $name = $_POST['field'];
     }
-} else {
-    $name = $_POST['field'] ?? "";
 }
 
-
-
-$locations_id = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0
-    && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
+$val = 0;
+if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
     $user = new User();
-    if ($user->getFromDB($_POST["value"])) {
-        $locations_id = $user->fields['locations_id'];
+    if ($user->getFromDB($_POST["users_id"])) {
+        $val = $user->fields['locations_id'];
     }
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $locations_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 if (isset($_POST["locations_id"]) && $_POST["locations_id"] > 0) {
-    $locations_id = $_POST['locations_id'];
+    $val = $_POST['locations_id'];
 }
 
-$opt = ['name'  => $name,
-    'value' => $locations_id,
+$opt = ['name' => $_POST['field'],
+    'value' => $val,
     'width' => '200px'];
-
-if (isset($fieldparameter->fields["is_mandatory"]) && $fieldparameter->fields['is_mandatory'] == 1) {
-    $opt['specific_tags'] = ['required' => 'required'];
-}
 
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
     $opt['specific_tags'] = ['required' => 'required'];
 }
 
-if ($display_type == PluginMetademandsDropdown::CLASSIC_DISPLAY) {
+if ($_POST['display_type'] == PluginMetademandsDropdown::CLASSIC_DISPLAY) {
     Location::dropdown($opt);
 } else {
     $opt['fields_id'] = $_POST['fields_id'];
-    $opt['required'] = (isset($fieldparameter->fields["is_mandatory"]) && $fieldparameter->fields['is_mandatory'] == 1 ? "required" : "");
+    $opt['required'] = (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1 ? "required" : "");
     PluginMetademandsDropdown::locationDropdown($opt);
 }
 
-$_POST['name'] = "location_user" . $_POST["id_fielduser"];
+$_POST['name'] = "location_user" . $_POST["id_fielduser"].$_POST['fields_id'];
 $_POST['rand'] = "";
+//Toolbox::logInfo($_POST);
 Ajax::commonDropdownUpdateItem($_POST);
-
-$_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$fields_id] = $locations_id;
+$metademands = new PluginMetademandsMetademand();
+$metademands->getFromDB($_POST['metademands_id']);
+$metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
+$data['id'] = $_POST['fields_id'];
+$data['item'] = Location::getType();
+PluginMetademandsDropdown::checkConditions($data, $metaconditionsparams);

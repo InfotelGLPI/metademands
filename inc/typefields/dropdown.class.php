@@ -171,7 +171,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                                 },
                             });
                         }
-    
+
                         $(document).ready(function () {
                             loadSplittedLocations();
                         });
@@ -208,7 +208,7 @@ class PluginMetademandsDropdown extends CommonDBTM
         switch ($data['item']) {
             case "Location" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    echo "<div id='location_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['locations_id'] = $value;
                     $fieldUser             = new PluginMetademandsField();
@@ -220,13 +220,13 @@ class PluginMetademandsDropdown extends CommonDBTM
                     if (isset($fieldUser->fields['id'])
                         && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
 
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                        $_POST['users_id']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($_POST['users_id'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $_POST['users_id'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
 
@@ -243,6 +243,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                     $options['name']    = $namefield . "[" . $data['id'] . "]";
                     $options['width']    = "400px";
                     $options['display'] = false;
+                    $options['display_type'] = $data['display_type'];
                     if ($data['is_mandatory'] == 1) {
                         $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                     }
@@ -263,7 +264,7 @@ class PluginMetademandsDropdown extends CommonDBTM
 
             case "UserTitle" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='title_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    echo "<div id='title_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['fields_id']    = $data['id'];
                     $_POST['usertitles_id'] = $value;
@@ -274,13 +275,13 @@ class PluginMetademandsDropdown extends CommonDBTM
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
                     if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                        $_POST['users_id']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($_POST['users_id'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $_POST['users_id'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
 
@@ -306,7 +307,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                 break;
             case "UserCategory" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='category_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    echo "<div id='category_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['usercategories_id'] = $value;
                     $fieldUser             = new PluginMetademandsField();
@@ -316,13 +317,13 @@ class PluginMetademandsDropdown extends CommonDBTM
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
                     if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
-                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                        $_POST['users_id']        = (isset($fieldparameter->fields['default_use_id_requester'])
                             && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 
-                        if (empty($_POST['value'])) {
+                        if (empty($_POST['users_id'])) {
                             $user = new User();
                             $user->getFromDB(Session::getLoginUserID());
-                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            $_POST['users_id'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
                         }
                     }
 
@@ -450,7 +451,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                          $('select[name=\"checkbox_id\"]').val(),
                          $('select[name=\"check_type_value\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
                 echo " </script>";
@@ -471,10 +472,10 @@ class PluginMetademandsDropdown extends CommonDBTM
                          $('select[name=\"checkbox_id\"]').val(),
                          $('select[name=\"check_type_value\"]').val()
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });
-                 
+
                  ";
 
 
@@ -778,7 +779,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }";
                     }
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -929,7 +930,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         $display = $hidden_link;
                     }
 
-                    $onchange .= "$.each( tohide, function( key, value ) {           
+                    $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
@@ -1052,12 +1053,12 @@ class PluginMetademandsDropdown extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
-                if ($data["display_type"] == self::BLOCK_DISPLAY) {
-                    $values = $data['value'];
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
-                } else {
+//                if ($data["display_type"] == self::BLOCK_DISPLAY) {
+//                    $values = $data['value'];
+//                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+//                } else {
                     $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
-                }
+//                }
             }
 
 

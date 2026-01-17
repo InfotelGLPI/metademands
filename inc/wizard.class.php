@@ -371,14 +371,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "</span>";
             echo "</div>";
 
-            if ($with_title == true) {
-                echo "</div>";
-            }
-
-            $margin = "";
-            if ($with_title == false) {
-                $margin = "margin-top: 50px;";
-            }
+            $margin = "margin-top: 50px;";
             echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;position:absolute;right:0;z-index: 1000;$margin'>";
             echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
             echo "<li class='nav-item' role='presentation'>";
@@ -834,7 +827,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $query = "SELECT `id`,`name`, 'comment'
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE (is_order = 1  OR `itilcategories_id` <> '')
-                   AND $crit  
+                   AND $crit
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
             . $dbu->getEntitiesRestrictRequest(
                 " AND ",
@@ -1935,32 +1928,32 @@ class PluginMetademandsWizard extends CommonDBTM
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem('loadedblock');
                         var block_id = $block_id;
-                        
+
                         window.metademandparams = {};
-                        
+
                         metademandparams.root_doc = '$root_doc';
                         metademandparams.paramUrl = '$paramUrl';
                         metademandparams.token = '$token';
                         metademandparams.id = '$ID';
                         metademandparams.nameform = '$nameform';
                         metademandparams.block_id = '$block_id';
-                        
+
                         metademandparams.nexttitle = '$nexttitle';
                         metademandparams.submittitle = '$submittitle';
                         metademandparams.msg = '$alert';
                         metademandparams.msg_regex = '$alert_regex';
-                        
+
                         metademandparams.seesummary = '$see_summary';
-                        
+
                         metademandparams.json_all_meta_fields = {$json_all_meta_fields};
                         metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                       
+
                         metademandparams.use_condition = '$use_condition';
                         metademandparams.show_rule = '$show_rule';
                         metademandparams.show_button = '$show_button';
                         metademandparams.use_richtext = '$use_richtext';
                         metademandparams.richtext_ids = {$richtext_id};
-                        
+
                         metademandparams.use_as_step = '$use_as_step';
                         metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                         metademandparams.havenextuser = '$havenextuser';
@@ -1992,16 +1985,16 @@ class PluginMetademandsWizard extends CommonDBTM
 //                         var clicbloc = parseInt(tabId.replace('block', ''));
 ////                         console.log(clicbloc);
 ////                         console.log(parseInt(loadedId));
-//                         
+//
 //                         if (clicbloc > parseInt(loadedId)) {
-//                         
+//
 //                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
 //                                plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams);
-//                                
+//
 //                        } else if (clicbloc <= parseInt(loadedId)) {
-//                                
+//
 //                                sessionStorage.setItem('loadedblock', clicbloc);
 //                                updateActiveTab(tabId.replace('block', ''));
 //                                window.location.hash = '#block' + tabId;
@@ -2085,12 +2078,12 @@ class PluginMetademandsWizard extends CommonDBTM
                                     const scrollContainer = document.querySelector(".scrollable-tabs");
                                     const scrollLeftBtn = document.querySelector(".scroll-left");
                                     const scrollRightBtn = document.querySelector(".scroll-right");
-                                
+
                                     if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
                                         scrollLeftBtn.addEventListener("click", function () {
                                             scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
                                         });
-                                
+
                                         scrollRightBtn.addEventListener("click", function () {
                                             scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
                                         });
@@ -2301,31 +2294,31 @@ class PluginMetademandsWizard extends CommonDBTM
                 $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
 
                 echo "<script>
-                        
+
                         function updateThisDraft(draft_id, draft_name) {
                             //Security in case of unconfirmed line
                             var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
                             if (tr_input.length > 0) {
-                                var careful = false;    
-                            
+                                var careful = false;
+
                                 for(var j = 0; j < tr_input.length; j++) {
                                    if(tr_input[j].value != '' && tr_input[j].value != '0'){
                                         careful = true;
-                                   } 
+                                   }
                                 }
-                                
+
                                 if(careful){
-                                    if (!confirm('{$trad}')) {   
+                                    if (!confirm('{$trad}')) {
                                         return;
                                     }
                                 }
-                                
+
                             }
-    
+
                             if(typeof tinyMCE !== 'undefined'){
                                 tinyMCE.triggerSave();
                             }
-    
+
                             jQuery('.resume_builder_input').trigger('change');
                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                             $('#ajax_loader').show();
@@ -2337,7 +2330,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             arrayDatas.push({name: \"fied\", value: ''});
                             arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
                             arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
-    
+
                             $.ajax({
                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
                                type: 'POST',
@@ -2352,7 +2345,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
                             });
                         }
-    
+
                         function deleteThisDraft(draft_id) {
                               var self_delete = true;
                               $('#ajax_loader').show();
@@ -2378,12 +2371,12 @@ class PluginMetademandsWizard extends CommonDBTM
                                      }
                                  });
                            };
-                                
+
                         var check_free_table = document.querySelector('#freetable_table');
                         if(check_free_table){
-                            document.querySelector('.boutons_draft #button_save_mydraft').style='display:none';    
+                            document.querySelector('.boutons_draft #button_save_mydraft').style='display:none';
                         }
-    
+
                     </script>";
             }
         } else {
@@ -2692,7 +2685,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo Html::scriptBlock(
                     "var myelement$rand = '#up" . $block . "';
                                  var bloc$rand = 'bloc" . $block . "';
-                                 $(myelement$rand).click(function() {     
+                                 $(myelement$rand).click(function() {
                                      if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
                                          $('[bloc-hideid =' + bloc$rand + ']').hide();
                                          $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
@@ -2872,25 +2865,25 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandparams.id = '$ID';
                     metademandparams.nameform = '$nameform';
                     metademandparams.block_id = '$block_id';
-                    
+
                     metademandparams.nexttitle = '$nexttitle';
                     metademandparams.submittitle = '$submittitle';
-                   
+
                     metademandparams.msg = '$alert';
                     metademandparams.msg_regex = '$alert_regex';
 
                     metademandparams.seesummary = '$see_summary';
-                    
+
                     metademandparams.json_all_meta_fields = {$json_all_meta_fields};
                     metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-                    
+
                     metademandparams.use_as_step = '$use_as_step';
                     metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                     metademandparams.havenextuser = '$havenextuser';
                     metademandparams.updatestepform = '$updatestepform';
                     metademandparams.submitsteptitle = '$submitsteptitle';
                     metademandparams.nextsteptitle = '$nextsteptitle';
-                    
+
                     window.metademandconditionsparams = {};
                     metademandconditionsparams.root_doc = '$root_doc';
                     metademandconditionsparams.submittitle = '$submittitle';
@@ -2900,18 +2893,18 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandconditionsparams.show_button = '$show_button';
                     metademandconditionsparams.use_richtext = '$use_richtext';
                     metademandconditionsparams.richtext_ids = {$richtext_id};
-                    
+
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
 
                     firstnumTab = plugin_metademands_wizard_findFirstTab($block_id, metademandparams);
 
                     plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
-                    
+
                     prevBtn.addEventListener('click', () => {
                       plugin_metademands_wizard_prevBtn(-1, firstnumTab, metademandparams, metademandconditionsparams);
                     });
-                    
+
                     nextBtn.addEventListener('click', async () => {
                           const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams);
                           if (result !== false) {
