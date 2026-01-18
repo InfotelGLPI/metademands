@@ -955,8 +955,10 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                 arrayDatas.push({name: 'action', value: 'nextUser'});
                 arrayDatas.push({name: 'form_name', value: metademandparams.nameform});
                 arrayDatas.push({name: 'update_stepform', value: metademandparams.updatestepform});
+
                 if (metademandparams.havenextuser == true) {
                     plugin_metademands_wizard_showStep(metademandparams.root_doc, arrayDatas);
+                    return false;
                 } else {
                     plugin_metademands_wizard_nextUser(metademandparams.root_doc, arrayDatas);
                 }

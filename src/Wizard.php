@@ -2318,7 +2318,7 @@ class Wizard extends CommonDBTM
                 echo "<button type='button' id='prevBtn' style='margin-right: 8px;font-size: 14px !important;' class='btn btn-primary'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
-                echo "&nbsp;<button type='button' id='nextBtn' style='margin-right: 8px;font-size: 14px !important;'  class='btn btn-primary'>";
+                echo "&nbsp;<button type='button' id='nextBtn' style='margin-right: 8px;font-size: 14px !important;' class='btn btn-primary'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 

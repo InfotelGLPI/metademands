@@ -1577,7 +1577,7 @@ class Dropdownobject extends CommonDBTM
                     if ($check_value['check_type_value'] == 2) {
                         $regex = str_replace('\\', '\\\\', $idc);
                         $script .= "
-                        console.log('passe 0');
+//                        console.log('passe 0');
                             await $.ajax({
                                 url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
                                 type: 'POST',
@@ -1591,11 +1591,12 @@ class Dropdownobject extends CommonDBTM
                                 }
                             });
                             if (answer == true) {
-                            console.log('passe');
+//                            console.log('passe');
                             ";
                     } else {
                         $script .= "if ($(this).val() == $idc || $idc == -1 ) {
-                        console.log('passe2');";
+//                        console.log('passe2');
+                        ";
                     }
 
                     //specific for radio / dropdowns - one value
