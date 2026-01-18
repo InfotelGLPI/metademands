@@ -907,7 +907,7 @@ class Checkbox extends CommonDBTM
                             $('[id-field =\"field'+key+'\"]').hide();
                             $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
-                                " . FieldOption::resetMandatoryFieldsByField($name) . "
+                                " . FieldOption::resetMandatoryFieldsByFieldForHidden($name) . "
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
                                 $('[id-field =\"field'+key+'-2\"]').show();
@@ -934,7 +934,7 @@ class Checkbox extends CommonDBTM
                                $('[id-field =\"field'+key+'\"]').hide();
                                $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
-                               " . FieldOption::resetMandatoryFieldsByField($name) . "
+                               " . FieldOption::resetMandatoryFieldsByFieldForHidden($name) . "
                                $('[name =\"field[' + key + ']\"]').removeAttr('required');
                             } else {
                                $('[id-field =\"field'+key+'\"]').show();

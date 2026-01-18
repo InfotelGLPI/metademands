@@ -2297,6 +2297,24 @@ class FieldOption extends CommonDBChild
 
         return "var fieldid = sessionStorage.getItem('hiddenlink$name');
                             $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
+                                        jQuery(this).removeAttr('required');
+                                        jQuery(this).removeClass('invalid');
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                            });";
+    }
+
+    public static function resetMandatoryFieldsByFieldForHidden($name)
+    {
+
+        return "var fieldid = sessionStorage.getItem('hiddenlink$name');
+                            $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':

@@ -35,6 +35,7 @@ if (strpos($_SERVER['PHP_SELF'], "uTextFieldUpdate.php")) {
 }
 
 Session::checkLoginUser();
+
 $user = new User();
 $data = [];
 if (isset($_GET['id']) && $_GET["id"] > 0) {

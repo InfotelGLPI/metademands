@@ -419,7 +419,7 @@ class Textarea extends CommonDBTM
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                  $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                  sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                  " . FieldOption::resetMandatoryFieldsByField($name);
+                                  " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
 
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -450,7 +450,7 @@ class Textarea extends CommonDBTM
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                 $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                 sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                 " . FieldOption::resetMandatoryFieldsByField($name);
+                                 " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
 
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -689,11 +689,17 @@ class Textarea extends CommonDBTM
         if ($field['value'] != 0) {
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<tr>";
-                $result[$field['rank']]['content'] .= "<th $style_title colspan='$colspan'>";
+                if ($field['hide_title'] == 0) {
+                    $result[$field['rank']]['content'] .= "<th $style_title colspan='$colspan'>";
+                }
             }
-            $result[$field['rank']]['content'] .= $label;
+            if ($field['hide_title'] == 0) {
+                $result[$field['rank']]['content'] .= $label;
+            }
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</th>";
+                if ($field['hide_title'] == 0) {
+                    $result[$field['rank']]['content'] .= "</th>";
+                }
                 $result[$field['rank']]['content'] .= "</tr><tr><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field);

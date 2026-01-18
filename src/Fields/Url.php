@@ -459,7 +459,7 @@ class Url extends CommonDBTM
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                  $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                  sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                  " . FieldOption::resetMandatoryFieldsByField($name);
+                                  " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -488,7 +488,7 @@ class Url extends CommonDBTM
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                 $('[id-field =\"field" . $hidden_link . "-2\"]').hide();
                                 sessionStorage.setItem('hiddenlink$name', $hidden_link);
-                                 " . FieldOption::resetMandatoryFieldsByField($name);
+                                 " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
 
                         if (is_array($childs_by_checkvalue)) {
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {

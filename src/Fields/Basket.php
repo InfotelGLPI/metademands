@@ -1049,7 +1049,7 @@ class Basket extends CommonDBTM
                             $('[id-field =\"field'+key+'\"]').hide();
                             $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
-                                " . FieldOption::resetMandatoryFieldsByField($name);
+                                " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
 
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
@@ -1093,7 +1093,7 @@ class Basket extends CommonDBTM
                                $('[id-field =\"field'+key+'\"]').hide();
                                $('[id-field =\"field'+key+'-2\"]').hide();
                                sessionStorage.setItem('hiddenlink$name', key);
-                               " . FieldOption::resetMandatoryFieldsByField($name) . "
+                               " . FieldOption::resetMandatoryFieldsByFieldForHidden($name) . "
                                $('[name =\"field['+key+']\"]').removeAttr('required');
                                $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                             } else {
