@@ -232,7 +232,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     'name' => $nameitil . "_plugin_servicecatalog_itilcategories_id",
                     'right' => 'all',
                     'value' => $value,
-                    'condition' => ["id" => $values],
+                    'condition' => [(new ITILCategory())::getTable().".id" => $values],
                     'display' => false,
                     'readonly' => $readonly ?? false,
                     'class' => 'form-select itilmeta',
@@ -1541,7 +1541,7 @@ JAVASCRIPT
                     'name' => $name,
                     'right' => 'all',
                     'value' => $params['check_value'],
-                    'condition' => ["id" => $values],
+                    'condition' => [(new ITILCategory())::getTable().".id" => $values],
                     'display' => true,
                     'used' => $already_used,
                 ];
@@ -1690,7 +1690,7 @@ JAVASCRIPT
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
-    public static function fieldsMandatoryScript($data)
+    public static function fieldsMandatoryScript($data, $itilcategories_id = 0)
     {
 
         $check_values = $data['options'] ?? [];
@@ -1700,7 +1700,9 @@ JAVASCRIPT
         if ($data["item"] == "ITILCategory_Metademands") {
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
-
+        if ($itilcategories_id > 0 && $data['item'] == "ITILCategory_Metademands") {
+            $data['value'] = $itilcategories_id;
+        }
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
@@ -1792,12 +1794,15 @@ JAVASCRIPT
         }
     }
 
-    public static function taskScript($data)
+    public static function taskScript($data, $itilcategories_id = 0)
     {
         $check_values = $data['options'] ?? [];
         $metaid = $data['plugin_metademands_metademands_id'];
         $id = $data["id"];
 
+        if ($itilcategories_id > 0 && $data['item'] == "ITILCategory_Metademands") {
+            $data['value'] = $itilcategories_id;
+        }
         $script = "";
         $script2 = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -1947,7 +1952,7 @@ JAVASCRIPT
         }
     }
 
-    public static function fieldsHiddenScript($data)
+    public static function fieldsHiddenScript($data, $itilcategories_id = 0)
     {
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
@@ -1956,7 +1961,9 @@ JAVASCRIPT
         if ($data["item"] == "ITILCategory_Metademands") {
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
-
+        if ($itilcategories_id > 0 && $data['item'] == "ITILCategory_Metademands") {
+            $data['value'] = $itilcategories_id;
+        }
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
@@ -1998,6 +2005,15 @@ JAVASCRIPT
                         if ($custom_value['is_default'] == 1) {
                             $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$k').trigger('change');";
                         }
+                    }
+                }
+
+                if (isset($data['default_values'])
+                    && is_array($data['default_values'])
+                    && count($data['default_values']) > 0) {
+                    $default_values = $data['default_values'];
+                    foreach ($default_values as $k => $default_value) {
+                        $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$default_value').trigger('change');";
                     }
                 }
             }
@@ -2100,7 +2116,7 @@ JAVASCRIPT
         }
     }
 
-    public static function blocksHiddenScript($data)
+    public static function blocksHiddenScript($data, $itilcategories_id = 0)
     {
         $metaid = $data['plugin_metademands_metademands_id'];
         $check_values = $data['options'] ?? [];
@@ -2109,7 +2125,9 @@ JAVASCRIPT
         if ($data["item"] == "ITILCategory_Metademands") {
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
-
+        if ($itilcategories_id > 0 && $data['item'] == "ITILCategory_Metademands") {
+            $data['value'] = $itilcategories_id;
+        }
         //add childs by idc
         $childs_by_checkvalue = [];
         foreach ($check_values as $idc => $check_value) {

@@ -312,9 +312,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "</script>\n";
 
             echo "<script type = \"text/javascript\">
-                
+
                 function reloadviewOption(value) {
-                    
+
                     $('#viewoption" . $item->getType() . $item->getID() . $rand . "')
                         .load('" . $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php',{
                         type:\"" . __CLASS__ . "\",
@@ -1513,7 +1513,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         );
     }
 
-    public static function taskScript($data)
+    public static function taskScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1541,7 +1541,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
             case 'url':
             case 'textarea':
-            case 'dropdown_meta':
             case 'dropdown_object':
             case 'dropdown_ldap':
             case 'dropdown':
@@ -1549,6 +1548,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'checkbox':
             case 'text':
                 $class::taskScript($data);
+                break;
+            case 'dropdown_meta':
+                $class::taskScript($data, $itilcategories_id);
                 break;
                 //            case 'parent_field':
                 //                break;
@@ -1566,7 +1568,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function fieldsMandatoryScript($data)
+    public static function fieldsMandatoryScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1595,13 +1597,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'dropdown':
             case 'dropdown_object':
             case 'dropdown_ldap':
-            case 'dropdown_meta':
             case 'textarea':
             case 'url':
             case 'email':
             case 'tel':
             case 'text':
                 $class::fieldsMandatoryScript($data);
+            break;
+            case 'dropdown_meta':
+                $class::fieldsMandatoryScript($data, $itilcategories_id);
                 break;
             case 'parent_field':
                 break;
@@ -1619,7 +1623,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function fieldsHiddenScript($data)
+    public static function fieldsHiddenScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1644,7 +1648,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
             case 'url':
             case 'textarea':
-            case 'dropdown_meta':
             case 'dropdown_object':
             case 'dropdown_ldap':
             case 'dropdown':
@@ -1655,6 +1658,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'basket':
             case 'text':
                 $class::fieldsHiddenScript($data);
+            break;
+            case 'dropdown_meta':
+                $class::fieldsHiddenScript($data, $itilcategories_id);
                 break;
             case 'parent_field':
                 break;
@@ -1672,7 +1678,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function blocksHiddenScript($data)
+    public static function blocksHiddenScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1697,7 +1703,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'email':
             case 'url':
             case 'textarea':
-            case 'dropdown_meta':
             case 'dropdown_object':
             case 'dropdown_ldap':
             case 'dropdown':
@@ -1708,6 +1713,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'basket':
             case 'text':
                 $class::blocksHiddenScript($data);
+            break;
+            case 'dropdown_meta':
+                $class::blocksHiddenScript($data, $itilcategories_id);
                 break;
             case 'parent_field':
                 break;
@@ -1900,17 +1908,17 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         //Prepare subblocks
         $script .= "
-        
+
                     if (typeof answer === 'undefined') {
                         answer = false;
                     }
-                    
+
                     if(answer === false){
                          $.each( hidden_blocks, function( key, value ) {
                             tohideblock[value] = true;
                         });
                     }
-        
+
                     $.each( child_blocks, function( key, value ) {
                         tohideblock[value] = true;
                     });
@@ -2235,7 +2243,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 this.click();
                                                 this.checked = false;
                                                 break;
-                                            }   
+                                            }
                                         }
                                         jQuery(this).removeAttr('required');
                                         jQuery(this).removeClass('invalid');

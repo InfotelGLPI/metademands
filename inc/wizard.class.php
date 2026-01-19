@@ -2816,16 +2816,16 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         //verifie si une sous metademande doit etre lancé
-        PluginMetademandsFieldOption::taskScript($data);
+        PluginMetademandsFieldOption::taskScript($data, $itilcategories_id);
 
         //Active champs obligatoires sur les fields_link
-        PluginMetademandsFieldOption::fieldsMandatoryScript($data);
+        PluginMetademandsFieldOption::fieldsMandatoryScript($data, $itilcategories_id);
 
         //Affiche les hidden_link
-        PluginMetademandsFieldOption::fieldsHiddenScript($data);
+        PluginMetademandsFieldOption::fieldsHiddenScript($data, $itilcategories_id);
 
         //cache ou affiche les hidden_block & child_blocks
-        PluginMetademandsFieldOption::blocksHiddenScript($data);
+        PluginMetademandsFieldOption::blocksHiddenScript($data, $itilcategories_id);
 
         PluginMetademandsFieldOption::checkboxScript($data);
 

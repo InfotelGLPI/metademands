@@ -60,6 +60,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             $comment = $data['comment'];
         }
         $field    = "";
+        $toupdate = [];
         switch ($data['item']) {
             case 'User':
                 $userrand = mt_rand();
