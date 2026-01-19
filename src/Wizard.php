@@ -2969,18 +2969,17 @@ class Wizard extends CommonDBTM
                 }
             }
         }
-
         //verifie si une sous metademande doit etre lancé
-        FieldOption::taskScript($data);
+        FieldOption::taskScript($data, $itilcategories_id);
 
         //Active champs obligatoires sur les fields_link
-        FieldOption::fieldsMandatoryScript($data);
+        FieldOption::fieldsMandatoryScript($data, $itilcategories_id);
 
         //Affiche les hidden_link
-        FieldOption::fieldsHiddenScript($data);
+        FieldOption::fieldsHiddenScript($data, $itilcategories_id);
 
         //cache ou affiche les hidden_block & child_blocks
-        FieldOption::blocksHiddenScript($data);
+        FieldOption::blocksHiddenScript($data, $itilcategories_id);
 
         FieldOption::checkboxScript($data);
 

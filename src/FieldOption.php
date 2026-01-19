@@ -1599,7 +1599,7 @@ class FieldOption extends CommonDBChild
         );
     }
 
-    public static function taskScript($data)
+    public static function taskScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1627,14 +1627,15 @@ class FieldOption extends CommonDBChild
             case 'email':
             case 'url':
             case 'textarea':
-            case 'dropdown_meta':
             case 'dropdown_object':
             case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_multiple':
             case 'checkbox':
-            case 'text':
                 $class::taskScript($data);
+                break;
+            case 'dropdown_meta':
+                $class::taskScript($data, $itilcategories_id);
                 break;
                 //            case 'parent_field':
                 //                break;
@@ -1652,7 +1653,7 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    public static function fieldsMandatoryScript($data)
+    public static function fieldsMandatoryScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1678,16 +1679,18 @@ class FieldOption extends CommonDBChild
             case 'radio':
             case 'checkbox':
             case 'dropdown_multiple':
-            case 'dropdown':
             case 'dropdown_object':
             case 'dropdown_ldap':
-            case 'dropdown_meta':
+            case 'dropdown':
             case 'textarea':
             case 'url':
             case 'email':
             case 'tel':
             case 'text':
                 $class::fieldsMandatoryScript($data);
+                break;
+            case 'dropdown_meta':
+                $class::fieldsMandatoryScript($data, $itilcategories_id);
                 break;
             case 'parent_field':
                 break;
@@ -1705,7 +1708,7 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    public static function fieldsHiddenScript($data)
+    public static function fieldsHiddenScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1730,10 +1733,9 @@ class FieldOption extends CommonDBChild
             case 'email':
             case 'url':
             case 'textarea':
-            case 'dropdown_meta':
+            case 'dropdown':
             case 'dropdown_object':
             case 'dropdown_ldap':
-            case 'dropdown':
             case 'dropdown_multiple':
             case 'checkbox':
             case 'radio':
@@ -1741,6 +1743,9 @@ class FieldOption extends CommonDBChild
             case 'basket':
             case 'text':
                 $class::fieldsHiddenScript($data);
+                break;
+            case 'dropdown_meta':
+                $class::fieldsHiddenScript($data, $itilcategories_id);
                 break;
             case 'parent_field':
                 break;
@@ -1758,7 +1763,7 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    public static function blocksHiddenScript($data)
+    public static function blocksHiddenScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1783,7 +1788,6 @@ class FieldOption extends CommonDBChild
             case 'email':
             case 'url':
             case 'textarea':
-            case 'dropdown_meta':
             case 'dropdown_object':
             case 'dropdown_ldap':
             case 'dropdown':
@@ -1794,6 +1798,9 @@ class FieldOption extends CommonDBChild
             case 'basket':
             case 'text':
                 $class::blocksHiddenScript($data);
+            break;
+            case 'dropdown_meta':
+                $class::blocksHiddenScript($data, $itilcategories_id);
                 break;
             case 'parent_field':
                 break;

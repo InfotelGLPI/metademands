@@ -694,10 +694,16 @@ class Field extends CommonDBChild
         $this->showFormHeader($options);
 
         $metademand_fields = new self();
-        $metademand_fields->getFromDBByCrit([
+        $metafield_itil = false;
+        if ($metafields = $metademand_fields->find([
             'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
             'item' => 'ITILCategory_Metademands',
-        ]);
+        ])) {
+            if (count($metafields) > 0) {
+                $metafield_itil = true;
+            }
+        }
+
         $categories = [];
         if (isset($metademand->fields['itilcategories_id'])) {
             if (is_array(json_decode($metademand->fields['itilcategories_id'], true))) {
@@ -710,7 +716,7 @@ class Field extends CommonDBChild
             ['value' => $this->fields["plugin_metademands_metademands_id"]]
         );
 
-        if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
+        if ($metafield_itil == false && count($categories) > 1) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
             echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;" . __(
                     'Please add a type category field',
