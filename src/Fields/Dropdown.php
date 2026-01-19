@@ -426,15 +426,15 @@ class Dropdown extends CommonDBTM
                             }
                             $field .= "</div>";
                         }
-                    } else {
-                        if ($data['item'] == Resource::class) {
-                            $opt['showHabilitations'] = true;
-                        }
-                        if ($item = getItemForItemtype($data['item'])) {
-                            $container_class = new $data['item']();
-                            $field = "";
-                            $field .= $container_class::dropdown($opt);
-                        }
+                    }
+                } else {
+                    if ($data['item'] == Resource::class) {
+                        $opt['showHabilitations'] = true;
+                    }
+                    if ($item = getItemForItemtype($data['item'])) {
+                        $container_class = new $data['item']();
+                        $field = "";
+                        $field .= $container_class::dropdown($opt);
                     }
                 }
                 break;
