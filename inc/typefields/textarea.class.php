@@ -101,8 +101,8 @@ class PluginMetademandsTextarea extends CommonDBTM
             if (!empty($comment)) {
                 $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
             }
-            $field = "<textarea $required class='form-control' rows='6' cols='80' 
-               placeholder=\"" . $comment . "\" 
+            $field = "<textarea $required class='form-control' rows='6' cols='80'
+               placeholder=\"" . $comment . "\"
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             echo $field;
         }
@@ -152,7 +152,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                      $('select[name=\"users_id_validate\"]').val(),
                      $('select[name=\"checkbox_id\"]').val(),0
               ];
-                 
+
                  reloadviewOption(formOption);
              });";
 
@@ -335,7 +335,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                                     },
                                 });
 
-                                 
+
                                  ";
                         $script .= "}";
                     }
@@ -609,7 +609,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                             for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
                                 let field = 'field' + metademandconditionsparams.richtext_ids[i];
                                 let editor = tinyMCE.get(field);
-                        
+
                                 if (editor) {
                                     editor.on('keyup', function () {
                                         plugin_metademands_wizard_checkConditions(metademandconditionsparams);
@@ -664,16 +664,24 @@ class PluginMetademandsTextarea extends CommonDBTM
         $lang,
         $is_order = false
     ) {
+
         $colspan = $is_order ? 12 : 2;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<tr>";
-                $result[$field['rank']]['content'] .= "<th $style_title colspan='$colspan'>";
+                if ($field['hide_title'] == 0) {
+                    $result[$field['rank']]['content'] .= "<th $style_title colspan='$colspan'>";
+                }
+
             }
-            $result[$field['rank']]['content'] .= $label;
+            if ($field['hide_title'] == 0) {
+                $result[$field['rank']]['content'] .= $label;
+            }
             if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</th>";
+                if ($field['hide_title'] == 0) {
+                    $result[$field['rank']]['content'] .= "</th>";
+                }
                 $result[$field['rank']]['content'] .= "</tr><tr><td colspan='$colspan'>";
             }
             $result[$field['rank']]['content'] .= self::getFieldValue($field);
@@ -965,14 +973,14 @@ class PluginMetademandsTextarea extends CommonDBTM
                   // TinyMCE.
                   // https://www.tiny.cloud/docs/advanced/events/
                   const placeholderManager = (e) => {
-      
+
                      // Check if the content contains the placeholder inserted above.
                      // The get() function looks for an id attribute.
                      // https://www.tiny.cloud/docs/api/tinymce.dom/tinymce.dom.domutils/#get
                      const placeholderExists = editor.dom.get('placeholder');
-                     
+
                      if (placeholderExists) {
-      
+
                         // In this demo we want to start an empty document with a title.
                            // This does not force having a title for a document, it's simply
                            // a convenience feature.
@@ -981,10 +989,10 @@ class PluginMetademandsTextarea extends CommonDBTM
                            });
                      }
                   };
-      
+
                   // Bind the click event listener to the placeholder manager function
                   editor.once('click tap keydown', placeholderManager);
-      
+
                   editor.on('Undo', () => {
                      // Rebind the click event listener when the editor is reverted back
                      // to the original content
