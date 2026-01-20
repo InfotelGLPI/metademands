@@ -882,7 +882,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     $groups = array_merge($groups, $a_groups);
                 }
 
-                foreach ($CFG_GLPI["linkgroup_types"] as $itemtype_groups) {
+                $objects = $CFG_GLPI["linkgroup_types"];
+                if (count($values['limit']) > 0) {
+                    $objects = $values['limit'];
+                }
+                foreach ($objects as $itemtype_groups) {
                     if (($item = getItemForItemtype($itemtype_groups))
                         && Ticket::isPossibleToAssignType($itemtype_groups)
                     ) {

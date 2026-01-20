@@ -4244,7 +4244,11 @@ JAVASCRIPT
                         $groups = array_merge($groups, $a_groups);
                     }
 
-                    foreach ($CFG_GLPI["linkgroup_types"] as $itemtype) {
+                    $itemtypes = $CFG_GLPI["linkgroup_types"];
+                    if (count($limit) > 0) {
+                        $itemtypes = $limit;
+                    }
+                    foreach ($itemtypes as $itemtype) {
                         if (($item = getItemForItemtype($itemtype))
                             && Ticket::isPossibleToAssignType($itemtype)) {
                             $itemtable = getTableForItemType($itemtype);
