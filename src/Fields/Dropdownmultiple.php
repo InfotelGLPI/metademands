@@ -1527,7 +1527,6 @@ class Dropdownmultiple extends CommonDBTM
                 //Initialize id default value
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
-                        //Initialize id default value
                         if (isset($data['custom_values'])
                             && is_array($data['custom_values'])
                             && count($data['custom_values']) > 0) {

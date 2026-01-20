@@ -754,7 +754,7 @@ class Dropdown extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $onchange = "console.log('fieldsHiddenScript-dropdownmeta $id');";
+            $onchange = "console.log('fieldsMandatoryScript-dropdown $id');";
         }
 
         if (count($check_values) > 0) {

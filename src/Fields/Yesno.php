@@ -304,6 +304,20 @@ class Yesno extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
+    public static function updateMandatoryField($fields_link, $name)
+    {
+        return "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                 $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                 //Special case Upload field
+                  sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                 " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+               } else {
+                  $('#metademands_wizard_red" . $fields_link . "').html('');
+                  sessionStorage.setItem('hiddenlink$name', $fields_link);
+                " . Fieldoption::resetMandatoryFieldsByField($name) . "
+               ";
+    }
+
     public static function fieldsMandatoryScript($data)
     {
         $check_values = $data['options'] ?? [];
@@ -320,6 +334,26 @@ class Yesno extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
+
+            //Initialize id default value
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['fields_link'] as $fields_link) {
+                    if (isset($data['custom'])) {
+                        $custom_values = FieldParameter::_unserialize($data['custom']);
+                        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                            if ($custom_values == $idc) {
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $custom_values . "').trigger('change');";
+                            }
+                        } else {
+                            if ($custom_values == 1 && $custom_values == $idc) {
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', false).trigger('change');";
+                            } else if ($custom_values == 2 && $custom_values == $idc) {
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                            }
+                        }
+                    }
+                }
+            }
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
@@ -331,28 +365,53 @@ class Yesno extends CommonDBTM
                 }
             }
 
-            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $onchange .= "$('[name^=\"field[" . $id . "]\"]').change(function() {";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['fields_link'] as $fields_link) {
+                foreach ($data['options'][$idc]['fields_link'] as $fields_link) {
                     $val = $idc;
-
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $onchange .= "if ($(this).val() == $val) {";
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                                             $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                             //Special case Upload field
+                                              sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                             " . Fieldoption::checkMandatoryFile($fields_link, $name) . "
+                                           } else {
+                                              $('#metademands_wizard_red" . $fields_link . "').html('');
+                                              sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                           ";
+                        $onchange .= "}";
                     } else {
-                        $onchange .= " if (this.checked) {";
-                    }
+                        $onchange .= "if (this.checked &&  $val == 2) {";
 
-                    $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
-                                     $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
-                                     //Special case Upload field
-                                      sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
-                                   } else {
-                                      $('#metademands_wizard_red" . $fields_link . "').html('');
-                                      sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
-                                   }";
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                                             $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                             //Special case Upload field
+                                              sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                             " . Fieldoption::checkMandatoryFile($fields_link, $name);
+                        $onchange .= "} else if (this.checked &&  $val == 2) {";
+
+                        $onchange .= " $('#metademands_wizard_red" . $fields_link . "').html('');
+                                              sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                           ";
+                        $onchange .= "} else if (!this.checked &&  $val == 1) {";
+
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                                             $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                             //Special case Upload field
+                                              sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                             " . Fieldoption::checkMandatoryFile($fields_link, $name);
+                        $onchange .= "} else if (this.checked &&  $val == 1) {";
+
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('');
+                                              sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                            " . Fieldoption::resetMandatoryFieldsByField($name) . "
+                                           ";
+                        $onchange .= "}";
+                    }
 
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $fields_link;
@@ -362,6 +421,7 @@ class Yesno extends CommonDBTM
             $onchange .= "});";
 
             if ($display > 0) {
+                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
                 $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
             }
 
@@ -546,23 +606,32 @@ class Yesno extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
-            //Initialize id default value
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    if (isset($data['custom'])) {
-                        $custom_values = FieldParameter::_unserialize($data['custom']);
-                        if ($idc == $custom_values) {
-                            $post_onchange .= "$('[name^=\"field[$id]\"]').prop('checked', true).trigger('change');";
-                        }
-                    }
-                }
-            }
 
             //default hide of all hidden links
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
                     $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
+                }
+            }
+
+            //Initialize id default value
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    if (isset($data['custom'])) {
+                        $custom_values = FieldParameter::_unserialize($data['custom']);
+                        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                            if ($custom_values == $idc) {
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $custom_values . "').trigger('change');";
+                            }
+                        } else {
+                            if ($custom_values == 1 && $custom_values == $idc) {
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', false).trigger('change');";
+                            } else if ($custom_values == 2 && $custom_values == $idc) {
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                            }
+                        }
+                    }
                 }
             }
 
@@ -612,7 +681,6 @@ class Yesno extends CommonDBTM
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_link;
                     }
-                    //            }
                 }
             }
             $onchange .= "});";
