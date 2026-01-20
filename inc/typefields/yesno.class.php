@@ -227,7 +227,7 @@ class PluginMetademandsYesno extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val(),0
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -303,6 +303,26 @@ class PluginMetademandsYesno extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
+
+            //Initialize id default value
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['fields_link'] as $fields_link) {
+                    if (isset($data['custom'])) {
+                        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
+                        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                            if ($custom_values == $idc) {
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $custom_values . "').trigger('change');";
+                            }
+                        } else {
+                            if ($custom_values == 1 && $custom_values == $idc) {
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', false).trigger('change');";
+                            } else if ($custom_values == 2 && $custom_values == $idc) {
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                            }
+                        }
+                    }
+                }
+            }
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
@@ -317,25 +337,50 @@ class PluginMetademandsYesno extends CommonDBTM
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
             $display = 0;
             foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['fields_link'] as $fields_link) {
-                    $val = Toolbox::addslashes_deep($idc);
-
+                foreach ($data['options'][$idc]['fields_link'] as $fields_link) {
+                    $val = $idc;
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $onchange .= "if ($(this).val() == $val) {";
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                                             $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                             //Special case Upload field
+                                              sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                             " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
+                                           } else {
+                                              $('#metademands_wizard_red" . $fields_link . "').html('');
+                                              sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                           ";
+                        $onchange .= "}";
                     } else {
-                        $onchange .= " if (this.checked) {";
-                    }
+                        $onchange .= "if (this.checked &&  $val == 2) {";
 
-                    $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
-                                     $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
-                                     //Special case Upload field
-                                      sessionStorage.setItem('mandatoryfile$name', $fields_link);
-                                     " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name) . "
-                                   } else {
-                                      $('#metademands_wizard_red" . $fields_link . "').html('');
-                                      sessionStorage.setItem('hiddenlink$name', $fields_link);
-                                    " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
-                                   }";
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                                             $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                             //Special case Upload field
+                                              sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                             " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name);
+                        $onchange .= "} else if (this.checked &&  $val == 2) {";
+
+                        $onchange .= " $('#metademands_wizard_red" . $fields_link . "').html('');
+                                              sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                           ";
+                        $onchange .= "} else if (!this.checked &&  $val == 1) {";
+
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('*');
+                                             $('[name =\"field[' + $fields_link + ']\"]').attr('required', 'required');
+                                             //Special case Upload field
+                                              sessionStorage.setItem('mandatoryfile$name', $fields_link);
+                                             " . PluginMetademandsFieldoption::checkMandatoryFile($fields_link, $name);
+                        $onchange .= "} else if (this.checked &&  $val == 1) {";
+
+                        $onchange .= "$('#metademands_wizard_red" . $fields_link . "').html('');
+                                              sessionStorage.setItem('hiddenlink$name', $fields_link);
+                                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name) . "
+                                           ";
+                        $onchange .= "}";
+                    }
 
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $fields_link;
@@ -345,6 +390,7 @@ class PluginMetademandsYesno extends CommonDBTM
             $onchange .= "});";
 
             if ($display > 0) {
+                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
                 $pre_onchange .= PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $display);
             }
 
@@ -529,25 +575,34 @@ class PluginMetademandsYesno extends CommonDBTM
         }
 
         if (count($check_values) > 0) {
+
+            //default hide of all hidden links
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
+                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
+                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
+                }
+            }
+
             //Initialize id default value
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     if (isset($data['custom'])) {
                         $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
-                        if ($idc == $custom_values) {
-                            $post_onchange .= "$('[name^=\"field[$id]\"]').prop('checked', true).trigger('change');";
+                        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                            if ($custom_values == $idc) {
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $custom_values . "').trigger('change');";
+                            }
+                        } else {
+                            if ($custom_values == 1 && $custom_values == $idc) {
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', false).trigger('change');";
+                            } else if ($custom_values == 2 && $custom_values == $idc) {
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
+                            }
                         }
                     }
                 }
             }
-
-            //default hide of all hidden links
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-                }
-            }
-
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
@@ -570,7 +625,7 @@ class PluginMetademandsYesno extends CommonDBTM
                         $onchange .= " if (this.checked) {";
                     }
                     $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();
-                             
+
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', $hidden_link);
@@ -750,7 +805,7 @@ class PluginMetademandsYesno extends CommonDBTM
                     }
 
                     $onchange .= " } else {
-                
+
                 sessionStorage.setItem('hiddenbloc$name', $hidden_block);";
 
                     //specific - one value
