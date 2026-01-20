@@ -637,12 +637,23 @@ class Dropdownobject extends CommonDBTM
                         $cond[$type_group] = $val;
                     }
                 }
-                $opt = ['value'     => $value,
-                    'entity'    => $_SESSION['glpiactiveentities'],
-                    'name'      => $namefield . "[" . $data['id'] . "]",
-                    //                          'readonly'  => true,
-                    'condition' => $cond,
-                    'display'   => false];
+
+	            if($data['item'] == 'Ticket'){
+		            $opt = ['value'     => $value,
+			            'entity'    => $_SESSION['glpiactiveentities'],
+			            'name'      => $namefield . "[" . $data['id'] . "]",
+			            //                          'readonly'  => true,
+			            'displaywith' => ['id'],
+			            'condition' => $cond,
+			            'display'   => false];
+	            }else{
+		            $opt = ['value'     => $value,
+			            'entity'    => $_SESSION['glpiactiveentities'],
+			            'name'      => $namefield . "[" . $data['id'] . "]",
+			            //                          'readonly'  => true,
+			            'condition' => $cond,
+			            'display'   => false];
+	            }
 
                 if (isset($data['readonly']) && $data['readonly'] == 1 && $data['item'] == "Entity") {
                     $opt['readonly'] = true;
