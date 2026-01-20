@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-19 16:39+0000\n"
+"POT-Creation-Date: 2026-01-20 12:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1291,7 +1291,7 @@ msgstr ""
 #: src/Fields/Text.php:347 src/Fields/Checkbox.php:713 src/Fields/Radio.php:684
 #: src/Fields/Url.php:346 src/Fields/Dropdownobject.php:1248
 #: src/Fields/Dropdownmultiple.php:1198 src/Fields/Dropdownmultiple.php:1374
-#: src/Fields/Yesno.php:399 src/Fields/Basket.php:833 src/Fields/Email.php:344
+#: src/Fields/Yesno.php:459 src/Fields/Basket.php:833 src/Fields/Email.php:344
 #: src/Fields/Textarea.php:304
 msgid "Next"
 msgstr ""
@@ -1717,7 +1717,7 @@ msgstr ""
 #: src/Fields/Text.php:345 src/Fields/Checkbox.php:711 src/Fields/Radio.php:682
 #: src/Fields/Url.php:344 src/Fields/Dropdownobject.php:1247
 #: src/Fields/Dropdownmultiple.php:1196 src/Fields/Dropdownmultiple.php:1372
-#: src/Fields/Yesno.php:397 src/Fields/Basket.php:832
+#: src/Fields/Yesno.php:457 src/Fields/Basket.php:832
 #: src/Fields/Basket.php:1849 src/Fields/Email.php:342
 #: src/Fields/Textarea.php:302
 msgctxt "button"
