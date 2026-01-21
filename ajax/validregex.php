@@ -34,8 +34,16 @@ include('../../../inc/includes.php');
 Session::checkLoginUser();
 
 
-if (isset($_POST['regex']) && isset($_POST['valeur']) && preg_match($_POST['regex'], $_POST['valeur'])) {
-    echo 'true';
+if (isset($_POST['regex']) && isset($_POST['valeur'])) {
+    $_POST['regex'] = stripcslashes($_POST['regex']);
+    if (strpos($_POST['valeur'], Dropdown::EMPTY_VALUE) !== false) {
+        $_POST['valeur'] = str_replace(Dropdown::EMPTY_VALUE, '', $_POST['valeur']);
+    }
+    if (preg_match($_POST['regex'], $_POST['valeur'])) {
+        echo 'true';
+    } else {
+        echo 'false';
+    }
 } else {
     echo 'false';
 }
