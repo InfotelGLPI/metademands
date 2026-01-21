@@ -60,7 +60,7 @@ class PluginMetademandsUpload extends CommonDBTM
         $self = new self();
 
         if (is_array($value)) {
-            $value = "";
+            $value = " ";
         }
         $randupload = mt_rand();
         $namedrop = 'dropdoc' . $randupload;

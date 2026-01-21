@@ -134,9 +134,23 @@ function plugin_metademands_wizard_validateForm(metademandparams)
     }
 
     if (typeof x[metademandparams.currentTab] !== 'undefined') {
-        y = x[metademandparams.currentTab].getElementsByTagName('input');
-        z = x[metademandparams.currentTab].getElementsByTagName('select');
-        w = x[metademandparams.currentTab].getElementsByTagName('textarea');
+        //only inputs with div visible
+        const inputs = x[metademandparams.currentTab].getElementsByTagName('input');
+        y = Array.from(inputs).filter(input => {
+            const bloc = input.closest('[bloc-id]');
+            return bloc && bloc.style.display !== 'none';
+        });
+        const selects = x[metademandparams.currentTab].getElementsByTagName('select');
+        z = Array.from(selects).filter(select => {
+            const bloc = select.closest('[bloc-id]');
+            return bloc && bloc.style.display !== 'none';
+        });
+
+        const textareas = x[metademandparams.currentTab].getElementsByTagName('textarea');
+        w = Array.from(textareas).filter(select => {
+            const bloc = select.closest('[bloc-id]');
+            return bloc && bloc.style.display !== 'none';
+        });
     }
 
     var mandatory = [];
