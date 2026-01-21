@@ -538,11 +538,19 @@ class Wizard extends CommonDBTM
             $title = $meta->fields['hide_title'] ? 0 : 1;
         }
 
+        echo "<div id ='content'>";
+
+        echo "<div id='meta-form' class='bt-block'> ";
+
+        echo "<form novalidate name='wizard_form' id ='wizard_form'
+                        method='post'
+                        action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
+                        enctype='multipart/form-data'
+                        class='metademands_img'> ";
+
         if ($parameters['step'] > Metademand::STEP_LIST && $title == 0) {
             self::showmodelsAndDrafts($parameters, false);
         }
-
-        echo "<div id ='content'>";
 
         if ($maintenance_mode == 1 && !$parameters['preview']) {
             echo "<div class='alert alert-warning center'>";
@@ -639,14 +647,6 @@ class Wizard extends CommonDBTM
                     }
                 }
             }
-
-            echo "<div id='meta-form' class='bt-block'> ";
-
-            echo "<form novalidate name='wizard_form' id ='wizard_form'
-                        method='post'
-                        action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
-                        enctype='multipart/form-data'
-                        class='metademands_img'> ";
 
             // Case of simple ticket convertion
             echo Html::hidden('tickets_id', ['value' => $parameters['tickets_id']]);
