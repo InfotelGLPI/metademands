@@ -30,8 +30,17 @@
 
 Session::checkLoginUser();
 
-if (isset($_POST['regex']) && isset($_POST['valeur']) && preg_match($_POST['regex'], $_POST['valeur'])) {
-    echo 'true';
+if (isset($_POST['regex']) && isset($_POST['valeur'])) {
+    if (strpos($_POST['valeur'], Dropdown::EMPTY_VALUE) !== false) {
+        $_POST['valeur'] = str_replace(Dropdown::EMPTY_VALUE, '', $_POST['valeur']);
+    }
+    if (preg_match($_POST['regex'], $_POST['valeur'])) {
+        echo 'true';
+    } else {
+        echo $_POST['regex'];
+        echo $_POST['valeur'];
+        echo 'false2';
+    }
 } else {
     echo 'false';
 }
