@@ -145,8 +145,8 @@ class PluginMetademandsDraft extends CommonDBTM
                             if(val){
                               $('#plugin_metademands_drafts_id').val(val);
                             }
-                            
-                            
+
+
                         });
                       $(\"form input[type=submit]\").click(function() {
                           $(\"input[type=submit]\", $(this).parents(\"form\")).removeAttr(\"clicked\");
@@ -220,7 +220,7 @@ class PluginMetademandsDraft extends CommonDBTM
                     'button',
                     'Load draft',
                     'metademands'
-                ) . "' 
+                ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 $return .= "</button>";
                 $return .= "</td>";
@@ -233,7 +233,7 @@ class PluginMetademandsDraft extends CommonDBTM
                         'button',
                         'Save draft',
                         'metademands'
-                    ) . "' 
+                    ) . "'
                                data-hasqtip='0' aria-hidden='true'></i>";
                     $return .= "</button>";
                     $return .= "</td>";
@@ -245,7 +245,7 @@ class PluginMetademandsDraft extends CommonDBTM
                     'button',
                     'Delete draft',
                     'metademands'
-                ) . "' 
+                ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 $return .= "</button>";
                 $return .= "</td>";
@@ -300,7 +300,7 @@ class PluginMetademandsDraft extends CommonDBTM
                                    console.log(xhr);
                                    console.log(status);
                                    console.log(error);
-                                 } 
+                                 }
                              });
                        };
                      </script>";
@@ -354,14 +354,14 @@ class PluginMetademandsDraft extends CommonDBTM
                                       console.log(xhr);
                                       console.log(status);
                                       console.log(error);
-                                    } 
+                                    }
                                 });
                           }
                         </script>";
 
         $return .= "<script>
                           $('#submitSave').click(function() {
-                           
+
                              if(typeof tinyMCE !== 'undefined'){
                                 tinyMCE.triggerSave();
                              }
@@ -382,7 +382,7 @@ class PluginMetademandsDraft extends CommonDBTM
                                       console.log(xhr);
                                       console.log(status);
                                       console.log(error);
-                                    } 
+                                    }
                                 });
                           });
                         </script>";
@@ -436,7 +436,7 @@ class PluginMetademandsDraft extends CommonDBTM
         $draft_name = $datas['plugin_metademands_drafts_name'];
 
 
-        $query_type = " SELECT itil.name 
+        $query_type = " SELECT itil.name
                         FROM glpi_plugin_metademands_drafts_values as dvalue
                         JOIN glpi_itilcategories as itil ON itil.id = dvalue.value
                         JOIN glpi_plugin_metademands_fields as field ON field.id = dvalue.plugin_metademands_fields_id
@@ -572,25 +572,25 @@ class PluginMetademandsDraft extends CommonDBTM
                         </button>
                         <script>
                             function load_draft_modal(){
-                                
+
                                 var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
                                 if (tr_input.length > 0) {
-                                    var careful = false;    
-                                
+                                    var careful = false;
+
                                     for(var j = 0; j < tr_input.length; j++) {
                                        if(tr_input[j].value != '' && tr_input[j].value != '0'){
                                             careful = true;
-                                       } 
+                                       }
                                     }
-                                    
+
                                     if(careful){
-                                        if (!confirm('{$trad}')) {   
+                                        if (!confirm('{$trad}')) {
                                             return;
                                         }
                                     }
-                                    
+
                                 }
-                                
+
                                document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
                                document.querySelector('#my_new_draft').classList.remove('fade');
                             }
@@ -664,7 +664,7 @@ class PluginMetademandsDraft extends CommonDBTM
             function saveMyDraft() {
                 let draft_name = document.querySelector('.modal-dialog .modal-body .draft_name').value;
                 udpateDraft('', draft_name)
-            } 
+            }
         </script>
 HTML;
 
@@ -677,14 +677,14 @@ HTML;
 
          // move modal to body
          $(myModalEl{$rand}).appendTo($("body"));
-         
-       
+
+
          myModalEl{$rand}.addEventListener('hide.bs.modal', function () {
             if ({$reloadonclose}) {
                window.location.reload()
             }
          });
-         
+
          myModalEl{$rand}.querySelector('.btn-close').addEventListener('click', function () {
             document.querySelector('#my_new_draft').style = '';
             document.querySelector('#my_new_draft').classList.add('fade');
