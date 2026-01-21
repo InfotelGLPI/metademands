@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 16:08+0000\n"
+"POT-Creation-Date: 2026-01-21 09:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -331,7 +331,7 @@ msgctxt "button"
 msgid "Clear the basket"
 msgstr ""
 
-#: src/Wizard.php:633
+#: src/Wizard.php:641
 msgid "Click here for more informations"
 msgstr ""
 
@@ -591,7 +591,7 @@ msgstr ""
 msgid "Devices own by my groups"
 msgstr ""
 
-#: src/Wizard.php:625
+#: src/Wizard.php:633
 msgid "Did you know that there is an FAQ article that may be able to help you?"
 msgstr ""
 
@@ -1531,7 +1531,7 @@ msgstr ""
 msgid "Please add a type category field"
 msgstr ""
 
-#: src/Wizard.php:551
+#: src/Wizard.php:559
 msgid "Please come back later"
 msgstr ""
 
@@ -2081,7 +2081,7 @@ msgstr ""
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
-#: src/Wizard.php:550 src/Metademand.php:1468
+#: src/Wizard.php:558 src/Metademand.php:1468
 msgid "This form is in maintenance mode"
 msgstr ""
 
