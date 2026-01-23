@@ -255,7 +255,7 @@ class Wizard extends CommonDBTM
 
         echo "<div class='col-md-12 md-title'>";
         echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
-        echo "<section class='card-body' style='width: 100%;'>";//height: 90px;
+        echo "<section class='card-body' style='width: 100%;padding: 12px!important;'>";//height: 80px;
         echo "<div class='d-flex'>";
 
         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {

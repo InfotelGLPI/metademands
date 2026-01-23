@@ -57,7 +57,7 @@ use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
-define('PLUGIN_METADEMANDS_VERSION', '3.5.8');
+define('PLUGIN_METADEMANDS_VERSION', '3.5.9');
 
 global $CFG_GLPI;
 
