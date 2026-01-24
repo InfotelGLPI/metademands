@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-23 08:16+0000\n"
+"POT-Creation-Date: 2026-01-24 12:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -455,9 +455,9 @@ msgid_plural "Dates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:3601
+#: src/Wizard.php:3600
 #, php-format
-msgid "Date %1$s cannot be greater than date %2$s"
+msgid "Date %s cannot be less than initial date"
 msgstr ""
 
 #: src/Wizard.php:3590
@@ -801,7 +801,7 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: src/Wizard.php:3655
+#: src/Wizard.php:3651
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -2141,7 +2141,7 @@ msgstr ""
 msgid "To validate without child"
 msgstr ""
 
-#: src/Wizard.php:3643
+#: src/Wizard.php:3639
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
