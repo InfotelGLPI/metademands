@@ -786,7 +786,9 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
         return false;
     }
 
-    if (metademandparams.useconfirm > 0) {
+    if (metademandparams.useconfirm > 0
+        && metademandparams.use_as_step == 1) {
+
         const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
         const inputs = div.querySelectorAll('input, select, textarea');
 
@@ -808,7 +810,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                 if (window.tinymce && tinymce.get(input.id)) {
                     value = tinymce.get(input.id).getContent({ format: 'text' });
 
-                    console.log(value);
+                    // console.log(value);
                 }
 
                 if (value.trim() !== '') {

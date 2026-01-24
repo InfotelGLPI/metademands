@@ -3430,11 +3430,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 && isset($all_fields[$fields['id'] . '-2'])) {
                 $value2 = $all_fields[$fields['id'] . '-2'];
                 if (strtotime($fields['value']) > strtotime($value2)) {
-                    $msg[] = sprintf(
-                        __('Date %1$s cannot be greater than date %2$s', 'metademands'),
-                        $value['name'],
-                        $value['label2']
-                    );
+                    $msg[] = sprintf(__("Date %s cannot be less than initial date", 'metademands'), $value['name']);
                     $checkKoDateInterval[] = 1;
                 }
             }
