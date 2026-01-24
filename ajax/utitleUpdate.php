@@ -71,9 +71,9 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 }
 
 $val = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0) {
+if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
     $user = new User();
-    if ($user->getFromDB($_POST["value"])) {
+    if ($user->getFromDB($_POST["users_id"])) {
         $val = $user->fields['usertitles_id'];
     }
 }
