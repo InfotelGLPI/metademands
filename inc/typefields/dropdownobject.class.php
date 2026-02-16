@@ -401,9 +401,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         foreach ($group_user_data as $groups) {
                             $requester_groups[] = $groups['id'];
                         }
-                        if (count($requester_groups) > 0) {
+//                        if (count($requester_groups) > 0) {
                             $right = "groups";
-                        }
+//                        }
                     }
                 }
 
@@ -416,6 +416,14 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     'toupdate' => $toupdate,
                     'readonly' => $data['readonly'] ?? false,
                 ];
+
+                if (Session::getCurrentInterface() != 'central') {
+                    $opt['toadd'][Session::getLoginUserID()] = [
+                        'id' => Session::getLoginUserID(),
+                        'text' => getUserName(Session::getLoginUserID()),
+                    ];
+                }
+
                 if ($data['is_mandatory'] == 1) {
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
@@ -444,6 +452,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                         }
                     }
                 }
+
                 echo User::dropdown($opt);
                 if ($opt['readonly']) {
                     echo Html::hidden($opt['name'], ['value' => $opt['value']]);

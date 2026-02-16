@@ -559,7 +559,9 @@ class PluginMetademandsFieldParameter extends CommonDBChild
                 || ($params['type'] == "dropdown_multiple"
                     && $params["item"] == "Appliance")
                 || ($params['type'] == "dropdown_object"
-                    && Ticket::isPossibleToAssignType($params["item"]))) {
+                    && Ticket::isPossibleToAssignType($params["item"])
+                    && $params["item"] != "User"
+                    && $params["item"] != "Group")) {
                 $granted_fields = [
                     13,
                 ];
