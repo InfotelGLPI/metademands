@@ -769,6 +769,7 @@ class Dropdown extends CommonDBTM
             $onchange .= "var tohide = {};";
 
             $display = 0;
+            $compteur = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
                     $onchange .= "if ($fields_link in tohide) {
@@ -777,20 +778,15 @@ class Dropdown extends CommonDBTM
                         }";
 
                     if ($check_value['check_type_value'] == 2) {
-                        $regex = str_replace('\\', '\\\\', $idc);
                         $onchange .= "
-                            await $.ajax({
-                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                type: 'POST',
-                                datatype: 'HTML',
-                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
-                                success: function (response) {
-                                    if(response == 'true') {
-                                        tohide[$fields_link] = false;
-                                    }
-                                }
-                            });
-                            ";
+                        let regex$compteur = $idc;
+                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                            
+                        if(regex$compteur.test(val$compteur)) {
+                            tohide[$fields_link] = false;
+                        }
+                        ";
+                        $compteur += 1;
                     } else {
                         $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0)) {
                             tohide[$fields_link] = false;
@@ -885,20 +881,15 @@ class Dropdown extends CommonDBTM
                        ";
 
                     if ($check_value['check_type_value'] == 2) {
-                        $regex = str_replace('\\', '\\\\', $idc);
                         $script .= "
-                            await $.ajax({
-                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                type: 'POST',
-                                datatype: 'HTML',
-                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
-                                success: function (response) {
-                                    if(response == 'true') {
-                                        tohide[$tasks_id] = false;
-                                    }
-                                }
-                            });
-                            ";
+                        let regex$compteur = $idc;
+                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                            
+                        if(regex$compteur.test(val$compteur)) {
+                            tohide[$tasks_id] = false;
+                        }
+                        ";
+                        $compteur += 1;
                     } else {
                         $script .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
                             tohide[$tasks_id] = false;
@@ -1031,28 +1022,29 @@ class Dropdown extends CommonDBTM
                 }
             }
 
+            $compteur = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     if ($check_value['check_type_value'] == 2) {
-                        $regex = str_replace('\\', '\\\\', $idc);
                         $onchange .= "
-                            await $.ajax({
-                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                type: 'POST',
-                                datatype: 'HTML',
-                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
-                                success: function (response) {
-                                    if(response == 'true') {
-                                        tohide[$hidden_link] = false;
-                                    }
-                                }
-                            });
-                            ";
+                        let regex$compteur = $idc;
+                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                            
+                        if(regex$compteur.test(val$compteur)) {
+                            tohide[$hidden_link] = false;
+                        }
+                        ";
+                        $compteur += 1;
                     } else {
                         $onchange .= "if ( ($(this).val() == $idc ||  ($(this).val() != 0 && $idc == -1 ))) {
                             tohide[$hidden_link] = false;
                         }";
                     }
+                }
+            }
+
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_link;
                     }
@@ -1196,6 +1188,7 @@ class Dropdown extends CommonDBTM
 
             $onchange .= "var tohide = {};";
             $display = 0;
+            $compteur = 0;
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_block'] as $hidden_block) {
                     $onchange .= "if ($hidden_block in tohide) {
@@ -1204,20 +1197,15 @@ class Dropdown extends CommonDBTM
                       }";
 
                     if ($check_value['check_type_value'] == 2) {
-                        $regex = str_replace('\\', '\\\\', $idc);
                         $onchange .= "
-                            await $.ajax({
-                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                type: 'POST',
-                                datatype: 'HTML',
-                                data: { valeur: $('[name=\"$name\"] option:selected').text(), regex: '$regex' },
-                                success: function (response) {
-                                    if(response == 'true') {
-                                        tohide[$hidden_block] = false;
-                                    }
-                                }
-                            });
-                            ";
+                        let regex$compteur = $idc;
+                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                            
+                        if(regex$compteur.test(val$compteur)) {
+                            tohide[$hidden_block] = false;
+                        }
+                        ";
+                        $compteur += 1;
                     } else {
                         $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
                         tohide[$hidden_block] = false;

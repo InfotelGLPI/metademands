@@ -584,7 +584,10 @@ class Radio extends CommonDBTM
                         if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$fields_link] = false;
                         }";
-
+                }
+            }
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['fields_link'] as $fields_link) {
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         if (isset($data['value']) && is_array($data['value'])) {
                             $values = $data['value'];
@@ -864,6 +867,11 @@ class Radio extends CommonDBTM
                         if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$hidden_link] = false;
                         }";
+                }
+            }
+
+            foreach ($check_values as $idc => $check_value) {
+                foreach ($check_value['hidden_link'] as $hidden_link) {
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         if (isset($data['value']) && is_array($data['value'])) {

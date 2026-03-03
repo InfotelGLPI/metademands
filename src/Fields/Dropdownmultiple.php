@@ -1013,35 +1013,26 @@ class Dropdownmultiple extends CommonDBTM
                     }
                 }
 
+                $compteur = 0;
+
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
 
 
                         if ($check_value['check_type_value'] == 2) {
-                            $regex = str_replace('\\', '\\\\', $idc);
                             $onchange .= "
                             var answerresponse = false;
                             let promises = [];
                              $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
-                                let p = $.ajax({
-                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                    type: 'POST',
-                                    datatype: 'HTML',
-                                    data: { valeur: $(this).text(), regex: '$regex' },
-                                    success: function (response) {
-                                        if(response == 'true') {
-                                            answerresponse = true;
-                                        }
-                                    }
-                                });
-                                promises.push(p);
+                                let regex$compteur = $idc;
+                                let val$compteur = $(this).text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                                    
+                                if(regex$compteur.test(val$compteur)) {
+                                    answerresponse = true;
+                                }
                              });
-
-
-
-
-
                             ";
+                            $compteur += 1;
                         } else {
 
                             $onchange .= "
@@ -1228,29 +1219,26 @@ class Dropdownmultiple extends CommonDBTM
                         }
                     }
 
+                    $compteur = 0;
+
                     foreach ($check_values as $idc => $check_value) {
                         foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
                             $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
                             if ($check_value['check_type_value'] == 2) {
-                                $regex = str_replace('\\', '\\\\', $idc);
                                 $script .= "
-                                    var answerresponse = false;
-                                    let promises = [];
-                                     $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
-                                        let p = $.ajax({
-                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                            type: 'POST',
-                                            datatype: 'HTML',
-                                            data: { valeur: $(this).text(), regex: '$regex' },
-                                            success: function (response) {
-                                                if(response == 'true') {
-                                                    answerresponse = true;
-                                                }
-                                            }
-                                        });
-                                        promises.push(p);
-                                     });";
+                                var answerresponse = false;
+                                let promises = [];
+                                 $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                    let regex$compteur = $idc;
+                                    let val$compteur = $(this).text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                                        
+                                    if(regex$compteur.test(val$compteur)) {
+                                        answerresponse = true;
+                                    }
+                                 });
+                                ";
+                                $compteur += 1;
                             } else {
                                 if ($data["item"] == "other") {
                                     if (isset($data['custom_values'])
@@ -1581,33 +1569,25 @@ class Dropdownmultiple extends CommonDBTM
                     }
                 }
 
+                $compteur = 0;
+
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_link'] as $hidden_link) {
 
                         if ($check_value['check_type_value'] == 2) {
-                            $regex = str_replace('\\', '\\\\', $idc);
                             $onchange .= "
                             var answerresponse = false;
-                            let promises = [];
-
-                             $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
-                                let p = $.ajax({
-                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                    type: 'POST',
-                                    datatype: 'HTML',
-                                    data: { valeur: $(this).text(), regex: '$regex' },
-                                    success: function (response) {
-                                        if(response == 'true') {
-                                            answerresponse = true;
-                                        }
+                                let promises = [];
+                                 $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                    let regex$compteur = $idc;
+                                    let val$compteur = $(this).text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                                        
+                                    if(regex$compteur.test(val$compteur)) {
+                                        answerresponse = true;
                                     }
-                                });
-                                promises.push(p);
-
-                             });
-
-
-                            ";
+                                 });
+                                ";
+                            $compteur += 1;
                         } else {
 
                             $onchange .= "
@@ -1944,34 +1924,26 @@ class Dropdownmultiple extends CommonDBTM
                     }
                 }
 
+                $compteur = 0;
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['hidden_block'] as $hidden_block) {
                         //                    $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
                         if ($check_value['check_type_value'] == 2) {
-                            $regex = str_replace('\\', '\\\\', $idc);
                             $script .= "
-                            var answerresponse = false;
-                            let promises = [];
-                             $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
-                                let p = $.ajax({
-                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/validregex.php',
-                                    type: 'POST',
-                                    datatype: 'HTML',
-                                    data: { valeur: $(this).text(), regex: '$regex' },
-                                    success: function (response) {
-                                        if(response == 'true') {
-                                            answerresponse = true;
-                                        }
+                           var answerresponse = false;
+                                let promises = [];
+                                 $.each($('[name^=\"field[" . $data["id"] . "]\"] option:selected'), function() {
+                                    let regex$compteur = $idc;
+                                    let val$compteur = $(this).text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
+                                        
+                                    if(regex$compteur.test(val$compteur)) {
+                                        answerresponse = true;
                                     }
-                                });
-                                promises.push(p);
-                             });
-
-
-
-                            ";
+                                 });
+                                ";
+                            $compteur += 1;
                         } else {
 
                             $script .= "
