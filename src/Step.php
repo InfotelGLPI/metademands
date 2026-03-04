@@ -226,6 +226,8 @@ class Step extends CommonDBChild
                 }
             }
             return $finalListBlock;
+        }else {
+            return [$blockIdNow];
         }
 
         return $listBlock;
