@@ -106,6 +106,14 @@ if (isset($_GET['meta_validated'])) {
     $meta_validated = $_POST['meta_validated'];
 }
 
+if (isset($PLUGIN_HOOKS['metademands'])) {
+	foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+		if (Plugin::isPluginActive($plug)) {
+			echo Metademand::pluginPreItemAdd($plug);
+		}
+	}
+}
+
 if ($nofreetable == false) {
     if (isset($_POST['see_basket_summary']) && $_POST['see_basket_summary'] == 1) {
         $_POST['see_basket_summary'] = 0;
