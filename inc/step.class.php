@@ -165,6 +165,8 @@ class PluginMetademandsStep extends CommonDBChild
                 }
             }
             return $finalListBlock;
+        }else {
+            return [$blockIdNow];
         }
 
         return $listBlock;
