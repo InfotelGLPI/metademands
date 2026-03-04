@@ -8956,6 +8956,28 @@ HTML;
         }
     }
 
+	public static function pluginPreItemAdd($plug)
+	{
+		global $PLUGIN_HOOKS;
+
+		$dbu = new DbUtils();
+		if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+			$pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+			foreach ($pluginclasses as $pluginclass) {
+				if (!class_exists($pluginclass)) {
+					continue;
+				}
+				$form[$pluginclass] = [];
+				$item = $dbu->getItemForItemtype($pluginclass);
+				if ($item && is_callable([$item, 'preItemAdd'])) {
+					return $item->preItemAdd();
+				}
+			}
+		}
+	}
+
+
     public static function checkPluginUniqueItilcategory($plug, $dbu)
     {
         global $PLUGIN_HOOKS;
