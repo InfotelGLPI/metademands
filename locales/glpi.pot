@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-04 15:19+0000\n"
+"POT-Creation-Date: 2026-03-04 15:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2026,11 +2026,11 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: ajax/createmetademands.php:232
+#: ajax/createmetademands.php:240
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/addform.php:178 ajax/createmetademands.php:343
+#: ajax/addform.php:178 ajax/createmetademands.php:351
 #, php-format
 msgid "There is no line on the mandatory table %s"
 msgstr ""
