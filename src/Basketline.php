@@ -65,8 +65,7 @@ class Basketline extends CommonDBTM
                         `value`                             text COLLATE utf8mb4_unicode_ci,
                         `value2`                            text COLLATE utf8mb4_unicode_ci,
                         PRIMARY KEY (`id`),
-                        UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`, `plugin_metademands_fields_id`, `line`, `name`,
-                                              `users_id`),
+                        UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`plugin_metademands_fields_id`,`line`,`name`,`users_id`),
                         KEY `users_id` (`users_id`),
                         KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
@@ -74,9 +73,6 @@ class Basketline extends CommonDBTM
 
             $DB->doQuery($query);
         }
-
-        $migration->dropKey($table, 'unicity');
-        $migration->addKey($table, ['plugin_metademands_metademands_id','plugin_metademands_fields_id','line','name','users_id'], 'unicity');
 
         //version 3.3.0
         if (!isIndex($table, "users_id")) {

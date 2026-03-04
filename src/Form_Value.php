@@ -69,7 +69,7 @@ class Form_Value extends CommonDBTM
         if (!isIndex($table, "plugin_metademands_forms_id")) {
             $migration->addKey($table, "plugin_metademands_forms_id");
         }
-        if (!isIndex($table, "plugin_metademands_metademands_id")) {
+        if (!isIndex($table, "plugin_metademands_fields_id")) {
             $migration->addKey($table, "plugin_metademands_metademands_id");
         }
     }

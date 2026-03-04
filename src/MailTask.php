@@ -110,6 +110,10 @@ class MailTask extends CommonDBChild
 
             $DB->doQuery($query);
         }
+
+        if ($DB->fieldExists($table, "itilcategories_id")) {
+            $migration->changeField($table, 'itilcategories_id', 'itilcategories_id', " int {$default_key_sign} NOT NULL DEFAULT '0'");
+        }
     }
 
     public static function uninstall()

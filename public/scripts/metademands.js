@@ -197,15 +197,17 @@ function plugin_metademands_wizard_validateForm(metademandparams)
                         $('[name=\"' + fieldname + '\"]').removeAttr('required');
                         if (y[i].type === 'text') {
                             if (y[i].pattern) {
+
                                 let regex = new RegExp(y[i].pattern);
                                 if (!regex.test(y[i].value)) {
+
                                     $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                     $('[name=\"' + fieldname + '\"]').attr('required', 'required');
                                     var newfieldname = fieldname.match(/\[(.*?)\]/);
                                     if (newfieldname) {
                                         mandatory_regex.push(newfieldname[1]);
                                     }
-                                    kop++;
+                                    ko++;
                                 }
                             }
                         }
@@ -483,7 +485,11 @@ function plugin_metademands_wizard_validateForm(metademandparams)
         valid = false;
 
         const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);
+        const fields_mandatory_regex = mandatory_regex.filter(element => element !== '' && element !== null && element !== undefined);
+
         const fields_mandatory_unique = fields_mandatory.filter((element, index) => fields_mandatory.indexOf(element) === index);
+        const fields_mandatory_unique_regex = fields_mandatory_regex.filter((element, index) => fields_mandatory_regex.indexOf(element) === index);
+
         fields_mandatory_unique.sort((a, b) => a - b);
         //json_all_meta_fields
         var alert_mandatory_fields = [];
@@ -491,6 +497,13 @@ function plugin_metademands_wizard_validateForm(metademandparams)
             $.each(metademandparams.json_all_meta_fields, function (key, value) {
                 if (v == key) {
                     alert_mandatory_fields.push(value);
+                }
+            });
+        });
+        $.each(fields_mandatory_unique_regex, function (k, v) {
+            $.each(metademandparams.json_all_meta_fields, function (key, value) {
+                if (v == key) {
+                    alert_mandatory_fields.push(metademandparams.msg_regex + " : " +value);
                 }
             });
         });

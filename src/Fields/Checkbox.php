@@ -595,7 +595,7 @@ class Checkbox extends CommonDBTM
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
-                    $onchange .= "if (this.checked){";
+                    $onchange .= "if (this.checked) {";
 //                    $onchange .= " if ($(this).val() == $idc || $idc == -1) {
 //                                if ($fields_link in tohide) {
 //                                } else {
@@ -619,12 +619,12 @@ class Checkbox extends CommonDBTM
                                     $(id).html('');
                                     sessionStorage.setItem('hiddenlink$name', key);
                                     " . FieldOption::resetMandatoryFieldsByField($name) . "
-                                    $('[name =\"field[' + key + ']\"]').removeAttr('required');
+                                    $('[name*=\"field[' + key + ']\"]').removeAttr('required');
                                 } else {
                                     var id = '#metademands_wizard_red'+ key;
                                     var fieldid = 'field'+ key;
                                     $(id).html('*');
-                                    $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                                    $('[name*=\"field[' + key + ']\"]').attr('required', 'required');
                                     $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                     //Special case Upload field
                                       sessionStorage.setItem('mandatoryfile$name', $fields_link);
@@ -653,12 +653,12 @@ class Checkbox extends CommonDBTM
                                 $(id).html('');
                                 sessionStorage.setItem('hiddenlink$name', key);
                                 " . FieldOption::resetMandatoryFieldsByField($name) . "
-                                $('[name =\"field[' + key + ']\"]').removeAttr('required');
+                                $('[name*=\"field[' + key + ']\"]').removeAttr('required');
                             } else {
                                var id = '#metademands_wizard_red'+ key;
                                var fieldid = 'field'+ key;
                                $(id).html('*');
-                               $('[name =\"field[' + key + ']\"]').attr('required', 'required');
+                               $('[name*=\"field[' + key + ']\"]').attr('required', 'required');
                                $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
                                //Special case Upload field
                                   sessionStorage.setItem('mandatoryfile$name', key);

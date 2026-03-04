@@ -1257,7 +1257,7 @@ class Wizard extends CommonDBTM
                         echo "<section class='card-body'>";
                         echo "<div class='d-flex'>";
 
-                        echo "<div class='aspect-ratio-1' style='margin-top: 40px;margin-left: 10px;width: 70px;height: 70px;'>";
+                        echo "<div class='aspect-ratio-1' style='margin-left: 10px;width: 70px;height: 70px;'>";
                         $stylespan = "md-cat-icon-stack fa-2x";
                         $sizespan = "1em";
                         $title_color = "";
@@ -3489,6 +3489,9 @@ class Wizard extends CommonDBTM
     public static function checkMandatoryFields($fieldname, $value = [], $fields = [], $post = [])
     {
         //Don't check hidden fields of hidden blocks
+        if (isset($post["form_metademands_id"])) {
+            $post["metademands_id"] = $post["form_metademands_id"];
+        }
         $hidden_blocks = $_SESSION['plugin_metademands'][$post["metademands_id"]]['hidden_blocks'] ?? [];
         $dbu = new DbUtils();
 

@@ -100,7 +100,7 @@ class Form extends CommonDBTM
                 [
                     'is_private' => 1,
                 ],
-                []
+                ['1' => '1']
             );
             $DB->doQuery($query);
         }

@@ -59,6 +59,7 @@ use GlpiPlugin\Metademands\Metademand_Resource;
 use GlpiPlugin\Metademands\MetademandTask;
 use GlpiPlugin\Metademands\MetademandTranslation;
 use GlpiPlugin\Metademands\MetademandValidation;
+use GlpiPlugin\Metademands\Pluginfields;
 use GlpiPlugin\Metademands\Profile;
 use GlpiPlugin\Metademands\Step;
 use GlpiPlugin\Metademands\Stepform;
@@ -118,6 +119,7 @@ function plugin_metademands_install()
         MetademandTask::install($migration);
         MetademandTranslation::install($migration);
         MetademandValidation::install($migration);
+        Pluginfields::install($migration);
         Step::install($migration);
         Stepform::install($migration);
         Stepform_Actor::install($migration);
@@ -212,6 +214,16 @@ function plugin_metademands_install()
         //version 3.5.5
         if (!$DB->fieldExists("glpi_plugin_metademands_configsteps", "change_step_by_step_option")) {
             Configstep::install($migration);
+        }
+
+        //version 3.5.11
+        if (!$DB->fieldExists("glpi_plugin_metademands_fieldparameters", "ldap_attribute")) {
+            FieldParameter::install($migration);
+            FieldCustomvalue::install($migration);
+            MailTask::install($migration);
+        }
+        if (!$DB->tableExists("glpi_plugin_metademands_pluginfields", false)) {
+            Pluginfields::install($migration);
         }
     }
 
@@ -341,6 +353,7 @@ function plugin_metademands_uninstall()
     MetademandTask::uninstall();
     MetademandTranslation::uninstall();
     MetademandValidation::uninstall();
+    Pluginfields::uninstall();
     Step::uninstall();
     Stepform::uninstall();
     Stepform_Actor::uninstall();

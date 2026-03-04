@@ -29,7 +29,7 @@
 
 use GlpiPlugin\Metademands\FieldCustomvalue;
 
-Session::checkLoginUser();
+Session::checkRight("plugin_metademands", UPDATE);
 
 if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields_id'])) {
     $csvMimes = array(
@@ -54,8 +54,8 @@ if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields
             $fieldcustom->deleteByCriteria(['plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id']]);
             while (($data = fgetcsv($handle, 1000, $_SESSION["glpicsv_delimiter"])) !== false) {
                 $input['name'] = $data[0];
-                $input['is_default'] = $data[1];
-                $input['comment'] = $data[2];
+                $input['is_default'] = $data[1] ?? 0;
+                $input['comment'] = $data[2] ?? '';
                 $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
                 $input['rank'] = $rank;
                 $rank++;

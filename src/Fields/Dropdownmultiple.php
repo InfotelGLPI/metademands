@@ -117,8 +117,9 @@ class Dropdownmultiple extends CommonDBTM
                             $users[] = $v['id'];
                         }
                     }
-
-                    $criteria['WHERE'][getTableForItemType($data['item']) . '.id'] = $users;
+                    if (count($users) > 0) {
+                        $criteria['WHERE'][getTableForItemType($data['item']) . '.id'] = $users;
+                    }
                 }
             }
 
