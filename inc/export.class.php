@@ -1899,9 +1899,9 @@ class PluginMetademandsExport extends CommonDBTM
                 $meta_step = new PluginMetademandsStep();
                 $metas['block_id'] = $ste['block_id'];
                 $metas['groups_id'] = $ste['groups_id'];
-                $metas['only_by_supervisor'] = $ste['only_by_supervisor'];
-                $metas['reminder_delay'] = $ste['reminder_delay'];
-                $metas['message'] = $ste['message'];
+                $metas['only_by_supervisor'] = $ste['only_by_supervisor'] ?? 0;
+                $metas['reminder_delay'] = $ste['reminder_delay'] ?? '';
+                $metas['message'] = $ste['message'] ?? '';
                 $metas['plugin_metademands_metademands_id'] = $newIDMeta;
                 $meta_step->add($metas);
             }
