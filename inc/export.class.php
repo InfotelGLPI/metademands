@@ -212,7 +212,7 @@ class PluginMetademandsExport extends CommonDBTM
 
         $steps = $step->find(['plugin_metademands_metademands_id' => $metademands->getID()]);
         foreach ($steps as $id => $ste) {
-            $fields['step'][$id] = $ste;
+            $fields['step']['step'.$id] = $ste;
         }
 
         //TODO GroupConfig
