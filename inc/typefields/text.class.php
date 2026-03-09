@@ -86,7 +86,7 @@ class PluginMetademandsText extends CommonDBTM
                             $(\"[name='field[$ID]']\").ready(function() {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: { 
+                                     data: {
                                          id : $(\"[name='field[$ID]']\").val()
                                      },
                                   success: function(response){
@@ -182,7 +182,7 @@ class PluginMetademandsText extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val(),0
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -380,7 +380,7 @@ class PluginMetademandsText extends CommonDBTM
                                        }
                                     },
                                 });
-                                 
+
                                  ";
                     $script .= "}";
                 }

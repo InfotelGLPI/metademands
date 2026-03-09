@@ -41,7 +41,7 @@ include_once PLUGIN_METADEMANDS_DIR . "/vendor/autoload.php";
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands()
 {
-    global $PLUGIN_HOOKS, $CFG_GLPI;
+    global $PLUGIN_HOOKS;
 
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/autoload.php");
     $autoloader = new PluginMetademandsAutoloader();

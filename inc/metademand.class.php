@@ -2345,7 +2345,22 @@ JAVASCRIPT
                             $parent_fields['id'] = $values['fields']['tickets_id'];
                         }
                     }
-                    $parent_fields['entities_id'] = $_SESSION['glpiactive_entity'];
+                    $entities_id = $_SESSION['glpiactive_entity'];
+                    if (!Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])){
+                        $entities_id = $metademand->fields['entities_id'];
+                        $message = __('This metademand cannot be used with this entity', 'metademands');
+                        Session::addMessageAfterRedirect($message, false, ERROR);
+
+
+                        if (Session::getCurrentInterface() != 'central'
+                            && Plugin::isPluginActive('servicecatalog')) {
+                            Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
+                        } else {
+                            $wizard = new PluginMetademandsWizard();
+                            Html::redirect($wizard->getFormURL() . "?step=" . self::STEP_INIT);
+                        }
+                    }
+                    $parent_fields['entities_id'] = $entities_id;
 
                     $parent_fields['status'] = CommonITILObject::INCOMING;
 

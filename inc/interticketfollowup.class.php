@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -72,11 +73,11 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                 && $item->fields['status'] != Ticket::CLOSED)
             && Session::haveRight("plugin_metademands_followup", READ)) {
             $itemtypes['interticketfollowup'] = [
-               'type'  => 'PluginMetademandsInterticketfollowup',
-               'class' => 'PluginMetademandsInterticketfollowup',
-               'icon'  => 'fas fa-comments',
-               'label' => _n('Inter ticket followup', 'Inter ticket followups', 1, 'metademands'),
-               'item'  => new PluginMetademandsInterticketfollowup()
+                'type'  => 'PluginMetademandsInterticketfollowup',
+                'class' => 'PluginMetademandsInterticketfollowup',
+                'icon'  => 'fas fa-comments',
+                'label' => _n('Inter ticket followup', 'Inter ticket followups', 1, 'metademands'),
+                'item'  => new PluginMetademandsInterticketfollowup(),
             ];
         }
 
@@ -203,37 +204,37 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                 }
                 $follow  = new self();
                 $follows = $follow->find([
-                                            'OR'  => [
+                    'OR'  => [
 
-                                               'AND' => [
-                                                  'tickets_id' => $list_tickets,
-                                                  'targets_id' => 0
-                                               ],
-                                               ['targets_id' => $items_id],
-                                               ['tickets_id' => $items_id],
+                        'AND' => [
+                            'tickets_id' => $list_tickets,
+                            'targets_id' => 0,
+                        ],
+                        ['targets_id' => $items_id],
+                        ['tickets_id' => $items_id],
 
-                                            ],
-                                            'AND' => [
-                                               'OR' => [
+                    ],
+                    'AND' => [
+                        'OR' => [
 
-                                                  'AND' => [
-                                                     'tickets_id' => $list_tickets,
-                                                     'targets_id' => 0
-                                                  ],
-                                                  ['targets_id' => $items_id],
-                                                  ['tickets_id' => $items_id],
+                            'AND' => [
+                                'tickets_id' => $list_tickets,
+                                'targets_id' => 0,
+                            ],
+                            ['targets_id' => $items_id],
+                            ['tickets_id' => $items_id],
 
-                                               ]
-                                            ]
-                                         ]);
+                        ],
+                    ],
+                ]);
             }
 
             foreach ($follows as $follow) {
                 $follow['can_edit']                                      = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID()) ? true : false;
                 $item['timeline'][self::getType() . "_" . $follow['id']] = [
-                   'type'     => self::getType(),
-                   'item'     => $follow,
-                   'itiltype' => 'Interticketfollowup'
+                    'type'     => self::getType(),
+                    'item'     => $follow,
+                    'itiltype' => 'Interticketfollowup',
                 ];
             }
             $document_item_obj = new Document_Item();
@@ -243,7 +244,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
             if ($doc_crit) {
                 $document_items = $document_item_obj->find([
                     $doc_crit,
-                    'timeline_position' => ['>', CommonITILObject::NO_TIMELINE]
+                    'timeline_position' => ['>', CommonITILObject::NO_TIMELINE],
                 ]);
                 foreach ($document_items as $document_item) {
                     $document_obj->getFromDB($document_item['documents_id']);
@@ -340,22 +341,22 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
 
         // Add screenshots if needed, without notification
         $this->input = $this->addFiles($this->input, [
-           'force_update'  => true,
-           'name'          => 'content',
-           'content_field' => 'content',
-           'date'          => $this->fields['date'],
+            'force_update'  => true,
+            'name'          => 'content',
+            'content_field' => 'content',
+            'date'          => $this->fields['date'],
         ]);
 
         // Add documents if needed, without notification
         $this->input = $this->addFiles($this->input, [
-           'force_update' => true,
-           'date'         => $this->fields['date'],
+            'force_update' => true,
+            'date'         => $this->fields['date'],
         ]);
 
         $donotif = !isset($this->input['_disablenotif']) && $CFG_GLPI["use_notifications"];
 
-      //      // Check if stats should be computed after this change
-      //      $no_stat = isset($this->input['_do_not_compute_takeintoaccount']);
+        //      // Check if stats should be computed after this change
+        //      $no_stat = isset($this->input['_do_not_compute_takeintoaccount']);
         $no_stat = true;
 
         $parentitem = new Ticket();
@@ -374,17 +375,17 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
 
         if ($donotif) {
             $options = ['interticketfollowup_id' => $this->fields["id"],
-                        'ticket'                 => $parentitem,
-                        'entities_id'            => $parentitem->getEntityID()
+                'ticket'                 => $parentitem,
+                'entities_id'            => $parentitem->getEntityID(),
             ];
             NotificationEvent::raiseEvent("add_interticketfollowup", $this, $options);
         }
 
         // Add log entry in the ITILObject
         $changes = [
-           0,
-           '',
-           $this->fields['id'],
+            0,
+            '',
+            $this->fields['id'],
         ];
 
         Log::history(
@@ -407,33 +408,33 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
         $or_crits = [];
         // documents associated to followups
         if ($bypass_rights || self::canView()) {
-         //         $fup_crits = [
-         //            self::getTableField('tickets_id') => $item->getID(),
-         //         ];
+            //         $fup_crits = [
+            //            self::getTableField('tickets_id') => $item->getID(),
+            //         ];
 
             $fup_crits[] = [
-               'OR' => [
+                'OR' => [
 
-                  'AND' => [
-                     self::getTableField('tickets_id') => $list_tickets,
-                     self::getTableField('targets_id') => 0
-                  ],
-                  [self::getTableField('targets_id') => $items_id],
-                  [self::getTableField('tickets_id') => $items_id],
+                    'AND' => [
+                        self::getTableField('tickets_id') => $list_tickets,
+                        self::getTableField('targets_id') => 0,
+                    ],
+                    [self::getTableField('targets_id') => $items_id],
+                    [self::getTableField('tickets_id') => $items_id],
 
-               ],
+                ],
             ];
 
 
             $or_crits[] = [
-               Document_Item::getTableField('itemtype') => self::getType(),
-               Document_Item::getTableField('items_id') => new QuerySubQuery(
-                   [
-                      'SELECT' => 'id',
-                      'FROM'   => self::getTable(),
-                      'WHERE'  => $fup_crits,
-                   ]
-               ),
+                Document_Item::getTableField('itemtype') => self::getType(),
+                Document_Item::getTableField('items_id') => new QuerySubQuery(
+                    [
+                        'SELECT' => 'id',
+                        'FROM'   => self::getTable(),
+                        'WHERE'  => $fup_crits,
+                    ]
+                ),
             ];
         }
         if (empty($or_crits)) {
