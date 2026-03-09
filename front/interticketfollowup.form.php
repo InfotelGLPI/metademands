@@ -33,6 +33,8 @@
 use Glpi\Event;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\Interticketfollowup;
+use GlpiPlugin\Metademands\Ticket_Metademand;
+use GlpiPlugin\Metademands\Ticket;
 
 Session::checkLoginUser();
 
@@ -43,16 +45,45 @@ if (!isset($_POST['itemtype']) || !class_exists($_POST['itemtype'])) {
 }
 $track = new $_POST['itemtype'];
 
-
 if (isset($_POST["add"])) {
-   $fup->check(-1, CREATE, $_POST);
-   $fup->add($_POST);
+    if (isset($_POST["targets_id"])) {
+        if ($_POST["targets_id"] == 0) {
 
-   Event::log($fup->getField('tickets_id'), strtolower($_POST['itemtype']), 4, "tracking",
-      //TRANS: %s is the user login
-              sprintf(__('%s adds a followup'), $_SESSION["glpiname"]));
-   Html::redirect($track->getFormURLWithID($fup->getField('tickets_id')));
+            $tickets_found = [];
+            $ticket_metademand = new Ticket_Metademand();
+            $ticket_metademand_datas = $ticket_metademand->find(['tickets_id' => $_POST["tickets_id"]]);
 
+            // If ticket is Parent : Check if all sons ticket are closed
+            if (count($ticket_metademand_datas)) {
+                $ticket_metademand_datas = reset($ticket_metademand_datas);
+                $tickets_found = Ticket::getSonTickets(
+                    $_POST["tickets_id"],
+                    $ticket_metademand_datas['plugin_metademands_metademands_id'],
+                    [],
+                    true,
+                    true
+                );
+            }
+
+            foreach ($tickets_found as $ticket) {
+                $_POST["targets_id"] = $ticket["tickets_id"];
+                $fup->check(-1, CREATE, $_POST);
+                $fup->add($_POST);
+
+                Event::log($fup->getField('tickets_id'), strtolower($_POST['itemtype']), 4, "tracking",
+                    //TRANS: %s is the user login
+                    sprintf(__('%s adds a followup'), $_SESSION["glpiname"]));
+            }
+        } else {
+            $fup->check(-1, CREATE, $_POST);
+            $fup->add($_POST);
+
+            Event::log($fup->getField('tickets_id'), strtolower($_POST['itemtype']), 4, "tracking",
+                //TRANS: %s is the user login
+                sprintf(__('%s adds a followup'), $_SESSION["glpiname"]));
+        }
+    }
+    Html::redirect($track->getFormURLWithID($_POST["tickets_id"]));
 }
 //else if (isset($_POST['add_close'])
 //           ||isset($_POST['add_reopen'])) {
