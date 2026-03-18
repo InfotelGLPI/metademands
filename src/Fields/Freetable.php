@@ -275,8 +275,8 @@ class Freetable extends CommonDBTM
                     $field .= "<td $style id=\"linetotal\">$linetotal €</td>";
                 }
 
-                $field .= "<td><button onclick =\"editLine($idline, window.metademandfreelinesparams$rand)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"ti ti-pencil\"></i></button></td>";
-                $field .= "<td><button onclick =\"removeLine($idline, window.metademandfreelinesparams$rand)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"ti ti-trash\"></i></button></td>";
+                $field .= "<td><button onclick =\"editLine($idline, $rand, window.metademandfreelinesparams$rand)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"ti ti-pencil\"></i></button></td>";
+                $field .= "<td><button onclick =\"removeLine($idline, $rand, window.metademandfreelinesparams$rand)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"ti ti-trash\"></i></button></td>";
                 $field .= "</tr>";
 
             }
