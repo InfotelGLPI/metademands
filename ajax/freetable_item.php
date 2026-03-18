@@ -39,7 +39,6 @@ $data_by_free = [];
 $fields_id = $_POST['datas']['fields_id'];
 $metademands_id = $_POST['datas']['metademands_id'];
 
-
 if (isset($_POST['datas']['add'])) {
     $datas[$_POST['datas']['add']['id']] = $_POST['datas']['add'];
     foreach ($datas as $key => $data) {
@@ -51,7 +50,8 @@ if (isset($_POST['datas']['add'])) {
         $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key] = $data;
     }
 
-} else if (isset($_POST['type']) && $_POST['type'] == 'remove') {
+} else if (isset($_POST['type'])
+    && $_POST['type'] == 'remove') {
     if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$_POST['datas']['remove']])) {
         unset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$_POST['datas']['remove']]);
     }

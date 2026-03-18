@@ -30,15 +30,19 @@ function addLine(metademandfreelinesparams)
 
     window.metademandfreelinesparams = metademandfreelinesparams;
 
+    var fields_id = metademandfreelinesparams.rand;
+
     var fields = metademandfreelinesparams.encoded_fields;
+
     var type_fields = metademandfreelinesparams.types_encoded_fields;
     var dropdown_values_fields = metademandfreelinesparams.dropdown_values_encoded_fields;
     var lastid = metademandfreelinesparams.lastid;
+
     const tabfields = [];
 
-    if (!document.querySelector('#freetable_table' + metademandfreelinesparams.rand + '.add_item')) {
+    if (!document.querySelector('#freetable_table' + fields_id + '.add_item')) {
 
-        if ($('#freetable_table'+ metademandfreelinesparams.rand + ' tr[id^=line_' + metademandfreelinesparams.rand + '_]:first').length > 0) {
+        if ($('#freetable_table'+ fields_id + ' tr[id^=line_' + fields_id + '_]:first').length > 0) {
             // console.log(lastid);
             if (lastid > 0 && lastid > i) {
                 i = lastid;
@@ -47,7 +51,7 @@ function addLine(metademandfreelinesparams)
             // console.log("existe deja");
             // console.log(i);
 
-            tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + metademandfreelinesparams.rand + '_' + i + '\">';
+            tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + fields_id + '_' + i + '\">';
 
             $.each(fields, function (index, valuej) {
 
@@ -78,21 +82,21 @@ function addLine(metademandfreelinesparams)
 
             });
 
-            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmUpdateLine(this, '+ i +', 1)\">';
+            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmUpdateLine(this, '+ i +', 1, ' + fields_id +')\">';
             tabbutton = '<td style=\"text-align: right;\" colspan=\"2\">'
                 + str
                 + '<i class =\"ti ti-check\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine(' + i + ')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button onclick =\"removeLine(' + i + ', ' + fields_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td>'
                 + '</tr>';
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
 
-            $('#freetable_table'+ metademandfreelinesparams.rand + ' tr[id^=line_' + metademandfreelinesparams.rand + '_]:last').after(joined);
+            $('#freetable_table'+ fields_id + ' tr[id^=line_' + fields_id + '_]:last').after(joined);
         } else {
             // console.log("n existe pas");
             // console.log(i);
-            tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + metademandfreelinesparams.rand + '_' + i + '\">';
+            tabtr = '<tr class=\"tab_bg_1\" id=\"line_' + fields_id + '_' + i + '\">';
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == metademandfreelinesparams.text) {
                     tabfields.push('<td><input id = \"' + index + '\" type=\"text\" name=\"' + index + '\" size=\"' + metademandfreelinesparams.size + '\" ></td>');
@@ -119,15 +123,21 @@ function addLine(metademandfreelinesparams)
                     tabfields.push('<td><input add=1 id=\"' + index + '\" value=\"0\" type=\"time\" name=\"' + index + '\" ></td>');
                 }
             });
-            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmUpdateLine(this, ' + i +',  1)\">';
-            tabbutton = '<td style=\"text-align: center;\" colspan=\"2\">'
-                + str
-                + '<i class =\"ti ti-check\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
-                + '<i class =\"ti ti-trash\"></i></button></td>'
-                + '</tr>';
+            var paramsCopy = JSON.stringify(metademandfreelinesparams);
+
+            var btn = '<button class="btn btn-success add_item" type="button" name="add_item" ' +
+                'onclick=\'confirmUpdateLine(this,' + i + ',1,' + fields_id + ',' + paramsCopy + ')\'>' +
+                '<i class="ti ti-check"></i></button>';
+
+            tabbutton = '<td style="text-align:center;" colspan="2">'
+                + btn
+                + '</td>'
+                + '<td style="text-align:center;">'
+                + '<button onclick="removeLine(' + i + ',' + fields_id + ')" class="btn btn-danger" type="button">'
+                + '<i class="ti ti-trash"></i></button>'
+                + '</td></tr>';
             var joined = [tabtr, tabfields, tabbutton].join(' ');
-            $('#freetable_table'+ metademandfreelinesparams.rand + ' tr[class^=tab_bg_1]:last').after(joined);
+            $('#freetable_table'+ fields_id + ' tr[class^=tab_bg_1]:last').after(joined);
         }
     } else {
         alert(metademandfreelinesparams.existLine);
@@ -137,7 +147,7 @@ function addLine(metademandfreelinesparams)
 }
 
 
-function confirmUpdateLine(node, nb, typepost, newparams)
+function confirmUpdateLine(node, nb, typepost, field_id, newparams)
 {
 
     if (newparams) {
@@ -186,31 +196,16 @@ function confirmUpdateLine(node, nb, typepost, newparams)
         var line = {
             'add': l,
             'metademands_id': params.plugin_metademands_metademands_id,
-            'fields_id': params.rand
+            'fields_id': field_id
         };
     } else {
         var line = {
             'update': l,
             'metademands_id': params.plugin_metademands_metademands_id,
-            'fields_id': params.rand
+            'fields_id': field_id
         };
     }
 
-    // data['lines' + params.rand] = {ind: l};
-    // data['metademands_id'] = params.plugin_metademands_metademands_id;
-    // data['fields_id'] = params.rand;
-//                    } else {
-//                       $.each(l, function (key, datas) {
-//                        $.each(datas, function (key_data, data_lines) {
-//                                if(key_data == 'id'){
-//                                    if(data_lines == 'ind'){
-//                                       data['lines$rand'][key] = l;
-//                                    }
-//                                }
-//                            });
-//                        });
-//                    }
-// console.log(data);
     $.ajax({
         url: params.root + '/ajax/freetable_item.php',
         type: 'POST',
@@ -269,8 +264,8 @@ function confirmUpdateLine(node, nb, typepost, newparams)
         total = Math.round((total + Number.EPSILON) * 100) / 100;
     }
     if (ko == 0) {
-        if ($('[id^=line_' + params.rand + '_]').length == 0) {
-            tabtr = '<tr name=\"data\" $style id=\"line_' + params.rand + '_' + i + '\" disabled>';
+        if ($('[id^=line_' + field_id + '_]').length == 0) {
+            tabtr = '<tr name=\"data\" $style id=\"line_' + field_id + '_' + i + '\" disabled>';
 
             $.each(fields, function (index, valuej) {
 
@@ -301,17 +296,17 @@ function confirmUpdateLine(node, nb, typepost, newparams)
                 }
 
             });
-            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine(' + i +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
+            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine(' + i +', ' + field_id +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                 + '<i class =\"ti ti-pencil\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ', ' + field_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td></tr>'
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
 
-            $('#freetable_table' + params.rand + ' tr:last').before(joined);
+            $('#freetable_table' + field_id + ' tr:last').before(joined);
             $('#name_' + i).val(name);
 
-            elem_parent.find('input[name=name' + params.rand + ']').val('');
+            elem_parent.find('input[name=name' + field_id + ']').val('');
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == params.text) {
                     $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
@@ -331,7 +326,7 @@ function confirmUpdateLine(node, nb, typepost, newparams)
                 }
             });
         } else if (typepost == 'add') {
-            tabtr = '<tr name=\"data\" $style id=\"line_' + params.rand + '_' + i + '\" disabled>';
+            tabtr = '<tr name=\"data\" $style id=\"line_' + field_id + '_' + i + '\" disabled>';
 
             $.each(fields, function (index, valuej) {
 
@@ -362,16 +357,16 @@ function confirmUpdateLine(node, nb, typepost, newparams)
                 }
 
             });
-            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick=\"editLine(' + i +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
+            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick=\"editLine(' + i +', ' + field_id +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                 + '<i class =\"ti ti-pencil\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ', ' + field_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td></tr>'
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
 
-            $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last').after(joined);
+            $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last').after(joined);
             $('#name_' + i).val(name);
-            elem_parent.find('input[name=name' + params.rand + ']').val('');
+            elem_parent.find('input[name=name' + field_id + ']').val('');
 
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == params.text) {
@@ -392,7 +387,7 @@ function confirmUpdateLine(node, nb, typepost, newparams)
                 }
             });
         } else {
-            tabtr = '<tr name=\"data\" $style id=\"line_' + params.rand + '_' + i + '\">';
+            tabtr = '<tr name=\"data\" $style id=\"line_' + field_id + '_' + i + '\">';
 
             $.each(fields, function (index, valuej) {
 
@@ -422,27 +417,27 @@ function confirmUpdateLine(node, nb, typepost, newparams)
                     tabfields.push('<td $style><input add=4 id=\"' + index + '_' + i + '\" type=\"time\" name=\"' + index + '\"  disabled ></td>');
                 }
             });
-            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick=\"editLine(' + i +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
+            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick=\"editLine(' + i +', ' + field_id +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                 + '<i class =\"ti ti-pencil\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick=\"removeLine( ' + i + ')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button onclick=\"removeLine( ' + i + ', ' + field_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td></tr>'
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
 
-            $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last').after(joined);
+            $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last').after(joined);
 
-            $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last #name_' + i).val(name);
+            $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last #name_' + i).val(name);
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == params.text) {
-                    $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                 } else if (type_fields[index] == params.select) {
-                    $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last #' + index + '_' + i).val(elem_parent.find('select[name=' + index + ']').val());
+                    $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last #' + index + '_' + i).val(elem_parent.find('select[name=' + index + ']').val());
                 } else if (type_fields[index] == params.number) {
-                    $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                 } else if (type_fields[index] == params.date) {
-                    $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                 } else if (type_fields[index] == params.time) {
-                    $('#freetable_table' + params.rand + ' tr[id^=line_' + params.rand + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                 }
             });
         }
@@ -480,7 +475,7 @@ function showConfirmButton()
     }
 }
 
-function removeLine(l, newparams)
+function removeLine(l, field_id, newparams)
 {
     if (newparams) {
         params = newparams;
@@ -489,11 +484,11 @@ function removeLine(l, newparams)
         params = window.metademandfreelinesparams;
     }
 
-    $('#line_' + params.rand + '_' + l).remove();
+    $('#line_' + field_id + '_' + l).remove();
     var line = {
         'remove': l,
         'metademands_id': params.plugin_metademands_metademands_id,
-        'fields_id': params.rand
+        'fields_id': field_id
     };
 
     $.ajax({
@@ -501,20 +496,20 @@ function removeLine(l, newparams)
         type: 'POST',
         data: {type: 'remove', datas: line}
     });
-    var tabdatas = $('[id^=line_' + params.rand + '_]');
+    var tabdatas = $('[id^=line_' + field_id + '_]');
     if (tabdatas.length == 0) {
-        $('#add_freetables' + params.rand).css('display', 'none');
+        $('#add_freetables' + field_id).css('display', 'none');
         $('#div_save_draft').css('display', 'none');
         if ($('#button_save_mydraft')) {
             $('#button_save_mydraft').css('display', 'none');
         }
     }
-    if (document.querySelector('tr[id=\"tr_valid' + params.rand + '\"]')) {
-        document.querySelector('tr[id=\"tr_valid' + params.rand + '\"]').remove();
+    if (document.querySelector('tr[id=\"tr_valid' + field_id + '\"]')) {
+        document.querySelector('tr[id=\"tr_valid' + field_id + '\"]').remove();
     }
 }
 
-function editLine(l, newparams)
+function editLine(l, field_id, newparams)
 {
 
     if (newparams) {
@@ -524,7 +519,7 @@ function editLine(l, newparams)
          params = window.metademandfreelinesparams;
     }
 
-    let line = document.querySelector('#line_' + params.rand + '_' + l);
+    let line = document.querySelector('#line_' + field_id + '_' + l);
 
     let inputs = line.querySelectorAll('input');
     let selects = line.querySelectorAll('select');
@@ -556,7 +551,7 @@ function editLine(l, newparams)
     button.appendChild(ico);
     button.dataset.id = l;
     button.addEventListener('click', function () {
-        confirmUpdateLine(this, l, 2, newparams);
+        confirmUpdateLine(this, l, 2, field_id, newparams);
     });
     td.appendChild(button);
     line.appendChild(td);
@@ -572,7 +567,7 @@ function editLine(l, newparams)
     button1.appendChild(ico1);
     button1.dataset.id = l;
     button1.addEventListener('click', function () {
-        removeLine(this, this.dataset.id, newparams);
+        removeLine(this.dataset.id, field_id, newparams);
     });
     td1.appendChild(button1);
     line.appendChild(td1);
