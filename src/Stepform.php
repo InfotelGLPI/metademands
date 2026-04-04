@@ -1012,7 +1012,7 @@ class Stepform extends CommonDBTM
                 if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
                     $metaID = $name['plugin_metademands_metademands_id'];
                     $block_id = $name['block_id'];
-                    echo '<div class="btnsc-normal" style="min-height: 300px" >';
+                    echo '<div class="readonly-btnsc-normal" style="min-height: 300px" >';
                     $fasize = "fa-4x";
                     echo "<div class='center'>";
                     $icon = "fa-share-alt";
