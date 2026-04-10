@@ -49,6 +49,9 @@ class Ticket_Task extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands';
 
+    public static $itemtype = Task::class;
+    public static $items_id = 'plugin_metademands_tasks_id';
+
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()

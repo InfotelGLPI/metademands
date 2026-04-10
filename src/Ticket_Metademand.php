@@ -54,6 +54,10 @@ if (!defined('GLPI_ROOT')) {
 class Ticket_Metademand extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands';
+
+    public static $itemtype = Metademand::class;
+    public static $items_id = 'plugin_metademands_metademands_id';
+
     public const RUNNING   = 1;
     public const TO_CLOSED = 2;
     public const CLOSED    = 3;
