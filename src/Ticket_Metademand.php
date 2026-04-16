@@ -34,7 +34,6 @@ use CommonDBTM;
 use CommonGLPI;
 use CommonITILObject;
 use DBConnection;
-use DbUtils;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Resources\Resource;
 use Group_User;
@@ -1621,7 +1620,7 @@ class Ticket_Metademand extends CommonDBTM
     }
 
 
-    static function migrateAllRunningAndToBeClosedMetademands()
+    public static function migrateAllRunningAndToBeClosedMetademands()
     {
         global $DB;
 
@@ -1633,14 +1632,14 @@ class Ticket_Metademand extends CommonDBTM
                 'glpi_tickets' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 ['glpi_tickets.status' => ['NOT IN', [\Ticket::SOLVED, \Ticket::CLOSED]]],
                 'glpi_tickets.is_deleted' => 0,
-            ]
+            ],
         ];
 
         $results_running_parents = $DB->request($get_running_parents_tickets_meta);
@@ -1679,14 +1678,15 @@ class Ticket_Metademand extends CommonDBTM
                         );
                     }
                 } else {
-                    $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                    $ticket_metademand->update(
+                        ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
                     );
                 }
             }
         }
     }
 
-    static function migrateAllClosedMetademands()
+    public static function migrateAllClosedMetademands()
     {
         global $DB;
 
@@ -1699,14 +1699,14 @@ class Ticket_Metademand extends CommonDBTM
                 'glpi_tickets' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_tickets_metademands' => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 ['glpi_tickets.status' => [\Ticket::SOLVED, \Ticket::CLOSED]],
                 'glpi_tickets.is_deleted' => 0,
-            ]
+            ],
         ];
 
         $results_closed_parents = $DB->request($get_closed_meta);
@@ -1746,14 +1746,15 @@ class Ticket_Metademand extends CommonDBTM
                         );
                     }
                 } else {
-                    $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::CLOSED]
+                    $ticket_metademand->update(
+                        ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::CLOSED]
                     );
                 }
             }
         }
     }
 
-    static function getSonsQuery($parent_id)
+    public static function getSonsQuery($parent_id)
     {
         return [
             'SELECT' => ['glpi_plugin_metademands_tickets_tasks.tickets_id AS sons_ticket', 'glpi_tickets.status'],
@@ -1762,13 +1763,13 @@ class Ticket_Metademand extends CommonDBTM
                 'glpi_tickets' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_tasks' => 'tickets_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_tickets_tasks' => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_plugin_metademands_tickets_tasks.parent_tickets_id' => $parent_id,
-            ]
+            ],
         ];
     }
 }

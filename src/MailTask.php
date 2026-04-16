@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -38,6 +39,8 @@ use Html;
 use ITILCategory;
 use Migration;
 use Session;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Address;
 use User;
 
 if (!defined('GLPI_ROOT')) {
@@ -136,8 +139,8 @@ class MailTask extends CommonDBChild
             'type' => \Ticket::DEMAND_TYPE,
             'parent_tasks_id' => 0,
             'plugin_metademands_tasks_id' => 0,
-            'content' => '',
-            'name' => '',
+            'content' => ' ',
+            'name' => ' ',
             'block_use' => 1,
             'useBlock' => 1,
             'block_parent_ticket_resolution' => 0,
@@ -228,7 +231,7 @@ class MailTask extends CommonDBChild
         echo "<td>";
         ITILCategory::dropdown([
             'name' => 'itilcategories_id',
-            'value' => $values['itilcategories_id']
+            'value' => $values['itilcategories_id'],
         ]);
         echo "</td>";
         echo "<td colspan='4'></td>";
@@ -250,7 +253,7 @@ class MailTask extends CommonDBChild
         // Requester user
         //         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
         User::dropdown(['name' => 'users_id_recipient',
-            'value' => isset($values['users_id_recipient']) ? $values['users_id_recipient'] : 0,
+            'value' => $values['users_id_recipient'] ?? 0,
             'entity' => $metademands->fields["entities_id"],
             'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
         echo "</td>";
@@ -266,7 +269,7 @@ class MailTask extends CommonDBChild
         // Requester Group
         //         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
         \Dropdown::show('Group', ['name' => 'groups_id_recipient',
-            'value' => isset($values['groups_id_recipient']) ? $values['groups_id_recipient'] : 0,
+            'value' => $values['groups_id_recipient'] ?? 0,
             'entity' => $metademands->fields["entities_id"],
             'condition' => ['is_requester' => 1]]);
         echo "</td>";
@@ -279,7 +282,7 @@ class MailTask extends CommonDBChild
         echo "<tr class='tab_bg_1'>";
         echo "<th>" . __('Title') . "</th>";
         echo "<td width='$colsize3%'>";
-        $name = isset($values['name']) ? $values['name'] : '';
+        $name = $values['name'] ?? '';
         echo Html::input('name', ['value' => $name, 'size' => 90]);
         echo "</td>";
         echo "</tr>";
@@ -315,35 +318,42 @@ class MailTask extends CommonDBChild
     }
 
 
-    static function sendMail($title, $recipient, $body)
+    public static function sendMail($title, $recipient, $body)
     {
         global $CFG_GLPI;
 
-        $mmail = new GLPIMailer();
+        $transport = Transport::fromDsn(GLPIMailer::buildDsn(true));
 
-        $mmail->AddCustomHeader("Auto-Submitted: auto-generated");
+        $mmail = new GLPIMailer($transport);
+        $mail = $mmail->getEmail();
+
+        $mail->getHeaders()->addTextHeader("Auto-Submitted", "auto-generated");
         // For exchange
-        $mmail->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
-        $mmail->SetFrom($CFG_GLPI["from_email"], $CFG_GLPI["from_email_name"], false);
-        $mmail->isHTML(true);
+        $mail->getHeaders()->addTextHeader("X-Auto-Response-Suppress", "OOF, DR, NDR, RN, NRN");
+
+        $mail->from(new Address($CFG_GLPI["from_email"],  $CFG_GLPI["from_email_name"]));
 
         if (is_array($recipient)) {
             foreach ($recipient as $r) {
-                if(empty($r['name'])){
+                if (empty($r['name'])) {
                     $r['name'] = $r['email'];
                 }
-                $mmail->addAddress($r['email'], $r['name']);
+                $mail->to(new Address($r['email'], $r['name']));
             }
         } else {
-            $mmail->AddAddress($recipient, $recipient);
+            $mail->to(new Address($recipient, $recipient));
         }
-        $mmail->Subject = $title;
-        $mmail->Body = $body;
+
+        $mail->subject($title);
+
+        $mail->html($body);
 
         if (!$mmail->Send()) {
-            Session::addMessageAfterRedirect(__('Fail to send email', 'metademands'), false,
-                ERROR);
-            GLPINetwork::addErrorMessageAfterRedirect();
+            Session::addMessageAfterRedirect(
+                __('Fail to send email', 'metademands'),
+                false,
+                ERROR
+            );
             return false;
         } else {
             Session::addMessageAfterRedirect(__('Email sent', 'metademands'));

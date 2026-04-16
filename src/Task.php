@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -32,13 +33,13 @@ namespace GlpiPlugin\Metademands;
 use Ajax;
 use CommonDBChild;
 use CommonDBTM;
+use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Html;
 use MassiveAction;
 use Migration;
 use Session;
-use CommonGLPI;
 use Toolbox;
 
 if (!defined('GLPI_ROOT')) {
@@ -48,17 +49,17 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class Task
  */
-class Task extends CommonDBChild {
-
+class Task extends CommonDBChild
+{
     public static $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
     public static $items_id = 'plugin_metademands_metademands_id';
 
-    const TICKET_TYPE     = 0;
-    const METADEMAND_TYPE = 1;
-    const TASK_TYPE       = 2;
-    const MAIL_TYPE = 3;
+    public const TICKET_TYPE     = 0;
+    public const METADEMAND_TYPE = 1;
+    public const TASK_TYPE       = 2;
+    public const MAIL_TYPE = 3;
 
     public function canCreateItem(): bool
     {
@@ -80,7 +81,7 @@ class Task extends CommonDBChild {
     }
 
 
-     public static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-pencil-plus";
     }
@@ -258,27 +259,27 @@ class Task extends CommonDBChild {
      * @return bool (display)
      * @throws \GlpitestSQLError
      */
-//    public function showTaskslist($item)
-//    {
-//        global $CFG_GLPI;
-//
-//        if (!$this->canview()) {
-//            return false;
-//        }
-//        if (!$this->cancreate()) {
-//            return false;
-//        }
-//
-//        $canedit = $item->can($item->fields['id'], UPDATE);
-//        $solved  = true;
-//        if ($canedit) {
-//            // Check if metademand tasks has been already created
-//
-//        }
-//
-//
-//        $this->listTasks($item, $canedit, $solved);
-//    }
+    //    public function showTaskslist($item)
+    //    {
+    //        global $CFG_GLPI;
+    //
+    //        if (!$this->canview()) {
+    //            return false;
+    //        }
+    //        if (!$this->cancreate()) {
+    //            return false;
+    //        }
+    //
+    //        $canedit = $item->can($item->fields['id'], UPDATE);
+    //        $solved  = true;
+    //        if ($canedit) {
+    //            // Check if metademand tasks has been already created
+    //
+    //        }
+    //
+    //
+    //        $this->listTasks($item, $canedit, $solved);
+    //    }
 
 
     /**
@@ -301,7 +302,7 @@ class Task extends CommonDBChild {
             return false;
         }
 
-//        $metademand = new Metademand();
+        //        $metademand = new Metademand();
 
         if (isset($options['parent']) && !empty($options['parent'])) {
             $item = $options['parent'];
@@ -310,12 +311,12 @@ class Task extends CommonDBChild {
         if ($ID > 0) {
 
             $this->check($ID, READ);
-//            $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
+            //            $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
         } else {
             // Create item
             $options['itemtype'] = get_class($item);
             $options['items_id'] = $item->getID();
-//            $metademand->getFromDB($item->getID());
+            //            $metademand->getFromDB($item->getID());
             // Create item
             $this->check(-1, CREATE, $options);
             $this->getEmpty();
@@ -345,7 +346,7 @@ class Task extends CommonDBChild {
             if (count($metademand_tasks)) {
                 unset($task_types[self::METADEMAND_TYPE]);
             }
-            if($ID > 0){
+            if ($ID > 0) {
                 $valType = $this->fields['type'];
             } else {
                 $valType = 0;
@@ -394,10 +395,10 @@ class Task extends CommonDBChild {
                         'groups_id_assign' => $tickettask->fields['groups_id_assign'],
                         'status' => $tickettask->fields['status'],
                         'requesttypes_id' => $tickettask->fields['requesttypes_id'],
-//                    'actiontime' => $tickettask->fields['actiontime'],
-//                    'itemtype' => $tickettask->fields['itemtype']
+                        //                    'actiontime' => $tickettask->fields['actiontime'],
+                        //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
-                } else if ($this->fields['type'] == self::MAIL_TYPE) {
+                } elseif ($this->fields['type'] == self::MAIL_TYPE) {
                     $mailtask = new MailTask();
                     $mailtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
                     $values = [
@@ -420,31 +421,31 @@ class Task extends CommonDBChild {
                 } else {
                     $values = [
                         'tickettask_id' => $tickettask->getID(),
-//                        'itilcategories_id' => $tickettask->fields['itilcategories_id'],
+                        //                        'itilcategories_id' => $tickettask->fields['itilcategories_id'],
                         'type' => $type,
-//                        'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
-//                        'plugin_metademands_tasks_id' => $ID,
-//                        'content' => $tickettask->fields['content'],
-//                        'name' => $this->fields['name'],
-//                        'block_use' => json_decode($this->fields['block_use'], true),
-//                        'useBlock' => $this->fields['useBlock'],
-//                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
-//                        'formatastable' => $this->fields['formatastable'],
-//                        'entities_id' => $this->fields['entities_id'],
-//                        'is_recursive' => $this->fields['is_recursive'],
-//                        'users_id_requester' => $tickettask->fields['users_id_requester'],
-//                        'users_id_observer' => $tickettask->fields['users_id_observer'],
-//                        'users_id_assign' => $tickettask->fields['users_id_assign'],
-//                        'groups_id_requester' => $tickettask->fields['groups_id_requester'],
-//                        'groups_id_observer' => $tickettask->fields['groups_id_observer'],
-//                        'groups_id_assign' => $tickettask->fields['groups_id_assign'],
-//                        'status' => $tickettask->fields['status'],
-//                        'requesttypes_id' => $tickettask->fields['requesttypes_id'],
-//                    'actiontime' => $tickettask->fields['actiontime'],
-//                    'itemtype' => $tickettask->fields['itemtype']
+                        //                        'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
+                        //                        'plugin_metademands_tasks_id' => $ID,
+                        //                        'content' => $tickettask->fields['content'],
+                        //                        'name' => $this->fields['name'],
+                        //                        'block_use' => json_decode($this->fields['block_use'], true),
+                        //                        'useBlock' => $this->fields['useBlock'],
+                        //                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
+                        //                        'formatastable' => $this->fields['formatastable'],
+                        //                        'entities_id' => $this->fields['entities_id'],
+                        //                        'is_recursive' => $this->fields['is_recursive'],
+                        //                        'users_id_requester' => $tickettask->fields['users_id_requester'],
+                        //                        'users_id_observer' => $tickettask->fields['users_id_observer'],
+                        //                        'users_id_assign' => $tickettask->fields['users_id_assign'],
+                        //                        'groups_id_requester' => $tickettask->fields['groups_id_requester'],
+                        //                        'groups_id_observer' => $tickettask->fields['groups_id_observer'],
+                        //                        'groups_id_assign' => $tickettask->fields['groups_id_assign'],
+                        //                        'status' => $tickettask->fields['status'],
+                        //                        'requesttypes_id' => $tickettask->fields['requesttypes_id'],
+                        //                    'actiontime' => $tickettask->fields['actiontime'],
+                        //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
                 }
-                if($type != Task::MAIL_TYPE){
+                if ($type != Task::MAIL_TYPE) {
                     TicketTask::showTicketTaskForm($item->getID(), $solved, $type, $values);
                 }
             } else {
@@ -466,14 +467,14 @@ class Task extends CommonDBChild {
             echo "</td>";
             echo "</tr>";
 
-//            echo "<tr class='tab_bg_1'>";
-//
-//            echo "<td class='tab_bg_2 center' colspan='6'>";
+            //            echo "<tr class='tab_bg_1'>";
+            //
+            //            echo "<td class='tab_bg_2 center' colspan='6'>";
             echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
-//            echo Html::hidden('entities_id', ['value' => $item->fields['entities_id']]);
-//            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
-//            echo "</td>";
-//            echo "</tr>";
+            //            echo Html::hidden('entities_id', ['value' => $item->fields['entities_id']]);
+            //            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
+            //            echo "</td>";
+            //            echo "</tr>";
 
             $this->showFormButtons(['colspan' => 3]);
 
@@ -529,7 +530,8 @@ class Task extends CommonDBChild {
     }
 
 
-    function sortByParentChild($data) {
+    public function sortByParentChild($data)
+    {
         // Tableau pour stocker le résultat final
         $sortedData = [];
 
@@ -542,7 +544,8 @@ class Task extends CommonDBChild {
         }
 
         // Fonction récursive pour ajouter un parent et ses enfants au tableau trié
-        function addParentAndChildren($item, &$sortedData, $indexedData) {
+        function addParentAndChildren($item, &$sortedData, $indexedData)
+        {
             $sortedData[] = $item;
             foreach ($indexedData as $child) {
                 if ($child['parent_task'] == $item['tasks_id']) {
@@ -587,24 +590,26 @@ class Task extends CommonDBChild {
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
         if ($canedit && $solved) {
-            echo "<div id='viewchild"  . $item->getID() . "$rand'></div>\n";
+            echo "<div id='viewchild" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addchild"  . $item->getID() . "$rand() {\n";
+            echo "function addchild" . $item->getID() . "$rand() {\n";
             $params = ['type' => __CLASS__,
                 'parenttype' => get_class($item),
                 $item->getForeignKeyField() => $item->getID(),
                 'id' => -1,
                 'solved' => $solved];
-            Ajax::updateItemJsCode("viewchild"  . $item->getID() . "$rand",
+            Ajax::updateItemJsCode(
+                "viewchild" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                $params);
+                $params
+            );
             echo "};";
             echo "</script>\n";
-            echo "<div class='center'>" .
-                "<a class='submit btn btn-primary' href='javascript:addchild" .
-                 $item->getID() . "$rand();'>" . __('Add a task', 'metademands') .
-                "</a></div><br>";
+            echo "<div class='center'>"
+                . "<a class='submit btn btn-primary' href='javascript:addchild"
+                 . $item->getID() . "$rand();'>" . __('Add a task', 'metademands')
+                . "</a></div><br>";
         }
 
         echo "<div class='center first-bloc'>";
@@ -619,7 +624,7 @@ class Task extends CommonDBChild {
             'tags',
             PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->getID(),
             ['title'   => __('Show list of available tags'),
-             'display' => false]
+                'display' => false]
         );
         echo "</td>";
         echo "</tr>";
@@ -627,7 +632,7 @@ class Task extends CommonDBChild {
         echo "</div>";
 
         if (count($tasks)) {
-//            Session::initNavigateListItems(TicketTask::class, self::getTypeName(1));
+            //            Session::initNavigateListItems(TicketTask::class, self::getTypeName(1));
 
             echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/treetable/treetable.js");
             echo "<div class='left first-bloc'>";
@@ -647,7 +652,7 @@ class Task extends CommonDBChild {
                 echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
             }
             echo "</th>";
-//            echo "<th class='center b'>#</th>";
+            //            echo "<th class='center b'>#</th>";
             echo "<th class='center b' width='6%'>" . __('ID') . "</th>";
             echo "<th class='center b'>" . __('Name') . "</th>";
             echo "<th class='center b'>" . __('Entity') . "</th>";
@@ -666,7 +671,7 @@ class Task extends CommonDBChild {
             foreach ($tasks as $key => $value) {
 
                 $id = $value['tasks_id'];
-                if($value['type'] == Task::MAIL_TYPE){
+                if ($value['type'] == Task::MAIL_TYPE) {
                     $mailtask = new MailTask();
                     $mailtask->getFromDBByCrit(['plugin_metademands_tasks_id' => $id]);
                 }
@@ -690,7 +695,7 @@ class Task extends CommonDBChild {
                     }
                 }
 
-                echo "<tr class='tab_bg_1 $class' $style data-id='$id' data-parent='".$value['parent_task']."' data-level='".$value['level']."'>";
+                echo "<tr class='tab_bg_1 $class' $style data-id='$id' data-parent='" . $value['parent_task'] . "' data-level='" . $value['level'] . "'>";
 
                 if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
                     $color_class = '';
@@ -701,12 +706,12 @@ class Task extends CommonDBChild {
                 $onhover = '';
                 if ($canedit && ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE)) {
                     $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditchild"  . $id . "$rand();\"";
+                           onClick=\"viewEditchild" . $id . "$rand();\"";
                 }
 
                 if ($canedit && $solved) {
                     echo "<td $color_class width='10'>";
-                    Html::showMassiveActionCheckBox(__CLASS__,$id);
+                    Html::showMassiveActionCheckBox(__CLASS__, $id);
                     echo "</td>";
                 } else {
                     echo "<td $color_class width='10'></td>";
@@ -718,15 +723,17 @@ class Task extends CommonDBChild {
                 echo "<td data-column='name'>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditchild"  . $id . "$rand() {\n";
+                    echo "function viewEditchild" . $id . "$rand() {\n";
                     $params = ['type' => __CLASS__,
                         'parenttype' => get_class($item),
                         $item->getForeignKeyField() => $item->getID(),
                         'id' => $id,
                         'solved' => $solved];
-                    Ajax::updateItemJsCode("viewchild"  . $item->getID() . "$rand",
+                    Ajax::updateItemJsCode(
+                        "viewchild" . $item->getID() . "$rand",
                         $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        $params);
+                        $params
+                    );
                     echo "};";
                     echo "</script>\n";
                 }
@@ -734,57 +741,57 @@ class Task extends CommonDBChild {
                 echo $id;
                 echo "</td>";
 
-//                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
-//                    echo "<td $onhover>";
-//                    $width = 0;
+                //                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
+                //                    echo "<td $onhover>";
+                //                    $width = 0;
 
-//                    $name = "#metademandTicketTask" . $value['tickettasks_id'];
-//                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . TicketTask::getTypeName() . "' >";
-//                    echo $value['tickettasks_id'];
-//                    echo "</a>";
-//                    echo Ajax::createIframeModalWindow(
-//                        'metademandTicketTask' . $value['tickettasks_id'],
-//                        Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-//                        ['title'         => TicketTask::getTypeName(),
-//                         'display'       => false,
-//                         'reloadonclose' => true]
-//                    );
-//
-//               //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-//               //                                             ['title' => TicketTask::getTypeName(), 'reloadonclose' => true]);
-//               //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
-//                    echo "</td>";
-//                } else {
-//                    $color_class = "class='metademand_metademandtasks'";
-//                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL(Metademand::class) .
-//                         "?id=" . $value['link_metademands_id'] . "'>" . $value['link_metademands_id'] . "</a></td>";
-//                }
+                //                    $name = "#metademandTicketTask" . $value['tickettasks_id'];
+                //                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . TicketTask::getTypeName() . "' >";
+                //                    echo $value['tickettasks_id'];
+                //                    echo "</a>";
+                //                    echo Ajax::createIframeModalWindow(
+                //                        'metademandTicketTask' . $value['tickettasks_id'],
+                //                        Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
+                //                        ['title'         => TicketTask::getTypeName(),
+                //                         'display'       => false,
+                //                         'reloadonclose' => true]
+                //                    );
+                //
+                //               //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
+                //               //                                             ['title' => TicketTask::getTypeName(), 'reloadonclose' => true]);
+                //               //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
+                //                    echo "</td>";
+                //                } else {
+                //                    $color_class = "class='metademand_metademandtasks'";
+                //                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL(Metademand::class) .
+                //                         "?id=" . $value['link_metademands_id'] . "'>" . $value['link_metademands_id'] . "</a></td>";
+                //                }
 
                 // Name
                 if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
 
-//                    $width = 0;
-//                    $name  = "#metademandTicketTask" . $value['tickettasks_id'];
-//                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . TicketTask::getTypeName() . "' >";
+                    //                    $width = 0;
+                    //                    $name  = "#metademandTicketTask" . $value['tickettasks_id'];
+                    //                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . TicketTask::getTypeName() . "' >";
                     echo "<td $onhover>";
                     echo $value['tickettasks_name'];
-//                    echo "</a>";
-//                    echo Ajax::createIframeModalWindow(
-//                        'metademandTicketTask' . $value['tickettasks_id'],
-//                        Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-//                        ['title'         => TicketTask::getTypeName(),
-//                         'display'       => false,
-//                         'reloadonclose' => true]
-//                    );
+                    //                    echo "</a>";
+                    //                    echo Ajax::createIframeModalWindow(
+                    //                        'metademandTicketTask' . $value['tickettasks_id'],
+                    //                        Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
+                    //                        ['title'         => TicketTask::getTypeName(),
+                    //                         'display'       => false,
+                    //                         'reloadonclose' => true]
+                    //                    );
 
-               //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-               //                                             ['title' => TicketTask::getTypeName(), 'reloadonclose' => true]);
-               //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
+                    //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
+                    //                                             ['title' => TicketTask::getTypeName(), 'reloadonclose' => true]);
+                    //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
                     echo "</td>";
                 } else {
                     $color_class = "class='$metaclass'";
-                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL(Metademand::class) .
-                        "?id=" . $value['link_metademands_id'] . "'>" . \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
+                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL(Metademand::class)
+                        . "?id=" . $value['link_metademands_id'] . "'>" . \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
                 }
 
                 // Entity
@@ -798,7 +805,7 @@ class Task extends CommonDBChild {
                     if (isset($value['itilcategories_id']) && $value['itilcategories_id'] > 0) {
                         $cat = \Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
                     }
-                } else if ($value['type'] == self::MAIL_TYPE) {
+                } elseif ($value['type'] == self::MAIL_TYPE) {
                     if (isset($mailtask->fields['itilcategories_id']) && $mailtask->fields['itilcategories_id'] > 0) {
                         $cat = \Dropdown::getDropdownName("glpi_itilcategories", $mailtask->fields['itilcategories_id']);
                     }
@@ -812,7 +819,7 @@ class Task extends CommonDBChild {
 
                 //assign
                 $techdata = "";
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE ) {
+                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
 
                     if ($value['type'] != self::MAIL_TYPE) {
                         if (isset($value['users_id_assign'])
@@ -972,25 +979,25 @@ class Task extends CommonDBChild {
                 'glpi_plugin_metademands_tickettasks.users_id_observer',
                 'glpi_plugin_metademands_tickettasks.groups_id_requester',
                 'glpi_plugin_metademands_tickettasks.users_id_requester',
-                'glpi_plugin_metademands_tasks.entities_id'
+                'glpi_plugin_metademands_tasks.entities_id',
             ],
             'FROM'      => 'glpi_plugin_metademands_tasks',
             'LEFT JOIN'       => [
                 'glpi_plugin_metademands_tickettasks' => [
                     'ON' => [
                         'glpi_plugin_metademands_tickettasks' => 'plugin_metademands_tasks_id',
-                        'glpi_plugin_metademands_tasks'          => 'id'
-                    ]
+                        'glpi_plugin_metademands_tasks'          => 'id',
+                    ],
                 ],
                 'glpi_plugin_metademands_metademandtasks' => [
                     'ON' => [
                         'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_tasks_id',
-                        'glpi_plugin_metademands_tasks'          => 'id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_tasks'          => 'id',
+                    ],
+                ],
             ],
             'WHERE'       => ['glpi_plugin_metademands_tasks.plugin_metademands_metademands_id' => $metademands_id],
-            'ORDERBY'       => ['glpi_plugin_metademands_tasks.id', 'glpi_plugin_metademands_tasks.completename']
+            'ORDERBY'       => ['glpi_plugin_metademands_tasks.id', 'glpi_plugin_metademands_tasks.completename'],
         ];
 
         if (count($params['condition']) > 0) {
@@ -1029,8 +1036,8 @@ class Task extends CommonDBChild {
                 $options[self::MAIL_TYPE] = __('Mail');
             }
         }
-        if ($metademands_id > 0 &&
-            $metademands->getFromDB($metademands_id)
+        if ($metademands_id > 0
+            && $metademands->getFromDB($metademands_id)
             && isset($metademands->fields['force_create_tasks'])
             && $metademands->fields['force_create_tasks'] == 1) {
             $options[self::TASK_TYPE] = __('Task');
@@ -1068,8 +1075,8 @@ class Task extends CommonDBChild {
     /**
      * Get a child for a level given
      *
-     * @param integer $tasks_id
-     * @param integer $search_level
+     * @param int $tasks_id
+     * @param int $search_level
      *
      * @return array child
      * @throws \GlpitestSQLError
@@ -1116,7 +1123,7 @@ class Task extends CommonDBChild {
             $metas = $dbu->getAllDataFromTable(
                 'glpi_plugin_metademands_metademands',
                 ["`itilcategories_id`" => $input["itilcategories_id"],
-                 "`type`"              => $meta->getField("type")]
+                    "`type`"              => $meta->getField("type")]
             );
 
             if (!empty($metas)) {
@@ -1131,36 +1138,36 @@ class Task extends CommonDBChild {
         return $input;
     }
 
-//   /**
-//    * @param $params
-//    * @param $protocol
-//    *
-//    * @return array
-//    */
-//   static function methodListTasktypes($params, $protocol) {
-//
-//      if (isset ($params['help'])) {
-//         return ['help' => 'bool,optional'];
-//      }
-//
-//      if (!Session::getLoginUserID()) {
-//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-//      }
-//
-//      $tasks  = new self();
-//      $result = $tasks->getTaskTypes();
-//
-//      if (!Session::haveRight("ticket", CREATE)) {
-//         unset($result[0]);// unset ticket option
-//      }
-//
-//      $response = [];
-//      foreach ($result as $key => $taskType) {
-//         $response[] = ['id' => $key + 1, 'value' => $taskType];
-//      }
-//
-//      return $response;
-//   }
+    //   /**
+    //    * @param $params
+    //    * @param $protocol
+    //    *
+    //    * @return array
+    //    */
+    //   static function methodListTasktypes($params, $protocol) {
+    //
+    //      if (isset ($params['help'])) {
+    //         return ['help' => 'bool,optional'];
+    //      }
+    //
+    //      if (!Session::getLoginUserID()) {
+    //         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+    //      }
+    //
+    //      $tasks  = new self();
+    //      $result = $tasks->getTaskTypes();
+    //
+    //      if (!Session::haveRight("ticket", CREATE)) {
+    //         unset($result[0]);// unset ticket option
+    //      }
+    //
+    //      $response = [];
+    //      foreach ($result as $key => $taskType) {
+    //         $response[] = ['id' => $key + 1, 'value' => $taskType];
+    //      }
+    //
+    //      return $response;
+    //   }
 
     /**
      * @param $metademands_id
@@ -1186,8 +1193,8 @@ class Task extends CommonDBChild {
         }
 
         return \Dropdown::showFromArray('plugin_metademands_tasks_id', $data, ['value'   => $selected_value,
-                                                                                'tree'    => true,
-                                                                                'display' => $display]);
+            'tree'    => true,
+            'display' => $display]);
     }
 
     /**
@@ -1201,25 +1208,25 @@ class Task extends CommonDBChild {
         $tab = [];
 
         $tab[] = [
-           'id'   => 'common',
-           'name' => self::getTypeName(1)
+            'id'   => 'common',
+            'name' => self::getTypeName(1),
         ];
 
         $tab[] = [
-           'id'            => '1',
-           'table'         => $this->getTable(),
-           'field'         => 'name',
-           'name'          => __('Name'),
-           'datatype'      => 'itemlink',
-           'itemlink_type' => $this->getType()
+            'id'            => '1',
+            'table'         => $this->getTable(),
+            'field'         => 'name',
+            'name'          => __('Name'),
+            'datatype'      => 'itemlink',
+            'itemlink_type' => $this->getType(),
         ];
 
         $tab[] = [
-           'id'       => '30',
-           'table'    => $this->getTable(),
-           'field'    => 'id',
-           'name'     => __('ID'),
-           'datatype' => 'number'
+            'id'       => '30',
+            'table'    => $this->getTable(),
+            'field'    => 'id',
+            'name'     => __('ID'),
+            'datatype' => 'number',
         ];
 
         return $tab;
@@ -1288,12 +1295,12 @@ class Task extends CommonDBChild {
                     'block_use',
                     $blocks,
                     [
-                       'width'    => '100%',
-                       'multiple' => true,
+                        'width'    => '100%',
+                        'multiple' => true,
                     ]
                 );
                 echo Html::submit(_x('button', 'Post'), ['name'  => 'massiveaction',
-                                                         'class' => 'btn btn-primary']);
+                    'class' => 'btn btn-primary']);
                 return true;
                 break;
         }
@@ -1315,8 +1322,7 @@ class Task extends CommonDBChild {
         MassiveAction $ma,
         CommonDBTM $item,
         array         $ids
-    )
-    {
+    ) {
         $task = new Task();
         $dbu  = new DbUtils();
 
@@ -1324,14 +1330,14 @@ class Task extends CommonDBChild {
             case "updateBlock":
                 $input = $ma->getInput();
                 foreach ($ids as $key) {
-                        $myvalue['block_use'] = json_encode($input['block_use']);
-                        $myvalue['id']        = $key;
-                        if ($task->update($myvalue)) {
-                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
-                        } else {
-                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
-                        }
+                    $myvalue['block_use'] = json_encode($input['block_use']);
+                    $myvalue['id']        = $key;
+                    if ($task->update($myvalue)) {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                    } else {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
                     }
+                }
 
                 break;
         }
