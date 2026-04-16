@@ -2182,7 +2182,7 @@ class Wizard extends CommonDBTM
                         if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
                             $i++;
                             if ($i > 0) {
-                                $name = $value['name'];
+                                $name = empty(Field::displayField($value['id'], 'name')) ? $value['name'] : Field::displayField($value['id'], 'name');
                                 if ($debug || $preview) {
                                     $name .= " #$blockid";
                                 }
