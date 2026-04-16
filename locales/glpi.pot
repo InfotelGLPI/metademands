@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-16 14:54+0000\n"
+"POT-Creation-Date: 2026-04-16 15:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,7 +72,7 @@ msgstr ""
 msgid "Activate supervisor validation"
 msgstr ""
 
-#: src/MailTask.php:244 src/TicketTask.php:375
+#: src/MailTask.php:247 src/TicketTask.php:375
 msgid "Actors"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Add a new option"
 msgstr ""
 
-#: src/Task.php:606
+#: src/Task.php:611
 msgid "Add a task"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgstr ""
 msgid "Block"
 msgstr ""
 
-#: src/Task.php:879 src/Task.php:1282 src/MailTask.php:202 src/Step.php:436
+#: src/Task.php:886 src/Task.php:1289 src/MailTask.php:205 src/Step.php:436
 #: src/Step.php:714 src/Step.php:728 src/FieldOption.php:1566
 #: src/TicketTask.php:232
 #, php-format
@@ -237,7 +237,7 @@ msgstr ""
 msgid "Block overview"
 msgstr ""
 
-#: src/Task.php:661 src/TicketTask.php:257
+#: src/Task.php:666 src/TicketTask.php:257
 msgid "Block parent ticket resolution"
 msgstr ""
 
@@ -245,7 +245,7 @@ msgstr ""
 msgid "Block title"
 msgstr ""
 
-#: src/Task.php:658 src/MailTask.php:194 src/TicketTask.php:225
+#: src/Task.php:663 src/MailTask.php:197 src/TicketTask.php:225
 msgid "Block to use"
 msgstr ""
 
@@ -284,7 +284,7 @@ msgid "Checkbox"
 msgstr ""
 
 #: src/Metademand.php:4012 src/Metademand.php:6411
-#: src/Ticket_Metademand.php:772
+#: src/Ticket_Metademand.php:771
 msgid "Child Ticket"
 msgstr ""
 
@@ -335,7 +335,7 @@ msgstr ""
 msgid "Click here for more informations"
 msgstr ""
 
-#: src/Ticket_Metademand.php:395
+#: src/Ticket_Metademand.php:394
 msgctxt "status"
 msgid "Closed"
 msgstr ""
@@ -700,7 +700,7 @@ msgstr ""
 msgid "Edit by"
 msgstr ""
 
-#: src/MailTask.php:349
+#: src/MailTask.php:359
 msgid "Email sent"
 msgstr ""
 
@@ -783,7 +783,7 @@ msgstr ""
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: src/MailTask.php:344
+#: src/MailTask.php:353
 msgid "Fail to send email"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "Form requester"
 msgstr ""
 
-#: src/Task.php:660 src/MailTask.php:222 src/TicketTask.php:252
+#: src/Task.php:665 src/MailTask.php:225 src/TicketTask.php:252
 msgid "Format the description of the childs ticket as a table"
 msgstr ""
 
@@ -1018,7 +1018,7 @@ msgstr ""
 msgid "In progress"
 msgstr ""
 
-#: src/Ticket_Metademand.php:389
+#: src/Ticket_Metademand.php:388
 msgctxt "status"
 msgid "In progress"
 msgstr ""
@@ -1077,7 +1077,7 @@ msgstr ""
 msgid "Ldap Dropdown"
 msgstr ""
 
-#: src/Task.php:657
+#: src/Task.php:662
 msgid "Level"
 msgstr ""
 
@@ -1110,7 +1110,7 @@ msgid_plural "Link with metademands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ticket_Metademand.php:180 src/Ticket_Metademand.php:184
+#: src/Ticket_Metademand.php:179 src/Ticket_Metademand.php:183
 msgid "Linked opened tickets"
 msgstr ""
 
@@ -1512,7 +1512,7 @@ msgid "Parent ticket tag"
 msgstr ""
 
 #: src/Metademand.php:4030 src/Metademand.php:6427
-#: src/Ticket_Metademand.php:784
+#: src/Ticket_Metademand.php:783
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] ""
@@ -1612,7 +1612,7 @@ msgstr ""
 msgid "Read-Only"
 msgstr ""
 
-#: src/Task.php:832
+#: src/Task.php:839
 msgid "Recipients"
 msgstr ""
 
@@ -1689,7 +1689,7 @@ msgstr[1] ""
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
-#: src/Task.php:858 src/Task.php:867
+#: src/Task.php:865 src/Task.php:874
 msgid "Root"
 msgstr ""
 
@@ -1889,16 +1889,16 @@ msgstr ""
 msgid "Target ticket(s)"
 msgstr ""
 
-#: src/Ticket_Metademand.php:75 src/Ticket_Task.php:65 src/Task.php:79
-#: src/MailTask.php:67 src/MetademandTask.php:63 src/TicketTask.php:71
+#: src/Ticket_Metademand.php:74 src/Ticket_Task.php:65 src/Task.php:80
+#: src/MailTask.php:70 src/MetademandTask.php:63 src/TicketTask.php:71
 msgid "Task creation"
 msgstr ""
 
-#: src/Task.php:338
+#: src/Task.php:339
 msgid "Task type"
 msgstr ""
 
-#: src/Task.php:641
+#: src/Task.php:646
 msgid "Tasks"
 msgstr ""
 
@@ -1932,7 +1932,7 @@ msgstr ""
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: src/Metademand.php:747 src/Metademand.php:853 src/Task.php:1124
+#: src/Metademand.php:747 src/Metademand.php:853 src/Task.php:1131
 #: src/TicketTask.php:781
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
@@ -2126,7 +2126,7 @@ msgstr ""
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: src/Ticket_Metademand.php:392
+#: src/Ticket_Metademand.php:391
 msgctxt "status"
 msgid "To close"
 msgstr ""
@@ -2191,7 +2191,7 @@ msgstr ""
 msgid "Unselect all"
 msgstr ""
 
-#: src/Task.php:1259
+#: src/Task.php:1266
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
@@ -2213,7 +2213,7 @@ msgstr ""
 msgid "Use as basket"
 msgstr ""
 
-#: src/Task.php:659 src/MailTask.php:183 src/TicketTask.php:220
+#: src/Task.php:664 src/MailTask.php:186 src/TicketTask.php:220
 msgid "Use block"
 msgstr ""
 
@@ -2374,7 +2374,7 @@ msgstr ""
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
-#: src/Task.php:483
+#: src/Task.php:484
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
@@ -2404,7 +2404,7 @@ msgstr ""
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: src/Task.php:461
+#: src/Task.php:462
 msgid "You don't have the ticket creation right"
 msgstr ""
 
