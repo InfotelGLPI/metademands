@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 08:17+0000\n"
+"POT-Creation-Date: 2026-04-20 08:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Add attachment"
 msgstr ""
 
-#: src/Wizard.php:1591 src/Wizard.php:1771
+#: src/Wizard.php:1591 src/Wizard.php:1768
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
@@ -205,7 +205,7 @@ msgstr ""
 msgid "Basket summary"
 msgstr ""
 
-#: src/Step.php:445
+#: src/Step.php:414
 msgid ""
 "Be careful if all blocks are not assigned, they will be displayed to the "
 "last assigned group"
@@ -215,14 +215,14 @@ msgstr ""
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: src/Wizard.php:2193 src/Field.php:596 src/Field.php:988 src/Field.php:1403
-#: src/Field.php:3514 src/Field.php:4817 src/Step.php:475 src/Step.php:560
-#: src/Step.php:702
+#: src/Wizard.php:2191 src/Field.php:596 src/Field.php:988 src/Field.php:1403
+#: src/Field.php:3514 src/Field.php:4817 src/Step.php:444 src/Step.php:529
+#: src/Step.php:671
 msgid "Block"
 msgstr ""
 
-#: src/Task.php:886 src/Task.php:1289 src/MailTask.php:205 src/Step.php:436
-#: src/Step.php:714 src/Step.php:728 src/FieldOption.php:1566
+#: src/Task.php:886 src/Task.php:1289 src/MailTask.php:205 src/Step.php:405
+#: src/Step.php:683 src/Step.php:697 src/FieldOption.php:1566
 #: src/TicketTask.php:232
 #, php-format
 msgid "Block %s"
@@ -265,12 +265,12 @@ msgstr ""
 msgid "Cancel /delete a form"
 msgstr ""
 
-#: src/Wizard.php:2328
+#: src/Wizard.php:2326
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: src/Wizard.php:2458 src/Draft.php:692
+#: src/Wizard.php:2459 src/Draft.php:692
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -382,7 +382,7 @@ msgstr ""
 msgid "Confirm the final deletion?"
 msgstr ""
 
-#: src/Wizard.php:2430
+#: src/Wizard.php:2431
 msgid "Confirmation"
 msgstr ""
 
@@ -454,12 +454,12 @@ msgid_plural "Dates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:3620
+#: src/Wizard.php:3630
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3610
+#: src/Wizard.php:3620
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
@@ -498,7 +498,7 @@ msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Step.php:406
+#: src/Step.php:375
 msgid "Define a new visibility"
 msgstr ""
 
@@ -545,7 +545,7 @@ msgctxt "button"
 msgid "Delete permanently"
 msgstr ""
 
-#: src/Wizard.php:2453
+#: src/Wizard.php:2454
 msgid "Delete the draft"
 msgstr ""
 
@@ -554,7 +554,7 @@ msgctxt "button"
 msgid "Delete this line"
 msgstr ""
 
-#: src/Step.php:629
+#: src/Step.php:598
 msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
@@ -737,7 +737,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr ""
 
-#: src/Step.php:1349
+#: src/Step.php:1318
 msgid "Error assigning to next group"
 msgstr ""
 
@@ -800,7 +800,7 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: src/Wizard.php:3671
+#: src/Wizard.php:3681
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -1135,7 +1135,7 @@ msgstr ""
 msgid "List of translations"
 msgstr ""
 
-#: src/Step.php:505
+#: src/Step.php:474
 msgid "List of visibilities"
 msgstr ""
 
@@ -1176,7 +1176,7 @@ msgstr ""
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: src/Step.php:812
+#: src/Step.php:781
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
@@ -1283,9 +1283,9 @@ msgstr ""
 msgid "New model"
 msgstr ""
 
-#: src/Wizard.php:1341 src/Wizard.php:1586 src/Wizard.php:1729
-#: src/Wizard.php:1738 src/Wizard.php:1777 src/Wizard.php:1783
-#: src/Wizard.php:2339 src/Fields/Email.php:345
+#: src/Wizard.php:1341 src/Wizard.php:1586 src/Wizard.php:1725
+#: src/Wizard.php:1734 src/Wizard.php:1774 src/Wizard.php:1780
+#: src/Wizard.php:2337 src/Wizard.php:2340 src/Fields/Email.php:345
 #: src/Fields/Dropdownobject.php:1264 src/Fields/Dropdownmeta.php:1860
 #: src/Fields/Yesno.php:460 src/Fields/Radio.php:688
 #: src/Fields/Dropdown.php:858 src/Fields/Dropdownmultiple.php:1194
@@ -1299,7 +1299,7 @@ msgstr ""
 msgid "Next group in charge of demand"
 msgstr ""
 
-#: src/Step.php:1011 front/nextGroup.form.php:81 front/nextGroup.form.php:88
+#: src/Step.php:980 front/nextGroup.form.php:81 front/nextGroup.form.php:88
 #: front/nextGroup.form.php:98
 msgid "Next recipient"
 msgstr ""
@@ -1364,7 +1364,7 @@ msgstr ""
 msgid "No spaces, no special characters"
 msgstr ""
 
-#: src/Step.php:647
+#: src/Step.php:616
 msgid "No visibility defined"
 msgstr ""
 
@@ -1452,7 +1452,7 @@ msgstr ""
 msgid "One value by line, separated by comma"
 msgstr ""
 
-#: src/Step.php:801
+#: src/Step.php:770
 msgid "Only by supervisor"
 msgstr ""
 
@@ -1464,11 +1464,11 @@ msgstr ""
 msgid "Only users of my groups"
 msgstr ""
 
-#: src/Step.php:609
+#: src/Step.php:578
 msgid "Only visible by supervisor"
 msgstr ""
 
-#: src/Step.php:579 src/Step.php:598
+#: src/Step.php:548 src/Step.php:567
 msgid "Only visible for this group"
 msgid_plural "Only visible for these groups"
 msgstr[0] ""
@@ -1553,15 +1553,15 @@ msgstr ""
 msgid "Pool"
 msgstr ""
 
-#: src/Wizard.php:2336
+#: src/Wizard.php:2334
 msgid "Previous"
 msgstr ""
 
-#: src/Wizard.php:2388
+#: src/Wizard.php:2389
 msgid "Previous data edited"
 msgstr ""
 
-#: src/Wizard.php:2378
+#: src/Wizard.php:2379
 msgid "Previous user"
 msgstr ""
 
@@ -1710,7 +1710,7 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Wizard.php:1581 src/Wizard.php:1768 src/Fields/Email.php:343
+#: src/Wizard.php:1581 src/Wizard.php:1765 src/Fields/Email.php:343
 #: src/Fields/Dropdownobject.php:1263 src/Fields/Dropdownmeta.php:1858
 #: src/Fields/Yesno.php:458 src/Fields/Radio.php:686
 #: src/Fields/Dropdown.php:857 src/Fields/Dropdownmultiple.php:1192
@@ -1722,7 +1722,7 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: src/Wizard.php:1739
+#: src/Wizard.php:1735
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
@@ -1784,7 +1784,7 @@ msgstr ""
 msgid "See top metademands"
 msgstr ""
 
-#: src/Wizard.php:1991
+#: src/Wizard.php:1988
 msgctxt "button"
 msgid "See your basket"
 msgstr ""
@@ -1797,7 +1797,7 @@ msgstr ""
 msgid "Select all"
 msgstr ""
 
-#: src/Step.php:1158
+#: src/Step.php:1127
 msgid "Select the next group"
 msgstr ""
 
@@ -1857,7 +1857,7 @@ msgstr[1] ""
 msgid "Step-by-step mode"
 msgstr ""
 
-#: src/Step.php:558
+#: src/Step.php:527
 msgid "Sub Block"
 msgstr ""
 
@@ -1928,7 +1928,7 @@ msgstr ""
 msgid "Textarea"
 msgstr ""
 
-#: src/Wizard.php:1731
+#: src/Wizard.php:1727
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
@@ -1977,7 +1977,7 @@ msgstr ""
 msgid "The metademand is validated and affected"
 msgstr ""
 
-#: src/Step.php:641
+#: src/Step.php:610
 msgid "The object is created"
 msgstr ""
 
@@ -2018,7 +2018,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr ""
 
-#: src/Step.php:661 src/Step.php:1021 src/Step.php:1201
+#: src/Step.php:630 src/Step.php:990 src/Step.php:1170
 msgid "There is a problem with the setup"
 msgstr ""
 
@@ -2043,11 +2043,11 @@ msgstr ""
 msgid "There was a problem on upload your signature"
 msgstr ""
 
-#: src/Wizard.php:1940
+#: src/Wizard.php:1937
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 
-#: src/Wizard.php:1732
+#: src/Wizard.php:1728
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
@@ -2083,7 +2083,7 @@ msgstr ""
 msgid "This form is in maintenance mode"
 msgstr ""
 
-#: src/Step.php:984
+#: src/Step.php:953
 msgid "This group is already assigned to this block"
 msgstr ""
 
@@ -2139,7 +2139,7 @@ msgstr ""
 msgid "To validate without child"
 msgstr ""
 
-#: src/Wizard.php:3659
+#: src/Wizard.php:3669
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
@@ -2196,7 +2196,7 @@ msgctxt "button"
 msgid "Update block to use"
 msgstr ""
 
-#: src/Wizard.php:2449
+#: src/Wizard.php:2450
 msgid "Update the draft"
 msgstr ""
 
@@ -2255,7 +2255,7 @@ msgstr ""
 msgid "User information to get"
 msgstr ""
 
-#: src/Step.php:1093 src/Step.php:1211
+#: src/Step.php:1062 src/Step.php:1180
 msgctxt "button"
 msgid "Validate"
 msgstr ""
@@ -2304,7 +2304,7 @@ msgstr ""
 msgid "Visibility"
 msgstr ""
 
-#: src/Step.php:613
+#: src/Step.php:582
 msgid "Visible by all"
 msgstr ""
 
@@ -2352,7 +2352,7 @@ msgstr ""
 msgid "Yes / No"
 msgstr ""
 
-#: src/Wizard.php:2674
+#: src/Wizard.php:2675
 msgid ""
 "You are using a public template. This allows you to automatically pre-fill "
 "form fields, making your life easier :)"
@@ -2386,7 +2386,7 @@ msgstr ""
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: src/Wizard.php:1883
+#: src/Wizard.php:1880
 msgid "You do not have access to the form"
 msgstr ""
 
@@ -2394,7 +2394,7 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: src/Wizard.php:2295
+#: src/Wizard.php:2293
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -2424,11 +2424,11 @@ msgstr ""
 msgid "You have duplicates rank!"
 msgstr ""
 
-#: src/Wizard.php:1987
+#: src/Wizard.php:1984
 msgid "You have items on your basket"
 msgstr ""
 
-#: src/Wizard.php:1717 src/Wizard.php:2434
+#: src/Wizard.php:1713 src/Wizard.php:2435
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
@@ -2440,7 +2440,7 @@ msgstr ""
 msgid "You have to select an item"
 msgstr ""
 
-#: src/Step.php:963 src/Step.php:1108
+#: src/Step.php:932 src/Step.php:1077
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 
@@ -2448,7 +2448,7 @@ msgstr ""
 msgid "Your basket"
 msgstr ""
 
-#: src/Step.php:662
+#: src/Step.php:631
 msgid "Your blocks are not all defined"
 msgstr ""
 
@@ -2473,7 +2473,7 @@ msgid ""
 "the following information."
 msgstr ""
 
-#: src/Step.php:954 src/Step.php:1083
+#: src/Step.php:923 src/Step.php:1052
 msgid "Your form will be validated by your supervisor"
 msgstr ""
 
