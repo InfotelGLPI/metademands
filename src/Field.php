@@ -4116,9 +4116,9 @@ border-style: none !important; border-color: initial !important;border-image: in
                     }
 
                     $itemtypes = $CFG_GLPI["linkgroup_types"];
-                    if (count($limit) > 0) {
-                        $itemtypes = $limit;
-                    }
+//                    if (count($limit) > 0) {
+//                        $itemtypes = $limit;
+//                    }
                     foreach ($itemtypes as $itemtype) {
                         if (($item = getItemForItemtype($itemtype))
                             && \Ticket::isPossibleToAssignType($itemtype)) {

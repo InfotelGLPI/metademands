@@ -32,6 +32,7 @@ use CommonDBTM;
 use CommonITILObject;
 use DbUtils;
 use GlpiPlugin\Badges\Badge;
+use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldOption;
@@ -1774,7 +1775,7 @@ class Dropdownmeta extends CommonDBTM
                         $onchange .= "
                         let regex$compteur = $idc;
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-                            
+
                         if(regex$compteur.test(val$compteur)) {
                             tohide[$fields_link] = false;
                         }
@@ -1893,7 +1894,7 @@ class Dropdownmeta extends CommonDBTM
                         $script .= "
                         let regex$compteur = $idc;
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-                            
+
                         if(regex$compteur.test(val$compteur)) {
                             tohide[$tasks_id] = false;
                         }
@@ -2095,7 +2096,7 @@ class Dropdownmeta extends CommonDBTM
                         $onchange .= "
                         let regex$compteur = $idc;
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-                            
+
                         if(regex$compteur.test(val$compteur)) {
                             tohide[$hidden_link] = false;
                         }
@@ -2272,7 +2273,7 @@ class Dropdownmeta extends CommonDBTM
                         $onchange .= "
                         let regex$compteur = $idc;
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-                            
+
                         if(regex$compteur.test(val$compteur)) {
                             tohide[$hidden_block] = false;
                         }
@@ -2377,8 +2378,16 @@ class Dropdownmeta extends CommonDBTM
             }
         }
 
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $onchange = "window.metademandconditionsparams = {};
+        $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
+        $condition_fields = [];
+        foreach ($conditions as $cid => $condition) {
+            $condition_fields[] = $condition['plugin_metademands_fields_id'];
+        }
+
+        if ($show_rule != Condition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
+
+            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+            $onchange = "window.metademandconditionsparams = {};
                         metademandconditionsparams.submittitle = '$submittitle';
                         metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
@@ -2387,17 +2396,18 @@ class Dropdownmeta extends CommonDBTM
                         metademandconditionsparams.use_richtext = '$use_richtext';
                         metademandconditionsparams.richtext_ids = {$richtext_id};
                         metademandconditionsparams.root_doc = '$root_doc';";
-        $name = "field[" . $data["id"] . "]";
-        if ($data["item"] == "ITILCategory_Metademands") {
-            $name = "field_plugin_servicecatalog_itilcategories_id";
-        }
-        $onchange .= "$('[name=\"$name\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-        $onchange .= "});";
+            $name = "field[" . $data["id"] . "]";
+            if ($data["item"] == "ITILCategory_Metademands") {
+                $name = "field_plugin_servicecatalog_itilcategories_id";
+            }
+            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
+            $onchange .= "});";
 
-        echo Html::scriptBlock(
-            '$(document).ready(function() {' . $onchange . '});'
-        );
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $onchange . '});'
+            );
+        }
     }
 
 

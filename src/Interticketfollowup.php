@@ -465,17 +465,17 @@ class Interticketfollowup extends CommonITILObject
                     $list_tickets = 0;
                 }
                 $follow  = new self();
-                $follows = $follow->find([
-                    'OR'  => [
-
-                        'AND' => [
-                            'tickets_id' => $list_tickets,
-                            'targets_id' => 0,
-                        ],
-                        ['targets_id' => $items_id],
-                        ['tickets_id' => $items_id],
-
-                    ],
+                $crits = [
+//                    'OR'  => [
+//
+//                        'AND' => [
+//                            'tickets_id' => $list_tickets,
+//                            'targets_id' => 0,
+//                        ],
+//                        ['targets_id' => $items_id],
+//                        ['tickets_id' => $items_id],
+//
+//                    ],
                     'AND' => [
                         'OR' => [
 
@@ -488,7 +488,8 @@ class Interticketfollowup extends CommonITILObject
 
                         ],
                     ],
-                ]);
+                ];
+                $follows = $follow->find($crits);
             }
 
             foreach ($follows as $follow) {
