@@ -706,74 +706,76 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
 {
 
     var formDatas;
-    formDatas = $('#wizard_form').serializeArray();
+    if (metademandconditionsparams.show_rule != 1) {
+        formDatas = $('#wizard_form').serializeArray();
 
-    if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
-        for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
-            let field = 'field' + metademandconditionsparams.richtext_ids[i];
+        if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
+            for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
+                let field = 'field' + metademandconditionsparams.richtext_ids[i];
 
-            if (typeof tinyMCE.get(field) !== 'undefined') {
-                if (tinyMCE.get(field).getContent() !== 'undefined') {
-                    let content = tinyMCE.get(field).getContent();
-                    let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
-                    formDatas.push({
-                        name: name,
-                        value: content
-                    });
+                if (typeof tinyMCE.get(field) !== 'undefined') {
+                    if (tinyMCE.get(field).getContent() !== 'undefined') {
+                        let content = tinyMCE.get(field).getContent();
+                        let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
+                        formDatas.push({
+                            name: name,
+                            value: content
+                        });
+                    }
                 }
             }
         }
+
+        $.ajax({
+            url: metademandconditionsparams.root_doc + '/ajax/condition.php',
+            type: 'POST',
+            datatype: 'JSON',
+            data: formDatas,
+            success: function (response) {
+                if (response) {
+                    eval('valid_condition=' + response);
+                    if (valid_condition) {
+                        if (metademandconditionsparams.show_button == 1) {
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                                document.getElementById('nextBtn').style.display = 'none';
+                            }
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                                document.getElementById('nextBtn').style.display = 'none';
+                            }
+                        } else {
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                                document.getElementById('nextBtn').style.display = 'inline';
+                            }
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                                document.getElementById('nextBtn').style.display = 'inline';
+                            }
+                        }
+                    } else {
+                        if (metademandconditionsparams.show_button == 1) {
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                                document.getElementById('nextBtn').style.display = 'inline';
+                            }
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                                document.getElementById('nextBtn').style.display = 'inline';
+                            }
+                        } else {
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+                                document.getElementById('nextBtn').style.display = 'none';
+                            }
+                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
+                                document.getElementById('nextBtn').style.display = 'none';
+                            }
+                        }
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+            }
+        });
     }
-
-    $.ajax({
-        url: metademandconditionsparams.root_doc + '/ajax/condition.php',
-        type: 'POST',
-        datatype: 'JSON',
-        data: formDatas,
-        success: function (response) {
-            if (response) {
-                eval('valid_condition=' + response);
-                if (valid_condition) {
-                    if (metademandconditionsparams.show_button == 1) {
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                            document.getElementById('nextBtn').style.display = 'none';
-                        }
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                            document.getElementById('nextBtn').style.display = 'none';
-                        }
-                    } else {
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                            document.getElementById('nextBtn').style.display = 'inline';
-                        }
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                            document.getElementById('nextBtn').style.display = 'inline';
-                        }
-                    }
-                } else {
-                    if (metademandconditionsparams.show_button == 1) {
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                            document.getElementById('nextBtn').style.display = 'inline';
-                        }
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                            document.getElementById('nextBtn').style.display = 'inline';
-                        }
-                    } else {
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                            document.getElementById('nextBtn').style.display = 'none';
-                        }
-                        if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                            document.getElementById('nextBtn').style.display = 'none';
-                        }
-                    }
-                }
-            }
-        },
-        error: function (xhr, status, error) {
-            console.log(xhr);
-            console.log(status);
-            console.log(error);
-        }
-    });
 }
 
 

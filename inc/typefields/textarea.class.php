@@ -593,8 +593,15 @@ class PluginMetademandsTextarea extends CommonDBTM
             }
         }
 
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $onchange = "window.metademandconditionsparams = {};
+        $conditions = PluginMetademandsCondition::conditionsTab($data['plugin_metademands_metademands_id']);
+        $condition_fields = [];
+        foreach ($conditions as $cid => $condition) {
+            $condition_fields[] = $condition['plugin_metademands_fields_id'];
+        }
+
+        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
+            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+            $onchange = "window.metademandconditionsparams = {};
                         metademandconditionsparams.submittitle = '$submittitle';
                         metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
@@ -604,8 +611,8 @@ class PluginMetademandsTextarea extends CommonDBTM
                         metademandconditionsparams.richtext_ids = {$richtext_id};
                         metademandconditionsparams.root_doc = '$root_doc';";
 
-        if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
-            $onchange .= "if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
+            if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
+                $onchange .= "if (typeof tinyMCE !== 'undefined' && metademandconditionsparams.use_richtext) {
                             for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
                                 let field = 'field' + metademandconditionsparams.richtext_ids[i];
                                 let editor = tinyMCE.get(field);
@@ -617,15 +624,16 @@ class PluginMetademandsTextarea extends CommonDBTM
                                 }
                             }
                         }";
-        } else {
-            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-            $onchange .= "});";
-        }
+            } else {
+                $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
+                $onchange .= "});";
+            }
 
-        echo Html::scriptBlock(
-            '$(document).ready(function() {' . $onchange . '});'
-        );
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $onchange . '});'
+            );
+        }
     }
 
     /**

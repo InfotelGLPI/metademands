@@ -86,7 +86,7 @@ class PluginMetademandsUrl extends CommonDBTM
                             $(\"[name='field[$ID]']\").ready(function() {
                                  $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: { 
+                                     data: {
                                          id : $(\"[name='field[$ID]']\").val()
                                      },
                                   success: function(response){
@@ -182,7 +182,7 @@ class PluginMetademandsUrl extends CommonDBTM
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val(),0
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -381,7 +381,7 @@ class PluginMetademandsUrl extends CommonDBTM
                                        }
                                     },
                                 });
-                                 
+
                                  ";
                     $script .= "}";
                 }
@@ -629,9 +629,15 @@ class PluginMetademandsUrl extends CommonDBTM
                 $$key = $metaparams[$key];
             }
         }
+        $conditions = PluginMetademandsCondition::conditionsTab($data['plugin_metademands_metademands_id']);
+        $condition_fields = [];
+        foreach ($conditions as $cid => $condition) {
+            $condition_fields[] = $condition['plugin_metademands_fields_id'];
+        }
 
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $onchange = "window.metademandconditionsparams = {};
+        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
+            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+            $onchange = "window.metademandconditionsparams = {};
                         metademandconditionsparams.submittitle = '$submittitle';
                         metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
@@ -641,13 +647,14 @@ class PluginMetademandsUrl extends CommonDBTM
                         metademandconditionsparams.richtext_ids = {$richtext_id};
                         metademandconditionsparams.root_doc = '$root_doc';";
 
-        $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-        $onchange .= "});";
+            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
+            $onchange .= "});";
 
-        echo Html::scriptBlock(
-            '$(document).ready(function() {' . $onchange . '});'
-        );
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $onchange . '});'
+            );
+        }
     }
 
     public static function getFieldValue($field)

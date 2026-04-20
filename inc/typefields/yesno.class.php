@@ -853,9 +853,15 @@ class PluginMetademandsYesno extends CommonDBTM
                 $$key = $metaparams[$key];
             }
         }
+        $conditions = PluginMetademandsCondition::conditionsTab($data['plugin_metademands_metademands_id']);
+        $condition_fields = [];
+        foreach ($conditions as $cid => $condition) {
+            $condition_fields[] = $condition['plugin_metademands_fields_id'];
+        }
 
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $onchange = "window.metademandconditionsparams = {};
+        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
+            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+            $onchange = "window.metademandconditionsparams = {};
                         metademandconditionsparams.submittitle = '$submittitle';
                         metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
@@ -864,14 +870,15 @@ class PluginMetademandsYesno extends CommonDBTM
                         metademandconditionsparams.use_richtext = '$use_richtext';
                         metademandconditionsparams.richtext_ids = {$richtext_id};
                         metademandconditionsparams.root_doc = '$root_doc';";
-        $name = "field[" . $data["id"] . "]";
-        $onchange .= "$('[name=\"$name\"]').change(function() {";
-        $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-        $onchange .= "});";
+            $name = "field[" . $data["id"] . "]";
+            $onchange .= "$('[name=\"$name\"]').change(function() {";
+            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
+            $onchange .= "});";
 
-        echo Html::scriptBlock(
-            '$(document).ready(function() {' . $onchange . '});'
-        );
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $onchange . '});'
+            );
+        }
     }
 
     public static function getFieldValue($field)

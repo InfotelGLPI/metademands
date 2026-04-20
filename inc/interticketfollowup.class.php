@@ -203,17 +203,17 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                     $list_tickets = 0;
                 }
                 $follow  = new self();
-                $follows = $follow->find([
-                    'OR'  => [
-
-                        'AND' => [
-                            'tickets_id' => $list_tickets,
-                            'targets_id' => 0,
-                        ],
-                        ['targets_id' => $items_id],
-                        ['tickets_id' => $items_id],
-
-                    ],
+                $crits = [
+//                    'OR'  => [
+//
+//                        'AND' => [
+//                            'tickets_id' => $list_tickets,
+//                            'targets_id' => 0,
+//                        ],
+//                        ['targets_id' => $items_id],
+//                        ['tickets_id' => $items_id],
+//
+//                    ],
                     'AND' => [
                         'OR' => [
 
@@ -226,11 +226,12 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
 
                         ],
                     ],
-                ]);
+                ];
+                $follows = $follow->find($crits);
             }
 
             foreach ($follows as $follow) {
-                $follow['can_edit']                                      = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID()) ? true : false;
+                $follow['can_edit'] = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID()) ? true : false;
                 $item['timeline'][self::getType() . "_" . $follow['id']] = [
                     'type'     => self::getType(),
                     'item'     => $follow,

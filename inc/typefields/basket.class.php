@@ -594,7 +594,7 @@ class PluginMetademandsBasket extends CommonDBTM
                          $('select[name=\"checkbox_id\"]').val(),
                          0
                   ];
-                     
+
                      reloadviewOption(formOption);
                  });";
 
@@ -733,7 +733,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
                         $onchange .= "if($(this).val() == $idc){
                                 if($fields_link in tohide){
-    
+
                                 }else{
                                    tohide[$fields_link] = true;
                                 }
@@ -863,7 +863,7 @@ class PluginMetademandsBasket extends CommonDBTM
                          tohide[$tasks_id] = false;
                       ";
 
-                    $script .= "$.each( tohide, function( key, value ) {           
+                    $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
@@ -901,7 +901,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                     },
                             });
                          }
-            
+
             ";
                     if ($withquantity == false) {
                         $script .= "}";
@@ -1878,7 +1878,7 @@ class PluginMetademandsBasket extends CommonDBTM
                            });
                            $('#prevBtn').hide();
                            $('.step_wizard').hide();
-                          
+
                         </script>";
                 //            }
             }
@@ -1899,16 +1899,23 @@ class PluginMetademandsBasket extends CommonDBTM
                 $$key = $metaparams[$key];
             }
         }
-        $withquantity = false;
-        $custom_values = isset($data['custom_values']) ? PluginMetademandsFieldParameter::_unserialize(
-            $data['custom_values']
-        ) : [];
-        if (isset($custom_values[0]) && $custom_values[0] == 1) {
-            $withquantity = true;
+        $conditions = PluginMetademandsCondition::conditionsTab($data['plugin_metademands_metademands_id']);
+        $condition_fields = [];
+        foreach ($conditions as $cid => $condition) {
+            $condition_fields[] = $condition['plugin_metademands_fields_id'];
         }
 
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $onchange = "window.metademandconditionsparams = {};
+        if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
+            $withquantity = false;
+            $custom_values = isset($data['custom_values']) ? PluginMetademandsFieldParameter::_unserialize(
+                $data['custom_values']
+            ) : [];
+            if (isset($custom_values[0]) && $custom_values[0] == 1) {
+                $withquantity = true;
+            }
+
+            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
+            $onchange = "window.metademandconditionsparams = {};
                         metademandconditionsparams.submittitle = '$submittitle';
                         metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
@@ -1918,19 +1925,20 @@ class PluginMetademandsBasket extends CommonDBTM
                         metademandconditionsparams.richtext_ids = {$richtext_id};
                         metademandconditionsparams.root_doc = '$root_doc';";
 
-        if ($withquantity == false) {
-            $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-        } else {
-            $name = "quantity[" . $data["id"] . "]";
+            if ($withquantity == false) {
+                $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            } else {
+                $name = "quantity[" . $data["id"] . "]";
 
-            $onchange .= "$('[name^=\"$name\"]').change(function() {";
+                $onchange .= "$('[name^=\"$name\"]').change(function() {";
+            }
+            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
+            $onchange .= "});";
+
+            echo Html::scriptBlock(
+                '$(document).ready(function() {' . $onchange . '});'
+            );
         }
-        $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-        $onchange .= "});";
-
-        echo Html::scriptBlock(
-            '$(document).ready(function() {' . $onchange . '});'
-        );
     }
 
     public static function getFieldValue(
