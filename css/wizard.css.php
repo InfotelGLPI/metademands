@@ -31,6 +31,22 @@ div[class="btnsc-normal"] {
    background-color: #FFF;
 }
 
+div[class="readonly-btnsc-normal"] {
+    margin: 0 10px 10px 0;
+    height: 200px !important;
+    user-drag: element;
+    text-align: center;
+    -moz-border-radius: 10px;
+    width: 250px;
+    float: left;
+    list-style-type: none;
+    padding: 4px 15px 15px 15px;
+    overflow: auto;
+    user-drag: element;
+    border: solid #CCC 1px;
+    background-color: #FFF;
+}
+
 div[class="btnsc-normal-type"] {
     margin: 0 10px 10px 0;
     /*height: 260px !important;*/

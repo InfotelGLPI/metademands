@@ -208,7 +208,7 @@ function plugin_metademands_wizard_validateForm(metademandparams)
                         ko++;
                     } else {
                         $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                        $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                        // $('[name=\"' + fieldname + '\"]').removeAttr('required');
                         if (y[i].type === 'text') {
                             if (y[i].pattern) {
                                 let regex = new RegExp(y[i].pattern);
@@ -225,7 +225,7 @@ function plugin_metademands_wizard_validateForm(metademandparams)
                         }
                         //hack for date
                         $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
-                        $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
+                        // $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
 
                         //                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                     }
@@ -642,8 +642,13 @@ function plugin_metademands_wizard_displayStepButton(metademandparams)
             } else {
                 if (create) {
                     document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                    document.getElementById('nextBtn2').style.display = 'none';
+                } else if (metademandparams.changestepbystepoption) {
+                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                    document.getElementById('nextBtn2').style.display = 'inline';
                 } else {
                     document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                    document.getElementById('nextBtn2').style.display = 'none';
                 }
             }
         } else {
@@ -779,7 +784,7 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
 }
 
 
-async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparams, metademandconditionsparams)
+async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparams, metademandconditionsparams, ischangestepbystepoption)
 {
 
     // This function will figure out which tab to display
@@ -967,7 +972,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                 document.querySelector('.scrollable-tabs').scrollBy({left: 150, behavior: 'smooth'});
             }
 
-            if (!metademandparams.listStepBlock.includes(id_bloc)) {
+            if (!metademandparams.listStepBlock.includes(id_bloc) || (metademandparams.changestepbystepoption && !ischangestepbystepoption)) {
                 if (typeof tinyMCE !== 'undefined') {
                     tinyMCE.triggerSave();
                 }
@@ -980,7 +985,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                 arrayDatas.push({name: 'action', value: 'nextUser'});
                 arrayDatas.push({name: 'form_name', value: metademandparams.nameform});
                 arrayDatas.push({name: 'update_stepform', value: metademandparams.updatestepform});
-                if (metademandparams.havenextuser == true) {
+                if (metademandparams.havenextuser == true && ischangestepbystepoption == false) {
                     plugin_metademands_wizard_showStep(metademandparams.root_doc, arrayDatas);
                 } else {
                     plugin_metademands_wizard_nextUser(metademandparams.root_doc, arrayDatas);

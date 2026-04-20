@@ -1561,17 +1561,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 $updatestepform = 1;
             }
         }
-
+        $changestepbystepoption = false;
         if ($metademands->fields['step_by_step_mode'] == 1) {
             $metademandsconfigsteps = new PluginMetademandsConfigstep();
             foreach ($metademandsconfigsteps->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]) as $row) {
                 if ($row['change_step_by_step_option'] == 1) {
-                    $block_id_now = $block_id == 0 ? 1 : $block_id;
-                    $listStepBlocks = PluginMetademandsStep::cleanListBlock(
-                        $listStepBlocks,
-                        $block_id_now,
-                        $metademands->fields['id']
-                    );
+                    $changestepbystepoption = true;
                 }
             }
         }
@@ -1644,6 +1639,7 @@ class PluginMetademandsWizard extends CommonDBTM
         //For multi User forms
         $metaparams['havenextuser'] = $havenextuser;
         $metaparams['updatestepform'] = $updatestepform;
+        $metaparams['changestepbystepoption'] = $changestepbystepoption;
         //End For multi User forms
 
         //End Use as step parameters
@@ -1971,6 +1967,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         metademandparams.use_as_step = '$use_as_step';
                         metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                         metademandparams.havenextuser = '$havenextuser';
+                        metademandparams.changestepbystepoption = '$changestepbystepoption';
                         metademandparams.updatestepform = '$updatestepform';
                         metademandparams.submitsteptitle = '$submitsteptitle';
                         metademandparams.nextsteptitle = '$nextsteptitle';
@@ -2185,6 +2182,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
                 echo "&nbsp;<button type='button' id='nextBtn' style='margin-right: 8px;font-size: 14px !important;'  class='btn btn-primary'>";
+                echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
+
+                echo "&nbsp;<button type='button' id='nextBtn2' style='margin-right: 8px;font-size: 14px !important;display: none'  class='btn btn-primary'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 
@@ -2894,6 +2894,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademandparams.use_as_step = '$use_as_step';
                     metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
                     metademandparams.havenextuser = '$havenextuser';
+                    metademandparams.changestepbystepoption = '$changestepbystepoption';
                     metademandparams.updatestepform = '$updatestepform';
                     metademandparams.submitsteptitle = '$submitsteptitle';
                     metademandparams.nextsteptitle = '$nextsteptitle';
@@ -2910,6 +2911,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     const prevBtn = document.getElementById('prevBtn');
                     const nextBtn = document.getElementById('nextBtn');
+                    const nextBtn2 = document.getElementById('nextBtn2');
 
                     firstnumTab = plugin_metademands_wizard_findFirstTab($block_id, metademandparams);
 
@@ -2920,7 +2922,14 @@ class PluginMetademandsWizard extends CommonDBTM
                     });
 
                     nextBtn.addEventListener('click', async () => {
-                          const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams);
+                          const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams, false);
+                          if (result !== false) {
+                            plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
+                          }
+                        });
+                    
+                    nextBtn2.addEventListener('click', async () => {
+                          const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams, true);
                           if (result !== false) {
                             plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
                           }
