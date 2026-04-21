@@ -1,0 +1,8 @@
+<phpunit bootstrap="../../tests/bootstrap.php" colors="true" testdox="true">
+   <testsuites>
+      <testsuite name="Integration">
+         <file>tests/MetademandTest.php</file>
+         <file>tests/StepTest.php</file>
+      </testsuite>
+   </testsuites>
+</phpunit>
