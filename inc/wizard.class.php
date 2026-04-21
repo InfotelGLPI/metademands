@@ -2927,7 +2927,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
                           }
                         });
-                    
+
                     nextBtn2.addEventListener('click', async () => {
                           const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams, true);
                           if (result !== false) {

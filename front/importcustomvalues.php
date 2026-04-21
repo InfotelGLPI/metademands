@@ -47,7 +47,9 @@ if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields
     );
 
 
-    if (!empty($_FILES['importFrm']['name']) && in_array($_FILES['importFrm']['type'], $csvMimes)) {
+    $finfo    = new finfo(FILEINFO_MIME_TYPE);
+    $realMime = $finfo->file($_FILES['importFrm']['tmp_name']);
+    if (!empty($_FILES['importFrm']['name']) && in_array($realMime, $csvMimes)) {
         if (($handle = fopen($_FILES['importFrm']['tmp_name'], "r")) !== false) {
             $rank = 0;
             $fieldcustom = new PluginMetademandsFieldCustomvalue();

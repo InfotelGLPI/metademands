@@ -36,7 +36,11 @@ Html::header_nocache();
 Session::checkRight("plugin_metademands", UPDATE);
 
 if (isset($_POST['itemtype']) && isset($_POST['language'])) {
-   $item = new $_POST['itemtype'];
-   $item->getFromDB($_POST['items_id']);
-   PluginMetademandsFieldTranslation::dropdownFields($item, $_POST['language']);
+    $item = getItemForItemtype($_POST['itemtype']);
+    if ($item === false) {
+        echo __('Access denied');
+    } else {
+        $item->getFromDB((int) $_POST['items_id']);
+        PluginMetademandsFieldTranslation::dropdownFields($item, $_POST['language']);
+    }
 }

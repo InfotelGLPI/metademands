@@ -28,6 +28,8 @@
 
 include('../../../inc/includes.php');
 
+Session::checkRight('plugin_metademands', UPDATE);
+
 $translation = new PluginMetademandsBasketobjectTranslation();
 if (isset($_POST['add'])) {
     $translation->add($_POST);

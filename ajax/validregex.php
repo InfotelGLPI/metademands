@@ -33,16 +33,23 @@ include('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
+header('Content-Type: text/plain; charset=UTF-8');
 
 if (isset($_POST['regex']) && isset($_POST['valeur'])) {
-    $_POST['regex'] = stripcslashes($_POST['regex']);
     if (strpos($_POST['valeur'], Dropdown::EMPTY_VALUE) !== false) {
         $_POST['valeur'] = str_replace(Dropdown::EMPTY_VALUE, '', $_POST['valeur']);
     }
-    if (preg_match($_POST['regex'], $_POST['valeur'])) {
+    $saved_limit = ini_set('pcre.backtrack_limit', 100000);
+    $result = @preg_match($_POST['regex'], $_POST['valeur']);
+    ini_set('pcre.backtrack_limit', $saved_limit);
+    if ($result === false) {
+        echo 'invalid_regex';
+    } elseif ($result) {
         echo 'true';
     } else {
-        echo 'false';
+        echo htmlspecialchars($_POST['regex'], ENT_QUOTES, 'UTF-8');
+        echo htmlspecialchars($_POST['valeur'], ENT_QUOTES, 'UTF-8');
+        echo 'false2';
     }
 } else {
     echo 'false';

@@ -108,4 +108,5 @@ $metademands->getFromDB($_POST['metademands_id']);
 $metaconditionsparams = PluginMetademandsWizard::getConditionsParams($metademands);
 $data['id'] = $_POST['fields_id'];
 $data['item'] = Location::getType();
+$data['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
 PluginMetademandsDropdown::checkConditions($data, $metaconditionsparams);

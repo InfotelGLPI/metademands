@@ -94,7 +94,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
             "
                      var myelement$rand = '#up" . $rank . "';
                      var bloc$rand = 'bloc" . $rank . "';
-                     $(myelement$rand).click(function() {     
+                     $(myelement$rand).click(function() {
                          if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
                              $('[bloc-hideid =' + bloc$rand + ']').hide();
                              $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');

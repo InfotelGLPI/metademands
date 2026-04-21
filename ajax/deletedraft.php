@@ -31,11 +31,16 @@ include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-$users_id                          = $_POST['users_id'];
-$plugin_metademands_metademands_id = $_POST['plugin_metademands_metademands_id'];
-$draft_id                          = $_POST['drafts_id'];
+Session::checkLoginUser();
+
+$users_id                          = Session::getLoginUserID();
+$plugin_metademands_metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
+$draft_id                          = (int) $_POST['drafts_id'];
 
 $self = new PluginMetademandsDraft();
+if (!$self->getFromDB($draft_id) || (int) $self->fields['users_id'] !== $users_id) {
+    echo __('Access denied');
+}
 $self->deleteByCriteria(['id' => $draft_id]);
 
 $values = new PluginMetademandsDraft_Value();
