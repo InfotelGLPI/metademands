@@ -139,6 +139,10 @@ jobs:
           --db-password=""
         working-directory: glpi
 
+      - name: Install metademands plugin Composer dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --no-progress
+        working-directory: glpi/plugins/metademands
+
       - name: Install metademands plugin
         run: |
           php bin/console glpi:plugin:install  --no-interaction --env=testing metademands
