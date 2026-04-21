@@ -42,6 +42,7 @@ class MetademandTest extends DbTestCase
         ]);
 
         $this->assertFalse($result);
+        $this->hasSessionMessages(1, ['Object to create is mandatory']);
     }
 
     public function testPrepareInputForAddJsonEncodesItilCategoriesId(): void
@@ -141,6 +142,7 @@ class MetademandTest extends DbTestCase
         $this->createItem(Step::class, [
             'plugin_metademands_metademands_id' => $metademand->getID(),
             'block_id'                          => 1,
+            'groups_id'                         => 0,
         ]);
 
         $metademand->delete(['id' => $metademand->getID()], true);

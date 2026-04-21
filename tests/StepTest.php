@@ -28,6 +28,7 @@ class StepTest extends DbTestCase
         $step = $this->createItem(Step::class, [
             'plugin_metademands_metademands_id' => $metademand->getID(),
             'block_id'                          => 1,
+            'groups_id'                         => 0,
         ]);
 
         $this->assertGreaterThan(0, $step->getID());
@@ -46,10 +47,12 @@ class StepTest extends DbTestCase
         $this->createItem(Step::class, [
             'plugin_metademands_metademands_id' => $metademand->getID(),
             'block_id'                          => 1,
+            'groups_id'                         => 0,
         ]);
         $this->createItem(Step::class, [
             'plugin_metademands_metademands_id' => $metademand->getID(),
             'block_id'                          => 2,
+            'groups_id'                         => 0,
         ]);
 
         $count = countElementsInTable(
