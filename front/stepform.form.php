@@ -29,6 +29,8 @@
 
 use GlpiPlugin\Metademands\Stepform;
 
+Session::checkRight('plugin_metademands', UPDATE);
+
 if (!isset($_GET["id"])) {
    $_GET["id"] = "";
 }
@@ -39,13 +41,15 @@ if (!isset($_GET["withtemplate"])) {
 if (isset($_POST['delete_form_from_list'])) {
 
     $step = new Stepform();
-    $step->deleteAfterCreate($_POST['plugin_metademands_stepforms_id'], true);
+    $step->check((int) $_POST['plugin_metademands_stepforms_id'], DELETE);
+    $step->deleteAfterCreate((int) $_POST['plugin_metademands_stepforms_id'], true);
     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php");
 
 } else if (isset($_POST['delete_form_from_metademands'])) {
 
     $step = new Stepform();
-    $step->deleteAfterCreate($_POST['plugin_metademands_stepforms_id'], false);
+    $step->check((int) $_POST['plugin_metademands_stepforms_id'], DELETE);
+    $step->deleteAfterCreate((int) $_POST['plugin_metademands_stepforms_id'], false);
 
     Html::back();
 

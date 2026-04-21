@@ -129,4 +129,5 @@ $metademands->getFromDB($_POST['metademands_id']);
 $metaconditionsparams = Wizard::getConditionsParams($metademands);
 $data['id'] = $_POST['fields_id'];
 $data['item'] = User::getType();
+$data['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
 Dropdownobject::checkConditions($data, $metaconditionsparams);

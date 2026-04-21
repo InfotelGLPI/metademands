@@ -38,7 +38,6 @@ use GlpiPlugin\Servicecatalog\Main;
 use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Metademands\Config;
 
-include('../../../inc/includes.php');
 Session::checkLoginUser();
 
 global $CFG_GLPI;

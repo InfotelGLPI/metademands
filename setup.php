@@ -85,15 +85,15 @@ function plugin_init_metademands()
     $tiles_manager = TilesManager::getInstance();
     $tiles_manager->registerPluginTileType(new MetademandPageTile());
 
-    $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
-    $PLUGIN_HOOKS['change_profile']['metademands'] = [Profile::class, 'initProfile'];
+    $PLUGIN_HOOKS[Hooks::CSRF_COMPLIANT]['metademands'] = true;
+    $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['metademands'] = [Profile::class, 'initProfile'];
     $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'] = ['scripts/metademands.js', 'scripts/metademands_freelines.js'];
     $PLUGIN_HOOKS[Hooks::ADD_CSS]['metademands'] = ['css/metademands.css'];
     //    $PLUGIN_HOOKS['add_css']['metademands'] = ['css/range.scss'];
     // add minidashboard
-    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = 'plugin_metademands_hook_dashboard_cards';
+    $PLUGIN_HOOKS[Hooks::DASHBOARD_CARDS]['metademands'] = 'plugin_metademands_hook_dashboard_cards';
 
-    $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
+    $PLUGIN_HOOKS[Hooks::USE_MASSIVE_ACTION]['metademands'] = 1;
     $_SESSION["glpi_plugin_metademands_loaded"] = 0;
 
     if (Session::getLoginUserID()) {
@@ -134,12 +134,12 @@ function plugin_init_metademands()
             Resource::class
                 => [Metademand_Resource::class, 'redirectFormForResource'],
         ];
-        $PLUGIN_HOOKS['item_empty']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::ITEM_EMPTY]['metademands'] = [
             'Ticket'
                 => [Ticket::class, 'emptyTicket'],
         ];
 
-        $PLUGIN_HOOKS['pre_item_purge']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::PRE_ITEM_PURGE]['metademands'] = [
             'Profile'
                 => [Profile::class, 'purgeProfiles'],
             'Ticket' => 'plugin_metademands_item_purge',
@@ -149,7 +149,7 @@ function plugin_init_metademands()
                 => [TicketField::class, 'post_delete_predefinedField'],
         ];
 
-        $PLUGIN_HOOKS['item_update']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['metademands'] = [
             'Ticket'
                 => [Ticket::class, 'post_update_ticket'],
             'ITILCategory'
@@ -158,12 +158,12 @@ function plugin_init_metademands()
                 => [TicketField::class, 'update_category_predefinedFields'],
         ];
 
-        $PLUGIN_HOOKS['pre_item_update']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['metademands'] = [
             'Ticket'
                 => [Ticket::class, 'pre_update_ticket'],
         ];
 
-        $PLUGIN_HOOKS['item_add']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::ITEM_ADD]['metademands'] = [
             'TicketTemplateMandatoryField'
                 => [TicketField::class, 'post_add_mandatoryField'],
             'TicketTemplatePredefinedField'
@@ -176,16 +176,16 @@ function plugin_init_metademands()
                 => [Ticket::class, 'post_add_ticket'],
         ];
 
-        $PLUGIN_HOOKS['pre_item_add']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands'] = [
             'Ticket'
                 => [Ticket::class, 'pre_add_ticket'],
         ];
 
-        $PLUGIN_HOOKS['item_transfer']['metademands'] = 'plugin_item_transfer_metademands';
+        $PLUGIN_HOOKS[Hooks::ITEM_TRANSFER]['metademands'] = 'plugin_item_transfer_metademands';
 
         if (Session::haveRight("plugin_metademands", READ)
             || Session::haveRight('plugin_metademands_createmeta', READ)) {
-            $PLUGIN_HOOKS['menu_toadd']['metademands'] = [
+            $PLUGIN_HOOKS[Hooks::MENU_TOADD]['metademands'] = [
                 'helpdesk' => Menu::class,
                 'management' => Basketobject::class,
             ];
@@ -194,8 +194,8 @@ function plugin_init_metademands()
         if (Session::haveRight("plugin_metademands", READ)
             && !Plugin::isPluginActive('servicecatalog')
             && !Session::haveRight("plugin_metademands_in_menu", READ)) {
-            $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php';
-            $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['metademands'] = Metademand::getIcon();
+            $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY]['metademands'] = PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php';
+            $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY_ICON]['metademands'] = Metademand::getIcon();
         }
 
         if (!isset($_SESSION["plugin_metademands_on_login_loaded"])
@@ -207,18 +207,7 @@ function plugin_init_metademands()
                 //                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
 
 
-                $dest = PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php';
-                $toadd = '';
-                $dest = addslashes($dest);
-
-                echo "<script type='text/javascript'>
-                            NomNav = navigator.appName;
-                            if (NomNav=='Konqueror') {
-                               window.location='" . $dest . $toadd . "';
-                            } else {
-                               window.location='" . $dest . "';
-                            }
-                         </script>";
+                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
                 exit();
 
             }
@@ -231,35 +220,24 @@ function plugin_init_metademands()
             if (str_contains($_SERVER['REQUEST_URI'], "create_ticket")
                 || str_contains($_SERVER['REQUEST_URI'], "Helpdesk")
                 || str_contains($_SERVER['REQUEST_URI'], "ServiceCatalog")) {
-                $dest = PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php';
-                $toadd = '';
-                $dest = addslashes($dest);
-
-                echo "<script type='text/javascript'>
-                            NomNav = navigator.appName;
-                            if (NomNav=='Konqueror') {
-                               window.location='" . $dest . $toadd . "';
-                            } else {
-                               window.location='" . $dest . "';
-                            }
-                         </script>";
+                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
                 exit();
             }
         }
         // END TEST Redirect
 
         if (Session::haveRight("config", UPDATE)) {
-            $PLUGIN_HOOKS['config_page']['metademands'] = 'front/config.form.php';
+            $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['metademands'] = 'front/config.form.php';
         }
 
         // Template
         $PLUGIN_HOOKS['tickettemplate']['metademands'] = [Ticket::class, 'getAllowedFields'];
 
         // Rule
-        $PLUGIN_HOOKS['use_rules']['metademands'] = ['RuleTicket'];
+        $PLUGIN_HOOKS[Hooks::USE_RULES]['metademands'] = ['RuleTicket'];
 
         // Notifications
-        $PLUGIN_HOOKS['item_get_datas']['metademands'] = [
+        $PLUGIN_HOOKS[Hooks::ITEM_GET_DATA]['metademands'] = [
             'NotificationTargetTicket'
                 => [Ticket::class, 'addNotificationDatas'],
         ];
@@ -273,17 +251,17 @@ function plugin_init_metademands()
         Plugin::registerClass(Export::class, ['addtabon' => Form::class]);
     }
 
-    $PLUGIN_HOOKS['timeline_actions']['metademands'] = [
+    $PLUGIN_HOOKS[Hooks::TIMELINE_ACTIONS]['metademands'] = [
         MetademandValidation::class,
         'showActionsForm',
     ];
 
     //Add another actions into answer
-    $PLUGIN_HOOKS['timeline_answer_actions']['metademands'] = [
+    $PLUGIN_HOOKS[Hooks::TIMELINE_ANSWER_ACTIONS]['metademands'] = [
         Interticketfollowup::class,
         'addToTimeline',
     ];
-    $PLUGIN_HOOKS['show_in_timeline']['metademands'] = [
+    $PLUGIN_HOOKS[Hooks::SHOW_IN_TIMELINE]['metademands'] = [
         Interticketfollowup::class,
         'getlistItems',
     ];

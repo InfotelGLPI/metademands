@@ -28,6 +28,8 @@
 
 use GlpiPlugin\Metademands\BasketobjectTranslation;
 
+Session::checkRight('plugin_metademands', UPDATE);
+
 $translation = new BasketobjectTranslation();
 if (isset($_POST['add'])) {
     $translation->add($_POST);

@@ -35,11 +35,16 @@ use GlpiPlugin\Metademands\Form_Value;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-$users_id                          = $_POST['users_id'];
-$plugin_metademands_metademands_id = $_POST['plugin_metademands_metademands_id'];
-$form_id                          = $_POST['forms_id'];
+Session::checkLoginUser();
+
+$users_id                          = Session::getLoginUserID();
+$plugin_metademands_metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
+$form_id                           = (int) $_POST['forms_id'];
 
 $self = new Form();
+if (!$self->getFromDB($form_id) || (int) $self->fields['users_id'] !== $users_id) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
 $self->deleteByCriteria(['id' => $form_id]);
 
 $values = new Form_Value();

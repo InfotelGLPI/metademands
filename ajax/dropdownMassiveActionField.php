@@ -212,7 +212,10 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                     case "softwareversions_id_buy":
                         $_POST['softwares_id'] = $_POST['extra_softwares_id'];
                         $_POST['myname']       = $search['linkfield'];
-                        include("dropdownInstallVersion.php");
+                        $inc = $CFG_GLPI["root_doc"] . '/ajax/dropdownInstallVersion.php';
+                        if (file_exists($inc)) {
+                            include($inc);
+                        }
                         break;
                 }
                 break;

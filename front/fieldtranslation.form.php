@@ -28,6 +28,8 @@
 
 use GlpiPlugin\Metademands\FieldTranslation;
 
+Session::checkRight('plugin_metademands', UPDATE);
+
 $translation = new FieldTranslation();
 if (isset($_POST['add'])) {
    $translation->add($_POST);

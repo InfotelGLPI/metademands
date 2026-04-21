@@ -26,8 +26,6 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
-
 Session::checkRight('entity', UPDATE);
 
 $authldap = new AuthLdap();

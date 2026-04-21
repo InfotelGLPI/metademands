@@ -37,7 +37,10 @@ Html::header_nocache();
 Session::checkRight("plugin_metademands", UPDATE);
 
 if (isset($_POST['itemtype']) && isset($_POST['language'])) {
-   $item = new $_POST['itemtype'];
-   $item->getFromDB($_POST['items_id']);
-   FieldTranslation::dropdownFields($item, $_POST['language']);
+    $item = getItemForItemtype($_POST['itemtype']);
+    if ($item === false) {
+        throw new \Glpi\Exception\Http\BadRequestHttpException();
+    }
+    $item->getFromDB((int) $_POST['items_id']);
+    FieldTranslation::dropdownFields($item, $_POST['language']);
 }
