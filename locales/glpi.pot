@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 08:18+0000\n"
+"POT-Creation-Date: 2026-04-21 11:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -386,7 +386,7 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
-#: front/stepform.php:42 front/stepform.php:44
+#: front/stepform.php:41 front/stepform.php:43
 msgid "Continue metademand"
 msgstr ""
 
@@ -406,7 +406,7 @@ msgstr ""
 msgid "Create a meta-demand"
 msgstr ""
 
-#: src/Menu.php:62 src/Menu.php:67 front/wizard.form.php:230
+#: src/Menu.php:62 src/Menu.php:67 front/wizard.form.php:229
 msgid "Create a metademand"
 msgstr ""
 
@@ -444,7 +444,7 @@ msgid_plural "Custom values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: front/importcustomvalues.php:64
+#: front/importcustomvalues.php:66
 msgid "Data imported successfully"
 msgstr ""
 
@@ -529,12 +529,12 @@ msgstr ""
 msgid "Define visibility"
 msgstr ""
 
-#: ajax/deletedraft.php:67 src/Draft.php:375
+#: ajax/deletedraft.php:72 src/Draft.php:375
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deleteform.php:69 src/Form.php:373 src/Stepform.php:731
+#: ajax/deleteform.php:74 src/Form.php:373 src/Stepform.php:731
 #: src/Stepform.php:915 src/Stepform.php:1069
 msgctxt "button"
 msgid "Delete form"
@@ -1010,7 +1010,7 @@ msgstr ""
 msgid "Import metademands"
 msgstr ""
 
-#: front/importcustomvalues.php:67
+#: front/importcustomvalues.php:69
 msgid "Impossible to read the CSV file"
 msgstr ""
 
@@ -1139,12 +1139,12 @@ msgstr ""
 msgid "List of visibilities"
 msgstr ""
 
-#: ajax/deletedraft.php:61 src/Draft.php:350
+#: ajax/deletedraft.php:66 src/Draft.php:350
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deleteform.php:63 src/Form.php:173 src/Form.php:350 src/Form.php:600
+#: ajax/deleteform.php:68 src/Form.php:173 src/Form.php:350 src/Form.php:600
 #: src/Form.php:688 src/Form.php:717 src/Form.php:917 src/Form.php:1008
 msgctxt "button"
 msgid "Load form"
@@ -1182,7 +1182,7 @@ msgstr ""
 
 #: src/Config.php:76 src/Metademand.php:130 src/Tools.php:157 src/Tools.php:234
 #: src/Tools.php:329 src/Tools.php:492 src/Profile.php:150 src/Profile.php:155
-#: src/Profile.php:254 src/Menu.php:48 setup.php:300
+#: src/Profile.php:254 src/Menu.php:48 setup.php:278
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -1316,7 +1316,7 @@ msgstr ""
 msgid "No conditions founded"
 msgstr ""
 
-#: ajax/deletedraft.php:73 src/Draft.php:385 front/draft.form.php:27
+#: ajax/deletedraft.php:78 src/Draft.php:385 front/draft.form.php:27
 msgid "No draft available for this form"
 msgstr ""
 
@@ -1336,7 +1336,7 @@ msgstr ""
 msgid "No equipment founded"
 msgstr ""
 
-#: ajax/deleteform.php:75 src/Wizard.php:851 src/Wizard.php:1067
+#: ajax/deleteform.php:80 src/Wizard.php:851 src/Wizard.php:1067
 msgid "No existing forms founded"
 msgstr ""
 
@@ -1540,7 +1540,7 @@ msgid ""
 "sorted by display order"
 msgstr ""
 
-#: front/importcustomvalues.php:71
+#: front/importcustomvalues.php:73
 msgid "Please upload a valid CSV file"
 msgstr ""
 
@@ -2087,7 +2087,7 @@ msgstr ""
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: src/Metademand.php:2750 front/wizard.form.php:131
+#: src/Metademand.php:2750 front/wizard.form.php:130
 msgid "This metademand cannot be used with this entity"
 msgstr ""
 
