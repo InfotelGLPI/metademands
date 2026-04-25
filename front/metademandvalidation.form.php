@@ -29,6 +29,8 @@
 
 use GlpiPlugin\Metademands\MetademandValidation;
 
+Session::checkLoginUser();
+
 Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
 
 $metavalidation = new MetademandValidation();

@@ -154,7 +154,7 @@ class Ldapdropdown extends CommonDBTM
             $ldap_values['ldap_filter'] = sprintf(
                 "(& %s (%s))",
                 $ldap_values['ldap_filter'],
-                $attribute[0] . '=*' . $post['searchText'] . '*'
+                $attribute[0] . '=*' . ldap_escape($post['searchText'], '', LDAP_ESCAPE_FILTER) . '*'
             );
         }
 

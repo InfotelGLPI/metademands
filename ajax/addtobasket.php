@@ -49,6 +49,10 @@ $wizard = new Wizard();
 $metademands = new Metademand();
 $fields = new Field();
 
+if (!$metademands->getFromDB((int) $_POST['form_metademands_id']) || !$metademands->canViewItem()) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
 $KO = false;
 $step = Metademand::STEP_SHOW;
 

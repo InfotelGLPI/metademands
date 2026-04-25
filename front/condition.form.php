@@ -86,6 +86,7 @@ if (isset($_POST['add'])) {
         }
     }
 
+    $condition->check(-1, CREATE, $input);
     $res = $condition->add($input);
     if (!$res) {
         Session::addMessageAfterRedirect(__('Condition not added', 'metademands'), false, ERROR);
@@ -129,6 +130,7 @@ if (isset($_POST['add'])) {
             $input['check_value'] = $_POST['check_value'];
         }
     }
+    $condition->check((int) $_POST['id'], UPDATE);
     $res = $condition->update($input);
     Html::back();
     } else {

@@ -8949,13 +8949,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         switch ($action) {
             case 'getHtml':
                 $placeholder = $title;
+                $type_safe   = htmlspecialchars((string)(int)$type, ENT_QUOTES, 'UTF-8');
                 $html = <<<HTML
                <div class="" tabindex="-1" id="mt-fuzzysearch">
                   <div class="">
                      <div class="modal-content">
                         <div class="modal-body" style="padding: 10px;">
                            <input type="text" class="mt-home-trigger-fuzzy form-control" placeholder="{$placeholder}">
-                           <input type="hidden" name="meta_type" id="meta_type" value="$type"/>
+                           <input type="hidden" name="meta_type" id="meta_type" value="{$type_safe}"/>
                            <ul class="results list-group mt-2" style="background: #FFF;"></ul>
                         </div>
                      </div>
