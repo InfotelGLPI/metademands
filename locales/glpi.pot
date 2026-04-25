@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 07:42+0000\n"
+"POT-Creation-Date: 2026-04-25 10:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -306,7 +306,7 @@ msgstr ""
 msgid "Childs tickets get parent content"
 msgstr ""
 
-#: src/Metademand.php:9040
+#: src/Metademand.php:9041
 msgid "Choose a template"
 msgstr ""
 
@@ -352,11 +352,11 @@ msgstr ""
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
-#: front/condition.form.php:135
+#: front/condition.form.php:137
 msgid "Condition"
 msgstr ""
 
-#: front/condition.form.php:91
+#: front/condition.form.php:92
 msgid "Condition not added"
 msgstr ""
 
@@ -1182,7 +1182,7 @@ msgstr ""
 
 #: src/Config.php:76 src/Metademand.php:130 src/Tools.php:157 src/Tools.php:234
 #: src/Tools.php:329 src/Tools.php:492 src/Profile.php:150 src/Profile.php:155
-#: src/Profile.php:254 src/Menu.php:48 setup.php:278
+#: src/Profile.php:254 src/Menu.php:48 setup.php:277
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -2014,7 +2014,7 @@ msgstr ""
 msgid "There is a problem on object creation"
 msgstr ""
 
-#: ajax/addtobasket.php:105
+#: ajax/addtobasket.php:109
 msgid "There is a problem with the basket"
 msgstr ""
 
@@ -2436,7 +2436,7 @@ msgstr ""
 msgid "You have to select a field"
 msgstr ""
 
-#: front/condition.form.php:69 front/condition.form.php:112
+#: front/condition.form.php:69 front/condition.form.php:113
 msgid "You have to select an item"
 msgstr ""
 
