@@ -4535,7 +4535,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $meta_task['tasks_id'],
                                                     $parent_tickets_id
                                                 )) {
-                                                    $ticket_task = new TicketTask();
+                                                    $ticket_task = new \TicketTask();
                                                     $input = [];
                                                     $input['content'] = $meta_task['tickettasks_name']
                                                      . " " . $meta_task['content'];
