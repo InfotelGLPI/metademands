@@ -1714,7 +1714,7 @@ class Dropdownmeta extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '' || $fields['value'] === 0)) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -1892,7 +1892,7 @@ class Dropdownmeta extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode($idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -2094,7 +2094,7 @@ class Dropdownmeta extends CommonDBTM
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode($idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -2271,7 +2271,7 @@ class Dropdownmeta extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode($idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -2346,7 +2346,7 @@ class Dropdownmeta extends CommonDBTM
                     }
 
                     if ($data["item"] == "ITILCategory_Metademands") {
-                        if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                        if (isset($_GET['itilcategories_id']) && $idc == (int) $_GET['itilcategories_id']) {
                             $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                           " . FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
@@ -2372,11 +2372,13 @@ class Dropdownmeta extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];
@@ -2438,25 +2440,18 @@ class Dropdownmeta extends CommonDBTM
             if ($field['value'] != 0) {
                 switch ($field['item']) {
                     case 'ITILCategory_Metademands':
-                        $pass = false;
                         if (isset($PLUGIN_HOOKS['metademands'])) {
                             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                                 $new_drop = self::getPluginDropdownItilcategoryName($plug, $field['value']);
                                 if (Plugin::isPluginActive($plug) && $new_drop != false) {
                                     return $new_drop;
-                                    $pass = true;
                                 }
                             }
                         }
-
-                        if (!$pass) {
-                            return \Dropdown::getDropdownName(
-                                $dbu->getTableForItemType('ITILCategory'),
-                                $field['value']
-                            );
-                        }
-
-                        // no break
+                        return \Dropdown::getDropdownName(
+                            $dbu->getTableForItemType('ITILCategory'),
+                            $field['value']
+                        );
                     case 'mydevices':
                         $splitter = explode("_", $field['value']);
                         if (count($splitter) == 2) {
@@ -2468,10 +2463,8 @@ class Dropdownmeta extends CommonDBTM
                                 $dbu->getTableForItemType($itemtype),
                                 $items_id
                             );
-                        } else {
-                            return "";
                         }
-                        // no break
+                        return "";
                     case 'urgency':
                         return \Ticket::getUrgencyName($field['value']);
                     case 'impact':
@@ -2486,6 +2479,7 @@ class Dropdownmeta extends CommonDBTM
                 }
             }
         }
+        return "";
     }
 
     public static function displayFieldItems(
@@ -2539,10 +2533,8 @@ class Dropdownmeta extends CommonDBTM
                         }
 
                         $splitter = explode("_", $field['value']);
-                        if (count($splitter) == 2) {
-                            $itemtype = $splitter[0];
-                            $items_id = $splitter[1];
-                        }
+                        $itemtype = count($splitter) == 2 ? $splitter[0] : null;
+                        $items_id = count($splitter) == 2 ? $splitter[1] : null;
                         if ($itemtype && $items_id) {
                             $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                         }
@@ -2601,7 +2593,6 @@ class Dropdownmeta extends CommonDBTM
                 if (!class_exists($pluginclass)) {
                     continue;
                 }
-                $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'getdropdownItilcategory'])) {
                     return $item->getdropdownItilcategory($opt);
@@ -2622,7 +2613,6 @@ class Dropdownmeta extends CommonDBTM
                 if (!class_exists($pluginclass)) {
                     continue;
                 }
-                $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'getdropdownItilcategoryName'])) {
                     return $item->getdropdownItilcategoryName($opt);

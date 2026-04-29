@@ -58,10 +58,6 @@ class Date extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
         $opt = [
             'value' => $value,
             'display' => false,
@@ -71,7 +67,7 @@ class Date extends CommonDBTM
 
         $use_future_date = $data['use_future_date'];
         if (isset($use_future_date) && !empty($use_future_date)) {
-            $opt['min'] = $_SESSION["glpi_currenttime"];
+            $opt['min'] = date("Y-m-d");
         }
 
         if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
@@ -144,7 +140,7 @@ class Date extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && ($fields['value'] == 'NULL' || empty($fields['value']))) {
+            && ($fields['value'] === null || $fields['value'] === '' || $fields['value'] === 'NULL')) {
             $msg = $value['name'];
             $checkKo = 1;
         }

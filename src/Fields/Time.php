@@ -59,10 +59,6 @@ class Time extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
         $field = "<span style='width: 50%!important;display: -webkit-box;'>";
         $field .= self::showTimeField($namefield . "[" . $data['id'] . "]", [
             'value' => $value,
@@ -175,7 +171,7 @@ HTML;
             enableSeconds: true,
             time_24hr: true,
             locale: getFlatPickerLocale("{$locale['language']}", "{$locale['region']}"),
-            minuteIncrement: "{$p['timestep']}",
+            minuteIncrement: {$p['timestep']},
             onChange: function(selectedDates, dateStr, instance) {
                {$p['on_change']}
             }
@@ -211,7 +207,7 @@ JS;
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && ($fields['value'] == 'NULL' || empty($fields['value']))) {
+            && ($fields['value'] === null || $fields['value'] === '' || $fields['value'] === 'NULL')) {
             $msg = $value['name'];
             $checkKo = 1;
         }

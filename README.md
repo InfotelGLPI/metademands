@@ -16,7 +16,7 @@ Create your own end-user wizard and generate child tickets for each group of tec
 Characteristics :
 
 - [X] Generate your own assistants
-- [X] Use setp by step on your own forms
+- [X] Use step by step on your own forms
 - [X] Link with the ticket category to launch it automatically
 - [X] Create a father / childs tickets
 - [X] Semi-automatic creation of child tickets

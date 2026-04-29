@@ -84,7 +84,7 @@ class Basket extends CommonDBTM
         $background_color = "";
         if (isset($metademand->fields['background_color'])
             && $metademand->fields['background_color'] != "") {
-            $background_color = "background-color:" . $metademand->fields['background_color'] . ";";
+            $background_color = "background-color:" . htmlspecialchars($metademand->fields['background_color'], ENT_QUOTES) . ";";
         }
         $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
             $data['custom_values']
@@ -215,23 +215,24 @@ class Basket extends CommonDBTM
 
         $field .= "</tr>";
 
+        $search_id = $data['id'];
         if ($nb > 1) {
 
             $field .= "<tr class='tab_bg_1'>";
             $field .= "<th style='$background_color'>";
-            $field .= "<input type='text' id='searchref' size='10' placeholder='" . __(
+            $field .= "<input type='text' id='searchref-$search_id' size='10' placeholder='" . __(
                 'Search..',
                 'metademands'
             ) . "'>";
             $field .= "</th>";
             $field .= "<th style='$background_color'>";
-            $field .= "<input type='text' id='searchname' placeholder='" . __(
+            $field .= "<input type='text' id='searchname-$search_id' placeholder='" . __(
                 'Search for names..',
                 'metademands'
             ) . "'>";
             $field .= "</th>";
             $field .= "<th style='$background_color'>";
-            $field .= "<input type='text' id='searchdescription' placeholder='" . __(
+            $field .= "<input type='text' id='searchdescription-$search_id' placeholder='" . __(
                 'Search for description..',
                 'metademands'
             ) . "'>";
@@ -240,7 +241,7 @@ class Basket extends CommonDBTM
             $field .= "</th>";
             $field .= "</tr>";
 
-            $field .= "<tbody id='tablesearch'>";
+            $field .= "<tbody id='tablesearch-$search_id'>";
         } else {
             $field .= "<tbody>";
         }
@@ -487,6 +488,10 @@ class Basket extends CommonDBTM
         $field .= "</tbody>";
         $field .= "</table>";
 
+        if ($nb > 1) {
+            $field .= "<script>basketSearchInit($search_id);</script>";
+        }
+
         echo $field;
     }
 
@@ -641,25 +646,20 @@ class Basket extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-        //        $msg = "";
-        //        $checkKo = 0;
-        //        // Check fields empty
-        //        if ($value['is_mandatory']
-        //            && empty($fields['value'])) {
-        //            $msg = $value['name'];
-        //            $checkKo = 1;
-        //        }
-        //
-        //        return ['checkKo' => $checkKo, 'msg' => $msg];
+        $msg     = "";
+        $checkKo = 0;
+
+        if ($value['is_mandatory'] && ($fields['value'] === null || $fields['value'] === '')) {
+            $msg     = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     public static function isCheckValueOK($value, $check_value)
     {
-        //        if (($check_value == 2 && $value != "")) {
-        //            return false;
-        //        } elseif ($check_value == 1 && $value == "") {
-        //            return false;
-        //        }
+        return true;
     }
 
     public static function showParamsValueToCheck($params)
@@ -1221,7 +1221,6 @@ class Basket extends CommonDBTM
                             }
 
                          });";
-                    $script .= "console.log('hidden-basket1');";
 
                     if ($withquantity == false) {
                         $script .= " } else { ";
@@ -1238,7 +1237,7 @@ class Basket extends CommonDBTM
                                 }";
                         $script .= " });
                         }
-                        console.log('hidden-basket2');";
+                        ";
                         $script .= " }";
                     }
                     if (isset($data['value']) && $idc == $data['value']) {
@@ -1288,7 +1287,6 @@ class Basket extends CommonDBTM
                                 $('[bloc-id =\"subbloc'+key+'\"]').show();
                             }
                         });
-                        console.log('hidden-basket3');
                         ";
                 }
             }
@@ -1522,7 +1520,8 @@ class Basket extends CommonDBTM
             $content .= "<th style='border: 1px solid black;'>" . __('Designation', 'metademands') . "</th>";
             $content .= "<th style='border: 1px solid black;'>" . __('Description') . "</th>";
 
-            $withprice = false;
+            $withprice    = false;
+            $withquantity = false;
             if (Plugin::isPluginActive('orderfollowup')) {
                 foreach ($materials as $id => $material) {
                     $field = new Field();
@@ -1626,8 +1625,8 @@ class Basket extends CommonDBTM
                 }
                 if (is_array($material)) {
                     foreach ($material as $mat_id) {
-                        $material = new Basketobject();
-                        if ($material->getFromDB($mat_id)) {
+                        $basket_obj = new Basketobject();
+                        if ($basket_obj->getFromDB($mat_id)) {
                             if ($withquantity == false) {
                                 $quantity = 1;
                             } else {
@@ -1645,15 +1644,15 @@ class Basket extends CommonDBTM
                             $content .= "<tr class='tab_bg_1'>";
 
                             $content .= "<td style='border: 1px solid black;'>";
-                            $content .= $material->fields['reference'];
+                            $content .= $basket_obj->fields['reference'];
                             $content .= "</td>";
 
                             $content .= "<td style='border: 1px solid black;'>";
-                            $content .= $material->getName();
+                            $content .= $basket_obj->getName();
                             $content .= "</td>";
 
                             $content .= "<td style='border: 1px solid black;'>";
-                            $content .= $material->fields['description'];
+                            $content .= $basket_obj->fields['description'];
                             $content .= "</td>";
 
 
@@ -1879,7 +1878,7 @@ class Basket extends CommonDBTM
                              $.ajax({
                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
                                    type: 'POST',
-                                   datatype: 'html',
+                                   dataType: 'html',
                                    data: arrayDatas,
                                    success: function (response) {
                                       if(response != 1){
@@ -1929,11 +1928,13 @@ class Basket extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];

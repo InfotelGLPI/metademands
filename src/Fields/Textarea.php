@@ -117,7 +117,7 @@ class Textarea extends CommonDBTM
             }
             $field = "<textarea $required class='form-control' rows='$rows' cols='$cols'
                placeholder=\"" . $comment . "\"
-               name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+               name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . htmlspecialchars($value) . "</textarea>";
             echo $field;
         }
     }
@@ -204,6 +204,7 @@ class Textarea extends CommonDBTM
         } elseif ($check_value == 1 && $value == "") {
             return false;
         }
+        return true;
     }
 
     public static function fieldsMandatoryScript($data)
@@ -217,7 +218,7 @@ class Textarea extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $onchange = "console.log('fieldsMandatoryScript-tel $id');";
+            $onchange = "console.log('fieldsMandatoryScript-textarea $id')";
         }
 
         if (count($check_values) > 0) {
@@ -608,11 +609,13 @@ class Textarea extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];
@@ -668,7 +671,7 @@ class Textarea extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -678,9 +681,7 @@ class Textarea extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        $field['value'] = htmlspecialchars_decode($field['value']);
-
-        return $field['value'];
+        return RichText::getSafeHtml($field['value']);
     }
 
     public static function displayFieldItems(

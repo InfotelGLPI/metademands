@@ -59,10 +59,6 @@ class Datetimeinterval extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $end)
     {
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
         $opt = [
             'value' => $value,
             'display' => false,
@@ -142,7 +138,7 @@ class Datetimeinterval extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && ($fields['value'] == 'NULL' || empty($fields['value']))) {
+            && ($fields['value'] === null || $fields['value'] === '' || $fields['value'] === 'NULL')) {
             $msg = $value['name'];
             $checkKo = 1;
         }

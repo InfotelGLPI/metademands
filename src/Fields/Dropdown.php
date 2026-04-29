@@ -175,7 +175,7 @@ class Dropdown extends CommonDBTM
         $value = $opt['value'];
         $required = $opt['required'];
 
-        echo "<select class='chained-select' name=\"$name-dropdown\" id=\"$id-dropdown\" $required class='chained-select'></select>";
+        echo "<select class='chained-select' name=\"$name-dropdown\" id=\"$id-dropdown\" $required></select>";
         echo Html::scriptBlock("function loadSplittedLocations() {
 
                             $(\"#$id-dropdown\").chainedSelects({
@@ -203,10 +203,6 @@ class Dropdown extends CommonDBTM
 
         $metademand = new Metademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
 
         $field = "";
 
@@ -271,7 +267,6 @@ class Dropdown extends CommonDBTM
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $field            .= Location::dropdown($options);
                     } else {
-                        $opt['fields_id'] = $data['id'];
                         $opt['value'] = $value;
                         $opt['fields_id'] = $_POST['fields_id'];
                         $opt['required'] = ($data['is_mandatory'] == 1 ? "required" : "");
@@ -717,6 +712,7 @@ class Dropdown extends CommonDBTM
             && ($check_value != Field::$not_null && $check_value != 0)) {
             return false;
         }
+        return true;
     }
 
     /**
@@ -731,7 +727,7 @@ class Dropdown extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -780,7 +776,7 @@ class Dropdown extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -842,6 +838,7 @@ class Dropdown extends CommonDBTM
 
         $script = "";
         $script2 = "";
+        $compteur = 0;
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
@@ -883,7 +880,7 @@ class Dropdown extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1028,7 +1025,7 @@ class Dropdown extends CommonDBTM
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1199,7 +1196,7 @@ class Dropdown extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1275,7 +1272,7 @@ class Dropdown extends CommonDBTM
                     }
 
                     if ($data["item"] == "ITILCategory_Metademands") {
-                        if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                        if (isset($_GET['itilcategories_id']) && $idc == (int) $_GET['itilcategories_id']) {
                             $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                           " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
@@ -1301,11 +1298,13 @@ class Dropdown extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];
@@ -1346,7 +1345,7 @@ class Dropdown extends CommonDBTM
                         $field['value']
                     );
                 }
-
+                return '';
         }
     }
 

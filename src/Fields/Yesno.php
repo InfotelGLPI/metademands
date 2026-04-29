@@ -284,6 +284,7 @@ class Yesno extends CommonDBTM
             && ($check_value != Field::$not_null && $check_value != 0)) {
             return false;
         }
+        return true;
     }
 
     /**
@@ -297,7 +298,7 @@ class Yesno extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -730,7 +731,7 @@ class Yesno extends CommonDBTM
         $debug = isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         if ($debug) {
-            $script = "console.log('blocksHiddenScript-yesno $id');";
+            $onchange = "console.log('blocksHiddenScript-yesno $id')";
         }
 
 
@@ -881,11 +882,13 @@ class Yesno extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];

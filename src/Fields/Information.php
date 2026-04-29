@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Field;
 use Html;
 
@@ -63,15 +64,12 @@ class Information extends CommonDBTM
     {
 
         $field = '';
-        $iconcolor = "info-alert-info";
         $display = "alert-info";
-        if ($data["display_type"] == 2) {
+        if ($data["display_type"] == self::WARNING) {
             $display = "alert-warning";
-            $iconcolor = "info-alert-warning";
         }
-        if ($data["display_type"] == 3) {
+        if ($data["display_type"] == self::ALERT) {
             $display = "alert-danger";
-            $iconcolor = "info-alert-danger";
         }
         $class = "class='alert $display alert-dismissible fade show informations'";
         $field .= "<div $class style='display:flex;align-items: center;'>";
@@ -84,32 +82,26 @@ class Information extends CommonDBTM
         }
 
         if (!empty($data['comment'])) {
-            if (empty(Field::displayField($data['id'], 'comment'))) {
-                $todisplay .= htmlspecialchars_decode(stripslashes($data['comment']));
-            } else {
-                $todisplay .= Field::displayField($data['id'], 'comment');
-            }
+            $comment = Field::displayField($data['id'], 'comment') ?: $data['comment'];
+            $todisplay .= RichText::getSafeHtml($comment);
         }
 
         if (!empty($data['label2'])) {
-            if (empty(Field::displayField($data['id'], 'label2'))) {
-                $todisplay .= htmlspecialchars_decode(stripslashes($data['label2']));
-            } else {
-                $todisplay .= Field::displayField($data['id'], 'label2');
-            }
+            $label2 = Field::displayField($data['id'], 'label2') ?: $data['label2'];
+            $todisplay .= RichText::getSafeHtml($label2);
         }
 
         if ($on_order == false && !empty($todisplay)) {
             $icon = $data['icon'];
-            $color = $data['color'];
+            $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
             if ($icon) {
                 if (str_contains($icon, 'fa-')) {
-                    $field .= "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
+                    $field .= "<i class='fas fa-2x $icon' style='color:{$safe_color};'></i>&nbsp;";
                 } else {
-                    $field .= "<i class='ti $icon' style='font-size:2em;color: $color;'></i>&nbsp;";
+                    $field .= "<i class='ti $icon' style='font-size:2em;color:{$safe_color};'></i>&nbsp;";
                 }
             }
-            $field .= "<div style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</div>";
+            $field .= "<div style='color:{$safe_color};'>" . $todisplay . "</div>";
         }
         if ($preview) {
             $field .= $config_link;

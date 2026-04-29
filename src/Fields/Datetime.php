@@ -58,10 +58,6 @@ class Datetime extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
         $opt = [
             'value' => $value,
             'display' => false,
@@ -76,11 +72,9 @@ class Datetime extends CommonDBTM
 
         if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
             $addDays = $data['additional_number_day'];
-            $startDate = time();
-            $value = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
+            $value = date('Y-m-d H:i:s', strtotime("+$addDays day"));
             $opt['value'] = $value;
-            $use_future_date = $data['use_future_date'];
-            if ($value == null && isset($use_future_date) && !empty($use_future_date)) {
+            if (!empty($data['use_future_date'])) {
                 $opt['mindate'] = $value;
             }
         }
@@ -139,7 +133,7 @@ class Datetime extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && ($fields['value'] == 'NULL' || empty($fields['value']))) {
+            && ($fields['value'] === null || $fields['value'] === '' || $fields['value'] === 'NULL')) {
             $msg = $value['name'];
             $checkKo = 1;
         }

@@ -61,15 +61,16 @@ class Title extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        $debug = isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
 
         if ($data['hide_title'] == 0) {
             $color = Wizard::hex2rgba($data['color'], "0.03");
-            $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
+            $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
+            $style_background = "style='background-color: $color!important;border-color:{$safe_color}!important;border-radius: 0;margin-bottom: 10px;'";
 
-            echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
-            echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
+            echo "<div id-field='field" . (int) $data["id"] . "' class='card-header' $style_background>";
+            echo "<br><h2 class='card-title'><span style='color:{$safe_color};font-weight: normal;'>";
             $icon = $data['icon'];
             if (!empty($icon)) {
                 if (str_contains($icon, 'fa-')) {
@@ -85,9 +86,9 @@ class Title extends CommonDBTM
                 }
             }
 
-            echo $label;
+            echo htmlspecialchars($label);
             if ($debug) {
-                echo " (ID:" . $data['id'] . ")";
+                echo " (ID:" . (int) $data['id'] . ")";
             }
 
             if (isset($data['label2']) && !empty($data['label2'])) {
@@ -109,8 +110,7 @@ class Title extends CommonDBTM
                 if (empty($comment = Field::displayField($data['id'], 'comment'))) {
                     $comment = $data['comment'];
                 }
-                $comment = htmlspecialchars_decode(stripslashes($comment));
-                echo "<div class='card-body'><i>" . $comment . "</i></div>";
+                echo "<div class='card-body'><i>" . RichText::getSafeHtml($comment) . "</i></div>";
             }
         }
     }

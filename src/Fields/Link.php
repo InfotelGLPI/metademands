@@ -60,10 +60,6 @@ class Link extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
         if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
             $label2 = $data['label2'];
         }
@@ -83,10 +79,11 @@ class Link extends CommonDBTM
                         $btnLabel = $label2;
                     }
 
+                    $safe_url = htmlspecialchars($custom_values[1], ENT_QUOTES);
                     $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags(
                         $btnLabel
                     ) . "'
-                     target='_blank' onclick=\"window.open('" . $custom_values[1] . "','_blank');return false\">";
+                     target='_blank' onclick=\"window.open('{$safe_url}','_blank');return false\">";
 
                     break;
                 case 'link_a':
@@ -143,6 +140,7 @@ class Link extends CommonDBTM
         if ((($check_value == Field::$not_null || $check_value == 0) && empty($value))) {
             return false;
         }
+        return true;
     }
 
     public static function fieldsMandatoryScript($data) {}
@@ -172,9 +170,7 @@ class Link extends CommonDBTM
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
-            if (!str_starts_with($field['value'], 'http://') && !str_starts_with($field['value'], 'https://')) {
-                $field['value'] = "http://" . $field['value'];
-            }
+            $safe_url = htmlspecialchars(self::getFieldValue($field), ENT_QUOTES);
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
@@ -182,9 +178,7 @@ class Link extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . self::getFieldValue(
-                $field
-            ) . '</a>';
+            $result[$field['rank']]['content'] .= '<a href="' . $safe_url . '" data-mce-href="' . $safe_url . '">' . $safe_url . '</a>';
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= '</td>';
             }

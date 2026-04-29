@@ -76,7 +76,7 @@ class Text extends CommonDBTM
         $opt = [
             'id-field' => $name,
             'value' => $value,
-            'placeholder' => (!$comment == null) ? RichText::getTextFromHtml($comment) : "",
+            'placeholder' => ($comment !== null) ? RichText::getTextFromHtml($comment) : "",
             'size' => $size,
         ];
         if ($data['regex']) {
@@ -233,7 +233,7 @@ class Text extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -248,6 +248,7 @@ class Text extends CommonDBTM
         } elseif ($check_value == 1 && $value == "") {
             return false;
         }
+        return true;
     }
 
     public static function showParamsValueToCheck($params)
@@ -641,11 +642,13 @@ class Text extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];

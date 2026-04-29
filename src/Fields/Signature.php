@@ -58,113 +58,129 @@ class Signature extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        $name = $namefield . "[" . $data['id'] . "]";
+        $field_id       = $data['id'];
+        $name           = $namefield . "[" . $field_id . "]";
+        $is_mandatory   = ($data['is_mandatory'] == 1) ? 1 : 0;
+        $metademands_id = (int) $data['plugin_metademands_metademands_id'];
 
-        $required = 0;
-        if ($data['is_mandatory'] == 1) {
-            $required = 1;
+        // Unique HTML IDs per field to support multiple Signature fields on the same form
+        $canvas_id = "signature-pad-$field_id";
+        $save_id   = "savesign-$field_id";
+        $clear_id  = "clearsign-$field_id";
+        $hidden_id = "hiddenId-$field_id";
+        $result_id = "result-$field_id";
+
+        // json_encode safely escapes quotes and special chars in translated strings
+        $msg_add        = json_encode("<i class=\"ti ti-circle-check fa-1x\" style=\"color:forestgreen\"></i> " . __('Your signature has been uploaded', 'metademands'));
+        $msg_remove     = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('Your signature has been deleted', 'metademands'));
+        $msg_failadd    = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('There was a problem on upload your signature', 'metademands'));
+        $msg_failremove = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('There was a problem on delete your signature', 'metademands'));
+        $msg_mandatory  = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('This field is mandatory', 'metademands'));
+
+        $field  = "<div class='wrapper'>";
+        $field .= "<canvas id='$canvas_id' class='signature-pad' width=400 height=100></canvas>";
+        $field .= "</div>";
+
+        // Show existing signature as preview when editing a saved value
+        if (!empty($value)) {
+            $picture_url = Toolbox::getPictureUrl($value);
+            $field .= "<div id='existing-sign-$field_id'>";
+            $field .= "<img src='" . htmlspecialchars($picture_url, ENT_QUOTES) . "' style='max-height:100px;border:1px solid #ccc;'>";
+            $field .= "</div>";
         }
 
-        $metademands_id = $data['plugin_metademands_metademands_id'];
-        $id = $data['id'];
-
-        $msg_add = "<i class=\"ti ti-circle-check fa-1x\" style=\"color:forestgreen\"></i> ".__('Your signature has been uploaded', 'metademands');
-        $msg_remove = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('Your signature has been deleted', 'metademands');
-        $msg_failadd = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('There was a problem on upload your signature', 'metademands');
-        $msg_failremove = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('There was a problem on delete your signature', 'metademands');
-        $msg_mandatory = "<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> ".__('This field is mandatory', 'metademands');
-
-        $field = "<div class='wrapper'>";
-        $field .= "<canvas id='signature-pad' class='signature-pad' width=400 height=100></canvas>";
-        $field .= "</div>";
         $field .= "<br><div>";
-        $field .= "<button id='savesign' form='' class='btn btn-primary'>" . __(
-            'Add your signature',
-            'metademands'
-        ) . "</button> ";
-        $field .= "<button id='clearsign' form='' class='btn btn-primary'>" . __('Clear', 'metademands') . "</button>";
+        // type='button' prevents accidental form submission on click
+        $field .= "<button type='button' id='$save_id' class='btn btn-primary'>" . __('Add your signature', 'metademands') . "</button> ";
+        $field .= "<button type='button' id='$clear_id' class='btn btn-primary'>" . __('Clear', 'metademands') . "</button>";
         $field .= "</div>";
 
-        $js = Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
-        $css = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
+        $existing_value = htmlspecialchars($value ?? '', ENT_QUOTES);
 
-        $field .= $js;
-        $field .= $css;
+        // Span et input placés avant le <script> pour garantir leur présence dans le DOM à l'exécution
+        $field .= "<br><span class='result' id='$result_id'></span>";
+        $field .= "<input type='hidden' id='$hidden_id' name='$name' value='$existing_value'>";
 
+        $field .= Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
+        $field .= Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
+
+        // IIFE to scope all variables — supports multiple Signature fields per page
         $field .= "<script type='text/javascript'>
-                        var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
-                            backgroundColor: 'rgba(255, 255, 255, 0)',
-                            penColor: 'rgb(0, 0, 0)'
-                        });
-                        var saveButton = document.getElementById('savesign');
-                        var cancelButton = document.getElementById('clearsign');
-                        var meta_id = $metademands_id;
-                        var msg_add = '$msg_add';
-                        var msg_remove = '$msg_remove';
-                        var msg_failadd = '$msg_failadd';
-                        var msg_failremove = '$msg_failremove';
-                        var msg_mandatory = '$msg_mandatory';
-                        var is_mandatory = $required;
-                        let hasDrawn = false;
+        (function () {
+            var signaturePad = new SignaturePad(document.getElementById('$canvas_id'), {
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                penColor: 'rgb(0, 0, 0)'
+            });
+            var saveButton   = document.getElementById('$save_id');
+            var clearButton  = document.getElementById('$clear_id');
+            var resultEl     = document.getElementById('$result_id');
+            var hiddenInput  = document.getElementById('$hidden_id');
+            var meta_id      = $metademands_id;
+            var is_mandatory = $is_mandatory;
+            var field_id     = $field_id;
+            var msg_add        = $msg_add;
+            var msg_remove     = $msg_remove;
+            var msg_failadd    = $msg_failadd;
+            var msg_failremove = $msg_failremove;
+            var msg_mandatory  = $msg_mandatory;
+            var hasDrawn = false;
 
-                        if (is_mandatory == true) {
-                            sessionStorage.setItem('mandatory_sign', $id);
+            if (is_mandatory) {
+                sessionStorage.setItem('mandatory_sign_' + field_id, field_id);
+            }
+
+            saveButton.addEventListener('click', function () {
+                let datasign = '';
+                if (!signaturePad.isEmpty()) {
+                    datasign = signaturePad.toDataURL('image/png');
+                    hasDrawn = true;
+                }
+                if (!hasDrawn && is_mandatory) {
+                    resultEl.innerHTML = msg_mandatory;
+                    return;
+                }
+                if (hasDrawn) {
+                    $.ajax({
+                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addsignature.php',
+                        type: 'POST',
+                        dataType: 'html',
+                        data: { datasign: datasign, metademands_id: meta_id },
+                        success: function (response) {
+                            resultEl.innerHTML = msg_add;
+                            hiddenInput.value = response;
+                            sessionStorage.removeItem('mandatory_sign_' + field_id);
+                        },
+                        error: function () {
+                            resultEl.innerHTML = msg_failadd;
                         }
+                    });
+                }
+            });
 
-                        saveButton.addEventListener('click', function (event) {
+            clearButton.addEventListener('click', function () {
+                signaturePad.clear();
+                hasDrawn = false;
+                let datasign = hiddenInput.value;
+                $.ajax({
+                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/removesignature.php',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: { metademands_id: meta_id, datasign: datasign },
+                    success: function () {
+                        resultEl.innerHTML = msg_remove;
+                        hiddenInput.value = '';
+                        if (is_mandatory) {
+                            sessionStorage.setItem('mandatory_sign_' + field_id, field_id);
+                        }
+                    },
+                    error: function () {
+                        resultEl.innerHTML = msg_failremove;
+                    }
+                });
+            });
+        })();
+        </script>";
 
-                            var datasign = '';
-                            if (!signaturePad.isEmpty()) {
-                                var datasign = signaturePad.toDataURL('image/png');
-                                hasDrawn = true;
-                            }
-                            if (hasDrawn == false && is_mandatory == true) {
-                                $('.result').html(msg_mandatory);
-                            }
-
-                            if (hasDrawn) {
-                                $.ajax({
-                                       url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addsignature.php',
-                                       type: 'POST',
-                                       datatype: 'html',
-                                       data : { datasign : datasign, metademands_id : meta_id},
-                                       success: function (response) {
-                                            $('.result').html(msg_add);
-                                            $('#hiddenId').attr('value', response);
-                                            sessionStorage.removeItem('mandatory_sign', $id);
-                                        },
-                                       error: function() {
-                                            $('.result').html(msg_failadd);
-                                       }
-                                    });
-                            }
-                        });
-
-                        cancelButton.addEventListener('click', function (event) {
-                            signaturePad.clear();
-                            hasDrawn = false;
-                            var datasign = $('#hiddenId').val();
-                            $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/removesignature.php',
-                                   type: 'POST',
-                                   datatype: 'html',
-                                   data : { metademands_id : meta_id, datasign : datasign},
-                                   success: function (response) {
-                                        $('.result').html(msg_remove);
-                                        $('#hiddenId').attr('value', '');
-                                        if (is_mandatory == true) {
-                                            sessionStorage.setItem('mandatory_sign', $id);
-                                        }
-                                    },
-                                   error: function() {
-                                        $('.result').html(msg_failremove);
-                                   }
-                                });
-                        });
-                    </script>";
-
-        $field .= "<br><span class='result'></span>";
-        $field .= "<input type='hidden' id='hiddenId' name='$name' value=''>";
         echo $field;
     }
 
@@ -181,11 +197,25 @@ class Signature extends CommonDBTM
     /**
      * @param array $value
      * @param array $fields
-     * @return bool
+     * @return array
      */
-    public static function checkMandatoryFields($value = [], $fields = []) {}
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+        $msg     = "";
+        $checkKo = 0;
 
-    public static function isCheckValueOK($value, $check_value) {}
+        if ($value['is_mandatory'] && ($fields['value'] === null || $fields['value'] === '')) {
+            $msg     = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
+    }
+
+    public static function isCheckValueOK($value, $check_value)
+    {
+        return true;
+    }
 
     public static function showParamsValueToCheck($params) {}
 
@@ -200,8 +230,7 @@ class Signature extends CommonDBTM
     public static function getFieldValue($field)
     {
         $picture_url = Toolbox::getPictureUrl($field['value']);
-
-        return "<img src='$picture_url'>";
+        return "<img src='" . htmlspecialchars($picture_url, ENT_QUOTES) . "'>";
     }
 
     public static function displayFieldItems(

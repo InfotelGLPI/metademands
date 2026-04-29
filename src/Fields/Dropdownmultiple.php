@@ -78,9 +78,6 @@ class Dropdownmultiple extends CommonDBTM
     {
         global $DB;
 
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
         $field = "";
 
         if ($data["display_type"] != self::CLASSIC_DISPLAY) {
@@ -231,7 +228,10 @@ class Dropdownmultiple extends CommonDBTM
         } else {
             if (getItemForItemtype($data["item"])) {
                 $item = new $data['item']();
-                $criteria['FROM'] = getTableForItemType($data['item']);
+                $criteria = [
+                    'FROM'  => getTableForItemType($data['item']),
+                    'WHERE' => [],
+                ];
 
                 if ($item->maybeDeleted()) {
                     $criteria['WHERE'][getTableForItemType($data['item']) . '.is_deleted'] = 0;
@@ -333,10 +333,13 @@ class Dropdownmultiple extends CommonDBTM
         if (is_array($list) && count($list) > 0) {
             foreach ($list as $k => $val) {
                 if (!in_array($k, $value)) {
+                    $esc_k = htmlspecialchars((string) $k, ENT_QUOTES);
                     if ($item == 'other') {
-                        $div .= "<option value=\"$k\">" . $val['name'] . "</option>";
+                        $esc_name = htmlspecialchars($val['name'], ENT_QUOTES);
+                        $div .= "<option value=\"$esc_k\">$esc_name</option>";
                     } else {
-                        $div .= "<option value=\"$k\" >$val</option>";
+                        $esc_val = htmlspecialchars((string) $val, ENT_QUOTES);
+                        $div .= "<option value=\"$esc_k\">$esc_val</option>";
                     }
                 }
             }
@@ -358,16 +361,19 @@ class Dropdownmultiple extends CommonDBTM
         $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect" . $id . "_to\" size='8' multiple='multiple' style='font-size: 1em;'>";
         if (is_array($value) && count($value) > 0) {
             foreach ($value as $k => $val) {
+                $esc_val = htmlspecialchars((string) $val, ENT_QUOTES);
+                $esc_k   = htmlspecialchars((string) $k, ENT_QUOTES);
                 if ($item == 'other') {
                     if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$id])) {
-                        $div .= "<option value=\"$val\">" . $list[$val]['name'] . "</option>";
+                        $esc_name = htmlspecialchars($list[$val]['name'], ENT_QUOTES);
+                        $div .= "<option value=\"$esc_val\">$esc_name</option>";
                     } else {
-                        $div .= "<option value=\"$k\">" . $val . "</option>";
+                        $div .= "<option value=\"$esc_k\">" . htmlspecialchars((string) $val, ENT_QUOTES) . "</option>";
                     }
                 } elseif ($item == User::getType()) {
-                    $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
+                    $div .= "<option selected value=\"$esc_val\">" . getUserName($val, 0, true) . "</option>";
                 } else {
-                    $div .= "<option selected value=\"$val\" >" . \Dropdown::getDropdownName(
+                    $div .= "<option selected value=\"$esc_val\">" . \Dropdown::getDropdownName(
                         getTableForItemType($item),
                         $val
                     ) . "</option>";
@@ -954,6 +960,7 @@ class Dropdownmultiple extends CommonDBTM
         if ($check_value == Field::$not_null && is_array($value) && count($value) == 0) {
             return false;
         }
+        return true;
     }
 
     /**
@@ -967,7 +974,7 @@ class Dropdownmultiple extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -2253,8 +2260,8 @@ class Dropdownmultiple extends CommonDBTM
 
             if (isset($checkbox_id) && $checkbox_id > 0) {
                 if ($data["item"] == "other") {
-                    $title = $custom_values[$idc]['name'];
-                    $script .= "if ($(value).attr('title') == '$title') {
+                    $title = json_encode($custom_values[$idc]['name']);
+                    $script .= "if ($(value).attr('title') == $title) {
                                     document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
                                 }";
                 } else {
@@ -2295,11 +2302,13 @@ class Dropdownmultiple extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];
@@ -2443,6 +2452,7 @@ class Dropdownmultiple extends CommonDBTM
                 $information = ['full_name'];
             }
 
+            $dataItems = "";
             if ($formatAsTable) {
                 $dataItems = "<table style='border:0;'>";
             }

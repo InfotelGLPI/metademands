@@ -73,7 +73,8 @@ class Freetable extends CommonDBTM
         $background_color = "";
         if (isset($meta->fields['background_color'])
             && $meta->fields['background_color'] != "") {
-            $background_color = "background-color:" . $meta->fields['background_color'] . ";";
+            $safe_bg = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
+            $background_color = "background-color:" . $safe_bg . ";";
         }
         $plugin_metademands_fields_id = $data['id'];
 
@@ -92,6 +93,7 @@ class Freetable extends CommonDBTM
             && is_array($data['value'])) {
             $values = $data['value'];
         }
+        $nb_values = count($values);
         $colspan = '4';
 
         $style_th = "style='text-align: left;$background_color'";
@@ -175,8 +177,7 @@ class Freetable extends CommonDBTM
             $orderfollowup_is_active = 1;
         }
 
-        $existLine = __('You can\'t create a new line when there is an existing one', 'metademands');
-        $style = "style=\"\"";
+        $existLine = json_encode(__('You can\'t create a new line when there is an existing one', 'metademands'));
 
         $lastid = 0;
         if (is_array($values) && count($values) > 0) {
@@ -194,7 +195,7 @@ class Freetable extends CommonDBTM
         $field .= "<script>
                     $(document).ready(function (){
                         window.metademandfreelinesparams$rand = {};
-                        metademandfreelinesparams$rand.existLine = '$existLine';
+                        metademandfreelinesparams$rand.existLine = $existLine;
                         metademandfreelinesparams$rand.rand = '$rand';
                         metademandfreelinesparams$rand.root = '$root';
                         metademandfreelinesparams$rand.encoded_fields = $encoded_fields;
@@ -205,7 +206,6 @@ class Freetable extends CommonDBTM
                         metademandfreelinesparams$rand.size = $size;
                         metademandfreelinesparams$rand.empty_value = '$empty_value';
                         metademandfreelinesparams$rand.plugin_metademands_metademands_id = $plugin_metademands_metademands_id;
-                        metademandfreelinesparams$rand.style = '$style';
                         metademandfreelinesparams$rand.lastid = $lastid;
                         metademandfreelinesparams$rand.text = $texttype;
                         metademandfreelinesparams$rand.select = $selecttype;
@@ -213,6 +213,9 @@ class Freetable extends CommonDBTM
                         metademandfreelinesparams$rand.readonly = $readonlytype;
                         metademandfreelinesparams$rand.date = $datetype;
                         metademandfreelinesparams$rand.time = $timetype;
+                        if ($nb_values === 0) {
+                            addLine(window.metademandfreelinesparams$rand);
+                        }
                     });
 
                </script>";
@@ -234,45 +237,42 @@ class Freetable extends CommonDBTM
                     }
                 }
 
-                $field .= "<tr name=\"data\" $style id=\"line_" . $rand . "_$idline\" disabled>";
+                $quantity   = 0;
+                $unit_price = 0;
+                if (Plugin::isPluginActive('orderfollowup')) {
+                    $quantity   = floatval($l['quantity'] ?? 0);
+                    $unit_price = floatval($l['unit_price'] ?? 0);
+                }
+
+                $field .= "<tr name=\"data\" id=\"line_" . $rand . "_$idline\" disabled>";
 
                 foreach ($addfields as $k => $addfield) {
                     if (isset($l[$k])) {
+                        $escaped_val = htmlspecialchars((string) $l[$k], ENT_QUOTES);
+                        $escaped_k   = htmlspecialchars($k, ENT_QUOTES);
+                        $escaped_id  = htmlspecialchars($k . '_' . $idline, ENT_QUOTES);
                         if ($types[$k] == MetaFreetablefield::TYPE_TEXT) {
-                            $id = $k . '_' . $idline;
-                            $field .= "<td $style><input id=\"$id\" name=\"$k\" type=\"text\" value=\"$l[$k]\" size=\"$size\" disabled></td>";
+                            $field .= "<td><input id=\"$escaped_id\" name=\"$escaped_k\" type=\"text\" value=\"$escaped_val\" size=\"$size\" disabled></td>";
                         } elseif ($types[$k] == MetaFreetablefield::TYPE_SELECT) {
-                            $id = $k . '_' . $idline;
-                            $field .= "<td $style><select id=\"$id\" name=\"$k\">";
-
+                            $field .= "<td><select id=\"$escaped_id\" name=\"$escaped_k\">";
                             foreach ($dropdown_values[$k] as $key => $dropdown_value) {
-                                $selected = "";
-                                if ($key == $l[$k]) {
-                                    $selected = "selected";
-                                }
-                                $field .= "<option $selected value=\"$dropdown_value\">" . $dropdown_value . "</option>";
+                                $selected = ($key == $l[$k]) ? "selected" : "";
+                                $esc_dv   = htmlspecialchars((string) $dropdown_value, ENT_QUOTES);
+                                $field .= "<option $selected value=\"$esc_dv\">$esc_dv</option>";
                             }
                             $field .= "</select></td>";
                         } elseif ($types[$k] == MetaFreetablefield::TYPE_NUMBER) {
-                            $id = $k . '_' . $idline;
-                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"number\" min=\"0\" value=\"$l[$k]\" style=\"width: 7em;\" disabled></td>";
+                            $field .= "<td><input add=-1 id=\"$escaped_id\" name=\"$escaped_k\" type=\"number\" min=\"0\" value=\"$escaped_val\" style=\"width: 7em;\" disabled></td>";
                         } elseif ($types[$k] == MetaFreetablefield::TYPE_DATE) {
-                            $id = $k . '_' . $idline;
-                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"date\" value=\"$l[$k]\" disabled></td>";
+                            $field .= "<td><input add=-1 id=\"$escaped_id\" name=\"$escaped_k\" type=\"date\" value=\"$escaped_val\" disabled></td>";
                         } elseif ($types[$k] == MetaFreetablefield::TYPE_TIME) {
-                            $id = $k . '_' . $idline;
-                            $field .= "<td $style><input add=-1 id=\"$id\" name=\"$k\" type=\"time\" value=\"$l[$k]\" disabled></td>";
-                        }
-
-                        if (Plugin::isPluginActive('orderfollowup')) {
-                            $quantity = $l['quantity'];
-                            $unit_price = $l['unit_price'];
+                            $field .= "<td><input add=-1 id=\"$escaped_id\" name=\"$escaped_k\" type=\"time\" value=\"$escaped_val\" disabled></td>";
                         }
                     }
                 }
                 if (Plugin::isPluginActive('orderfollowup')) {
                     $linetotal = number_format($quantity * $unit_price, 2, '.', ' ');
-                    $field .= "<td $style id=\"linetotal\">$linetotal €</td>";
+                    $field .= "<td id=\"linetotal_$idline\">$linetotal €</td>";
                 }
 
                 $field .= "<td><button onclick =\"editLine($idline, $rand, window.metademandfreelinesparams$rand)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"ti ti-pencil\"></i></button></td>";
@@ -281,17 +281,6 @@ class Freetable extends CommonDBTM
 
             }
         }
-
-        $field .= "<script>
-                    const observer$rand = new MutationObserver(() => {
-                        if (window.metademandfreelinesparams$rand) {
-                            addLine(window.metademandfreelinesparams$rand);
-                            observer$rand.disconnect(); // une seule fois
-                        }
-                    });
-
-                    observer$rand.observe(document.body, { childList: true, subtree: true })
-               </script>";
 
         $field .= "</table>";
 
@@ -304,28 +293,25 @@ class Freetable extends CommonDBTM
             $grandtotal = __('Grand total (TTC)', 'orderfollowup');
             $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
             $field .= "<script>
-                    function saveInput() {
+                    function saveInput_{$rand}() {
                         var grandtotal = 0;
+                        var grandtotalht = 0;
                         var tva = $tva_calc;
-                        i = 0;
-                        $('[id^=line_]').each(function (){
-                             i++;
+                        $('#freetable_table{$rand} tr[id^=line_{$rand}_]').each(function () {
                              grandtotal += $(this).find('[id^=unit_price_]').val() * $(this).find('[id^=quantity_]').val();
-                             grandtotalht = grandtotal / (1 + tva);
                         });
+                        grandtotalht = grandtotal / (1 + tva);
 
-                        $('[id^=line_]').css('background-color', '#f7f7f7');
-                        let tr_grantotal = document.getElementById('grandtotal');
-                        if (tr_grantotal == null) {
-                            grandtotalht = grandtotal / (1 + tva);
-                             $('#freetable_table$rand tr[id^=line_]:last').after('<tr $style id=\"grandtotal\">' +
-                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
-                          '<tr $style id=\"grandtotalht\">' +
-                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
+                        $('#freetable_table{$rand} tr[id^=line_{$rand}_]').css('background-color', '#f7f7f7');
+                        let tr_grandtotal = document.getElementById('grandtotal_{$rand}');
+                        if (tr_grandtotal === null) {
+                             $('#freetable_table{$rand} tr[id^=line_{$rand}_]:last').after('<tr id=\"grandtotal_{$rand}\">' +
+                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal_{$rand}\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
+                          '<tr id=\"grandtotalht_{$rand}\">' +
+                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht_{$rand}\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
                         } else {
-
-                           $('#amount_grandtotal').text(grandtotal.toFixed(2) +' €');
-                           $('#amount_grandtotalht').text(grandtotalht.toFixed(2)+' €');
+                           $('#amount_grandtotal_{$rand}').text(grandtotal.toFixed(2) + ' €');
+                           $('#amount_grandtotalht_{$rand}').text(grandtotalht.toFixed(2) + ' €');
                         }
                         $('#nextBtn').show();
                     }
@@ -334,7 +320,7 @@ class Freetable extends CommonDBTM
             $field .= "<table class='tab_cadre' width='100%' style='overflow: auto;width:100%;$background_color'>";
             $field .= "<tr class='tab_bg_1'>";
             $field .= "<td colspan='8' style ='text-align:center;'>";
-            $field .= "<button onclick='saveInput()' type = 'button' id='add_freeinputs' class='btn btn-primary' style='display: none;'>";
+            $field .= "<button onclick='saveInput_{$rand}()' type = 'button' id='add_freeinputs_{$rand}' class='btn btn-primary' style='display: none;'>";
             $field .= "<span>" . __('Validate the basket', 'orderfollowup') . "</span>";
             $field .= "</button>";
             $field .= "</td>";
@@ -524,16 +510,15 @@ class Freetable extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-        //        $msg = "";
-        //        $checkKo = 0;
-        //        // Check fields empty
-        //        if ($value['is_mandatory']
-        //            && $fields['value'] == null) {
-        //            $msg = $value['name'];
-        //            $checkKo = 1;
-        //        }
-        //
-        //        return ['checkKo' => $checkKo, 'msg' => $msg];
+        $msg     = "";
+        $checkKo = 0;
+
+        if ($value['is_mandatory'] && empty($fields['value'])) {
+            $msg     = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     public static function fieldsMandatoryScript($data) {}
@@ -614,14 +599,15 @@ class Freetable extends CommonDBTM
             if (count($customs) > 0) {
                 foreach ($customs as $custom) {
                     $addfields[$custom['internal_name']] = $custom['name'];
-                }
-                if ($custom['type'] == MetaFreetablefield::TYPE_SELECT) {
-                    $dropdown_values[$custom['internal_name']] = explode(",", $custom['dropdown_values']);
+                    if ($custom['type'] == MetaFreetablefield::TYPE_SELECT) {
+                        $dropdown_values[$custom['internal_name']] = explode(",", $custom['dropdown_values']);
+                    }
                 }
             }
         }
-        $nb = count($customs);
+        $nb = is_array($customs) ? count($customs) : 0;
 
+        $colspan = 1;
         if ($nb == 1) {
             $colspan = 12;
         }
@@ -729,6 +715,6 @@ class Freetable extends CommonDBTM
 
         $result[$field['rank']]['content'] .= $content;
 
-        return $content;
+        return $result;
     }
 }

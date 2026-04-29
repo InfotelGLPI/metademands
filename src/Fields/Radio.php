@@ -205,39 +205,37 @@ class Radio extends CommonDBTM
                         $field .= "</label>";
                         $field .= "</div>";
                     }
-                }
 
-                $childs_blocks = [];
-                $fieldopt = new FieldOption();
-                if ($opts = $fieldopt->find(
-                    ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key]
-                )) {
-                    foreach ($opts as $opt) {
-                        if (!empty($opt['childs_blocks'])) {
-                            $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-                        }
-                    }
-                }
-                if (isset($childs_blocks[$key])) {
-                    $id = $data['id'];
-                    $script = "<script type='text/javascript'>";
-                    $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
-                    $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
-
-                    foreach ($childs_blocks as $customvalue => $childs) {
-                        if ($customvalue != $key) {
-                            foreach ($childs as $k => $v) {
-                                $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
-                                $script .= FieldOption::resetMandatoryBlockFields($namefield);
-                                $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                    $childs_blocks = [];
+                    $fieldopt = new FieldOption();
+                    if ($opts = $fieldopt->find(
+                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key]
+                    )) {
+                        foreach ($opts as $opt) {
+                            if (!empty($opt['childs_blocks'])) {
+                                $childs_blocks[] = json_decode($opt['childs_blocks'], true);
                             }
                         }
                     }
-                    $script .= "}";
-                    $script .= "})";
-                    $script .= "</script>";
+                    if (!empty($childs_blocks)) {
+                        $id = $data['id'];
+                        $blockScript = "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
+                        $blockScript .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
 
-                    $field .= $script;
+                        foreach ($childs_blocks as $customvalue => $childs) {
+                            if ($customvalue != $key) {
+                                foreach ($childs as $k => $v) {
+                                    $blockScript .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
+                                    $blockScript .= FieldOption::resetMandatoryBlockFields($namefield);
+                                    $blockScript .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                                }
+                            }
+                        }
+                        $blockScript .= "}";
+                        $blockScript .= "});";
+
+                        $field .= Html::scriptBlock($blockScript);
+                    }
                 }
             }
             if ($data["display_type"] == self::BLOCK_DISPLAY) {
@@ -499,7 +497,7 @@ class Radio extends CommonDBTM
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        echo $elements[$params['check_value']] ?? 0;
+        echo $elements[$params['check_value']] ?? "";
     }
 
     /**
@@ -513,7 +511,7 @@ class Radio extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && $fields['value'] == null) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -528,6 +526,7 @@ class Radio extends CommonDBTM
         } elseif ($check_value != $value) {
             return false;
         }
+        return true;
     }
 
     public static function fieldsMandatoryScript($data)
@@ -942,17 +941,6 @@ class Radio extends CommonDBTM
         $id = $data["id"];
         $name = "field[" . $data["id"] . "]";
 
-        //hidden_blocks by idc
-        $hiddenblocks_by_checkvalue = [];
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['hidden_block'] as $hidden_block) {
-                if (isset($hidden_block)) {
-                    $hiddenblocks_by_checkvalue[$idc] = $hidden_block;
-                }
-            }
-        }
-
-
         //add childs by idc
         $childs_by_checkvalue = [];
         foreach ($check_values as $idc => $check_value) {
@@ -1140,7 +1128,7 @@ class Radio extends CommonDBTM
                     }
 
                     if ($data["item"] == "ITILCategory_Metademands") {
-                        if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                        if (isset($_GET['itilcategories_id']) && $idc == (int) $_GET['itilcategories_id']) {
                             $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                         $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
                           " . FieldOption::setMandatoryBlockFields($metaid, $hidden_block);
@@ -1168,11 +1156,13 @@ class Radio extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];
@@ -1231,6 +1221,7 @@ class Radio extends CommonDBTM
                 return $label;
             }
         }
+        return "";
     }
 
     public static function displayFieldItems(

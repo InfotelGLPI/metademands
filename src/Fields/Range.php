@@ -68,82 +68,70 @@ class Range extends CommonDBTM
         if (is_array($value)) {
             $value = 0;
         }
-        $opt = [
-            'value' => $value,
-            'display' => false,
-        ];
+
+        $min               = 0;
+        $max               = 9999;
+        $step              = 1;
+        $minimal_mandatory = 0;
 
         if (isset($data['custom_values'])) {
-            $custom_values = FieldParameter::_unserialize($data['custom_values']);
-            $opt = [
-                'value' => $value,
-                'min' => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
-                'max' => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 9999),
-                'step' => ((isset($custom_values[2]) && $custom_values[2] != "") ? $custom_values[2] : 1),
-                'display' => false,
-            ];
-            $minimal_mandatory = ((isset($custom_values[3]) && $custom_values[3] != "") ? $custom_values[3] : 0);
-            if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
-                $opt['specific_tags'] = [
-                    'required' => 'required',
-                    'isnumber' => 'isnumber',
-                    'minimal_mandatory' => $minimal_mandatory,
-                ];
-            }
-        } else {
-            $opt = [
-                'value' => '',
-                'min' => 0,
-                'max' => 0,
-                'step' => 1,
-            ];
+            $custom_values     = FieldParameter::_unserialize($data['custom_values']);
+            $min               = (isset($custom_values[0]) && $custom_values[0] !== "") ? (int) $custom_values[0] : 0;
+            $max               = (isset($custom_values[1]) && $custom_values[1] !== "") ? (int) $custom_values[1] : 9999;
+            $step              = (isset($custom_values[2]) && $custom_values[2] !== "") ? (int) $custom_values[2] : 1;
+            $minimal_mandatory = (isset($custom_values[3]) && $custom_values[3] !== "") ? (int) $custom_values[3] : 0;
         }
-        $name = $namefield . "[" . $data['id'] . "]";
-        $required = "";
-        $mandatory = "";
-        if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
-            $required = "required='required'";
-        }
-        if ($minimal_mandatory > 0) {
-            $mandatory = "minimal_mandatory='$minimal_mandatory'";
-        }
-        $field = "<div class='range'>";
-        $field .= "<div class='range-slider'>";
 
-        if (!isset($opt['value']) || empty($opt['value'])) {
-            $opt['value'] = 0;
+        if (empty($value)) {
+            $value = $min;
         }
-        $field .= "<input type='range' id='range' $required $mandatory isnumber='isnumber' name='$name' value='" . $opt['value'] . "' min='" . $opt['min'] . "' max='" . $opt['max'] . "' step='" . $opt['step'] . "'>";
+
+        $name     = $namefield . "[" . $data['id'] . "]";
+        // Unique IDs per field to support multiple Range fields on the same form
+        $field_id = 'range_' . $data['id'];
+
+        $required       = (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) ? "required='required'" : "";
+        $mandatory_attr = $minimal_mandatory > 0 ? "minimal_mandatory='$minimal_mandatory'" : "";
+
+        $field  = "<div class='range'>";
+        $field .= "<div class='range-slider'>";
+        $field .= "<input type='range' id='$field_id' $required $mandatory_attr isnumber='isnumber'"
+            . " name='$name' value='$value' min='$min' max='$max' step='$step'>";
         $field .= "<div class='sliderticks'>";
 
-        $min = $opt['min'];
-        $max = $opt['max'];
-        $step = $opt['step'];
-        for ($i = $min; $i <= $max; $i += $step) {
-            $field .= "<span>" . $i . "</span>";
+        // Cap ticks at 20 to avoid generating thousands of DOM elements
+        $tick_count = $step > 0 ? (int) floor(($max - $min) / $step) + 1 : 0;
+        if ($tick_count <= 20) {
+            for ($i = $min; $i <= $max; $i += $step) {
+                $field .= "<span>$i</span>";
+            }
+        } else {
+            $field .= "<span>$min</span>";
+            $field .= "<span>$max</span>";
         }
-        $field .= "</div>";
-        $field .= "</div>";
-
-        $field .= "<div class='rangevalue'>0</div>";
 
         $field .= "</div>";
+        $field .= "</div>";
+        // Show actual current value, not hardcoded "0"
+        $field .= "<div class='rangevalue' id='rangevalue_{$data['id']}'>$value</div>";
+        $field .= "</div>";
 
-        $js = 'const sliderEl = document.querySelector("#range")
-                                        const sliderValue = document.querySelector(".rangevalue")
+        // IIFE to scope variables, supporting multiple Range fields per page
+        $js = "(function() {
+            const sliderEl    = document.querySelector('#$field_id');
+            const sliderValue = document.querySelector('#rangevalue_{$data['id']}');
+            const updateSlider = (val) => {
+                sliderValue.textContent = val;
+                // Account for min offset in progress calculation
+                const range    = sliderEl.max - sliderEl.min;
+                const progress = range > 0 ? (val - sliderEl.min) / range * 100 : 0;
+                sliderEl.style.background = `linear-gradient(to right, #f50 \${progress}%, #ccc \${progress}%)`;
+            };
+            updateSlider(sliderEl.value);
+            sliderEl.addEventListener('input', (event) => updateSlider(event.target.value));
+        })();";
 
-                                        sliderEl.addEventListener("input", (event) => {
-                                          const tempSliderValue = event.target.value;
-
-                                          sliderValue.textContent = tempSliderValue;
-
-                                          const progress = (tempSliderValue / sliderEl.max) * 100;
-
-                                          sliderEl.style.background = `linear-gradient(to right, #f50 ${progress}%, #ccc ${progress}%)`;
-                                        })';
         echo Html::scriptBlock('$(document).ready(function() {' . $js . '});');
-
-        echo Html::scriptBlock('');
         echo $field;
     }
 
@@ -151,15 +139,15 @@ class Range extends CommonDBTM
     {
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        $min = 0;
-        $max = 0;
-        $step = 0;
-        $minimal = 0;
+        $min      = 0;
+        $max      = 0;
+        $step     = 0;
+        $minimal  = 0;
 
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
-            $min = $params['custom_values'][0] ?? "";
-            $max = $params['custom_values'][1] ?? "";
-            $step = $params['custom_values'][2] ?? "";
+            $min     = $params['custom_values'][0] ?? "";
+            $max     = $params['custom_values'][1] ?? "";
+            $step    = $params['custom_values'][2] ?? "";
             $minimal = $params['custom_values'][3] ?? "";
         }
         echo '<label>' . __("Minimal count") . '</label>&nbsp;';
@@ -203,13 +191,22 @@ class Range extends CommonDBTM
      */
     public static function checkMandatoryFields($value = [], $fields = [])
     {
-        $msg = "";
+        $msg     = "";
         $checkKo = 0;
-        // Check fields empty
-        if ($value['is_mandatory']
-            && $fields['value'] == null) {
-            $msg = $value['name'];
+
+        if ($value['is_mandatory'] && ($fields['value'] === null || $fields['value'] === '')) {
+            $msg     = $value['name'];
             $checkKo = 1;
+        }
+
+        // Server-side check for minimal_mandatory (mirrors the client-side attribute)
+        if (!$checkKo && isset($value['custom_values'])) {
+            $custom_values     = FieldParameter::_unserialize($value['custom_values']);
+            $minimal_mandatory = (isset($custom_values[3]) && $custom_values[3] !== "") ? (int) $custom_values[3] : 0;
+            if ($minimal_mandatory > 0 && (int) $fields['value'] < $minimal_mandatory) {
+                $msg     = $value['name'];
+                $checkKo = 1;
+            }
         }
 
         return ['checkKo' => $checkKo, 'msg' => $msg];

@@ -79,9 +79,6 @@ class Dropdownobject extends CommonDBTM
         $metademand = new Metademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
         $field    = "";
         $toupdate = [];
         switch ($data['item']) {
@@ -727,9 +724,8 @@ class Dropdownobject extends CommonDBTM
                     //                    }
                     //                    $opt['used'] = $used;
 
-                    $container_class = new $data['item']();
-                    $field           = "";
-                    $field           .= \Dropdown::show($data['item'], $opt);
+                    $field = "";
+                    $field .= \Dropdown::show($data['item'], $opt);
                 }
                 break;
         }
@@ -982,8 +978,6 @@ class Dropdownobject extends CommonDBTM
 
     public static function showValueToCheck($item, $params)
     {
-        $field = new FieldOption();
-        $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
         $already_used = [];
         switch ($params["item"]) {
             case 'User':
@@ -1089,7 +1083,7 @@ class Dropdownobject extends CommonDBTM
                                     $elements[$key] = $params["item"]::getFriendlyNameById($key);
                                 }
                             }
-                            echo $elements[$params['check_value']];
+                            echo $elements[$params['check_value']] ?? "";
                         } else {
                             $elements[-1] = __('Not null value', 'metademands');
                             if (is_array(json_decode($params['custom_values'], true))) {
@@ -1114,6 +1108,7 @@ class Dropdownobject extends CommonDBTM
             && ($check_value != Field::$not_null && $check_value != 0)) {
             return false;
         }
+        return true;
     }
 
     /**
@@ -1128,7 +1123,7 @@ class Dropdownobject extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && empty($fields['value'])) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -1180,7 +1175,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1289,9 +1284,8 @@ class Dropdownobject extends CommonDBTM
                         ";
 
                     if ($check_value['check_type_value'] == 2) {
-                        $regex = str_replace('\\', '\\\\', $idc);
                         $script .= "
-                        let regex$compteur = $idc;
+                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1468,7 +1462,7 @@ class Dropdownobject extends CommonDBTM
                     foreach ($check_value['hidden_link'] as $hidden_link) {
                         if ($check_value['check_type_value'] == 2) {
                             $onchange .= "
-                                let regex$compteur = $idc;
+                                let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                                 let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                                 if(regex$compteur.test(val$compteur)) {
@@ -1593,7 +1587,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                       let regex$compteur = $idc;
+                       let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1676,7 +1670,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                            let regex$compteur = $idc;
+                            let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(!regex$compteur.test(val$compteur)) {
@@ -1712,11 +1706,13 @@ class Dropdownobject extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];

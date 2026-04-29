@@ -66,39 +66,33 @@
 }(jQuery));
 
 
-var table = document.getElementById('tablesearch');
+function basketSearchInit(fieldId) {
+    const table = document.getElementById('tablesearch-' + fieldId);
+    if (!table) return;
 
-if (table !== null) {
-    // Get input elements and table
-    var filterRefInput = document.getElementById('searchref');
-    var filterNameInput = document.getElementById('searchname');
-    var filterDescriptionInput = document.getElementById('searchdescription');
-    var rows = table.getElementsByTagName('tr');
+    const filterRefInput         = document.getElementById('searchref-' + fieldId);
+    const filterNameInput        = document.getElementById('searchname-' + fieldId);
+    const filterDescriptionInput = document.getElementById('searchdescription-' + fieldId);
+    const rows = table.getElementsByTagName('tr');
 
-// Add event listeners to the input elements
+    function filterTable() {
+        const filterRef  = filterRefInput.value.toUpperCase();
+        const filterName = filterNameInput.value.toUpperCase();
+        const filterDesc = filterDescriptionInput.value.toUpperCase();
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            if (cells.length < 3) continue;
+            const ref  = cells[0].textContent.toUpperCase();
+            const name = cells[1].textContent.toUpperCase();
+            const desc = cells[2].textContent.toUpperCase();
+            rows[i].style.display = (ref.includes(filterRef) && name.includes(filterName) && desc.includes(filterDesc)) ? '' : 'none';
+        }
+    }
+
     filterRefInput.addEventListener('input', filterTable);
     filterNameInput.addEventListener('input', filterTable);
     filterDescriptionInput.addEventListener('input', filterTable);
-
-    function filterTable()
-    {
-        var filterRef = filterRefInput.value.toUpperCase();
-        var filterName = filterNameInput.value.toUpperCase();
-        var filterDesc = filterDescriptionInput.value.toUpperCase();
-
-        // Loop through all table rows, hide those that don't match the filter criteria
-        for (var i = 0; i < rows.length; i++) {
-            var ref = rows[i].getElementsByTagName('td')[0].textContent.toUpperCase();
-            var name = rows[i].getElementsByTagName('td')[1].textContent.toUpperCase();
-            var desc = rows[i].getElementsByTagName('td')[2].textContent.toUpperCase();
-
-            if (ref.includes(filterRef) && name.includes(filterName) && desc.includes(filterDesc)) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
-            }
-        }
-    }
 }
 
 
@@ -173,7 +167,8 @@ function plugin_metademands_wizard_validateForm(metademandparams)
             && fieldname != '_uploader_content[]'
             && fieldtype != 'file'
             && fieldtype != 'informations'
-            && fieldtype != 'hidden' //for input hidden for dropdown_multiple
+            && !y[i].classList.contains('flatpickr-alt-input') // skip flatpickr display input (no name, duplicate of hidden below)
+            && (fieldtype != 'hidden' || y[i].classList.contains('flatpickr-input')) // allow flatpickr date hidden input; exclude dropdown_multiple hidden inputs
             && fieldmandatory == true) {
             var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
 
@@ -401,6 +396,28 @@ function plugin_metademands_wizard_validateForm(metademandparams)
             var fieldname = z[i].name;
             var idfield = fieldname.replace(/[\[\]]/g, '')
             var visible = $('[id-field=\"' + idfield + '\"]').css('display');
+
+            if (fieldname.endsWith('-dropdown')) {
+                if (fieldmandatory == true) {
+                    const realName = fieldname.replace(/-dropdown$/, '');
+                    const hiddenInput = document.querySelector('[name="' + realName + '"]');
+                    const realValue = hiddenInput ? hiddenInput.value : '';
+                    const res = $('[name="' + fieldname + '"]').closest('[bloc-id]').css('display');
+                    if (res != 'none' && (realValue === '' || realValue === '0' || parseInt(realValue) === 0)) {
+                        $('[name="' + fieldname + '"]').addClass('invalid');
+                        $('[name="' + fieldname + '"]').attr('required', 'required');
+                        const newfieldname = realName.match(/\[(.*?)\]/);
+                        if (newfieldname) {
+                            mandatory.push(newfieldname[1]);
+                        }
+                        ko++;
+                    } else {
+                        $('[name="' + fieldname + '"]').removeClass('invalid');
+                        $('[name="' + fieldname + '"]').removeAttr('required');
+                    }
+                }
+                continue;
+            }
 
             if (z[i].value == 0 && isnumber == null
                 && ismultiplenumber == null

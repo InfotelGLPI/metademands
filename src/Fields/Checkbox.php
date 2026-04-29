@@ -475,8 +475,6 @@ class Checkbox extends CommonDBTM
 
     public static function showValueToCheck($item, $params)
     {
-        $field = new FieldOption();
-        $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
         $already_used = [];
         $elements[-1] = __('Not null value', 'metademands');
         foreach ($params['custom_values'] as $key => $val) {
@@ -495,7 +493,7 @@ class Checkbox extends CommonDBTM
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        echo $elements[$params['check_value']] ?? 0;
+        echo $elements[$params['check_value']] ?? "";
     }
 
     /**
@@ -510,7 +508,7 @@ class Checkbox extends CommonDBTM
 
         // Check fields empty
         if ($value['is_mandatory']
-            && $fields['value'] == null) {
+            && $fields['value'] === null) {
             $msg = $value['name'];
             $checkKo = 1;
         }
@@ -548,6 +546,7 @@ class Checkbox extends CommonDBTM
         } else {
             return false;
         }
+        return true;
     }
 
     public static function fieldsMandatoryScript($data)
@@ -1189,11 +1188,13 @@ class Checkbox extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $submittitle   = $metaparams['submittitle'] ?? '';
+        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
+        $use_condition = $metaparams['use_condition'] ?? '';
+        $show_rule     = $metaparams['show_rule'] ?? '';
+        $show_button   = $metaparams['show_button'] ?? '';
+        $use_richtext  = $metaparams['use_richtext'] ?? '';
+        $richtext_id   = $metaparams['richtext_id'] ?? 0;
 
         $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
         $condition_fields = [];
@@ -1247,7 +1248,7 @@ class Checkbox extends CommonDBTM
             foreach ($custom_values as $key => $val) {
                 $checked = isset($field['value'][$key]) ? 1 : 0;
                 if ($checked) {
-                    $custom_checkbox[] .= $val;
+                    $custom_checkbox[] = $val;
                 }
             }
             return implode(',', $custom_checkbox);
@@ -1255,6 +1256,7 @@ class Checkbox extends CommonDBTM
             if ($field['value']) {
                 return $field['value'];
             }
+            return '';
         }
     }
 
@@ -1276,7 +1278,7 @@ class Checkbox extends CommonDBTM
         }
 
         $result[$field['rank']]['display'] = true;
-        if (!empty($field['custom_values']) && $field['value'] > 0) {
+        if (!empty($field['custom_values']) && !empty($field['value'])) {
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }

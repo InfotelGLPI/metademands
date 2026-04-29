@@ -64,8 +64,9 @@ class Titleblock extends CommonDBTM
         $debug = isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         $color = "#FFF"; //Wizard::hex2rgba($data['color'], "0.03");
-        $rank = $data['rank'];
-        $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;border-top:none;margin-bottom: 10px;'";
+        $rank = (int) $data['rank'];
+        $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
+        $style_background = "style='background-color: $color!important;border-color: {$safe_color}!important;border-radius: 0;border-top:none;margin-bottom: 10px;'";
 
         if ($preview || $debug) {
             echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
@@ -73,7 +74,7 @@ class Titleblock extends CommonDBTM
             echo "<div class='card-header' $style_background>";
         }
 
-        echo "<h2 class=\"card-title\"><span style='color:" . $data['color'] . ";font-weight: normal;'>";
+        echo "<h2 class=\"card-title\"><span style='color:{$safe_color};font-weight: normal;'>";
         $icon = $data['icon'];
         if (!empty($icon)) {
             if (str_contains($icon, 'fa-')) {
@@ -86,7 +87,7 @@ class Titleblock extends CommonDBTM
             $label = $data['name'];
         }
 
-        echo $label;
+        echo htmlspecialchars($label);
         if ($debug) {
             echo " (ID:" . $data['id'] . ")";
         }
@@ -101,7 +102,7 @@ class Titleblock extends CommonDBTM
                 ['awesome-class' => 'ti ti-info-circle']
             );
         }
-        echo "<i id='up" . $rank . "' class='ti ti-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
+        echo "<i id='up{$rank}' class='ti ti-chevron-up pointer' style='right:40px;position: absolute;color:{$safe_color};'></i>";
         $rand = mt_rand();
         echo Html::scriptBlock(
             "
@@ -123,8 +124,7 @@ class Titleblock extends CommonDBTM
             if (empty($comment = Field::displayField($data['id'], 'comment'))) {
                 $comment = $data['comment'];
             }
-            $comment = htmlspecialchars_decode(stripslashes($comment));
-            echo "<div class='card-body'><i>" . $comment . "</i></div>";
+            echo "<div class='card-body'><i>" . RichText::getSafeHtml($comment) . "</i></div>";
         }
     }
 

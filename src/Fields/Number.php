@@ -59,22 +59,14 @@ class Number extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
         if (is_array($value)) {
             $value = 0;
         }
-        $opt = [
-            'value' => $value,
-            'display' => false,
-        ];
 
         if (isset($data['custom_values'])) {
             $custom_values = FieldParameter::_unserialize($data['custom_values']);
             $opt = [
-                'value' => $value,
+                'value' => $value === null ? 0 : $value,
                 'min' => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
                 'max' => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 9999),
                 'step' => ((isset($custom_values[2]) && $custom_values[2] != "") ? $custom_values[2] : 1),
@@ -88,9 +80,11 @@ class Number extends CommonDBTM
                     'minimal_mandatory' => $minimal_mandatory,
                 ];
             }
-        }
-        if ($opt['value'] == 'null') {
-            $opt['value'] = 0;
+        } else {
+            $opt = [
+                'value' => $value === null ? 0 : $value,
+                'display' => false,
+            ];
         }
         $field = \Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
 
@@ -157,7 +151,7 @@ class Number extends CommonDBTM
         $checkKo = 0;
         // Check fields empty
         if ($value['is_mandatory']
-            && $fields['value'] == null) {
+            && ($fields['value'] === null || $fields['value'] === '')) {
             $msg = $value['name'];
             $checkKo = 1;
         }
