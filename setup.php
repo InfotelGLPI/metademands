@@ -57,7 +57,7 @@ use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
-define('PLUGIN_METADEMANDS_VERSION', '3.5.13');
+define('PLUGIN_METADEMANDS_VERSION', '3.5.14');
 
 global $CFG_GLPI;
 
@@ -260,7 +260,7 @@ function plugin_init_metademands()
         Interticketfollowup::class,
         'addToTimeline',
     ];
-    $PLUGIN_HOOKS[Hooks::SHOW_IN_TIMELINE]['metademands'] = [
+    $PLUGIN_HOOKS[Hooks::TIMELINE_ITEMS]['metademands'] = [
         Interticketfollowup::class,
         'getlistItems',
     ];

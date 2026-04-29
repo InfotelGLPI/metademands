@@ -79,6 +79,45 @@ class FieldCustomvalue extends CommonDBChild
     public static $allowed_customvalues_items = ['other', 'Appliance', 'Group'];
 
 
+    /** @var array<int, array[]|null> Rows grouped by plugin_metademands_fields_id (sorted by rank) */
+    private static array $rows_cache = [];
+
+    /**
+     * Batch-load FieldCustomvalue rows for the given field IDs into the static cache.
+     */
+    public static function preloadForFields(array $field_ids): void
+    {
+        global $DB;
+
+        if (empty($field_ids)) {
+            return;
+        }
+        $uncached = array_diff(array_map('intval', $field_ids), array_keys(self::$rows_cache));
+        if (empty($uncached)) {
+            return;
+        }
+        foreach ($uncached as $id) {
+            self::$rows_cache[$id] = [];
+        }
+        foreach ($DB->request([
+            'FROM'    => 'glpi_plugin_metademands_fieldcustomvalues',
+            'WHERE'   => ['plugin_metademands_fields_id' => $uncached],
+            'ORDERBY' => ['rank'],
+        ]) as $row) {
+            self::$rows_cache[(int) $row['plugin_metademands_fields_id']][$row['id']] = $row;
+        }
+    }
+
+    /**
+     * Return all cached custom-value rows for this field (empty array = none, false = not preloaded).
+     *
+     * @return array[]|false
+     */
+    public static function getFromStaticCache(int $field_id)
+    {
+        return array_key_exists($field_id, self::$rows_cache) ? self::$rows_cache[$field_id] : false;
+    }
+
     public static function getTypeName($nb = 0)
     {
         return _n('Custom value', 'Custom values', $nb, 'metademands');

@@ -1937,8 +1937,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         $metademand = new self();
         $metademand->getFromDB($input['plugin_metademands_metademands_id']);
 
-        $field = new Field();
-        $field->getFromDB($input['id']);
+        $field = Field::getCachedField((int) $input['id']) ?? new Field();
 
         $new_value .= $metademand->getName() . " - " . $field->getName();
 
@@ -2689,12 +2688,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     }
 
 
+                    // preload FieldOption for all submitted field IDs (batch, avoids N+1)
+                    $submitted_field_ids = array_filter(
+                        array_map(fn($k) => (int) str_replace("-2", "", (string) $k), array_keys($values['fields'])),
+                        fn($id) => $id > 0
+                    );
+                    FieldOption::preloadForFields($submitted_field_ids);
+
                     foreach ($values['fields'] as $id => $datav) {
-                        $metademands_fields = new Field();
                         if (strpos($id, '-2')) {
                             $id = str_replace("-2", "", $id);
                         }
-                        if ($metademands_fields->getFromDB($id)) {
+                        $metademands_fields = Field::getCachedField((int) $id);
+                        if ($metademands_fields !== null) {
                             switch ($metademands_fields->fields['item']) {
                                 case 'ITILCategory_Metademands':
                                     $parent_fields['itilcategories_id'] = $datav;
@@ -2704,25 +2710,27 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                     break;
                             }
 
-                            $fieldopt = new FieldOption();
-                            if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
-                                foreach ($opts as $opt) {
-                                    if (isset($opt['users_id_validate'])
-                                        && !empty($opt['users_id_validate'])) {
-                                        if (!is_array($datav)) {
-                                            $datav = [$datav];
-                                        }
+                            $opts = FieldOption::getFromStaticCache((int) $id);
+                            if ($opts === false) {
+                                $fieldopt = new FieldOption();
+                                $opts = $fieldopt->find(["plugin_metademands_fields_id" => $id]) ?: [];
+                            }
+                            foreach ($opts as $opt) {
+                                if (isset($opt['users_id_validate'])
+                                    && !empty($opt['users_id_validate'])) {
+                                    if (!is_array($datav)) {
+                                        $datav = [$datav];
+                                    }
 
-                                        if (isset($opt['check_value'])
-                                            && is_array($datav)
-                                            && $opt['users_id_validate'] > 0) {
-                                            $checkValue = $opt['check_value'];
-                                            $usersValidate = $opt['users_id_validate'];
-                                            if (in_array($checkValue, $datav)) {
-                                                $add_validation = '0';
-                                                $validatortype = 'user';
-                                                $users_id_validate[] = $usersValidate;
-                                            }
+                                    if (isset($opt['check_value'])
+                                        && is_array($datav)
+                                        && $opt['users_id_validate'] > 0) {
+                                        $checkValue = $opt['check_value'];
+                                        $usersValidate = $opt['users_id_validate'];
+                                        if (in_array($checkValue, $datav)) {
+                                            $add_validation = '0';
+                                            $validatortype = 'user';
+                                            $users_id_validate[] = $usersValidate;
                                         }
                                     }
                                 }
@@ -2809,11 +2817,16 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     );
                     $list_fields = $line['form'];
 
+                    // preload FieldParameter + FieldCustomvalue for all form fields (batch)
+                    $list_field_ids = array_map('intval', array_keys($list_fields));
+                    FieldParameter::preloadForFields($list_field_ids);
+                    FieldCustomvalue::preloadForFields($list_field_ids);
 
                     $searchOption = Search::getOptions($object_class);
                     foreach ($list_fields as $id => $fields_values) {
-                        $metafield = new Field();
-                        if ($metafield->getFromDB($id)) {
+                        $metafield = Field::getCachedField((int) $id);
+                        $params = [];
+                        if ($metafield !== null) {
                             $params = Field::getAllParamsFromField($metafield);
                         }
                         $fields_values = array_merge($fields_values, $params);
@@ -3012,12 +3025,17 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                 }
                             }
                         }
-                        $inputFieldMain = [];
+                        // load pluginfields once; reused by the post-ticket block below
+                        $pluginfields_for_meta = [];
                         if (Plugin::isPluginActive('fields')) {
-                            $pluginfield = new Pluginfields();
-                            $pluginfields = $pluginfield->find(
+                            $pluginfields_for_meta = (new Pluginfields())->find(
                                 ['plugin_metademands_metademands_id' => $form_metademands_id]
                             );
+                        }
+
+                        $inputFieldMain = [];
+                        if (Plugin::isPluginActive('fields')) {
+                            $pluginfields = $pluginfields_for_meta;
                             foreach ($pluginfields as $plfield) {
                                 $fields_field = new PluginFieldsField();
                                 $fields_container = new PluginFieldsContainer();
@@ -3145,10 +3163,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                         if ($parent_tickets_id) {
                             if (Plugin::isPluginActive('fields')) {
                                 $inputField = [];
-                                $pluginfield = new Pluginfields();
-                                $pluginfields = $pluginfield->find(
-                                    ['plugin_metademands_metademands_id' => $form_metademands_id]
-                                );
+                                $pluginfields = $pluginfields_for_meta;
 
                                 foreach ($pluginfields as $plfield) {
                                     $fields_field = new PluginFieldsField();
@@ -3442,8 +3457,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $explodeTitle = explode("#", $l['tickettasks_name']);
                                                     foreach ($explodeTitle as $title) {
                                                         if (isset($values['fields'][$title])) {
-                                                            $field = new Field();
-                                                            $field->getFromDB($title);
+                                                            $field = Field::getCachedField((int) $title) ?? new Field();
                                                             $fields = $field->fields;
 
 
@@ -3477,8 +3491,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeTitle2 = explode(".", $title);
 
                                                             if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                     )) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
@@ -3512,8 +3526,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeTitle = explode("#", $str);
                                                         foreach ($explodeTitle as $title) {
                                                             if (isset($values['fields'][$title])) {
-                                                                $field = new Field();
-                                                                $field->getFromDB($title);
+                                                                $field = Field::getCachedField((int) $title) ?? new Field();
                                                                 $fields = $field->fields;
 
 
@@ -3544,8 +3557,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                                 $explodeTitle2 = explode(".", $title);
 
                                                                 if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                                    $field_object = new Field();
-                                                                    if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                                    $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                                    if ($field_object !== null) {
                                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                         )) {
                                                                             $users_id = $values['fields'][$explodeTitle2[0]];
@@ -3618,8 +3631,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                             $explodeTitle = explode("#", $l['tickettasks_name']);
                                             foreach ($explodeTitle as $title) {
                                                 if (isset($values['fields'][$title])) {
-                                                    $field = new Field();
-                                                    $field->getFromDB($title);
+                                                    $field = Field::getCachedField((int) $title) ?? new Field();
                                                     $fields = $field->fields;
 
 
@@ -3655,8 +3667,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $explodeTitle2 = explode(".", $title);
 
                                                     if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                        $field_object = new Field();
-                                                        if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                        $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                        if ($field_object !== null) {
                                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                             )) {
                                                                 $users_id = $values['fields'][$explodeTitle2[0]];
@@ -3702,8 +3714,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         //                                                        }
 
                                                         if (isset($values['fields'][$content])) {
-                                                            $field = new Field();
-                                                            $field->getFromDB($content);
+                                                            $field = Field::getCachedField((int) $content) ?? new Field();
                                                             $fields = $field->fields;
 
 
@@ -3744,8 +3755,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeContent2 = explode(".", $content);
 
                                                             if (isset($values['fields'][$explodeContent2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                     )) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
@@ -3779,8 +3790,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeContent = explode("#", $str);
                                                         foreach ($explodeContent as $content) {
                                                             if (isset($values['fields'][$content])) {
-                                                                $field = new Field();
-                                                                $field->getFromDB($content);
+                                                                $field = Field::getCachedField((int) $content) ?? new Field();
                                                                 $fields = $field->fields;
 
 
@@ -3816,8 +3826,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                                 $explodeContent2 = explode(".", $content);
 
                                                                 if (isset($values['fields'][$explodeContent2[0]])) {
-                                                                    $field_object = new Field();
-                                                                    if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                    $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                                    if ($field_object !== null) {
                                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                         )) {
                                                                             $users_id = $values['fields'][$explodeContent2[0]];
@@ -3905,8 +3915,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     //                                                        }
                                                     //                                                    }
                                                     if (isset($values['fields'][$content])) {
-                                                        $field = new Field();
-                                                        $field->getFromDB($content);
+                                                        $field = Field::getCachedField((int) $content) ?? new Field();
                                                         $fields = $field->fields;
 
 
@@ -3947,8 +3956,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeContent2 = explode(".", $content);
 
                                                         if (isset($values['fields'][$explodeContent2[0]])) {
-                                                            $field_object = new Field();
-                                                            if ($field_object->getFromDB($explodeContent2[0])) {
+                                                            $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                            if ($field_object !== null) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                 )) {
                                                                     $users_id = $values['fields'][$explodeContent2[0]];
@@ -4050,8 +4059,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
 
                                                         if (isset($values['fields'][$title])) {
 
-                                                            $field = new Field();
-                                                            $field->getFromDB($title);
+                                                            $field = Field::getCachedField((int) $title) ?? new Field();
                                                             $fields = $field->fields;
 
 
@@ -4084,8 +4092,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeTitle2 = explode(".", $title);
 
                                                             if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object"
                                                                         && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
@@ -4110,8 +4118,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeTitle = explode("#", $str);
                                                         foreach ($explodeTitle as $title) {
                                                             if (isset($values['fields'][$title])) {
-                                                                $field = new Field();
-                                                                $field->getFromDB($title);
+                                                                $field = Field::getCachedField((int) $title) ?? new Field();
                                                                 $fields = $field->fields;
 
 
@@ -4142,8 +4149,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                                 $explodeTitle2 = explode(".", $title);
 
                                                                 if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                                    $field_object = new Field();
-                                                                    if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                                    $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                                    if ($field_object !== null) {
                                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                         )) {
                                                                             $users_id = $values['fields'][$explodeTitle2[0]];
@@ -4206,8 +4213,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $explodeContent = explode("#", $son_ticket_data['content']);
                                                     foreach ($explodeContent as $content) {
                                                         if (isset($values['fields'][$content])) {
-                                                            $field = new Field();
-                                                            $field->getFromDB($content);
+                                                            $field = Field::getCachedField((int) $content) ?? new Field();
                                                             $fields = $field->fields;
 
 
@@ -4244,8 +4250,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeContent2 = explode(".", $content);
 
                                                             if (isset($values['fields'][$explodeContent2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object"
                                                                         && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
@@ -4270,8 +4276,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeContent = explode("#", $str);
                                                         foreach ($explodeContent as $content) {
                                                             if (isset($values['fields'][$content])) {
-                                                                $field = new Field();
-                                                                $field->getFromDB($content);
+                                                                $field = Field::getCachedField((int) $content) ?? new Field();
                                                                 $fields = $field->fields;
 
 
@@ -4307,8 +4312,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                                 $explodeContent2 = explode(".", $content);
 
                                                                 if (isset($values['fields'][$explodeContent2[0]])) {
-                                                                    $field_object = new Field();
-                                                                    if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                    $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                                    if ($field_object !== null) {
                                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                         )) {
                                                                             $users_id = $values['fields'][$explodeContent2[0]];
@@ -4397,8 +4402,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     //                                                    }
 
                                                     if (isset($values['fields'][$content])) {
-                                                        $field = new Field();
-                                                        $field->getFromDB($content);
+                                                        $field = Field::getCachedField((int) $content) ?? new Field();
                                                         $fields = $field->fields;
 
 
@@ -4437,8 +4441,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeContent2 = explode(".", $content);
 
                                                         if (isset($values['fields'][$explodeContent2[0]])) {
-                                                            $field_object = new Field();
-                                                            if ($field_object->getFromDB($explodeContent2[0])) {
+                                                            $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                            if ($field_object !== null) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                 )) {
                                                                     $users_id = $values['fields'][$explodeContent2[0]];
@@ -4571,8 +4575,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                 $explodeTitle = explode("#", $l['tickettasks_name']);
                                                 foreach ($explodeTitle as $title) {
                                                     if (isset($values['fields'][$title])) {
-                                                        $field = new Field();
-                                                        $field->getFromDB($title);
+                                                        $field = Field::getCachedField((int) $title) ?? new Field();
                                                         $fields = $field->fields;
                                                         $fields['value'] = $values['fields'][$title];
 
@@ -4604,8 +4607,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         $explodeTitle2 = explode(".", $title);
 
                                                         if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                            $field_object = new Field();
-                                                            if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                            $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                            if ($field_object !== null) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                 )) {
                                                                     $users_id = $values['fields'][$explodeTitle2[0]];
@@ -4639,8 +4642,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $explodeTitle = explode("#", $str);
                                                     foreach ($explodeTitle as $title) {
                                                         if (isset($values['fields'][$title])) {
-                                                            $field = new Field();
-                                                            $field->getFromDB($title);
+                                                            $field = Field::getCachedField((int) $title) ?? new Field();
                                                             $fields = $field->fields;
                                                             $fields['value'] = $values['fields'][$title];
 
@@ -4669,8 +4671,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeTitle2 = explode(".", $title);
 
                                                             if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                     )) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
@@ -4743,8 +4745,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                         $explodeTitle = explode("#", $l['tickettasks_name']);
                                         foreach ($explodeTitle as $title) {
                                             if (isset($values['fields'][$title])) {
-                                                $field = new Field();
-                                                $field->getFromDB($title);
+                                                $field = Field::getCachedField((int) $title) ?? new Field();
                                                 $fields = $field->fields;
 
                                                 $fields['value'] = $values['fields'][$title];
@@ -4780,8 +4781,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                 $explodeTitle2 = explode(".", $title);
 
                                                 if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                    $field_object = new Field();
-                                                    if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                    $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                    if ($field_object !== null) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                         )) {
                                                             $users_id = $values['fields'][$explodeTitle2[0]];
@@ -4825,8 +4826,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                         //                                                            }
                                                         //                                                        }
                                                         if (isset($values['fields'][$content])) {
-                                                            $field = new Field();
-                                                            $field->getFromDB($content);
+                                                            $field = Field::getCachedField((int) $content) ?? new Field();
                                                             $fields = $field->fields;
 
                                                             $fields['value'] = $values['fields'][$content];
@@ -4862,8 +4862,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeContent2 = explode(".", $content);
 
                                                             if (isset($values['fields'][$explodeContent2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                     )) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
@@ -4898,8 +4898,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $explodeContent = explode("#", $str);
                                                     foreach ($explodeContent as $content) {
                                                         if (isset($values['fields'][$content])) {
-                                                            $field = new Field();
-                                                            $field->getFromDB($content);
+                                                            $field = Field::getCachedField((int) $content) ?? new Field();
                                                             $fields = $field->fields;
 
                                                             $fields['value'] = $values['fields'][$content];
@@ -4935,8 +4934,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                             $explodeContent2 = explode(".", $content);
 
                                                             if (isset($values['fields'][$explodeContent2[0]])) {
-                                                                $field_object = new Field();
-                                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                                if ($field_object !== null) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                                     )) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
@@ -5020,8 +5019,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                 //                                            }
 
                                                 if (isset($values['fields'][$content])) {
-                                                    $field = new Field();
-                                                    $field->getFromDB($content);
+                                                    $field = Field::getCachedField((int) $content) ?? new Field();
                                                     $fields = $field->fields;
 
                                                     $fields['value'] = $values['fields'][$content];
@@ -5059,8 +5057,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                     $explodeContent2 = explode(".", $content);
 
                                                     if (isset($values['fields'][$explodeContent2[0]])) {
-                                                        $field_object = new Field();
-                                                        if ($field_object->getFromDB($explodeContent2[0])) {
+                                                        $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                        if ($field_object !== null) {
                                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                             )) {
                                                                 $users_id = $values['fields'][$explodeContent2[0]];
@@ -5289,6 +5287,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
         }
         $options['formatastable'] ??= true;
 
+        // hoist metademand load outside both loops — same row, no need to reload per field
+        $self_meta = new self();
+        $self_meta->getFromDB($metademands_id);
+        $hide_no_field = $self_meta->getField('hide_no_field') == 1;
+
         foreach ($values_form as $k => $values) {
             if (is_array($values) && $config_data['show_form_changes']) {
                 foreach ($values as $key => $val) {
@@ -5333,9 +5336,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     $field['value2'] = $values[$fields_id . '-2'];
                 }
 
-                $self = new self();
-                $self->getFromDB($metademands_id);
-                if ($self->getField('hide_no_field') == 1) {
+                if ($hide_no_field) {
                     if ($field['type'] == 'radio'
                         && ($field['value'] == ""
                             || (is_array($field['value'])
@@ -5513,8 +5514,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
     ) {
         global $PLUGIN_HOOKS;
 
-        $metafield = new Field();
-        if ($metafield->getFromDB($field["id"])) {
+        $metafield = Field::getCachedField((int) $field["id"]);
+        if ($metafield !== null) {
             $params = Field::getAllParamsFromField($metafield);
         }
         $field = array_merge($field, $params);
@@ -5817,8 +5818,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                 $explodeTitle = explode("#", $value['value']);
                                 foreach ($explodeTitle as $title) {
                                     if (isset($values['fields'][$title])) {
-                                        $field = new Field();
-                                        $field->getFromDB($title);
+                                        $field = Field::getCachedField((int) $title) ?? new Field();
                                         $fields = $field->fields;
 
                                         $fields['value'] = $values['fields'][$title];
@@ -5847,8 +5847,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                         $explodeTitle2 = explode(".", $title);
 
                                         if (isset($values['fields'][$explodeTitle2[0]])) {
-                                            $field_object = new Field();
-                                            if ($field_object->getFromDB($explodeTitle2[0])) {
+                                            $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                            if ($field_object !== null) {
                                                 if ($field_object->fields['type'] == "dropdown_object"
                                                     && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeTitle2[0]];
@@ -5938,8 +5938,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                     $explodeTitle = explode("#", $str);
                                     foreach ($explodeTitle as $title) {
                                         if (isset($values['fields'][$title])) {
-                                            $field = new Field();
-                                            $field->getFromDB($title);
+                                            $field = Field::getCachedField((int) $title) ?? new Field();
                                             $fields = $field->fields;
 
 
@@ -6046,8 +6045,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                         $explodeTitle = explode("#", $value['value']);
                         foreach ($explodeTitle as $title) {
                             if (isset($values['fields'][$title])) {
-                                $field = new Field();
-                                $field->getFromDB($title);
+                                $field = Field::getCachedField((int) $title) ?? new Field();
                                 $fields = $field->fields;
 
 
@@ -6293,8 +6291,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
 
                                     foreach ($list_fields as $id => $fields_values) {
                                         $params = [];
-                                        $field = new Field();
-                                        if ($field->getFromDB($id)) {
+                                        $field = Field::getCachedField((int) $id);
+                                        if ($field !== null) {
                                             $params = Field::getAllParamsFromField($field);
                                         }
 
@@ -6656,8 +6654,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                     $explodeTitle = explode("#", $l['tickettasks_name']);
                                     foreach ($explodeTitle as $title) {
                                         if (isset($values['fields'][$title])) {
-                                            $field = new Field();
-                                            $field->getFromDB($title);
+                                            $field = Field::getCachedField((int) $title) ?? new Field();
                                             $fields = $field->fields;
 
 
@@ -6689,8 +6686,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                             $explodeTitle2 = explode(".", $title);
 
                                             if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                $field_object = new Field();
-                                                if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                if ($field_object !== null) {
                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                     )) {
                                                         $users_id = $values['fields'][$explodeTitle2[0]];
@@ -6725,8 +6722,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                         $explodeTitle = explode("#", $str);
                                         foreach ($explodeTitle as $title) {
                                             if (isset($values['fields'][$title])) {
-                                                $field = new Field();
-                                                $field->getFromDB($title);
+                                                $field = Field::getCachedField((int) $title) ?? new Field();
                                                 $fields = $field->fields;
 
 
@@ -6757,8 +6753,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                 $explodeTitle2 = explode(".", $title);
 
                                                 if (isset($values['fields'][$explodeTitle2[0]])) {
-                                                    $field_object = new Field();
-                                                    if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                    $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                                    if ($field_object !== null) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                         )) {
                                                             $users_id = $values['fields'][$explodeTitle2[0]];
@@ -6830,8 +6826,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                             $explodeTitle = explode("#", $l['tickettasks_name']);
                             foreach ($explodeTitle as $title) {
                                 if (isset($values['fields'][$title])) {
-                                    $field = new Field();
-                                    $field->getFromDB($title);
+                                    $field = Field::getCachedField((int) $title) ?? new Field();
                                     $fields = $field->fields;
 
 
@@ -6865,8 +6860,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                     $explodeTitle2 = explode(".", $title);
 
                                     if (isset($values['fields'][$explodeTitle2[0]])) {
-                                        $field_object = new Field();
-                                        if ($field_object->getFromDB($explodeTitle2[0])) {
+                                        $field_object = Field::getCachedField((int) $explodeTitle2[0]);
+                                        if ($field_object !== null) {
                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                             )) {
                                                 $users_id = $values['fields'][$explodeTitle2[0]];
@@ -6907,8 +6902,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                             //                                                }
                                             //                                            }
                                             if (isset($values['fields'][$content])) {
-                                                $field = new Field();
-                                                $field->getFromDB($content);
+                                                $field = Field::getCachedField((int) $content) ?? new Field();
                                                 $fields = $field->fields;
 
 
@@ -6940,8 +6934,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                 $explodeContent2 = explode(".", $content);
 
                                                 if (isset($values['fields'][$explodeContent2[0]])) {
-                                                    $field_object = new Field();
-                                                    if ($field_object->getFromDB($explodeContent2[0])) {
+                                                    $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                    if ($field_object !== null) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                         )) {
                                                             $users_id = $values['fields'][$explodeContent2[0]];
@@ -6976,8 +6970,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                         $explodeContent = explode("#", $str);
                                         foreach ($explodeContent as $content) {
                                             if (isset($values['fields'][$content])) {
-                                                $field = new Field();
-                                                $field->getFromDB($content);
+                                                $field = Field::getCachedField((int) $content) ?? new Field();
                                                 $fields = $field->fields;
 
 
@@ -7008,8 +7001,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                                 $explodeContent2 = explode(".", $content);
 
                                                 if (isset($values['fields'][$explodeContent2[0]])) {
-                                                    $field_object = new Field();
-                                                    if ($field_object->getFromDB($explodeContent2[0])) {
+                                                    $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                                    if ($field_object !== null) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                         )) {
                                                             $users_id = $values['fields'][$explodeContent2[0]];
@@ -7088,8 +7081,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                     //                                        }
                                     //                                    }
                                     if (isset($values['fields'][$content])) {
-                                        $field = new Field();
-                                        $field->getFromDB($content);
+                                        $field = Field::getCachedField((int) $content) ?? new Field();
                                         $fields = $field->fields;
 
 
@@ -7123,8 +7115,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                         $explodeContent2 = explode(".", $content);
 
                                         if (isset($values['fields'][$explodeContent2[0]])) {
-                                            $field_object = new Field();
-                                            if ($field_object->getFromDB($explodeContent2[0])) {
+                                            $field_object = Field::getCachedField((int) $explodeContent2[0]);
+                                            if ($field_object !== null) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType(
                                                 )) {
                                                     $users_id = $values['fields'][$explodeContent2[0]];

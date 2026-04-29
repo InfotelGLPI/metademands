@@ -90,8 +90,8 @@ class Ticket_Field extends CommonDBTM
         if (!$DB->tableExists($table)) {
             $query = "CREATE TABLE `$table` (
                         `id` int {$default_key_sign} NOT NULL auto_increment,
-                        `value`                        text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                        `value2`                       text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `value`                        longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `value2`                       longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                         `tickets_id`                   int {$default_key_sign} NOT NULL           DEFAULT '0',
                         `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL           DEFAULT '0',
                         PRIMARY KEY (`id`),
@@ -104,7 +104,7 @@ class Ticket_Field extends CommonDBTM
 
         //version 3.2.0
         if (!$DB->fieldExists($table, "value2")) {
-            $migration->addField($table, "value2", "text COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+            $migration->addField($table, "value2", "longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
 
@@ -117,6 +117,14 @@ class Ticket_Field extends CommonDBTM
             if (!isIndex($table, "tickets_id")) {
                 $migration->addKey($table, "tickets_id");
             }
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.3.14
+        $fields = $DB->listFields($table);
+        if (isset($fields['value']) && stripos($fields['value']['Type'], 'longtext') === false) {
+            $migration->changeField($table, 'value', 'value', 'longtext');
+            $migration->changeField($table, 'value2', 'value2', 'longtext');
             $migration->migrationOneTable($table);
         }
     }
@@ -175,7 +183,7 @@ class Ticket_Field extends CommonDBTM
                 if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
 
                     if ($field['type'] == "textarea"  && $field['use_richtext'] == 1) {
-                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $ticket, $linked_docs, false);
+                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $ticket, [], false);
                     } else {
                         $field['value'] = $values[$fields_id];
                     }

@@ -1358,6 +1358,12 @@ class Field extends CommonDBChild
         }
         $fieldparameter = new FieldParameter();
 
+        // Batch-load all related data for this metademand's fields (avoids N+1 per field)
+        $all_ids_for_preload = array_column(is_array($data) ? $data : [], 'id');
+        FieldParameter::preloadForFields($all_ids_for_preload);
+        FieldCustomvalue::preloadForFields($all_ids_for_preload);
+        FieldOption::preloadForFields($all_ids_for_preload);
+
         $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
         $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
 
@@ -1493,7 +1499,11 @@ class Field extends CommonDBChild
             }
 
             foreach ($data as $value) {
-                if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']])) {
+                $fp_check = FieldParameter::getFromStaticCache((int) $value['id']);
+                if ($fp_check === false) {
+                    $fp_check = $fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]);
+                }
+                if (!$fp_check) {
                     $koparams++;
                 }
 
@@ -1508,8 +1518,12 @@ class Field extends CommonDBChild
                             $value['item'],
                             $allowed_customvalues_items
                         ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
-                    $field_custom = new FieldCustomvalue();
-                    if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
+                    $fc_check = FieldCustomvalue::getFromStaticCache((int) $value['id']);
+                    if ($fc_check === false) {
+                        $field_custom = new FieldCustomvalue();
+                        $fc_check = $field_custom->find(["plugin_metademands_fields_id" => $value['id']]);
+                    }
+                    if (!$fc_check) {
                         $kocustom++;
                     }
                 }
@@ -1594,12 +1608,25 @@ class Field extends CommonDBChild
                         echo "</td>";
                     }
 
+                    // N+1 fix: load per-field data from static cache (preloaded before this loop)
+                    $fp_cur = FieldParameter::getFromStaticCache((int) $value['id']);
+                    if ($fp_cur === false) {
+                        $fp_cur = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']]) ? $fieldparameter->fields : null;
+                    }
+                    $fieldparameter->fields = $fp_cur ?? [];
+                    $fc_cur = FieldCustomvalue::getFromStaticCache((int) $value['id']);
+                    if ($fc_cur === false) {
+                        $fc_cur = $field_custom->find(["plugin_metademands_fields_id" => $value['id']]) ?: [];
+                    }
+                    $fo_cur = FieldOption::getFromStaticCache((int) $value['id']);
+                    if ($fo_cur === false) {
+                        $fo_cur = (new FieldOption())->find(["plugin_metademands_fields_id" => $value['id']]) ?: [];
+                    }
+
                     echo "<td>";
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if (!$fieldparameter->find(
-                            ["plugin_metademands_fields_id" => $value['id']]
-                        ) || ((
+                    if (!$fp_cur || ((
                                 isset($value['type'])
                                 && (in_array(
                                         $value['type'],
@@ -1612,7 +1639,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                                         $allowed_customvalues_items
                                     ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
                             )
-                            && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
+                            && !$fc_cur)) {
                         echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
                     }
                     echo "</div>";
@@ -1649,9 +1676,10 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo self::getFieldTypesName($value['type']);
                     //name of parent field
                     if ($value['type'] == 'parent_field') {
-                        if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $value['id']])) {
+                        $parent_opt = count($fo_cur) > 0 ? reset($fo_cur) : null;
+                        if ($parent_opt) {
                             $field = new self();
-                            if ($field->getFromDB($fieldopt->fields['parent_field_id'])) {
+                            if ($field->getFromDB($parent_opt['parent_field_id'])) {
                                 if (empty(trim($field->fields['name']))) {
                                     echo " ( ID - " . $value['parent_field_id'] . ")";
                                 } else {
@@ -1673,12 +1701,12 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "<td class='rowhandler control center'>";
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
-                        if ($fieldparameter->fields['is_mandatory'] == 1) {
+                    if ($fp_cur) {
+                        if ($fp_cur['is_mandatory'] == 1) {
                             echo "<span class='red'>";
                         }
-                        echo \Dropdown::getYesNo($fieldparameter->fields['is_mandatory']);
-                        if ($fieldparameter->fields['is_mandatory'] == 1) {
+                        echo \Dropdown::getYesNo($fp_cur['is_mandatory']);
+                        if ($fp_cur['is_mandatory'] == 1) {
                             echo "</span>";
                         }
                     }
@@ -1689,13 +1717,12 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "<td class='rowhandler control center'>";
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    $fieldopt = new FieldOption();
-                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
-                        $nbopts = count($opts);
+                    if (count($fo_cur) > 0) {
+                        $nbopts = count($fo_cur);
                         if ($nbopts > 1) {
                             echo __('Multiples', 'metademands');
                         } else {
-                            foreach ($opts as $opt) {
+                            foreach ($fo_cur as $opt) {
                                 $datao['item'] = $value['item'];
                                 $datao['type'] = $value['type'];
                                 $datao['id'] = $value['id'];
@@ -1704,22 +1731,13 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 $datao['check_type_value'] = $opt['check_type_value'];
                                 $datao['check_value_regex'] = $opt['check_value_regex'];
 
-                                $metademand_custom = new FieldCustomvalue();
                                 $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
                                 $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
 
                                 if (isset($value['type'])
                                     && in_array($value['type'], $allowed_customvalues_types)
                                     || in_array($value['item'], $allowed_customvalues_items)) {
-                                    $datao['custom_values'] = [];
-                                    if ($customs = $metademand_custom->find(
-                                        ["plugin_metademands_fields_id" => $value['id']],
-                                        "rank"
-                                    )) {
-                                        if (count($customs) > 0) {
-                                            $datao['custom_values'] = $customs;
-                                        }
-                                    }
+                                    $datao['custom_values'] = count($fc_cur) > 0 ? $fc_cur : [];
                                 } else {
                                     $datao['custom_values'] = $value['custom_values'] ?? [];
                                 }
@@ -1743,13 +1761,13 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                     $searchOption = Search::getOptions('Ticket');
-                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
-                        if ($fieldparameter->fields['used_by_ticket']
+                    if ($fp_cur) {
+                        if ($fp_cur['used_by_ticket']
                             && $value['type'] !== 'text'
                             && $value['type'] !== 'email'
                             && $value['type'] !== 'tel'
                             && $value['type'] !== 'url') {
-                            echo $searchOption[$fieldparameter->fields['used_by_ticket']]['name'];
+                            echo $searchOption[$fp_cur['used_by_ticket']]['name'];
                         } else {
                             echo \Dropdown::EMPTY_VALUE;
                         }
@@ -1762,9 +1780,8 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "<td class='rowhandler control center'>";
                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
 border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    $fieldopt = new FieldOption();
-                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
-                        foreach ($opts as $opt) {
+                    if (count($fo_cur) > 0) {
+                        foreach ($fo_cur as $opt) {
                             $tasks = [];
                             if (!empty($opt['plugin_metademands_tasks_id'])) {
                                 $tasks[] = $opt['plugin_metademands_tasks_id'];
@@ -2478,8 +2495,24 @@ border-style: none !important; border-color: initial !important;border-image: in
     }
 
 
+    /**
+     * Return a Field object for the given ID, memoised for the duration of the request.
+     * Avoids repeated DB hits when the same field ID is referenced in multiple loops.
+     */
+    public static function getCachedField(int $id): ?self
+    {
+        static $cache = [];
+        if (!isset($cache[$id])) {
+            $f = new self();
+            $cache[$id] = $f->getFromDB($id) ? $f : null;
+        }
+        return $cache[$id];
+    }
+
     public static function getAllParamsFromField($field)
     {
+        static $metademand_cache = [];
+
         $metademand = new Metademand();
         $metademand_params = new FieldParameter();
         $field_custom = new FieldCustomvalue();
@@ -2490,13 +2523,24 @@ border-style: none !important; border-color: initial !important;border-image: in
         $id = $field->getID();
         if (isset($id) && $id > 0) {
 
-            $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $field->getID()]
-            );
-            if (isset($field->fields['plugin_metademands_metademands_id'])) {
-                $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
+            // FieldParameter — use static cache (preloadForFields() may have warmed it)
+            $fp_cached = FieldParameter::getFromStaticCache($id);
+            if ($fp_cached === false) {
+                $metademand_params->getFromDBByCrit(["plugin_metademands_fields_id" => $id]);
+            } else {
+                $metademand_params->fields = $fp_cached ?? [];
             }
 
+            // Parent metademand — static cache keyed by metademand ID
+            $meta_id = $field->fields['plugin_metademands_metademands_id'] ?? 0;
+            if ($meta_id > 0) {
+                if (!isset($metademand_cache[$meta_id])) {
+                    $metademand->getFromDB($meta_id);
+                    $metademand_cache[$meta_id] = $metademand->fields;
+                } else {
+                    $metademand->fields = $metademand_cache[$meta_id];
+                }
+            }
 
             $default_values = [];
             if (isset($metademand_params->fields['default'])) {
@@ -2518,10 +2562,15 @@ border-style: none !important; border-color: initial !important;border-image: in
                 && $field->fields['item'] != "Appliance"
                 && $field->fields['item'] != "Group") {
                 $custom_values = [];
-                if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
-                    if (count($customs) > 0) {
-                        $custom_values = $customs;
-                    }
+                // FieldCustomvalue — use static cache (preloadForFields() may have warmed it)
+                $fc_cached = FieldCustomvalue::getFromStaticCache($id);
+                if ($fc_cached === false) {
+                    $customs = $field_custom->find(["plugin_metademands_fields_id" => $id], "rank");
+                } else {
+                    $customs = $fc_cached;
+                }
+                if ($customs && count($customs) > 0) {
+                    $custom_values = $customs;
                     $default_values = [];
                 }
             }

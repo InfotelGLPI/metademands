@@ -92,6 +92,46 @@ class FieldParameter extends CommonDBChild
     ];
     public static $allowed_parameters_items = ['User', 'Group'];
 
+    /** @var array<int, array|null> Row indexed by plugin_metademands_fields_id, null = absent */
+    private static array $row_cache = [];
+
+    /**
+     * Batch-load FieldParameter rows for the given field IDs into the static cache.
+     * Subsequent calls to getFromStaticCache() will not hit the database.
+     */
+    public static function preloadForFields(array $field_ids): void
+    {
+        global $DB;
+
+        if (empty($field_ids)) {
+            return;
+        }
+        $uncached = array_diff(array_map('intval', $field_ids), array_keys(self::$row_cache));
+        if (empty($uncached)) {
+            return;
+        }
+        foreach ($uncached as $id) {
+            self::$row_cache[$id] = null;
+        }
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_metademands_fieldparameters',
+            'WHERE' => ['plugin_metademands_fields_id' => $uncached],
+        ]) as $row) {
+            self::$row_cache[(int) $row['plugin_metademands_fields_id']] = $row;
+        }
+    }
+
+    /**
+     * Return the cached row for this field, or null if none exists.
+     * Returns false when the cache has not been warmed yet (unknown).
+     *
+     * @return array|null|false  array = found, null = not found, false = not preloaded
+     */
+    public static function getFromStaticCache(int $field_id)
+    {
+        return array_key_exists($field_id, self::$row_cache) ? self::$row_cache[$field_id] : false;
+    }
+
     public static function getTypeName($nb = 0)
     {
         return _n('Parameter', 'Parameters', $nb, 'metademands');

@@ -3,6 +3,7 @@
       <testsuite name="Unit">
          <file>tests/ConditionTest.php</file>
          <file>tests/FieldTest.php</file>
+         <file>tests/WizardTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

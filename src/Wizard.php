@@ -77,6 +77,47 @@ class Wizard extends CommonDBTM
         return CommonDBTM::getTable(Metademand::class);
     }
 
+    /**
+     * Normalize richtext textarea upload POST data into standard upload arrays.
+     *
+     * When Html::file() is called with name="field[N]" (from Textarea::textarea()),
+     * jQuery File Upload creates inputs named _field[N][idx], _prefix_field[N][idx],
+     * _tag_field[N][idx] instead of the standard _filename[idx] etc.
+     * This method converts those field-specific names to the standard format so
+     * adddraft.php and addform.php can store them uniformly in the session.
+     *
+     * @param array $post $_POST data
+     * @return array{_filename: list<string>, _prefix_filename: list<string>, _tag_filename: list<string>}
+     */
+    public static function extractRichtextFieldUploads(array $post): array
+    {
+        $result = [
+            '_filename'        => [],
+            '_prefix_filename' => [],
+            '_tag_filename'    => [],
+        ];
+
+        if (!isset($post['_field']) || !is_array($post['_field'])) {
+            return $result;
+        }
+
+        foreach ($post['_field'] as $field_id => $files) {
+            if (!is_array($files)) {
+                continue;
+            }
+            foreach ($files as $idx => $filename) {
+                if (empty($filename)) {
+                    continue;
+                }
+                $result['_filename'][]        = $filename;
+                $result['_prefix_filename'][] = $post['_prefix_field'][$field_id][$idx] ?? '';
+                $result['_tag_filename'][]    = $post['_tag_field'][$field_id][$idx] ?? '';
+            }
+        }
+
+        return $result;
+    }
+
     public static function getIcon()
     {
         return "ti ti-device-imac-search";
@@ -1669,21 +1710,22 @@ class Wizard extends CommonDBTM
 
         $fields = new Field();
         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+
+        // Batch-load related data for all fields of this metademand (3 queries total instead of 3N)
+        $all_field_ids = array_column(is_array($fields_data) ? $fields_data : [], 'id');
+        FieldParameter::preloadForFields($all_field_ids);
+        FieldCustomvalue::preloadForFields($all_field_ids);
+        FieldOption::preloadForFields($all_field_ids);
+
         $all_meta_fields = [];
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
-                $label = "";
-                if (isset($data['name'])) {
-                    $label = $data['name'];
-                }
-                $metademand_params = new FieldParameter();
-                $metademand_params->getFromDBByCrit(
-                    ["plugin_metademands_fields_id" => $data["id"]]
-                );
-                $all_meta_fields[$data['id']] = (isset($metademand_params->fields['hide_title'])
-                    && $metademand_params->fields['hide_title'] == 1) ? Field::getFieldTypesName(
-                        $data['type']
-                    ) : $label;
+                $label = $data['name'] ?? '';
+                $fp_data = FieldParameter::getFromStaticCache((int) $data['id']);
+                $all_meta_fields[$data['id']] = ($fp_data !== null && $fp_data !== false
+                    && isset($fp_data['hide_title']) && $fp_data['hide_title'] == 1)
+                    ? Field::getFieldTypesName($data['type'])
+                    : $label;
             }
         }
         $json_all_meta_fields = json_encode($all_meta_fields);
@@ -1907,14 +1949,17 @@ class Wizard extends CommonDBTM
         $subblocks_data = [];
         foreach ($allfields as $blockid => $blockfields) {
             foreach ($blockfields as $value) {
-                $fieldopt = new FieldOption();
-                if ($opts = $fieldopt->find(
-                    [
+                $cached_opts = FieldOption::getFromStaticCache((int) $value['id']);
+                if ($cached_opts === false) {
+                    // cache miss — fallback to DB
+                    $fieldopt = new FieldOption();
+                    $cached_opts = $fieldopt->find([
                         "plugin_metademands_fields_id" => $value['id'],
-                        "hidden_block_same_block" => 1,
-                    ]
-                )) {
-                    foreach ($opts as $opt) {
+                        "hidden_block_same_block"      => 1,
+                    ]);
+                }
+                foreach ($cached_opts as $opt) {
+                    if (($opt['hidden_block_same_block'] ?? 0) == 1) {
                         $subblocks[] = $opt['hidden_block'];
                     }
                 }
@@ -2593,8 +2638,15 @@ class Wizard extends CommonDBTM
         $styleasTab = "";
 
         $displayBlocksAsTab = 0;
+        static $sc_cache = [];
+        $meta_id_for_sc = $metademands->getID();
+        if (!isset($sc_cache[$meta_id_for_sc])) {
+            $sc_obj = new Configstep();
+            $sc_obj->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id_for_sc]);
+            $sc_cache[$meta_id_for_sc] = $sc_obj->fields ?? [];
+        }
         $stepConfig = new Configstep();
-        $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands->getID()]);
+        $stepConfig->fields = $sc_cache[$meta_id_for_sc];
         if ($metademands->fields['step_by_step_mode'] == 1
             && isset($stepConfig->fields['see_blocks_as_tab'])
             && $stepConfig->fields['see_blocks_as_tab'] == 1) {
@@ -2613,25 +2665,23 @@ class Wizard extends CommonDBTM
         if (($displayBlocksAsTab == 0 || $preview)
             && $line[$keys[0]]['type'] == 'title-block') {
             $data = $line[$keys[0]];
-            $fieldparameter = new FieldParameter();
-            if ($fieldparameter->getFromDBByCrit(
-                ['plugin_metademands_fields_id' => $line[$keys[0]]['id']]
-            )) {
-                unset($fieldparameter->fields['plugin_metademands_fields_id']);
-                unset($fieldparameter->fields['id']);
-
-                $params = $fieldparameter->fields;
+            $tb_field_id = (int) $line[$keys[0]]['id'];
+            $fp_tb = FieldParameter::getFromStaticCache($tb_field_id);
+            if ($fp_tb === false) {
+                $fieldparameter = new FieldParameter();
+                $fp_tb = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $tb_field_id])
+                    ? $fieldparameter->fields
+                    : null;
+            }
+            if ($fp_tb !== null) {
+                $params = $fp_tb;
+                unset($params['plugin_metademands_fields_id'], $params['id']);
                 $data = array_merge($line[$keys[0]], $params);
-                if (isset($fieldparameter->fields['default'])) {
-                    $line[$keys[0]]['default_values'] = FieldParameter::_unserialize(
-                        $fieldparameter->fields['default']
-                    );
+                if (isset($fp_tb['default'])) {
+                    $line[$keys[0]]['default_values'] = FieldParameter::_unserialize($fp_tb['default']);
                 }
-
-                if (isset($fieldparameter->fields['custom'])) {
-                    $line[$keys[0]]['custom_values'] = FieldParameter::_unserialize(
-                        $fieldparameter->fields['custom']
-                    );
+                if (isset($fp_tb['custom'])) {
+                    $line[$keys[0]]['custom_values'] = FieldParameter::_unserialize($fp_tb['custom']);
                 }
             }
 
@@ -2642,14 +2692,16 @@ class Wizard extends CommonDBTM
             if (isset($line[$keys[0]]['type'])
                 && in_array($line[$keys[0]]['type'], $allowed_customvalues_types)
                 || in_array($line[$keys[0]]['item'], $allowed_customvalues_items)) {
-                $field_custom = new FieldCustomvalue();
-                if ($customs = $field_custom->find(
-                    ["plugin_metademands_fields_id" => $line[$keys[0]]['id']],
-                    "rank"
-                )) {
-                    if (count($customs) > 0) {
-                        $line[$keys[0]]['custom_values'] = $customs;
-                    }
+                $fc_tb = FieldCustomvalue::getFromStaticCache($tb_field_id);
+                if ($fc_tb === false) {
+                    $field_custom = new FieldCustomvalue();
+                    $fc_tb = $field_custom->find(
+                        ["plugin_metademands_fields_id" => $tb_field_id],
+                        "rank"
+                    ) ?: [];
+                }
+                if (count($fc_tb) > 0) {
+                    $line[$keys[0]]['custom_values'] = $fc_tb;
                 }
             }
 
@@ -2684,16 +2736,23 @@ class Wizard extends CommonDBTM
         $subblocks = [];
         $check_values  = [];
         foreach ($line as $key => $data) {
-            $fieldopt = new FieldOption();
-            if ($opts = $fieldopt->find(
-                [
+            $fo_cached = FieldOption::getFromStaticCache((int) $data['id']);
+            if ($fo_cached === false) {
+                $fieldopt = new FieldOption();
+                $fo_cached = $fieldopt->find([
                     "plugin_metademands_fields_id" => $data['id'],
-                    "hidden_block_same_block" => 1,
-                ]
-            )) {
-                foreach ($opts as $opt) {
-                    $check_values[$opt['check_value']] = $opt['hidden_block'];
+                    "hidden_block_same_block"      => 1,
+                ]) ?: [];
+            }
+            $has_subblock = false;
+            foreach ($fo_cached as $opt) {
+                if (($opt['hidden_block_same_block'] ?? 0) != 1) {
+                    continue;
                 }
+                $check_values[$opt['check_value']] = $opt['hidden_block'];
+                $has_subblock = true;
+            }
+            if ($has_subblock) {
                 asort($check_values);
                 $subblocks[$data['rank']] = $check_values;
             }
@@ -2755,23 +2814,24 @@ class Wizard extends CommonDBTM
         }
 
         $fieldparameter = new FieldParameter();
-        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
-            unset($fieldparameter->fields['plugin_metademands_fields_id']);
-            unset($fieldparameter->fields['id']);
-
-            $params = $fieldparameter->fields;
+        $fp_cached = FieldParameter::getFromStaticCache((int) $data['id']);
+        if ($fp_cached === false) {
+            // cache not warmed — fall back to single DB query
+            $fp_cached = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])
+                ? $fieldparameter->fields
+                : null;
+        }
+        if ($fp_cached !== null) {
+            $fieldparameter->fields = $fp_cached;
+            $params = $fp_cached;
+            unset($params['plugin_metademands_fields_id'], $params['id']);
             $data = array_merge($data, $params);
 
-            if (isset($fieldparameter->fields['default'])) {
-                $data['default_values'] = FieldParameter::_unserialize(
-                    $fieldparameter->fields['default']
-                );
+            if (isset($fp_cached['default'])) {
+                $data['default_values'] = FieldParameter::_unserialize($fp_cached['default']);
             }
-
-            if (isset($fieldparameter->fields['custom'])) {
-                $data['custom_values'] = FieldParameter::_unserialize(
-                    $fieldparameter->fields['custom']
-                );
+            if (isset($fp_cached['custom'])) {
+                $data['custom_values'] = FieldParameter::_unserialize($fp_cached['custom']);
             }
         }
 
@@ -2784,11 +2844,13 @@ class Wizard extends CommonDBTM
             && $data['item'] != "urgency"
             && $data['item'] != "priority"
             && $data['item'] != "impact") {
-            $field_custom = new FieldCustomvalue();
-            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
-                if (count($customs) > 0) {
-                    $data['custom_values'] = $customs;
-                }
+            $fc_cached = FieldCustomvalue::getFromStaticCache((int) $data['id']);
+            if ($fc_cached === false) {
+                $field_custom = new FieldCustomvalue();
+                $fc_cached = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank") ?: [];
+            }
+            if (count($fc_cached) > 0) {
+                $data['custom_values'] = $fc_cached;
             }
         }
 

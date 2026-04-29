@@ -772,7 +772,6 @@ class Textarea extends CommonDBTM
 
         if ($p['enable_fileupload']) {
             $p_rt = $p;
-            unset($p_rt['name']);
             $p_rt['display'] = false;
             $p_rt['required'] = false;
             $p_rt['dropZone'] = 'dropdoc' . $p['rand'];

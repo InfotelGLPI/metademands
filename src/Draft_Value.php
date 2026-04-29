@@ -55,8 +55,8 @@ class Draft_Value extends CommonDBTM
                         `id` int {$default_key_sign} NOT NULL auto_increment,
                         `plugin_metademands_drafts_id` int {$default_key_sign} NOT NULL DEFAULT '0',
                         `plugin_metademands_fields_id` int {$default_key_sign} NOT NULL DEFAULT '0',
-                        `value`                        text         NOT NULL,
-                        `value2`                       text         NOT NULL,
+                        `value`                        longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                        `value2`                       longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_drafts_id` (`plugin_metademands_drafts_id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
@@ -77,6 +77,14 @@ class Draft_Value extends CommonDBTM
         }
         if (!isIndex($table, "plugin_metademands_fields_id")) {
             $migration->addKey($table, "plugin_metademands_fields_id");
+        }
+
+        ///version 3.3.14
+        $fields = $DB->listFields($table);
+        if (isset($fields['value']) && stripos($fields['value']['Type'], 'longtext') === false) {
+            $migration->changeField($table, 'value', 'value', 'longtext');
+            $migration->changeField($table, 'value2', 'value2', 'longtext');
+            $migration->migrationOneTable($table);
         }
     }
 

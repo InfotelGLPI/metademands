@@ -78,6 +78,11 @@ if (isset($_POST['save_draft'])) {
                     $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_filename'][] = $_POST['_filename'][$key];
                 }
             }
+            foreach (Wizard::extractRichtextFieldUploads($_POST) as $key => $values) {
+                foreach ($values as $value) {
+                    $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files'][$key][] = $value;
+                }
+            }
 
 //            if (Plugin::isPluginActive('orderfollowup')) {
 //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
