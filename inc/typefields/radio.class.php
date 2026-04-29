@@ -850,6 +850,7 @@ JAVASCRIPT
                             $('[id-field =\"field'+key+'\"]').hide();
                             sessionStorage.setItem('hiddenlink$name', key);
                             $('[name =\"field['+key+']\"]').removeAttr('required');
+                            $('[name =\"field['+key+']\"]').removeAttr('value');
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($name);
                     if (is_array($childs_by_checkvalue)) {
                         foreach ($childs_by_checkvalue as $k => $childs_blocks) {
