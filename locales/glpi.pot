@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-29 11:51+0000\n"
+"POT-Creation-Date: 2026-04-29 15:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,16 +27,16 @@ msgstr ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/Fields/Freetable.php:305 src/Fields/Freetable.php:717
+#: src/Fields/Freetable.php:294 src/Fields/Freetable.php:703
 #: src/MetademandPdf.php:522
 msgid "(if VAT 20%)"
 msgstr ""
 
-#: src/Fields/Basket.php:1815
+#: src/Fields/Basket.php:1814
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
-#: src/Fields/Link.php:129
+#: src/Fields/Link.php:126
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
@@ -60,7 +60,7 @@ msgstr ""
 msgid "AND"
 msgstr ""
 
-#: src/Fields/Basket.php:536
+#: src/Fields/Basket.php:541
 msgid "Accessory"
 msgstr ""
 
@@ -118,7 +118,7 @@ msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: src/Fields/Signature.php:82
+#: src/Fields/Signature.php:94
 msgid "Add your signature"
 msgstr ""
 
@@ -126,12 +126,12 @@ msgstr ""
 msgid "Additional label"
 msgstr ""
 
-#: src/Fields/Datetimeinterval.php:125 src/Fields/Dateinterval.php:128
-#: src/Fields/Datetime.php:123 src/Fields/Date.php:123
+#: src/Fields/Datetimeinterval.php:121 src/Fields/Dateinterval.php:124
+#: src/Fields/Datetime.php:117 src/Fields/Date.php:119
 msgid "Additional number day to the default date"
 msgstr ""
 
-#: src/Fields/Information.php:130
+#: src/Fields/Information.php:122
 msgid "Alert"
 msgstr ""
 
@@ -185,7 +185,7 @@ msgid_plural "Associated forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Fields/Ldapdropdown.php:277
+#: src/Fields/Ldapdropdown.php:273
 msgid "Attribute"
 msgstr ""
 
@@ -201,7 +201,7 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: src/Fields/Basket.php:1510
+#: src/Fields/Basket.php:1508
 msgid "Basket summary"
 msgstr ""
 
@@ -228,8 +228,8 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1444 src/Fields/Radio.php:400
-#: src/Fields/Dropdown.php:510 src/Fields/Checkbox.php:397
+#: src/Fields/Dropdownmeta.php:1444 src/Fields/Radio.php:398
+#: src/Fields/Dropdown.php:505 src/Fields/Checkbox.php:397
 msgid "Block display"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgstr ""
 msgid "Both"
 msgstr ""
 
-#: src/Fields/Link.php:120
+#: src/Fields/Link.php:117
 msgid "Button Type"
 msgstr ""
 
@@ -311,9 +311,9 @@ msgid "Choose a template"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1382 src/Fields/Dropdownmeta.php:1443
-#: src/Fields/Yesno.php:197 src/Fields/Radio.php:399
-#: src/Fields/Dropdown.php:492 src/Fields/Dropdown.php:509
-#: src/Fields/Dropdownmultiple.php:672 src/Fields/Checkbox.php:396
+#: src/Fields/Yesno.php:197 src/Fields/Radio.php:397
+#: src/Fields/Dropdown.php:487 src/Fields/Dropdown.php:504
+#: src/Fields/Dropdownmultiple.php:678 src/Fields/Checkbox.php:396
 msgid "Classic display"
 msgstr ""
 
@@ -322,7 +322,7 @@ msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: src/Fields/Signature.php:85
+#: src/Fields/Signature.php:95
 msgid "Clear"
 msgstr ""
 
@@ -484,14 +484,14 @@ msgstr ""
 msgid "Date of the next reminder"
 msgstr ""
 
-#: src/Fields/Datetimeinterval.php:108 src/Fields/Dateinterval.php:111
-#: src/Fields/Datetime.php:108 src/Fields/Date.php:108
+#: src/Fields/Datetimeinterval.php:104 src/Fields/Dateinterval.php:107
+#: src/Fields/Datetime.php:102 src/Fields/Date.php:104
 msgid "Day greater or equal to now"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1210 src/Fields/Yesno.php:166
-#: src/Fields/Radio.php:294 src/Fields/Dropdownmultiple.php:510
-#: src/Fields/Dropdownmultiple.php:597 src/Fields/Checkbox.php:290
+#: src/Fields/Radio.php:292 src/Fields/Dropdownmultiple.php:516
+#: src/Fields/Dropdownmultiple.php:603 src/Fields/Checkbox.php:290
 #: src/FieldCustomvalue.php:641
 msgid "Default value"
 msgid_plural "Default values"
@@ -520,8 +520,8 @@ msgstr ""
 msgid "Define initial requester as requester for child tickets"
 msgstr ""
 
-#: src/Fields/Datetimeinterval.php:115 src/Fields/Dateinterval.php:118
-#: src/Fields/Datetime.php:117 src/Fields/Date.php:117
+#: src/Fields/Datetimeinterval.php:111 src/Fields/Dateinterval.php:114
+#: src/Fields/Datetime.php:111 src/Fields/Date.php:113
 msgid "Define the default date"
 msgstr ""
 
@@ -580,8 +580,8 @@ msgstr ""
 msgid "Departure date"
 msgstr ""
 
-#: src/Fields/Basket.php:161 src/Fields/Basket.php:1522
-#: src/Fields/Basket.php:2046 src/Fields/Basket.php:2397
+#: src/Fields/Basket.php:161 src/Fields/Basket.php:1520
+#: src/Fields/Basket.php:2047 src/Fields/Basket.php:2398
 #: src/Basketobject.php:141 src/Basketobject.php:239
 msgid "Designation"
 msgstr ""
@@ -606,7 +606,7 @@ msgstr ""
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: src/Fields/Freetable.php:407 src/Freetablefield.php:435
+#: src/Fields/Freetable.php:393 src/Freetablefield.php:435
 msgid "Display name"
 msgstr ""
 
@@ -623,13 +623,13 @@ msgid "Display this hidden field"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1386 src/Fields/Dropdownmeta.php:1447
-#: src/Fields/Yesno.php:201 src/Fields/Radio.php:403
-#: src/Fields/Dropdown.php:496 src/Fields/Dropdown.php:513
-#: src/Fields/Dropdownmultiple.php:676 src/Fields/Checkbox.php:400
+#: src/Fields/Yesno.php:201 src/Fields/Radio.php:401
+#: src/Fields/Dropdown.php:491 src/Fields/Dropdown.php:508
+#: src/Fields/Dropdownmultiple.php:682 src/Fields/Checkbox.php:400
 msgid "Display type of the field"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:514
+#: src/Fields/Dropdownmultiple.php:520
 msgid "Display value in the dropdown"
 msgstr ""
 
@@ -663,7 +663,7 @@ msgstr ""
 msgid "Done on"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:673
+#: src/Fields/Dropdownmultiple.php:679
 msgid "Double column display"
 msgstr ""
 
@@ -684,7 +684,7 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: src/Fields/Freetable.php:423 src/Freetablefield.php:443
+#: src/Fields/Freetable.php:409 src/Freetablefield.php:443
 msgid "Dropdown values"
 msgstr ""
 
@@ -745,8 +745,8 @@ msgstr ""
 msgid "Error when creating export archive"
 msgstr ""
 
-#: src/Fields/Basket.php:170 src/Fields/Basket.php:1553
-#: src/Fields/Basket.php:2073
+#: src/Fields/Basket.php:170 src/Fields/Basket.php:1552
+#: src/Fields/Basket.php:2074
 msgid "Estimated unit price"
 msgstr ""
 
@@ -818,7 +818,7 @@ msgstr ""
 msgid "Fill out a form"
 msgstr ""
 
-#: src/Field.php:4847 src/Fields/Ldapdropdown.php:268
+#: src/Field.php:4847 src/Fields/Ldapdropdown.php:264
 msgid "Filter"
 msgstr ""
 
@@ -875,17 +875,17 @@ msgstr[1] ""
 msgid "Glpi Object"
 msgstr ""
 
-#: src/Fields/Basket.php:1803
+#: src/Fields/Basket.php:1802
 msgid "Grand total"
 msgstr ""
 
-#: src/Fields/Freetable.php:305 src/Fields/Freetable.php:717
-#: src/Fields/Basket.php:1828 src/Fields/Basket.php:2322
+#: src/Fields/Freetable.php:294 src/Fields/Freetable.php:703
+#: src/Fields/Basket.php:1827 src/Fields/Basket.php:2323
 #: src/MetademandPdf.php:429 src/MetademandPdf.php:522
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:304 src/Fields/Freetable.php:716
+#: src/Fields/Freetable.php:293 src/Fields/Freetable.php:702
 #: src/MetademandPdf.php:513
 msgid "Grand total (TTC)"
 msgstr ""
@@ -1023,15 +1023,15 @@ msgctxt "status"
 msgid "In progress"
 msgstr ""
 
-#: src/Fields/Information.php:128
+#: src/Fields/Information.php:120
 msgid "Information"
 msgstr ""
 
-#: src/Fields/Information.php:59
+#: src/Fields/Information.php:60
 msgid "Informations"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:824 src/Fields/Dropdownmultiple.php:719
+#: src/Fields/Dropdownobject.php:820 src/Fields/Dropdownmultiple.php:725
 #: src/FieldParameter.php:943
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -1053,7 +1053,7 @@ msgstr[1] ""
 msgid "Interface"
 msgstr ""
 
-#: src/Fields/Freetable.php:389 src/Freetablefield.php:383
+#: src/Fields/Freetable.php:375 src/Freetablefield.php:383
 msgid "Internal name"
 msgstr ""
 
@@ -1094,8 +1094,8 @@ msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
 #: ajax/viewtypefields.php:56 src/Fields/Email.php:124
-#: src/Fields/Dropdownobject.php:752 src/Fields/Dropdownobject.php:847
-#: src/Fields/Dropdownmeta.php:1400 src/Fields/Dropdown.php:470
+#: src/Fields/Dropdownobject.php:748 src/Fields/Dropdownobject.php:843
+#: src/Fields/Dropdownmeta.php:1400 src/Fields/Dropdown.php:465
 #: src/Fields/Tel.php:127 src/Fields/Text.php:125
 msgid "Link this to a user field"
 msgstr ""
@@ -1167,7 +1167,7 @@ msgstr ""
 msgid "Make this field mandatory"
 msgstr ""
 
-#: src/Field.php:1572 src/Fields/Freetable.php:449 src/Freetablefield.php:468
+#: src/Field.php:1572 src/Fields/Freetable.php:435 src/Freetablefield.php:468
 msgid "Mandatory"
 msgstr ""
 
@@ -1235,7 +1235,7 @@ msgstr ""
 msgid "Metademands to be validated"
 msgstr ""
 
-#: src/Fields/Number.php:133 src/Fields/Range.php:183
+#: src/Fields/Number.php:127 src/Fields/Range.php:171
 msgid "Minimal mandatory"
 msgstr ""
 
@@ -1285,13 +1285,13 @@ msgstr ""
 
 #: src/Wizard.php:1382 src/Wizard.php:1627 src/Wizard.php:1767
 #: src/Wizard.php:1776 src/Wizard.php:1816 src/Wizard.php:1822
-#: src/Wizard.php:2382 src/Wizard.php:2385 src/Fields/Email.php:345
-#: src/Fields/Dropdownobject.php:1264 src/Fields/Dropdownmeta.php:1860
-#: src/Fields/Yesno.php:460 src/Fields/Radio.php:688
-#: src/Fields/Dropdown.php:858 src/Fields/Dropdownmultiple.php:1194
-#: src/Fields/Dropdownmultiple.php:1367 src/Fields/Textarea.php:305
-#: src/Fields/Checkbox.php:713 src/Fields/Url.php:347 src/Fields/Basket.php:834
-#: src/Fields/Tel.php:349 src/Fields/Text.php:348 src/FieldOption.php:2171
+#: src/Wizard.php:2382 src/Wizard.php:2385 src/Fields/Email.php:346
+#: src/Fields/Dropdownobject.php:1259 src/Fields/Dropdownmeta.php:1860
+#: src/Fields/Yesno.php:461 src/Fields/Radio.php:687
+#: src/Fields/Dropdown.php:855 src/Fields/Dropdownmultiple.php:1201
+#: src/Fields/Dropdownmultiple.php:1374 src/Fields/Textarea.php:306
+#: src/Fields/Checkbox.php:712 src/Fields/Url.php:348 src/Fields/Basket.php:834
+#: src/Fields/Tel.php:350 src/Fields/Text.php:349 src/FieldOption.php:2171
 msgid "Next"
 msgstr ""
 
@@ -1344,7 +1344,7 @@ msgstr ""
 msgid "No file specified"
 msgstr ""
 
-#: src/Fields/Basket.php:1923
+#: src/Fields/Basket.php:1922
 msgid "No items on basket"
 msgstr ""
 
@@ -1377,16 +1377,16 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:1032 src/Fields/Dropdownobject.php:1035
-#: src/Fields/Dropdownobject.php:1045 src/Fields/Dropdownobject.php:1067
-#: src/Fields/Dropdownobject.php:1083 src/Fields/Dropdownobject.php:1094
+#: src/Fields/Dropdownobject.php:1026 src/Fields/Dropdownobject.php:1029
+#: src/Fields/Dropdownobject.php:1039 src/Fields/Dropdownobject.php:1061
+#: src/Fields/Dropdownobject.php:1077 src/Fields/Dropdownobject.php:1088
 #: src/Fields/Dropdownmeta.php:1612 src/Fields/Dropdownmeta.php:1622
-#: src/Fields/Dropdownmeta.php:1643 src/Fields/Radio.php:485
-#: src/Fields/Radio.php:498 src/Fields/Dropdown.php:638
-#: src/Fields/Dropdown.php:674 src/Fields/Dropdownmultiple.php:905
-#: src/Fields/Checkbox.php:481 src/Fields/Checkbox.php:494
-#: src/Fields/Basket.php:560 src/Fields/Ldapdropdown.php:344
-#: src/Fields/Ldapdropdown.php:380
+#: src/Fields/Dropdownmeta.php:1643 src/Fields/Radio.php:483
+#: src/Fields/Radio.php:496 src/Fields/Dropdown.php:633
+#: src/Fields/Dropdown.php:669 src/Fields/Dropdownmultiple.php:911
+#: src/Fields/Checkbox.php:479 src/Fields/Checkbox.php:492
+#: src/Fields/Basket.php:565 src/Fields/Ldapdropdown.php:340
+#: src/Fields/Ldapdropdown.php:376
 msgid "Not null value"
 msgstr ""
 
@@ -1438,17 +1438,17 @@ msgid_plural "Object types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Fields/Basket.php:2179
+#: src/Fields/Basket.php:2180
 msgid "On catalog"
 msgstr ""
 
-#: src/Fields/Basket.php:274 src/Fields/Basket.php:430
-#: src/Fields/Basket.php:527 src/Fields/Basket.php:1671
-#: src/Fields/Basket.php:1764 src/Fields/Basket.php:2171
+#: src/Fields/Basket.php:275 src/Fields/Basket.php:431
+#: src/Fields/Basket.php:532 src/Fields/Basket.php:1670
+#: src/Fields/Basket.php:1763 src/Fields/Basket.php:2172
 msgid "On quotation"
 msgstr ""
 
-#: src/Fields/Freetable.php:424 src/Freetablefield.php:444
+#: src/Fields/Freetable.php:410 src/Freetablefield.php:444
 msgid "One value by line, separated by comma"
 msgstr ""
 
@@ -1460,7 +1460,7 @@ msgstr ""
 msgid "Only these groups"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:778 src/Fields/Dropdownmultiple.php:690
+#: src/Fields/Dropdownobject.php:774 src/Fields/Dropdownmultiple.php:696
 msgid "Only users of my groups"
 msgstr ""
 
@@ -1493,7 +1493,7 @@ msgstr ""
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: src/Fields/Basket.php:2054
+#: src/Fields/Basket.php:2055
 msgid "Order type"
 msgstr ""
 
@@ -1583,9 +1583,9 @@ msgstr ""
 msgid "Publisher"
 msgstr ""
 
-#: src/Fields/Basket.php:188 src/Fields/Basket.php:1573
-#: src/Fields/Basket.php:2067 src/Fields/Basket.php:2403
-#: src/Fields/Basket.php:2446
+#: src/Fields/Basket.php:188 src/Fields/Basket.php:1572
+#: src/Fields/Basket.php:2068 src/Fields/Basket.php:2404
+#: src/Fields/Basket.php:2447
 msgid "Quantity"
 msgstr ""
 
@@ -1597,9 +1597,9 @@ msgstr ""
 msgid "Range"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1157 src/Fields/Radio.php:269
-#: src/Fields/Dropdownmultiple.php:572 src/Fields/Checkbox.php:265
-#: src/Fields/Freetable.php:377 src/FieldCustomvalue.php:622
+#: src/Fields/Dropdownmeta.php:1157 src/Fields/Radio.php:267
+#: src/Fields/Dropdownmultiple.php:578 src/Fields/Checkbox.php:265
+#: src/Fields/Freetable.php:363 src/FieldCustomvalue.php:622
 #: src/Freetablefield.php:382
 msgid "Rank"
 msgstr ""
@@ -1608,7 +1608,7 @@ msgstr ""
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:817 src/Fields/Dropdownmeta.php:1424
+#: src/Fields/Dropdownobject.php:813 src/Fields/Dropdownmeta.php:1424
 msgid "Read-Only"
 msgstr ""
 
@@ -1616,8 +1616,8 @@ msgstr ""
 msgid "Recipients"
 msgstr ""
 
-#: src/Fields/Basket.php:159 src/Fields/Basket.php:1521
-#: src/Fields/Basket.php:2044 src/Fields/Basket.php:2395
+#: src/Fields/Basket.php:159 src/Fields/Basket.php:1519
+#: src/Fields/Basket.php:2045 src/Fields/Basket.php:2396
 #: src/Basketobject.php:158 src/Basketobject.php:263
 msgid "Reference"
 msgstr ""
@@ -1710,13 +1710,13 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Wizard.php:1622 src/Wizard.php:1807 src/Fields/Email.php:343
-#: src/Fields/Dropdownobject.php:1263 src/Fields/Dropdownmeta.php:1858
-#: src/Fields/Yesno.php:458 src/Fields/Radio.php:686
-#: src/Fields/Dropdown.php:857 src/Fields/Dropdownmultiple.php:1192
-#: src/Fields/Dropdownmultiple.php:1365 src/Fields/Textarea.php:303
-#: src/Fields/Checkbox.php:711 src/Fields/Url.php:345 src/Fields/Basket.php:833
-#: src/Fields/Basket.php:1850 src/Fields/Tel.php:347 src/Fields/Text.php:346
+#: src/Wizard.php:1622 src/Wizard.php:1807 src/Fields/Email.php:344
+#: src/Fields/Dropdownobject.php:1258 src/Fields/Dropdownmeta.php:1858
+#: src/Fields/Yesno.php:459 src/Fields/Radio.php:685
+#: src/Fields/Dropdown.php:854 src/Fields/Dropdownmultiple.php:1199
+#: src/Fields/Dropdownmultiple.php:1372 src/Fields/Textarea.php:304
+#: src/Fields/Checkbox.php:710 src/Fields/Url.php:346 src/Fields/Basket.php:833
+#: src/Fields/Basket.php:1849 src/Fields/Tel.php:348 src/Fields/Text.php:347
 #: src/Basketline.php:192 src/FieldOption.php:2169
 msgctxt "button"
 msgid "Save & Post"
@@ -1751,15 +1751,15 @@ msgstr ""
 msgid "Schema check"
 msgstr ""
 
-#: src/Fields/Basket.php:235
+#: src/Fields/Basket.php:236
 msgid "Search for description.."
 msgstr ""
 
-#: src/Fields/Basket.php:229
+#: src/Fields/Basket.php:230
 msgid "Search for names.."
 msgstr ""
 
-#: src/Fields/Basket.php:223
+#: src/Fields/Basket.php:224
 msgid "Search.."
 msgstr ""
 
@@ -1793,7 +1793,7 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:515
+#: src/Fields/Dropdownmultiple.php:521
 msgid "Select all"
 msgstr ""
 
@@ -1805,7 +1805,7 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:769
+#: src/Fields/Dropdownobject.php:765
 msgid "Show a identity card of user"
 msgstr ""
 
@@ -1821,7 +1821,7 @@ msgstr ""
 msgid "Son ticket tag"
 msgstr ""
 
-#: src/Fields/Dropdown.php:493
+#: src/Fields/Dropdown.php:488
 msgid "Splitted display"
 msgstr ""
 
@@ -1843,7 +1843,7 @@ msgstr[1] ""
 msgid "Step by step settings"
 msgstr ""
 
-#: src/Fields/Number.php:127 src/Fields/Range.php:177
+#: src/Fields/Number.php:121 src/Fields/Range.php:165
 msgid "Step for number"
 msgstr ""
 
@@ -1937,7 +1937,7 @@ msgstr ""
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
-#: src/Fields/Textarea.php:882
+#: src/Fields/Textarea.php:883
 msgid "The description field is mandatory"
 msgstr ""
 
@@ -2035,11 +2035,11 @@ msgstr ""
 msgid "There is no line on the mandatory table %s"
 msgstr ""
 
-#: src/Fields/Signature.php:74
+#: src/Fields/Signature.php:77
 msgid "There was a problem on delete your signature"
 msgstr ""
 
-#: src/Fields/Signature.php:73
+#: src/Fields/Signature.php:76
 msgid "There was a problem on upload your signature"
 msgstr ""
 
@@ -2071,7 +2071,7 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr ""
 
-#: src/Fields/Signature.php:75
+#: src/Fields/Signature.php:78
 msgid "This field is mandatory"
 msgstr ""
 
@@ -2149,18 +2149,18 @@ msgid "Tools"
 msgstr ""
 
 #: src/Fields/Basket.php:207 src/Fields/Basket.php:212
-#: src/Fields/Basket.php:1587 src/Fields/Basket.php:1593
-#: src/Fields/Basket.php:1599 src/Fields/Basket.php:2327
-#: src/Fields/Basket.php:2334
+#: src/Fields/Basket.php:1586 src/Fields/Basket.php:1592
+#: src/Fields/Basket.php:1598 src/Fields/Basket.php:2328
+#: src/Fields/Basket.php:2335
 msgid "Total"
 msgstr ""
 
-#: src/Fields/Basket.php:201 src/Fields/Basket.php:1582
-#: src/Fields/Basket.php:2096 src/Fields/Basket.php:2425
+#: src/Fields/Basket.php:201 src/Fields/Basket.php:1581
+#: src/Fields/Basket.php:2097 src/Fields/Basket.php:2426
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:141 src/Fields/Freetable.php:665
+#: src/Fields/Freetable.php:143 src/Fields/Freetable.php:651
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2168,7 +2168,7 @@ msgstr ""
 msgid "Translation"
 msgstr ""
 
-#: src/Fields/Freetable.php:396 src/Fields/Information.php:175
+#: src/Fields/Freetable.php:382 src/Fields/Information.php:167
 #: src/Freetablefield.php:396 src/FieldOption.php:483
 msgid "Type"
 msgstr ""
@@ -2177,17 +2177,17 @@ msgstr ""
 msgid "Type of value to check"
 msgstr ""
 
-#: src/Fields/Basket.php:179 src/Fields/Basket.php:1563
-#: src/Fields/Basket.php:2063 src/Fields/Basket.php:2409
+#: src/Fields/Basket.php:179 src/Fields/Basket.php:1562
+#: src/Fields/Basket.php:2064 src/Fields/Basket.php:2410
 msgid "Unit"
 msgstr ""
 
-#: src/Fields/Basket.php:182 src/Fields/Basket.php:1566
-#: src/Fields/Basket.php:2085 src/Fields/Basket.php:2421
+#: src/Fields/Basket.php:182 src/Fields/Basket.php:1565
+#: src/Fields/Basket.php:2086 src/Fields/Basket.php:2422
 msgid "Unit price (HT)"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:516
+#: src/Fields/Dropdownmultiple.php:522
 msgid "Unselect all"
 msgstr ""
 
@@ -2221,11 +2221,11 @@ msgstr ""
 msgid "Use drafts"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:798 src/Fields/Dropdownmultiple.php:700
+#: src/Fields/Dropdownobject.php:794 src/Fields/Dropdownmultiple.php:706
 msgid "Use id of requester by default"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:805 src/Fields/Dropdownmultiple.php:707
+#: src/Fields/Dropdownobject.php:801 src/Fields/Dropdownmultiple.php:713
 msgid "Use id of supervisor requester by default"
 msgstr ""
 
@@ -2237,9 +2237,9 @@ msgstr ""
 msgid "Use this field as object field"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:786 src/Fields/Dropdownobject.php:866
-#: src/Fields/Dropdownmeta.php:1374 src/Fields/Dropdown.php:457
-#: src/Fields/Datetime.php:101 src/Fields/Date.php:101
+#: src/Fields/Dropdownobject.php:782 src/Fields/Dropdownobject.php:862
+#: src/Fields/Dropdownmeta.php:1374 src/Fields/Dropdown.php:452
+#: src/Fields/Datetime.php:95 src/Fields/Date.php:97
 msgid "Use this field for child ticket field"
 msgstr ""
 
@@ -2268,7 +2268,7 @@ msgstr ""
 msgid "Validate metademands"
 msgstr ""
 
-#: src/Fields/Freetable.php:338
+#: src/Fields/Freetable.php:324
 msgid "Validate the basket"
 msgstr ""
 
@@ -2285,11 +2285,11 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: src/Field.php:1573 src/Fields/Dropdownobject.php:923
+#: src/Field.php:1573 src/Fields/Dropdownobject.php:919
 #: src/Fields/Dropdownmeta.php:1494 src/Fields/Yesno.php:228
-#: src/Fields/Radio.php:449 src/Fields/Dropdown.php:559
-#: src/Fields/Dropdownmultiple.php:745 src/Fields/Checkbox.php:445
-#: src/Fields/Basket.php:559 src/Fields/Ldapdropdown.php:294
+#: src/Fields/Radio.php:447 src/Fields/Dropdown.php:554
+#: src/Fields/Dropdownmultiple.php:751 src/Fields/Checkbox.php:445
+#: src/Fields/Basket.php:564 src/Fields/Ldapdropdown.php:290
 #: src/Condition.php:418 src/Condition.php:556 src/Condition.php:658
 #: src/Condition.php:985 src/FieldOption.php:487
 msgid "Value to check"
@@ -2308,7 +2308,7 @@ msgstr ""
 msgid "Visible by all"
 msgstr ""
 
-#: src/Fields/Information.php:129
+#: src/Fields/Information.php:121
 msgid "Warning"
 msgstr ""
 
@@ -2332,11 +2332,11 @@ msgstr ""
 msgid "What you want to do ?"
 msgstr ""
 
-#: src/Fields/Basket.php:500
+#: src/Fields/Basket.php:505
 msgid "With quantity"
 msgstr ""
 
-#: src/Fields/Basket.php:512
+#: src/Fields/Basket.php:517
 msgid "With unit price (HT)"
 msgstr ""
 
@@ -2370,7 +2370,7 @@ msgstr ""
 msgid "You can't add a field without type"
 msgstr ""
 
-#: src/Fields/Freetable.php:178
+#: src/Fields/Freetable.php:180
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
@@ -2490,11 +2490,11 @@ msgstr ""
 msgid "Your private models"
 msgstr ""
 
-#: src/Fields/Signature.php:72
+#: src/Fields/Signature.php:75
 msgid "Your signature has been deleted"
 msgstr ""
 
-#: src/Fields/Signature.php:71
+#: src/Fields/Signature.php:74
 msgid "Your signature has been uploaded"
 msgstr ""
 
@@ -2502,7 +2502,7 @@ msgstr ""
 msgid "advanced request"
 msgstr ""
 
-#: src/Fields/Link.php:124
+#: src/Fields/Link.php:121
 msgid "button"
 msgstr ""
 
