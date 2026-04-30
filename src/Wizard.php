@@ -1896,7 +1896,7 @@ class Wizard extends CommonDBTM
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
-                if (ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
+                if (method_exists(ServiceCatalogConfig::class, 'getMultiEntityRedirection') && ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
                 } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
@@ -3295,9 +3295,9 @@ class Wizard extends CommonDBTM
         } else {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
-                if (ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
+                if (method_exists(ServiceCatalogConfig::class, 'getMultiEntityRedirection') && ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
-                } elseif(ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
+                } elseif(method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/ticket.form.php?id=" . $result['id']);
                 } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");

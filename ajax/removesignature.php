@@ -35,11 +35,13 @@ Session::checkLoginUser();
 
 $ok = false;
 
-if (isset($_POST['metademands_id'])) {
-
-    $filename = $_POST['datasign'];
-    $dest = Toolbox::deletePicture($filename);
-    $ok = true;
+if (isset($_POST['datasign']) && isset($_POST['metademands_id'])) {
+    $datasign = $_POST['datasign'];
+    // Validate: no path traversal, signature files only
+    if (preg_match('/^sign-[\w.-]+\.(?:png|jpg|jpeg|gif)$/i', $datasign)) {
+        Toolbox::deletePicture($datasign);
+        $ok = true;
+    }
 }
 
 echo $ok;

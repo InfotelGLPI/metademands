@@ -52,7 +52,7 @@ $wizard = new Wizard();
 $metademands = new Metademand();
 $fields = new Field();
 
-if (!$metademands->getFromDB($form_metademands_id) || !$metademands->canViewItem()) {
+if (!$metademands->getFromDB($form_metademands_id) || !$metademands->can($form_metademands_id, READ)) {
     throw new \Glpi\Exception\Http\AccessDeniedHttpException();
 }
 

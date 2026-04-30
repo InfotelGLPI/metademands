@@ -36,4 +36,6 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-echo Metademand::fuzzySearch($_REQUEST['action'], $_REQUEST['type']);
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
+$type   = $_POST['type'] ?? $_GET['type'] ?? '';
+echo Metademand::fuzzySearch($action, $type);

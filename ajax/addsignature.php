@@ -42,7 +42,8 @@ if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {
     $decoded_image = base64_decode($encoded_image);
 
     $login = Session::getLoginUserID();
-    $filename = "sign-" . $_POST['metademands_id'] . "-" . $login . ".png";
+    $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+    $filename = "sign-" . $metademands_id . "-" . $login . ".png";
     $filepath = GLPI_TMP_DIR . '/' . $filename;
     if (file_put_contents($filepath, $decoded_image)) {
         $ok = true;

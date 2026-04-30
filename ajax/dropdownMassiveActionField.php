@@ -265,9 +265,10 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                             break;
 
                         case "text":
-                            Html::textarea(['name'            => $search["linkfield"] . "' >" . $_POST["value"],
-                                     'cols'       => 45,
-                                     'rows'       => 5,
+                            Html::textarea(['name'             => $search["linkfield"],
+                                     'value'           => htmlspecialchars($_POST["value"] ?? '', ENT_QUOTES, 'UTF-8'),
+                                     'cols'            => 45,
+                                     'rows'            => 5,
                                      'enable_richtext' => true]);
                             $already_display = true;
                             break;

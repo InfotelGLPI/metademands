@@ -1,6 +1,7 @@
 <?php
 header("Content-type: text/css; charset: UTF-8");
 include('../../../../inc/includes.php');
+Session::checkLoginUser();
 $color = "#3a5693";
 $hover = "#ff9c10";
 ?>

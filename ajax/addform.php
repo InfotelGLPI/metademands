@@ -98,11 +98,12 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
         $content = [];
 
         for ($i = 0; $i < $nblines; $i++) {
-            if (isset($_POST['_filename'])) {
-                foreach ($_POST['_filename'] as $key => $filename) {
-                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['uploaded_files']['_prefix_filename'][] = $_POST['_prefix_filename'][$key];
-                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['uploaded_files']['_tag_filename'][] = $_POST['_tag_filename'][$key];
-                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['uploaded_files']['_filename'][] = $_POST['_filename'][$key];
+            if (isset($_POST['_filename']) && is_array($_POST['_filename'])) {
+                $meta_id = (int) ($_POST['metademands_id'] ?? 0);
+                foreach (array_slice($_POST['_filename'], 0, 20) as $key => $filename) {
+                    $_SESSION['plugin_metademands'][$meta_id]['fields']['uploaded_files']['_prefix_filename'][] = $_POST['_prefix_filename'][$key] ?? '';
+                    $_SESSION['plugin_metademands'][$meta_id]['fields']['uploaded_files']['_tag_filename'][] = $_POST['_tag_filename'][$key] ?? '';
+                    $_SESSION['plugin_metademands'][$meta_id]['fields']['uploaded_files']['_filename'][] = $filename;
                 }
             }
             foreach (Wizard::extractRichtextFieldUploads($_POST) as $key => $values) {

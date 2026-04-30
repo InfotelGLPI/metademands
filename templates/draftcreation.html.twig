@@ -47,14 +47,14 @@
                         <td>{{ metademand_name }}</td>
                         <td>
                             <select name ='metademands_id'>
-                                <option value={{ 0 }} >{{ listMetademand[0] }}</option>
+                                <option value="{{ 0 }}" >{{ listMetademand[0] }}</option>
                                 {% for key, value in listMetademand %}
                                     {% if (value | length > 2) %}
                                         {% for data in value %}
-                                            <option value={{ key }} data-idcat={{ data['itilcategory'] }}>{{ data['name'] }}</option>
+                                            <option value="{{ key }}" data-idcat="{{ data['itilcategory'] }}">{{ data['name'] }}</option>
                                         {% endfor %}
                                     {% else %}
-                                        <option value={{ key }} data-idcat={{ value['itilcategory'] }}>{{ value['name'] }}</option>
+                                        <option value="{{ key }}" data-idcat="{{ value['itilcategory'] }}">{{ value['name'] }}</option>
                                     {% endif %}
 
                                 {% endfor %}

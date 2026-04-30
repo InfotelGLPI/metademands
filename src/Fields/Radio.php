@@ -224,8 +224,19 @@ class Radio extends CommonDBTM
 
                         foreach ($childs_blocks as $customvalue => $childs) {
                             if ($customvalue != $key) {
-                                foreach ($childs as $k => $v) {
-                                    $blockScript .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
+                                // $childs peut être [1,2,3] (plat) ou ['val'=>[1,2]] (associatif)
+                                $block_ids = [];
+                                foreach ((array)$childs as $entry) {
+                                    if (is_array($entry)) {
+                                        foreach ($entry as $bid) {
+                                            $block_ids[] = (int)$bid;
+                                        }
+                                    } else {
+                                        $block_ids[] = (int)$entry;
+                                    }
+                                }
+                                foreach ($block_ids as $v) {
+                                    $blockScript .= "sessionStorage.setItem('hiddenbloc$v', $v);";
                                     $blockScript .= FieldOption::resetMandatoryBlockFields($namefield);
                                     $blockScript .= "$('div[bloc-id=\"bloc$v\"]').hide();";
                                 }
