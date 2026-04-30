@@ -387,7 +387,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 if (type_fields[index] == params.text) {
                     tabfields.push('<td $style><input id = \"' + index + '_' + i + '\" type=\"text\" name=\"' + index + '\" size=\"' + params.size + '\" disabled ></td>');
                 } else if (type_fields[index] == params.select) {
-                    var select_open = '<td $style><select id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
+                    var select_open = '<td $style><select disabled id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
                     var select_options = '';
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
@@ -523,11 +523,11 @@ function editLine(l, field_id, newparams)
     }
 
     for (var i = 0; i < selects.length; i++) {
-        inputs[i].disabled = false;
+        selects[i].disabled = false;
     }
 
     for (var i = 0; i < areas.length; i++) {
-        inputs[i].disabled = false;
+        areas[i].disabled = false;
     }
 
     line.querySelector('button[name=\"delete_item\"]').parentNode.remove();
