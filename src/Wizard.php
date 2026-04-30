@@ -3182,42 +3182,41 @@ class Wizard extends CommonDBTM
             if ($metademands->fields['is_order'] == 1
                 && isset($values['basket'])) {
                 $basketclass = new Basketline();
+                $current_user = Session::getLoginUserID();
+
+                // Preload all upload basket lines for this user/metademand in one query
+                // Indexed as $upload_index[field_id][line] = row
+                $upload_index = [];
+                foreach ($basketclass->find([
+                    'plugin_metademands_metademands_id' => $metademands_id,
+                    'users_id' => $current_user,
+                    'name' => 'upload',
+                ]) as $row) {
+                    $upload_index[(int) $row['plugin_metademands_fields_id']][(int) $row['line']] = $row;
+                }
+
                 if ($metademands->fields['create_one_ticket'] == 0) {
                     //create one ticket for each basket
                     foreach ($values['basket'] as $k => $basket) {
                         $datas = [];
                         $datas['basket'] = $basket;
 
-                        if (isset($values['fields']['_filename'])) {
-                            unset($values['fields']['_filename']);
-                        }
-                        if (isset($values['fields']['_prefix_filename'])) {
-                            unset($values['fields']['_prefix_filename']);
-                        }
-                        if (isset($values['fields']['_tag_filename'])) {
-                            unset($values['fields']['_tag_filename']);
-                        }
+                        unset(
+                            $values['fields']['_filename'],
+                            $values['fields']['_prefix_filename'],
+                            $values['fields']['_tag_filename']
+                        );
                         $filename = [];
                         $prefixname = [];
                         $tagname = [];
+                        $line = $k + 1;
                         foreach ($basket as $key => $val) {
-                            $line = $k + 1;
-
-                            $check = $basketclass->getFromDBByCrit([
-                                "plugin_metademands_metademands_id" => $metademands_id,
-                                'plugin_metademands_fields_id' => $key,
-                                'line' => $line,
-                                'users_id' => Session::getLoginUserID(),
-                                'name' => "upload",
-                            ]);
-                            if ($check) {
-                                if (!empty($val)) {
-                                    $files = json_decode($val, 1);
-                                    foreach ($files as $file) {
-                                        $filename[] = $file['_filename'];
-                                        $prefixname[] = $file['_prefix_filename'];
-                                        $tagname[] = $file['_tag_filename'];
-                                    }
+                            if (isset($upload_index[(int) $key][$line]) && !empty($val)) {
+                                $files = json_decode($val, true);
+                                foreach ($files as $file) {
+                                    $filename[]    = $file['_filename'];
+                                    $prefixname[]  = $file['_prefix_filename'];
+                                    $tagname[]     = $file['_tag_filename'];
                                 }
                             }
                         }
@@ -3235,40 +3234,27 @@ class Wizard extends CommonDBTM
                     }
                     $basketclass->deleteByCriteria([
                         'plugin_metademands_metademands_id' => $metademands_id,
-                        'users_id' => Session::getLoginUserID(),
+                        'users_id' => $current_user,
                     ]);
                 } else {
                     //create one ticket for all basket
-                    if (isset($values['fields']['_filename'])) {
-                        unset($values['fields']['_filename']);
-                    }
-                    if (isset($values['fields']['_prefix_filename'])) {
-                        unset($values['fields']['_prefix_filename']);
-                    }
-                    if (isset($values['fields']['_tag_filename'])) {
-                        unset($values['fields']['_tag_filename']);
-                    }
+                    unset(
+                        $values['fields']['_filename'],
+                        $values['fields']['_prefix_filename'],
+                        $values['fields']['_tag_filename']
+                    );
                     $filename = [];
                     $prefixname = [];
                     $tagname = [];
                     foreach ($values['basket'] as $k => $basket) {
+                        $line = $k + 1;
                         foreach ($basket as $key => $val) {
-                            $line = $k + 1;
-                            $check = $basketclass->getFromDBByCrit([
-                                "plugin_metademands_metademands_id" => $metademands_id,
-                                'plugin_metademands_fields_id' => $key,
-                                'line' => $line,
-                                'users_id' => Session::getLoginUserID(),
-                                'name' => "upload",
-                            ]);
-                            if ($check) {
-                                if (!empty($val)) {
-                                    $files = json_decode($val, 1);
-                                    foreach ($files as $file) {
-                                        $filename[] = $file['_filename'];
-                                        $prefixname[] = $file['_prefix_filename'];
-                                        $tagname[] = $file['_tag_filename'];
-                                    }
+                            if (isset($upload_index[(int) $key][$line]) && !empty($val)) {
+                                $files = json_decode($val, true);
+                                foreach ($files as $file) {
+                                    $filename[]    = $file['_filename'];
+                                    $prefixname[]  = $file['_prefix_filename'];
+                                    $tagname[]     = $file['_tag_filename'];
                                 }
                             }
                         }
@@ -3279,7 +3265,7 @@ class Wizard extends CommonDBTM
 
                     $basketclass->deleteByCriteria([
                         'plugin_metademands_metademands_id' => $metademands_id,
-                        'users_id' => Session::getLoginUserID(),
+                        'users_id' => $current_user,
                     ]);
 
                     $result = Metademand::addObjects($metademands_id, $values, $options);

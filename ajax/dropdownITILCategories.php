@@ -36,6 +36,8 @@ if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
    die("Sorry. You can't access this file directly");
 }
 
+Session::checkLoginUser();
+
 //$opt = ['entity' => $_POST["entity_restrict"]];
 $condition  =[];
 

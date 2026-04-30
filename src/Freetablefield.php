@@ -62,6 +62,44 @@ class Freetablefield extends CommonDBChild
     public const TYPE_DATE = 5;
     public const TYPE_TIME = 6;
 
+    /** @var array<int, array[]> Rows grouped by plugin_metademands_fields_id (sorted by rank) */
+    private static array $rows_cache = [];
+
+    /**
+     * Batch-load Freetablefield rows for the given field IDs into the static cache.
+     */
+    public static function preloadForFields(array $field_ids): void
+    {
+        global $DB;
+
+        if (empty($field_ids)) {
+            return;
+        }
+        $uncached = array_diff(array_map('intval', $field_ids), array_keys(self::$rows_cache));
+        if (empty($uncached)) {
+            return;
+        }
+        foreach ($uncached as $id) {
+            self::$rows_cache[$id] = [];
+        }
+        foreach ($DB->request([
+            'FROM'    => self::getTable(),
+            'WHERE'   => ['plugin_metademands_fields_id' => $uncached],
+            'ORDERBY' => ['rank'],
+        ]) as $row) {
+            self::$rows_cache[(int) $row['plugin_metademands_fields_id']][$row['id']] = $row;
+        }
+    }
+
+    /**
+     * Return all cached freetable rows for this field (empty array = none, false = not preloaded).
+     *
+     * @return array[]|false
+     */
+    public static function getFromStaticCache(int $field_id)
+    {
+        return array_key_exists($field_id, self::$rows_cache) ? self::$rows_cache[$field_id] : false;
+    }
 
     public static function getTypeName($nb = 0)
     {
@@ -157,8 +195,10 @@ class Freetablefield extends CommonDBChild
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
         $field_custom = new self();
-        if ($field_custom->find(["plugin_metademands_fields_id" => $item->getID()])) {
-            $field_custom->showFieldsForm($field_custom->getID(), ['parent' => $item]);
+        $results = $field_custom->find(["plugin_metademands_fields_id" => $item->getID()]);
+        if (!empty($results)) {
+            $first = reset($results);
+            $field_custom->showFieldsForm($first['id'], ['parent' => $item]);
         } else {
             $field_custom->showFieldsForm(-1, ['parent' => $item]);
         }
@@ -178,6 +218,7 @@ class Freetablefield extends CommonDBChild
         $types[self::TYPE_TEXT] = __('Text', 'metademands');
         $types[self::TYPE_SELECT] = __('Dropdown', 'metademands');
         $types[self::TYPE_NUMBER] = __('Number', 'metademands');
+        $types[self::TYPE_READONLY] = __('Readonly', 'metademands');
         $types[self::TYPE_DATE] = __('Date', 'metademands');
         $types[self::TYPE_TIME] = _n('Hour', 'Hours', 1);
         return $types;
@@ -309,8 +350,8 @@ class Freetablefield extends CommonDBChild
                 // Reorganization of all fields
                 if ($params['old_order'] < $params['new_order']) {
                     $toUpdateList = $this->find([
-                        '`rank`' => ['>', $params['old_order']],
-                        'rank' => ['<=', $params['new_order']],
+                        ['rank' => ['>', $params['old_order']]],
+                        ['rank' => ['<=', $params['new_order']]],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
@@ -321,8 +362,8 @@ class Freetablefield extends CommonDBChild
                     }
                 } else {
                     $toUpdateList = $this->find([
-                        '`rank`' => ['<', $params['old_order']],
-                        'rank' => ['>=', $params['new_order']],
+                        ['rank' => ['<', $params['old_order']]],
+                        ['rank' => ['>=', $params['new_order']]],
                     ]);
 
                     foreach ($toUpdateList as $toUpdate) {
@@ -333,7 +374,7 @@ class Freetablefield extends CommonDBChild
                     }
                 }
 
-                if (isset($itemMove->fields["id"]) && $itemMove->fields['id'] > 0) {
+                if ($itemMove->fields['id'] > 0) {
                     $this->update([
                         'id' => $itemMove->fields['id'],
                         'rank' => $params['new_order'],
@@ -352,7 +393,8 @@ class Freetablefield extends CommonDBChild
     public static function initCustomValue($count, $plugin_metademands_fields_id = 0)
     {
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
+            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR],
+            JSON_HEX_APOS
         ) . ");";
 
         echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => true]);
@@ -373,7 +415,7 @@ class Freetablefield extends CommonDBChild
     public static function addNewValue($rank, $fields_id)
     {
         $target = self::getFormURL();
-        echo "<form method='post' action=\"$target\">";
+        echo "<form method='post' action=\"" . htmlspecialchars($target, ENT_QUOTES) . "\">";
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr class='tab_bg_1'>";
 
@@ -497,7 +539,7 @@ class Freetablefield extends CommonDBChild
      */
     public function prepareInputForAdd($input)
     {
-        if (empty($input['name'])
+        if (!isset($input['name']) || $input['name'] === ''
         ) {
             Session::addMessageAfterRedirect(
                 __("You can't add a field without name", "metademands"),

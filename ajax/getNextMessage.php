@@ -37,9 +37,11 @@ if (strpos($_SERVER['PHP_SELF'], "getNextMessage.php")) {
     die("Sorry. You can't access this file directly");
 }
 
+Session::checkLoginUser();
+
 $metademands = new Metademand();
-$metademands->getFromDB($_POST['plugin_metademands_metademands_id']);
-$block_id = $_POST['block_id'];
+$metademands->getFromDB((int) $_POST['plugin_metademands_metademands_id']);
+$block_id = (int) $_POST['block_id'];
 
 if ($metademands->fields['step_by_step_mode'] == 1
 ) {

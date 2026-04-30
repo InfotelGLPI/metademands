@@ -31,74 +31,77 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\Export;
 
-if (isset($_POST["action"])
-    && isset($_POST["metademands"])
-    && is_array($_POST["metademands"])
-    && Session::haveRight("plugin_metademands", CREATE)) {
-    $old_memory = ini_set("memory_limit", "-1");
-    $old_execution = ini_set("max_execution_time", "0");
+Session::checkRight("plugin_metademands", CREATE);
 
-    $files = [];
-    foreach ($_POST["metademands"] as $id) {
-
-        if ($_POST["action"] == "exportXML") {
-            $file = Export::exportAsXMLForMetademands($id);
-        } else {
-            $file = Export::exportAsJSONForGLPIForm($id);
-        }
-
-        $splitter = explode("/", $file, 2);
-
-        if ($splitter[0] == "_plugins") {
-            $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-        }
-
-        if ($send && file_exists($send)) {
-            $files[] = $send;
-        } else {
-            ini_set("memory_limit", $old_memory);
-            ini_set("max_execution_time", $old_execution);
-            throw new BadRequestHttpException(__('Unauthorized access to this file'));
-        }
-    }
-
-    $zip = new ZipArchive();
-    $filename = '/metademands/export_' . date('Y-m-d') . '.zip';
-    $fullZip = GLPI_PLUGIN_DOC_DIR . $filename;
-    if ($zip->open($fullZip, ZipArchive::CREATE)) {
-        foreach ($files as $file) {
-            $zip->addFile($file, basename($file));
-        }
-        $zip->close();
-
-        foreach ($files as $file) {
-            unlink($file);
-        }
-
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/zip');
-        header('Content-Disposition: attachment; filename=export_' . date('Y-m-d') . '.zip');
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($fullZip));
-
-        readfile($fullZip);
-        unlink($fullZip);
-
-        ini_set("memory_limit", $old_memory);
-        ini_set("max_execution_time", $old_execution);
-    } else {
-        Session::addMessageAfterRedirect(
-            __('Error when creating export archive', 'metademands'),
-            false,
-            ERROR
-        );
-        ini_set("memory_limit", $old_memory);
-        ini_set("max_execution_time", $old_execution);
-        Html::back();
-    }
-} else {
-    throw new AccessDeniedHttpException();
+if (!isset($_POST["action"])
+    || !isset($_POST["metademands"])
+    || !is_array($_POST["metademands"])) {
+    throw new BadRequestHttpException();
 }
+
+$export_ids = array_map('intval', $_POST["metademands"]);
+if (count($export_ids) > 50) {
+    throw new BadRequestHttpException(__('Too many items to export at once', 'metademands'));
+}
+
+$old_memory = ini_set("memory_limit", "512M");
+$old_execution = ini_set("max_execution_time", "120");
+
+$files = [];
+foreach ($export_ids as $id) {
+    if ($_POST["action"] === "exportXML") {
+        $file = Export::exportAsXMLForMetademands($id);
+    } else {
+        $file = Export::exportAsJSONForGLPIForm($id);
+    }
+
+    $splitter = explode("/", $file, 2);
+
+    if ($splitter[0] == "_plugins") {
+        $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
+    }
+
+    if (isset($send) && file_exists($send)) {
+        $files[] = $send;
+    } else {
+        ini_set("memory_limit", $old_memory);
+        ini_set("max_execution_time", $old_execution);
+        throw new BadRequestHttpException(__('Unauthorized access to this file'));
+    }
+}
+
+$zip = new ZipArchive();
+$filename = '/metademands/export_' . date('Y-m-d') . '.zip';
+$fullZip = GLPI_PLUGIN_DOC_DIR . $filename;
+if ($zip->open($fullZip, ZipArchive::CREATE)) {
+    foreach ($files as $file) {
+        $zip->addFile($file, basename($file));
+    }
+    $zip->close();
+
+    foreach ($files as $file) {
+        unlink($file);
+    }
+
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename=export_' . date('Y-m-d') . '.zip');
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($fullZip));
+
+    readfile($fullZip);
+    unlink($fullZip);
+} else {
+    Session::addMessageAfterRedirect(
+        __('Error when creating export archive', 'metademands'),
+        false,
+        ERROR
+    );
+    Html::back();
+}
+
+ini_set("memory_limit", $old_memory);
+ini_set("max_execution_time", $old_execution);

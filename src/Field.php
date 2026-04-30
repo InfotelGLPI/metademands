@@ -1363,6 +1363,7 @@ class Field extends CommonDBChild
         FieldParameter::preloadForFields($all_ids_for_preload);
         FieldCustomvalue::preloadForFields($all_ids_for_preload);
         FieldOption::preloadForFields($all_ids_for_preload);
+        Freetablefield::preloadForFields($all_ids_for_preload);
 
         $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
         $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
@@ -2578,10 +2579,10 @@ border-style: none !important; border-color: initial !important;border-image: in
             if (isset($field->fields['type'])
                 && $field->fields['type'] == "freetable") {
                 $custom_values = [];
-                if ($customs = $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
-                    if (count($customs) > 0) {
-                        $custom_values = $customs;
-                    }
+                $ft_cached = Freetablefield::getFromStaticCache($id);
+                $customs = ($ft_cached !== false) ? $ft_cached : $freetablefield->find(["plugin_metademands_fields_id" => $field->getID()], "rank");
+                if (!empty($customs)) {
+                    $custom_values = $customs;
                     $default_values = [];
                 }
             }
