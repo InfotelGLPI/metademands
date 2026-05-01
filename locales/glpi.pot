@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-30 08:03+0000\n"
+"POT-Creation-Date: 2026-05-01 11:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,7 +228,7 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1444 src/Fields/Radio.php:398
+#: src/Fields/Dropdownmeta.php:1444 src/Fields/Radio.php:409
 #: src/Fields/Dropdown.php:505 src/Fields/Checkbox.php:397
 msgid "Block display"
 msgstr ""
@@ -311,7 +311,7 @@ msgid "Choose a template"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1382 src/Fields/Dropdownmeta.php:1443
-#: src/Fields/Yesno.php:197 src/Fields/Radio.php:397
+#: src/Fields/Yesno.php:197 src/Fields/Radio.php:408
 #: src/Fields/Dropdown.php:487 src/Fields/Dropdown.php:504
 #: src/Fields/Dropdownmultiple.php:678 src/Fields/Checkbox.php:396
 msgid "Classic display"
@@ -490,7 +490,7 @@ msgid "Day greater or equal to now"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1210 src/Fields/Yesno.php:166
-#: src/Fields/Radio.php:292 src/Fields/Dropdownmultiple.php:516
+#: src/Fields/Radio.php:303 src/Fields/Dropdownmultiple.php:516
 #: src/Fields/Dropdownmultiple.php:603 src/Fields/Checkbox.php:290
 #: src/FieldCustomvalue.php:641
 msgid "Default value"
@@ -623,7 +623,7 @@ msgid "Display this hidden field"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1386 src/Fields/Dropdownmeta.php:1447
-#: src/Fields/Yesno.php:201 src/Fields/Radio.php:401
+#: src/Fields/Yesno.php:201 src/Fields/Radio.php:412
 #: src/Fields/Dropdown.php:491 src/Fields/Dropdown.php:508
 #: src/Fields/Dropdownmultiple.php:682 src/Fields/Checkbox.php:400
 msgid "Display type of the field"
@@ -672,7 +672,7 @@ msgstr ""
 msgid "Draft name"
 msgstr ""
 
-#: ajax/adddraft.php:185
+#: ajax/adddraft.php:186
 msgid "Draft name is required"
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr[1] ""
 msgid "Form name"
 msgstr ""
 
-#: ajax/addform.php:233
+#: ajax/addform.php:234
 msgid "Form name is required"
 msgstr ""
 
@@ -1287,7 +1287,7 @@ msgstr ""
 #: src/Wizard.php:1776 src/Wizard.php:1816 src/Wizard.php:1822
 #: src/Wizard.php:2382 src/Wizard.php:2385 src/Fields/Email.php:346
 #: src/Fields/Dropdownobject.php:1259 src/Fields/Dropdownmeta.php:1860
-#: src/Fields/Yesno.php:461 src/Fields/Radio.php:687
+#: src/Fields/Yesno.php:461 src/Fields/Radio.php:698
 #: src/Fields/Dropdown.php:855 src/Fields/Dropdownmultiple.php:1201
 #: src/Fields/Dropdownmultiple.php:1374 src/Fields/Textarea.php:306
 #: src/Fields/Checkbox.php:712 src/Fields/Url.php:348 src/Fields/Basket.php:834
@@ -1381,8 +1381,8 @@ msgstr ""
 #: src/Fields/Dropdownobject.php:1039 src/Fields/Dropdownobject.php:1061
 #: src/Fields/Dropdownobject.php:1077 src/Fields/Dropdownobject.php:1088
 #: src/Fields/Dropdownmeta.php:1612 src/Fields/Dropdownmeta.php:1622
-#: src/Fields/Dropdownmeta.php:1643 src/Fields/Radio.php:483
-#: src/Fields/Radio.php:496 src/Fields/Dropdown.php:633
+#: src/Fields/Dropdownmeta.php:1643 src/Fields/Radio.php:494
+#: src/Fields/Radio.php:507 src/Fields/Dropdown.php:633
 #: src/Fields/Dropdown.php:669 src/Fields/Dropdownmultiple.php:911
 #: src/Fields/Checkbox.php:479 src/Fields/Checkbox.php:492
 #: src/Fields/Basket.php:565 src/Fields/Ldapdropdown.php:340
@@ -1597,7 +1597,7 @@ msgstr ""
 msgid "Range"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1157 src/Fields/Radio.php:267
+#: src/Fields/Dropdownmeta.php:1157 src/Fields/Radio.php:278
 #: src/Fields/Dropdownmultiple.php:578 src/Fields/Checkbox.php:265
 #: src/Fields/Freetable.php:363 src/FieldCustomvalue.php:622
 #: src/Freetablefield.php:424
@@ -1716,7 +1716,7 @@ msgstr ""
 
 #: src/Wizard.php:1622 src/Wizard.php:1807 src/Fields/Email.php:344
 #: src/Fields/Dropdownobject.php:1258 src/Fields/Dropdownmeta.php:1858
-#: src/Fields/Yesno.php:459 src/Fields/Radio.php:685
+#: src/Fields/Yesno.php:459 src/Fields/Radio.php:696
 #: src/Fields/Dropdown.php:854 src/Fields/Dropdownmultiple.php:1199
 #: src/Fields/Dropdownmultiple.php:1372 src/Fields/Textarea.php:304
 #: src/Fields/Checkbox.php:710 src/Fields/Url.php:346 src/Fields/Basket.php:833
@@ -2034,7 +2034,7 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/createmetademands.php:351 ajax/addform.php:183
+#: ajax/createmetademands.php:351 ajax/addform.php:184
 #, php-format
 msgid "There is no line on the mandatory table %s"
 msgstr ""
@@ -2295,7 +2295,7 @@ msgstr ""
 
 #: src/Field.php:1574 src/Fields/Dropdownobject.php:919
 #: src/Fields/Dropdownmeta.php:1494 src/Fields/Yesno.php:228
-#: src/Fields/Radio.php:447 src/Fields/Dropdown.php:554
+#: src/Fields/Radio.php:458 src/Fields/Dropdown.php:554
 #: src/Fields/Dropdownmultiple.php:751 src/Fields/Checkbox.php:445
 #: src/Fields/Basket.php:564 src/Fields/Ldapdropdown.php:290
 #: src/Condition.php:418 src/Condition.php:556 src/Condition.php:658
