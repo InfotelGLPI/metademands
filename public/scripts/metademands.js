@@ -53,10 +53,6 @@
                     var item_bloc = $('#' + field_name);
                     item_bloc.append(response);
                     $('#add_custom_values').show();
-                    var scripts, scriptsFinder = /<script[^>]*>([\s\S]+?)<\/script>/gi;
-                    while (scripts == scriptsFinder.exec(response)) {
-                        eval(scripts[1]);
-                    }
                 }
             });
         };
@@ -101,6 +97,7 @@ function plugin_metademands_wizard_validateForm(metademandparams)
 
     // This function deals with validation of the form fields
     var x, y = 0, w = 0, z = 0, i, valid = true, ko = 0, kop = 0;
+    var fieldid, fieldname, fieldtype, fieldmandatory, isswitch, isnumber, ismultiplenumber, minimal_mandatory, alert_mandatory_fields_list, alert_msg;
 
     if (metademandparams.use_as_step == 1) {
         var x = document.getElementsByClassName('tab-step');
@@ -660,7 +657,7 @@ function plugin_metademands_wizard_displayStepButton(metademandparams)
                 }
             }
         } else {
-            document.getElementById('nextBtn').style.display == 'none';
+            document.getElementById('nextBtn').style.display = 'none';
         }
     }
 }
@@ -685,8 +682,8 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams)
     //     x[i + 1] = tabs[i];
     // }
 
-    bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-    id_bloc = parseInt(bloc.replace('bloc', ''));
+    let bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+    let id_bloc = parseInt(bloc.replace('bloc', ''));
 
     $(document).ready(function () {
         $.ajax({
@@ -747,7 +744,7 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
             data: formDatas,
             success: function (response) {
                 if (response) {
-                    eval('valid_condition=' + response);
+                    const valid_condition = JSON.parse(response);
                     if (valid_condition) {
                         if (metademandconditionsparams.show_button == 1) {
                             if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
@@ -817,6 +814,8 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
     if (metademandparams.useconfirm > 0
         && metademandparams.edit_model == 0
             && metademandparams.use_as_step == 1) {
+        const currentBlocAttr = x[metademandparams.currentTab]?.firstChild?.getAttribute('bloc-id');
+        const id_bloc = currentBlocAttr ? parseInt(currentBlocAttr.replace('bloc', '')) : 0;
         const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
         const inputs = div.querySelectorAll('input, select, textarea');
 
@@ -853,7 +852,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
         }
     }
     // Increase or decrease the current tab by 1:
-    nextTab = metademandparams.currentTab + n;
+    let nextTab = metademandparams.currentTab + n;
     // Hide the current tab:
     if (x[metademandparams.currentTab] !== undefined) {
         x[metademandparams.currentTab].style.display = 'none';
@@ -863,8 +862,8 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
 
     metademandparams.currentTab = metademandparams.currentTab + n;
 
-    create = false;
-    createNow = false;
+    let create = false;
+    let createNow = false;
 
     if (metademandparams.use_as_step == 1) {
         var finded = false;
@@ -906,7 +905,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
             $(this).prop('selected', true);
         });
         $('#ajax_loader').show();
-        arrayDatas = $('#wizard_form').serializeArray();
+        let arrayDatas = $('#wizard_form').serializeArray();
         arrayDatas.push({name: 'save_form', value: true});
         arrayDatas.push({name: 'step', value: 2});
         arrayDatas.push({name: 'form_name', value: metademandparams.nameform});
@@ -991,8 +990,8 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
     if (metademandparams.use_as_step == 1
         && typeof metademandparams !== 'undefined') {
         if (x[metademandparams.currentTab] !== undefined) {
-            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
+            let bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            let id_bloc = parseInt(bloc.replace('bloc', ''));
 
             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
             document.getElementById('ablock' + id_bloc)?.classList.add('active');
@@ -1008,7 +1007,7 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
                 $('select[id$=\"_to\"] option').each(function () {
                     $(this).prop('selected', true);
                 });
-                arrayDatas = $('#wizard_form').serializeArray();
+                let arrayDatas = $('#wizard_form').serializeArray();
                 arrayDatas.push({name: 'block_id', value: id_bloc});
                 arrayDatas.push({name: 'action', value: 'nextUser'});
                 arrayDatas.push({name: 'form_name', value: metademandparams.nameform});
@@ -1036,8 +1035,8 @@ function plugin_metademands_wizard_findFirstTab(block_id, metademandparams)
     }
 
     if (block_id > 0) {
-        bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-        id_bloc = parseInt(bloc.replace('bloc', ''));
+        let bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+        let id_bloc = parseInt(bloc.replace('bloc', ''));
         while (block_id != id_bloc) {
             metademandparams.currentTab = metademandparams.currentTab + 1;
             bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
@@ -1064,7 +1063,7 @@ function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, met
     }
 
     // Increase or decrease the current tab by 1:
-    nextTab = metademandparams.currentTab + n;
+    let nextTab = metademandparams.currentTab + n;
     // Hide the current tab:
     if (x[metademandparams.currentTab] !== undefined) {
         x[metademandparams.currentTab].style.display = 'none';
@@ -1101,8 +1100,8 @@ function plugin_metademands_wizard_prevBtn(n, firstnumTab, metademandparams, met
 
 
         if (x[metademandparams.currentTab] !== undefined) {
-            bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
-            id_bloc = parseInt(bloc.replace('bloc', ''));
+            let bloc = x[metademandparams.currentTab].firstChild.getAttribute('bloc-id');
+            let id_bloc = parseInt(bloc.replace('bloc', ''));
 
             document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
             document.getElementById('ablock' + id_bloc)?.classList.add('active');
@@ -1230,7 +1229,6 @@ function plugin_metademands_changeLDAP(root_doc, ldap) {
             value: ldap_directory,
         },
     }).done(function(response) {
-        var selector = '$slashSelector';
         document.querySelector('form [name="ldap_filter"]').value = response;
     });
 }

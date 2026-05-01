@@ -1,4 +1,6 @@
 
+var i = 0;
+
 // metademandfreelinesparams.existLine = '$existLine';
 // metademandfreelinesparams.rand = '$rand';
 // metademandfreelinesparams.root = '$root';
@@ -32,6 +34,7 @@ function addLine(metademandfreelinesparams)
     var type_fields = metademandfreelinesparams.types_encoded_fields;
     var dropdown_values_fields = metademandfreelinesparams.dropdown_values_encoded_fields;
     var lastid = metademandfreelinesparams.lastid;
+    let tabtr, tabbutton;
 
     const tabfields = [];
 
@@ -145,12 +148,7 @@ function addLine(metademandfreelinesparams)
 function confirmUpdateLine(node, nb, typepost, field_id, newparams)
 {
 
-    if (newparams) {
-        params = newparams;
-    } else {
-        window.metademandfreelinesparams = metademandfreelinesparams;
-        params = window.metademandfreelinesparams;
-    }
+    const params = newparams || window.metademandfreelinesparams;
 
     var fields = params.encoded_fields;
     var type_fields = params.types_encoded_fields;
@@ -159,8 +157,9 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
     var empty_value = params.empty_value;
     var elem_parent = $(node).parent().parent();
     var tabfields = [];
+    let tabtr, tabbutton;
 
-    l = {
+    const l = {
         'id': nb,
     };
     $.each(fields, function (index, valuej) {
@@ -204,7 +203,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
         type: 'POST',
         data: {datas: line}
     });
-    ko = 0;
+    let ko = 0;
 
     $.each(fields, function (index, valuej) {
 
@@ -218,14 +217,12 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 }
             } else if (type_fields[index] == params.select) {
                 var select = document.getElementById(index);
-                if (select.selectedIndex != undefined) {
-                    var text = select.options[select.selectedIndex].text;
-                    if (text == empty_value) {
-                        select.style.borderColor = 'red';
-                        ko = 1;
-                    } else {
-                        select.style.borderColor = '';
-                    }
+                var text = select.options[select.selectedIndex].text;
+                if (text == empty_value) {
+                    select.style.borderColor = 'red';
+                    ko = 1;
+                } else {
+                    select.style.borderColor = '';
                 }
             } else if (type_fields[index] == params.number) {
                 if (elem_parent.find('input[name=' + index + ']').val() == 0) {
@@ -297,8 +294,6 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
             var joined = [tabtr, tabfields, tabbutton].join(' ');
 
             $('#freetable_table' + field_id + ' tr:last').before(joined);
-            $('#name_' + i).val(name);
-
             elem_parent.find('input[name=name' + field_id + ']').val('');
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == params.text) {
@@ -358,7 +353,6 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
             var joined = [tabtr, tabfields, tabbutton].join(' ');
 
             $('#freetable_table' + field_id + ' tr[id^=line_' + field_id + '_]:last').after(joined);
-            $('#name_' + i).val(name);
             elem_parent.find('input[name=name' + field_id + ']').val('');
 
             $.each(fields, function (index, valuej) {
@@ -470,12 +464,7 @@ function showConfirmButton()
 
 function removeLine(l, field_id, newparams)
 {
-    if (newparams) {
-        params = newparams;
-    } else {
-        window.metademandfreelinesparams = metademandfreelinesparams;
-        params = window.metademandfreelinesparams;
-    }
+    const params = newparams || window.metademandfreelinesparams;
 
     $('#line_' + field_id + '_' + l).remove();
     var line = {
@@ -504,13 +493,7 @@ function removeLine(l, field_id, newparams)
 
 function editLine(l, field_id, newparams)
 {
-
-    if (newparams) {
-        params = newparams;
-    } else {
-        window.metademandfreelinesparams = metademandfreelinesparams;
-        params = window.metademandfreelinesparams;
-    }
+    const params = newparams || window.metademandfreelinesparams;
 
     let line = document.querySelector('#line_' + field_id + '_' + l);
 
