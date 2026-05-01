@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-01 11:40+0000\n"
+"POT-Creation-Date: 2026-05-01 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -454,12 +454,12 @@ msgid_plural "Dates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:3680
+#: src/Wizard.php:3688
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3670
+#: src/Wizard.php:3678
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
@@ -800,7 +800,7 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: src/Wizard.php:3731
+#: src/Wizard.php:3739
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -2147,7 +2147,7 @@ msgstr ""
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3719
+#: src/Wizard.php:3727
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
