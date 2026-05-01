@@ -1219,6 +1219,82 @@ function updateActiveTab(rank)
     document.getElementById('ablock' + rank)?.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
 }
 
+async function plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, metademandparams, metademandconditionsparams)
+{
+    if (metademandparams.use_as_step != 1) return;
+
+    const tabs = document.getElementsByClassName('tab-step');
+
+    // Trouver l'index du tab cible à partir du bloc-id
+    let targetTabIndex = -1;
+    for (let t = 0; t < tabs.length; t++) {
+        const blocAttr = tabs[t]?.firstChild?.getAttribute('bloc-id');
+        if (blocAttr && parseInt(blocAttr.replace('bloc', '')) === targetBlockId) {
+            targetTabIndex = t;
+            break;
+        }
+    }
+
+    // Bloc introuvable, déjà actif, ou caché : on ignore
+    if (targetTabIndex === -1 || targetTabIndex === metademandparams.currentTab) return;
+    if (tabs[targetTabIndex]?.firstChild?.style.display === 'none') return;
+
+    const goingForward = targetTabIndex > metademandparams.currentTab;
+
+    if (goingForward) {
+        // Validation du step courant
+        if (!plugin_metademands_wizard_validateForm(metademandparams)) return;
+
+        // Confirmation si aucune valeur saisie dans le step courant
+        if (metademandparams.useconfirm > 0 && metademandparams.edit_model == 0) {
+            const currentBlocAttr = tabs[metademandparams.currentTab]?.firstChild?.getAttribute('bloc-id');
+            const id_bloc = currentBlocAttr ? parseInt(currentBlocAttr.replace('bloc', '')) : 0;
+            const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
+            if (div) {
+                const inputs = div.querySelectorAll('input, select, textarea');
+                let uneValeurSaisie = false;
+                inputs.forEach(input => {
+                    if ((input.type === 'checkbox' || input.type === 'radio') && input.checked) {
+                        uneValeurSaisie = true;
+                    } else if (input.tagName === 'SELECT') {
+                        const isYesNo = input.classList.contains('yesno');
+                        const value = input.value;
+                        if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
+                            uneValeurSaisie = true;
+                        }
+                    } else if (input.tagName === 'TEXTAREA') {
+                        let value = input.value;
+                        if (window.tinymce && tinymce.get(input.id)) {
+                            value = tinymce.get(input.id).getContent({ format: 'text' });
+                        }
+                        if (value.trim() !== '') {
+                            uneValeurSaisie = true;
+                        }
+                    }
+                });
+                if (!uneValeurSaisie) {
+                    const confirmed = await showBootstrapConfirmationModal(metademandparams.confirmmsg);
+                    if (!confirmed) return;
+                }
+            }
+        }
+    }
+
+    // Cacher le tab courant
+    if (tabs[metademandparams.currentTab] !== undefined) {
+        tabs[metademandparams.currentTab].style.display = 'none';
+    }
+
+    metademandparams.currentTab = targetTabIndex;
+
+    // Mettre à jour l'onglet actif
+    document.querySelectorAll('a[id^="ablock"]').forEach(a => a.classList.remove('active'));
+    document.getElementById('ablock' + targetBlockId)?.classList.add('active');
+    document.getElementById('ablock' + targetBlockId)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+    plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
+}
+
 function plugin_metademands_changeLDAP(root_doc, ldap) {
     var ldap_directory = ldap.value;
 

@@ -3156,6 +3156,14 @@ class Wizard extends CommonDBTM
                             plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
                           }
                         });
+
+                    document.querySelectorAll('a.tablinks').forEach(function(tabLink) {
+                        tabLink.addEventListener('click', async function(e) {
+                            e.preventDefault();
+                            const targetBlockId = parseInt(this.id.replace('ablock', ''));
+                            await plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, metademandparams, metademandconditionsparams);
+                        });
+                    });
                   });
                </script>";
     }
