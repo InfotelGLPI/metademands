@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-01 12:06+0000\n"
+"POT-Creation-Date: 2026-05-04 09:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -890,7 +890,7 @@ msgstr ""
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: hook.php:586
+#: hook.php:590
 msgid "Group child ticket"
 msgstr ""
 
@@ -1100,7 +1100,7 @@ msgstr ""
 msgid "Link this to a user field"
 msgstr ""
 
-#: hook.php:597
+#: hook.php:601
 msgid "Link to metademands"
 msgstr ""
 
@@ -1192,7 +1192,7 @@ msgstr[1] ""
 msgid "Meta-demands linked"
 msgstr ""
 
-#: hook.php:557
+#: hook.php:561
 msgid "Metademand approver"
 msgstr ""
 
@@ -1204,7 +1204,7 @@ msgstr ""
 msgid "Metademand need a validation"
 msgstr ""
 
-#: hook.php:570
+#: hook.php:574
 msgid "Metademand status"
 msgstr ""
 
@@ -1223,15 +1223,15 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: front/tools.form.php:62
+#: src/Metademand.php:9405 front/tools.form.php:62
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: src/Metademand.php:8382 hook.php:1015
+#: src/Metademand.php:8382 hook.php:1019
 msgid "Metademands to be closed"
 msgstr ""
 
-#: src/Metademand.php:8465 hook.php:1032
+#: src/Metademand.php:8465 hook.php:1036
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -1701,11 +1701,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: src/Metademand.php:8216 hook.php:997
+#: src/Metademand.php:8216 hook.php:1001
 msgid "Running metademands"
 msgstr ""
 
-#: src/Metademand.php:8286 hook.php:1049
+#: src/Metademand.php:8286 hook.php:1053
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1920,7 +1920,7 @@ msgid ""
 "maintenance mode"
 msgstr ""
 
-#: hook.php:609
+#: hook.php:613
 msgid "Technician child ticket"
 msgstr ""
 
@@ -2303,7 +2303,7 @@ msgstr ""
 msgid "Value to check"
 msgstr ""
 
-#: src/Tools.php:114
+#: src/Metademand.php:9373 src/Tools.php:114
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
