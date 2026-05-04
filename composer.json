@@ -8,6 +8,6 @@
         "glpi-project/tools": "^0.4"
     },
     "require": {
-        "fpdf/fpdf": "^1.85"
+        "fpdf/fpdf": "^1.86"
     }
 }
