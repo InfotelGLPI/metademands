@@ -9357,4 +9357,58 @@ HTML;
             ['id' => $form->getID()]
         );
     }
+
+    /**
+     * Cron Info
+     *
+     * @param $name of the cron task
+     *
+     * @return array
+     **/
+    public static function cronInfo($name)
+    {
+        switch ($name) {
+            case 'MetademandsGlobalStatus':
+                return [
+                    'description' =>  _x('button', 'Verify metademands global status', 'metademands'),
+                ]; // Optional
+                break;
+        }
+        return [];
+    }
+
+    /**
+     * Cron action on Metademands
+     *
+     * @param $task for log, if NULL display
+     *
+     * @return int
+     **/
+    public static function cronMetademandsGlobalStatus($task = null)
+    {
+        global $DB;
+
+        $cron_status = 0;
+        $nb = 0;
+        $ticket_metademand = new Ticket_Metademand();
+        if ($notclosedmetademands = $ticket_metademand->find(['NOT' => ['status' => Ticket_Metademand::CLOSED]])) {
+            foreach ($notclosedmetademands as $notclosedmetademand) {
+                $ticket = new \Ticket();
+                if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
+                    if ($ticket->fields['status'] != \Ticket::CLOSED) {
+                        Ticket_Metademand::changeMetademandGlobalStatus($ticket);
+
+                        $cron_status = 1;
+                        $nb++;
+                        $task->setVolume($nb);
+                        if ($nb) {
+                            $task->log(__('Metademands statuses updated', 'metademands'));
+                        }
+                    }
+                }
+            }
+        }
+
+        return $cron_status;
+    }
 }

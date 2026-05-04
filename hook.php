@@ -304,6 +304,8 @@ function plugin_metademands_install()
     Interticketfollowup::addNotifications();
     Stepform::addNotifications();
 
+    CronTask::Register(Metademand::class, 'MetademandsGlobalStatus', DAY_TIMESTAMP);
+
     Profile::initProfile();
     Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
 
@@ -379,6 +381,8 @@ function plugin_metademands_uninstall()
 
     Profile::removeRightsFromSession();
     Profile::removeRightsFromDB();
+
+    CronTask::unregister("Metademands");
 
     return true;
 }
