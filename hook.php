@@ -717,6 +717,11 @@ function plugin_metademands_install() {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.4.1.sql");
     }
 
+    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "use_title_block", false)) {
+        $query = "ALTER TABLE `glpi_plugin_metademands_configs` ADD `use_title_block` tinyint DEFAULT '0';";
+        $DB->doQuery($query);
+    }
+
     //Displayprefs
     $prefs = [1 => 1, 2 => 2, 3 => 3, 99 => 4];
     foreach ($prefs as $num => $rank) {
