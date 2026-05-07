@@ -50,6 +50,8 @@ $fieldUser = new Field();
 $fieldparameter = new FieldParameter();
 $readonly = 0;
 $default_use_id_requester_supervisor  = 0;
+$display_type = 0;
+$id = null;
 
 //Update donc $_POST['field'] doesn't exist
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
@@ -68,6 +70,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
                         $default_use_id_requester_supervisor = 1;
                     }
+                    $display_type = (int)($fieldparameter->fields['display_type'] ?? 0);
                     $id = $f['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $_POST["fields_id"] = $id;
@@ -108,9 +111,25 @@ if ($readonly == 1) {
     $opt['readonly'] = true;
 }
 
-
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
     $opt['specific_tags'] = ['required' => 'required'];
+}
+
+if ($display_type == 1 && $id !== null) {
+    $tooltip_moreparams = [
+        'users_id'                           => '__VALUE__',
+        'id_fielduser'                       => (int)$id,
+        'display_type'                       => 1,
+        'metademands_id'                     => (int)$_POST['metademands_id'],
+        'default_use_id_requester'           => 0,
+        'default_use_id_requester_supervisor' => 0,
+    ];
+    $opt['toupdate'] = [[
+        'value_fieldname' => 'value',
+        'to_update'       => "tooltip_user$id",
+        'url'             => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
+        'moreparams'      => $tooltip_moreparams,
+    ]];
 }
 
 if ($readonly == 1) {
@@ -118,6 +137,21 @@ if ($readonly == 1) {
     echo Html::hidden($_POST["field"], ['value' => $val]);
 } else {
     User::dropdown($opt);
+}
+
+if ($display_type == 1 && $id !== null) {
+    echo Ajax::updateItem(
+        "tooltip_user$id",
+        PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
+        [
+            'users_id'                           => (int)$val,
+            'id_fielduser'                       => (int)$id,
+            'display_type'                       => 1,
+            'metademands_id'                     => (int)$_POST['metademands_id'],
+            'default_use_id_requester'           => 0,
+            'default_use_id_requester_supervisor' => 0,
+        ]
+    );
 }
 
 $_POST['name'] = "manager_user".$_POST["id_fielduser"].$_POST['fields_id'];

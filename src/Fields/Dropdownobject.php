@@ -92,7 +92,9 @@ class Dropdownobject extends CommonDBTM
                             'fieldname' => $namefield,
                             'id_fielduser'   => $data['id'],
                             'display_type' => $data['display_type'],
-                            'metademands_id' => $data['plugin_metademands_metademands_id']];
+                            'metademands_id' => $data['plugin_metademands_metademands_id'],
+                            'default_use_id_requester' => $data['default_use_id_requester'] ?? 0,
+                            'default_use_id_requester_supervisor' => $data['default_use_id_requester_supervisor'] ?? 0];
 
                     $toupdate[] = ['value_fieldname' => 'value',
                         'id_fielduser' => $data['id'],
@@ -100,16 +102,12 @@ class Dropdownobject extends CommonDBTM
                         'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
                         'moreparams'   => $paramstooltip];
 
-                    echo "<script type='text/javascript'>";
-                    echo "$(function() {";
-                    Ajax::updateItemJsCode(
+                    echo Ajax::updateItem(
                         "tooltip_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
                         $paramstooltip,
-                        $namefield . "[" . $data['id'] . "]",
-                        false
+                        "dropdown_" . $namefield . "[" . $data['id'] . "]" . $userrand
                     );
-                    echo "});</script>";
                 }
                 $fieldparameter = new FieldParameter();
                 $fielddropdown = new Field();

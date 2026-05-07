@@ -40,9 +40,16 @@ if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
 Session::checkLoginUser();
 $fieldUser = new Field();
 
-if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])
-    && !isset($_POST['users_id'])) {
-    $_POST['users_id'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
+// Quand users_id est 0 (ex. initialisation select2), calculer la valeur par défaut
+// depuis les paramètres du champ transmis par Dropdownobject::showWizardField()
+if (empty($_POST['users_id']) || (int)$_POST['users_id'] === 0) {
+    if (!empty($_POST['default_use_id_requester']) && (int)$_POST['default_use_id_requester'] === 1) {
+        $_POST['users_id'] = Session::getLoginUserID();
+    } elseif (!empty($_POST['default_use_id_requester_supervisor']) && (int)$_POST['default_use_id_requester_supervisor'] === 1) {
+        $supervisorUser = new User();
+        $supervisorUser->getFromDB(Session::getLoginUserID());
+        $_POST['users_id'] = $supervisorUser->fields['users_id_supervisor'] ?? 0;
+    }
 }
 
 $content = " ";

@@ -1211,7 +1211,7 @@ class Field extends CommonDBChild
                 . $item->getID() . "$rand();'>" . __('Add a existing field', 'metademands')
                 . "</a></div><br>";
 
-            echo "<div id='viewexistingfieldmeta" . $item->getType() . $item->getID() . "$rand'></div>\n";
+            echo "<div id='viewexistingfieldmeta" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
             echo "function addExistingFieldmeta" . $item->getID() . "$rand() {\n";

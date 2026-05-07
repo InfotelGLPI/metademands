@@ -2827,8 +2827,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                                         $parent_ticketfields["_add_validation"] = '0';
                                         $parent_fields["validatortype"] = 'user';
                                         $parent_ticketfields["validatortype"] = 'user';
-                                        $parent_fields["users_id_validate"] = [$v[$id]];
-                                        $parent_ticketfields["users_id_validate"] = [$v[$id]];
+                                        $parent_fields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int)$v[$id]];
+                                        $parent_ticketfields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int)$v[$id]];
                                     }
                                     if ($fields_values['used_by_ticket'] == 13) {
                                         if ($fields_values['type'] == "dropdown_meta"
@@ -2898,19 +2898,16 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                         $parent_ticketfields["_add_validation"] = $add_validation;
                         $parent_fields["validatortype"] = $validatortype;
                         $parent_ticketfields["validatortype"] = $validatortype;
-                        if (isset($parent_fields["users_id_validate"])) {
-                            $parent_fields["users_id_validate"] = array_merge(
-                                $parent_fields["users_id_validate"],
-                                $users_id_validate
-                            );
-                            $parent_ticketfields["users_id_validate"] = array_merge(
-                                $parent_ticketfields["users_id_validate"],
-                                $users_id_validate
-                            );
-                        } else {
-                            $parent_fields["users_id_validate"] = $users_id_validate;
-                            $parent_ticketfields["users_id_validate"] = $users_id_validate;
+                        $validation_targets = array_map(
+                            fn($uid) => ['itemtype_target' => User::class, 'items_id_target' => (int)$uid],
+                            $users_id_validate
+                        );
+                        if (!isset($parent_fields["_validation_targets"])) {
+                            $parent_fields["_validation_targets"] = [];
+                            $parent_ticketfields["_validation_targets"] = [];
                         }
+                        $parent_fields["_validation_targets"] = array_merge($parent_fields["_validation_targets"], $validation_targets);
+                        $parent_ticketfields["_validation_targets"] = array_merge($parent_ticketfields["_validation_targets"], $validation_targets);
                     }
 
                     // Case of update existing ticket with form
