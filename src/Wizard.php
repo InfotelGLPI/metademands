@@ -1720,7 +1720,8 @@ class Wizard extends CommonDBTM
         $all_meta_fields = [];
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
-                $label = $data['name'] ?? '';
+                $translated = Field::displayField($data['id'], 'name');
+                $label = $translated !== '' ? $translated : ($data['name'] ?? '');
                 $fp_data = FieldParameter::getFromStaticCache((int) $data['id']);
                 $all_meta_fields[$data['id']] = ($fp_data !== null && $fp_data !== false
                     && isset($fp_data['hide_title']) && $fp_data['hide_title'] == 1)

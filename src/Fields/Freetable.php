@@ -35,6 +35,7 @@ use Plugin;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Orderfollowup\Config;
 use Toolbox;
+use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Freetablefield as MetaFreetablefield;
 
 if (!defined('GLPI_ROOT')) {
@@ -109,7 +110,8 @@ class Freetable extends CommonDBTM
         if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
             if (count($customs) > 0) {
                 foreach ($customs as $custom) {
-                    $addfields[$custom['internal_name']] = $custom['name'];
+                    $translated_col = Field::displayField($data['id'], 'freetablecol' . $custom['rank']);
+                    $addfields[$custom['internal_name']] = $translated_col !== '' ? $translated_col : $custom['name'];
                     $commentfields[$custom['internal_name']] = $custom['comment'];
                     if ($custom['is_mandatory'] == 1) {
                         $is_mandatory[] = $custom['internal_name'];
@@ -548,9 +550,9 @@ class Freetable extends CommonDBTM
                     ])) {
                         if (count($customs) > 0) {
                             foreach ($customs as $id => $custom) {
-                                $values[$elt['id']][$k][Toolbox::decodeFromUtf8(
-                                    $custom['name']
-                                )] = $value;
+                                $translated_col = Field::displayField($elt['id'], 'freetablecol' . $custom['rank']);
+                                $col_label = $translated_col !== '' ? $translated_col : $custom['name'];
+                                $values[$elt['id']][$k][Toolbox::decodeFromUtf8($col_label)] = $value;
                             }
                         }
                         //TODO
@@ -593,12 +595,15 @@ class Freetable extends CommonDBTM
         //        $total = 0;
         $addfields = [];
         $dropdown_values = [];
+        $types = [];
         $colspan_title = $is_order ? 12 : 2;
         $field_custom = new MetaFreetablefield();
         if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field['id']], "rank")) {
             if (count($customs) > 0) {
                 foreach ($customs as $custom) {
-                    $addfields[$custom['internal_name']] = $custom['name'];
+                    $translated_col = Field::displayField($field['id'], 'freetablecol' . $custom['rank'], $lang);
+                    $addfields[$custom['internal_name']] = $translated_col !== '' ? $translated_col : $custom['name'];
+                    $types[$custom['internal_name']] = $custom['type'];
                     if ($custom['type'] == MetaFreetablefield::TYPE_SELECT) {
                         $dropdown_values[$custom['internal_name']] = explode(",", $custom['dropdown_values']);
                     }
@@ -629,6 +634,7 @@ class Freetable extends CommonDBTM
         if (Plugin::isPluginActive('orderfollowup')) {
             $total = 0;
         }
+
         if (isset($_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['freetables'][$field['id']])) {
             $freetables = $_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['freetables'][$field['id']];
 
@@ -663,17 +669,14 @@ class Freetable extends CommonDBTM
                             $content .= "<td $style_td colspan='$colspan'>";
                         }
 
-                        if ($fi['type'] == MetaFreetablefield::TYPE_SELECT) {
-                            if (isset($dropdown_values[$fi[$k]])) {
-                                $content .= $dropdown_values[$fi[$k]];
-                            }
-                        }
-                        if ($fi['type'] == MetaFreetablefield::TYPE_DATE) {
+                        if (($types[$k] ?? null) == MetaFreetablefield::TYPE_SELECT) {
+                            $content .= $fi[$k] ?? '';
+                        } elseif (($types[$k] ?? null) == MetaFreetablefield::TYPE_DATE) {
                             $content .= Html::convDate($fi[$k]);
-                        } elseif ($fi['type'] == MetaFreetablefield::TYPE_TIME) {
-                            $content .= $fi[$k];
+                        } elseif (($types[$k] ?? null) == MetaFreetablefield::TYPE_TIME) {
+                            $content .= $fi[$k] ?? '';
                         } else {
-                            $content .= $fi[$k];
+                            $content .= $fi[$k] ?? '';
                         }
 
                         if ($formatAsTable) {

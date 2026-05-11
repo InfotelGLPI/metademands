@@ -1,7 +1,6 @@
 <?php
-use Glpi\Event;
-include('../../../../inc/includes.php');
 header('Content-Type: text/javascript');
+header('Cache-Control: max-age=86400, public');
 
 include ('diacritics.js');
 ?>

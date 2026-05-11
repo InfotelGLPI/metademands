@@ -29,6 +29,7 @@
  */
 
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Form;
 use GlpiPlugin\Metademands\Form_Value;
 use GlpiPlugin\Metademands\Metademand;
@@ -172,15 +173,49 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                             if ($value['type'] == 'freetable'
                                 && isset($_POST["is_freetable_mandatory"])) {
 
+                                $block_rank = (int) $value['rank'];
+                                $meta_id_for_block = (int) ($value['plugin_metademands_metademands_id'] ?? $_POST['metademands_id']);
+                                $block_controlled = false;
+                                $block_shown = false;
+
+                                $meta_field_for_block = new Field();
+                                $meta_field_ids_for_block = array_keys(
+                                    $meta_field_for_block->find(['plugin_metademands_metademands_id' => $meta_id_for_block])
+                                );
+
+                                if (!empty($meta_field_ids_for_block)) {
+                                    $fieldopt_for_block = new FieldOption();
+                                    $ctrl_opts = $fieldopt_for_block->find([
+                                        'plugin_metademands_fields_id' => $meta_field_ids_for_block,
+                                        'hidden_block' => $block_rank,
+                                    ]);
+                                    $block_controlled = count($ctrl_opts) > 0;
+                                    foreach ($ctrl_opts as $ctrl_opt) {
+                                        $submitted_cv = $post[$ctrl_opt['plugin_metademands_fields_id']] ?? null;
+                                        $cv = $ctrl_opt['check_value'];
+                                        if ($submitted_cv !== null && (string) $submitted_cv !== '0'
+                                            && ((string) $submitted_cv === (string) $cv
+                                                || (int) $cv === 0
+                                                || (int) $cv === -1)) {
+                                            $block_shown = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 $mandatories = $_POST["is_freetable_mandatory"];
                                 foreach ($mandatories as $fm => $mandatory) {
                                     if ($mandatory == 1
                                     && $fm == $id) {
+                                        if ($block_controlled && !$block_shown) {
+                                            continue;
+                                        }
                                         if (!isset($_POST['freetables'][$fm])
                                             || count(
                                                 $_POST['freetables'][$fm]
                                             ) == 0) {
-                                            $name = $value['name'];
+                                            $translated = Field::displayField($id, 'name');
+                                            $name = $translated !== '' ? $translated : $value['name'];
                                             $msg = sprintf(__("There is no line on the mandatory table %s", "metademands"), $name);
                                             Session::addMessageAfterRedirect(
                                                 $msg,

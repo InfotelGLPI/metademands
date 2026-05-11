@@ -2420,20 +2420,10 @@ class Dropdownmeta extends CommonDBTM
         $dbu = new DbUtils();
         if (!empty($field['custom_values'])
             && $field['item'] == 'other') {
-            //TODO MIGRATE
-            //            $custom_values = FieldParameter::_unserialize($field['custom_values']);
-            //            $custom_values[0] = \Dropdown::EMPTY_VALUE;
-            //            foreach ($custom_values as $k => $val) {
-            //                if (!empty($ret = Field::displayField($field["id"], "custom" . $k, $lang))) {
-            //                    $custom_values[$k] = $ret;
-            //                }
-            //                if (isset($custom_values[$field['value']])) {
-            //                    return $custom_values[$field['value']];
-            //                }
-            //            }
             $custom_values = [];
-            foreach ($field['custom_values'] as $key => $val) {
-                $custom_values[$val['id']] = $val['name'];
+            foreach ($field['custom_values'] as $val) {
+                $translated = Field::displayField($field["id"], "custom" . $val['rank'], $lang);
+                $custom_values[$val['id']] = $translated !== '' ? $translated : $val['name'];
             }
             return $custom_values[$field['value']] ?? "";
         } else {
@@ -2498,14 +2488,9 @@ class Dropdownmeta extends CommonDBTM
         if (!empty($field['custom_values'])
             && $field['item'] == 'other' && $field['value'] > 0) {
             $custom_values[0] = \Dropdown::EMPTY_VALUE;
-            foreach ($field['custom_values'] as $key => $val) {
-                $custom_values[$val['id']] = $val['name'];
-            }
-
-            foreach ($custom_values as $k => $val) {
-                if (!empty($ret = Field::displayField($field["id"], "custom" . $k, $lang))) {
-                    $custom_values[$k] = $ret;
-                }
+            foreach ($field['custom_values'] as $val) {
+                $translated = Field::displayField($field["id"], "custom" . $val['rank'], $lang);
+                $custom_values[$val['id']] = $translated !== '' ? $translated : $val['name'];
             }
             if (isset($custom_values[$field['value']])) {
                 if ($formatAsTable) {

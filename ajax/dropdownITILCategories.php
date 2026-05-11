@@ -83,8 +83,10 @@ foreach ($cats as $item) {
     if (is_null($tempcats)) {
         $tempcats = [];
     } else {
-        foreach ($tempcats as $tempcat) {
-            $used [] = $tempcat;
+        if (is_array($tempcats)) {
+            foreach ($tempcats as $tempcat) {
+                $used [] = $tempcat;
+            }
         }
     }
 

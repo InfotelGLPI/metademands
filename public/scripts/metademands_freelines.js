@@ -80,7 +80,7 @@ function addLine(metademandfreelinesparams)
 
             });
 
-            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmUpdateLine(this, '+ i +', 1, ' + fields_id +')\">';
+            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmUpdateLine(this, '+ i +', 1, ' + fields_id + ', window.metademandfreelinesparams' + fields_id + ')\">';
             tabbutton = '<td style=\"text-align: right;\" colspan=\"2\">'
                 + str
                 + '<i class =\"ti ti-check\"></i></button></td>'
@@ -121,10 +121,8 @@ function addLine(metademandfreelinesparams)
                     tabfields.push('<td><input add=1 id=\"' + index + '\" value=\"0\" type=\"time\" name=\"' + index + '\" ></td>');
                 }
             });
-            var paramsCopy = JSON.stringify(metademandfreelinesparams);
-
             var btn = '<button class="btn btn-success add_item" type="button" name="add_item" ' +
-                'onclick=\'confirmUpdateLine(this,' + i + ',1,' + fields_id + ',' + paramsCopy + ')\'>' +
+                'onclick="confirmUpdateLine(this,' + i + ',1,' + fields_id + ',window.metademandfreelinesparams' + fields_id + ')">' +
                 '<i class="ti ti-check"></i></button>';
 
             tabbutton = '<td style="text-align:center;" colspan="2">'

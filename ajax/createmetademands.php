@@ -293,6 +293,29 @@ if ($nofreetable == false) {
                         // Double appel for prevent order fields
                         $_POST['field'] = $post;
 
+                        // Compute which block ranks are shown (visible) based on submitted values and FieldOption rules
+                        $shown_block_ranks = [];
+                        $controlled_block_ranks = [];
+                        foreach ($data as $cond_id => $cond_value) {
+                            if (!isset($cond_value['options'])) {
+                                continue;
+                            }
+                            foreach ($cond_value['options'] as $check_val => $option) {
+                                foreach ($option['hidden_block'] ?? [] as $hb) {
+                                    if ((int) $hb > 0) {
+                                        $controlled_block_ranks[(int) $hb] = true;
+                                        $submitted = $post[$cond_id] ?? null;
+                                        if ($submitted !== null && (string) $submitted !== '0'
+                                            && ((string) $submitted === (string) $check_val
+                                                || (int) $check_val === 0
+                                                || (int) $check_val === -1)) {
+                                            $shown_block_ranks[(int) $hb] = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         //end fields_link to be mandatory
                         foreach ($data as $id => $value) {
                             $field = new Field();
@@ -344,11 +367,16 @@ if ($nofreetable == false) {
                                     $mandatories = $_POST["is_freetable_mandatory"];
                                     foreach ($mandatories as $fm => $mandatory) {
                                         if ($mandatory == 1 && $fm == $id) {
+                                            $block_rank = (int) $value['rank'];
+                                            if (isset($controlled_block_ranks[$block_rank]) && !isset($shown_block_ranks[$block_rank])) {
+                                                continue;
+                                            }
                                             if (!isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm])
                                                 || count(
                                                     $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm]
                                                 ) == 0) {
-                                                $msg = sprintf(__("There is no line on the mandatory table %s", "metademands"), $value['name']);
+                                                $translated = Field::displayField($id, 'name');
+                                                $msg = sprintf(__("There is no line on the mandatory table %s", "metademands"), $translated !== '' ? $translated : $value['name']);
                                                 Session::addMessageAfterRedirect(
                                                     $msg,
                                                     false,

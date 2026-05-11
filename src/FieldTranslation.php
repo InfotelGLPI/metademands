@@ -285,6 +285,18 @@ class FieldTranslation extends CommonDBChild
                             }
                         }
                     }
+
+                    if (empty($searchOption)
+                        && isset($item->fields['type'])
+                        && $item->fields['type'] === 'freetable') {
+                        $freetablefield = new Freetablefield();
+                        $cols = $freetablefield->find(['plugin_metademands_fields_id' => $item->getID()], 'rank');
+                        foreach ($cols as $col) {
+                            if ('freetablecol' . $col['rank'] === $data['field']) {
+                                $searchOption['name'] = $col['name'];
+                            }
+                        }
+                    }
                 }
                 echo $searchOption['name'] ?? "" . "</td>";
                 echo "<td $onhover>" . $data['value'] . "</td>";
@@ -423,6 +435,14 @@ class FieldTranslation extends CommonDBChild
                         $options["commentcustom" . $rank] =  __('Comment').' '.$val['name'];
                     }
                 }
+            }
+        }
+
+        if (isset($item->fields['type']) && $item->fields['type'] === 'freetable') {
+            $freetablefield = new Freetablefield();
+            $cols = $freetablefield->find(['plugin_metademands_fields_id' => $item->getID()], 'rank');
+            foreach ($cols as $col) {
+                $options['freetablecol' . $col['rank']] = $col['name'];
             }
         }
 
