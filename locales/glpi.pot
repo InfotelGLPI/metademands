@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-07 10:44+0000\n"
+"POT-Creation-Date: 2026-05-11 13:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/Fields/Freetable.php:294 src/Fields/Freetable.php:703
+#: src/Fields/Freetable.php:296 src/Fields/Freetable.php:706
 #: src/MetademandPdf.php:522
 msgid "(if VAT 20%)"
 msgstr ""
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Add attachment"
 msgstr ""
 
-#: src/Wizard.php:1632 src/Wizard.php:1810
+#: src/Wizard.php:1632 src/Wizard.php:1811
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
@@ -215,7 +215,7 @@ msgstr ""
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: src/Wizard.php:2236 src/Field.php:596 src/Field.php:988 src/Field.php:1410
+#: src/Wizard.php:2237 src/Field.php:596 src/Field.php:988 src/Field.php:1410
 #: src/Field.php:3564 src/Field.php:4867 src/Step.php:444 src/Step.php:529
 #: src/Step.php:671
 msgid "Block"
@@ -265,12 +265,12 @@ msgstr ""
 msgid "Cancel /delete a form"
 msgstr ""
 
-#: src/Wizard.php:2371
+#: src/Wizard.php:2372
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: src/Wizard.php:2504 src/Draft.php:692
+#: src/Wizard.php:2505 src/Draft.php:692
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -382,7 +382,7 @@ msgstr ""
 msgid "Confirm the final deletion?"
 msgstr ""
 
-#: src/Wizard.php:2476
+#: src/Wizard.php:2477
 msgid "Confirmation"
 msgstr ""
 
@@ -454,12 +454,12 @@ msgid_plural "Dates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:3688
+#: src/Wizard.php:3689
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3678
+#: src/Wizard.php:3679
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
@@ -545,7 +545,7 @@ msgctxt "button"
 msgid "Delete permanently"
 msgstr ""
 
-#: src/Wizard.php:2499
+#: src/Wizard.php:2500
 msgid "Delete the draft"
 msgstr ""
 
@@ -606,7 +606,7 @@ msgstr ""
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: src/Fields/Freetable.php:393 src/Freetablefield.php:477
+#: src/Fields/Freetable.php:395 src/Freetablefield.php:477
 msgid "Display name"
 msgstr ""
 
@@ -684,7 +684,7 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: src/Fields/Freetable.php:409 src/Freetablefield.php:485
+#: src/Fields/Freetable.php:411 src/Freetablefield.php:485
 msgid "Dropdown values"
 msgstr ""
 
@@ -800,7 +800,7 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: src/Wizard.php:3739
+#: src/Wizard.php:3740
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -849,7 +849,7 @@ msgstr[1] ""
 msgid "Form name"
 msgstr ""
 
-#: ajax/addform.php:234
+#: ajax/addform.php:269
 msgid "Form name is required"
 msgstr ""
 
@@ -861,7 +861,7 @@ msgstr ""
 msgid "Format the description of the childs ticket as a table"
 msgstr ""
 
-#: src/Fields/Freetable.php:63
+#: src/Fields/Freetable.php:64
 msgid "Free table"
 msgstr ""
 
@@ -879,13 +879,13 @@ msgstr ""
 msgid "Grand total"
 msgstr ""
 
-#: src/Fields/Freetable.php:294 src/Fields/Freetable.php:703
+#: src/Fields/Freetable.php:296 src/Fields/Freetable.php:706
 #: src/Fields/Basket.php:1827 src/Fields/Basket.php:2323
 #: src/MetademandPdf.php:429 src/MetademandPdf.php:522
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:293 src/Fields/Freetable.php:702
+#: src/Fields/Freetable.php:295 src/Fields/Freetable.php:705
 #: src/MetademandPdf.php:513
 msgid "Grand total (TTC)"
 msgstr ""
@@ -1053,7 +1053,7 @@ msgstr[1] ""
 msgid "Interface"
 msgstr ""
 
-#: src/Fields/Freetable.php:375 src/Freetablefield.php:425
+#: src/Fields/Freetable.php:377 src/Freetablefield.php:425
 msgid "Internal name"
 msgstr ""
 
@@ -1167,7 +1167,7 @@ msgstr ""
 msgid "Make this field mandatory"
 msgstr ""
 
-#: src/Field.php:1573 src/Fields/Freetable.php:435 src/Freetablefield.php:510
+#: src/Field.php:1573 src/Fields/Freetable.php:437 src/Freetablefield.php:510
 msgid "Mandatory"
 msgstr ""
 
@@ -1283,9 +1283,9 @@ msgstr ""
 msgid "New model"
 msgstr ""
 
-#: src/Wizard.php:1382 src/Wizard.php:1627 src/Wizard.php:1767
-#: src/Wizard.php:1776 src/Wizard.php:1816 src/Wizard.php:1822
-#: src/Wizard.php:2382 src/Wizard.php:2385 src/Fields/Email.php:346
+#: src/Wizard.php:1382 src/Wizard.php:1627 src/Wizard.php:1768
+#: src/Wizard.php:1777 src/Wizard.php:1817 src/Wizard.php:1823
+#: src/Wizard.php:2383 src/Wizard.php:2386 src/Fields/Email.php:346
 #: src/Fields/Dropdownobject.php:1257 src/Fields/Dropdownmeta.php:1860
 #: src/Fields/Yesno.php:461 src/Fields/Radio.php:698
 #: src/Fields/Dropdown.php:855 src/Fields/Dropdownmultiple.php:1201
@@ -1448,7 +1448,7 @@ msgstr ""
 msgid "On quotation"
 msgstr ""
 
-#: src/Fields/Freetable.php:410 src/Freetablefield.php:486
+#: src/Fields/Freetable.php:412 src/Freetablefield.php:486
 msgid "One value by line, separated by comma"
 msgstr ""
 
@@ -1553,15 +1553,15 @@ msgstr ""
 msgid "Pool"
 msgstr ""
 
-#: src/Wizard.php:2379
+#: src/Wizard.php:2380
 msgid "Previous"
 msgstr ""
 
-#: src/Wizard.php:2434
+#: src/Wizard.php:2435
 msgid "Previous data edited"
 msgstr ""
 
-#: src/Wizard.php:2424
+#: src/Wizard.php:2425
 msgid "Previous user"
 msgstr ""
 
@@ -1599,7 +1599,7 @@ msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1157 src/Fields/Radio.php:278
 #: src/Fields/Dropdownmultiple.php:578 src/Fields/Checkbox.php:265
-#: src/Fields/Freetable.php:363 src/FieldCustomvalue.php:622
+#: src/Fields/Freetable.php:365 src/FieldCustomvalue.php:622
 #: src/Freetablefield.php:424
 msgid "Rank"
 msgstr ""
@@ -1714,7 +1714,7 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Wizard.php:1622 src/Wizard.php:1807 src/Fields/Email.php:344
+#: src/Wizard.php:1622 src/Wizard.php:1808 src/Fields/Email.php:344
 #: src/Fields/Dropdownobject.php:1256 src/Fields/Dropdownmeta.php:1858
 #: src/Fields/Yesno.php:459 src/Fields/Radio.php:696
 #: src/Fields/Dropdown.php:854 src/Fields/Dropdownmultiple.php:1199
@@ -1726,7 +1726,7 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: src/Wizard.php:1777
+#: src/Wizard.php:1778
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
@@ -1788,7 +1788,7 @@ msgstr ""
 msgid "See top metademands"
 msgstr ""
 
-#: src/Wizard.php:2033
+#: src/Wizard.php:2034
 msgctxt "button"
 msgid "See your basket"
 msgstr ""
@@ -1932,7 +1932,7 @@ msgstr ""
 msgid "Textarea"
 msgstr ""
 
-#: src/Wizard.php:1769
+#: src/Wizard.php:1770
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
@@ -2034,7 +2034,7 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/createmetademands.php:351 ajax/addform.php:184
+#: ajax/createmetademands.php:379 ajax/addform.php:219
 #, php-format
 msgid "There is no line on the mandatory table %s"
 msgstr ""
@@ -2047,11 +2047,11 @@ msgstr ""
 msgid "There was a problem on upload your signature"
 msgstr ""
 
-#: src/Wizard.php:1982
+#: src/Wizard.php:1983
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 
-#: src/Wizard.php:1770
+#: src/Wizard.php:1771
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
@@ -2147,7 +2147,7 @@ msgstr ""
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3727
+#: src/Wizard.php:3728
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
@@ -2168,7 +2168,7 @@ msgstr ""
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:143 src/Fields/Freetable.php:651
+#: src/Fields/Freetable.php:145 src/Fields/Freetable.php:657
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2176,7 +2176,7 @@ msgstr ""
 msgid "Translation"
 msgstr ""
 
-#: src/Fields/Freetable.php:382 src/Fields/Information.php:167
+#: src/Fields/Freetable.php:384 src/Fields/Information.php:167
 #: src/Freetablefield.php:438 src/FieldOption.php:483
 msgid "Type"
 msgstr ""
@@ -2204,7 +2204,7 @@ msgctxt "button"
 msgid "Update block to use"
 msgstr ""
 
-#: src/Wizard.php:2495
+#: src/Wizard.php:2496
 msgid "Update the draft"
 msgstr ""
 
@@ -2276,7 +2276,7 @@ msgstr ""
 msgid "Validate metademands"
 msgstr ""
 
-#: src/Fields/Freetable.php:324
+#: src/Fields/Freetable.php:326
 msgid "Validate the basket"
 msgstr ""
 
@@ -2360,7 +2360,7 @@ msgstr ""
 msgid "Yes / No"
 msgstr ""
 
-#: src/Wizard.php:2727
+#: src/Wizard.php:2728
 msgid ""
 "You are using a public template. This allows you to automatically pre-fill "
 "form fields, making your life easier :)"
@@ -2378,7 +2378,7 @@ msgstr ""
 msgid "You can't add a field without type"
 msgstr ""
 
-#: src/Fields/Freetable.php:180
+#: src/Fields/Freetable.php:182
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
@@ -2394,7 +2394,7 @@ msgstr ""
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: src/Wizard.php:1922
+#: src/Wizard.php:1923
 msgid "You do not have access to the form"
 msgstr ""
 
@@ -2402,7 +2402,7 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: src/Wizard.php:2338
+#: src/Wizard.php:2339
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -2432,11 +2432,11 @@ msgstr ""
 msgid "You have duplicates rank!"
 msgstr ""
 
-#: src/Wizard.php:2029
+#: src/Wizard.php:2030
 msgid "You have items on your basket"
 msgstr ""
 
-#: src/Wizard.php:1755 src/Wizard.php:2480
+#: src/Wizard.php:1756 src/Wizard.php:2481
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
