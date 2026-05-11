@@ -2625,6 +2625,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                 'authldaps_id' => $metademand_params->fields["authldaps_id"] ?? 0,
                 'ldap_filter' => $metademand_params->fields["ldap_filter"] ?? "",
                 'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
+                'root_items_id' => (int) ($metademand_params->fields["root_items_id"] ?? 0),
                 'custom_values' => $custom_values,
                 'default_values' => $default_values,
             ];

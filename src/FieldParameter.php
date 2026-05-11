@@ -182,6 +182,7 @@ class FieldParameter extends CommonDBChild
                         `authldaps_id`                        int {$default_key_sign}         DEFAULT 0,
                         `ldap_attribute`                      int                             DEFAULT 0,
                         `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
+                        `root_items_id`                       int {$default_key_sign}         DEFAULT 0,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
@@ -205,6 +206,10 @@ class FieldParameter extends CommonDBChild
         }
         if (!$DB->fieldExists($table, "ldap_filter")) {
             $migration->addField($table, "ldap_filter", "varchar(255) NOT NULL DEFAULT ''");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "root_items_id")) {
+            $migration->addField($table, "root_items_id", "int {$default_key_sign} DEFAULT 0");
             $migration->migrationOneTable($table);
         }
     }

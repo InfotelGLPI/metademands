@@ -5248,6 +5248,28 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             $resultTemp = [];
             $nb = 0;
 
+            // Compute which block ranks are controlled (hidden_block option exists)
+            // and which are shown (submitted value matches a check_value)
+            $controlled_block_ranks = [];
+            $shown_block_ranks = [];
+            foreach ($parent_fields as $fid => $f) {
+                foreach ($f['options'] ?? [] as $check_val => $option) {
+                    foreach ($option['hidden_block'] ?? [] as $hb) {
+                        $hb = (int) $hb;
+                        if ($hb > 0) {
+                            $controlled_block_ranks[$hb] = true;
+                            $submitted = $values[$fid] ?? null;
+                            if ($submitted !== null && (string) $submitted !== '0'
+                                && ((string) $submitted === (string) $check_val
+                                    || (int) $check_val === 0
+                                    || (int) $check_val === -1)) {
+                                $shown_block_ranks[$hb] = true;
+                            }
+                        }
+                    }
+                }
+            }
+
             foreach ($parent_fields as $fields_id => $field) {
                 if (!isset($resultTemp[$field['rank']])) {
                     $resultTemp[$field['rank']]['content'] = "";
@@ -5263,6 +5285,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                         || $field['type'] == 'datetime_interval')
                     && isset($values[$fields_id . '-2'])) {
                     $field['value2'] = $values[$fields_id . '-2'];
+                }
+
+                // Skip all fields belonging to a controlled but hidden block
+                $block_rank = (int) ($field['rank'] ?? 0);
+                if ($block_rank > 0
+                    && isset($controlled_block_ranks[$block_rank])
+                    && !isset($shown_block_ranks[$block_rank])) {
+                    continue;
                 }
 
                 if ($hide_no_field) {

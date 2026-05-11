@@ -73,7 +73,8 @@ class Dropdown extends CommonDBTM
     }
 
     public static function getLocations(
-        $entities_id = 0
+        $entities_id = 0,
+        int $root_items_id = 0
     ) {
         /** @var DBmysql $DB */
         global $DB;
@@ -111,27 +112,33 @@ class Dropdown extends CommonDBTM
             return $a['name'] <=> $b['name'];
         });
 
-        $locs = self::buildLocationTree($locations);
+        $locs = self::buildLocationTree($locations, $root_items_id);
 
         return $locs;
     }
 
-    public static function buildLocationTree(array $locations)
+    public static function buildLocationTree(array $locations, int $root_items_id = 0)
     {
-        // Indexer par ID
         $indexed = [];
         foreach ($locations as $loc) {
             $indexed[$loc['id']] = $loc + ['children' => []];
         }
 
-        // Lier les enfants aux parents
         foreach ($indexed as &$loc) {
             if ($loc['locations_id'] && isset($indexed[$loc['locations_id']])) {
                 $indexed[$loc['locations_id']]['children'][] = &$loc;
             }
         }
+        unset($loc);
 
-        // Trouver les racines
+        if ($root_items_id > 0 && isset($indexed[$root_items_id])) {
+            $result = [];
+            foreach ($indexed[$root_items_id]['children'] as $child) {
+                $result[$child['name']] = self::transformNode($child);
+            }
+            return $result;
+        }
+
         $roots = array_filter($indexed, fn($loc) => $loc['locations_id'] == 0);
         $result = [];
 
@@ -168,7 +175,8 @@ class Dropdown extends CommonDBTM
 
         echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/cascading-dropdowns/jquery.chained.selects.js");
 
-        $locations = self::getLocations($_SESSION['glpiactiveentities']);
+        $root_items_id = (int) ($opt['root_items_id'] ?? 0);
+        $locations = self::getLocations($_SESSION['glpiactiveentities'], $root_items_id);
         $locations_json = json_encode($locations);
         $name = $opt['name'];
         $id = $opt['fields_id'];
@@ -265,11 +273,19 @@ class Dropdown extends CommonDBTM
                     $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $root_items_id = (int) ($data['root_items_id'] ?? 0);
+                        if ($root_items_id > 0) {
+                            $dbu = new DbUtils();
+                            $sons = $dbu->getSonsOf(Location::getTable(), $root_items_id);
+                            unset($sons[$root_items_id]);
+                            $options['condition'] = ['id' => $sons];
+                        }
                         $field            .= Location::dropdown($options);
                     } else {
                         $opt['value'] = $value;
                         $opt['fields_id'] = $_POST['fields_id'];
                         $opt['required'] = ($data['is_mandatory'] == 1 ? "required" : "");
+                        $opt['root_items_id'] = (int) ($data['root_items_id'] ?? 0);
                         $field .= self::locationDropdown($opt);
                     }
                 }
@@ -497,6 +513,16 @@ class Dropdown extends CommonDBTM
                 $disp,
                 ['value' => $params['display_type'], 'display' => false]
             );
+            echo "</td>";
+            echo "<td>";
+            echo __('Root location', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Location::dropdown([
+                'name'                => 'root_items_id',
+                'value'               => $params['root_items_id'] ?? 0,
+                'display_emptychoice' => true,
+            ]);
             echo "</td>";
             echo "</tr>";
         } else {
