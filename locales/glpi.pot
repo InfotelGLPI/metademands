@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-04 09:22+0000\n"
+"POT-Creation-Date: 2026-05-07 10:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/Metademand.php:5139
+#: src/Metademand.php:5136
 #, php-format
 msgid "%1$s %2$s successfully created"
 msgstr ""
@@ -283,7 +283,7 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: src/Metademand.php:3953 src/Metademand.php:6341
+#: src/Metademand.php:3950 src/Metademand.php:6338
 #: src/Ticket_Metademand.php:771
 msgid "Child Ticket"
 msgstr ""
@@ -306,7 +306,7 @@ msgstr ""
 msgid "Childs tickets get parent content"
 msgstr ""
 
-#: src/Metademand.php:8965
+#: src/Metademand.php:8962
 msgid "Choose a template"
 msgstr ""
 
@@ -340,7 +340,7 @@ msgctxt "status"
 msgid "Closed"
 msgstr ""
 
-#: src/Metademand.php:7533
+#: src/Metademand.php:7530
 msgid "Coming"
 msgstr ""
 
@@ -374,7 +374,7 @@ msgstr ""
 msgid "Configuration of the meta-demand plugin"
 msgstr ""
 
-#: src/Metademand.php:8119
+#: src/Metademand.php:8116
 msgid "Configure demands"
 msgstr ""
 
@@ -559,7 +559,7 @@ msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
 
-#: src/Metademand.php:5126
+#: src/Metademand.php:5123
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
@@ -568,11 +568,11 @@ msgstr ""
 msgid "Demand Progression"
 msgstr ""
 
-#: src/Metademand.php:5121
+#: src/Metademand.php:5118
 msgid "Demand add failed"
 msgstr ""
 
-#: src/Metademand.php:7274
+#: src/Metademand.php:7271
 msgid "Demand followup"
 msgstr ""
 
@@ -655,11 +655,11 @@ msgstr ""
 msgid "Do you want to see them ?"
 msgstr ""
 
-#: src/Metademand.php:7123
+#: src/Metademand.php:7120
 msgid "Do you want to validate her?"
 msgstr ""
 
-#: src/Metademand.php:8828
+#: src/Metademand.php:8825
 msgid "Done on"
 msgstr ""
 
@@ -688,7 +688,7 @@ msgstr ""
 msgid "Dropdown values"
 msgstr ""
 
-#: src/Metademand.php:7309 src/Metademand.php:7457
+#: src/Metademand.php:7306 src/Metademand.php:7454
 msgid "Due date"
 msgstr ""
 
@@ -755,7 +755,7 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: src/Metademand.php:7296
+#: src/Metademand.php:7293
 msgid "Existing childs tickets"
 msgstr ""
 
@@ -763,11 +763,11 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: src/Metademand.php:7973 src/Export.php:202
+#: src/Metademand.php:7970 src/Export.php:202
 msgid "Export JSON"
 msgstr ""
 
-#: src/Metademand.php:7971 src/Export.php:164 src/Export.php:191
+#: src/Metademand.php:7968 src/Export.php:164 src/Export.php:191
 msgid "Export XML"
 msgstr ""
 
@@ -822,7 +822,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Wizard.php:1241 src/Metademand.php:8871
+#: src/Wizard.php:1241 src/Metademand.php:8868
 msgid "Find a form"
 msgstr ""
 
@@ -1014,7 +1014,7 @@ msgstr ""
 msgid "Impossible to read the CSV file"
 msgstr ""
 
-#: src/Metademand.php:8830
+#: src/Metademand.php:8827
 msgid "In progress"
 msgstr ""
 
@@ -1031,7 +1031,7 @@ msgstr ""
 msgid "Informations"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:820 src/Fields/Dropdownmultiple.php:725
+#: src/Fields/Dropdownobject.php:818 src/Fields/Dropdownmultiple.php:725
 #: src/FieldParameter.php:943
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -1094,7 +1094,7 @@ msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
 #: ajax/viewtypefields.php:56 src/Fields/Email.php:124
-#: src/Fields/Dropdownobject.php:748 src/Fields/Dropdownobject.php:843
+#: src/Fields/Dropdownobject.php:746 src/Fields/Dropdownobject.php:841
 #: src/Fields/Dropdownmeta.php:1400 src/Fields/Dropdown.php:465
 #: src/Fields/Tel.php:127 src/Fields/Text.php:125
 msgid "Link this to a user field"
@@ -1126,7 +1126,7 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: src/Metademand.php:7151
+#: src/Metademand.php:7148
 msgid "List of tickets / tasks which be created after validation"
 msgstr ""
 
@@ -1200,7 +1200,7 @@ msgstr ""
 msgid "Metademand file to import"
 msgstr ""
 
-#: src/Metademand.php:7121
+#: src/Metademand.php:7118
 msgid "Metademand need a validation"
 msgstr ""
 
@@ -1208,7 +1208,7 @@ msgstr ""
 msgid "Metademand status"
 msgstr ""
 
-#: src/Metademand.php:7127 src/Metademand.php:7135
+#: src/Metademand.php:7124 src/Metademand.php:7132
 #: src/MetademandValidation.php:73 src/MetademandValidation.php:464
 #: src/MetademandValidation.php:473 src/MetademandValidation.php:496
 msgid "Metademand validation"
@@ -1223,15 +1223,15 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: src/Metademand.php:9405 front/tools.form.php:62
+#: src/Metademand.php:9402 front/tools.form.php:62
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: src/Metademand.php:8382 hook.php:1019
+#: src/Metademand.php:8379 hook.php:1019
 msgid "Metademands to be closed"
 msgstr ""
 
-#: src/Metademand.php:8465 hook.php:1036
+#: src/Metademand.php:8462 hook.php:1036
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -1286,7 +1286,7 @@ msgstr ""
 #: src/Wizard.php:1382 src/Wizard.php:1627 src/Wizard.php:1767
 #: src/Wizard.php:1776 src/Wizard.php:1816 src/Wizard.php:1822
 #: src/Wizard.php:2382 src/Wizard.php:2385 src/Fields/Email.php:346
-#: src/Fields/Dropdownobject.php:1259 src/Fields/Dropdownmeta.php:1860
+#: src/Fields/Dropdownobject.php:1257 src/Fields/Dropdownmeta.php:1860
 #: src/Fields/Yesno.php:461 src/Fields/Radio.php:698
 #: src/Fields/Dropdown.php:855 src/Fields/Dropdownmultiple.php:1201
 #: src/Fields/Dropdownmultiple.php:1374 src/Fields/Textarea.php:306
@@ -1304,7 +1304,7 @@ msgstr ""
 msgid "Next recipient"
 msgstr ""
 
-#: src/Metademand.php:7447
+#: src/Metademand.php:7444
 msgid "Next tickets"
 msgstr ""
 
@@ -1377,9 +1377,9 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:1026 src/Fields/Dropdownobject.php:1029
-#: src/Fields/Dropdownobject.php:1039 src/Fields/Dropdownobject.php:1061
-#: src/Fields/Dropdownobject.php:1077 src/Fields/Dropdownobject.php:1088
+#: src/Fields/Dropdownobject.php:1024 src/Fields/Dropdownobject.php:1027
+#: src/Fields/Dropdownobject.php:1037 src/Fields/Dropdownobject.php:1059
+#: src/Fields/Dropdownobject.php:1075 src/Fields/Dropdownobject.php:1086
 #: src/Fields/Dropdownmeta.php:1612 src/Fields/Dropdownmeta.php:1622
 #: src/Fields/Dropdownmeta.php:1643 src/Fields/Radio.php:494
 #: src/Fields/Radio.php:507 src/Fields/Dropdown.php:633
@@ -1394,7 +1394,7 @@ msgstr ""
 msgid "Not subject to validation"
 msgstr ""
 
-#: src/Metademand.php:8843
+#: src/Metademand.php:8840
 msgid "Not yet completed"
 msgstr ""
 
@@ -1460,7 +1460,7 @@ msgstr ""
 msgid "Only these groups"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:774 src/Fields/Dropdownmultiple.php:696
+#: src/Fields/Dropdownobject.php:772 src/Fields/Dropdownmultiple.php:696
 msgid "Only users of my groups"
 msgstr ""
 
@@ -1503,7 +1503,7 @@ msgid_plural "Parameters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Metademand.php:7294
+#: src/Metademand.php:7291
 msgid "Parent ticket"
 msgstr ""
 
@@ -1511,7 +1511,7 @@ msgstr ""
 msgid "Parent ticket tag"
 msgstr ""
 
-#: src/Metademand.php:3971 src/Metademand.php:6357
+#: src/Metademand.php:3968 src/Metademand.php:6354
 #: src/Ticket_Metademand.php:783
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
@@ -1565,7 +1565,7 @@ msgstr ""
 msgid "Previous user"
 msgstr ""
 
-#: src/Metademand.php:8779
+#: src/Metademand.php:8776
 msgid "Progression of your demand"
 msgstr ""
 
@@ -1608,7 +1608,7 @@ msgstr ""
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:813 src/Fields/Dropdownmeta.php:1424
+#: src/Fields/Dropdownobject.php:811 src/Fields/Dropdownmeta.php:1424
 msgid "Read-Only"
 msgstr ""
 
@@ -1701,11 +1701,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: src/Metademand.php:8216 hook.php:1001
+#: src/Metademand.php:8213 hook.php:1001
 msgid "Running metademands"
 msgstr ""
 
-#: src/Metademand.php:8286 hook.php:1053
+#: src/Metademand.php:8283 hook.php:1053
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1715,7 +1715,7 @@ msgid "Save"
 msgstr ""
 
 #: src/Wizard.php:1622 src/Wizard.php:1807 src/Fields/Email.php:344
-#: src/Fields/Dropdownobject.php:1258 src/Fields/Dropdownmeta.php:1858
+#: src/Fields/Dropdownobject.php:1256 src/Fields/Dropdownmeta.php:1858
 #: src/Fields/Yesno.php:459 src/Fields/Radio.php:696
 #: src/Fields/Dropdown.php:854 src/Fields/Dropdownmultiple.php:1199
 #: src/Fields/Dropdownmultiple.php:1372 src/Fields/Textarea.php:304
@@ -1809,7 +1809,7 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:765
+#: src/Fields/Dropdownobject.php:763
 msgid "Show a identity card of user"
 msgstr ""
 
@@ -1829,7 +1829,7 @@ msgstr ""
 msgid "Splitted display"
 msgstr ""
 
-#: src/Metademand.php:8007
+#: src/Metademand.php:8004
 msgid "Start the download"
 msgstr ""
 
@@ -2014,7 +2014,7 @@ msgid ""
 "cannot be in basket mode"
 msgstr ""
 
-#: src/Metademand.php:3067
+#: src/Metademand.php:3064
 msgid "There is a problem on object creation"
 msgstr ""
 
@@ -2026,7 +2026,7 @@ msgstr ""
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: src/Metademand.php:7554
+#: src/Metademand.php:7551
 msgid "There is no childs tickets"
 msgstr ""
 
@@ -2055,13 +2055,13 @@ msgstr ""
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: src/Metademand.php:8011
+#: src/Metademand.php:8008
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: src/Metademand.php:8060
+#: src/Metademand.php:8057
 msgid "This action requires PHP extension zip"
 msgstr ""
 
@@ -2099,7 +2099,7 @@ msgstr ""
 msgid "This reference already exists"
 msgstr ""
 
-#: src/Metademand.php:5132
+#: src/Metademand.php:5129
 #, php-format
 msgid "Ticket \"%s\" successfully updated"
 msgstr ""
@@ -2229,11 +2229,11 @@ msgstr ""
 msgid "Use drafts"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:794 src/Fields/Dropdownmultiple.php:706
+#: src/Fields/Dropdownobject.php:792 src/Fields/Dropdownmultiple.php:706
 msgid "Use id of requester by default"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:801 src/Fields/Dropdownmultiple.php:713
+#: src/Fields/Dropdownobject.php:799 src/Fields/Dropdownmultiple.php:713
 msgid "Use id of supervisor requester by default"
 msgstr ""
 
@@ -2245,7 +2245,7 @@ msgstr ""
 msgid "Use this field as object field"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:782 src/Fields/Dropdownobject.php:862
+#: src/Fields/Dropdownobject.php:780 src/Fields/Dropdownobject.php:860
 #: src/Fields/Dropdownmeta.php:1374 src/Fields/Dropdown.php:452
 #: src/Fields/Datetime.php:95 src/Fields/Date.php:97
 msgid "Use this field for child ticket field"
@@ -2293,7 +2293,7 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: src/Field.php:1574 src/Fields/Dropdownobject.php:919
+#: src/Field.php:1574 src/Fields/Dropdownobject.php:917
 #: src/Fields/Dropdownmeta.php:1494 src/Fields/Yesno.php:228
 #: src/Fields/Radio.php:458 src/Fields/Dropdown.php:554
 #: src/Fields/Dropdownmultiple.php:751 src/Fields/Checkbox.php:445
@@ -2303,7 +2303,7 @@ msgstr ""
 msgid "Value to check"
 msgstr ""
 
-#: src/Metademand.php:9373 src/Tools.php:114
+#: src/Metademand.php:9370 src/Tools.php:114
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
