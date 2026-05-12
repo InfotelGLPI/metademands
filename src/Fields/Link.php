@@ -129,6 +129,7 @@ class Link extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo Html::submit("", [
+            'name'  => 'update',
             'class' => 'btn btn-primary',
             'icon'  => 'ti ti-device-floppy']);
         echo "</td>";
