@@ -3,9 +3,11 @@
 This plugin is on Transifex - Help us to translate :
 https://www.transifex.com/infotelGLPI/GLPI_metademands/
 
-![Plugin metademands](https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/Bloc2.png "Plugin metademands")
+![Plugin metademands](https://raw.githubusercontent.com/InfotelGLPI/metademands/master/public/screenshots/Bloc2.png "Plugin metademands")
 
 Wiki : https://github.com/InfotelGLPI/metademands/wiki
+
+[Documentation (FR)](public/docs/guide_utilisateur_metademands_fr.md) | [Documentation (EN)](public/docs/guide_utilisateur_metademands_en.md)
 
 Many GLPI users want to configure complex requests. As a result, custom forms must allow you to create multiple tickets (assigned to X different groups).
 
