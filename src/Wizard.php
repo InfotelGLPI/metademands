@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -908,7 +908,8 @@ class Wizard extends CommonDBTM
                     );
                     break;
             }
-            echo Html::hidden('step', ['value' => $step]);
+//            Comment Fix for parameter display_type 0
+//            echo Html::hidden('step', ['value' => $step]);
         }
     }
 
@@ -1104,7 +1105,7 @@ class Wizard extends CommonDBTM
                 echo "</p></div></a>";
             }
         } else {
-            echo "<div class='alert alert-important alert-info center'>";
+            echo "<div class='alert alert-info center'>";
             echo __("No existing forms founded", 'metademands');
             echo "</div>";
         }
@@ -1372,6 +1373,7 @@ class Wizard extends CommonDBTM
             $options['display_emptychoice'] = true;
             $options['type'] = $type;
             $data = $meta->listMetademands(false, $options);
+
             \Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
             echo "</div>";
             echo "</div>";
@@ -1379,6 +1381,9 @@ class Wizard extends CommonDBTM
             echo "<br/>";
             echo "<div class=\"bt-row\">";
             echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 right\">";
+//            Comment Fix for parameter display_type 0
+            echo "<input type='hidden' name='step' value='" . Metademand::STEP_SHOW . "'/>";
+            echo "<input type='hidden' name='meta_type' id='meta_type' value='" . $type . "'/>";
             echo Html::submit(__('Next', 'metademands'), ['name' => 'next', 'class' => 'btn btn-primary']);
             echo "</div>";
 
@@ -3150,7 +3155,7 @@ class Wizard extends CommonDBTM
                             plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
                           }
                         });
-                    
+
                     nextBtn2.addEventListener('click', async () => {
                           const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams, true);
                           if (result !== false) {

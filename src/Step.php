@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2003-2019 by the Metademands Development Team.
+  Copyright (C) 2018-2026 by the Metademands Development Team.
 
  -------------------------------------------------------------------------
 
@@ -408,7 +408,7 @@ class Step extends CommonDBChild
         }
         ksort($blocks);
         if (count($blocks) > 0) {
-            echo "<div class='alert alert-important alert-warning d-flex'>";
+            echo "<div class='alert alert-warning d-flex'>";
             echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;";
             echo __(
                 'Be careful if all blocks are not assigned, they will be displayed to the last assigned group',
@@ -986,7 +986,7 @@ class Step extends CommonDBChild
                 ]
             );
         } else {
-            $return = "<div class='alert alert-important alert-danger d-flex'>";
+            $return = "<div class='alert alert-danger d-flex'>";
             $return .= "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";
         }
 
@@ -1166,7 +1166,7 @@ class Step extends CommonDBChild
                     echo "</tr>";
                 }
             } else {
-                echo "<div class='alert alert-important alert-danger d-flex'>";
+                echo "<div class='alert alert-danger d-flex'>";
                 echo "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";
             }
 

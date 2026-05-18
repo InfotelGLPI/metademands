@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -43,6 +43,8 @@ use Glpi\DBAL\QueryExpression;
 use Glpi\Form\Category;
 use Glpi\Form\ServiceCatalog\ServiceCatalog;
 use Glpi\Form\ServiceCatalog\ServiceCatalogLeafInterface;
+use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
+use Glpi\ItemTranslation\Context\TranslationHandler;
 use Glpi\RichText\RichText;
 use Glpi\UI\IllustrationManager;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
@@ -80,7 +82,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class Metademand
  */
-class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
+class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, ProvideTranslationsInterface
 {
     public const LOG_ADD = 1;
     public const LOG_UPDATE = 2;
@@ -2109,7 +2111,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             $meta_data[0] = Dropdown::EMPTY_VALUE;
         }
 
-        if (!empty($type) || $forceview) {
+        if (!empty($params['type']) || $forceview) {
 
             $query
                 = [
@@ -2132,8 +2134,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
             ];
 
             $type = \Ticket::DEMAND_TYPE;
-            if (isset($options['type'])) {
-                $type = $options['type'];
+            if (isset($params['type'])) {
+                $type = $params['type'];
             }
             if ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE) {
                 $query['WHERE'] = $query['WHERE'] + [$this->getTable() . ".type" => $type];
@@ -7577,7 +7579,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
                     echo "</table></div>";
                 }
             } else {
-                echo "<div class='alert  alert-info center'>";
+                echo "<div class='alert alert-info center'>";
                 echo __('There is no childs tickets', 'metademands');
                 echo "</div>";
             }
@@ -8191,46 +8193,33 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface
      */
     public static function displayField($id, $field, $lang = '')
     {
-        global $DB;
+        $res = '';
 
-        $res = "";
-        // Make new database object and fill variables
-        $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_metademands_metademandtranslations',
-            'WHERE' => [
-                'itemtype' => self::getType(),
+        $tr = new MetademandTranslation();
+        if ($tr->getFromDBByCrit([
+            'items_id' => $id,
+            'itemtype' => self::getType(),
+            'key'      => $field,
+            'language' => $_SESSION['glpilanguage'],
+        ])) {
+            $res = $tr->getTranslation() ?? '';
+        }
+
+        if ($lang !== '' && $lang !== $_SESSION['glpilanguage']) {
+            $tr2 = new MetademandTranslation();
+            if ($tr2->getFromDBByCrit([
                 'items_id' => $id,
-                'field' => $field,
-                'language' => $_SESSION['glpilanguage'],
-            ],
-        ]);
-
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            $iterator2 = $DB->request([
-                'FROM' => 'glpi_plugin_metademands_metademandtranslations',
-                'WHERE' => [
-                    'itemtype' => self::getType(),
-                    'items_id' => $id,
-                    'field' => $field,
-                    'language' => $lang,
-                ],
-            ]);
-        }
-
-
-        if (count($iterator)) {
-            foreach ($iterator as $data) {
-                $res = $data['value'];
-            }
-        }
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            if (count($iterator2)) {
-                foreach ($iterator2 as $data2) {
-                    $res .= ' / ' . $data2['value'];
-                    $iterator2->next();
+                'itemtype' => self::getType(),
+                'key'      => $field,
+                'language' => $lang,
+            ])) {
+                $val2 = $tr2->getTranslation() ?? '';
+                if ($val2 !== '') {
+                    $res .= ' / ' . $val2;
                 }
             }
         }
+
         return $res;
     }
 
@@ -9437,5 +9426,44 @@ HTML;
         }
 
         return $cron_status;
+    }
+
+    public function listTranslationsHandlers(): array
+    {
+        $meta_key = sprintf('%s_%d', static::getType(), $this->getID());
+        $meta_category = __('Metademand', 'metademands') . ' : ' . ($this->fields['name'] ?? '');
+        $handlers = [];
+
+        $handlers[$meta_key][] = new TranslationHandler(
+            item: $this,
+            key: 'name',
+            name: __('Name'),
+            value: $this->fields['name'],
+            category: $meta_category,
+        );
+
+        $handlers[$meta_key][] = new TranslationHandler(
+            item: $this,
+            key: 'comment',
+            name: __('Comments'),
+            value: $this->fields['comment'],
+            category: $meta_category,
+        );
+
+        $field_obj = new Field();
+        $field_records = $field_obj->find(
+            ['plugin_metademands_metademands_id' => $this->getID()],
+            'rank'
+        );
+        foreach ($field_records as $field_id => $field_data) {
+            $field = new Field();
+            if ($field->getFromDB($field_id)) {
+                foreach ($field->listTranslationsHandlers() as $group_key => $group_handlers) {
+                    $handlers[$group_key] = $group_handlers;
+                }
+            }
+        }
+
+        return $handlers;
     }
 }

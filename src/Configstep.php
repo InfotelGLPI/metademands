@@ -2,7 +2,7 @@
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2003-2019 by the Metademands Development Team.
+  Copyright (C) 2018-2026 by the Metademands Development Team.
 
  -------------------------------------------------------------------------
 

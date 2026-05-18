@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -41,7 +41,7 @@ if (Plugin::isPluginActive("metademands")) {
     }
 } else {
     Html::header(__('Setup'), '', "config", "plugin");
-    echo "<div class='alert alert-important alert-warning d-flex'>";
+    echo "<div class='alert alert-warning d-flex'>";
     echo "<b>" . __('Please activate the plugin', 'metademands') . "</b></div>";
     Html::footer();
 }

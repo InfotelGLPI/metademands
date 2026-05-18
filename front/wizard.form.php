@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -28,15 +29,14 @@
  */
 
 use GlpiPlugin\Metademands\Basketline;
+use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
-use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Stepform;
+use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Main;
-use GlpiPlugin\Metademands\Wizard;
-use GlpiPlugin\Metademands\Config;
 
 Session::checkLoginUser();
 
@@ -45,6 +45,11 @@ global $CFG_GLPI;
 $wizard = new Wizard();
 $metademands = new Metademand();
 $fields = new Field();
+
+// Fix for parameter display_type 0
+if (!empty($_POST)) {
+    $_GET = $_POST;
+}
 
 if (empty($_POST['metademands_id'])) {
     $_POST['metademands_id'] = 0;
@@ -215,7 +220,7 @@ if (isset($_POST['update_basket_line'])) {
     $basketline = new Basketline();
     $basketline->deleteByCriteria([
         'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-        'users_id' => Session::getLoginUserID()
+        'users_id' => Session::getLoginUserID(),
     ]);
 
     Html::redirect(

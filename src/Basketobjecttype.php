@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2003-2019 by the Metademands Development Team.
+  Copyright (C) 2018-2026 by the Metademands Development Team.
 
  -------------------------------------------------------------------------
 
@@ -30,6 +30,8 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDropdown;
 use DBConnection;
+use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
+use Glpi\ItemTranslation\Context\TranslationHandler;
 use Migration;
 
 if (!defined('GLPI_ROOT')) {
@@ -39,7 +41,8 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class Basketobjecttype
  */
-class Basketobjecttype extends CommonDropdown {
+class Basketobjecttype extends CommonDropdown implements ProvideTranslationsInterface
+{
 
     static $rightname = "dropdown";
    var $can_be_translated = true;
@@ -78,5 +81,21 @@ class Basketobjecttype extends CommonDropdown {
         global $DB;
 
         $DB->dropTable(self::getTable(), true);
+    }
+
+    public function listTranslationsHandlers(): array
+    {
+        $key = sprintf('%s_%d', static::getType(), $this->getID());
+
+        return [
+            $key => [
+                new TranslationHandler(
+                    item: $this,
+                    key: 'name',
+                    name: __('Name'),
+                    value: $this->fields['name'],
+                ),
+            ],
+        ];
     }
 }

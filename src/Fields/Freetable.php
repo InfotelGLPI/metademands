@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2003-2019 by the Metademands Development Team.
+  Copyright (C) 2018-2026 by the Metademands Development Team.
 
  -------------------------------------------------------------------------
 
@@ -256,7 +256,7 @@ class Freetable extends CommonDBTM
                         if ($types[$k] == MetaFreetablefield::TYPE_TEXT) {
                             $field .= "<td><input id=\"$escaped_id\" name=\"$escaped_k\" type=\"text\" value=\"$escaped_val\" size=\"$size\" disabled></td>";
                         } elseif ($types[$k] == MetaFreetablefield::TYPE_SELECT) {
-                            $field .= "<td><select id=\"$escaped_id\" name=\"$escaped_k\">";
+                            $field .= "<td><select class='form-select' id=\"$escaped_id\" name=\"$escaped_k\">";
                             foreach ($dropdown_values[$k] as $key => $dropdown_value) {
                                 $selected = ($key == $l[$k]) ? "selected" : "";
                                 $esc_dv   = htmlspecialchars((string) $dropdown_value, ENT_QUOTES);

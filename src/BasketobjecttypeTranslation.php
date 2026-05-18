@@ -3,413 +3,71 @@
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2003-2019 by the Metademands Development Team.
-
+  Copyright (C) 2018-2026 by the Metademands Development Team.
  -------------------------------------------------------------------------
-
  LICENSE
-
  This file is part of Metademands.
-
  Metademands is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
-
- Metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
 
-use Ajax;
 use CommonGLPI;
-use DBConnection;
-use DbUtils;
-use DropdownTranslation;
-use Html;
+use Glpi\ItemTranslation\ItemTranslation;
 use Migration;
+use Override;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-
-/**
- * BasketobjecttypeTranslation Class
- *
- **/
-class BasketobjecttypeTranslation extends DropdownTranslation {
-
-    static public $itemtype  = 'itemtype';
-    static public $items_id  = 'items_id';
-    public        $dohistory = true;
-
-    static $rightname = 'plugin_metademands';
-
-
-    /**
-     * Return the localized name of the current Type
-     * Should be overloaded in each new class
-     *
-     * @param integer $nb Number of items
-     *
-     * @return string
-     **/
-    static function getTypeName($nb = 0) {
-        return _n('Translation', 'Translations', $nb);
-    }
-
-
-    static function getIcon() {
-        return Metademand::getIcon();
-    }
-
-    public static function install(Migration $migration)
+class BasketobjecttypeTranslation extends AbstractMetademandTranslation
+{
+    #[Override]
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
-        global $DB;
-
-        $default_charset   = DBConnection::getDefaultCharset();
-        $default_collation = DBConnection::getDefaultCollation();
-        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
-        $table  = self::getTable();
-
-        if (!$DB->tableExists($table)) {
-            $query = "CREATE TABLE `$table` (
-                        `id` int {$default_key_sign} NOT NULL auto_increment,
-                        `items_id` int {$default_key_sign} NOT NULL                   DEFAULT '0',
-                        `itemtype` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                        `field`    varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                        `language` varchar(5) COLLATE utf8mb4_unicode_ci   DEFAULT NULL,
-                        `value`    text COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
-                        PRIMARY KEY (`id`)
-               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
-
-            $DB->doQuery($query);
+        if (!($item instanceof Basketobjecttype)) {
+            return '';
         }
 
-        $query = $DB->buildUpdate(
-            $table,
-            [
-                'itemtype' => Basketobjecttype::class,
-            ],
-            [
-                'itemtype' => 'PluginMetademandsBasketobjecttype'
-            ]
-        );
-        $DB->doQuery($query);
-    }
-
-    public static function uninstall()
-    {
-        global $DB;
-
-        $DB->dropTable(self::getTable(), true);
-    }
-
-
-    /**
-     * Get the standard massive actions which are forbidden
-     *
-     * @return array an array of massive actions
-     **@since version 0.84
-     *
-     * This should be overloaded in Class
-     *
-     */
-    function getForbiddenStandardMassiveAction() {
-
-        $forbidden   = parent::getForbiddenStandardMassiveAction();
-        $forbidden[] = 'update';
-        return $forbidden;
-    }
-
-
-    /**
-     * @param \CommonGLPI $item
-     * @param int         $withtemplate
-     *
-     * @return array|string
-     * @see CommonGLPI::getTabNameForItem()
-     */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
-        $nb = self::getNumberOfTranslationsForItem($item);
-        return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
-    }
-
-    /**
-     * @param $item            CommonGLPI object
-     * @param $tabnum (default 1)
-     * @param $withtemplate (default 0)
-     **
-     *
-     * @return bool
-     */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-        if (self::canBeTranslated($item)) {
-            self::showTranslations($item);
+        $count = 0;
+        if ($_SESSION['glpishow_count_on_tabs']) {
+            $count = countDistinctElementsInTable(
+                static::getTable(),
+                'language',
+                ['items_id' => $item->getID(), 'itemtype' => $item->getType()]
+            );
         }
+
+        return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $count);
+    }
+
+    #[Override]
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
+    {
+        if (!($item instanceof Basketobjecttype)) {
+            return false;
+        }
+
+        static::renderTranslationsTab($item);
         return true;
     }
 
-
-    /**
-     * Display all translated field for a dropdown
-     *
-     * @param $item a Dropdown item
-     *
-     * @return true;
-     **/
-    static function showTranslations($item) {
-        global $DB, $CFG_GLPI;
-
-        $rand    = mt_rand();
-        $canedit = $item->can($item->getID(), UPDATE);
-
-        if ($canedit) {
-            echo "<div id='viewtranslationbasketobjtype"
-                . $item->getID() . "$rand'></div>\n";
-
-            echo "<script type='text/javascript' >\n";
-            echo "function addTranslationbasketobjtype" . $item->getID() . "$rand() {\n";
-            $params = ['type'                      => __CLASS__,
-                'parenttype'                => get_class($item),
-                $item->getForeignKeyField() => $item->getID(),
-                'id'                        => -1];
-            Ajax::updateItemJsCode("viewtranslationbasketobjtype"  . $item->getID() . "$rand",
-                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                $params);
-            echo "};";
-            echo "</script>\n";
-            echo "<div class='center'>" .
-                "<a class='submit btn btn-primary' href='javascript:addTranslationbasketobjtype" .
-                 $item->getID() . "$rand();'>" . __('Add a new translation') .
-                "</a></div><br>";
-        }
-        $iterator = $DB->request([
-            'FROM'  => getTableForItemType(__CLASS__),
-            'WHERE' => [
-                'itemtype' => $item->getType(),
-                'items_id' => $item->getID(),
-            ],
-            'ORDER' => ['language ASC']
-        ]);
-        if (count($iterator)) {
-            if ($canedit) {
-                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-                $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-                Html::showMassiveActions($massiveactionparams);
-            }
-            echo "<div class='left'>";
-            echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-            echo "<th colspan='4'>" . __("List of translations", "metademands") . "</th></tr><tr>";
-            if ($canedit) {
-                echo "<th width='10'>";
-                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-                echo "</th>";
-            }
-            echo "<th>" . __("Language") . "</th>";
-            echo "<th>" . __("Value") . "</th></tr>";
-            foreach ($iterator as $data) {
-                $onhover = '';
-                if ($canedit) {
-                    $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditTranslationbasketobjtype" . $data['id'] . "$rand();\"";
-                }
-                echo "<tr class='tab_bg_1'>";
-                if ($canedit) {
-                    echo "<td class='center'>";
-                    Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
-                    echo "</td>";
-                }
-
-                echo "<td $onhover>";
-                if ($canedit) {
-                    echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditTranslationbasketobjtype" . $data['id'] . "$rand() {\n";
-                    $params = ['type'                      => __CLASS__,
-                        'parenttype'                => get_class($item),
-                        $item->getForeignKeyField() => $item->getID(),
-                        'id'                        => $data["id"]];
-                    Ajax::updateItemJsCode("viewtranslationbasketobjtype"  . $item->getID() . "$rand",
-                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        $params);
-                    echo "};";
-                    echo "</script>\n";
-                }
-                echo \Dropdown::getLanguageName($data['language']);
-                echo "<td $onhover>" . $data['value'] . "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-            if ($canedit) {
-                $massiveactionparams['ontop'] = false;
-                Html::showMassiveActions($massiveactionparams);
-                Html::closeForm();
-            }
-        } else {
-            echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
-            echo "<th class='center b'>" . __("No translation has been added yet") . "</th></tr></table>";
-        }
-        return true;
-    }
-
-
-
-
-
-    /**
-     * Display translation form
-     *
-     * @param int $ID field (default -1)
-     * @param     $options   array
-     *
-     * @return bool
-     */
-    function showForm($ID = -1, $options = []) {
-        global $CFG_GLPI;
-
-        if (isset($options['parent']) && !empty($options['parent'])) {
-            $item = $options['parent'];
-        }
-        if ($ID > 0) {
-            $this->check($ID, UPDATE);
-        } else {
-            $options['itemtype'] = get_class($item);
-            $options['items_id'] = $item->getID();
-
-            // Create item
-            $this->check(-1, CREATE, $options);
-        }
-
-        $this->showFormHeader($options);
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Language') . "</td>";
-        echo "<td>";
-        echo Html::hidden('items_id', ['value' => $item->getID()]);
-        echo Html::hidden('itemtype', ['value' => get_class($item)]);
-        if ($ID > 0) {
-            echo Html::hidden('language', ['value' => $this->fields['language']]);
-            echo \Dropdown::getLanguageName($this->fields['language']);
-        } else {
-            $rand   = \Dropdown::showLanguages("language",
-                ['display_none' => false,
-                    'value'        => $_SESSION['glpilanguage']]);
-            $params = ['language' => '__VALUE__',
-                'itemtype' => get_class($item),
-                'items_id' => $item->getID()];
-//            Ajax::updateItemOnSelectEvent("dropdown_language$rand",
-//                "span_fields",
-//                PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateTranslationFields.php",
-//                $params);
-        }
-        echo "</td><td colspan='2'>&nbsp;</td></tr>";
-        $baskettype = $options['parent'];
-        echo "<tr class='tab_bg_1'><td>" . __('Value') . "</td>";
-        echo "<td>";
-        echo Html::input('value',
-            [
-                'type' => 'text',
-                'value' => $baskettype->fields['name'],
-                'readonly' => true
-            ]
-        );
-        echo "</td>";
-        echo "<td>" . __('Translation', 'metademands') . "</td>";
-        echo "<td>";
-        Html::textarea(['name'            => 'value',
-            'value'           => $this->fields["value"],
-            'cols'       => 80,
-            'rows'       => 3,
-            'enable_richtext' => false]);
-        echo "</td>";
-        echo "</tr>";
-        $this->showFormButtons($options);
-        return true;
-    }
-
-
-    /**
-     * Check if an item can be translated
-     * It be translated if translation if globally on and item is an instance of CommonDropdown
-     * or CommonTreeDropdown and if translation is enabled for this class
-     *
-     * @param \CommonGLPI $item
-     *
-     * @return true if item can be translated, false otherwise
-     */
-    static function canBeTranslated(CommonGLPI $item) {
-
-        return ($item instanceof Basketobjecttype);
-    }
-
-
-    /**
-     * Return the number of translations for an item
-     *
-     * @param item
-     *
-     * @return int number of translations for this item
-     */
-    static function getNumberOfTranslationsForItem($item) {
-        $dbu = new DbUtils();
-        return $dbu->countElementsInTable($dbu->getTableForItemType(__CLASS__),
-            ["items_id" => $item->getID()]);
-    }
-
-    /**
-     * Returns the translation of the field
-     *
-     *
-     */
-    public static function displayTranslatedValue($id, $field, $lang = '')
+    #[Override]
+    public static function getSystemSQLCriteria(?string $tablename = null): array
     {
-        global $DB;
-
-        $res = "";
-        // Make new database object and fill variables
-        $iterator = $DB->request([
-            'FROM'  => 'glpi_plugin_metademands_basketobjecttypetranslations',
-            'WHERE' => [
-                'itemtype' => self::getType(),
-                'items_id' => $id,
-                'field'    => $field,
-                'language' => $_SESSION['glpilanguage']
-            ]]);
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            $iterator2 = $DB->request([
-                'FROM'  => 'glpi_plugin_metademands_basketobjecttypetranslations',
-                'WHERE' => [
-                    'itemtype' => self::getType(),
-                    'items_id' => $id,
-                    'field'    => $field,
-                    'language' => $lang
-                ]]);
-        }
-
-
-        if (count($iterator)) {
-            foreach ($iterator as $data) {
-                $res = $data['value'];
-            }
-        }
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            if (count($iterator2)) {
-                foreach ($iterator2 as $data2) {
-                    $res .= ' / ' . $data2['value'];
-                    $iterator2->next();
-                }
-            }
-        }
-        return $res;
+        $criteria = ['itemtype' => [Basketobjecttype::class]];
+        return [crc32(serialize($criteria)) => $criteria];
     }
 
+    #[Override]
+    public static function install(Migration $migration): void
+    {
+        static::migrateFromLegacyTable('glpi_plugin_metademands_basketobjecttypetranslations', $migration);
+    }
 }

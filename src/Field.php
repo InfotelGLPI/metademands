@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -47,6 +47,8 @@ use Document;
 use Entity;
 use Glpi\DBAL\QueryExpression;
 use Glpi\Features\Clonable;
+use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
+use Glpi\ItemTranslation\Context\TranslationHandler;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Checkbox;
@@ -110,7 +112,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class Field
  */
-class Field extends CommonDBChild
+class Field extends CommonDBChild implements ProvideTranslationsInterface
 {
     use Clonable;
 
@@ -501,7 +503,6 @@ class Field extends CommonDBChild
             $this->addStandardTab(FieldCustomvalue::class, $ong, $options);
         }
         $this->addStandardTab(FieldOption::class, $ong, $options);
-        $this->addStandardTab(FieldTranslation::class, $ong, $options);
         if (Session::getCurrentInterface() == 'central') {
             $this->addStandardTab('Log', $ong, $options);
         }
@@ -717,7 +718,7 @@ class Field extends CommonDBChild
         );
 
         if ($metafield_itil == false && count($categories) > 1) {
-            echo "<div class='alert alert-important alert-warning d-flex'>";
+            echo "<div class='alert alert-warning d-flex'>";
             echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;" . __(
                     'Please add a type category field',
                     'metademands'
@@ -1158,7 +1159,7 @@ class Field extends CommonDBChild
                 && $field->fields['item'] != "Group") {
                 $field_custom = new FieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
-                    echo "<div class='alert alert-important alert-warning d-flex'>";
+                    echo "<div class='alert alert-warning d-flex'>";
                     echo "<b>" . __(
                             'Warning : there is no custom values for this object',
                             'metademands'
@@ -1530,14 +1531,14 @@ class Field extends CommonDBChild
                 }
             }
             if ($koparams > 0) {
-                echo "<div class='alert alert-important alert-warning d-flex'>";
+                echo "<div class='alert alert-warning d-flex'>";
                 echo "<b>" . __(
                         'Warning : there are fields without parameters, please check',
                         'metademands'
                     ) . "</b></div>";
             }
             if ($kocustom > 0) {
-                echo "<div class='alert alert-important alert-warning d-flex'>";
+                echo "<div class='alert alert-warning d-flex'>";
                 echo "<b>" . __(
                         'Warning : there are fields without custom values, please check',
                         'metademands'
@@ -3884,45 +3885,33 @@ border-style: none !important; border-color: initial !important;border-image: in
      */
     public static function displayField($id, $field, $lang = '')
     {
-        global $DB;
+        $res = '';
 
-        $res = "";
-        // Make new database object and fill variables
-        $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_metademands_fieldtranslations',
-            'WHERE' => [
-                'itemtype' => self::getType(),
+        $tr = new FieldTranslation();
+        if ($tr->getFromDBByCrit([
+            'items_id' => $id,
+            'itemtype' => self::getType(),
+            'key'      => $field,
+            'language' => $_SESSION['glpilanguage'],
+        ])) {
+            $res = $tr->getTranslation() ?? '';
+        }
+
+        if ($lang !== '' && $lang !== $_SESSION['glpilanguage']) {
+            $tr2 = new FieldTranslation();
+            if ($tr2->getFromDBByCrit([
                 'items_id' => $id,
-                'field' => $field,
-                'language' => $_SESSION['glpilanguage'],
-            ],
-        ]);
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            $iterator2 = $DB->request([
-                'FROM' => 'glpi_plugin_metademands_fieldtranslations',
-                'WHERE' => [
-                    'itemtype' => self::getType(),
-                    'items_id' => $id,
-                    'field' => $field,
-                    'language' => $lang,
-                ],
-            ]);
-        }
-
-
-        if (count($iterator)) {
-            foreach ($iterator as $data) {
-                $res = $data['value'];
-            }
-        }
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            if (count($iterator2)) {
-                foreach ($iterator2 as $data2) {
-                    $res .= ' / ' . $data2['value'];
-                    $iterator2->next();
+                'itemtype' => self::getType(),
+                'key'      => $field,
+                'language' => $lang,
+            ])) {
+                $val2 = $tr2->getTranslation() ?? '';
+                if ($val2 !== '') {
+                    $res .= ' / ' . $val2;
                 }
             }
         }
+
         return $res;
     }
 
@@ -3939,55 +3928,17 @@ border-style: none !important; border-color: initial !important;border-image: in
      */
     public static function displayCustomvaluesField($id, $field, $type = "name", $lang = '')
     {
-        global $DB;
-
         $field_custom = new FieldCustomvalue();
         $field_custom->getFromDB($field);
-        if ($type == "name") {
-            $field = "custom" . $field_custom->fields['rank'];
-        } elseif ($type == "comment") {
-            $field = "commentcustom" . $field_custom->fields['rank'];
+        if ($type === "name") {
+            $key = "custom" . $field_custom->fields['rank'];
+        } elseif ($type === "comment") {
+            $key = "commentcustom" . $field_custom->fields['rank'];
+        } else {
+            $key = $field;
         }
 
-
-        $res = "";
-        // Make new database object and fill variables
-        $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_metademands_fieldtranslations',
-            'WHERE' => [
-                'itemtype' => self::getType(),
-                'items_id' => $id,
-                'field' => $field,
-                'language' => $_SESSION['glpilanguage'],
-            ],
-        ]);
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            $iterator2 = $DB->request([
-                'FROM' => 'glpi_plugin_metademands_fieldtranslations',
-                'WHERE' => [
-                    'itemtype' => self::getType(),
-                    'items_id' => $id,
-                    'field' => $field,
-                    'language' => $lang,
-                ],
-            ]);
-        }
-
-        if (count($iterator)) {
-            foreach ($iterator as $data) {
-                $res = $data['value'];
-            }
-        }
-        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-            if (count($iterator2)) {
-                foreach ($iterator2 as $data2) {
-                    $res .= ' / ' . $data2['value'];
-                    $iterator2->next();
-                }
-            }
-        }
-
-        return $res;
+        return self::displayField($id, $key, $lang);
     }
 
     /**
@@ -5005,5 +4956,89 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
 
         return $data;
+    }
+
+    public function listTranslationsHandlers(): array
+    {
+        $key = sprintf('%s_%d', static::getType(), $this->getID());
+        $category = $this->fields['name'] ?? '';
+        $handlers = [];
+
+        $handlers[$key][] = new TranslationHandler(
+            item: $this,
+            key: 'name',
+            name: __('Name'),
+            value: $this->fields['name'],
+            category: $category,
+        );
+
+        $handlers[$key][] = new TranslationHandler(
+            item: $this,
+            key: 'label2',
+            name: __('Additional label', 'metademands'),
+            value: $this->fields['label2'],
+            category: $category,
+        );
+
+        $handlers[$key][] = new TranslationHandler(
+            item: $this,
+            key: 'comment',
+            name: __('Comments'),
+            value: $this->fields['comment'],
+            category: $category,
+        );
+
+        $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+        $item_field = $this->fields['item'] ?? '';
+
+        if (
+            isset($this->fields['type'])
+            && (
+                in_array($this->fields['type'], $allowed_customvalues_types)
+                || in_array($item_field, $allowed_customvalues_items)
+            )
+            && !in_array($item_field, ['urgency', 'priority', 'impact'])
+        ) {
+            $customs = (new FieldCustomvalue())->find(
+                ['plugin_metademands_fields_id' => $this->getID()],
+                'rank'
+            );
+            foreach ($customs as $custom) {
+                $rank = $custom['rank'];
+                $handlers[$key][] = new TranslationHandler(
+                    item: $this,
+                    key: 'custom' . $rank,
+                    name: $custom['name'],
+                    value: $custom['name'],
+                    category: $category,
+                );
+                $handlers[$key][] = new TranslationHandler(
+                    item: $this,
+                    key: 'commentcustom' . $rank,
+                    name: __('Comment') . ' ' . $custom['name'],
+                    value: null,
+                    category: $category,
+                );
+            }
+        }
+
+        if (isset($this->fields['type']) && $this->fields['type'] === 'freetable') {
+            $cols = (new Freetablefield())->find(
+                ['plugin_metademands_fields_id' => $this->getID()],
+                'rank'
+            );
+            foreach ($cols as $col) {
+                $handlers[$key][] = new TranslationHandler(
+                    item: $this,
+                    key: 'freetablecol' . $col['rank'],
+                    name: $col['name'],
+                    value: $col['name'],
+                    category: $category,
+                );
+            }
+        }
+
+        return $handlers;
     }
 }

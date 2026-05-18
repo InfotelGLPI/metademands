@@ -56,7 +56,7 @@ function addLine(metademandfreelinesparams)
                 if (type_fields[index] == metademandfreelinesparams.text) {
                     tabfields.push('<td><input id = \"' + index + '\" type=\"text\" name=\"' + index + '\" size=\"' + metademandfreelinesparams.size + '\" ></td>');
                 } else if (type_fields[index] == metademandfreelinesparams.select) {
-                    var select_open = '<td><select id = \"' + index + '\" name=\"' + index + '\">';
+                    var select_open = '<td><select class=\"form-select\" id = \"' + index + '\" name=\"' + index + '\">';
                     var select_options = '';
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
@@ -99,7 +99,7 @@ function addLine(metademandfreelinesparams)
                 if (type_fields[index] == metademandfreelinesparams.text) {
                     tabfields.push('<td><input id = \"' + index + '\" type=\"text\" name=\"' + index + '\" size=\"' + metademandfreelinesparams.size + '\" ></td>');
                 } else if (type_fields[index] == metademandfreelinesparams.select) {
-                    var select_open = '<td><select id = \"' + index + '\" name=\"' + index + '\">';
+                    var select_open = '<td><select class=\"form-select\" id = \"' + index + '\" name=\"' + index + '\">';
                     var select_options = '';
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
@@ -260,7 +260,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 if (type_fields[index] == params.text) {
                     tabfields.push('<td $style><input id = \"' + index + '_' + i + '\" type=\"text\" name=\"' + index + '\" size=\"' + params.size + '\" disabled ></td>');
                 } else if (type_fields[index] == params.select) {
-                    var select_open = '<td $style><select id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
+                    var select_open = '<td $style><select class=\"form-select\" id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
                     var select_options = '';
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
@@ -319,7 +319,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 if (type_fields[index] == params.text) {
                     tabfields.push('<td $style><input id = \"' + index + '_' + i + '\" type=\"text\" name=\"' + index + '\" size=\"' + params.size + '\" disabled ></td>');
                 } else if (type_fields[index] == params.select) {
-                    var select_open = '<td $style><select id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
+                    var select_open = '<td $style><select class=\"form-select\" id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
                     var select_options = '';
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
@@ -379,7 +379,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 if (type_fields[index] == params.text) {
                     tabfields.push('<td $style><input id = \"' + index + '_' + i + '\" type=\"text\" name=\"' + index + '\" size=\"' + params.size + '\" disabled ></td>');
                 } else if (type_fields[index] == params.select) {
-                    var select_open = '<td $style><select disabled id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
+                    var select_open = '<td $style><select class=\"form-select\" disabled id = \"' + index + '_' + i + '\" name=\"' + index + '\">';
                     var select_options = '';
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {

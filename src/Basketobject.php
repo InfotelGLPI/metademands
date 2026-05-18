@@ -2,7 +2,7 @@
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2003-2019 by the Metademands Development Team.
+  Copyright (C) 2018-2026 by the Metademands Development Team.
 
  -------------------------------------------------------------------------
 
@@ -30,6 +30,8 @@ namespace GlpiPlugin\Metademands;
 use CommonDBTM;
 use DBConnection;
 use GlpiPlugin\Orderfollowup\Material;
+use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
+use Glpi\ItemTranslation\Context\TranslationHandler;
 use Html;
 use Migration;
 use Plugin;
@@ -43,7 +45,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class Basketobject
  */
-class Basketobject extends CommonDBTM
+class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
 {
 
     public $dohistory = true;
@@ -285,5 +287,28 @@ class Basketobject extends CommonDBTM
 
 
         return true;
+    }
+
+    public function listTranslationsHandlers(): array
+    {
+        $key = sprintf('%s_%d', static::getType(), $this->getID());
+        $handlers = [];
+
+        $handlers[$key][] = new TranslationHandler(
+            item: $this,
+            key: 'name',
+            name: __('Designation', 'metademands'),
+            value: $this->fields['name'],
+        );
+
+        $handlers[$key][] = new TranslationHandler(
+            item: $this,
+            key: 'description',
+            name: __('Description'),
+            value: $this->fields['description'],
+            is_rich_text: false,
+        );
+
+        return $handlers;
     }
 }

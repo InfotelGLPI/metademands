@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -43,7 +43,10 @@ use GlpiPlugin\Metademands\Form\MetademandProvider;
 use GlpiPlugin\Metademands\Helpdesk\Tile\MetademandPageTile;
 use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldTranslation;
 use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\MetademandTranslation;
 use GlpiPlugin\Metademands\Metademand_Resource;
 use GlpiPlugin\Metademands\MetademandValidation;
 use GlpiPlugin\Metademands\Profile;
@@ -57,7 +60,7 @@ use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
-define('PLUGIN_METADEMANDS_VERSION', '3.5.14');
+define('PLUGIN_METADEMANDS_VERSION', '3.5.15');
 
 global $CFG_GLPI;
 
@@ -112,6 +115,10 @@ function plugin_init_metademands()
         Plugin::registerClass(Profile::class, ['addtabon' => 'Profile']);
         Plugin::registerClass(Metademand_Resource::class, ['addtabon' => ContractType::class]);
 
+        Plugin::registerClass(
+            MetademandTranslation::class,
+            ['addtabon' => [Metademand::class]]
+        );
         Plugin::registerClass(
             BasketobjectTranslation::class,
             ['addtabon' => [Basketobject::class]]

@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -427,17 +427,17 @@ class MetademandValidation extends CommonDBTM
         $this->update($inputVal);
 
         if ($inputVal['validate'] == self::TASK_CREATION) {
-            echo "<div class='alert alert-success alert-important d-flex'>" . __(
+            echo "<div class='alert alert-success d-flex'>" . __(
                 'Tasks are created',
                 'metademands'
             ) . "</div>";
         } elseif ($inputVal['validate'] == self::TICKET_CREATION) {
-            echo "<div class='alert alert-success alert-important d-flex'>" . __(
+            echo "<div class='alert alert-success d-flex'>" . __(
                 'Sub-tickets are created',
                 'metademands'
             ) . "</div>";
         } elseif ($inputVal['validate'] == self::VALIDATE_WITHOUT_TASK) {
-            echo "<div class='alert alert-success alert-important d-flex'>" . __(
+            echo "<div class='alert alert-success d-flex'>" . __(
                 'The metademand is validated and affected',
                 'metademands'
             ) . "</div>";

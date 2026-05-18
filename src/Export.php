@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -216,7 +216,7 @@ class Export extends CommonDBTM
         $metatranslation = new MetademandTranslation();
         $translations = $metatranslation->find([
             'items_id' => $metademands->getID(),
-            'itemtype' => self::getType(),
+            'itemtype' => Metademand::class,
         ]);
         foreach ($translations as $id => $translation) {
             $fields['translations']['meta_translation' . $id] = $translation;
@@ -287,7 +287,7 @@ class Export extends CommonDBTM
                 'itemtype' => Field::getType(),
             ]);
             foreach ($translationsfield as $k => $v) {
-                $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
+                $fields['metafields'][$id]['fieldtranslations']['translation' . $k] = $v;
             }
         }
         $resourceMeta = new Metademand_Resource();
@@ -1515,7 +1515,15 @@ class Export extends CommonDBTM
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
                     $fieldstranslation['items_id'] = $newIDField;
-
+                    // Backward compatibility: old XML used 'field'+'value', new uses 'key'+'translations'
+                    if (isset($fieldstranslation['field']) && !isset($fieldstranslation['key'])) {
+                        $fieldstranslation['key'] = $fieldstranslation['field'];
+                        unset($fieldstranslation['field']);
+                    }
+                    if (isset($fieldstranslation['value']) && !isset($fieldstranslation['translations'])) {
+                        $fieldstranslation['translations'] = ['one' => $fieldstranslation['value']];
+                        unset($fieldstranslation['value']);
+                    }
                     $trans = new FieldTranslation();
                     $trans->add($fieldstranslation);
                 }
@@ -1939,7 +1947,15 @@ class Export extends CommonDBTM
                 $meta_translation = new MetademandTranslation();
                 unset($trans['id']);
                 $trans['items_id'] = $newIDMeta;
-
+                // Backward compatibility: old XML used 'field'+'value', new uses 'key'+'translations'
+                if (isset($trans['field']) && !isset($trans['key'])) {
+                    $trans['key'] = $trans['field'];
+                    unset($trans['field']);
+                }
+                if (isset($trans['value']) && !isset($trans['translations'])) {
+                    $trans['translations'] = ['one' => $trans['value']];
+                    unset($trans['value']);
+                }
                 $meta_translation->add($trans);
             }
         }

@@ -1,0 +1,151 @@
+{#
+# -------------------------------------------------------------------------
+# Metademands plugin for GLPI
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of Metademands.
+#
+# Metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# Metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+# -------------------------------------------------------------------------
+# @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+# @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+# @link      https://github.com/InfotelGLPI/Metademands
+# -------------------------------------------------------------------------
+#}
+
+{% macro getTranslationInput(handler, translation, language) %}
+    {% set rand = random() %}
+    <input type="hidden" name="translations[{{ rand }}][itemtype]"    value="{{ get_class(handler.getItem()) }}" />
+    <input type="hidden" name="translations[{{ rand }}][items_id]"   value="{{ handler.getItem().getID() }}" />
+    <input type="hidden" name="translations[{{ rand }}][key]"        value="{{ handler.getKey() }}" />
+    <input type="hidden" name="translations[{{ rand }}][language]"   value="{{ language }}" />
+
+    <div class="d-flex align-items-center">
+        {% if translation and translation.isPossiblyObsolete() %}
+            <i class="ti ti-alert-circle text-warning me-1"
+               data-bs-toggle="tooltip"
+               title="{{ __('The default value has changed since the last translation') }}"></i>
+        {% endif %}
+
+        {% set current_value = '' %}
+        {% if translation %}{% set current_value = translation.getTranslation() %}{% endif %}
+
+        {% if handler.isRichText() %}
+            <textarea name="translations[{{ rand }}][translations][one]"
+                      class="form-control"
+                      rows="3"
+                      placeholder="{{ __('Enter translation') }}"
+                      aria-label="{{ __('Enter translation') }}">{{ current_value|e }}</textarea>
+        {% else %}
+            <input type="text"
+                   name="translations[{{ rand }}][translations][one]"
+                   class="form-control"
+                   value="{{ current_value|e }}"
+                   placeholder="{{ __('Enter translation') }}"
+                   aria-label="{{ __('Enter translation') }}" />
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{# ──────────────────────────────────────────────────────────────────────
+   Main tab content
+   ────────────────────────────────────────────────────────────────────── #}
+<section aria-label="{{ _n('Translation', 'Translations', get_plural_number()) }}">
+
+    {% if canedit and available_languages|length > 0 %}
+    <div class="mb-2">
+        <button type="button" class="btn btn-primary"
+                data-bs-toggle="modal" data-bs-target="#metademand-add-language-modal">
+            <i class="ti ti-plus me-1"></i>
+            {{ __('Add language') }}
+        </button>
+    </div>
+    {% endif %}
+
+    {# Language list datatable #}
+    <div class="card rounded">
+        {% include "components/datatable.html.twig" with {
+            'datatable_id'    : 'metademands-translations-' ~ item.getID(),
+            'container_class' : 'rounded',
+            'columns'         : {
+                'language'              : __('Language'),
+                'translated'            : __('Translated'),
+                'translations_to_do'    : __('Translations to do'),
+                'translations_to_review': __('Obsolete translations'),
+            },
+            'formatters'      : {
+                'language'  : 'raw_html',
+                'translated': 'progress',
+            },
+            'entries'         : translations|map(translation => {
+                'language': include('@metademands/item_translation_row.html.twig', {
+                    'metademand'       : item,
+                    'translation'      : translation,
+                    'canedit'          : canedit,
+                    'ajax_url'         : ajax_url,
+                    'translation_class': translation_class,
+                }),
+                'translated'            : translation.getTranslatedPercentage(),
+                'translations_to_do'    : translation.getTranslationsToDo(),
+                'translations_to_review': translation.getTranslationsToReview(),
+            }),
+            'total_number': 1,
+            'nofilter': true,
+        } only %}
+    </div>
+
+    {# Modal — add language #}
+    {% if canedit and available_languages|length > 0 %}
+    <div class="modal fade" id="metademand-add-language-modal" tabindex="-1" aria-labelledby="metademand-add-language-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ ajax_url }}">
+                    <input type="hidden" name="_glpi_csrf_token"    value="{{ csrf_token() }}" />
+                    <input type="hidden" name="action"              value="init_language" />
+                    <input type="hidden" name="items_id"            value="{{ item.getID() }}" />
+                    <input type="hidden" name="itemtype"            value="{{ item.getType() }}" />
+                    <input type="hidden" name="translation_class"   value="{{ translation_class }}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="metademand-add-language-modal-label">{{ __('Add a language') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% import 'components/form/fields_macros.html.twig' as fields %}
+                        {{ fields.dropdownArrayField(
+                            'language',
+                            '',
+                            available_languages,
+                            __('Language'),
+                            {
+                                'display_emptychoice': true,
+                                'emptylabel'         : __('Select language to translate'),
+                                'full_width'         : true,
+                            }
+                        ) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-plus me-1"></i>{{ __('Add') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</section>

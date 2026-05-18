@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2022 by the Metademands Development Team.
+ Copyright (C) 2018-2026 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -1257,13 +1257,13 @@ class FieldParameter extends CommonDBChild
 
                         $metademand_translations = new FieldTranslation();
                         $fieldtranslations = $metademand_translations->find(
-                            ["items_id" => $field['id'], "field" => $input['old_translation_name']]
+                            ["items_id" => $field['id'], "key" => $input['old_translation_name']]
                         );
                         if (count($fieldtranslations) > 0) {
                             foreach ($fieldtranslations as $k => $fieldtranslation) {
                                 $new_value = "custom" . $input['rank'];
                                 $metademand_translations->update(
-                                    ["id" => $fieldtranslation['id'], "field" => $new_value]
+                                    ["id" => $fieldtranslation['id'], "key" => $new_value]
                                 );
                             }
                         }
