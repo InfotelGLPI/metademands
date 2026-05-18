@@ -82,7 +82,7 @@ class Dropdownmeta extends CommonDBTM
      **/
     public static function getTypeName($nb = 0)
     {
-        return __('Dropdown', 'metademands');
+        return __('Specific dropdown', 'metademands');
     }
 
     public static function showWizardField($data, $namefield, $value, $on_order, $itilcategories_id)

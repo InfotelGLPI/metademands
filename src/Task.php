@@ -77,7 +77,7 @@ class Task extends CommonDBChild
      */
     public static function getTypeName($nb = 0)
     {
-        return __('Task creation', 'metademands');
+        return __('Child creation', 'metademands');
     }
 
 
