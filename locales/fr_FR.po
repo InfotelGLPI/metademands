@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-11 14:30+0000\n"
+"POT-Creation-Date: 2026-05-18 09:38+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -131,8 +131,8 @@ msgstr "Ajouter votre signature"
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
-#: src/Fields/Datetimeinterval.php:121 src/Fields/Dateinterval.php:124
-#: src/Fields/Datetime.php:117 src/Fields/Date.php:119
+#: src/Fields/Dateinterval.php:124 src/Fields/Date.php:119
+#: src/Fields/Datetimeinterval.php:121 src/Fields/Datetime.php:117
 msgid "Additional number day to the default date"
 msgstr "Journées additionnelles ajoutées à la date par défaut"
 
@@ -195,7 +195,7 @@ msgstr[2] "Formulaires associés"
 msgid "Attribute"
 msgstr "Attribut"
 
-#: ajax/displayGroupField.php:43 src/MetademandValidation.php:541
+#: src/MetademandValidation.php:541 ajax/displayGroupField.php:43
 msgid "Attribute ticket to "
 msgstr "Attribuer le ticket à"
 
@@ -223,21 +223,21 @@ msgstr ""
 msgid "Bind to the value of this checkbox"
 msgstr "Lier à la valeur de cette case à cocher"
 
-#: src/Wizard.php:2237 src/Field.php:596 src/Field.php:988 src/Field.php:1410
-#: src/Field.php:3565 src/Field.php:4868 src/Step.php:444 src/Step.php:529
+#: src/Field.php:596 src/Field.php:988 src/Field.php:1410 src/Field.php:3565
+#: src/Field.php:4868 src/Wizard.php:2237 src/Step.php:444 src/Step.php:529
 #: src/Step.php:671
 msgid "Block"
 msgstr "Bloc"
 
-#: src/Task.php:886 src/Task.php:1289 src/MailTask.php:205 src/Step.php:405
-#: src/Step.php:683 src/Step.php:697 src/FieldOption.php:1604
-#: src/TicketTask.php:232
+#: src/MailTask.php:205 src/TicketTask.php:232 src/FieldOption.php:1604
+#: src/Task.php:886 src/Task.php:1289 src/Step.php:405 src/Step.php:683
+#: src/Step.php:697
 #, php-format
 msgid "Block %s"
 msgstr "Bloc %s"
 
-#: src/Fields/Dropdownmeta.php:1444 src/Fields/Radio.php:409
-#: src/Fields/Dropdown.php:531 src/Fields/Checkbox.php:397
+#: src/Fields/Radio.php:409 src/Fields/Dropdown.php:531
+#: src/Fields/Dropdownmeta.php:1444 src/Fields/Checkbox.php:397
 msgid "Block display"
 msgstr "Affichage en bloc"
 
@@ -245,7 +245,7 @@ msgstr "Affichage en bloc"
 msgid "Block overview"
 msgstr "Aperçu du bloc"
 
-#: src/Task.php:666 src/TicketTask.php:257
+#: src/TicketTask.php:257 src/Task.php:666
 msgid "Block parent ticket resolution"
 msgstr "Bloquer la résolution du ticket parent"
 
@@ -253,7 +253,7 @@ msgstr "Bloquer la résolution du ticket parent"
 msgid "Block title"
 msgstr "Titre de bloc"
 
-#: src/Task.php:663 src/MailTask.php:197 src/TicketTask.php:225
+#: src/MailTask.php:197 src/TicketTask.php:225 src/Task.php:663
 msgid "Block to use"
 msgstr "Bloc à utiliser"
 
@@ -278,7 +278,7 @@ msgctxt "button"
 msgid "Cancel form"
 msgstr "Annuler le formulaire"
 
-#: src/Wizard.php:2505 src/Draft.php:692
+#: src/Draft.php:692 src/Wizard.php:2505
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -293,10 +293,14 @@ msgstr "Catégorie de la métademande"
 msgid "Checkbox"
 msgstr "Case à cocher"
 
-#: src/Metademand.php:3950 src/Metademand.php:6368
-#: src/Ticket_Metademand.php:771
+#: src/Ticket_Metademand.php:771 src/Metademand.php:3950
+#: src/Metademand.php:6368
 msgid "Child Ticket"
 msgstr "Ticket enfant"
+
+#: src/Task.php:80
+msgid "Child creation"
+msgstr "Création des enfants"
 
 #: src/Metademand.php:518
 msgid "Child ticket"
@@ -321,14 +325,14 @@ msgstr "Tickets enfants récupèrent les informations du ticket parent"
 msgid "Choose a template"
 msgstr "Choisissez un gabarit"
 
-#: src/Fields/Dropdownmeta.php:1382 src/Fields/Dropdownmeta.php:1443
-#: src/Fields/Yesno.php:197 src/Fields/Radio.php:408
-#: src/Fields/Dropdown.php:503 src/Fields/Dropdown.php:530
-#: src/Fields/Dropdownmultiple.php:678 src/Fields/Checkbox.php:396
+#: src/Fields/Dropdownmultiple.php:678 src/Fields/Radio.php:408
+#: src/Fields/Yesno.php:197 src/Fields/Dropdown.php:503
+#: src/Fields/Dropdown.php:530 src/Fields/Dropdownmeta.php:1382
+#: src/Fields/Dropdownmeta.php:1443 src/Fields/Checkbox.php:396
 msgid "Classic display"
 msgstr "Affichage classique"
 
-#: src/Draft.php:320 src/Form.php:280
+#: src/Form.php:280 src/Draft.php:320
 msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
@@ -499,14 +503,14 @@ msgstr "Date de la dernière étape"
 msgid "Date of the next reminder"
 msgstr "Date du prochain rappel"
 
-#: src/Fields/Datetimeinterval.php:104 src/Fields/Dateinterval.php:107
-#: src/Fields/Datetime.php:102 src/Fields/Date.php:104
+#: src/Fields/Dateinterval.php:107 src/Fields/Date.php:104
+#: src/Fields/Datetimeinterval.php:104 src/Fields/Datetime.php:102
 msgid "Day greater or equal to now"
 msgstr "Date supérieure ou égale à maintenant"
 
-#: src/Fields/Dropdownmeta.php:1210 src/Fields/Yesno.php:166
-#: src/Fields/Radio.php:303 src/Fields/Dropdownmultiple.php:516
-#: src/Fields/Dropdownmultiple.php:603 src/Fields/Checkbox.php:290
+#: src/Fields/Dropdownmultiple.php:516 src/Fields/Dropdownmultiple.php:603
+#: src/Fields/Radio.php:303 src/Fields/Yesno.php:166
+#: src/Fields/Dropdownmeta.php:1210 src/Fields/Checkbox.php:290
 #: src/FieldCustomvalue.php:641
 msgid "Default value"
 msgid_plural "Default values"
@@ -536,8 +540,8 @@ msgstr "Définir comme public"
 msgid "Define initial requester as requester for child tickets"
 msgstr "Définir le demandeur initial comme demandeur de tickets enfants"
 
-#: src/Fields/Datetimeinterval.php:111 src/Fields/Dateinterval.php:114
-#: src/Fields/Datetime.php:111 src/Fields/Date.php:113
+#: src/Fields/Dateinterval.php:114 src/Fields/Date.php:113
+#: src/Fields/Datetimeinterval.php:111 src/Fields/Datetime.php:111
 msgid "Define the default date"
 msgstr "Définir la date par défaut"
 
@@ -545,13 +549,13 @@ msgstr "Définir la date par défaut"
 msgid "Define visibility"
 msgstr "Définir la visibilité"
 
-#: ajax/deletedraft.php:72 src/Draft.php:375
+#: src/Draft.php:375 ajax/deletedraft.php:72
 msgctxt "button"
 msgid "Delete draft"
 msgstr "Supprimer le brouillon"
 
-#: ajax/deleteform.php:74 src/Form.php:373 src/Stepform.php:731
-#: src/Stepform.php:915 src/Stepform.php:1069
+#: src/Form.php:373 src/Stepform.php:731 src/Stepform.php:915
+#: src/Stepform.php:1069 ajax/deleteform.php:74
 msgctxt "button"
 msgid "Delete form"
 msgstr "Supprimer le formulaire"
@@ -602,7 +606,7 @@ msgstr "Date de départ"
 msgid "Designation"
 msgstr "Désignation"
 
-#: src/Field.php:4228 src/Fields/Dropdownmeta.php:960
+#: src/Fields/Dropdownmeta.php:960 src/Field.php:4228
 msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
@@ -640,10 +644,10 @@ msgstr "Afficher ce bloc caché dans le même bloc"
 msgid "Display this hidden field"
 msgstr "Afficher ce champ caché"
 
-#: src/Fields/Dropdownmeta.php:1386 src/Fields/Dropdownmeta.php:1447
-#: src/Fields/Yesno.php:201 src/Fields/Radio.php:412
-#: src/Fields/Dropdown.php:507 src/Fields/Dropdown.php:534
-#: src/Fields/Dropdownmultiple.php:682 src/Fields/Checkbox.php:400
+#: src/Fields/Dropdownmultiple.php:682 src/Fields/Radio.php:412
+#: src/Fields/Yesno.php:201 src/Fields/Dropdown.php:507
+#: src/Fields/Dropdown.php:534 src/Fields/Dropdownmeta.php:1386
+#: src/Fields/Dropdownmeta.php:1447 src/Fields/Checkbox.php:400
 msgid "Display type of the field"
 msgstr "Type d'affichage du champ"
 
@@ -696,7 +700,7 @@ msgstr "Nom du brouillon"
 msgid "Draft name is required"
 msgstr "Le nom du brouillon est obligatoire"
 
-#: src/Fields/Dropdownmeta.php:85 src/Freetablefield.php:219
+#: src/Freetablefield.php:219
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
@@ -724,8 +728,8 @@ msgstr "Publié par"
 msgid "Email sent"
 msgstr "Email envoyé"
 
-#: ajax/show_check_value.php:46 src/Condition.php:217 src/Condition.php:225
-#: src/Condition.php:236 src/Condition.php:248 src/Condition.php:289
+#: src/Condition.php:217 src/Condition.php:225 src/Condition.php:236
+#: src/Condition.php:248 src/Condition.php:289 ajax/show_check_value.php:46
 msgid "Empty"
 msgstr "Vide"
 
@@ -770,8 +774,8 @@ msgstr "Erreur lors de la création de l'archive"
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
-#: ajax/viewfieldinfos.php:55 src/FieldCustomvalue.php:319
-#: src/FieldParameter.php:339 src/Freetablefield.php:292
+#: src/FieldCustomvalue.php:319 src/Freetablefield.php:292
+#: src/FieldParameter.php:339 ajax/viewfieldinfos.php:55
 msgid "Example"
 msgstr "Exemple"
 
@@ -783,11 +787,11 @@ msgstr "Tickets enfants existants"
 msgid "Export"
 msgstr "Export"
 
-#: src/Metademand.php:8000 src/Export.php:202
+#: src/Export.php:202 src/Metademand.php:8000
 msgid "Export JSON"
 msgstr "Export JSON"
 
-#: src/Metademand.php:7998 src/Export.php:164 src/Export.php:191
+#: src/Export.php:164 src/Export.php:191 src/Metademand.php:7998
 msgid "Export XML"
 msgstr "Export XML"
 
@@ -817,8 +821,8 @@ msgstr "Échec de la vérification de l'intégrité des tables !"
 msgid "Father's field"
 msgstr "Champ père"
 
-#: src/Field.php:565 src/Condition.php:415 src/Condition.php:553
-#: src/Condition.php:982
+#: src/Condition.php:415 src/Condition.php:553 src/Condition.php:982
+#: src/Field.php:565
 msgid "Field"
 msgstr "Champ"
 
@@ -827,12 +831,12 @@ msgstr "Champ"
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
 
-#: ajax/viewfieldinfos.php:44 src/FieldCustomvalue.php:308
-#: src/FieldParameter.php:328 src/Freetablefield.php:281
+#: src/FieldCustomvalue.php:308 src/Freetablefield.php:281
+#: src/FieldParameter.php:328 ajax/viewfieldinfos.php:44
 msgid "Field informations"
 msgstr "Informations du champ"
 
-#: src/Field.php:4878 src/Condition.php:416 src/Condition.php:983
+#: src/Condition.php:416 src/Condition.php:983 src/Field.php:4878
 msgid "Field type"
 msgstr "Type de champ"
 
@@ -840,7 +844,7 @@ msgstr "Type de champ"
 msgid "Fill out a form"
 msgstr "Remplir un formulaire"
 
-#: src/Field.php:4849 src/Fields/Ldapdropdown.php:264
+#: src/Fields/Ldapdropdown.php:264 src/Field.php:4849
 msgid "Filter"
 msgstr "Filtre"
 
@@ -880,7 +884,7 @@ msgstr "Le nom du formulaire est requis"
 msgid "Form requester"
 msgstr "Demandeur du formulaire"
 
-#: src/Task.php:665 src/MailTask.php:225 src/TicketTask.php:252
+#: src/MailTask.php:225 src/TicketTask.php:252 src/Task.php:665
 msgid "Format the description of the childs ticket as a table"
 msgstr "Formatter la description du ticket enfant sous forme de tableau"
 
@@ -986,8 +990,8 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: src/Fields/Email.php:176 src/Fields/Textarea.php:144 src/Fields/Url.php:178
-#: src/Fields/Tel.php:180 src/Fields/Text.php:179
+#: src/Fields/Email.php:176 src/Fields/Textarea.php:144 src/Fields/Tel.php:180
+#: src/Fields/Url.php:178 src/Fields/Text.php:179
 msgid "If field empty"
 msgstr "Si le champ est vide"
 
@@ -1083,8 +1087,8 @@ msgstr[0] "Formulaire initial"
 msgstr[1] "Formulaires initiaux"
 msgstr[2] "Formulaires initiaux"
 
-#: src/Interticketfollowup.php:68 src/Interticketfollowup.php:343
-#: src/Profile.php:260
+#: src/Profile.php:260 src/Interticketfollowup.php:68
+#: src/Interticketfollowup.php:343
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] "Suivi inter ticket"
@@ -1135,10 +1139,10 @@ msgstr "Lier plusieurs groupes à un bloc"
 msgid "Link this to a plugin \"fields\" field"
 msgstr "Lier ce champ à un champ du plugin \"fields\""
 
-#: ajax/viewtypefields.php:56 src/Fields/Email.php:124
 #: src/Fields/Dropdownobject.php:746 src/Fields/Dropdownobject.php:841
-#: src/Fields/Dropdownmeta.php:1400 src/Fields/Dropdown.php:481
-#: src/Fields/Tel.php:127 src/Fields/Text.php:125
+#: src/Fields/Email.php:124 src/Fields/Dropdown.php:481
+#: src/Fields/Dropdownmeta.php:1400 src/Fields/Tel.php:127
+#: src/Fields/Text.php:125 ajax/viewtypefields.php:56
 msgid "Link this to a user field"
 msgstr "Lier ce champ à un champ utilisateur"
 
@@ -1173,8 +1177,8 @@ msgstr "Liste d'options"
 msgid "List of tickets / tasks which be created after validation"
 msgstr "Liste des tickets / tâches qui vont être créé après la validation"
 
-#: src/MetademandTranslation.php:232 src/BasketobjectTranslation.php:222
-#: src/FieldTranslation.php:222 src/BasketobjecttypeTranslation.php:213
+#: src/BasketobjecttypeTranslation.php:213 src/MetademandTranslation.php:232
+#: src/FieldTranslation.php:222 src/BasketobjectTranslation.php:222
 msgid "List of translations"
 msgstr "Liste des traductions"
 
@@ -1182,13 +1186,13 @@ msgstr "Liste des traductions"
 msgid "List of visibilities"
 msgstr "Liste des visibilités"
 
-#: ajax/deletedraft.php:66 src/Draft.php:350
+#: src/Draft.php:350 ajax/deletedraft.php:66
 msgctxt "button"
 msgid "Load draft"
 msgstr "Charger le brouillon"
 
-#: ajax/deleteform.php:68 src/Form.php:173 src/Form.php:350 src/Form.php:600
-#: src/Form.php:688 src/Form.php:717 src/Form.php:917 src/Form.php:1008
+#: src/Form.php:173 src/Form.php:350 src/Form.php:600 src/Form.php:688
+#: src/Form.php:717 src/Form.php:917 src/Form.php:1008 ajax/deleteform.php:68
 msgctxt "button"
 msgid "Load form"
 msgstr "Charger le formulaire"
@@ -1210,7 +1214,7 @@ msgstr "Faire une demande"
 msgid "Make this field mandatory"
 msgstr "Rendre ce champ obligatoire"
 
-#: src/Field.php:1573 src/Fields/Freetable.php:437 src/Freetablefield.php:510
+#: src/Fields/Freetable.php:437 src/Field.php:1573 src/Freetablefield.php:510
 msgid "Mandatory"
 msgstr "Obligatoire"
 
@@ -1224,9 +1228,9 @@ msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 "Message affiché avant l'envoi au superviseur ou à l'utilisateur suivant"
 
-#: src/Config.php:76 src/Metademand.php:130 src/Tools.php:157
-#: src/Tools.php:234 src/Tools.php:329 src/Tools.php:492 src/Profile.php:150
-#: src/Profile.php:155 src/Profile.php:254 src/Menu.php:48 setup.php:277
+#: src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
+#: src/Tools.php:157 src/Tools.php:234 src/Tools.php:329 src/Tools.php:492
+#: src/Menu.php:48 src/Config.php:76 src/Metademand.php:130 setup.php:277
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] "Meta-Demande"
@@ -1253,9 +1257,9 @@ msgstr "La métademande nécessite une validation"
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
-#: src/Metademand.php:7154 src/Metademand.php:7162
 #: src/MetademandValidation.php:73 src/MetademandValidation.php:464
 #: src/MetademandValidation.php:473 src/MetademandValidation.php:496
+#: src/Metademand.php:7154 src/Metademand.php:7162
 msgid "Metademand validation"
 msgstr "Validation de la métademande"
 
@@ -1280,7 +1284,7 @@ msgstr "Métademandes à clore"
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: src/Fields/Number.php:127 src/Fields/Range.php:171
+#: src/Fields/Range.php:171 src/Fields/Number.php:127
 msgid "Minimal mandatory"
 msgstr "Minimum obligatoire"
 
@@ -1328,16 +1332,16 @@ msgstr "Nouveau suivi inter tickets"
 msgid "New model"
 msgstr "Nouveau modèle"
 
-#: src/Wizard.php:1382 src/Wizard.php:1627 src/Wizard.php:1768
-#: src/Wizard.php:1777 src/Wizard.php:1817 src/Wizard.php:1823
-#: src/Wizard.php:2383 src/Wizard.php:2386 src/Fields/Email.php:346
-#: src/Fields/Dropdownobject.php:1257 src/Fields/Dropdownmeta.php:1860
-#: src/Fields/Yesno.php:461 src/Fields/Radio.php:698
-#: src/Fields/Dropdown.php:881 src/Fields/Dropdownmultiple.php:1201
-#: src/Fields/Dropdownmultiple.php:1374 src/Fields/Textarea.php:306
-#: src/Fields/Checkbox.php:712 src/Fields/Url.php:348
-#: src/Fields/Basket.php:834 src/Fields/Tel.php:350 src/Fields/Text.php:349
-#: src/FieldOption.php:2171
+#: src/Fields/Dropdownobject.php:1257 src/Fields/Dropdownmultiple.php:1201
+#: src/Fields/Dropdownmultiple.php:1374 src/Fields/Email.php:346
+#: src/Fields/Radio.php:698 src/Fields/Yesno.php:461
+#: src/Fields/Textarea.php:306 src/Fields/Dropdown.php:881
+#: src/Fields/Dropdownmeta.php:1860 src/Fields/Tel.php:350
+#: src/Fields/Basket.php:834 src/Fields/Url.php:348
+#: src/Fields/Checkbox.php:712 src/Fields/Text.php:349
+#: src/FieldOption.php:2171 src/Wizard.php:1382 src/Wizard.php:1627
+#: src/Wizard.php:1768 src/Wizard.php:1777 src/Wizard.php:1817
+#: src/Wizard.php:1823 src/Wizard.php:2383 src/Wizard.php:2386
 msgid "Next"
 msgstr "Suivant"
 
@@ -1362,7 +1366,7 @@ msgstr "Prochain utilisateur en charge de la demande"
 msgid "No conditions founded"
 msgstr "Pas de conditions trouvées"
 
-#: ajax/deletedraft.php:78 src/Draft.php:385 front/draft.form.php:27
+#: src/Draft.php:385 ajax/deletedraft.php:78 front/draft.form.php:27
 msgid "No draft available for this form"
 msgstr "Pas de brouillons disponibles pour ce formulaire"
 
@@ -1382,7 +1386,7 @@ msgstr "Aucune option vide de champ trouvée"
 msgid "No equipment founded"
 msgstr "Pas d'équipement trouvé"
 
-#: ajax/deleteform.php:80 src/Wizard.php:892 src/Wizard.php:1108
+#: src/Wizard.php:892 src/Wizard.php:1108 ajax/deleteform.php:80
 msgid "No existing forms founded"
 msgstr "Pas de formulaires existants trouvé"
 
@@ -1418,21 +1422,21 @@ msgstr "Pas de visibilité définie"
 msgid "Not available with Rich text option"
 msgstr "Non disponible avec l'option Texte Riche"
 
-#: ajax/show_check_value.php:49 src/Condition.php:218 src/Condition.php:226
-#: src/Condition.php:237 src/Condition.php:249 src/Condition.php:292
+#: src/Condition.php:218 src/Condition.php:226 src/Condition.php:237
+#: src/Condition.php:249 src/Condition.php:292 ajax/show_check_value.php:49
 msgid "Not empty"
 msgstr "Non vide"
 
 #: src/Fields/Dropdownobject.php:1024 src/Fields/Dropdownobject.php:1027
 #: src/Fields/Dropdownobject.php:1037 src/Fields/Dropdownobject.php:1059
 #: src/Fields/Dropdownobject.php:1075 src/Fields/Dropdownobject.php:1086
-#: src/Fields/Dropdownmeta.php:1612 src/Fields/Dropdownmeta.php:1622
-#: src/Fields/Dropdownmeta.php:1643 src/Fields/Radio.php:494
+#: src/Fields/Ldapdropdown.php:340 src/Fields/Ldapdropdown.php:376
+#: src/Fields/Dropdownmultiple.php:911 src/Fields/Radio.php:494
 #: src/Fields/Radio.php:507 src/Fields/Dropdown.php:659
-#: src/Fields/Dropdown.php:695 src/Fields/Dropdownmultiple.php:911
-#: src/Fields/Checkbox.php:479 src/Fields/Checkbox.php:492
-#: src/Fields/Basket.php:565 src/Fields/Ldapdropdown.php:340
-#: src/Fields/Ldapdropdown.php:376
+#: src/Fields/Dropdown.php:695 src/Fields/Dropdownmeta.php:1612
+#: src/Fields/Dropdownmeta.php:1622 src/Fields/Dropdownmeta.php:1643
+#: src/Fields/Basket.php:565 src/Fields/Checkbox.php:479
+#: src/Fields/Checkbox.php:492
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
@@ -1465,8 +1469,8 @@ msgstr "Nombre de suivis inter tickets"
 msgid "OR"
 msgstr "OU"
 
-#: ajax/reloaditem.php:41 src/Field.php:1019 src/Field.php:1027
-#: src/Field.php:1572 src/Field.php:3500 src/Field.php:4892
+#: src/Field.php:1019 src/Field.php:1027 src/Field.php:1572 src/Field.php:3500
+#: src/Field.php:4892 ajax/reloaditem.php:41
 msgid "Object"
 msgstr "Objet"
 
@@ -1563,8 +1567,8 @@ msgstr "Ticket parent"
 msgid "Parent ticket tag"
 msgstr "Balise du ticket père"
 
-#: src/Metademand.php:3968 src/Metademand.php:6384
-#: src/Ticket_Metademand.php:783
+#: src/Ticket_Metademand.php:783 src/Metademand.php:3968
+#: src/Metademand.php:6384
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] "Ticket parent"
@@ -1575,7 +1579,7 @@ msgstr[2] "Tickets parents"
 msgid "Permit multiple form"
 msgstr "Permettre les formulaires multiples"
 
-#: front/tools.php:41 front/config.form.php:60 front/config.php:45
+#: front/config.form.php:60 front/config.php:45 front/tools.php:41
 msgid "Please activate the plugin"
 msgstr "Merci d'activer le plugin"
 
@@ -1653,9 +1657,9 @@ msgstr "Bouton radio"
 msgid "Range"
 msgstr "Plage"
 
-#: src/Fields/Dropdownmeta.php:1157 src/Fields/Radio.php:278
-#: src/Fields/Dropdownmultiple.php:578 src/Fields/Checkbox.php:265
-#: src/Fields/Freetable.php:365 src/FieldCustomvalue.php:622
+#: src/Fields/Dropdownmultiple.php:578 src/Fields/Radio.php:278
+#: src/Fields/Freetable.php:365 src/Fields/Dropdownmeta.php:1157
+#: src/Fields/Checkbox.php:265 src/FieldCustomvalue.php:622
 #: src/Freetablefield.php:424
 msgid "Rank"
 msgstr "Rang"
@@ -1775,14 +1779,15 @@ msgctxt "button"
 msgid "Save"
 msgstr "Sauver"
 
-#: src/Wizard.php:1622 src/Wizard.php:1808 src/Fields/Email.php:344
-#: src/Fields/Dropdownobject.php:1256 src/Fields/Dropdownmeta.php:1858
-#: src/Fields/Yesno.php:459 src/Fields/Radio.php:696
-#: src/Fields/Dropdown.php:880 src/Fields/Dropdownmultiple.php:1199
-#: src/Fields/Dropdownmultiple.php:1372 src/Fields/Textarea.php:304
-#: src/Fields/Checkbox.php:710 src/Fields/Url.php:346
-#: src/Fields/Basket.php:833 src/Fields/Basket.php:1849 src/Fields/Tel.php:348
-#: src/Fields/Text.php:347 src/Basketline.php:192 src/FieldOption.php:2169
+#: src/Fields/Dropdownobject.php:1256 src/Fields/Dropdownmultiple.php:1199
+#: src/Fields/Dropdownmultiple.php:1372 src/Fields/Email.php:344
+#: src/Fields/Radio.php:696 src/Fields/Yesno.php:459
+#: src/Fields/Textarea.php:304 src/Fields/Dropdown.php:880
+#: src/Fields/Dropdownmeta.php:1858 src/Fields/Tel.php:348
+#: src/Fields/Basket.php:833 src/Fields/Basket.php:1849 src/Fields/Url.php:346
+#: src/Fields/Checkbox.php:710 src/Fields/Text.php:347
+#: src/FieldOption.php:2169 src/Basketline.php:192 src/Wizard.php:1622
+#: src/Wizard.php:1808
 msgctxt "button"
 msgid "Save & Post"
 msgstr "Sauver et envoyer"
@@ -1888,6 +1893,10 @@ msgstr "Signature"
 msgid "Son ticket tag"
 msgstr "Balise du ticket enfant"
 
+#: src/Fields/Dropdownmeta.php:85
+msgid "Specific dropdown"
+msgstr "Liste déroulante spécifique"
+
 #: src/Fields/Dropdown.php:504
 msgid "Splitted display"
 msgstr "Affichage divisé"
@@ -1911,7 +1920,7 @@ msgstr[2] "Étapes d'un formulaire de métademandes"
 msgid "Step by step settings"
 msgstr "Paramètres du mode pas à pas"
 
-#: src/Fields/Number.php:121 src/Fields/Range.php:165
+#: src/Fields/Range.php:165 src/Fields/Number.php:121
 msgid "Step for number"
 msgstr "Pas pour les nombre"
 
@@ -1958,8 +1967,8 @@ msgstr "Cible du suivi"
 msgid "Target ticket(s)"
 msgstr "Ticket(s) cible(s)"
 
-#: src/Ticket_Metademand.php:74 src/Ticket_Task.php:65 src/Task.php:80
-#: src/MailTask.php:70 src/MetademandTask.php:63 src/TicketTask.php:71
+#: src/Ticket_Task.php:65 src/MailTask.php:70 src/TicketTask.php:71
+#: src/Ticket_Metademand.php:74 src/MetademandTask.php:63
 msgid "Task creation"
 msgstr "Création des sous-demandes"
 
@@ -2003,8 +2012,8 @@ msgstr "Zone de commentaire"
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: src/Metademand.php:747 src/Metademand.php:853 src/Task.php:1131
-#: src/TicketTask.php:781
+#: src/TicketTask.php:781 src/Metademand.php:747 src/Metademand.php:853
+#: src/Task.php:1131
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 "La catégorie est liée à une méta-demande. Merci d'en sélectionner une autre"
@@ -2260,12 +2269,12 @@ msgstr "Total (HT)"
 msgid "Total (TTC)"
 msgstr "Total (TTC)"
 
-#: src/BasketobjectTranslation.php:360 src/BasketobjecttypeTranslation.php:326
+#: src/BasketobjecttypeTranslation.php:326 src/BasketobjectTranslation.php:360
 msgid "Translation"
 msgstr "Traduction"
 
 #: src/Fields/Freetable.php:384 src/Fields/Information.php:167
-#: src/Freetablefield.php:438 src/FieldOption.php:483
+#: src/FieldOption.php:483 src/Freetablefield.php:438
 msgid "Type"
 msgstr "Type"
 
@@ -2309,7 +2318,7 @@ msgstr "Utiliser une popup de vérification pour les valeurs vides"
 msgid "Use as basket"
 msgstr "Utiliser comme un panier"
 
-#: src/Task.php:664 src/MailTask.php:186 src/TicketTask.php:220
+#: src/MailTask.php:186 src/TicketTask.php:220 src/Task.php:664
 msgid "Use block"
 msgstr "Utiliser les blocs"
 
@@ -2337,8 +2346,8 @@ msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
 #: src/Fields/Dropdownobject.php:780 src/Fields/Dropdownobject.php:860
-#: src/Fields/Dropdownmeta.php:1374 src/Fields/Dropdown.php:468
-#: src/Fields/Datetime.php:95 src/Fields/Date.php:97
+#: src/Fields/Date.php:97 src/Fields/Dropdown.php:468
+#: src/Fields/Dropdownmeta.php:1374 src/Fields/Datetime.php:95
 msgid "Use this field for child ticket field"
 msgstr "Utiliser ce champ comme champ des tickets enfants"
 
@@ -2384,17 +2393,17 @@ msgstr "Validé par %s le %s"
 msgid "Value"
 msgstr "Valeur"
 
-#: src/Field.php:1574 src/Fields/Dropdownobject.php:917
-#: src/Fields/Dropdownmeta.php:1494 src/Fields/Yesno.php:228
-#: src/Fields/Radio.php:458 src/Fields/Dropdown.php:580
-#: src/Fields/Dropdownmultiple.php:751 src/Fields/Checkbox.php:445
-#: src/Fields/Basket.php:564 src/Fields/Ldapdropdown.php:290
 #: src/Condition.php:418 src/Condition.php:556 src/Condition.php:658
-#: src/Condition.php:985 src/FieldOption.php:487
+#: src/Condition.php:985 src/Fields/Dropdownobject.php:917
+#: src/Fields/Ldapdropdown.php:290 src/Fields/Dropdownmultiple.php:751
+#: src/Fields/Radio.php:458 src/Fields/Yesno.php:228
+#: src/Fields/Dropdown.php:580 src/Fields/Dropdownmeta.php:1494
+#: src/Fields/Basket.php:564 src/Fields/Checkbox.php:445 src/Field.php:1574
+#: src/FieldOption.php:487
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
-#: src/Metademand.php:9400 src/Tools.php:114
+#: src/Tools.php:114 src/Metademand.php:9400
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr "Vérifier le statut global des métademandes"
@@ -2569,8 +2578,8 @@ msgstr "Tous vos blocs ne sont pas définis"
 msgid "Your created forms"
 msgstr "Vos formulaires créés"
 
-#: src/Wizard.php:504 src/Draft.php:334 front/draft.form.php:12
-#: front/draftcreation.php:56 front/draft.php:10
+#: src/Draft.php:334 src/Wizard.php:504 front/draftcreation.php:56
+#: front/draft.php:10 front/draft.form.php:12
 msgid "Your drafts"
 msgstr "Vos brouillons"
 
@@ -2634,7 +2643,7 @@ msgstr "champ supprimé sur la demande"
 msgid "field update on demand"
 msgstr "champ modifié sur la demande"
 
-#: src/Draft.php:249 src/Stepform.php:816 src/Profile.php:175
+#: src/Profile.php:175 src/Stepform.php:816 src/Draft.php:249
 #: front/draftcreation.php:60
 msgid "form"
 msgid_plural "forms"
