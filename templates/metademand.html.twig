@@ -1,0 +1,254 @@
+{#
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+ @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+ @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+ @link      https://github.com/InfotelGLPI/Metademands
+ -------------------------------------------------------------------------
+#}
+
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+{% set bg = "" %}
+{% if item.isDeleted() %}
+    {% set bg = "asset-deleted" %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+    {% include("components/form/header.html.twig") %}
+
+    {% set rand        = random() %}
+    {% set params      = params ?? [] %}
+    {% set withtemplate = params['withtemplate'] ?? "" %}
+
+    <div class="card-body d-flex">
+        <div class="col-12 flex-column">
+            <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+                <div class="row flex-row align-items-start flex-grow-1">
+                    <div class="row flex-row">
+
+                        <input type="hidden" name="withtemplate" value="{{ withtemplate }}">
+                        <input type="hidden" name="id_template" value="{{ item.getID() }}">
+
+                        {# Alerte mode maintenance #}
+                        {% if item.fields['maintenance_mode'] == 1 %}
+                            <div class="col-12">
+                                <div class="alert alert-warning d-flex align-items-center">
+                                    <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
+                                    {{ __('This form is in maintenance mode', 'metademands') }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {# Nom du template (uniquement lors de l'édition d'un template) #}
+                        {% if is_template and not item.isNewItem() %}
+                            {{ fields.textField('template_name', item.fields['template_name'], __('Template name')) }}
+                            {{ fields.nullField() }}
+                        {% endif %}
+
+                        {# Nom + Actif #}
+                        {{ fields.autoNameField('name', item, __('Name'), withtemplate) }}
+                        {{ fields.dropdownYesNo('is_active', item.fields['is_active'], __('Active')) }}
+
+                        {# Modification avant / après validation #}
+                        {{ fields.dropdownYesNo('can_update', item.fields['can_update'],
+                            __('Allow form modification before validation', 'metademands')) }}
+                        {{ fields.dropdownYesNo('can_clone', item.fields['can_clone'],
+                            __('Allow form modification after validation', 'metademands')) }}
+
+                        {# Mode pas à pas + mode maintenance #}
+                        {{ fields.dropdownYesNo('step_by_step_mode', item.fields['step_by_step_mode'],
+                            __('Step-by-step mode', 'metademands')) }}
+                        {{ fields.dropdownYesNo('maintenance_mode', item.fields['maintenance_mode'],
+                            __('Maintenance mode')) }}
+
+                        {# Objet à créer #}
+                        {% if item.isNewItem() %}
+                            {% set obj_rand = random() %}
+                            {% set obj_dropdown %}
+                                {% do call('Dropdown::showFromArray', ['object_to_create', object_types, {
+                                    'value': item.fields['object_to_create'],
+                                    'rand': obj_rand
+                                }]) %}
+                            {% endset %}
+                            {{ fields.htmlField('object_to_create', obj_dropdown,
+                                __('Object to create', 'metademands') ~ ' *',
+                                {'add_field_html': '<span id="define_object"></span>'}) }}
+                            {% do call('Ajax::updateItemOnEvent', [
+                                'dropdown_object_to_create' ~ obj_rand,
+                                'define_object',
+                                plugin_web_dir ~ '/ajax/type_object.php',
+                                {'object_to_create': '__VALUE__'}
+                            ]) %}
+                            {{ fields.nullField() }}
+                        {% else %}
+                            {{ fields.htmlField('object_to_create',
+                                object_type_name ~ '<input type="hidden" name="object_to_create" value="' ~ item.fields['object_to_create']|e ~ '">',
+                                __('Object to create', 'metademands') ~ ' *') }}
+                            {{ fields.nullField() }}
+                        {% endif %}
+
+                        {# Type + Catégorie (seulement pour un item existant) #}
+                        {% if not item.isNewItem() %}
+                            {% if item.fields['object_to_create'] == 'Ticket' %}
+                                {% set type_rand = random() %}
+                                {% set type_dropdown %}
+                                    {% do call('Ticket::dropdownType', ['type', {
+                                        'value': item.fields['type'],
+                                        'rand': type_rand
+                                    }]) %}
+                                {% endset %}
+                                {{ fields.htmlField('type', type_dropdown, _n('Type', 'Types', 1)) }}
+                                {% do call('Ajax::updateItemOnSelectEvent', [
+                                    'dropdown_type' ~ type_rand,
+                                    'show_category_by_type',
+                                    plugin_web_dir ~ '/ajax/dropdownITILCategories.php',
+                                    {
+                                        'type': '__VALUE__',
+                                        'entity_restrict': item.fields['entities_id'],
+                                        'value': item.fields['itilcategories_id'],
+                                        'currenttype': item.fields['type']
+                                    }
+                                ]) %}
+                            {% else %}
+                                {{ fields.nullField() }}
+                            {% endif %}
+
+                            {# Catégories #}
+                            {% set cat_all_checked = categories_all_checked ? 'checked' : '' %}
+                            {% set cat_dropdown %}
+                                {% if available_categories|length > 0 %}
+                                    <div class="custom-control custom-checkbox custom-control-inline mb-1">
+                                        <label class="me-1">{{ __('All available categories', 'metademands') }}</label>
+                                        <input id="itilcategories_id_all" class="form-check-input" type="checkbox"
+                                               name="itilcategories_id_all" value="1" {{ cat_all_checked }}>
+                                    </div>
+                                    <script type="text/javascript">
+                                        $(function() {
+                                            let categoriesSelect = document.getElementById('show_category_by_type');
+                                            {{ categories_all_checked ? 'if (categoriesSelect) categoriesSelect.hidden = true;' : '' }}
+                                            document.getElementById('itilcategories_id_all').addEventListener('change',
+                                                (e) => categoriesSelect.hidden = e.target.checked);
+                                        });
+                                    </script>
+                                {% endif %}
+                                <span id="show_category_by_type" {{ categories_all_checked ? 'hidden' : '' }}>
+                                    {% do call('Dropdown::showFromArray', ['itilcategories_id', available_categories, {
+                                        'values': category_values,
+                                        'width': '100%',
+                                        'multiple': true,
+                                        'entity': item.fields['entities_id']
+                                    }]) %}
+                                </span>
+                            {% endset %}
+                            {{ fields.htmlField('itilcategories_id', cat_dropdown, __('Category')) }}
+                        {% endif %}
+
+                        {# URL (affichage seul) #}
+                        {{ fields.htmlField('', metademand_url, __('URL')) }}
+                        {{ fields.nullField() }}
+
+                        {# Icône #}
+                        {{ fields.dropdownWebIcons('icon', item.fields['icon'], __('Icon'), {
+                            'add_field_html': '&nbsp;<input type="checkbox" name="_blank_picture">&nbsp;' ~ __('Clear')
+                        }) }}
+                        {{ fields.nullField() }}
+
+                        {# Formulaire multiple + panier unique #}
+                        {{ fields.dropdownYesNo('is_order', item.fields['is_order'],
+                            __('Permit multiple form', 'metademands')) }}
+                        {% if item.fields['is_order'] == 1 %}
+                            {% set create_one_html %}
+                                {% do call('Dropdown::showYesNo', ['create_one_ticket', item.fields['create_one_ticket']]) %}
+                                <br>
+                                <span class="alert alert-warning d-flex mt-1">
+                                    {{ __('You cannot use this parameter if there is more than one category', 'metademands') }}
+                                </span>
+                            {% endset %}
+                            {{ fields.htmlField('create_one_ticket', create_one_html,
+                                __('Create one ticket for all lines of the basket', 'metademands')) }}
+                        {% else %}
+                            {{ fields.nullField() }}
+                        {% endif %}
+
+                        {# Panier + Masquer le titre #}
+                        {{ fields.dropdownYesNo('is_basket', item.fields['is_basket'],
+                            __('Use as basket', 'metademands')) }}
+                        {{ fields.dropdownYesNo('hide_title', item.fields['hide_title'],
+                            __('Hide title', 'metademands')) }}
+
+                        {# Champs spécifiques aux tickets #}
+                        {% if item.fields['object_to_create'] == 'Ticket' %}
+                            {{ fields.dropdownYesNo('validation_subticket', item.fields['validation_subticket'],
+                                __('Need validation to create subticket', 'metademands')) }}
+                            {{ fields.dropdownYesNo('hide_no_field', item.fields['hide_no_field'],
+                                __('Hide the "No" and empty values of fields in the tickets', 'metademands')) }}
+                        {% endif %}
+
+                        {# Couleur fond + couleur titre #}
+                        {% set bg_color %}
+                            {% do call('Html::showColorField', ['background_color', {'value': item.fields['background_color']}]) %}
+                        {% endset %}
+                        {{ fields.htmlField('background_color', bg_color, __('Background color', 'metademands')) }}
+                        {% set title_color %}
+                            {% do call('Html::showColorField', ['title_color', {'value': item.fields['title_color']}]) %}
+                        {% endset %}
+                        {{ fields.htmlField('title_color', title_color, __('Title color', 'metademands')) }}
+
+                        {# Tâches / tickets enfants (seulement pour un item existant) #}
+                        {% if not item.isNewItem() %}
+                            {% if item.fields['object_to_create'] == 'Ticket' %}
+                                {{ fields.dropdownYesNo('force_create_tasks', item.fields['force_create_tasks'],
+                                    __('Create tasks (not child tickets)', 'metademands')) }}
+                            {% else %}
+                                <input type="hidden" name="force_create_tasks" value="1">
+                                {{ fields.nullField() }}
+                            {% endif %}
+                            {{ fields.dropdownYesNo('initial_requester_childs_tickets',
+                                item.fields['initial_requester_childs_tickets'],
+                                __('Define initial requester as requester for child tickets', 'metademands')) }}
+                        {% endif %}
+
+                        {# Confirmation valeurs vides #}
+                        {{ fields.dropdownYesNo('use_confirm', item.fields['use_confirm'],
+                            __('Use a confirm popup check for empty values', 'metademands')) }}
+                        {{ fields.nullField() }}
+
+                        {# Commentaire #}
+                        {{ fields.textareaField('comment', item.fields['comment'], __('Comments'),
+                            {'full_width': true, 'rows': 10}) }}
+
+                    </div>{# .row #}
+                </div>{# .row #}
+            </div>{# .flex-row #}
+        </div>
+    </div>{# .card-body #}
+
+    {% include("components/form/buttons.html.twig") %}
+
+    {% if params['formfooter'] is not defined or params['formfooter'] != false %}
+        <div class="card-footer mx-n2 mb-n2">
+            {% include("components/form/dates.html.twig") %}
+        </div>
+    {% endif %}
+</div>

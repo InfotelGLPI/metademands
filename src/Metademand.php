@@ -57,6 +57,7 @@ use Html;
 use ITILCategory;
 use Log;
 use MassiveAction;
+use Glpi\Application\View\TemplateRenderer;
 use Migration;
 use Override;
 use Plugin;
@@ -1440,328 +1441,43 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         $options['formoptions'] = "data-track-changes=false";
         $this->initForm($ID, $options);
-        $this->showFormHeader($options);
 
         $is_template = isset($options['withtemplate']) && (int) $options['withtemplate'] === 1;
-        $from_template = isset($options['withtemplate']) && (int) $options['withtemplate'] === 2;
 
-        if ($is_template & !$this->isNewItem()) {
-            // Show template name after creation (creation is already handled by
-            // showFormHeader which add the template name in a special header
-            // only displayed on creation)
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Template name') . "</td>";
-            echo "<td>";
-            echo Html::input('template_name', [
-                'value' => $this->fields['template_name'],
-            ]);
-            echo "</td>";
-            echo "<td colspan='2'>&nbsp;</td>";
-            echo "</tr>";
-        }
-
-        echo "<tr class='tab_bg_1'>";
-        echo Html::hidden('withtemplate', ['value' => $options['withtemplate']]);
-        echo Html::hidden('id_template', ['value' => $ID]);
-        if ($this->fields['maintenance_mode'] == 1) {
-            echo "<h3>";
-            echo "<div class='alert alert-warning center'>";
-            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
-            echo __('This form is in maintenance mode', 'metademands') . "</div></h3>";
-        }
-
-        echo "<td>" . __('Name') . "</td>";
-        echo "<td>";
-        echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
-        echo "</td>";
-
-        echo "<td>" . __('Active') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("is_active", $this->fields['is_active']);
-        echo "</td>";
-
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>" . __('Allow form modification before validation', 'metademands') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("can_update", $this->fields['can_update']);
-        echo "</td>";
-        echo "<td>" . __('Allow form modification after validation', 'metademands') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("can_clone", $this->fields['can_clone']);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>";
-
-        echo __('Step-by-step mode', 'metademands');
-        echo "</td>";
-        echo "<td>";
-
-        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
-        echo "</td>";
-
-        echo "<td>" . __('Maintenance mode') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("maintenance_mode", $this->fields['maintenance_mode']);
-        echo "</td>";
-
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
-        echo "<td>";
-        if ($ID == 0 || empty($ID)) {
-            $objects = self::getObjectTypes();
-            $idDropdown = Dropdown::showFromArray(
-                'object_to_create',
-                $objects,
-                ['value' => $this->fields['object_to_create']]
-            );
-            Ajax::updateItemOnEvent(
-                "dropdown_object_to_create" . $idDropdown,
-                "define_object",
-                PLUGIN_METADEMANDS_WEBDIR . "/ajax/type_object.php",
-                ['object_to_create' => '__VALUE__']
-            );
-        } else {
-            echo self::getObjectTypeName($this->fields['object_to_create']);
-            echo Html::hidden('object_to_create', ['value' => $this->fields['object_to_create']]);
-        }
-        echo "</td>";
-        echo "<td colspan='2'>";
-
-        echo "<span id='define_object'>";
-        echo "</span>";
-
-        echo "</td>";
-        echo "</tr>";
-
-        if ($ID > 0) {
-            echo "<tr class='tab_bg_1'>";
-
-            if ($this->fields['object_to_create'] == 'Ticket') {
-                echo "<td>" . _n('Type', 'Types', 1) . "</td>";
-                echo "<td>";
-                $opt = [
-                    'value' => $this->fields['type'],
-                ];
-                $rand = \Ticket::dropdownType('type', $opt);
-
-                $params = [
-                    'type' => '__VALUE__',
-                    'entity_restrict' => $this->fields['entities_id'],
-                    'value' => $this->fields['itilcategories_id'],
-                    'currenttype' => $this->fields['type'],
-                ];
-
-                Ajax::updateItemOnSelectEvent(
-                    "dropdown_type$rand",
-                    "show_category_by_type",
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownITILCategories.php",
-                    $params
-                );
-                echo "</td>";
-            } else {
-                echo "<td colspan='2'></td>";
-            }
-
-            echo "<td>" . __('Category') . "</td>";
-            echo "<td>";
-
-            $availableCategories = self::getAvailableItilCategories($ID);
-
-            $categories = [];
-            if (isset($this->fields['itilcategories_id'])) {
-                if (is_array($this->fields['itilcategories_id'])) {
-                    $categories = json_encode($this->fields['itilcategories_id']);
-                } elseif (is_array(json_decode($this->fields['itilcategories_id'], true))) {
-                    $categories = $this->fields['itilcategories_id'];
+        $available_categories = [];
+        $category_values      = [];
+        $categories_all_checked = false;
+        if (!$this->isNewItem()) {
+            $available_categories = self::getAvailableItilCategories($ID);
+            $raw = $this->fields['itilcategories_id'] ?? null;
+            if ($raw) {
+                if (is_array($raw)) {
+                    $category_values = $raw;
+                } elseif (is_array(json_decode($raw, true))) {
+                    $category_values = json_decode($raw, true);
                 } else {
-                    $array = [$this->fields['itilcategories_id']];
-                    $categories = json_encode($array);
+                    $category_values = [$raw];
                 }
             }
-            $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
-
-            // if all available itil categories are selected checkbox is checked
-            if (count($availableCategories)) {
-                $diff1 = array_diff($values, array_keys($availableCategories));
-                $diff2 = array_diff(array_keys($availableCategories), $values);
-                $checked = empty($diff1) && empty($diff2) ? 'checked' : '';
-                echo "<div class='custom-control custom-checkbox custom-control-inline'>
-                    <label>" . __('All available categories', 'metademands') . "</label>
-                    <input id='itilcategories_id_all' class='form-check-input' type='checkbox' name='itilcategories_id_all' value='1' $checked>
-                </div>";
-                $jsDefaultVisibility = $checked ? 'categoriesSelect.hidden = true' : '';
-                echo "<script type='text/javascript'>
-                        $(function() {
-                            let categoriesSelect = document.getElementById('show_category_by_type');
-                            $jsDefaultVisibility
-                            document.getElementById('itilcategories_id_all').addEventListener('change', (e) => categoriesSelect.hidden = e.target.checked)
-                        })
-                    </script>";
-            }
-
-            echo "<span id='show_category_by_type'>";
-            Dropdown::showFromArray(
-                'itilcategories_id',
-                $availableCategories,
-                [
-                    'values' => $values,
-                    'width' => '100%',
-                    'multiple' => true,
-                    'entity' => $_SESSION['glpiactiveentities'],
-                ]
-            );
-            echo "</span>";
-            echo "</td>";
-            echo "</tr>";
-        }
-
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>" . __('URL') . "</td><td>";
-        echo $this->getURL($ID);
-        echo "</td>";
-
-        echo "<td></td>";
-        echo "<td>";
-        echo "</td>";
-
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>" . __('Icon') . "</td><td>";
-        $icon_selector_id = 'icon_' . mt_rand();
-        echo Html::select(
-            'icon',
-            [$this->fields['icon'] => $this->fields['icon']],
-            [
-                'id' => $icon_selector_id,
-                'selected' => $this->fields['icon'],
-                'style' => 'width:175px;',
-            ]
-        );
-
-        echo Html::script('js/modules/Form/WebIconSelector.js');
-        echo Html::scriptBlock("$(
-            function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );");
-        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>" . __('Permit multiple form', 'metademands') . "</td><td>";
-        Dropdown::showYesNo("is_order", $this->fields['is_order']);
-        echo "</td>";
-
-        if ($this->fields['is_order'] == 1) {
-            echo "<td>" . __('Create one ticket for all lines of the basket', 'metademands') . "</td><td>";
-            Dropdown::showYesNo("create_one_ticket", $this->fields['create_one_ticket']);
-            echo "<br>";
-            echo "<span class='alert alert-warning d-flex'>";
-            echo __('You cannot use this parameter if there is more than one category', 'metademands');
-            echo "</span>";
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
-        }
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>" . __('Use as basket', 'metademands') . "</td><td>";
-        Dropdown::showYesNo("is_basket", $this->fields['is_basket']);
-        echo "</td>";
-
-        echo "<td>" . __('Hide title', 'metademands') . "</td><td>";
-        Dropdown::showYesNo("hide_title", $this->fields['hide_title']);
-        echo "</td>";
-        echo "</tr>";
-
-        if ($this->fields['object_to_create'] == 'Ticket') {
-            echo "</tr>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
-            Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
-            echo "</td>";
-            echo "<td>";
-            echo __('Hide the "No" and empty values of fields in the tickets', 'metademands');
-            echo "</td><td>";
-            Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
-            echo "</td>";
-            echo "</tr>";
-        }
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Background color', 'metademands') . "</td><td>";
-        Html::showColorField('background_color', ['value' => $this->fields["background_color"]]);
-        echo "</td>";
-        echo "<td>" . __('Title color', 'metademands') . "</td><td>";
-        Html::showColorField('title_color', ['value' => $this->fields["title_color"]]);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        if ($ID > 0) {
-            if ($this->fields['object_to_create'] == 'Ticket') {
-                echo "<td>" . __('Create tasks (not child tickets)', 'metademands') . "</td>";
-                echo "<td>";
-                Dropdown::showYesNo("force_create_tasks", $this->fields['force_create_tasks']);
-                echo "</td>";
-            } else {
-                echo "<td colspan='2'></td>";
-                echo Html::hidden('force_create_tasks', ['value' => 1]);
+            if (count($available_categories)) {
+                $diff1 = array_diff($category_values, array_keys($available_categories));
+                $diff2 = array_diff(array_keys($available_categories), $category_values);
+                $categories_all_checked = empty($diff1) && empty($diff2);
             }
         }
 
-        echo "<td>" . __('Define initial requester as requester for child tickets', 'metademands') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("initial_requester_childs_tickets", $this->fields['initial_requester_childs_tickets']);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Use a confirm popup check for empty values', 'metademands') . "</td><td>";
-        Dropdown::showYesNo("use_confirm", $this->fields['use_confirm']);
-        echo "</td>";
-
-        echo "<td>";
-        echo "</td>";
-
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td rowspan='2'>" . __('Comments') . "</td>";
-        echo "<td rowspan='2'>";
-        Html::textarea([
-            'name' => 'comment',
-            'value' => $this->fields["comment"],
-            'cols' => 40,
-            'rows' => 10,
-            'enable_richtext' => false,
-            'enable_fileupload' => false,
+        TemplateRenderer::getInstance()->display('@metademands/metademand.html.twig', [
+            'item'                    => $this,
+            'params'                  => $options,
+            'is_template'             => $is_template,
+            'object_types'            => self::getObjectTypes(),
+            'object_type_name'        => self::getObjectTypeName($this->fields['object_to_create']),
+            'available_categories'    => $available_categories,
+            'category_values'         => $category_values,
+            'categories_all_checked'  => $categories_all_checked,
+            'metademand_url'          => $this->getURL($ID),
+            'plugin_web_dir'          => PLUGIN_METADEMANDS_WEBDIR,
         ]);
-        echo "</td>";
-        echo "<td colspan='2'></td>";
-
-        echo "</tr>";
-
-        $this->showFormButtons($options);
 
         return true;
     }

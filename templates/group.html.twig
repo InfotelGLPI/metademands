@@ -76,7 +76,7 @@
 
     {% if canedit %}
         {{ call('Html::openMassiveActionsForm', [mass_container])|raw }}
-        {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container}])|raw }}
+        {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container, 'display': false}])|raw }}
     {% endif %}
 
     <table class="tab_cadre_fixe">
@@ -104,7 +104,6 @@
     </table>
 
     {% if canedit %}
-        {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container, 'ontop': false}])|raw }}
-        {{ call('Html::closeForm', [])|raw }}
+        {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container, 'ontop': false, 'display': false}])|raw }}
     {% endif %}
 {% endif %}

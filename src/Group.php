@@ -487,4 +487,17 @@ class Group extends CommonDBChild
         }
         return true;
     }
+
+    /**
+     * @return array
+     */
+    function getForbiddenStandardMassiveAction()
+    {
+        $forbidden = parent::getForbiddenStandardMassiveAction();
+
+        $forbidden[] = 'update';
+        $forbidden[] = 'clone';
+        $forbidden[] = 'add_transfer_list';
+        return $forbidden;
+    }
 }
