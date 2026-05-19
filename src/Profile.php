@@ -32,6 +32,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonGLPI;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use ProfileRight;
 use Session;
@@ -45,6 +46,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class Profile extends \Profile
 {
+    public static $rightname = "profile";
     /**
      * @param int $nb
      *
@@ -59,21 +61,7 @@ class Profile extends \Profile
     {
         return "ti ti-share";
     }
-    /**
-     * @return bool|int
-     */
-    public static function canView(): bool
-    {
-        return Session::haveRight(self::$rightname, READ);
-    }
 
-    /**
-     * @return bool
-     */
-    public static function canCreate(): bool
-    {
-        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE, PURGE]);
-    }
 
     /**
      * @param \CommonGLPI $item
@@ -91,154 +79,58 @@ class Profile extends \Profile
 
 
     /**
-     * @param \CommonGLPI $item
-     * @param int         $tabnum
-     * @param int         $withtemplate
+     * @param CommonGLPI $item
+     * @param int        $tabnum
+     * @param int        $withtemplate
      *
      * @return bool
      */
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-    {
-        if ($item->getType() == 'Profile') {
-            $ID   = $item->getID();
-            $prof = new self();
-
-            $rights = [
-                'plugin_metademands' => 0,
-                'plugin_metademands_followup' => 0,
-                'plugin_metademands_updatemeta' => 0,
-                'plugin_metademands_on_login' => 0,
-                'plugin_metademands_in_menu' => 0,
-                'plugin_metademands_createmeta' => 0,
-                'plugin_metademands_validatemeta' => 0,
-                'plugin_metademands_fillform' => 0,
-                'plugin_metademands_cancelform' => 0,
-                'plugin_metademands_publicforms' => 0,
-            ];
-
-            self::addDefaultProfileInfos($ID, $rights);
-            $prof->showForm($ID);
+    public static function displayTabContentForItem(
+        CommonGLPI $item,
+        $tabnum = 1,
+        $withtemplate = 0
+    ) {
+        if (!$item instanceof \Profile || !self::canView()) {
+            return false;
         }
+
+        $profile = new \Profile();
+        $profile->getFromDB($item->getID());
+
+        $rights = self::getAllRights($profile->getField('interface'));
+
+        $twig = TemplateRenderer::getInstance();
+        $twig->display('@metademands/profile.html.twig', [
+            'id'      => $item->getID(),
+            'profile' => $profile,
+            'title'   => self::getTypeName(Session::getPluralNumber()),
+            'rights'  => $rights,
+        ]);
 
         return true;
     }
 
-
     /**
-     * @param int  $profiles_id
-     * @param bool $openform
-     * @param bool $closeform
-     *
-     * @return bool|void
+     * @param $profiles_id
      */
-    public function showForm($profiles_id = 0, $openform = true, $closeform = true)
+    public static function createFirstAccess($profiles_id)
     {
-        echo "<div class='firstbloc'>";
-        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
-            && $openform) {
-            $profile = new \Profile();
-            echo "<form method='post' action='" . $profile->getFormURL() . "'>";
-        }
+        $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
+            'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
+            'plugin_metademands_updatemeta' => 1,
+            'plugin_metademands_on_login' => 0,
+            'plugin_metademands_in_menu' => 0,
+            'plugin_metademands_createmeta' => 1,
+            'plugin_metademands_validatemeta' => 1,
+            'plugin_metademands_fillform' => 0,
+            'plugin_metademands_cancelform' => 0,
+            'plugin_metademands_publicforms' => 0];
 
-        $profile = new \Profile();
-        $profile->getFromDB($profiles_id);
-
-        $rights = $this->getAllRights();
-
-        $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-            'default_class' => 'tab_bg_2',
-            'title'         => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands')]);
-
-        echo "<table class='tab_cadre_fixehov'>";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<th colspan='6'>" . _n('Meta-Demand', 'Meta-Demands', 2, 'metademands') . "</th>";
-        echo "</th></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_createmeta']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Create a meta-demand', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_createmeta[1_0]',
-            'checked' => $effective_rights['plugin_metademands_createmeta']]);
-        echo "</td></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_validatemeta']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Validate a meta-demand', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_validatemeta[1_0]',
-            'checked' => $effective_rights['plugin_metademands_validatemeta']]);
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<th colspan='6'>" . ucfirst(_n('form', 'forms', 2, 'metademands')) . "</th>";
-        echo "</th></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_fillform']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Fill out a form', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_fillform[1_0]',
-            'checked' => $effective_rights['plugin_metademands_fillform']]);
-        echo "</td></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_cancelform']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Cancel /delete a form', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_cancelform[1_0]',
-            'checked' => $effective_rights['plugin_metademands_cancelform']]);
-        echo "</td></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_publicforms']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Define a private / public model', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_publicforms[1_0]',
-            'checked' => $effective_rights['plugin_metademands_publicforms']]);
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Right to update a meta-demand form from the ticket', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_updatemeta']);
-        Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
-            'checked' => $effective_rights['plugin_metademands_updatemeta']]);
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<th colspan='6'>" . __('Simplified interface') . "</th>";
-        echo "</th></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_on_login']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Show form selection on connection and replace the create form', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_on_login[1_0]',
-            'checked' => $effective_rights['plugin_metademands_on_login']]);
-        echo "</td></tr>\n";
-
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_in_menu']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Hide button in menu', 'metademands') . "</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_in_menu[1_0]',
-            'checked' => $effective_rights['plugin_metademands_in_menu']]);
-        echo "</td></tr>\n";
-        echo "</table>";
-
-        if ($canedit
-            && $closeform) {
-            echo "<div class='center'>";
-            echo Html::hidden('id', ['value' => $profiles_id]);
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            echo "</div>\n";
-            Html::closeForm();
-        }
-        echo "</div>";
-
-        $this->showLegend();
+        self::addDefaultProfileInfos(
+            $profiles_id,
+            $rights,
+            true
+        );
     }
 
     /**
@@ -265,59 +157,62 @@ class Profile extends \Profile
             $rights[] = ['itemtype' => Wizard::class,
                 'label'    => __('Create a meta-demand', 'metademands'),
                 'field'    => 'plugin_metademands_createmeta',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype' => Wizard::class,
                 'label'    => __('Validate a meta-demand', 'metademands'),
                 'field'    => 'plugin_metademands_validatemeta',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype' => Stepform::class,
                 'label'    => __('Fill out a form', 'metademands'),
                 'field'    => 'plugin_metademands_fillform',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype' => Stepform::class,
                 'label'    => __('Cancel / delete a form', 'metademands'),
                 'field'    => 'plugin_metademands_cancelform',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype' => Form::class,
                 'label'    => __('Define a private / public model', 'metademands'),
                 'field'    => 'plugin_metademands_publicforms',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype' => Wizard::class,
                 'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
                 'field'    => 'plugin_metademands_updatemeta',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype'  => Metademand::class,
                 'label'     => __('Show form selection on connection and replace the create form', 'metademands'),
                 'field'     => 'plugin_metademands_on_login',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
             $rights[] = ['itemtype'  => Metademand::class,
                 'label'     => __('Hide button in menu', 'metademands'),
                 'field'     => 'plugin_metademands_in_menu',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],
             ];
         }
 
         return $rights;
-    }
-
-
-    /**
-     * @param string $interface
-     *
-     * @return array
-     */
-    public static function getItemRights($interface = 'central')
-    {
-        if ($interface == 'central') {
-            $values = [CREATE => __('Create'),
-                READ   => __('Read'),
-                UPDATE => __('Update'),
-                PURGE  => ['short' => __('Purge'),
-                    'long'  => _x('button', 'Delete permanently')]];
-        } else {
-            $values = [READ => __('Read')];
-        }
-
-        return $values;
     }
 
 
@@ -414,28 +309,6 @@ class Profile extends \Profile
         }
     }
 
-    /**
-     * @param $profiles_id
-     */
-    public static function createFirstAccess($profiles_id)
-    {
-        $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
-            'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
-            'plugin_metademands_updatemeta' => 1,
-            'plugin_metademands_on_login' => 0,
-            'plugin_metademands_in_menu' => 0,
-            'plugin_metademands_createmeta' => 1,
-            'plugin_metademands_validatemeta' => 1,
-            'plugin_metademands_fillform' => 0,
-            'plugin_metademands_cancelform' => 0,
-            'plugin_metademands_publicforms' => 0];
-
-        self::addDefaultProfileInfos(
-            $profiles_id,
-            $rights,
-            true
-        );
-    }
 
     public static function removeRightsFromSession()
     {

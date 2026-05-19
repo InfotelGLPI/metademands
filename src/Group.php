@@ -32,6 +32,7 @@ namespace GlpiPlugin\Metademands;
 use CommonDBChild;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
 use Group_User;
 use Html;
@@ -311,93 +312,28 @@ class Group extends CommonDBChild
             }
         }
 
-        if ($canedit) {
-            echo "<form name='form' method='post' action='" .
-                Toolbox::getItemTypeFormURL(Group::class) . "'>";
-
-            echo "<div class='center'><table class='tab_cadre_fixe'>";
-            echo "<tr><th>" . __('Add a group', 'metademands') . "</th></tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            // Dropdown group
-            echo "<td class='center'>";
-            echo __('Group') . '&nbsp;';
-            \Dropdown::showFromArray("groups_id", $groups, ['name' => 'groups_id',
-                'width' => '150',
-                'multiple' => true,
-                'used' => $used_groups
-            ]);
-            echo "</td>";
-            echo "</tr>";
-            // Add groups with a regex
-            if ($config->fields['add_groups_with_regex']) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td class='center'>";
-                echo __('Regular expression', 'metademands') . '&nbsp;';
-                echo Html::input('regex_value', ['type' => 'text', 'width' => '150px', 'class' => '']);
-                echo "</td>";
-                echo "</tr>";
-            }
-
-            echo "<tr>";
-            echo "<td class='tab_bg_2 center'>";
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'add_groups', 'class' => 'btn btn-primary']);
-            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-            echo "</td>";
-            echo "</tr>";
-            echo "</table></div>";
-            Html::closeForm();
-        }
+        $groups_items = [];
         if ($dataMetademandGroup) {
-            $this->listItems($dataMetademandGroup, $canedit);
-        }
-    }
-
-    /**
-     * @param $fields
-     * @param $canedit
-     */
-    private function listItems($fields, $canedit)
-    {
-
-        $rand = mt_rand();
-        echo "<div class='left'>";
-        if ($canedit) {
-            Html::openMassiveActionsForm('mass' . $rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass'  . $rand];
-            Html::showMassiveActions($massiveactionparams);
-        }
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr>";
-        echo "<th colspan='3'>" . __('Groups allowed to enter a demand', 'metademands') . "</th>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "<th width='10'>";
-        if ($canedit) {
-            echo Html::getCheckAllAsCheckbox('mass' . $rand);
-        }
-        echo "</th>";
-        echo "<th>" . __('Name') . "</th>";
-        echo "</tr>";
-        foreach ($fields as $field) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td width='10'>";
-            if ($canedit) {
-                Html::showMassiveActionCheckBox(__CLASS__, $field['id']);
+            foreach ($dataMetademandGroup as $field) {
+                $group = new \Group();
+                $group->getFromDB($field['groups_id']);
+                $groups_items[] = [
+                    'id'   => $field['id'],
+                    'link' => $group->getLink(),
+                ];
             }
-            $group = new \Group();
-            $group->getFromDB($field['groups_id']);
-            echo "<td>" . $group->getLink() . "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-        if ($canedit) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
         }
 
-        echo "</div>";
+        TemplateRenderer::getInstance()->display('@metademands/group.html.twig', [
+            'action'               => Toolbox::getItemTypeFormURL(Group::class),
+            'metademand_id'        => $item->fields['id'],
+            'canedit'              => $canedit,
+            'groups'               => $groups,
+            'used_groups'          => $used_groups,
+            'add_groups_with_regex' => (bool) $config->fields['add_groups_with_regex'],
+            'groups_items'         => $groups_items,
+            'itemtype'             => static::class,
+        ]);
     }
 
 

@@ -158,23 +158,23 @@ if (isset($_POST["add"])) {
     }
 
     Html::back();
-}  else if (isset($_POST["fixorders"])) {
+} else if (isset($_POST["fixorders"])) {
+
+    $field->check(-1, UPDATE, $_POST);
 
     $field = new Field();
-    if ($field_values = $field->find(["plugin_metademands_metademands_id" =>$_POST["plugin_metademands_metademands_id"],
-        'rank' => $_POST["rank"]])) {
-        if (count($field_values) > 0) {
+    if ($field_values = $field->find([
+        "plugin_metademands_metademands_id" => (int)$_POST["plugin_metademands_metademands_id"],
+        'rank' => (int)$_POST["rank"],
+    ])) {
+        $orders = [];
+        foreach ($field_values as $k => $field_value) {
+            $orders[$k]['order'] = $field_value['order'];
+        }
 
-            foreach ($field_values as $k => $field_value) {
-                $orders[$k]['order'] = $field_value['order'];
-            }
-
-            $neworders = Field::fixOrders($orders);
-            foreach ($neworders as $id => $neworder) {
-                $input['id'] = $id;
-                $input['order'] = $neworder['order'];
-                $field->update($input);
-            }
+        $neworders = Field::fixOrders($orders);
+        foreach ($neworders as $id => $neworder) {
+            $field->update(['id' => $id, 'order' => $neworder['order']]);
         }
     }
     Html::back();

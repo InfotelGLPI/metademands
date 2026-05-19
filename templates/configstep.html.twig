@@ -1,0 +1,81 @@
+{#
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+ @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+ @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+ @link      https://github.com/InfotelGLPI/Metademands
+ -------------------------------------------------------------------------
+#}
+
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+<form name="form" action="{{ action }}" method="post">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademand_id }}">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ __('Step by step settings', 'metademands') }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {{ fields.dropdownYesNo('see_blocks_as_tab', confstep_fields.see_blocks_as_tab|default(0),
+                    __('See blocks as tab', 'metademands')) }}
+                {{ fields.dropdownYesNo('supervisor_validation', confstep_fields.supervisor_validation|default(0),
+                    __('Activate supervisor validation', 'metademands')) }}
+            </div>
+
+            {% if confstep_fields.supervisor_validation|default(0) == 0 %}
+                <div class="row">
+                    {{ fields.dropdownYesNo('link_user_block', confstep_fields.link_user_block|default(0),
+                        __('The user must select a defined user of the selected groups', 'metademands')) }}
+                    {{ fields.dropdownYesNo('multiple_link_groups_blocks', confstep_fields.multiple_link_groups_blocks|default(0),
+                        __('Link multiple groups to a block', 'metademands')) }}
+                </div>
+            {% endif %}
+
+            <div class="row">
+                {{ fields.dropdownYesNo('add_user_as_requester', confstep_fields.add_user_as_requester|default(0),
+                    __('Add all form actors as ticket requester', 'metademands')) }}
+                {{ fields.dropdownArrayField('step_by_step_interface', confstep_fields.step_by_step_interface|default(0),
+                    enum_interface, __('Interface', 'metademands')) }}
+            </div>
+
+            <div class="row">
+                {{ fields.dropdownYesNo('change_step_by_step_option', confstep_fields.change_step_by_step_option|default(0),
+                    __('Move to the next group even if you can continue', 'metademands')) }}
+                {{ fields.nullField() }}
+            </div>
+
+            <div class="hr mt-3 mb-3"></div>
+            <div class="hstack gap-1">
+                <div class="pe-5 ms-auto">
+                    <button class="btn btn-primary" type="submit" name="update_configstep" value="1">
+                        <i class="ti ti-device-floppy"></i>
+                        <span>{{ _x('button', 'Update') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

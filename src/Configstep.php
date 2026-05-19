@@ -29,6 +29,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use DBConnection;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Migration;
 use Session;
@@ -210,78 +211,12 @@ class Configstep extends CommonDBTM
             $blocksastab = $confStep->fields['see_blocks_as_tab'];
         }
 
-        echo "<form name = 'form' method='post' action='".Toolbox::getItemTypeFormURL(Configstep::class)."'>";
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-        echo "<tr><th colspan='6'>".self::getTypeName()."</th></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('See blocks as tab', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        \Dropdown::showYesNo('see_blocks_as_tab', $blocksastab);
-        echo "</td>";
-        echo "<td>";
-        echo __('Activate supervisor validation', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        \Dropdown::showYesNo('supervisor_validation', $supervisor_validation);
-        echo "</td>";
-        echo "</tr>";
-
-        if ($supervisor_validation == 0) {
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<td>";
-            echo __('The user must select a defined user of the selected groups', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo('link_user_block', $userLink);
-            echo "</td>";
-
-            echo "<td>";
-            echo __('Link multiple groups to a block', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo('multiple_link_groups_blocks', $multipleGroup);
-            echo "</td>";
-
-            echo "</tr>";
-        }
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Add all form actors as ticket requester', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        \Dropdown::showYesNo('add_user_as_requester', $addasrequester);
-        echo "</td>";
-        echo "<td>";
-        echo __('Interface', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        $step_by_step = $confStep->fields['step_by_step_interface'] ?? self::BOTH_INTERFACE;
-        \Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $step_by_step]);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo  __('Move to the next group even if you can continue', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        \Dropdown::showYesNo("change_step_by_step_option", $confStep->fields['change_step_by_step_option']);
-        echo "</td>";
-        echo "<td colspan='2'>";
-        echo "</td>";;
-        echo "</tr>";
-
-        echo "<tr><td class='tab_bg_2 center' colspan='6'>";
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-        echo Html::submit(_sx('button', 'Update'), ['name' => 'update_configstep', 'class' => 'btn btn-primary']);
-        echo "</td></tr>";
-        echo "</table></div>";
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display('@metademands/configstep.html.twig', [
+            'action'          => Toolbox::getItemTypeFormURL(Configstep::class),
+            'metademand_id'   => $item->fields['id'],
+            'confstep_fields' => $confStep->fields,
+            'enum_interface'  => self::getEnumInterface(),
+        ]);
     }
 }
 

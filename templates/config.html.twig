@@ -1,0 +1,122 @@
+{#
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+ @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+ @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+ @link      https://github.com/InfotelGLPI/Metademands
+ -------------------------------------------------------------------------
+#}
+
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+<form name="form" action="{{ action }}" method="post">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ __('Configuration of the meta-demand plugin', 'metademands') }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {{ fields.dropdownYesNo('simpleticket_to_metademand', config.simpleticket_to_metademand,
+                    __('Enable the update / add of simple ticket to metademand', 'metademands')) }}
+                {{ fields.dropdownYesNo('display_type', config.display_type,
+                    __('Enable display metademands via icons', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.textField('parent_ticket_tag', config.parent_ticket_tag,
+                    __('Parent ticket tag', 'metademands')) }}
+                {{ fields.textField('son_ticket_tag', config.son_ticket_tag,
+                    __('Son ticket tag', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.dropdownYesNo('childs_parent_content', config.childs_parent_content,
+                    __('Childs tickets get parent content', 'metademands')) }}
+                {{ fields.dropdownYesNo('create_pdf', config.create_pdf,
+                    __('Create PDF', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.dropdownYesNo('use_draft', config.use_draft,
+                    __('Use drafts', 'metademands')) }}
+                <input type="hidden" name="show_form_changes" value="0">
+                {{ fields.nullField() }}
+            </div>
+            <div class="row">
+                {% set language_html %}
+                    {% do call('Dropdown::showLanguages', ['languageTech', {'value': config.languageTech}]) %}
+                {% endset %}
+                {{ fields.htmlField('languageTech', language_html,
+                    __('Language Tech', 'metademands')) }}
+                {{ fields.dropdownYesNo('display_buttonlist_servicecatalog', config.display_buttonlist_servicecatalog,
+                    __('Display metademands list into ServiceCatalog plugin', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.dropdownYesNo('add_groups_with_regex', config.add_groups_with_regex,
+                    __('Allow adding groups by regex', 'metademands')) }}
+                {{ fields.dropdownYesNo('see_top', config.see_top,
+                    __('See top metademands', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.dropdownWebIcons('icon_incident', config.icon_incident,
+                    __('Icon for incidents', 'metademands')) }}
+                {{ fields.dropdownWebIcons('icon_request', config.icon_request,
+                    __('Icon for requests', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.dropdownWebIcons('icon_problem', config.icon_problem,
+                    __('Icon for problems', 'metademands')) }}
+                {{ fields.dropdownWebIcons('icon_change', config.icon_change,
+                    __('Icon for changes', 'metademands')) }}
+            </div>
+
+            {% if config.display_buttonlist_servicecatalog == 1 %}
+                <div class="hr mt-4 mb-2"></div>
+                <div class="row">
+                    {{ fields.smallTitle(__('Configuration of the Service Catalog plugin', 'metademands'), '', '', 'servicecatalog_title') }}
+                </div>
+                <div class="row">
+                    {{ fields.textareaField('title_servicecatalog', config.title_servicecatalog,
+                        __('Title for Service Catalog widget', 'metademands'), {'full_width': true}) }}
+                </div>
+                <div class="row">
+                    {{ fields.textareaField('comment_servicecatalog', config.comment_servicecatalog,
+                        __('Comment for Service Catalog widget', 'metademands'), {'full_width': true}) }}
+                </div>
+                <div class="row">
+                    {{ fields.dropdownWebIcons('fa_servicecatalog', config.fa_servicecatalog,
+                        __('Icon for Service Catalog widget', 'metademands')) }}
+                </div>
+            {% endif %}
+
+            <div class="hr mt-3 mb-3"></div>
+            <div class="hstack gap-1">
+                <div class="pe-5 ms-auto">
+                    <button class="btn btn-primary" type="submit" name="update_config" value="1">
+                        <i class="ti ti-device-floppy"></i>
+                        <span>{{ _x('button', 'Update') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

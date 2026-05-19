@@ -1,0 +1,110 @@
+{#
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+ @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+ @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+ @link      https://github.com/InfotelGLPI/Metademands
+ -------------------------------------------------------------------------
+#}
+
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+
+{% if canedit %}
+<form name="form" method="post" action="{{ action }}">
+    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
+    {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">{{ __('Add a group', 'metademands') }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <label class="form-label mb-0">{{ __('Group') }}</label>
+                {% set groups_html %}
+                    {% do call('Dropdown::showFromArray', ['groups_id', groups, {
+                        'name': 'groups_id',
+                        'width': '300px',
+                        'multiple': true,
+                        'used': used_groups
+                    }]) %}
+                {% endset %}
+                {{ groups_html|raw }}
+            </div>
+
+            {% if add_groups_with_regex %}
+            <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+                <label class="form-label mb-0">{{ __('Regular expression', 'metademands') }}</label>
+                <input type="text" name="regex_value" class="form-control" style="width:300px;">
+            </div>
+            {% endif %}
+
+            <div class="mt-3">
+                <button class="btn btn-primary" type="submit" name="add_groups" value="1">
+                    <i class="ti ti-plus"></i>
+                    <span>{{ _x('button', 'Add') }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endif %}
+
+{% if groups_items|length > 0 %}
+    {% set rand = random() %}
+    {% set mass_container = 'mass' ~ rand %}
+
+    {% if canedit %}
+        {{ call('Html::openMassiveActionsForm', [mass_container])|raw }}
+        {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container}])|raw }}
+    {% endif %}
+
+    <table class="tab_cadre_fixe">
+        <tr>
+            <th colspan="2">{{ __('Groups allowed to enter a demand', 'metademands') }}</th>
+        </tr>
+        <tr>
+            <th width="10">
+                {% if canedit %}
+                    {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
+                {% endif %}
+            </th>
+            <th>{{ __('Name') }}</th>
+        </tr>
+        {% for group_item in groups_items %}
+        <tr class="tab_bg_1">
+            <td width="10">
+                {% if canedit %}
+                    {{ call('Html::showMassiveActionCheckBox', [itemtype, group_item.id])|raw }}
+                {% endif %}
+            </td>
+            <td>{{ group_item.link|raw }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if canedit %}
+        {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container, 'ontop': false}])|raw }}
+        {{ call('Html::closeForm', [])|raw }}
+    {% endif %}
+{% endif %}
