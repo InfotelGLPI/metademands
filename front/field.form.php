@@ -74,7 +74,53 @@ if (isset($_POST['type'])
     $_POST['item'] = null;
 }
 
-if (isset($_POST["add"])) {
+if (isset($_POST["add_another"])) {
+    // Same as "add" but redirect back with ?open_add_field flag to reopen the modal
+    $_POST["add"] = $_POST["add_another"];
+    unset($_POST["add_another"]);
+
+    if (isset($_POST["plugin_metademands_metademands_id"])) {
+        $meta = new Metademand();
+        $meta->getFromDB($_POST["plugin_metademands_metademands_id"]);
+        $_POST["entities_id"] = $meta->getEntityID();
+    }
+    $field->check(-1, UPDATE, $_POST);
+
+    if ($_POST['id'] = $field->add($_POST)) {
+        if (isset($_POST['existing_field_id'])
+            && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST['existing_field_id']])) {
+            $inputp = $fieldparameter->fields;
+            unset($inputp['id']);
+            $inputp['plugin_metademands_fields_id'] = $_POST['id'];
+            $fieldparameter->add($inputp);
+        } else {
+            $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
+        }
+
+        if (isset($_POST['existing_field_id'])
+            && $customs = $fieldcustomvalues->find(['plugin_metademands_fields_id' => $_POST['existing_field_id']])) {
+            if (count($customs) > 0) {
+                foreach ($customs as $key => $val) {
+                    $inputc['name'] = $val['name'];
+                    $inputc['is_default'] = $val['is_default'];
+                    $inputc['comment'] = $val['comment'];
+                    $inputc['rank'] = $val['rank'];
+                    $inputc['plugin_metademands_fields_id'] = $_POST['id'];
+                    $fieldcustomvalues->add($inputc);
+                }
+            }
+        }
+
+        $field->recalculateOrder($_POST);
+        Metademand::addLog($_POST, Metademand::LOG_ADD);
+        unset($_SESSION['glpi_plugin_metademands_fields']);
+    }
+
+    $meta_id = (int)($_POST["plugin_metademands_metademands_id"] ?? 0);
+    $referer = htmlspecialchars_decode($_SERVER['HTTP_REFERER'] ?? '');
+    $sep = strpos($referer, '?') !== false ? '&' : '?';
+    Html::redirect($referer . $sep . 'open_add_field=' . $meta_id);
+} elseif (isset($_POST["add"])) {
     if (isset($_POST["plugin_metademands_metademands_id"])) {
         $meta = new Metademand();
         $meta->getFromDB($_POST["plugin_metademands_metademands_id"]);

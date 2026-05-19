@@ -126,12 +126,22 @@
             <div id="show_values"></div>
 
         </div>
-        <div class="card-footer d-flex justify-content-end">
-            <button class="btn btn-primary" type="submit"
-                    name="{{ is_new ? 'add' : 'update' }}" value="1">
-                <i class="ti ti-device-floppy"></i>
-                <span>{{ is_new ? _x('button', 'Add') : _x('button', 'Save') }}</span>
+        <div class="card-footer d-flex justify-content-end gap-2">
+            {% if is_new %}
+            <button class="btn btn-secondary" type="submit" name="add_another" value="1">
+                <i class="ti ti-plus"></i>
+                <span>{{ __('Add and create another', 'metademands') }}</span>
             </button>
+            <button class="btn btn-primary" type="submit" name="add" value="1">
+                <i class="ti ti-device-floppy"></i>
+                <span>{{ __('Add and close', 'metademands') }}</span>
+            </button>
+            {% else %}
+            <button class="btn btn-primary" type="submit" name="update" value="1">
+                <i class="ti ti-device-floppy"></i>
+                <span>{{ _x('button', 'Save') }}</span>
+            </button>
+            {% endif %}
         </div>
     </div>
 </form>

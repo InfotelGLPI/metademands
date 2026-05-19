@@ -946,6 +946,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_existing_id}')).show();
                 });
             }
+            (function () {
+                var p = new URLSearchParams(window.location.search);
+                if (p.get('open_add_field') === '{$item->getID()}') {
+                    p.delete('open_add_field');
+                    var qs = p.toString();
+                    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+                    addFieldmeta{$item->getID()}{$rand}();
+                }
+            })();
             </script>";
 
             echo "<div class='center'>"
