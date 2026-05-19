@@ -181,13 +181,15 @@ if (isset($_POST["add"])) {
     Html::back();
 } elseif (isset($_POST["fixranks"])) {
 
+    $fieldcustom->check(-1, UPDATE, $_POST);
+
     $field = new Field();
-    if ($field->getFromDB($_POST["plugin_metademands_fields_id"])) {
+    if ($field->getFromDB((int)$_POST["plugin_metademands_fields_id"])) {
         $params = Field::getAllParamsFromField($field);
         $custom_values = $params['custom_values'];
         $newranks = FieldCustomvalue::fixRanks($custom_values);
         foreach ($newranks as $id => $newrank) {
-            $fieldcustom->update($newrank);
+            $fieldcustom->update(['id' => $id, 'rank' => $newrank['rank']]);
         }
     }
 

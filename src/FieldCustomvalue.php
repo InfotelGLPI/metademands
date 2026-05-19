@@ -506,6 +506,7 @@ class FieldCustomvalue extends CommonDBChild
                 // Reorganization of all fields
                 if ($params['old_order'] < $params['new_order']) {
                     $toUpdateList = $this->find([
+                        'plugin_metademands_fields_id' => $params['field_id'],
                         '`rank`' => ['>', $params['old_order']],
                         'rank'   => ['<=', $params['new_order']],
                     ]);
@@ -518,6 +519,7 @@ class FieldCustomvalue extends CommonDBChild
                     }
                 } else {
                     $toUpdateList = $this->find([
+                        'plugin_metademands_fields_id' => $params['field_id'],
                         '`rank`' => ['<', $params['old_order']],
                         'rank'   => ['>=', $params['new_order']],
                     ]);
