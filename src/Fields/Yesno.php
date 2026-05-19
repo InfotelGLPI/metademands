@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Condition;
 use Html;
 use GlpiPlugin\Metademands\Field;
@@ -190,31 +191,23 @@ class Yesno extends CommonDBTM
         echo "</tr>";
     }
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-
         $disp = [];
         $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::SWITCH_DISPLAY] = __("Switch display", "metademands");
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Display type of the field', 'metademands');
-        echo "</td>";
-        echo "<td>";
+        $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
+            'value'   => $params['display_type'],
+            'display' => false,
+        ]);
 
-        echo \Dropdown::showFromArray(
-            "display_type",
-            $disp,
-            ['value' => $params['display_type'], 'display' => false]
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_yesno.html.twig',
+            [
+                'display_type_html'   => $display_type_html,
+                'show_switch_warning' => $params["display_type"] == self::SWITCH_DISPLAY,
+            ]
         );
-        echo "</td>";
-        echo "</tr>";
-        if ($params["display_type"] == self::SWITCH_DISPLAY) {
-            echo "<div class='alert alert-warning mt-2'>";
-            echo __("Warning: switch mode don't support mandatory field check", 'metademands');
-            echo "</div>";
-        }
-
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

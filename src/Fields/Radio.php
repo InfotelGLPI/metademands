@@ -30,6 +30,7 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\FieldCustomvalue;
@@ -271,41 +272,43 @@ class Radio extends CommonDBTM
 
             foreach ($custom_values as $key => $value) {
                 $target = FieldCustomvalue::getFormURL();
-                echo "<form method='post' action=\"$target\">";
                 echo "<tr class='tab_bg_1'>";
 
                 echo "<td class='rowhandler control center'>";
-                echo __('Rank', 'metademands') . " " . $value['rank'] . " ";
+                echo __('Rank', 'metademands') . " " . $value['rank'];
+                echo "</td>";
+
+                // Formulaire de mise à jour dans sa propre cellule (HTML5 valide)
+                echo "<td class='rowhandler control center' colspan='3'>";
+                echo "<form method='post' action=\"$target\">";
+                echo "<div class='d-flex align-items-center gap-2 flex-wrap'>";
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden(
                         'fields_id',
                         ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
                     );
+                    echo Html::hidden(
+                        'plugin_metademands_fields_id',
+                        ['value' => $params["plugin_metademands_fields_id"]]
+                    );
                     echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
                 }
-                echo "</td>";
+                echo Html::hidden('id[' . $key . ']', ['value' => $key]);
 
-                echo "<td class='rowhandler control center'>";
                 echo "<span id='custom_values$key'>";
                 echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 30]);
                 echo "</span>";
-                echo "</td>";
 
-                echo "<td class='rowhandler control center'>";
                 echo "<span id='comment_values$key'>";
                 echo __('Comment') . " ";
                 echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 30]);
                 echo "</span>";
-                echo "</td>";
 
-                echo "<td class='rowhandler control center'>";
                 echo "<span id='default_values$key'>";
                 echo _n('Default value', 'Default values', 1, 'metademands') . " ";
                 \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
                 echo "</span>";
-                echo "</td>";
 
-                echo "<td class='rowhandler control center'>";
                 echo "<span id='icon$key'>";
                 $icon_selector_id = 'icon_' . mt_rand();
                 echo Html::select(
@@ -317,7 +320,6 @@ class Radio extends CommonDBTM
                         'style' => 'width:175px;',
                     ]
                 );
-
                 echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock("$(
                         function() {
@@ -327,9 +329,17 @@ class Radio extends CommonDBTM
                            });
                         }
                      );");
-
                 $blank = "_blank_picture[$key]";
                 echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
+                echo "</span>";
+
+                echo Html::submit("", [
+                    'name' => 'update',
+                    'class' => 'btn btn-primary',
+                    'icon' => 'ti ti-device-floppy',
+                ]);
+                echo "</div>";
+                Html::closeForm();
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
@@ -338,16 +348,7 @@ class Radio extends CommonDBTM
                 echo "</div>";
                 echo "</td>";
 
-                echo "<td class='rowhandler control center'>";
-                echo Html::hidden('id[' . $key . ']', ['value' => $key]);
-
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
-                ]);
-                echo "</td>";
-
+                // Formulaire de suppression dans sa propre cellule (non imbriqué)
                 echo "<td class='rowhandler control center'>";
                 Html::showSimpleForm(
                     $target,
@@ -366,8 +367,6 @@ class Radio extends CommonDBTM
                 echo "</tr>";
 
                 $maxrank = $value['rank'];
-
-                Html::closeForm();
             }
             echo "</table>";
             echo "</div>";
@@ -387,14 +386,13 @@ class Radio extends CommonDBTM
         } else {
             $target = FieldCustomvalue::getFormURL();
             echo "<form method='post' action=\"$target\">";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td align='right'  id='show_custom_fields'>";
+            echo "<div class='d-flex align-items-center gap-2 mt-2' id='show_custom_fields'>";
             if (isset($params['plugin_metademands_fields_id'])) {
                 echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+                echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
             }
             FieldCustomvalue::initCustomValue(-1, true, true, $params["plugin_metademands_fields_id"]);
-            echo "</td>";
-            echo "</tr>";
+            echo "</div>";
             Html::closeForm();
             FieldCustomvalue::importCustomValue($params);
         }
@@ -402,53 +400,20 @@ class Radio extends CommonDBTM
         echo "</tr>";
     }
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
         $disp = [];
         $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Display type of the field', 'metademands');
-        echo "</td>";
-        echo "<td>";
+        $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
+            'value'   => $params['display_type'],
+            'display' => false,
+        ]);
 
-        echo \Dropdown::showFromArray(
-            "display_type",
-            $disp,
-            ['value' => $params['display_type'], 'display' => false]
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_checkbox_radio.html.twig',
+            ['display_type_html' => $display_type_html]
         );
-        echo "</td>";
-
-        echo "<td colspan='2'></td>";
-//        echo "<td>";
-//        echo __('Icon') . "&nbsp;";
-//        echo "</td>";
-//        echo "<td>";
-//        $icon_selector_id = 'icon_' . mt_rand();
-//        echo Html::select(
-//            'icon',
-//            [$params['icon'] => $params['icon']],
-//            [
-//                'id' => $icon_selector_id,
-//                'selected' => $params['icon'],
-//                'style' => 'width:175px;',
-//            ]
-//        );
-//
-//        echo Html::script('js/modules/Form/WebIconSelector.js');
-//        echo Html::scriptBlock("$(
-//            function() {
-//            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-//               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-//               icon_selector.init();
-//               });
-//            }
-//         );");
-//
-//        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-//        echo "</td>";
-        echo "</tr>";
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

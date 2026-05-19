@@ -113,7 +113,7 @@ if (isset($_POST["add"])) {
             $fieldparam->check(-1, UPDATE, $input);
             $fieldparam->update($input);
         }
-    } elseif (in_array($_POST["item"], Field::$field_specificobjects)) {
+    } elseif (isset($_POST["item"]) && in_array($_POST["item"], Field::$field_specificobjects)) {
         $input["default"] = FieldParameter::_serialize($_POST['default']);
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {

@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Locale;
 use GlpiPlugin\Metademands\Field;
@@ -192,8 +193,9 @@ JS;
     {
     }
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
+        return '';
     }
 
     /**

@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use CommonITILObject;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Badges\Badge;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
@@ -1150,36 +1151,41 @@ class Dropdownmeta extends CommonDBTM
 
             foreach ($custom_values as $key => $value) {
                 $target = FieldCustomvalue::getFormURL();
-                echo "<form method='post' action=\"$target\">";
                 echo "<tr class='tab_bg_1'>";
 
                 echo "<td class='rowhandler control center'>";
-                echo __('Rank', 'metademands') . " " . $value['rank'] . " ";
+                echo __('Rank', 'metademands') . " " . $value['rank'];
+                echo "</td>";
+
+                // Formulaire de mise à jour dans sa propre cellule (HTML5 valide)
+                echo "<td class='rowhandler control center' colspan='4'>";
+                echo "<form method='post' action=\"$target\">";
+                echo "<div class='d-flex align-items-center gap-2 flex-wrap'>";
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden(
                         'fields_id',
                         ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
                     );
+                    echo Html::hidden(
+                        'plugin_metademands_fields_id',
+                        ['value' => $params["plugin_metademands_fields_id"]]
+                    );
                     echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
                 }
-                echo "</td>";
+                echo Html::hidden('id[' . $key . ']', ['value' => $key]);
 
-                echo "<td class='rowhandler control center'>";
                 echo "<span id='custom_values$key'>";
                 echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 30]);
                 echo "</span>";
-                echo "</td>";
 
                 if (isset($params["display_type"])
                     && $params["display_type"] == self::BLOCK_DISPLAY) {
-                    echo "<td class='rowhandler control center'>";
                     echo "<span id='comment_values$key'>";
                     echo __('Comment') . " ";
                     echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 30]);
                     echo "</span>";
-                    echo "</td>";
                 }
-                echo "<td class='rowhandler control center'>";
+
                 echo "<span id='icon$key'>";
                 $icon_selector_id = 'icon_' . mt_rand();
                 echo Html::select(
@@ -1191,7 +1197,6 @@ class Dropdownmeta extends CommonDBTM
                         'style' => 'width:175px;',
                     ]
                 );
-
                 echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock("$(
                     function() {
@@ -1203,13 +1208,20 @@ class Dropdownmeta extends CommonDBTM
                  );");
                 $blank = "_blank_picture[$key]";
                 echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
-                echo "</td>";
+                echo "</span>";
 
-                echo "<td class='rowhandler control center'>";
                 echo "<span id='default_values$key'>";
                 echo _n('Default value', 'Default values', 1, 'metademands') . " ";
                 \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
                 echo "</span>";
+
+                echo Html::submit("", [
+                    'name' => 'update',
+                    'class' => 'btn btn-primary',
+                    'icon' => 'ti ti-device-floppy',
+                ]);
+                echo "</div>";
+                Html::closeForm();
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
@@ -1218,16 +1230,7 @@ class Dropdownmeta extends CommonDBTM
                 echo "</div>";
                 echo "</td>";
 
-                echo "<td class='rowhandler control center'>";
-                echo Html::hidden('id[' . $key . ']', ['value' => $key]);
-
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
-                ]);
-                echo "</td>";
-
+                // Formulaire de suppression dans sa propre cellule (non imbriqué)
                 echo "<td class='rowhandler control center'>";
                 Html::showSimpleForm(
                     $target,
@@ -1243,12 +1246,9 @@ class Dropdownmeta extends CommonDBTM
                 );
                 echo "</td>";
 
-
                 echo "</tr>";
 
                 $maxrank = $value['rank'];
-
-                Html::closeForm();
             }
             echo "</table>";
             echo "</div>";
@@ -1270,10 +1270,10 @@ class Dropdownmeta extends CommonDBTM
             $target = FieldCustomvalue::getFormURL();
             if (!in_array($params["item"], Field::$field_specificobjects)) {
                 echo "<form method='post' action=\"$target\">";
-                echo "<tr class='tab_bg_1'>";
-                echo "<td align='right' id='show_custom_fields' colspan='5'>";
+                echo "<div class='d-flex align-items-center gap-2 mt-2' id='show_custom_fields'>";
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
                 }
                 FieldCustomvalue::initCustomValue(
                     -1,
@@ -1281,8 +1281,7 @@ class Dropdownmeta extends CommonDBTM
                     true,
                     $params["plugin_metademands_fields_id"]
                 );
-                echo "</td>";
-                echo "</tr>";
+                echo "</div>";
                 Html::closeForm();
                 FieldCustomvalue::importCustomValue($params);
             } elseif ($params['item'] == 'urgency'
@@ -1295,8 +1294,12 @@ class Dropdownmeta extends CommonDBTM
                     }
                 }
                 echo "<form method='post' action=\"$target\">";
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>";
+                if (isset($params['plugin_metademands_fields_id'])) {
+                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+                    echo Html::hidden('type', ['value' => $params["type"]]);
+                    echo Html::hidden('item', ['value' => $params["item"]]);
+                }
+                echo "<div class='d-flex align-items-center gap-2 mt-2'>";
                 $options['name'] = "default[1]";
                 $options['display_emptychoice'] = true;
                 if ($params['item'] == 'urgency') {
@@ -1306,25 +1309,23 @@ class Dropdownmeta extends CommonDBTM
                 } elseif ($params['item'] == 'priority') {
                     \Ticket::dropdownPriority($options);
                 }
-
-                echo "</td>";
-                echo "</tr>";
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>";
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
                     'icon' => 'ti ti-device-floppy',
                 ]);
-                echo "</td>";
-                echo "</tr>";
+                echo "</div>";
                 Html::closeForm();
             } elseif ($params['item'] == 'mydevices') {
                 $default_values = $params['default_values'];
 
                 echo "<form method='post' action=\"$target\">";
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>";
+                if (isset($params['plugin_metademands_fields_id'])) {
+                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+                    echo Html::hidden('type', ['value' => $params["type"]]);
+                    echo Html::hidden('item', ['value' => $params["item"]]);
+                }
+                echo "<div class='d-flex align-items-center gap-2 mt-2'>";
 
                 $list = [];
 
@@ -1346,17 +1347,12 @@ class Dropdownmeta extends CommonDBTM
                     ]
                 );
 
-                echo "</td>";
-                echo "</tr>";
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>";
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
                     'icon' => 'ti ti-device-floppy',
                 ]);
-                echo "</td>";
-                echo "</tr>";
+                echo "</div>";
                 Html::closeForm();
             }
         }
@@ -1364,43 +1360,31 @@ class Dropdownmeta extends CommonDBTM
         echo "</tr>";
     }
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-        echo "<tr>";
-        if ($params["item"] == "urgency"
-            || $params["item"] == "impact"
-            || $params["item"] == "priority") {
-            echo "<td>";
-            echo __('Use this field for child ticket field', 'metademands');
-            echo "</td>";
-            echo "<td>";
+        $show_used_by_child = in_array($params["item"], ["urgency", "impact", "priority"]);
+        $used_by_child_html = '';
+        if ($show_used_by_child) {
+            ob_start();
             \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-            echo "</td>";
+            $used_by_child_html = ob_get_clean();
         }
-        if ($params["item"] == "mydevices") {
+
+        $show_display_type = $params["item"] == "mydevices";
+        $display_type_html = '';
+        if ($show_display_type) {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::ICON_DISPLAY] = __("Icon display", "metademands");
-
-            echo "<td>";
-            echo __('Display type of the field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            echo \Dropdown::showFromArray("display_type", $disp, [
-                'value' => $params['display_type'],
+            $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
+                'value'   => $params['display_type'],
                 'display' => false,
             ]);
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
         }
 
-        if ($params["item"] == "mydevices") {
-            echo "<td>";
-            echo __('Link this to a user field', 'metademands');
-            echo "</td>";
-
-            echo "<td>";
+        $show_link_to_user = $params["item"] == "mydevices";
+        $link_to_user_html = '';
+        if ($show_link_to_user) {
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
             $fields = $field->find([
@@ -1409,82 +1393,58 @@ class Dropdownmeta extends CommonDBTM
                 "item" => User::getType(),
             ]);
             foreach ($fields as $f) {
-                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+                $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
+            ob_start();
             \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            echo "</td>";
-        }
-        echo "</tr>";
-
-        if ($params["id"] > 0 && ($params['type'] == "dropdown_meta"
-                && $params["item"] == "ITILCategory_Metademands")) {
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<td>";
-            echo __('Read-Only', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo('readonly', ($params['readonly']));
-            echo "</td>";
-
-            echo "<td>";
-            echo __('Hidden field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo('hidden', ($params['hidden']));
-            echo "</td>";
-
-            echo "</tr>";
+            $link_to_user_html = ob_get_clean();
         }
 
-        if ($params["id"] > 0 && ($params['type'] == "dropdown_meta")
-            && $params["item"] == "other") {
+        $show_itil_options = $params["id"] > 0
+            && $params['type'] == "dropdown_meta"
+            && $params["item"] == "ITILCategory_Metademands";
+        $readonly_html = '';
+        $hidden_html = '';
+        if ($show_itil_options) {
+            ob_start();
+            \Dropdown::showYesNo('readonly', $params['readonly']);
+            $readonly_html = ob_get_clean();
+
+            ob_start();
+            \Dropdown::showYesNo('hidden', $params['hidden']);
+            $hidden_html = ob_get_clean();
+        }
+
+        $show_other_display_type = $params["id"] > 0
+            && $params['type'] == "dropdown_meta"
+            && $params["item"] == "other";
+        $other_display_type_html = '';
+        if ($show_other_display_type) {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Display type of the field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-
-            echo \Dropdown::showFromArray(
-                "display_type",
-                $disp,
-                ['value' => $params['display_type'], 'display' => false]
-            );
-            echo "</td>";
-
-            echo "<td colspan='2'></td>";
-//            echo "<td>";
-//            echo __('Icon') . "&nbsp;";
-//            echo "</td>";
-//            echo "<td>";
-//            $icon_selector_id = 'icon_' . mt_rand();
-//            echo Html::select(
-//                'icon',
-//                [$params['icon'] => $params['icon']],
-//                [
-//                    'id' => $icon_selector_id,
-//                    'selected' => $params['icon'],
-//                    'style' => 'width:175px;',
-//                ]
-//            );
-//
-//            echo Html::script('js/modules/Form/WebIconSelector.js');
-//            echo Html::scriptBlock("$(
-//            function() {
-//            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-//               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-//               icon_selector.init();
-//               });
-//            }
-//         );");
-//
-//            echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-//            echo "</td>";
-            echo "</tr>";
+            $other_display_type_html = \Dropdown::showFromArray("display_type", $disp, [
+                'value'   => $params['display_type'],
+                'display' => false,
+            ]);
         }
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_dropdownmeta.html.twig',
+            [
+                'show_used_by_child'      => $show_used_by_child,
+                'used_by_child_html'      => $used_by_child_html,
+                'show_display_type'       => $show_display_type,
+                'display_type_html'       => $display_type_html,
+                'show_link_to_user'       => $show_link_to_user,
+                'link_to_user_html'       => $link_to_user_html,
+                'show_itil_options'       => $show_itil_options,
+                'readonly_html'           => $readonly_html,
+                'hidden_html'             => $hidden_html,
+                'show_other_display_type' => $show_other_display_type,
+                'other_display_type_html' => $other_display_type_html,
+            ]
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

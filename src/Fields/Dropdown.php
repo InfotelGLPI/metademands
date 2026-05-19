@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use DbUtils;
 use DropdownTranslation;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Resources\Resource;
 use Html;
@@ -457,31 +458,20 @@ class Dropdown extends CommonDBTM
 
     public static function showFieldCustomValues($params) {}
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-
-        echo "<tr class='tab_bg_1'>";
-        if ($params['object_to_create'] == 'Ticket'
-            && ($params["item"] == "Location"
-                || $params["item"] == "RequestType")) {
-            echo "<td>";
-            echo __('Use this field for child ticket field', 'metademands');
-            echo "</td>";
-            echo "<td>";
+        $show_used_by_child = $params['object_to_create'] == 'Ticket'
+            && in_array($params["item"], ["Location", "RequestType"]);
+        $used_by_child_html = '';
+        if ($show_used_by_child) {
+            ob_start();
             \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
+            $used_by_child_html = ob_get_clean();
         }
 
-        if ($params["item"] == "Location"
-        || $params["item"] == "UserTitle"
-            || $params["item"] == "UserCategory") {
-            echo "<td>";
-            echo __('Link this to a user field', 'metademands');
-            echo "</td>";
-
-            echo "<td>";
+        $show_link_to_user = in_array($params["item"], ["Location", "UserTitle", "UserCategory"]);
+        $link_to_user_html = '';
+        if ($show_link_to_user) {
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
             $fields = $field->find([
@@ -490,87 +480,56 @@ class Dropdown extends CommonDBTM
                 "item" => User::getType(),
             ]);
             foreach ($fields as $f) {
-                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+                $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
+            ob_start();
             \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            echo "</td>";
+            $link_to_user_html = ob_get_clean();
         }
 
-        echo "</tr>";
+        $show_location_options = $params["item"] == "Location";
+        $show_display_type = !$show_location_options;
+        $display_type_html = '';
+        $root_items_html = '';
 
-        if ($params["item"] == "Location") {
+        if ($show_location_options) {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::SPLITTED_DISPLAY] = __("Splitted display", "metademands");
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Display type of the field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-
-            echo \Dropdown::showFromArray(
-                "display_type",
-                $disp,
-                ['value' => $params['display_type'], 'display' => false]
-            );
-            echo "</td>";
-            echo "<td>";
-            echo __('Root location', 'metademands');
-            echo "</td>";
-            echo "<td>";
+            $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
+                'value'   => $params['display_type'],
+                'display' => false,
+            ]);
+            ob_start();
             Location::dropdown([
                 'name'                => 'root_items_id',
                 'value'               => $params['root_items_id'] ?? 0,
                 'display_emptychoice' => true,
             ]);
-            echo "</td>";
-            echo "</tr>";
+            $root_items_html = ob_get_clean();
         } else {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Display type of the field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-
-            echo \Dropdown::showFromArray(
-                "display_type",
-                $disp,
-                ['value' => $params['display_type'], 'display' => false]
-            );
-            echo "</td>";
-            echo "<td colspan='2'></td>";
-//            echo "<td>";
-//            echo __('Icon') . "&nbsp;";
-//            echo "</td>";
-//            echo "<td>";
-//            $icon_selector_id = 'icon_' . mt_rand();
-//            echo Html::select(
-//                'icon',
-//                [$params['icon'] => $params['icon']],
-//                [
-//                    'id' => $icon_selector_id,
-//                    'selected' => $params['icon'],
-//                    'style' => 'width:175px;',
-//                ]
-//            );
-//
-//            echo Html::script('js/modules/Form/WebIconSelector.js');
-//            echo Html::scriptBlock("$(
-//            function() {
-//            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-//               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-//               icon_selector.init();
-//               });
-//            }
-//         );");
-//
-//            echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-//            echo "</td>";
-            echo "</tr>";
+            $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
+                'value'   => $params['display_type'],
+                'display' => false,
+            ]);
         }
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_dropdown.html.twig',
+            [
+                'show_used_by_child'    => $show_used_by_child,
+                'used_by_child_html'    => $used_by_child_html,
+                'show_link_to_user'     => $show_link_to_user,
+                'link_to_user_html'     => $link_to_user_html,
+                'show_location_options' => $show_location_options,
+                'show_display_type'     => $show_display_type,
+                'display_type_html'     => $display_type_html,
+                'root_items_html'       => $root_items_html,
+            ]
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

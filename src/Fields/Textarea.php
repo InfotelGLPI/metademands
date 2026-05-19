@@ -124,17 +124,16 @@ class Textarea extends CommonDBTM
 
     public static function showFieldCustomValues($params) {}
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Use richt text', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        \Dropdown::showYesNo('use_richtext', ($params['use_richtext']));
-        echo "</td>";
-        echo "<td colspan='2'></td>";
-        echo "</tr>";
+        ob_start();
+        \Dropdown::showYesNo('use_richtext', $params['use_richtext']);
+        $use_richtext_html = ob_get_clean();
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_textarea.html.twig',
+            ['use_richtext_html' => $use_richtext_html]
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

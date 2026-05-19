@@ -32,6 +32,7 @@ use Ajax;
 use CommonDBTM;
 use DbUtils;
 use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
@@ -733,20 +734,14 @@ class Dropdownobject extends CommonDBTM
 
     public static function showFieldCustomValues($values) {}
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
+        $rows = [];
 
         if ($params['item'] == 'User') {
             $custom_values = FieldParameter::_unserialize($params['custom_values']);
             $user_group = $custom_values['user_group'] ?? 0;
 
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Link this to a user field', 'metademands');
-            echo "</td>";
-
-            echo "<td>";
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
             $fields = $field->find([
@@ -755,92 +750,85 @@ class Dropdownobject extends CommonDBTM
                 "item" => User::getType(),
             ]);
             foreach ($fields as $f) {
-                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+                $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
+            ob_start();
             \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            echo "</td>";
-            echo "<td>";
-            echo __('Show a identity card of user', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo('display_type', $params['display_type']);
-            echo "</td>";
-            echo "</tr>";
+            $link_to_user_html = ob_get_clean();
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Only users of my groups', 'metademands');
-            echo "</td>";
-            echo "<td>";
+            ob_start();
+            \Dropdown::showYesNo('display_type', $params['display_type']);
+            $display_type_html = ob_get_clean();
+
+            $rows[] = [
+                ['label' => __('Link this to a user field', 'metademands'), 'html' => $link_to_user_html],
+                ['label' => __('Show a identity card of user', 'metademands'), 'html' => $display_type_html],
+            ];
+
+            ob_start();
             \Dropdown::showYesNo('user_group', $user_group);
-            echo "</td>";
+            $user_group_html = ob_get_clean();
 
             if ($params['object_to_create'] == 'Ticket') {
-                echo "<td>";
-                echo __('Use this field for child ticket field', 'metademands');
-                echo "</td>";
-                echo "<td>";
+                ob_start();
                 \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-                echo "</td>";
+                $used_by_child_html = ob_get_clean();
+                $rows[] = [
+                    ['label' => __('Only users of my groups', 'metademands'), 'html' => $user_group_html],
+                    ['label' => __('Use this field for child ticket field', 'metademands'), 'html' => $used_by_child_html],
+                ];
             } else {
-                echo "<td colspan='2'></td>";
+                $rows[] = [
+                    ['label' => __('Only users of my groups', 'metademands'), 'html' => $user_group_html],
+                    ['colspan' => 2, 'html' => ''],
+                ];
             }
-            echo "</tr>";
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Use id of requester by default', 'metademands');
-            echo "</td>";
-            echo "<td>";
+            ob_start();
             \Dropdown::showYesNo('default_use_id_requester', $params['default_use_id_requester']);
-            echo "</td>";
+            $default_use_id_requester_html = ob_get_clean();
 
-            echo "<td>";
-            echo __('Use id of supervisor requester by default', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo(
-                'default_use_id_requester_supervisor',
-                $params['default_use_id_requester_supervisor']
-            );
-            echo "</td>";
-            echo "</tr>";
+            ob_start();
+            \Dropdown::showYesNo('default_use_id_requester_supervisor', $params['default_use_id_requester_supervisor']);
+            $default_use_id_requester_supervisor_html = ob_get_clean();
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Read-Only', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo('readonly', ($params['readonly']));
-            echo "</td>";
+            $rows[] = [
+                ['label' => __('Use id of requester by default', 'metademands'), 'html' => $default_use_id_requester_html],
+                ['label' => __('Use id of supervisor requester by default', 'metademands'), 'html' => $default_use_id_requester_supervisor_html],
+            ];
 
-            echo "<td>";
-            echo __("Informations to display in ticket and PDF", "metademands");
-            echo "</td>";
-            echo "<td>";
+            ob_start();
+            \Dropdown::showYesNo('readonly', $params['readonly']);
+            $readonly_html = ob_get_clean();
+
             $decode = "";
             if (!is_array($params['informations_to_display'])) {
                 $decode = json_decode($params['informations_to_display']);
             }
             $values = empty($decode) ? ['full_name'] : $decode;
-            $informations["full_name"]         = __('Complete name');
-            $informations["realname"]          = __('Surname');
-            $informations["firstname"]         = __('First name');
-            $informations["name"]              = __('Login');
-            //                  $informations["group"]             = Group::getTypeName(1);
-            $informations["email"] = _n('Email', 'Emails', 1);
-            echo \Dropdown::showFromArray('informations_to_display', $informations, [
+            $informations = [
+                "full_name" => __('Complete name'),
+                "realname"  => __('Surname'),
+                "firstname" => __('First name'),
+                "name"      => __('Login'),
+                "email"     => _n('Email', 'Emails', 1),
+            ];
+            $informations_html = \Dropdown::showFromArray('informations_to_display', $informations, [
                 'values'   => $values,
                 'display'  => false,
                 'multiple' => true,
             ]);
-            echo "</tr>";
+
+            $rows[] = [
+                ['label' => __('Read-Only', 'metademands'), 'html' => $readonly_html],
+                ['label' => __('Informations to display in ticket and PDF', 'metademands'), 'html' => $informations_html],
+            ];
         } elseif ($params["item"] == "Group") {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Link this to a user field', 'metademands');
-            echo "</td>";
-            echo "<td>";
+            $custom_values = FieldParameter::_unserialize($params['custom_values']);
+            $is_assign = $custom_values['is_assign'] ?? 0;
+            $is_watcher = $custom_values['is_watcher'] ?? 0;
+            $is_requester = $custom_values['is_requester'] ?? 0;
+            $user_group = $custom_values['user_group'] ?? 0;
 
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
@@ -850,64 +838,58 @@ class Dropdownobject extends CommonDBTM
                 "item" => User::getType(),
             ]);
             foreach ($fields as $f) {
-                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+                $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
+            ob_start();
             \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            echo "</td>";
+            $link_to_user_html = ob_get_clean();
 
             if ($params['object_to_create'] == 'Ticket') {
-                echo "<td>";
-                echo __('Use this field for child ticket field', 'metademands');
-                echo "</td>";
-                echo "<td>";
+                ob_start();
                 \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-                echo "</td>";
+                $used_by_child_html = ob_get_clean();
+                $rows[] = [
+                    ['label' => __('Link this to a user field', 'metademands'), 'html' => $link_to_user_html],
+                    ['label' => __('Use this field for child ticket field', 'metademands'), 'html' => $used_by_child_html],
+                ];
             } else {
-                echo "<td colspan='2'></td>";
+                $rows[] = [
+                    ['label' => __('Link this to a user field', 'metademands'), 'html' => $link_to_user_html],
+                    ['colspan' => 2, 'html' => ''],
+                ];
             }
-            echo "</tr>";
 
-            echo "<tr class='tab_bg_1'>";
-            $custom_values = FieldParameter::_unserialize($params['custom_values']);
-            $is_assign = $custom_values['is_assign'] ?? 0;
-            $is_watcher = $custom_values['is_watcher'] ?? 0;
-            $is_requester = $custom_values['is_requester'] ?? 0;
-            $user_group = $custom_values['user_group'] ?? 0;
-            echo "<td>";
-            echo __('Requester');
-            echo "</td>";
-            echo "<td>";
-            // Assigned group
+            ob_start();
             \Dropdown::showYesNo('is_requester', $is_requester);
-            echo "</td>";
-            echo "<td>";
-            echo __('Observer');
-            echo "</td>";
-            echo "<td>";
-            // Watcher group
+            $is_requester_html = ob_get_clean();
+
+            ob_start();
             \Dropdown::showYesNo('is_watcher', $is_watcher);
-            echo "</td>";
-            echo "</tr>";
+            $is_watcher_html = ob_get_clean();
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Assigned');
-            echo "</td>";
-            echo "<td>";
-            // Requester group
+            $rows[] = [
+                ['label' => __('Requester'), 'html' => $is_requester_html],
+                ['label' => __('Observer'), 'html' => $is_watcher_html],
+            ];
+
+            ob_start();
             \Dropdown::showYesNo('is_assign', $is_assign);
-            echo "</td>";
+            $is_assign_html = ob_get_clean();
 
-            echo "<td>";
-            echo __('My groups');
-            echo "</td>";
-            echo "<td>";
-            // user_group
+            ob_start();
             \Dropdown::showYesNo('user_group', $user_group);
-            echo "</td>";
+            $user_group_html = ob_get_clean();
 
-            echo "</tr>";
+            $rows[] = [
+                ['label' => __('Assigned'), 'html' => $is_assign_html],
+                ['label' => __('My groups'), 'html' => $user_group_html],
+            ];
         }
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_dropdownobject.html.twig',
+            ['rows' => $rows]
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

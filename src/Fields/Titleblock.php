@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use GlpiPlugin\Metademands\Field;
@@ -132,45 +133,16 @@ class Titleblock extends CommonDBTM
     {
     }
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>";
-        echo __('Color');
-        echo "</td>";
-        echo "<td>";
+        ob_start();
         Html::showColorField('color', ['value' => $params["color"]]);
-        echo "</td>";
+        $color_html = ob_get_clean();
 
-        echo "<td colspan='2'></td>";
-//        echo "<td>";
-//        echo __('Icon') . "&nbsp;";
-//        echo "</td>";
-//        echo "<td>";
-//        $icon_selector_id = 'icon_' . mt_rand();
-//        echo Html::select(
-//            'icon',
-//            [$params['icon'] => $params['icon']],
-//            [
-//                'id' => $icon_selector_id,
-//                'selected' => $params['icon'],
-//                'style' => 'width:175px;',
-//            ]
-//        );
-//
-//        echo Html::script('js/modules/Form/WebIconSelector.js');
-//        echo Html::scriptBlock("$(
-//            function() {
-//            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-//               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-//               icon_selector.init();
-//               });
-//            }
-//         );");
-//        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-//        echo "</td>";
-        echo "</tr>";
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_color.html.twig',
+            ['color_html' => $color_html]
+        );
     }
 
     public static function fieldsMandatoryScript($data)

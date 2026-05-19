@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use GlpiPlugin\Metademands\Field;
@@ -100,39 +101,32 @@ class Dateinterval extends CommonDBTM
 
     public static function showFieldCustomValues($params) {}
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Day greater or equal to now', 'metademands');
-        echo "</td>";
-        echo "<td>";
+        ob_start();
         \Dropdown::showYesNo('use_future_date', $params['use_future_date']);
-        echo "</td>";
+        $use_future_date_html = ob_get_clean();
 
-        echo "<td>";
-        echo __('Define the default date', 'metademands');
-        echo "</td>";
-        echo "<td>";
+        ob_start();
         \Dropdown::showYesNo('use_date_now', $params['use_date_now']);
-        echo "</td>";
+        $use_date_now_html = ob_get_clean();
 
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Additional number day to the default date', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        $optionNumber = [
+        ob_start();
+        \Dropdown::showNumber('additional_number_day', [
             'value' => $params['additional_number_day'],
-            'min' => 0,
-            'max' => 500,
-        ];
-        \Dropdown::showNumber('additional_number_day', $optionNumber);
-        echo "</td>";
-        echo "<td colspan='2'></td>";
-        echo "</tr>";
+            'min'   => 0,
+            'max'   => 500,
+        ]);
+        $additional_number_day_html = ob_get_clean();
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_interval.html.twig',
+            [
+                'use_future_date_html'       => $use_future_date_html,
+                'use_date_now_html'          => $use_date_now_html,
+                'additional_number_day_html' => $additional_number_day_html,
+            ]
+        );
     }
 
     public static function checkMandatoryFields($value = [], $fields = [])

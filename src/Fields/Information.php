@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Field;
 use Html;
@@ -114,66 +115,27 @@ class Information extends CommonDBTM
     public static function showFieldCustomValues($params) {}
 
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
+        ob_start();
+        Html::showColorField('color', ['value' => $params["color"]]);
+        $color_html = ob_get_clean();
 
         $values[self::INFO] = __('Information', 'metademands');
         $values[self::WARNING] = __('Warning', 'metademands');
         $values[self::ALERT] = __('Alert', 'metademands');
+        $display_type_html = \Dropdown::showFromArray("display_type", $values, [
+            'value'   => $params['display_type'],
+            'display' => false,
+        ]);
 
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>";
-        echo __('Color');
-        echo "</td>";
-
-        echo "<td>";
-        Html::showColorField('color', ['value' => $params["color"]]);
-        echo "</td>";
-
-        echo "<td colspan='2'></td>";
-//        echo "<td>";
-//        echo __('Icon') . "&nbsp;";
-//        echo "</td>";
-//        echo "<td>";
-//        $icon_selector_id = 'icon_' . mt_rand();
-//        echo Html::select(
-//            'icon',
-//            [$params['icon'] => $params['icon']],
-//            [
-//                'id' => $icon_selector_id,
-//                'selected' => $params['icon'],
-//                'style' => 'width:175px;',
-//            ]
-//        );
-//
-//        echo Html::script('js/modules/Form/WebIconSelector.js');
-//        echo Html::scriptBlock("$(
-//            function() {
-//            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-//               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-//               icon_selector.init();
-//               });
-//            }
-//         );");
-//
-//        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-//        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td>";
-        echo __('Type', 'metademands');
-        echo '</td>';
-
-        echo "<td>";
-
-        \Dropdown::showFromArray("display_type", $values, ['value' => $params['display_type']]);
-        echo "</td>";
-        echo "<td colspan='2'></td>";
-        echo "</tr>";
-
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_color.html.twig',
+            [
+                'color_html'        => $color_html,
+                'display_type_html' => $display_type_html,
+            ]
+        );
     }
 
     public static function fieldsMandatoryScript($data) {}

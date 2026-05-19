@@ -32,6 +32,7 @@ use AuthLDAP;
 use CommonDBTM;
 use DbUtils;
 use Exception;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Condition;
 use Html;
 use GlpiPlugin\Metademands\Field;
@@ -240,47 +241,35 @@ class Ldapdropdown extends CommonDBTM
 
     public static function showFieldCustomValues($params) {}
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo _n('LDAP directory', 'LDAP directories', 1);
-        echo "</td>";
-        echo "<td>";
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $opt = [
-            'name'                 => 'authldaps_id',
-                'value'                => $params['authldaps_id'],
-            'condition'            => ['is_active' => 1],
-            'on_change'             => "plugin_metademands_changeLDAP('$root_doc', this)",
-//                'display_emptychoice'  => false,
-//                'rand'                 => $rand,
-        ];
-        AuthLDAP::dropdown($opt);
-        echo "</td>";
-
-        echo "<td>";
-        echo __('Filter', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        echo Html::input('ldap_filter', ['value' => $params["ldap_filter"], 'size' => 50]);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Attribute', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        RuleRightParameter::dropdown([
-            'name'                 => 'ldap_attribute',
-                'value'                => $params['ldap_attribute'],
+        ob_start();
+        AuthLDAP::dropdown([
+            'name'      => 'authldaps_id',
+            'value'     => $params['authldaps_id'],
+            'condition' => ['is_active' => 1],
+            'on_change' => "plugin_metademands_changeLDAP('$root_doc', this)",
         ]);
-        echo "</td>";
-        echo "<td colspan='2'>";
-        echo "</td>";
-        echo "</tr>";
+        $authldaps_html = ob_get_clean();
+
+        $ldap_filter_html = Html::input('ldap_filter', ['value' => $params["ldap_filter"], 'size' => 50]);
+
+        ob_start();
+        RuleRightParameter::dropdown([
+            'name'  => 'ldap_attribute',
+            'value' => $params['ldap_attribute'],
+        ]);
+        $ldap_attribute_html = ob_get_clean();
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_ldapdropdown.html.twig',
+            [
+                'authldaps_html'      => $authldaps_html,
+                'ldap_filter_html'    => $ldap_filter_html,
+                'ldap_attribute_html' => $ldap_attribute_html,
+            ]
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

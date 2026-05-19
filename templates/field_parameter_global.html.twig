@@ -27,51 +27,48 @@
  -------------------------------------------------------------------------
 #}
 
-<table class="tab_cadre w-100">
-    <tbody>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">{{ __('Global parameters', 'metademands') }}</h5>
+    </div>
+    <div class="card-body">
         {% if show_mandatory or show_hide_title %}
-        <tr>
+        <div class="row g-2 align-items-center mb-2">
             {% if show_mandatory %}
-            <td class="tab_bg_2">{{ __('Mandatory field') }}</td>
-            <td class="tab_bg_1">{{ mandatory_html|raw }}</td>
-            {% else %}
-            <td colspan="2"></td>
+            <label class="col-sm-3 col-form-label">{{ __('Mandatory field') }}</label>
+            <div class="col-sm-3">{{ mandatory_html|raw }}</div>
             {% endif %}
             {% if show_hide_title %}
-            <td class="tab_bg_2">{{ __('Hide title', 'metademands') }}</td>
-            <td class="tab_bg_1">{{ hide_title_html|raw }}</td>
-            {% else %}
-            <td colspan="2"></td>
+            <label class="col-sm-3 col-form-label">{{ __('Hide title', 'metademands') }}</label>
+            <div class="col-sm-3">{{ hide_title_html|raw }}</div>
             {% endif %}
-        </tr>
+        </div>
         {% endif %}
-        <tr>
-            <td class="tab_bg_2">{{ __('Icon') }}</td>
-            <td class="tab_bg_1" colspan="3">{{ icon_html|raw }}</td>
-        </tr>
+        <div class="row g-2 align-items-center mb-2">
+            <label class="col-sm-3 col-form-label">{{ __('Icon') }}</label>
+            <div class="col-sm-9">{{ icon_html|raw }}</div>
+        </div>
         {% if show_row_display %}
-        <tr>
-            <td class="tab_bg_2">{{ __('Takes the whole row', 'metademands') }}</td>
-            <td class="tab_bg_1">{{ row_display_html|raw }}</td>
+        <div class="row g-2 align-items-center mb-2">
+            <label class="col-sm-3 col-form-label">{{ __('Takes the whole row', 'metademands') }}</label>
+            <div class="col-sm-3">{{ row_display_html|raw }}</div>
             {% if show_is_basket %}
-            <td class="tab_bg_2">{{ __('Display into the basket', 'metademands') }}</td>
-            <td class="tab_bg_1">{{ is_basket_html|raw }}</td>
-            {% else %}
-            <td colspan="2"></td>
+            <label class="col-sm-3 col-form-label">{{ __('Display into the basket', 'metademands') }}</label>
+            <div class="col-sm-3">{{ is_basket_html|raw }}</div>
             {% endif %}
-        </tr>
+        </div>
         {% endif %}
         {% if show_used_by_ticket or show_plugin_fields %}
-        <tr>
+        <div class="row g-2 align-items-center mb-2">
             {% if show_used_by_ticket %}
-            <td class="tab_bg_2">{{ __('Use this field as object field', 'metademands') }}</td>
-            <td class="tab_bg_1"{% if not show_plugin_fields %} colspan="3"{% endif %}>{{ used_by_ticket_html|raw }}</td>
+            <label class="col-sm-3 col-form-label">{{ __('Use this field as object field', 'metademands') }}</label>
+            <div class="{{ show_plugin_fields ? 'col-sm-3' : 'col-sm-9' }}">{{ used_by_ticket_html|raw }}</div>
             {% endif %}
             {% if show_plugin_fields %}
-            <td class="tab_bg_2">{{ __('Link this to a plugin "fields" field', 'metademands') }}</td>
-            <td class="tab_bg_1"{% if not show_used_by_ticket %} colspan="3"{% endif %}>{{ plugin_fields_html|raw }}</td>
+            <label class="col-sm-3 col-form-label">{{ __('Link this to a plugin "fields" field', 'metademands') }}</label>
+            <div class="{{ show_used_by_ticket ? 'col-sm-3' : 'col-sm-9' }}">{{ plugin_fields_html|raw }}</div>
             {% endif %}
-        </tr>
+        </div>
         {% endif %}
-    </tbody>
-</table>
+    </div>
+</div>

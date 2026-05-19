@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
@@ -117,14 +118,8 @@ class Email extends CommonDBTM
 
     public static function showFieldCustomValues($params) {}
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Link this to a user field', 'metademands');
-        echo "</td>";
-        echo "<td>";
-
         $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
         $field = new Field();
         $fields = $field->find([
@@ -133,40 +128,32 @@ class Email extends CommonDBTM
             "item" => User::getType(),
         ]);
         foreach ($fields as $f) {
-            $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+            $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
         }
+        ob_start();
         \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-        echo "</td>";
+        $link_to_user_html = ob_get_clean();
 
-
-        if ($params['link_to_user'] > 0) {
-            echo "<td>" . __('User information to get', 'metademands') . "</td>";
+        $show_user_info = $params['link_to_user'] > 0;
+        $user_info_html = '';
+        if ($show_user_info) {
             $options = [
                 0 => \Dropdown::EMPTY_VALUE,
                 5 => __('Email'),
             ];
-            echo "</td>";
-            echo "<td>";
-            \Dropdown::showFromArray(
-                'used_by_ticket',
-                $options,
-                ['value' => $params["used_by_ticket"]]
-            );
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
+            ob_start();
+            \Dropdown::showFromArray('used_by_ticket', $options, ['value' => $params["used_by_ticket"]]);
+            $user_info_html = ob_get_clean();
         }
-        //
-        //        echo "<tr class='tab_bg_1'>";
-        //        echo "<td>";
-        //        echo __('Regex to respect', 'metademands');
-        //        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-        //        echo "</td>";
-        //        echo "<td>";
-        //        echo Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
-        //        echo "</td>";
-        //        echo "<td colspan='2'></td>";
-        //        echo "</tr>";
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_email.html.twig',
+            [
+                'link_to_user_html' => $link_to_user_html,
+                'show_user_info'    => $show_user_info,
+                'user_info_html'    => $user_info_html,
+            ]
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)

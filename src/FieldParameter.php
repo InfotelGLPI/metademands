@@ -384,6 +384,7 @@ class FieldParameter extends CommonDBChild
 
             echo self::showGlobalParameters($params);
 
+            echo "<br>";
             $class = Field::getClassFromType($params['type']);
 
             switch ($params["type"]) {
@@ -410,11 +411,9 @@ class FieldParameter extends CommonDBChild
                 case 'yesno':
                 case 'radio':
                 case 'checkbox':
-                    ob_start();
-                    $class::showFieldParameters($params);
-                    $specific_html = ob_get_clean();
+                    $specific_html = $class::showFieldParameters($params);
                     if (!empty(trim($specific_html))) {
-                        echo '<div class="mt-2"><table class="tab_cadre w-100"><tbody>' . $specific_html . '</tbody></table></div>';
+                        echo $specific_html;
                     }
                     break;
                 case 'number':

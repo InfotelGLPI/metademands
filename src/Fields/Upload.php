@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use Html;
 use GlpiPlugin\Metademands\Wizard;
@@ -180,20 +181,21 @@ class Upload extends CommonDBTM
     {
     }
 
-    public static function showFieldParameters($params)
+    public static function showFieldParameters($params): string
     {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Number of documents allowed', 'metademands');
-        echo "</td>";
-        echo "<td>";
         $data[0] = \Dropdown::EMPTY_VALUE;
         for ($i = 1; $i <= 50; $i++) {
             $data[$i] = $i;
         }
-        echo \Dropdown::showFromArray("max_upload", $data, ['value' => $params['max_upload'], 'display' => false]);
-        echo "</td>";
-        echo "</tr>";
+        $max_upload_html = \Dropdown::showFromArray("max_upload", $data, [
+            'value'   => $params['max_upload'],
+            'display' => false,
+        ]);
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_parameter_upload.html.twig',
+            ['max_upload_html' => $max_upload_html]
+        );
     }
 
 

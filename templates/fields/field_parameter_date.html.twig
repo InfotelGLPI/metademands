@@ -1,0 +1,47 @@
+{#
+-------------------------------------------------------------------------
+Metademands plugin for GLPI
+Copyright (C) 2018-2026 by the Metademands Development Team.
+-------------------------------------------------------------------------
+
+LICENSE
+
+This file is part of Metademands.
+
+Metademands is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+Metademands is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------
+@copyright Copyright (C) 2026-2026 by Metademands plugin team.
+@license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+@link      https://github.com/InfotelGLPI/Metademands
+-------------------------------------------------------------------------
+#}
+<div class="card mt-2">
+    <div class="card-header">
+        <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-2 align-items-center mb-2">
+            <label class="col-sm-3 col-form-label">{{ __('Use this field for child ticket field', 'metademands') }}</label>
+            <div class="col-sm-3">{{ used_by_child_html|raw }}</div>
+            <label class="col-sm-3 col-form-label">{{ __('Day greater or equal to now', 'metademands') }}</label>
+            <div class="col-sm-3">{{ use_future_date_html|raw }}</div>
+        </div>
+        <div class="row g-2 align-items-center mb-2">
+            <label class="col-sm-3 col-form-label">{{ __('Define the default date', 'metademands') }}</label>
+            <div class="col-sm-3">{{ use_date_now_html|raw }}</div>
+            <label class="col-sm-3 col-form-label">{{ __('Additional number day to the default date', 'metademands') }}</label>
+            <div class="col-sm-3">{{ additional_number_day_html|raw }}</div>
+        </div>
+    </div>
+</div>

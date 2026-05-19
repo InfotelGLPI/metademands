@@ -29,6 +29,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Toolbox;
 
@@ -187,7 +188,10 @@ class Signature extends CommonDBTM
 
     public static function showFieldCustomValues($params) {}
 
-    public static function showFieldParameters($params) {}
+    public static function showFieldParameters($params): string
+    {
+        return '';
+    }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params) {}
 
