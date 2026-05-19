@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 09:12+0000\n"
+"POT-Creation-Date: 2026-05-19 10:54+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -90,7 +90,8 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: templates/interticketfollowup_form.html.twig:90
-#: templates/group.html.twig:65 templates/field_form.html.twig:133
+#: templates/field_parameter_form.html.twig:51 templates/group.html.twig:65
+#: templates/field_option_form.html.twig:48 templates/field_form.html.twig:133
 #: templates/field_existing_form.html.twig:82
 msgctxt "button"
 msgid "Add"
@@ -104,6 +105,7 @@ msgstr "Ajouter un champ"
 msgid "Add a group"
 msgstr "Ajouter un groupe"
 
+#: templates/item_translations.html.twig:73
 #: templates/item_translations.html.twig:122
 msgid "Add a language"
 msgstr "Ajouter une langue"
@@ -112,7 +114,7 @@ msgstr "Ajouter une langue"
 msgid "Add a new field"
 msgstr "Ajouter un nouveau champ"
 
-#: src/FieldOption.php:451
+#: src/FieldOption.php:425 src/FieldOption.php:465
 msgid "Add a new option"
 msgstr "Ajouter une nouvelle option"
 
@@ -131,10 +133,6 @@ msgstr "Ajouter un champ existant"
 #: src/Fields/Upload.php:59
 msgid "Add attachment"
 msgstr "Ajouter une pièce jointe"
-
-#: templates/item_translations.html.twig:73
-msgid "Add language"
-msgstr "Ajouter une langue"
 
 #: src/Wizard.php:1637 src/Wizard.php:1816
 msgctxt "button"
@@ -191,7 +189,7 @@ msgstr "Toujours visible"
 msgid "Apply"
 msgstr "Appliquer"
 
-#: src/FieldCustomvalue.php:592
+#: src/FieldCustomvalue.php:514
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr "Etes-vous sur ? Les valeurs personnalisées seront supprimées !"
 
@@ -238,7 +236,7 @@ msgstr ""
 "Attention si tous les blocs ne sont pas assignés, ils seront affichés au "
 "dernier groupe assigné"
 
-#: src/FieldOption.php:495 src/FieldOption.php:1483
+#: src/FieldOption.php:507 src/FieldOption.php:1489
 msgid "Bind to the value of this checkbox"
 msgstr "Lier à la valeur de cette case à cocher"
 
@@ -249,7 +247,7 @@ msgstr "Lier à la valeur de cette case à cocher"
 msgid "Block"
 msgstr "Bloc"
 
-#: src/MailTask.php:205 src/TicketTask.php:232 src/FieldOption.php:1604
+#: src/MailTask.php:205 src/TicketTask.php:232 src/FieldOption.php:1610
 #: src/Task.php:885 src/Task.php:1288 src/Step.php:405 src/Step.php:683
 #: src/Step.php:697
 #, php-format
@@ -337,7 +335,7 @@ msgstr[2] "Tickets enfants"
 msgid "Child tickets created"
 msgstr "Tickets enfants créés"
 
-#: src/FieldOption.php:493 src/FieldOption.php:1408
+#: src/FieldOption.php:505 src/FieldOption.php:1414
 msgid "Childs blocks"
 msgstr "Blocs enfants"
 
@@ -488,12 +486,16 @@ msgstr "Créé par"
 msgid "Created on"
 msgstr "Créé le"
 
-#: src/FieldCustomvalue.php:123
+#: src/FieldCustomvalue.php:124
 msgid "Custom value"
 msgid_plural "Custom values"
 msgstr[0] "Valeur personnalisée"
 msgstr[1] "Valeurs personnalisées"
 msgstr[2] "Valeurs personnalisées"
+
+#: templates/field_customvalue_values.html.twig:49
+msgid "Custom values"
+msgstr "Valeurs personnalisées"
 
 #: front/importcustomvalues.php:66
 msgid "Data imported successfully"
@@ -545,7 +547,7 @@ msgstr "Date supérieure ou égale à maintenant"
 #: src/Fields/Dropdownmultiple.php:516 src/Fields/Dropdownmultiple.php:603
 #: src/Fields/Radio.php:303 src/Fields/Yesno.php:166
 #: src/Fields/Dropdownmeta.php:1210 src/Fields/Checkbox.php:290
-#: src/FieldCustomvalue.php:643
+#: src/FieldCustomvalue.php:565
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] "Valeur par défaut"
@@ -663,7 +665,7 @@ msgstr ""
 msgid "Display field after"
 msgstr "Afficher le champ après"
 
-#: src/Field.php:1303 src/FieldParameter.php:529
+#: src/Field.php:1303 templates/field_parameter_global.html.twig:57
 msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
@@ -675,15 +677,15 @@ msgstr "Montrer la liste des méta-demande dans le plugin ServiceCatalog"
 msgid "Display name"
 msgstr "Nom affiché"
 
-#: src/FieldOption.php:491 src/FieldOption.php:1318
+#: src/FieldOption.php:503 src/FieldOption.php:1324
 msgid "Display this hidden block"
 msgstr "Afficher ce bloc caché"
 
-#: src/FieldOption.php:492 src/FieldOption.php:1368
+#: src/FieldOption.php:504 src/FieldOption.php:1374
 msgid "Display this hidden block in the same block"
 msgstr "Afficher ce bloc caché dans le même bloc"
 
-#: src/FieldOption.php:251 src/FieldOption.php:490 src/FieldOption.php:1276
+#: src/FieldOption.php:252 src/FieldOption.php:502 src/FieldOption.php:1282
 msgid "Display this hidden field"
 msgstr "Afficher ce champ caché"
 
@@ -707,7 +709,7 @@ msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr "Voulez-vous les corriger ?"
 
-#: src/Tools.php:512 src/FieldCustomvalue.php:414 src/FieldCustomvalue.php:421
+#: src/Tools.php:512 src/FieldCustomvalue.php:364
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -766,6 +768,10 @@ msgstr "Doublons d'options des champs"
 #: src/Stepform.php:895
 msgid "Edit by"
 msgstr "Publié par"
+
+#: src/FieldOption.php:560
+msgid "Edit option"
+msgstr "Editer l'option"
 
 #: templates/item_translation_row.html.twig:77
 msgid "Edit translation"
@@ -830,8 +836,9 @@ msgstr "Erreur lors de la création de l'archive"
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
-#: src/FieldCustomvalue.php:319 src/Freetablefield.php:292
-#: src/FieldParameter.php:339 ajax/viewfieldinfos.php:55
+#: src/Freetablefield.php:292 ajax/viewfieldinfos.php:55
+#: templates/field_customvalue_form.html.twig:47
+#: templates/field_parameter_form.html.twig:68
 msgid "Example"
 msgstr "Exemple"
 
@@ -887,8 +894,9 @@ msgstr "Champ"
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
 
-#: src/FieldCustomvalue.php:308 src/Freetablefield.php:281
-#: src/FieldParameter.php:328 ajax/viewfieldinfos.php:44
+#: src/Freetablefield.php:281 ajax/viewfieldinfos.php:44
+#: templates/field_customvalue_form.html.twig:39
+#: templates/field_parameter_form.html.twig:60
 msgid "Field informations"
 msgstr "Informations du champ"
 
@@ -1014,11 +1022,13 @@ msgstr "Cacher le lien dans le menu"
 msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr "Masquer les valeurs \"Non\" et les valeurs vides dans les tickets"
 
-#: src/FieldParameter.php:479 templates/metademand.html.twig:198
+#: templates/metademand.html.twig:198
+#: templates/field_parameter_global.html.twig:41
 msgid "Hide title"
 msgstr "Cacher le titre"
 
 #: templates/metademand.html.twig:172
+#: templates/field_parameter_global.html.twig:49
 msgid "Icon"
 msgstr "Icône"
 
@@ -1046,7 +1056,7 @@ msgstr "Icone pour les problèmes"
 msgid "Icon for requests"
 msgstr "Icone pour les demandes"
 
-#: src/FieldOption.php:1410
+#: src/FieldOption.php:1416
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
@@ -1059,7 +1069,7 @@ msgstr ""
 msgid "If field empty"
 msgstr "Si le champ est vide"
 
-#: src/FieldOption.php:1485
+#: src/FieldOption.php:1491
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
@@ -1067,14 +1077,14 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la valeur de la "
 "case à cocher est définie"
 
-#: src/FieldOption.php:1320
+#: src/FieldOption.php:1326
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le bloc devient "
 "visible"
 
-#: src/FieldOption.php:1370
+#: src/FieldOption.php:1376
 msgid ""
 "If the value selected equals the value to check, the block becomes visible "
 "on the same block"
@@ -1082,27 +1092,27 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le bloc devient "
 "visible sur le même bloc"
 
-#: src/FieldOption.php:1245
+#: src/FieldOption.php:1251
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
 " obligatoire"
 
-#: src/FieldOption.php:1278
+#: src/FieldOption.php:1284
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
 " visible"
 
-#: src/FieldOption.php:1227
+#: src/FieldOption.php:1233
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la sous-demande "
 "est créée"
 
-#: src/FieldOption.php:1440
+#: src/FieldOption.php:1446
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
@@ -1140,7 +1150,7 @@ msgid "Informations"
 msgstr "Informations"
 
 #: src/Fields/Dropdownobject.php:818 src/Fields/Dropdownmultiple.php:725
-#: src/FieldParameter.php:948
+#: src/FieldParameter.php:801
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
@@ -1183,11 +1193,11 @@ msgstr "Langage technicien"
 msgid "Lastname"
 msgstr "Nom"
 
-#: src/Field.php:1306 src/FieldOption.php:488 src/FieldOption.php:1225
+#: src/Field.php:1306 src/FieldOption.php:500 src/FieldOption.php:1231
 msgid "Launch a task with the field"
 msgstr "Lancer une sous-demande avec le champ"
 
-#: src/FieldOption.php:494 src/FieldOption.php:1438
+#: src/FieldOption.php:506 src/FieldOption.php:1444
 msgid "Launch a validation"
 msgstr "Lancer une validation"
 
@@ -1207,7 +1217,7 @@ msgstr "Limité à vos 20 derniers formulaires"
 msgid "Link multiple groups to a block"
 msgstr "Lier plusieurs groupes à un bloc"
 
-#: src/FieldParameter.php:766
+#: templates/field_parameter_global.html.twig:71
 msgid "Link this to a plugin \"fields\" field"
 msgstr "Lier ce champ à un champ du plugin \"fields\""
 
@@ -1241,7 +1251,7 @@ msgstr "Ticket lié"
 msgid "List of conditions"
 msgstr "Liste des conditions"
 
-#: src/FieldOption.php:475
+#: src/FieldOption.php:487
 msgid "List of options"
 msgstr "Liste d'options"
 
@@ -1281,13 +1291,17 @@ msgstr "Faire une demande de changement"
 msgid "Make a request"
 msgstr "Faire une demande"
 
-#: src/FieldOption.php:242 src/FieldOption.php:489 src/FieldOption.php:1243
+#: src/FieldOption.php:243 src/FieldOption.php:501 src/FieldOption.php:1249
 msgid "Make this field mandatory"
 msgstr "Rendre ce champ obligatoire"
 
 #: src/Fields/Freetable.php:437 src/Field.php:1300 src/Freetablefield.php:510
 msgid "Mandatory"
 msgstr "Obligatoire"
+
+#: templates/field_parameter_global.html.twig:35
+msgid "Mandatory field"
+msgstr "Champ obligatoire"
 
 #: src/Field.php:2499
 #, php-format
@@ -1418,7 +1432,7 @@ msgstr "Nouveau modèle"
 #: src/Fields/Dropdownmeta.php:1860 src/Fields/Tel.php:350
 #: src/Fields/Basket.php:834 src/Fields/Url.php:348
 #: src/Fields/Checkbox.php:712 src/Fields/Text.php:349
-#: src/FieldOption.php:2171 src/Wizard.php:1387 src/Wizard.php:1632
+#: src/FieldOption.php:2177 src/Wizard.php:1387 src/Wizard.php:1632
 #: src/Wizard.php:1773 src/Wizard.php:1782 src/Wizard.php:1822
 #: src/Wizard.php:1828 src/Wizard.php:2388 src/Wizard.php:2391
 msgid "Next"
@@ -1481,7 +1495,7 @@ msgstr "Pas d'éléments dans le panier"
 msgid "No link"
 msgstr "Pas de lien"
 
-#: src/FieldOption.php:391
+#: templates/field_option_options.html.twig:32
 msgid "No options are allowed for this field type"
 msgstr "Aucune option n'est disponible pour ce type de champ"
 
@@ -1606,14 +1620,14 @@ msgstr[0] "Seulement visible par ce groupe"
 msgstr[1] "Seulement visible par ces groupes"
 msgstr[2] "Seulement visible par ces groupes"
 
-#: src/FieldOption.php:128
+#: src/FieldOption.php:129
 msgid "Option"
 msgid_plural "Options"
 msgstr[0] "Option"
 msgstr[1] "Options"
 msgstr[2] "Options"
 
-#: src/FieldOption.php:400
+#: templates/field_option_options.html.twig:36
 msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
@@ -1632,7 +1646,7 @@ msgstr "Ordre d'exécution et regroupement des conditions"
 msgid "Order type"
 msgstr "Type de commande"
 
-#: src/FieldParameter.php:137
+#: src/FieldParameter.php:138
 msgid "Parameter"
 msgid_plural "Parameters"
 msgstr[0] "Paramètre"
@@ -1671,7 +1685,7 @@ msgstr "Merci d'ajouter le champ : Catégorie de la métademande"
 msgid "Please come back later"
 msgstr "Merci de revenir plus tard"
 
-#: src/FieldCustomvalue.php:593
+#: src/FieldCustomvalue.php:515
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1739,7 +1753,7 @@ msgstr "Plage"
 
 #: src/Fields/Dropdownmultiple.php:578 src/Fields/Radio.php:278
 #: src/Fields/Freetable.php:365 src/Fields/Dropdownmeta.php:1157
-#: src/Fields/Checkbox.php:265 src/FieldCustomvalue.php:624
+#: src/Fields/Checkbox.php:265 src/FieldCustomvalue.php:546
 #: src/Freetablefield.php:424
 msgid "Rank"
 msgstr "Rang"
@@ -1775,7 +1789,7 @@ msgid "Reference is mandatory"
 msgstr "La référence est obligatoire"
 
 #: src/Condition.php:224 src/Condition.php:247 src/Condition.php:286
-#: src/FieldOption.php:1126 src/FieldOption.php:1138
+#: src/FieldOption.php:1132 src/FieldOption.php:1144
 msgid "Regex"
 msgstr "Expression régulière"
 
@@ -1815,7 +1829,7 @@ msgstr "Identifiant du demandeur"
 msgid "Requester name"
 msgstr "Nom du demandeur"
 
-#: src/FieldCustomvalue.php:581
+#: src/FieldCustomvalue.php:503
 msgid "Reset and import custom values"
 msgstr "Supprimer et importer les valeurs personnalisées"
 
@@ -1859,7 +1873,9 @@ msgid "Save"
 msgstr "SAuver"
 
 #: templates/interticketfollowup_form.html.twig:97
-#: templates/field_form.html.twig:133 templates/profile.html.twig:35
+#: templates/field_parameter_form.html.twig:51
+#: templates/field_option_form.html.twig:48 templates/field_form.html.twig:133
+#: templates/profile.html.twig:35
 msgctxt "button"
 msgid "Save"
 msgstr "Sauver"
@@ -1871,7 +1887,7 @@ msgstr "Sauver"
 #: src/Fields/Dropdownmeta.php:1858 src/Fields/Tel.php:348
 #: src/Fields/Basket.php:833 src/Fields/Basket.php:1849 src/Fields/Url.php:346
 #: src/Fields/Checkbox.php:710 src/Fields/Text.php:347
-#: src/FieldOption.php:2169 src/Basketline.php:192 src/Wizard.php:1627
+#: src/FieldOption.php:2175 src/Basketline.php:192 src/Wizard.php:1627
 #: src/Wizard.php:1813
 msgctxt "button"
 msgid "Save & Post"
@@ -2048,7 +2064,7 @@ msgstr "Affichage type Switch"
 msgid "Synchronise with ticket template"
 msgstr "Synchroniser avec le gabarit"
 
-#: src/FieldParameter.php:521
+#: templates/field_parameter_global.html.twig:54
 msgid "Takes the whole row"
 msgstr "Prend toute la ligne"
 
@@ -2177,7 +2193,7 @@ msgstr "Le type de l'objet est obligatoire"
 msgid "The plugin schema is good"
 msgstr "Le schéma du plugin est bon"
 
-#: src/FieldCustomvalue.php:410
+#: templates/field_customvalue_values.html.twig:41
 msgid ""
 "The ranks are not ordered correctly, you will not be able to order them!"
 msgstr ""
@@ -2261,7 +2277,7 @@ msgstr ""
 msgid "This action requires PHP extension zip"
 msgstr "Cette action nécessite l'extension PHP Zip"
 
-#: src/FieldOption.php:1346
+#: src/FieldOption.php:1352
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
@@ -2384,15 +2400,18 @@ msgid "Translations: %s"
 msgstr "Traductions: %s"
 
 #: src/Fields/Freetable.php:384 src/Fields/Information.php:167
-#: src/FieldOption.php:483 src/Freetablefield.php:438
-#: templates/metademand.html.twig:121 templates/field_form.html.twig:84
+#: src/FieldOption.php:495 src/Freetablefield.php:438
+#: templates/metademand.html.twig:121
+#: templates/field_customvalue_form.html.twig:43
+#: templates/field_parameter_form.html.twig:64
+#: templates/field_form.html.twig:84
 msgid "Type"
 msgid_plural "Types"
 msgstr[0] "Type"
 msgstr[1] "Types"
 msgstr[2] "Types"
 
-#: src/FieldOption.php:486
+#: src/FieldOption.php:498
 msgid "Type of value to check"
 msgstr "Type de valeur à vérifier"
 
@@ -2464,7 +2483,7 @@ msgstr ""
 msgid "Use richt text"
 msgstr "Utiliser le texte riche"
 
-#: src/Field.php:1305 src/FieldParameter.php:563
+#: src/Field.php:1305 templates/field_parameter_global.html.twig:67
 msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
@@ -2512,7 +2531,7 @@ msgstr "Validé sans tickets enfants"
 msgid "Validated by %s on %s"
 msgstr "Validé par %s le %s"
 
-#: src/FieldOption.php:1129 src/FieldOption.php:1138
+#: src/FieldOption.php:1135 src/FieldOption.php:1144
 msgid "Value"
 msgstr "Valeur"
 
@@ -2522,7 +2541,7 @@ msgstr "Valeur"
 #: src/Fields/Radio.php:458 src/Fields/Yesno.php:228
 #: src/Fields/Dropdown.php:580 src/Fields/Dropdownmeta.php:1494
 #: src/Fields/Basket.php:564 src/Fields/Checkbox.php:445 src/Field.php:1301
-#: src/FieldOption.php:487
+#: src/FieldOption.php:499
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
@@ -2594,7 +2613,7 @@ msgstr ""
 "Vous utilisez un modèle public. Cela vous permet de préremplir "
 "automatiquement les champs du formulaire, ce qui vous simplifie la vie :)"
 
-#: src/FieldCustomvalue.php:727
+#: src/FieldCustomvalue.php:649
 msgid "You can't add a custom value without name"
 msgstr "Vous ne pouvez pas ajouter de valeur personnalisée sans nom"
 
@@ -2663,7 +2682,7 @@ msgstr[2] "Vous avez %d brouillons"
 msgid "You have %s"
 msgstr "Vous avez %s"
 
-#: src/FieldCustomvalue.php:399
+#: templates/field_customvalue_values.html.twig:33
 msgid "You have duplicates rank!"
 msgstr "Vous avez des rangs en doublon !"
 
