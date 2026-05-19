@@ -36,6 +36,7 @@ use CommonITILActor;
 use DBConnection;
 use DbUtils;
 use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use ITILCategory;
 use Migration;
@@ -293,6 +294,7 @@ class TicketTask extends CommonDBChild
                 'type' => $values['type'],
                 'itilcategories_id' => $values['itilcategories_id'] ?? 0];
             Ajax::updateItemJsCode('ticket_category', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
 
             $params = ['action' => 'users_id_requester',
                 'entities_id' => '__VALUE__',
@@ -300,36 +302,42 @@ class TicketTask extends CommonDBChild
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
                 'users_id_requester' => $values['users_id_requester'] ?? 0];
             Ajax::updateItemJsCode('ticket_users_id_requester', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
 
             $params = ['action' => 'users_id_observer',
                 'entities_id' => '__VALUE__',
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
                 'users_id_observer' => $values['users_id_observer'] ?? 0];
             Ajax::updateItemJsCode('ticket_users_id_observer', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
 
             $params = ['action' => 'users_id_assign',
                 'entities_id' => '__VALUE__',
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
                 'users_id_assign' => $values['users_id_assign'] ?? 0];
             Ajax::updateItemJsCode('ticket_users_id_assign', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
 
             $params = ['action' => 'groups_id_requester',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_requester' => 1],
                 'groups_id_requester' => $values['groups_id_requester'] ?? 0];
             Ajax::updateItemJsCode('ticket_groups_id_requester', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
 
             $params = ['action' => 'groups_id_observer',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_watcher' => 1],
                 'groups_id_observer' => $values['groups_id_observer'] ?? 0];
             Ajax::updateItemJsCode('ticket_groups_id_observer', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
 
             $params = ['action' => 'groups_id_assign',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_assign' => 1],
                 'groups_id_assign' => $values['groups_id_assign'] ?? 0];
             Ajax::updateItemJsCode('ticket_groups_id_assign', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
+            echo ";\n";
             echo "}";
             echo "</script>";
             echo "</td>";
@@ -665,22 +673,22 @@ class TicketTask extends CommonDBChild
         $ticket = new \Ticket();
         $tt = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
-        echo "<form name='form_ticket' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?_in_modal=1&id=$ID' enctype=\"multipart/form-data\">";
+        ob_start();
         self::showTicketTaskForm($metademands->fields['id'], $solved, $tasks->fields['type'], $input);
+        $form_content_html = ob_get_clean();
 
-        echo Html::hidden('plugin_metademands_tasks_id', ['value' => $this->fields['plugin_metademands_tasks_id']]);
-        if (isset($tt->fields['id'])) {
-            echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
-        }
-        echo Html::hidden('type', ['value' => $metademands->fields['type']]);
-        echo Html::hidden('entities_id', ['value' => $metademands->fields['entities_id']]);
-
-        echo "<div><table class='tab_cadre_fixe'>";
-
-        $options['canedit'] = $canedit;
-        $options['candel'] = $solved;
-        $this->showFormButtons($options);
-
+        TemplateRenderer::getInstance()->display('@metademands/tickettask_form.html.twig', [
+            'form_action'        => Toolbox::getItemTypeFormURL(TicketTask::class),
+            'field_id'           => $ID > 0 ? $ID : 0,
+            'is_new'             => $ID <= 0,
+            'tasks_id'           => $this->fields['plugin_metademands_tasks_id'],
+            'type'               => $metademands->fields['type'],
+            'entities_id'        => $metademands->fields['entities_id'],
+            'tickettemplates_id' => $tt->fields['id'] ?? 0,
+            'form_content_html'  => $form_content_html,
+            'canedit'            => $canedit,
+            'can_delete'         => $solved && $ID > 0,
+        ]);
         return true;
     }
 

@@ -36,6 +36,7 @@ use CommonDBTM;
 use CommonGLPI;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use MassiveAction;
 use Migration;
@@ -325,12 +326,14 @@ class Task extends CommonDBChild
         if ($item->fields['maintenance_mode'] == 1) {
             $solved = true;
         } else {
-
             $solved = Ticket::isTicketSolved($item->getID());
         }
 
+        $modal_rand = mt_rand();
+        $form_html  = '';
 
         if ($solved) {
+            ob_start();
 
             $this->showFormHeader($options);
 
@@ -394,8 +397,6 @@ class Task extends CommonDBChild
                         'groups_id_assign' => $tickettask->fields['groups_id_assign'],
                         'status' => $tickettask->fields['status'],
                         'requesttypes_id' => $tickettask->fields['requesttypes_id'],
-                        //                    'actiontime' => $tickettask->fields['actiontime'],
-                        //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
                 } elseif ($this->fields['type'] == self::MAIL_TYPE) {
                     $mailtask = new MailTask();
@@ -420,28 +421,7 @@ class Task extends CommonDBChild
                 } else {
                     $values = [
                         'tickettask_id' => $tickettask->getID(),
-                        //                        'itilcategories_id' => $tickettask->fields['itilcategories_id'],
                         'type' => $type,
-                        //                        'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
-                        //                        'plugin_metademands_tasks_id' => $ID,
-                        //                        'content' => $tickettask->fields['content'],
-                        //                        'name' => $this->fields['name'],
-                        //                        'block_use' => json_decode($this->fields['block_use'], true),
-                        //                        'useBlock' => $this->fields['useBlock'],
-                        //                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
-                        //                        'formatastable' => $this->fields['formatastable'],
-                        //                        'entities_id' => $this->fields['entities_id'],
-                        //                        'is_recursive' => $this->fields['is_recursive'],
-                        //                        'users_id_requester' => $tickettask->fields['users_id_requester'],
-                        //                        'users_id_observer' => $tickettask->fields['users_id_observer'],
-                        //                        'users_id_assign' => $tickettask->fields['users_id_assign'],
-                        //                        'groups_id_requester' => $tickettask->fields['groups_id_requester'],
-                        //                        'groups_id_observer' => $tickettask->fields['groups_id_observer'],
-                        //                        'groups_id_assign' => $tickettask->fields['groups_id_assign'],
-                        //                        'status' => $tickettask->fields['status'],
-                        //                        'requesttypes_id' => $tickettask->fields['requesttypes_id'],
-                        //                    'actiontime' => $tickettask->fields['actiontime'],
-                        //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
                 }
                 if ($type != Task::MAIL_TYPE) {
@@ -466,64 +446,19 @@ class Task extends CommonDBChild
             echo "</td>";
             echo "</tr>";
 
-            //            echo "<tr class='tab_bg_1'>";
-            //
-            //            echo "<td class='tab_bg_2 center' colspan='6'>";
             echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
-            //            echo Html::hidden('entities_id', ['value' => $item->fields['entities_id']]);
-            //            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
-            //            echo "</td>";
-            //            echo "</tr>";
 
             $this->showFormButtons(['colspan' => 3]);
 
-        } else {
-            echo "<div class='alert alert-warning' role='alert'>";
-            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
-            echo __('You cannot add new tasks if linked tickets are not solved', 'metademands');
-            echo "</div>";
+            $form_html = ob_get_clean();
         }
 
-        /*echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Name') . "</td>";
-        echo "<td>";
-        echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
-        echo "</td>";
-        echo "<td>" . __('Label') . "</td>";
-        echo "<td>";
-        echo Html::input('label', ['value' => $this->fields['label'], 'size' => 40]);
-        echo "</td>";
-        echo "<td>" . __('Mandatory field') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("is_mandatory", $this->fields["is_mandatory"]);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Type') . "</td>";
-        echo "<td>";
-        Field::dropdownFieldTypes("type", ['value'     => $this->fields["type"],
-                                                            'on_change' => 'if(this.value == "dropdown"){
-                                    document.getElementById("show_item").style.display = "inline";
-                                    document.getElementById("show_item_title").style.display = "inline"
-                                  } else {
-                                    document.getElementById("show_item").style.display = "none";
-                                    document.getElementById("show_item_title").style.display = "none"
-                                  }']);
-        echo "</td>";
-        echo "<td>";
-        echo "<span id='show_item_title' style='display:none'>";
-        __('Object', 'metademands');
-        echo "</span>";
-        echo "</td>";
-        echo "<td>";
-        echo "<span id='show_item' style='display:none'>";
-        self::dropdownFieldItems("item", ['value' => $this->fields["item"]]);
-        echo "</span>";
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $this->fields["plugin_metademands_metademands_id"]]);
-        echo "</td>";
-
-        $this->showFormButtons(['colspan' => 3]);*/
+        TemplateRenderer::getInstance()->display('@metademands/task_form.html.twig', [
+            'modal_id'   => 'modal_task_' . $item->getID() . $modal_rand,
+            'is_new'     => $ID <= 0,
+            'form_html'  => $form_html,
+            'not_solved' => !$solved,
+        ]);
 
         return true;
     }

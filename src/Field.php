@@ -4703,6 +4703,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             key: 'label2',
             name: __('Additional label', 'metademands'),
             value: $this->fields['label2'],
+            is_rich_text: true,
             category: $category,
         );
 
@@ -4711,6 +4712,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             key: 'comment',
             name: __('Comments'),
             value: $this->fields['comment'],
+            is_rich_text: true,
             category: $category,
         );
 

@@ -34,6 +34,7 @@ use ChangeTemplate;
 use CommonDBChild;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use ITILCategory;
 use Migration;
@@ -367,7 +368,10 @@ class TicketField extends CommonDBChild
             echo "</div>";
         }
 
-        $this->listFields($object, $ticketfield_data, $fields, $searchOption, $canedit, $tt);
+        $rand = mt_rand();
+        echo "<div id='viewticketchild" . $item->fields['id'] . $rand . "'></div>";
+
+        $this->listFields($object, $ticketfield_data, $fields, $searchOption, $canedit, $tt, $item->fields['id'], $rand);
     }
 
     /**
@@ -395,53 +399,56 @@ class TicketField extends CommonDBChild
         if ($ID > 0) {
             $this->check($ID, READ);
         } else {
-            // Create item
             $this->check(-1, UPDATE);
             $this->getEmpty();
         }
 
-        $this->showFormHeader(['colspan' => 2]);
         $meta = new Metademand();
         $meta->getFromDB($this->fields["plugin_metademands_metademands_id"]);
         $object = $meta->fields['object_to_create'];
+        $searchOption = Search::getOptions($object);
+        $field_name = $searchOption[$this->fields['num']]['name'] ?? '';
+
+        $used_fields = $this->getPredefinedFields($this->fields["plugin_metademands_metademands_id"], true);
+        $itemtype_used = $used_fields['itemtype'] ?? '';
+
+        ob_start();
+        $this->showFormHeader(['colspan' => 2]);
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Name') . "</td>";
         echo "<td>";
-        $searchOption = Search::getOptions($object);
-        echo $searchOption[$this->fields['num']]['name'];
-
+        echo htmlspecialchars($field_name);
         echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
         echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
-
         echo "</td>";
         echo "<td>" . __('Value') . "</td>";
         echo "<td>";
-        $used_fields = $this->getPredefinedFields($this->fields["plugin_metademands_metademands_id"], true);
-        $itemtype_used = '';
-        if (isset($used_fields['itemtype'])) {
-            $itemtype_used = $used_fields['itemtype'];
-        }
         echo "<span id='show_massiveaction_field'>&nbsp;</span>\n";
-        $paramsmassaction = [
-            'id_field' => $this->fields["num"],
-            'value' => $this->fields["value"],
-            'name' => 'value',
-            'itemtype' => $object,
-            'datatype' => "text",
-            'itemtype_used' => $itemtype_used,
-            'relative_dates' => 1
-        ];
-
         Ajax::updateItem(
             "show_massiveaction_field",
             PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownMassiveActionField.php",
-            $paramsmassaction
+            [
+                'id_field'       => $this->fields["num"],
+                'value'          => $this->fields["value"],
+                'name'           => 'value',
+                'itemtype'       => $object,
+                'datatype'       => "text",
+                'itemtype_used'  => $itemtype_used,
+                'relative_dates' => 1,
+            ]
         );
         echo "</td>";
         echo "</tr>";
 
         $this->showFormButtons(['colspan' => 2, 'candel' => $this->fields["is_deletable"]]);
+        $form_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@metademands/ticketfield_form.html.twig', [
+            'modal_id'   => 'modal_ticketfield_' . $ID . '_' . mt_rand(),
+            'field_name' => $field_name,
+            'form_html'  => $form_html,
+        ]);
 
         return true;
     }
@@ -453,17 +460,20 @@ class TicketField extends CommonDBChild
      * @param $canedit
      * @param $tt
      */
-    private function listFields($object, $ticketfield_data, $fields, $searchOption, $canedit, $tt)
+    private function listFields($object, $ticketfield_data, $fields, $searchOption, $canedit, $tt, $meta_id = 0, $rand = null)
     {
+        global $CFG_GLPI;
+
+        if ($rand === null) {
+            $rand = mt_rand();
+        }
+
         $obj = new $object();
 
         $display_options = [
-//          'relative_dates' => true,
             'comments' => true,
             'html' => true
         ];
-
-        $rand = mt_rand();
 
         if (count($ticketfield_data) && count($fields)) {
             echo "<div class='center first-bloc left'>";
@@ -488,7 +498,7 @@ class TicketField extends CommonDBChild
             echo "<th>" . __('Name') . "</th>";
             echo "<th>" . __('Value') . "</th>";
             echo "</tr>";
-            // Init navigation list for field items
+
             Session::initNavigateListItems($this->getType(), self::getTypeName(2));
 
             $fieldnames = $tt->getAllowedFields(true);
@@ -496,31 +506,42 @@ class TicketField extends CommonDBChild
                 if (!in_array($searchOption[$value['num']]['linkfield'], self::$used_fields)
                     && !in_array($value['num'], self::$used_fields)) {
                     Session::addToNavigateListItems($this->getType(), $id);
+
+                    echo "<script type='text/javascript'>\n";
+                    echo "function viewEditTicketField" . $id . $rand . "() {\n";
+                    $params = [
+                        'type'     => __CLASS__,
+                        'parenttype' => Metademand::class,
+                        Metademand::getForeignKeyField() => $meta_id,
+                        'id'       => $id,
+                    ];
+                    Ajax::updateItemJsCode(
+                        "viewticketchild" . $meta_id . $rand,
+                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                        $params
+                    );
+                    echo ";\n}\n";
+                    echo "</script>\n";
+
                     echo "<tr class='tab_bg_1'>";
                     echo "<td width='10'>";
-                    //               $predefined = false;
-                    //               if (isset($tt->predefined[$fieldnames[$value['num']]])) {
-                    //                  $predefined = true;
-                    //               }
-
                     if ($canedit) {
                         Html::showMassiveActionCheckBox(__CLASS__, $id);
                     }
                     echo "</td>";
                     echo "<td>";
-                    //               if (!$predefined) {
-                    echo "<a href='" . Toolbox::getItemTypeFormURL(
-                            TicketField::class
-                        ) . "?id=" . $id . "'>" . $fields[$value['num']] . "</a> ";
-                    //               } else {
-                    //                  echo $fields[$value['num']] . " (" . __('Predefined value in template', 'metademands') . " " . $tt->getLink() . ") ";
-                    //               }
+                    if ($canedit) {
+                        echo "<a href='javascript:viewEditTicketField" . $id . $rand . "();'>";
+                        echo htmlspecialchars($fields[$value['num']]);
+                        echo "</a> ";
+                    } else {
+                        echo htmlspecialchars($fields[$value['num']]);
+                    }
                     echo $tt->getMandatoryMark($fieldnames[$value['num']]);
                     echo "</td>";
                     echo "<td>";
                     $display_datas = [];
                     $display_datas[$searchOption[$value['num']]['field']] = $value['value'];
-
                     echo $obj->getValueToDisplay($searchOption[$value['num']], $display_datas, $display_options);
                     echo "</td>";
                     echo "</tr>";
