@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 07:54+0000\n"
+"POT-Creation-Date: 2026-05-19 08:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: src/Configstep.php:225
+#: templates/configstep.html.twig:45
 msgid "Activate supervisor validation"
 msgstr ""
 
@@ -80,7 +80,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: templates/interticketfollowup_form.html.twig:90
+#: templates/interticketfollowup_form.html.twig:90 templates/group.html.twig:65
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -93,7 +93,7 @@ msgstr ""
 msgid "Add a field"
 msgstr ""
 
-#: src/Group.php:319
+#: templates/group.html.twig:39
 msgid "Add a group"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Add a task"
 msgstr ""
 
-#: src/Configstep.php:254
+#: templates/configstep.html.twig:59
 msgid "Add all form actors as ticket requester"
 msgstr ""
 
@@ -151,7 +151,7 @@ msgstr ""
 msgid "All available categories"
 msgstr ""
 
-#: src/Group.php:252
+#: src/Group.php:253
 msgid "All groups and not these groups"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgstr ""
 msgid "All tickets"
 msgstr ""
 
-#: src/Config.php:399
+#: templates/config.html.twig:75
 msgid "Allow adding groups by regex"
 msgstr ""
 
@@ -261,7 +261,7 @@ msgstr ""
 msgid "Block to use"
 msgstr ""
 
-#: src/Configstep.php:152
+#: src/Configstep.php:153
 msgid "Both"
 msgstr ""
 
@@ -273,12 +273,8 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/Profile.php:278
+#: src/Profile.php:179
 msgid "Cancel / delete a form"
-msgstr ""
-
-#: src/Profile.php:188
-msgid "Cancel /delete a form"
 msgstr ""
 
 #: src/Wizard.php:2377
@@ -322,7 +318,7 @@ msgstr ""
 msgid "Childs blocks"
 msgstr ""
 
-#: src/Config.php:350
+#: templates/config.html.twig:54
 msgid "Childs tickets get parent content"
 msgstr ""
 
@@ -374,7 +370,7 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-#: src/Config.php:543
+#: templates/config.html.twig:103
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
@@ -392,11 +388,11 @@ msgid_plural "Conditional displays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Config.php:529
+#: templates/config.html.twig:95
 msgid "Configuration of the Service Catalog plugin"
 msgstr ""
 
-#: src/Config.php:312
+#: templates/config.html.twig:37
 msgid "Configuration of the meta-demand plugin"
 msgstr ""
 
@@ -420,7 +416,7 @@ msgstr ""
 msgid "ContractType"
 msgstr ""
 
-#: src/Config.php:357
+#: templates/config.html.twig:56
 msgid "Create PDF"
 msgstr ""
 
@@ -428,7 +424,7 @@ msgstr ""
 msgid "Create a"
 msgstr ""
 
-#: src/Profile.php:160 src/Profile.php:266
+#: src/Profile.php:158
 msgid "Create a meta-demand"
 msgstr ""
 
@@ -529,7 +525,7 @@ msgstr[1] ""
 msgid "Define a new visibility"
 msgstr ""
 
-#: src/Profile.php:196 src/Profile.php:282
+#: src/Profile.php:186
 msgid "Define a private / public model"
 msgstr ""
 
@@ -552,7 +548,7 @@ msgstr ""
 msgid "Define the default date"
 msgstr ""
 
-#: src/Group.php:245
+#: src/Group.php:246
 msgid "Define visibility"
 msgstr ""
 
@@ -637,7 +633,7 @@ msgstr ""
 msgid "Display into the basket"
 msgstr ""
 
-#: src/Config.php:390
+#: templates/config.html.twig:71
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
@@ -764,11 +760,11 @@ msgstr ""
 msgid "Empty option has been deleted"
 msgstr ""
 
-#: src/Config.php:323
+#: templates/config.html.twig:44
 msgid "Enable display metademands via icons"
 msgstr ""
 
-#: src/Config.php:316
+#: templates/config.html.twig:42
 msgid "Enable the update / add of simple ticket to metademand"
 msgstr ""
 
@@ -862,7 +858,7 @@ msgstr ""
 msgid "Field type"
 msgstr ""
 
-#: src/Profile.php:180 src/Profile.php:274
+#: src/Profile.php:172
 msgid "Fill out a form"
 msgstr ""
 
@@ -938,6 +934,10 @@ msgstr ""
 msgid "Grand total (TTC)"
 msgstr ""
 
+#: templates/group.html.twig:43
+msgid "Group"
+msgstr ""
+
 #: hook.php:590
 msgid "Group child ticket"
 msgstr ""
@@ -946,11 +946,11 @@ msgstr ""
 msgid "Group in charge of the next step"
 msgstr ""
 
-#: src/Group.php:372
+#: templates/group.html.twig:84
 msgid "Groups allowed to enter a demand"
 msgstr ""
 
-#: src/Group.php:68
+#: src/Group.php:69
 msgid "Groups rights"
 msgstr ""
 
@@ -966,7 +966,7 @@ msgstr ""
 msgid "Hidden unless"
 msgstr ""
 
-#: src/Profile.php:224 src/Profile.php:294
+#: src/Profile.php:207
 msgid "Hide button in menu"
 msgstr ""
 
@@ -982,23 +982,23 @@ msgstr ""
 msgid "Icon display"
 msgstr ""
 
-#: src/Config.php:555
+#: templates/config.html.twig:107
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
-#: src/Config.php:500
+#: templates/config.html.twig:89
 msgid "Icon for changes"
 msgstr ""
 
-#: src/Config.php:417
+#: templates/config.html.twig:81
 msgid "Icon for incidents"
 msgstr ""
 
-#: src/Config.php:473
+#: templates/config.html.twig:87
 msgid "Icon for problems"
 msgstr ""
 
-#: src/Config.php:444
+#: templates/config.html.twig:83
 msgid "Icon for requests"
 msgstr ""
 
@@ -1090,14 +1090,14 @@ msgid_plural "Initial forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Profile.php:260 src/Interticketfollowup.php:67
+#: src/Profile.php:152 src/Interticketfollowup.php:67
 #: src/Interticketfollowup.php:342
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Configstep.php:260
+#: templates/configstep.html.twig:61
 msgid "Interface"
 msgstr ""
 
@@ -1109,7 +1109,7 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: src/Config.php:383
+#: templates/config.html.twig:69
 msgid "Language Tech"
 msgstr ""
 
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "Limited to your last 20 forms"
 msgstr ""
 
-#: src/Configstep.php:243
+#: templates/configstep.html.twig:53
 msgid "Link multiple groups to a block"
 msgstr ""
 
@@ -1227,9 +1227,9 @@ msgstr ""
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: src/Profile.php:150 src/Profile.php:155 src/Profile.php:254
-#: src/Tools.php:157 src/Tools.php:234 src/Tools.php:329 src/Tools.php:492
-#: src/Menu.php:48 src/Config.php:76 src/Metademand.php:132 setup.php:284
+#: src/Profile.php:146 src/Tools.php:157 src/Tools.php:234 src/Tools.php:329
+#: src/Tools.php:492 src/Menu.php:48 src/Config.php:77 src/Metademand.php:132
+#: setup.php:284
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -1302,7 +1302,7 @@ msgstr ""
 msgid "More informations"
 msgstr ""
 
-#: src/Configstep.php:270
+#: templates/configstep.html.twig:66
 msgid "Move to the next group even if you can continue"
 msgstr ""
 
@@ -1316,6 +1316,10 @@ msgstr ""
 
 #: src/Field.php:2430
 msgid "My values"
+msgstr ""
+
+#: templates/group.html.twig:92
+msgid "Name"
 msgstr ""
 
 #: src/Metademand.php:1700
@@ -1508,7 +1512,7 @@ msgstr ""
 msgid "Only by supervisor"
 msgstr ""
 
-#: src/Group.php:251
+#: src/Group.php:252
 msgid "Only these groups"
 msgstr ""
 
@@ -1559,7 +1563,7 @@ msgstr[1] ""
 msgid "Parent ticket"
 msgstr ""
 
-#: src/Config.php:332
+#: templates/config.html.twig:48
 msgid "Parent ticket tag"
 msgstr ""
 
@@ -1596,7 +1600,7 @@ msgstr ""
 msgid "Please upload a valid CSV file"
 msgstr ""
 
-#: src/Config.php:71
+#: src/Config.php:72
 msgid "Plugin setup"
 msgstr ""
 
@@ -1695,7 +1699,7 @@ msgstr ""
 msgid "Regex to respect"
 msgstr ""
 
-#: src/Group.php:336
+#: templates/group.html.twig:57
 msgid "Regular expression"
 msgstr ""
 
@@ -1735,13 +1739,13 @@ msgstr ""
 msgid "Resource manager"
 msgstr ""
 
-#: src/Profile.php:55
+#: src/Profile.php:57
 msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Profile.php:203 src/Profile.php:286
+#: src/Profile.php:193
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
@@ -1769,7 +1773,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: templates/interticketfollowup_form.html.twig:97
+#: templates/interticketfollowup_form.html.twig:97 templates/profile.html.twig:35
 msgctxt "button"
 msgid "Save"
 msgstr ""
@@ -1840,7 +1844,7 @@ msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: src/Configstep.php:219
+#: templates/configstep.html.twig:43
 msgid "See blocks as tab"
 msgstr ""
 
@@ -1848,7 +1852,7 @@ msgstr ""
 msgid "See form"
 msgstr ""
 
-#: src/Config.php:406
+#: templates/config.html.twig:77
 msgid "See top metademands"
 msgstr ""
 
@@ -1881,7 +1885,7 @@ msgstr ""
 msgid "Show a identity card of user"
 msgstr ""
 
-#: src/Profile.php:216 src/Profile.php:290
+#: src/Profile.php:200
 msgid "Show form selection on connection and replace the create form"
 msgstr ""
 
@@ -1889,7 +1893,7 @@ msgstr ""
 msgid "Signature"
 msgstr ""
 
-#: src/Config.php:340
+#: templates/config.html.twig:50
 msgid "Son ticket tag"
 msgstr ""
 
@@ -1915,7 +1919,7 @@ msgid_plural "Steps a metademands form"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Configstep.php:67
+#: src/Configstep.php:68 templates/configstep.html.twig:38
 msgid "Step by step settings"
 msgstr ""
 
@@ -2081,7 +2085,7 @@ msgid ""
 "resolved"
 msgstr ""
 
-#: src/Configstep.php:236
+#: templates/configstep.html.twig:51
 msgid "The user must select a defined user of the selected groups"
 msgstr ""
 
@@ -2203,7 +2207,7 @@ msgstr ""
 msgid "Title color"
 msgstr ""
 
-#: src/Config.php:532
+#: templates/config.html.twig:99
 msgid "Title for Service Catalog widget"
 msgstr ""
 
@@ -2283,6 +2287,11 @@ msgstr ""
 msgid "Unselect all"
 msgstr ""
 
+#: templates/configstep.html.twig:75 templates/config.html.twig:116
+msgctxt "button"
+msgid "Update"
+msgstr ""
+
 #: src/Task.php:1265
 msgctxt "button"
 msgid "Update block to use"
@@ -2309,7 +2318,7 @@ msgstr ""
 msgid "Use block"
 msgstr ""
 
-#: src/Config.php:366
+#: templates/config.html.twig:60
 msgid "Use drafts"
 msgstr ""
 
@@ -2352,7 +2361,7 @@ msgctxt "button"
 msgid "Validate"
 msgstr ""
 
-#: src/Profile.php:168 src/Profile.php:270
+#: src/Profile.php:165
 msgid "Validate a meta-demand"
 msgstr ""
 
@@ -2392,7 +2401,7 @@ msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
 
-#: src/Group.php:250
+#: src/Group.php:251
 msgid "Visibility"
 msgstr ""
 
@@ -2610,8 +2619,7 @@ msgstr ""
 msgid "field update on demand"
 msgstr ""
 
-#: src/Profile.php:175 src/Stepform.php:816 src/Draft.php:249
-#: front/draftcreation.php:60
+#: src/Stepform.php:816 src/Draft.php:249 front/draftcreation.php:60
 msgid "form"
 msgid_plural "forms"
 msgstr[0] ""
