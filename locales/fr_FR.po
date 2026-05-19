@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 13:42+0000\n"
+"POT-Creation-Date: 2026-05-19 15:24+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -98,6 +98,10 @@ msgctxt "button"
 msgid "Add"
 msgstr "Ajouter"
 
+#: templates/task_form.html.twig:35
+msgid "Add a child object"
+msgstr "Ajouter un objet enfant"
+
 #: src/MetademandValidation.php:178
 msgid "Add a field"
 msgstr "Ajouter un champ"
@@ -119,7 +123,7 @@ msgstr "Ajouter un nouveau champ"
 msgid "Add a new option"
 msgstr "Ajouter une nouvelle option"
 
-#: src/Task.php:545 templates/task_form.html.twig:35
+#: src/Task.php:545
 msgid "Add a task"
 msgstr "Ajouter une sous-demande"
 
@@ -143,7 +147,7 @@ msgstr "Ajouter et fermer"
 msgid "Add and create another"
 msgstr "Ajouter et créer un nouveau"
 
-#: src/Fields/Upload.php:59
+#: src/Fields/Upload.php:60
 msgid "Add attachment"
 msgstr "Ajouter une pièce jointe"
 
@@ -152,7 +156,7 @@ msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
 
-#: src/Fields/Signature.php:94
+#: src/Fields/Signature.php:95
 msgid "Add your signature"
 msgstr "Ajouter votre signature"
 
@@ -161,12 +165,12 @@ msgstr "Ajouter votre signature"
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
-#: src/Fields/Dateinterval.php:124 src/Fields/Date.php:119
-#: src/Fields/Datetimeinterval.php:121 src/Fields/Datetime.php:117
+#: templates/fields/field_parameter_date.html.twig:43
+#: templates/fields/field_parameter_interval.html.twig:41
 msgid "Additional number day to the default date"
 msgstr "Journées additionnelles ajoutées à la date par défaut"
 
-#: src/Fields/Information.php:122
+#: src/Fields/Information.php:126
 msgid "Alert"
 msgstr "Alerte"
 
@@ -225,7 +229,7 @@ msgstr[0] "Formulaire associé"
 msgstr[1] "Formulaires associés"
 msgstr[2] "Formulaires associés"
 
-#: src/Fields/Ldapdropdown.php:273
+#: templates/fields/field_parameter_ldapdropdown.html.twig:41
 msgid "Attribute"
 msgstr "Attribut"
 
@@ -271,8 +275,8 @@ msgstr "Bloc"
 msgid "Block %s"
 msgstr "Bloc %s"
 
-#: src/Fields/Radio.php:409 src/Fields/Dropdown.php:531
-#: src/Fields/Dropdownmeta.php:1444 src/Fields/Checkbox.php:397
+#: src/Fields/Radio.php:407 src/Fields/Dropdown.php:513
+#: src/Fields/Dropdownmeta.php:1425 src/Fields/Checkbox.php:395
 msgid "Block display"
 msgstr "Affichage en bloc"
 
@@ -284,7 +288,7 @@ msgstr "Aperçu du bloc"
 msgid "Block parent ticket resolution"
 msgstr "Bloquer la résolution du ticket parent"
 
-#: src/Fields/Titleblock.php:59
+#: src/Fields/Titleblock.php:60
 msgid "Block title"
 msgstr "Titre de bloc"
 
@@ -328,7 +332,7 @@ msgstr "Catégorie"
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
-#: src/Fields/Checkbox.php:65
+#: src/Fields/Checkbox.php:66
 msgid "Checkbox"
 msgstr "Case à cocher"
 
@@ -364,10 +368,10 @@ msgstr "Tickets enfants récupèrent les informations du ticket parent"
 msgid "Choose a template"
 msgstr "Choisissez un gabarit"
 
-#: src/Fields/Dropdownmultiple.php:678 src/Fields/Radio.php:408
-#: src/Fields/Yesno.php:197 src/Fields/Dropdown.php:503
-#: src/Fields/Dropdown.php:530 src/Fields/Dropdownmeta.php:1382
-#: src/Fields/Dropdownmeta.php:1443 src/Fields/Checkbox.php:396
+#: src/Fields/Dropdownmultiple.php:681 src/Fields/Radio.php:406
+#: src/Fields/Yesno.php:197 src/Fields/Dropdown.php:497
+#: src/Fields/Dropdown.php:512 src/Fields/Dropdownmeta.php:1377
+#: src/Fields/Dropdownmeta.php:1424 src/Fields/Checkbox.php:394
 msgid "Classic display"
 msgstr "Affichage classique"
 
@@ -376,7 +380,7 @@ msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
 
-#: src/Fields/Signature.php:95 templates/metademand.html.twig:173
+#: src/Fields/Signature.php:96 templates/metademand.html.twig:173
 msgid "Clear"
 msgstr "Supprimer"
 
@@ -401,6 +405,10 @@ msgstr "Fermer"
 msgctxt "status"
 msgid "Closed"
 msgstr "Clos"
+
+#: templates/fields/field_parameter_color.html.twig:35
+msgid "Color"
+msgstr "Couleur"
 
 #: src/Metademand.php:7275
 msgid "Coming"
@@ -520,7 +528,7 @@ msgstr "Valeurs personnalisées"
 msgid "Data imported successfully"
 msgstr "Données importées avec succès"
 
-#: src/Fields/Date.php:56 src/Freetablefield.php:222
+#: src/Fields/Date.php:57 src/Freetablefield.php:222
 #: templates/interticketfollowup_form.html.twig:64
 msgid "Date"
 msgid_plural "Dates"
@@ -538,15 +546,15 @@ msgstr "La date %s ne peut être inférieure à la date initiale"
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: src/Fields/Datetime.php:56
+#: src/Fields/Datetime.php:57
 msgid "Date & Hour"
 msgstr "Date & Heure"
 
-#: src/Fields/Datetimeinterval.php:57
+#: src/Fields/Datetimeinterval.php:58
 msgid "Date & Hour interval"
 msgstr "Intervalle Date & Heure"
 
-#: src/Fields/Dateinterval.php:57
+#: src/Fields/Dateinterval.php:58
 msgid "Date interval"
 msgstr "Intervalle de dates"
 
@@ -558,14 +566,14 @@ msgstr "Date de la dernière étape"
 msgid "Date of the next reminder"
 msgstr "Date du prochain rappel"
 
-#: src/Fields/Dateinterval.php:107 src/Fields/Date.php:104
-#: src/Fields/Datetimeinterval.php:104 src/Fields/Datetime.php:102
+#: templates/fields/field_parameter_date.html.twig:37
+#: templates/fields/field_parameter_interval.html.twig:35
 msgid "Day greater or equal to now"
 msgstr "Date supérieure ou égale à maintenant"
 
-#: src/Fields/Dropdownmultiple.php:516 src/Fields/Dropdownmultiple.php:603
-#: src/Fields/Radio.php:303 src/Fields/Yesno.php:166
-#: src/Fields/Dropdownmeta.php:1210 src/Fields/Checkbox.php:290
+#: src/Fields/Dropdownmultiple.php:523 src/Fields/Dropdownmultiple.php:610
+#: src/Fields/Radio.php:308 src/Fields/Yesno.php:167
+#: src/Fields/Dropdownmeta.php:1214 src/Fields/Checkbox.php:295
 #: src/FieldCustomvalue.php:565
 msgid "Default value"
 msgid_plural "Default values"
@@ -595,8 +603,8 @@ msgstr "Définir comme public"
 msgid "Define initial requester as requester for child tickets"
 msgstr "Définir le demandeur initial comme demandeur de tickets enfants"
 
-#: src/Fields/Dateinterval.php:114 src/Fields/Date.php:113
-#: src/Fields/Datetimeinterval.php:111 src/Fields/Datetime.php:111
+#: templates/fields/field_parameter_date.html.twig:41
+#: templates/fields/field_parameter_interval.html.twig:37
 msgid "Define the default date"
 msgstr "Définir la date par défaut"
 
@@ -674,7 +682,7 @@ msgstr "Date de départ"
 msgid "Designation"
 msgstr "Désignation"
 
-#: src/Fields/Dropdownmeta.php:960 src/Field.php:3914
+#: src/Fields/Dropdownmeta.php:961 src/Field.php:3914
 msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
@@ -689,7 +697,7 @@ msgstr ""
 msgid "Display field after"
 msgstr "Afficher le champ après"
 
-#: src/Field.php:1312 templates/field_parameter_global.html.twig:57
+#: src/Field.php:1312 templates/field_parameter_global.html.twig:56
 msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
@@ -713,14 +721,17 @@ msgstr "Afficher ce bloc caché dans le même bloc"
 msgid "Display this hidden field"
 msgstr "Afficher ce champ caché"
 
-#: src/Fields/Dropdownmultiple.php:682 src/Fields/Radio.php:412
-#: src/Fields/Yesno.php:201 src/Fields/Dropdown.php:507
-#: src/Fields/Dropdown.php:534 src/Fields/Dropdownmeta.php:1386
-#: src/Fields/Dropdownmeta.php:1447 src/Fields/Checkbox.php:400
+#: templates/fields/field_parameter_checkbox_radio.html.twig:35
+#: templates/fields/field_parameter_yesno.html.twig:35
+#: templates/fields/field_parameter_dropdown.html.twig:48
+#: templates/fields/field_parameter_dropdown.html.twig:55
+#: templates/fields/field_parameter_dropdownmeta.html.twig:41
+#: templates/fields/field_parameter_dropdownmeta.html.twig:60
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:35
 msgid "Display type of the field"
 msgstr "Type d'affichage du champ"
 
-#: src/Fields/Dropdownmultiple.php:520
+#: src/Fields/Dropdownmultiple.php:527
 msgid "Display value in the dropdown"
 msgstr "Afficher la valeur dans la liste déroulante"
 
@@ -756,7 +767,7 @@ msgstr "Souhaitez-vous la valider ?"
 msgid "Done on"
 msgstr "Fait le"
 
-#: src/Fields/Dropdownmultiple.php:679
+#: src/Fields/Dropdownmultiple.php:682
 msgid "Double column display"
 msgstr "Affichage en double colonnes"
 
@@ -773,7 +784,7 @@ msgstr "Le nom du brouillon est obligatoire"
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
-#: src/Fields/Dropdownmultiple.php:74
+#: src/Fields/Dropdownmultiple.php:75
 msgid "Dropdown multiple"
 msgstr "Liste déroulante multiple"
 
@@ -793,13 +804,13 @@ msgstr "Doublons d'options des champs"
 msgid "Edit by"
 msgstr "Publié par"
 
+#: templates/task_form.html.twig:35
+msgid "Edit child object"
+msgstr "Editer un objet enfant"
+
 #: src/FieldOption.php:560
 msgid "Edit option"
 msgstr "Editer l'option"
-
-#: templates/task_form.html.twig:35
-msgid "Edit task"
-msgstr "Editer la tâche"
 
 #: templates/tickettask_form.html.twig:39
 msgid "Edit ticket task"
@@ -940,7 +951,8 @@ msgstr "Type de champ"
 msgid "Fill out a form"
 msgstr "Remplir un formulaire"
 
-#: src/Fields/Ldapdropdown.php:264 src/Field.php:4535
+#: src/Field.php:4535
+#: templates/fields/field_parameter_ldapdropdown.html.twig:37
 msgid "Filter"
 msgstr "Filtre"
 
@@ -995,7 +1007,11 @@ msgstr[0] "Champ de la table libre"
 msgstr[1] "Champs de la table libre"
 msgstr[2] "Champs de la table libre"
 
-#: src/Fields/Dropdownobject.php:73
+#: templates/field_parameter_global.html.twig:32
+msgid "Global parameters"
+msgstr "Paramètres globaux"
+
+#: src/Fields/Dropdownobject.php:74
 msgid "Glpi Object"
 msgstr "Objet GLPI"
 
@@ -1038,7 +1054,7 @@ msgstr "Droits des groupes"
 msgid "Groups visibility"
 msgstr "Visibilité des groupes"
 
-#: src/Fields/Dropdownmeta.php:1431
+#: templates/fields/field_parameter_dropdownmeta.html.twig:54
 msgid "Hidden field"
 msgstr "Champ caché"
 
@@ -1055,16 +1071,16 @@ msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr "Masquer les valeurs \"Non\" et les valeurs vides dans les tickets"
 
 #: templates/metademand.html.twig:198
-#: templates/field_parameter_global.html.twig:41
+#: templates/field_parameter_global.html.twig:42
 msgid "Hide title"
 msgstr "Cacher le titre"
 
 #: templates/metademand.html.twig:172
-#: templates/field_parameter_global.html.twig:49
+#: templates/field_parameter_global.html.twig:48
 msgid "Icon"
 msgstr "Icône"
 
-#: src/Fields/Dropdownmeta.php:1383
+#: src/Fields/Dropdownmeta.php:1378
 msgid "Icon display"
 msgstr "Affichage comme icone"
 
@@ -1096,8 +1112,8 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: src/Fields/Email.php:176 src/Fields/Textarea.php:144 src/Fields/Tel.php:180
-#: src/Fields/Url.php:178 src/Fields/Text.php:179
+#: src/Fields/Email.php:163 src/Fields/Textarea.php:143 src/Fields/Tel.php:170
+#: src/Fields/Url.php:130 src/Fields/Text.php:169
 msgid "If field empty"
 msgstr "Si le champ est vide"
 
@@ -1173,16 +1189,16 @@ msgctxt "status"
 msgid "In progress"
 msgstr "En cours"
 
-#: src/Fields/Information.php:120
+#: src/Fields/Information.php:124
 msgid "Information"
 msgstr "Information"
 
-#: src/Fields/Information.php:60
+#: src/Fields/Information.php:61
 msgid "Informations"
 msgstr "Informations"
 
-#: src/Fields/Dropdownobject.php:818 src/Fields/Dropdownmultiple.php:725
-#: src/FieldParameter.php:801
+#: src/Fields/Dropdownobject.php:824 src/FieldParameter.php:800
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:50
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
@@ -1209,6 +1225,10 @@ msgstr "Interface"
 msgid "Internal name"
 msgstr "Nom interne"
 
+#: templates/fields/field_parameter_ldapdropdown.html.twig:35
+msgid "LDAP directory"
+msgstr "Annuair LDAP"
+
 #: templates/field_form.html.twig:54
 msgid "Label"
 msgstr "Label"
@@ -1233,7 +1253,7 @@ msgstr "Lancer une sous-demande avec le champ"
 msgid "Launch a validation"
 msgstr "Lancer une validation"
 
-#: src/Fields/Ldapdropdown.php:64
+#: src/Fields/Ldapdropdown.php:65
 msgid "Ldap Dropdown"
 msgstr "Liste déroulante LDAP"
 
@@ -1249,14 +1269,17 @@ msgstr "Limité à vos 20 derniers formulaires"
 msgid "Link multiple groups to a block"
 msgstr "Lier plusieurs groupes à un bloc"
 
-#: templates/field_parameter_global.html.twig:71
+#: templates/field_parameter_global.html.twig:68
 msgid "Link this to a plugin \"fields\" field"
 msgstr "Lier ce champ à un champ du plugin \"fields\""
 
-#: src/Fields/Dropdownobject.php:746 src/Fields/Dropdownobject.php:841
-#: src/Fields/Email.php:124 src/Fields/Dropdown.php:481
-#: src/Fields/Dropdownmeta.php:1400 src/Fields/Tel.php:127
-#: src/Fields/Text.php:125 ajax/viewtypefields.php:56
+#: src/Fields/Dropdownobject.php:764 src/Fields/Dropdownobject.php:852
+#: src/Fields/Dropdownobject.php:857 ajax/viewtypefields.php:56
+#: templates/fields/field_parameter_dropdown.html.twig:41
+#: templates/fields/field_parameter_text.html.twig:35
+#: templates/fields/field_parameter_email.html.twig:35
+#: templates/fields/field_parameter_dropdownmeta.html.twig:45
+#: templates/fields/field_parameter_tel.html.twig:35
 msgid "Link this to a user field"
 msgstr "Lier ce champ à un champ utilisateur"
 
@@ -1331,7 +1354,7 @@ msgstr "Rendre ce champ obligatoire"
 msgid "Mandatory"
 msgstr "Obligatoire"
 
-#: templates/field_parameter_global.html.twig:35
+#: templates/field_parameter_global.html.twig:38
 msgid "Mandatory field"
 msgstr "Champ obligatoire"
 
@@ -1457,13 +1480,13 @@ msgstr "Nouveau suivi inter tickets"
 msgid "New model"
 msgstr "Nouveau modèle"
 
-#: src/Fields/Dropdownobject.php:1257 src/Fields/Dropdownmultiple.php:1201
-#: src/Fields/Dropdownmultiple.php:1374 src/Fields/Email.php:346
-#: src/Fields/Radio.php:698 src/Fields/Yesno.php:461
-#: src/Fields/Textarea.php:306 src/Fields/Dropdown.php:881
-#: src/Fields/Dropdownmeta.php:1860 src/Fields/Tel.php:350
-#: src/Fields/Basket.php:834 src/Fields/Url.php:348
-#: src/Fields/Checkbox.php:712 src/Fields/Text.php:349
+#: src/Fields/Dropdownobject.php:1239 src/Fields/Dropdownmultiple.php:1193
+#: src/Fields/Dropdownmultiple.php:1366 src/Fields/Email.php:333
+#: src/Fields/Radio.php:663 src/Fields/Yesno.php:454
+#: src/Fields/Textarea.php:305 src/Fields/Dropdown.php:840
+#: src/Fields/Dropdownmeta.php:1820 src/Fields/Tel.php:340
+#: src/Fields/Basket.php:834 src/Fields/Url.php:300
+#: src/Fields/Checkbox.php:678 src/Fields/Text.php:339
 #: src/FieldOption.php:2177 src/Wizard.php:1387 src/Wizard.php:1632
 #: src/Wizard.php:1773 src/Wizard.php:1782 src/Wizard.php:1822
 #: src/Wizard.php:1828 src/Wizard.php:2388 src/Wizard.php:2391
@@ -1507,7 +1530,7 @@ msgstr "Pas de valeurs personnalisées vides trouvées"
 msgid "No empty field options founded"
 msgstr "Aucune option vide de champ trouvée"
 
-#: src/Fields/Dropdownmeta.php:856
+#: src/Fields/Dropdownmeta.php:857
 msgid "No equipment founded"
 msgstr "Pas d'équipement trouvé"
 
@@ -1543,7 +1566,7 @@ msgstr "Pas d'espaces, pas de caractères spéciaux"
 msgid "No visibility defined"
 msgstr "Pas de visibilité définie"
 
-#: src/Fields/Textarea.php:151
+#: src/Fields/Textarea.php:150
 msgid "Not available with Rich text option"
 msgstr "Non disponible avec l'option Texte Riche"
 
@@ -1552,16 +1575,16 @@ msgstr "Non disponible avec l'option Texte Riche"
 msgid "Not empty"
 msgstr "Non vide"
 
-#: src/Fields/Dropdownobject.php:1024 src/Fields/Dropdownobject.php:1027
-#: src/Fields/Dropdownobject.php:1037 src/Fields/Dropdownobject.php:1059
-#: src/Fields/Dropdownobject.php:1075 src/Fields/Dropdownobject.php:1086
-#: src/Fields/Ldapdropdown.php:340 src/Fields/Ldapdropdown.php:376
-#: src/Fields/Dropdownmultiple.php:911 src/Fields/Radio.php:494
-#: src/Fields/Radio.php:507 src/Fields/Dropdown.php:659
-#: src/Fields/Dropdown.php:695 src/Fields/Dropdownmeta.php:1612
-#: src/Fields/Dropdownmeta.php:1622 src/Fields/Dropdownmeta.php:1643
-#: src/Fields/Basket.php:565 src/Fields/Checkbox.php:479
-#: src/Fields/Checkbox.php:492
+#: src/Fields/Dropdownobject.php:1006 src/Fields/Dropdownobject.php:1009
+#: src/Fields/Dropdownobject.php:1019 src/Fields/Dropdownobject.php:1041
+#: src/Fields/Dropdownobject.php:1057 src/Fields/Dropdownobject.php:1068
+#: src/Fields/Ldapdropdown.php:329 src/Fields/Ldapdropdown.php:365
+#: src/Fields/Dropdownmultiple.php:903 src/Fields/Radio.php:459
+#: src/Fields/Radio.php:472 src/Fields/Dropdown.php:618
+#: src/Fields/Dropdown.php:654 src/Fields/Dropdownmeta.php:1572
+#: src/Fields/Dropdownmeta.php:1582 src/Fields/Dropdownmeta.php:1603
+#: src/Fields/Basket.php:565 src/Fields/Checkbox.php:445
+#: src/Fields/Checkbox.php:458
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
@@ -1577,7 +1600,7 @@ msgstr "Pas encore terminé"
 msgid "Number"
 msgstr "Nombre"
 
-#: src/Fields/Upload.php:187
+#: templates/fields/field_parameter_upload.html.twig:35
 msgid "Number of documents allowed"
 msgstr "Nombre de documents autorisés"
 
@@ -1637,7 +1660,8 @@ msgstr "Uniquement par le responsable"
 msgid "Only these groups"
 msgstr "Seulement ces groupes"
 
-#: src/Fields/Dropdownobject.php:772 src/Fields/Dropdownmultiple.php:696
+#: src/Fields/Dropdownobject.php:777 src/Fields/Dropdownobject.php:782
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:40
 msgid "Only users of my groups"
 msgstr "Seulement les utilisateurs de mes groupes"
 
@@ -1775,7 +1799,7 @@ msgstr "Éditeur"
 msgid "Quantity"
 msgstr "Quantité"
 
-#: src/Fields/Radio.php:67
+#: src/Fields/Radio.php:68
 msgid "Radio button"
 msgstr "Bouton radio"
 
@@ -1783,7 +1807,7 @@ msgstr "Bouton radio"
 msgid "Range"
 msgstr "Plage"
 
-#: src/Fields/Dropdownmultiple.php:578 src/Fields/Radio.php:278
+#: src/Fields/Dropdownmultiple.php:585 src/Fields/Radio.php:278
 #: src/Fields/Freetable.php:365 src/Fields/Dropdownmeta.php:1157
 #: src/Fields/Checkbox.php:265 src/FieldCustomvalue.php:546
 #: src/Freetablefield.php:424
@@ -1794,7 +1818,8 @@ msgstr "Rang"
 msgid "Ranks problem with fields"
 msgstr "Problèmes de rangs des champs"
 
-#: src/Fields/Dropdownobject.php:811 src/Fields/Dropdownmeta.php:1424
+#: src/Fields/Dropdownobject.php:823
+#: templates/fields/field_parameter_dropdownmeta.html.twig:52
 msgid "Read-Only"
 msgstr "Lecture seule"
 
@@ -1825,7 +1850,8 @@ msgstr "La référence est obligatoire"
 msgid "Regex"
 msgstr "Expression régulière"
 
-#: src/Fields/Tel.php:166 src/Fields/Text.php:165
+#: templates/fields/field_parameter_text.html.twig:43
+#: templates/fields/field_parameter_tel.html.twig:43
 msgid "Regex to respect"
 msgstr "Regex à respecter"
 
@@ -1884,7 +1910,7 @@ msgstr "Droit de mettre à jour un formulaire de méta-demande depuis le ticket"
 msgid "Root"
 msgstr "Racine"
 
-#: src/Fields/Dropdown.php:518
+#: templates/fields/field_parameter_dropdown.html.twig:50
 msgid "Root location"
 msgstr "Lieu racine"
 
@@ -1913,13 +1939,13 @@ msgctxt "button"
 msgid "Save"
 msgstr "Sauver"
 
-#: src/Fields/Dropdownobject.php:1256 src/Fields/Dropdownmultiple.php:1199
-#: src/Fields/Dropdownmultiple.php:1372 src/Fields/Email.php:344
-#: src/Fields/Radio.php:696 src/Fields/Yesno.php:459
-#: src/Fields/Textarea.php:304 src/Fields/Dropdown.php:880
-#: src/Fields/Dropdownmeta.php:1858 src/Fields/Tel.php:348
-#: src/Fields/Basket.php:833 src/Fields/Basket.php:1849 src/Fields/Url.php:346
-#: src/Fields/Checkbox.php:710 src/Fields/Text.php:347
+#: src/Fields/Dropdownobject.php:1238 src/Fields/Dropdownmultiple.php:1191
+#: src/Fields/Dropdownmultiple.php:1364 src/Fields/Email.php:331
+#: src/Fields/Radio.php:661 src/Fields/Yesno.php:452
+#: src/Fields/Textarea.php:303 src/Fields/Dropdown.php:839
+#: src/Fields/Dropdownmeta.php:1818 src/Fields/Tel.php:338
+#: src/Fields/Basket.php:833 src/Fields/Basket.php:1849 src/Fields/Url.php:298
+#: src/Fields/Checkbox.php:676 src/Fields/Text.php:337
 #: src/FieldOption.php:2175 src/Basketline.php:192 src/Wizard.php:1627
 #: src/Wizard.php:1813
 msgctxt "button"
@@ -2001,7 +2027,7 @@ msgstr "Voir votre panier"
 msgid "Select"
 msgstr "Sélectionner"
 
-#: src/Fields/Dropdownmultiple.php:521
+#: src/Fields/Dropdownmultiple.php:528
 msgid "Select all"
 msgstr "Tout cocher"
 
@@ -2017,7 +2043,7 @@ msgstr "Sélectionnez le groupe suivant"
 msgid "Service"
 msgstr "Service"
 
-#: src/Fields/Dropdownobject.php:763
+#: src/Fields/Dropdownobject.php:765
 msgid "Show a identity card of user"
 msgstr "Montrer la carte d'identité de l'utilisateur"
 
@@ -2027,7 +2053,7 @@ msgstr ""
 "Afficher la sélection du formulaire lors de la connexion et remplacer le "
 "formulaire de création"
 
-#: src/Fields/Signature.php:56
+#: src/Fields/Signature.php:57
 msgid "Signature"
 msgstr "Signature"
 
@@ -2035,11 +2061,29 @@ msgstr "Signature"
 msgid "Son ticket tag"
 msgstr "Balise du ticket enfant"
 
-#: src/Fields/Dropdownmeta.php:85
+#: src/Fields/Dropdownmeta.php:86
 msgid "Specific dropdown"
 msgstr "Liste déroulante spécifique"
 
-#: src/Fields/Dropdown.php:504
+#: templates/fields/field_parameter_checkbox_radio.html.twig:31
+#: templates/fields/field_parameter_yesno.html.twig:31
+#: templates/fields/field_parameter_dropdown.html.twig:31
+#: templates/fields/field_parameter_text.html.twig:31
+#: templates/fields/field_parameter_email.html.twig:31
+#: templates/fields/field_parameter_date.html.twig:31
+#: templates/fields/field_parameter_interval.html.twig:31
+#: templates/fields/field_parameter_upload.html.twig:31
+#: templates/fields/field_parameter_dropdownmeta.html.twig:31
+#: templates/fields/field_parameter_tel.html.twig:31
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:31
+#: templates/fields/field_parameter_color.html.twig:31
+#: templates/fields/field_parameter_dropdownobject.html.twig:32
+#: templates/fields/field_parameter_ldapdropdown.html.twig:31
+#: templates/fields/field_parameter_textarea.html.twig:31
+msgid "Specific parameters"
+msgstr "Paramètres spécifiques"
+
+#: src/Fields/Dropdown.php:498
 msgid "Splitted display"
 msgstr "Affichage divisé"
 
@@ -2097,7 +2141,7 @@ msgstr "Affichage type Switch"
 msgid "Synchronise with ticket template"
 msgstr "Synchroniser avec le gabarit"
 
-#: templates/field_parameter_global.html.twig:54
+#: templates/field_parameter_global.html.twig:53
 msgid "Takes the whole row"
 msgstr "Prend toute la ligne"
 
@@ -2146,7 +2190,7 @@ msgstr "Techniciens des tickets enfants"
 msgid "Template name"
 msgstr "Nom du gabarit"
 
-#: src/Fields/Text.php:62 src/Freetablefield.php:218
+#: src/Fields/Text.php:63 src/Freetablefield.php:218
 msgid "Text"
 msgstr "Texte"
 
@@ -2169,7 +2213,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr "La valeur par défaut a été modifiée depuis la dernière traduction"
 
-#: src/Fields/Textarea.php:883
+#: src/Fields/Textarea.php:882
 msgid "The description field is mandatory"
 msgstr "Le champ description est obligatoire"
 
@@ -2280,11 +2324,11 @@ msgstr "Il n'y a pas de demandes dans le panier"
 msgid "There is no line on the mandatory table %s"
 msgstr "Il n'y a pas de lignes dans le tableau obligatoire %s"
 
-#: src/Fields/Signature.php:77
+#: src/Fields/Signature.php:78
 msgid "There was a problem on delete your signature"
 msgstr "Il y a eu un problème à la suppression de votre signature"
 
-#: src/Fields/Signature.php:76
+#: src/Fields/Signature.php:77
 msgid "There was a problem on upload your signature"
 msgstr "Il y a eu un problème au chargement de votre signature"
 
@@ -2322,11 +2366,11 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr "Cette demande est déja utilisée dans"
 
-#: src/Fields/Signature.php:78
+#: src/Fields/Signature.php:79
 msgid "This field is mandatory"
 msgstr "Le champ est obligatoire"
 
-#: src/Fields/Dropdownmeta.php:345
+#: src/Fields/Dropdownmeta.php:346
 msgid "This field is mandatory, please select your equipment"
 msgstr "Ce champ est obligatoire, merci de sélectionner votre équipement"
 
@@ -2366,7 +2410,7 @@ msgstr "Groupe de techniciens des tickets cibles"
 msgid "Ticket technician of target tickets"
 msgstr "Technicien des tickets cibles"
 
-#: src/Fields/Time.php:57
+#: src/Fields/Time.php:58
 msgid "Time"
 msgstr "Heure"
 
@@ -2432,8 +2476,9 @@ msgstr[2] "Traductions"
 msgid "Translations: %s"
 msgstr "Traductions: %s"
 
-#: src/Fields/Freetable.php:384 src/Fields/Information.php:167
-#: src/FieldOption.php:495 src/Freetablefield.php:438
+#: src/Fields/Freetable.php:384 src/FieldOption.php:495
+#: src/Freetablefield.php:438
+#: templates/fields/field_parameter_color.html.twig:40
 #: templates/metademand.html.twig:121
 #: templates/field_customvalue_form.html.twig:43
 #: templates/field_parameter_form.html.twig:64
@@ -2462,7 +2507,7 @@ msgstr "Unité"
 msgid "Unit price (HT)"
 msgstr "Prix unitaire (HT)"
 
-#: src/Fields/Dropdownmultiple.php:522
+#: src/Fields/Dropdownmultiple.php:529
 msgid "Unselect all"
 msgstr "Tout décocher"
 
@@ -2501,28 +2546,31 @@ msgstr "Utiliser les blocs"
 msgid "Use drafts"
 msgstr "Utiliser les brouillons"
 
-#: src/Fields/Dropdownobject.php:792 src/Fields/Dropdownmultiple.php:706
+#: src/Fields/Dropdownobject.php:796
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:44
 msgid "Use id of requester by default"
 msgstr ""
 "Utiliser le demandeur en utilisateur par défaut de la liste déroulante"
 
-#: src/Fields/Dropdownobject.php:799 src/Fields/Dropdownmultiple.php:713
+#: src/Fields/Dropdownobject.php:797
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:46
 msgid "Use id of supervisor requester by default"
 msgstr ""
 "Utiliser le responsable de l'utilisateur en utilisateur par défaut de la "
 "liste déroulante"
 
-#: src/Fields/Textarea.php:131
+#: templates/fields/field_parameter_textarea.html.twig:35
 msgid "Use richt text"
 msgstr "Utiliser le texte riche"
 
-#: src/Field.php:1314 templates/field_parameter_global.html.twig:67
+#: src/Field.php:1314 templates/field_parameter_global.html.twig:64
 msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
-#: src/Fields/Dropdownobject.php:780 src/Fields/Dropdownobject.php:860
-#: src/Fields/Date.php:97 src/Fields/Dropdown.php:468
-#: src/Fields/Dropdownmeta.php:1374 src/Fields/Datetime.php:95
+#: src/Fields/Dropdownobject.php:778 src/Fields/Dropdownobject.php:853
+#: templates/fields/field_parameter_dropdown.html.twig:37
+#: templates/fields/field_parameter_date.html.twig:35
+#: templates/fields/field_parameter_dropdownmeta.html.twig:37
 msgid "Use this field for child ticket field"
 msgstr "Utiliser ce champ comme champ des tickets enfants"
 
@@ -2534,7 +2582,9 @@ msgstr "Les blocs à utiliser sont obligatoires"
 msgid "User in charge of the next step"
 msgstr "Utilisateur en charge de la prochaine étape"
 
-#: src/Fields/Email.php:143 src/Fields/Tel.php:146 src/Fields/Text.php:144
+#: templates/fields/field_parameter_text.html.twig:38
+#: templates/fields/field_parameter_email.html.twig:38
+#: templates/fields/field_parameter_tel.html.twig:38
 msgid "User information to get"
 msgstr "Information de l'utilisateur à récupérer"
 
@@ -2569,11 +2619,11 @@ msgid "Value"
 msgstr "Valeur"
 
 #: src/Condition.php:418 src/Condition.php:556 src/Condition.php:658
-#: src/Condition.php:985 src/Fields/Dropdownobject.php:917
-#: src/Fields/Ldapdropdown.php:290 src/Fields/Dropdownmultiple.php:751
-#: src/Fields/Radio.php:458 src/Fields/Yesno.php:228
-#: src/Fields/Dropdown.php:580 src/Fields/Dropdownmeta.php:1494
-#: src/Fields/Basket.php:564 src/Fields/Checkbox.php:445 src/Field.php:1310
+#: src/Condition.php:985 src/Fields/Dropdownobject.php:899
+#: src/Fields/Ldapdropdown.php:279 src/Fields/Dropdownmultiple.php:743
+#: src/Fields/Radio.php:423 src/Fields/Yesno.php:221
+#: src/Fields/Dropdown.php:539 src/Fields/Dropdownmeta.php:1454
+#: src/Fields/Basket.php:564 src/Fields/Checkbox.php:411 src/Field.php:1310
 #: src/FieldOption.php:499
 msgid "Value to check"
 msgstr "Valeur à vérifier"
@@ -2591,7 +2641,7 @@ msgstr "Visibilité"
 msgid "Visible by all"
 msgstr "Visible par tous"
 
-#: src/Fields/Information.php:121
+#: src/Fields/Information.php:125
 msgid "Warning"
 msgstr "Avertissement"
 
@@ -2608,7 +2658,7 @@ msgstr "Attention : il y a des champs sans paramètres, merci de vérifier"
 msgid "Warning : there is no custom values for this object"
 msgstr "Attention : il n'y a pas de valeurs personnalisées pour cet objet"
 
-#: src/Fields/Yesno.php:214
+#: templates/fields/field_parameter_yesno.html.twig:42
 msgid "Warning: switch mode don't support mandatory field check"
 msgstr ""
 "Attention : le mode Switch ne prends pas en charge la vérification du champ "
@@ -2634,7 +2684,7 @@ msgstr "Création du formulaire"
 msgid "Wizard overview"
 msgstr "Aperçu du formulaire"
 
-#: src/Fields/Yesno.php:63
+#: src/Fields/Yesno.php:64
 msgid "Yes / No"
 msgstr "Oui / Non"
 
@@ -2790,11 +2840,11 @@ msgstr "Vos modèles"
 msgid "Your private models"
 msgstr "Vos modèles privés"
 
-#: src/Fields/Signature.php:75
+#: src/Fields/Signature.php:76
 msgid "Your signature has been deleted"
 msgstr "Votre signature a été supprimée"
 
-#: src/Fields/Signature.php:74
+#: src/Fields/Signature.php:75
 msgid "Your signature has been uploaded"
 msgstr "Votre signature a été envoyée"
 
