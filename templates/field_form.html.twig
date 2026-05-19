@@ -34,7 +34,7 @@
 <form name="form" method="post" action="{{ action }}">
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
-    {{ inputs.hidden('id', field_id) }}
+    {% if not is_new %}{{ inputs.hidden('id', field_id) }}{% endif %}
     {{ inputs.hidden('entities_id', entities_id) }}
     {{ inputs.hidden('is_recursive', is_recursive) }}
 

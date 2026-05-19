@@ -35,6 +35,7 @@ use CommonDBChild;
 use CommonGLPI;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Migration;
 use Plugin;
@@ -282,20 +283,16 @@ class FieldParameter extends CommonDBChild
      */
     public function showParameterForm($ID = -1, $options = [])
     {
-        global $PLUGIN_HOOKS;
-
         if (!$this->canview()) {
             return false;
         }
         if (!$this->cancreate()) {
             return false;
         }
-        Html::requireJs('tinymce');
 
-        $metademand = new Metademand();
+        $metademand        = new Metademand();
         $metademand_fields = new Field();
-        $metademand_custom = new FieldCustomvalue();
-        $item = $options['parent'];
+        $item              = $options['parent'];
 
         if ($ID > 0) {
             $this->check($ID, UPDATE);
@@ -304,47 +301,35 @@ class FieldParameter extends CommonDBChild
         } else {
             $metademand_fields->getFromDB($item->getID());
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
-            // Create item
             $options['plugin_metademands_fields_id'] = $options['parent']->getField('id');
             $this->check(-1, CREATE, $options);
         }
 
-        $this->showFormHeader($options);
-
-
-        echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
-        echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
-        echo Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
-
         $params = Field::getAllParamsFromField($metademand_fields);
 
+        ob_start();
         self::showFieldParameters($params);
+        $field_parameters_html = ob_get_clean();
 
-        $this->showFormButtons(['colspan' => 2, 'candel' => false,]);
-
+        $field_example_html = '';
         if ($ID > 0) {
-            echo "<table class='tab_cadre' width='100%'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='2'>" . __('Field informations', 'metademands') . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Type') . "</td>";
-            echo "<td>";
-            echo Field::getFieldTypesName($params["type"]);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Example', 'metademands') . "</td>";
-            echo "<td>";
+            ob_start();
             echo Field::getFieldInput([], $params, false, 0, 0, false, "");
-            echo "</td>";
-            echo "</tr>";
-
-            echo "</table>";
+            $field_example_html = ob_get_clean();
         }
 
+        TemplateRenderer::getInstance()->display('@metademands/field_parameter_form.html.twig', [
+            'form_action'           => \Toolbox::getItemTypeFormURL(FieldParameter::class),
+            'field_parent_id'       => $item->getID(),
+            'field_type'            => $metademand_fields->fields['type'],
+            'field_item'            => $metademand_fields->fields['item'],
+            'field_id'              => $ID > 0 ? $ID : 0,
+            'is_new'                => $ID <= 0,
+            'field_parameters_html' => $field_parameters_html,
+            'is_existing'           => $ID > 0,
+            'field_type_name'       => $ID > 0 ? Field::getFieldTypesName($params['type']) : '',
+            'field_example_html'    => $field_example_html,
+        ]);
 
         return true;
     }
@@ -396,17 +381,8 @@ class FieldParameter extends CommonDBChild
 
         if (in_array($params['type'], $allowed_parameters_types)
             || in_array($params['item'], $allowed_parameters_items)) {
-            //            if (is_array($new_fields) && in_array($params['type'], $new_fields)) {
-            //                $params['value'] = $params['type'];
-            //            }
-            //            if ($params["type"] === "dropdown") {
-            //                $params['value'] = $params['type'];
-            //            }
 
-            self::showGlobalParameters($params);
-
-            //            echo "<div id='show_type_fields'>";
-            //            echo "<table width='100%' class='metademands_show_values'>";
+            echo self::showGlobalParameters($params);
 
             $class = Field::getClassFromType($params['type']);
 
@@ -434,7 +410,12 @@ class FieldParameter extends CommonDBChild
                 case 'yesno':
                 case 'radio':
                 case 'checkbox':
-                    echo $class::showFieldParameters($params);
+                    ob_start();
+                    $class::showFieldParameters($params);
+                    $specific_html = ob_get_clean();
+                    if (!empty(trim($specific_html))) {
+                        echo '<div class="mt-2"><table class="tab_cadre w-100"><tbody>' . $specific_html . '</tbody></table></div>';
+                    }
                     break;
                 case 'number':
                 case 'range':
@@ -445,129 +426,88 @@ class FieldParameter extends CommonDBChild
                     break;
                 default:
                     if (isset($PLUGIN_HOOKS['metademands'])) {
+                        ob_start();
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                             if (Plugin::isPluginActive($plug)) {
-                                echo self::showPluginCustomvalues($plug, $params);
+                                self::showPluginCustomvalues($plug, $params);
                             }
+                        }
+                        $plugin_html = ob_get_clean();
+                        if (!empty(trim($plugin_html))) {
+                            echo '<div class="mt-2"><table class="tab_cadre w-100"><tbody>' . $plugin_html . '</tbody></table></div>';
                         }
                     }
                     break;
             }
-            //            echo "</table>";
-            //            echo "</div>";
         }
     }
 
 
-    public static function showGlobalParameters($params)
+    public static function showGlobalParameters($params): string
     {
         global $PLUGIN_HOOKS;
-        // MANDATORY
-        echo "<tr class='tab_bg_1'>";
-        if ($params['type'] != "title"
-            && $params['type'] != "title-block"
-            && $params['type'] != "informations") {
-            if ($params['type'] != "link") {
-                echo "<td>" . __('Mandatory field') . "</td>";
-                echo "<td>";
-                \Dropdown::showYesNo("is_mandatory", $params["is_mandatory"]);
-                echo "</td>";
-            }
+
+        $type = $params['type'] ?? '';
+
+        $show_mandatory  = !in_array($type, ['title', 'title-block', 'informations', 'link']);
+        $show_hide_title = $type !== 'title-block';
+        $show_row_display = !in_array($type, ['title', 'title-block']);
+        $show_is_basket  = $show_row_display && ($params['is_order'] ?? 0) == 1;
+
+        ob_start();
+        if ($show_mandatory) {
+            \Dropdown::showYesNo("is_mandatory", $params["is_mandatory"]);
         }
-        if ($params['type'] != "title-block") {
-            echo "<td>";
-            echo __('Hide title', 'metademands');
-            echo "</td>";
-            echo "<td>";
+        $mandatory_html = ob_get_clean();
+
+        ob_start();
+        if ($show_hide_title) {
             \Dropdown::showYesNo('hide_title', ($params['hide_title']));
-            echo "</td>";
         }
-        echo "</tr>";
+        $hide_title_html = ob_get_clean();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Icon') . "&nbsp;";
-        echo "</td>";
-        echo "<td>";
+        ob_start();
         $icon_selector_id = 'icon_' . mt_rand();
-        echo Html::select(
-            'icon',
-            [$params['icon'] => $params['icon']],
-            [
-                'id' => $icon_selector_id,
-                'selected' => $params['icon'],
-                'style' => 'width:175px;',
-            ]
-        );
-
+        echo Html::select('icon', [$params['icon'] => $params['icon']], [
+            'id'       => $icon_selector_id,
+            'selected' => $params['icon'],
+            'style'    => 'width:175px;',
+        ]);
         echo Html::script('js/modules/Form/WebIconSelector.js');
-        echo Html::scriptBlock("$(
-            function() {
+        echo Html::scriptBlock("$(function() {
             import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );");
+                var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+                icon_selector.init();
+            });
+        });");
         echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
-        echo "</td>";
-        echo "<td colspan='2'></td>";
-        echo " </tr>";
+        $icon_html = ob_get_clean();
 
-        if ($params['type'] != "title"
-            && $params['type'] != "title-block") {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Takes the whole row', 'metademands');
-            echo "</td>";
-            echo "<td>";
+        ob_start();
+        if ($show_row_display) {
             \Dropdown::showYesNo('row_display', ($params['row_display']));
-            echo "</td>";
-
-            // Is_Basket Fields
-            if ($params['is_order'] == 1) {
-                echo "<td>" . __('Display into the basket', 'metademands') . "</td>";
-                echo "<td>";
-                if ($params['id'] > 0) {
-                    $value = $params["is_basket"];
-                } else {
-                    $value = 1;
-                }
-                \Dropdown::showYesNo("is_basket", $value);
-                echo "</td>";
-            } else {
-                echo "<td colspan='2'></td>";
-            }
-            echo " </tr>";
         }
+        $row_display_html = ob_get_clean();
 
-        echo "<tr class='tab_bg_1'>";
-        //TODO permit linked items_id / itemtype
-        if ($params['type'] != "title"
-            && $params['type'] != "title-block"
-            && $params['type'] != "informations"
-            && $params['type'] != 'text'
-            && $params['type'] != 'tel'
-            && $params['type'] != 'email'
-            && $params['type'] != 'url'
-//            && $params['type'] != 'textarea'
-            && $params['type'] != 'checkbox'
-            && $params['type'] != 'yesno'
-            && $params['type'] != 'radio'
-            && $params['type'] != 'number'
-            && $params['type'] != 'range'
-            && $params['type'] != 'basket'
-            && $params['type'] != 'link'
-            && $params['type'] != 'freetable') {
-            echo "<td>";
-            echo __('Use this field as object field', 'metademands');
-            echo "</td>";
-            echo "<td>";
+        ob_start();
+        if ($show_is_basket) {
+            $basket_value = ($params['id'] ?? 0) > 0 ? $params["is_basket"] : 1;
+            \Dropdown::showYesNo("is_basket", $basket_value);
+        }
+        $is_basket_html = ob_get_clean();
+
+        $excluded_for_ticket = [
+            'title', 'title-block', 'informations', 'text', 'tel', 'email', 'url',
+            'checkbox', 'yesno', 'radio', 'number', 'range', 'basket', 'link', 'freetable',
+        ];
+        $show_used_by_ticket = !in_array($type, $excluded_for_ticket);
+        $used_by_ticket_html = '';
+
+        if ($show_used_by_ticket) {
             $ticket_fields[0] = \Dropdown::EMPTY_VALUE;
-            $objectclass = $params['object_to_create'];
-            $searchOption = Search::getOptions($objectclass);
-
-            $allowed_fields = [];
+            $objectclass      = $params['object_to_create'];
+            $searchOption     = Search::getOptions($objectclass);
+            $allowed_fields   = [];
 
             if ($objectclass == 'Ticket') {
                 $tt = new TicketTemplate();
@@ -576,7 +516,7 @@ class FieldParameter extends CommonDBChild
             } elseif ($objectclass == 'Change') {
                 $tt = new ChangeTemplate();
             }
-            if ($objectclass == 'Ticket' || $objectclass == 'Problem' || $objectclass == 'Change') {
+            if (in_array($objectclass, ['Ticket', 'Problem', 'Change'])) {
                 $allowed_fields = $tt->getAllowedFields(true, true);
             }
 
@@ -592,131 +532,50 @@ class FieldParameter extends CommonDBChild
                 }
             }
 
-            //            //TODO ELCH into releases
-            //            if ($objectclass == 'Release') {
-            //                $allowed_fields = $tt->getAllowedFields(true, true);
-            //                $allowed_fields[9] = 'date_production';
-            //                $allowed_fields[18] = 'date_preproduction';
-            //                unset($allowed_fields[-1]);
-            //            }
-
             unset($allowed_fields[-2]);
 
-            //      Array ( [1] => name [21] => content [12] => status [10] => urgency [11] => impact [3] => priority
-            //      [15] => date [4] => _users_id_requester [71] => _groups_id_requester [5] => _users_id_assign
-            //      [8] => _groups_id_assign [6] => _suppliers_id_assign [66] => _users_id_observer [65] => _groups_id_observer
-            //      [7] => itilcategories_id [131] => itemtype [13] => items_id [142] => _documents_id [175] => _tasktemplates_id [9] => requesttypes_id
-            //      [83] => locations_id [37] => slas_id_tto [30] => slas_id_ttr [190] => olas_id_tto [191] => olas_id_ttr [18] => time_to_resolve
-            //      [155] => time_to_own [180] => internal_time_to_resolve [185] => internal_time_to_own [45] => actiontime [52] => global_validation [14] => type )
-            //         $granted_fields = [
-            //            4,
-            //            71,
-            //            66,
-            //            65,
-            //            'urgency',
-            //            'impact',
-            //            'priority',
-            //            'locations_id',
-            //            'requesttypes_id',
-            //            'itemtype',
-            //            'items_id',
-            //            'time_to_resolve',
-            //         ];
             $granted_fields = [];
 
-            if (($params['type'] == "dropdown_object"
-                    && $params["item"] == "User")
-                || ($params['type'] == "dropdown_multiple"
-                    && $params["item"] == "User")) {
-                //Valideur
+            if (($type == "dropdown_object" && $params["item"] == "User")
+                || ($type == "dropdown_multiple" && $params["item"] == "User")) {
                 $allowed_fields[59] = __('Approver');
-                $granted_fields = [
-                    4,
-                    66,
-                    59,
-                ];
+                $granted_fields = [4, 66, 59];
             }
-            if ($params['type'] == "dropdown_object"
-                && $params["item"] == "Group") {
-                $granted_fields = [
-                    71,
-                    65,
-                ];
+            if ($type == "dropdown_object" && $params["item"] == "Group") {
+                $granted_fields = [71, 65];
             }
-
-            if ($objectclass == 'Problem' && $params['type'] == "textarea") {
-                $granted_fields = [
-                    60,
-                    61,
-                    62,
-                ];
+            if ($objectclass == 'Problem' && $type == "textarea") {
+                $granted_fields = [60, 61, 62];
             }
-            if ($objectclass == 'Change' && $params['type'] == "textarea") {
-                $granted_fields = [
-                    60,
-                    61,
-                    62,
-                    63,
-                    67,
-                ];
+            if ($objectclass == 'Change' && $type == "textarea") {
+                $granted_fields = [60, 61, 62, 63, 67];
             }
-
-            if ($params['type'] == "dropdown_object"
-                && $params["item"] == "Entity") {
+            if ($type == "dropdown_object" && $params["item"] == "Entity") {
                 $allowed_fields[80] = 'entities_id';
-                $granted_fields = [
-                    80,
-                ];
+                $granted_fields = [80];
             }
-
-            if ($params['type'] == "dropdown"
-                && $params["item"] == "Location") {
-                $granted_fields = [
-                    'locations_id',
-                ];
+            if ($type == "dropdown" && $params["item"] == "Location") {
+                $granted_fields = ['locations_id'];
             }
-
-            if ($params['type'] == "dropdown"
-                && $params["item"] == "RequestType") {
-                $granted_fields = [
-                    'requesttypes_id',
-                ];
+            if ($type == "dropdown" && $params["item"] == "RequestType") {
+                $granted_fields = ['requesttypes_id'];
             }
-
-            if ($params['type'] == "dropdown_meta"
-                && ($params["item"] == "urgency"
-                    || $params["item"] == "impact"
-                    || $params["item"] == "priority")) {
-                $granted_fields = [
-                    $params["item"],
-                ];
+            if ($type == "dropdown_meta"
+                && in_array($params["item"], ["urgency", "impact", "priority"])) {
+                $granted_fields = [$params["item"]];
             }
-
-            if ($params['type'] == "dropdown_meta"
-                && ($params["item"] == "ITILCategory_Metademands")) {
-                $granted_fields = [
-                    'itilcategories_id',
-                ];
+            if ($type == "dropdown_meta" && $params["item"] == "ITILCategory_Metademands") {
+                $granted_fields = ['itilcategories_id'];
             }
-
-            if ($params['type'] == "date"
-                || $params["type"] == "datetime") {
-                $granted_fields = [
-                    'time_to_resolve',
-                ];
+            if ($type == "date" || $type == "datetime") {
+                $granted_fields = ['time_to_resolve'];
             }
-
-            if (($params['type'] == "dropdown_meta"
-                    && $params["item"] == "mydevices")
-                || ($params['type'] == "dropdown_multiple"
-                    && $params["item"] == "Appliance")
-                || ($params['type'] == "dropdown_object"
+            if (($type == "dropdown_meta" && $params["item"] == "mydevices")
+                || ($type == "dropdown_multiple" && $params["item"] == "Appliance")
+                || ($type == "dropdown_object"
                     && \Ticket::isPossibleToAssignType($params["item"])
-                    && $params["item"] != "User"
-                    && $params["item"] != "Group")) {
-                $granted_fields = [
-                    13,
-                ];
+                    && !in_array($params["item"], ["User", "Group"]))) {
+                $granted_fields = [13];
             }
 
             if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -728,17 +587,6 @@ class FieldParameter extends CommonDBChild
                 }
             }
 
-            //            TODO ELCH into releases
-            //            if ($objectclass == 'Release') {
-            //                if ($params['type'] == "date"
-            //                    || $params["type"] == "datetime") {
-            //                    $granted_fields = [
-            //                        'date_preproduction',
-            //                        'date_production'
-            //                    ];
-            //                }
-            //            }
-
             foreach ($allowed_fields as $id => $value) {
                 if ((isset($searchOption[$id]['linkfield'])
                         && in_array($searchOption[$id]['linkfield'], $granted_fields))
@@ -748,59 +596,64 @@ class FieldParameter extends CommonDBChild
                     }
                 }
             }
-            \Dropdown::showFromArray(
-                'used_by_ticket',
-                $ticket_fields,
-                ['value' => $params["used_by_ticket"]]
-            );
-            echo "</td>";
+
+            ob_start();
+            \Dropdown::showFromArray('used_by_ticket', $ticket_fields, ['value' => $params["used_by_ticket"]]);
+            $used_by_ticket_html = ob_get_clean();
         }
 
-        if ($params['type'] != "title"
-            && $params['type'] != "title-block"
-            && $params['type'] != "informations"
-            && $params['type'] != 'link'
-            && $params['type'] != "freetable") {
-            if (Plugin::isPluginActive('fields')) {
-                echo "<td>";
-                echo __('Link this to a plugin "fields" field', 'metademands');
-                echo "</td>";
-                echo "<td>";
+        $excluded_for_plugin = ['title', 'title-block', 'informations', 'link', 'freetable'];
+        $show_plugin_fields  = !in_array($type, $excluded_for_plugin) && Plugin::isPluginActive('fields');
+        $plugin_fields_html  = '';
 
-                $arrayAvailableContainer = [];
-                $fieldsContainer = new PluginFieldsContainer();
-                $fieldsContainers = $fieldsContainer->find();
+        if ($show_plugin_fields) {
+            ob_start();
 
-                foreach ($fieldsContainers as $container) {
-                    $typesContainer = json_decode($container['itemtypes']);
-                    if (is_array($typesContainer) && in_array($params["object_to_create"], $typesContainer)) {
-                        $arrayAvailableContainer[] = $container['id'];
-                    }
+            $arrayAvailableContainer = [];
+            $fieldsContainer         = new PluginFieldsContainer();
+            foreach ($fieldsContainer->find() as $container) {
+                $typesContainer = json_decode($container['itemtypes']);
+                if (is_array($typesContainer) && in_array($params["object_to_create"], $typesContainer)) {
+                    $arrayAvailableContainer[] = $container['id'];
                 }
-
-                $pluginfield = new Pluginfields();
-                $opt = ['display_emptychoice' => true];
-                if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $params["id"]])) {
-                    $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
-                }
-                $condition = [];
-                if (count($arrayAvailableContainer) > 0) {
-                    $condition = ['plugin_fields_containers_id' => $arrayAvailableContainer];
-                }
-
-                $field = new PluginFieldsField();
-                $fields_values = $field->find($condition);
-                $datas = [];
-                foreach ($fields_values as $fields_value) {
-                    $datas[$fields_value['id']] = $fields_value['label'];
-                }
-
-                \Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
-                echo Html::hidden('plugin_metademands_metademands_id', ['value' => $params["plugin_metademands_metademands_id"]]);
-                echo "</td>";
             }
+
+            $pluginfield = new Pluginfields();
+            $opt         = ['display_emptychoice' => true];
+            if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $params["id"]])) {
+                $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
+            }
+            $condition = count($arrayAvailableContainer) > 0
+                ? ['plugin_fields_containers_id' => $arrayAvailableContainer]
+                : [];
+
+            $field        = new PluginFieldsField();
+            $datas        = [];
+            foreach ($field->find($condition) as $fields_value) {
+                $datas[$fields_value['id']] = $fields_value['label'];
+            }
+
+            \Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
+            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $params["plugin_metademands_metademands_id"]]);
+
+            $plugin_fields_html = ob_get_clean();
         }
-        echo "</tr>";
+
+        return TemplateRenderer::getInstance()->render('@metademands/field_parameter_global.html.twig', [
+            'show_mandatory'      => $show_mandatory,
+            'mandatory_html'      => $mandatory_html,
+            'show_hide_title'     => $show_hide_title,
+            'hide_title_html'     => $hide_title_html,
+            'icon_html'           => $icon_html,
+            'show_row_display'    => $show_row_display,
+            'row_display_html'    => $row_display_html,
+            'show_is_basket'      => $show_is_basket,
+            'is_basket_html'      => $is_basket_html,
+            'show_used_by_ticket' => $show_used_by_ticket,
+            'used_by_ticket_html' => $used_by_ticket_html,
+            'show_plugin_fields'  => $show_plugin_fields,
+            'plugin_fields_html'  => $plugin_fields_html,
+        ]);
     }
 
     /**

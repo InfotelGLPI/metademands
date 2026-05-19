@@ -1,0 +1,73 @@
+{#
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+ @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+ @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+ @link      https://github.com/InfotelGLPI/Metademands
+ -------------------------------------------------------------------------
+#}
+
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+
+{% do call('Html::requireJs', ['tinymce']) %}
+
+<form name="form" method="post" action="{{ form_action }}">
+    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
+    {{ inputs.hidden('plugin_metademands_fields_id', field_parent_id) }}
+    {{ inputs.hidden('type', field_type) }}
+    {{ inputs.hidden('item', field_item) }}
+    {% if not is_new %}
+    {{ inputs.hidden('id', field_id) }}
+    {% endif %}
+
+    <div class="card mt-2">
+        <div class="card-body">
+            {{ field_parameters_html|raw }}
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button class="btn btn-primary" type="submit"
+                    name="{{ is_new ? 'add' : 'update' }}" value="1">
+                <i class="ti ti-device-floppy"></i>
+                <span>{{ is_new ? _x('button', 'Add') : _x('button', 'Save') }}</span>
+            </button>
+        </div>
+    </div>
+</form>
+
+{% if not is_new %}
+<div class="card mt-2">
+    <div class="card-header">
+        <h5 class="card-title">{{ __('Field informations', 'metademands') }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-3">{{ __('Type') }}</div>
+            <div class="col-9">{{ field_type_name }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-3">{{ __('Example', 'metademands') }}</div>
+            <div class="col-9">{{ field_example_html|raw }}</div>
+        </div>
+    </div>
+</div>
+{% endif %}

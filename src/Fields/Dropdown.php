@@ -581,7 +581,7 @@ class Dropdown extends CommonDBTM
         //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         FieldOption::showRegexDropdown($params['check_type_value'], $params['ID']);
-        echo "<td class = 'dropdown-valuetocheck' style='display: flex'>";
+        echo "<td class = 'dropdown-valuetocheck'>";
         switch ($params['check_type_value']) {
             case 1:
                 self::showValueToCheck($fieldoption, $params);

@@ -33,6 +33,7 @@ namespace GlpiPlugin\Metademands;
 use CommonDBChild;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
 use Html;
 use Migration;
@@ -265,65 +266,44 @@ class FieldCustomvalue extends CommonDBChild
         if (!$this->cancreate()) {
             return false;
         }
-        Html::requireJs('tinymce');
 
-        $metademand = new Metademand();
+        $metademand        = new Metademand();
         $metademand_fields = new Field();
         $metademand_params = new FieldParameter();
-
-        $item = $options['parent'];
+        $item              = $options['parent'];
 
         if ($ID > 0) {
             $this->check($ID, UPDATE);
             $metademand_fields->getFromDB($item->getID());
-            $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $item->getID()]
-            );
+            $metademand_params->getFromDBByCrit(["plugin_metademands_fields_id" => $item->getID()]);
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
         } else {
             $metademand_fields->getFromDB($item->getID());
-            $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $item->getID()]
-            );
+            $metademand_params->getFromDBByCrit(["plugin_metademands_fields_id" => $item->getID()]);
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
-            // Create item
             $options['plugin_metademands_fields_id'] = $options['parent']->getField('id');
             $this->check(-1, CREATE, $options);
         }
 
-        $this->showFormHeader($options);
-        $target = self::getFormURL();
-        echo "<form method='post' action=\"$target\">";
-        echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
-        echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
-        echo Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
-
         $params = Field::getAllParamsFromField($metademand_fields);
 
+        ob_start();
         self::showFieldCustomValues($params);
-        Html::closeForm();
+        $field_custom_values_html = ob_get_clean();
+
+        $field_example_html = '';
         if ($ID > 0) {
-            echo "<table class='tab_cadre' width='100%'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='2'>" . __('Field informations', 'metademands') . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Type') . "</td>";
-            echo "<td>";
-            echo Field::getFieldTypesName($params["type"]);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Example', 'metademands') . "</td>";
-            echo "<td>";
+            ob_start();
             echo Field::getFieldInput([], $params, false, 0, 0, false, "");
-            echo "</td>";
-            echo "</tr>";
-
-            echo "</table>";
+            $field_example_html = ob_get_clean();
         }
+
+        TemplateRenderer::getInstance()->display('@metademands/field_customvalue_form.html.twig', [
+            'field_custom_values_html' => $field_custom_values_html,
+            'is_new'                   => $ID <= 0,
+            'field_type_name'          => $ID > 0 ? Field::getFieldTypesName($params['type']) : '',
+            'field_example_html'       => $field_example_html,
+        ]);
 
         return true;
     }
@@ -339,150 +319,92 @@ class FieldCustomvalue extends CommonDBChild
      *
      * @return void
      */
-    public static function showFieldCustomValues($params = [])
+    public static function showFieldCustomValues($params = []): void
     {
-        //        $params['value'] = 0;
-        //        $params['item'] = '';
-        //        $params['type'] = '';
-        //
-        //        $values = $options['custom_values'];
-        //        $comment = $options['comment_values'];
-        //        $default = $options['default_values'];
-        //
-        //        foreach ($options as $key => $value) {
-        //            $params[$key] = $value;
-        //        }
-
         $allowed_customvalues_types = self::$allowed_customvalues_types;
-        $allowed_custom_types = self::$allowed_custom_types;
+        $allowed_custom_types       = self::$allowed_custom_types;
         $allowed_customvalues_items = self::$allowed_customvalues_items;
 
-        if (in_array($params['type'], $allowed_customvalues_types)
+        if (!(in_array($params['type'], $allowed_customvalues_types)
             || in_array($params['type'], $allowed_custom_types)
-            || in_array($params['item'], $allowed_customvalues_items)) {
-            echo "<table class='tab_cadre_fixe'>";
-            if ($params['type'] != "dropdown_multiple"
-                && $params['item'] != 'User') {
-                echo "<tr class='tab_bg_1'>";
-                echo "<th colspan='5'>";
-                echo self::getTypeName(2);
-                echo "</th>";
-                echo "</tr>";
-            }
-
-            if ($params["type"] == "dropdown_multiple" && empty($params["item"])) {
-                $params["item"] = "other";
-            }
-
-            if ($params["type"] == "radio") {
-                $params["item"] = "radio";
-            }
-            if ($params["type"] == "checkbox") {
-                $params["item"] = "checkbox";
-            }
-
-            if (in_array($params['type'], $allowed_customvalues_types)
-                || in_array($params['item'], $allowed_customvalues_items)) {
-                $ranks = [];
-                foreach ($params['custom_values'] as $key => $value) {
-                    if ($params['item'] != 'Appliance') {
-                        $ranks[] = $value['rank'];
-                    } else {
-                        $ranks[] = $key;
-                    }
-                }
-                if (count($ranks) > 0) {
-                    $hasDuplicates = count($ranks) > count(array_unique($ranks));
-                    if ($hasDuplicates == true) {
-                        echo "<div class='alert alert-warning d-flex'>";
-                        echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
-                            'You have duplicates rank!',
-                            'metademands'
-                        );
-                        echo "</div>";
-                    }
-
-                    if (self::isSequentialFromZero($ranks) == false
-                    && $params["item"] != "Appliance") {
-                        echo "<div class='alert alert-warning flex'>";
-                        echo "<div class='left'>";
-                        echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
-                            'The ranks are not ordered correctly, you will not be able to order them!',
-                            'metademands'
-                        );
-                        echo "<br><br>";
-                        echo _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands');
-                        echo "</div>";
-                        echo "<div class='right'>";
-                        $target = self::getFormURL();
-                        Html::showSimpleForm(
-                            $target,
-                            'fixranks',
-                            _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
-                            [
-                                'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
-                            ],
-                            'ti-settings',
-                            "class='btn btn-warning'"
-                        );
-                        echo "</div>";
-                        echo "</div>";
-                    }
-                }
-            }
-
-
-            if ($params["type"] != "dropdown_multiple") {
-                switch ($params['item']) {
-                    case 'impact':
-                    case 'urgency':
-                    case 'priority':
-                    case 'mydevices':
-                    case 'other':
-                        Dropdownmeta::showFieldCustomValues($params);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            $class = Field::getClassFromType($params['type']);
-
-            switch ($params['type']) {
-                case 'title':
-                case 'title-block':
-                case 'informations':
-                case 'text':
-                case 'tel':
-                case 'email':
-                case 'url':
-                case 'textarea':
-                case 'dropdown_meta':
-                case 'dropdown_object':
-                case 'dropdown_ldap':
-                case 'date':
-                case 'time':
-                case 'date_interval':
-                case 'datetime':
-                case 'upload':
-                case 'datetime_interval':
-                case 'dropdown':
-                case 'parent_field':
-                    break;
-                case 'dropdown_multiple':
-                case 'checkbox':
-                case 'radio':
-                case 'yesno':
-                case 'number':
-                case 'range':
-                case 'link':
-                case 'basket':
-                    $class::showFieldCustomValues($params);
-                    break;
-            }
-
-            echo "</table>";
+            || in_array($params['item'], $allowed_customvalues_items))) {
+            return;
         }
+
+        $show_header = $params['type'] != "dropdown_multiple" && ($params['item'] ?? '') != 'User';
+
+        if ($params["type"] == "dropdown_multiple" && empty($params["item"])) {
+            $params["item"] = "other";
+        }
+        if ($params["type"] == "radio") {
+            $params["item"] = "radio";
+        }
+        if ($params["type"] == "checkbox") {
+            $params["item"] = "checkbox";
+        }
+
+        $has_duplicates    = false;
+        $is_not_sequential = false;
+        $fix_ranks_html    = '';
+
+        if (in_array($params['type'], $allowed_customvalues_types)
+            || in_array($params['item'], $allowed_customvalues_items)) {
+            $ranks = [];
+            foreach ($params['custom_values'] as $key => $value) {
+                $ranks[] = $params['item'] != 'Appliance' ? $value['rank'] : $key;
+            }
+            if (count($ranks) > 0) {
+                $has_duplicates    = count($ranks) > count(array_unique($ranks));
+                $is_not_sequential = !self::isSequentialFromZero($ranks) && $params["item"] != "Appliance";
+                if ($is_not_sequential) {
+                    ob_start();
+                    Html::showSimpleForm(
+                        self::getFormURL(),
+                        'fixranks',
+                        _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
+                        ['plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"]],
+                        'ti-settings',
+                        "class='btn btn-warning'"
+                    );
+                    $fix_ranks_html = ob_get_clean();
+                }
+            }
+        }
+
+        ob_start();
+        if ($params["type"] != "dropdown_multiple") {
+            switch ($params['item']) {
+                case 'impact':
+                case 'urgency':
+                case 'priority':
+                case 'mydevices':
+                case 'other':
+                    Dropdownmeta::showFieldCustomValues($params);
+                    break;
+            }
+        }
+        $class = Field::getClassFromType($params['type']);
+        switch ($params['type']) {
+            case 'dropdown_multiple':
+            case 'checkbox':
+            case 'radio':
+            case 'yesno':
+            case 'number':
+            case 'range':
+            case 'link':
+            case 'basket':
+                $class::showFieldCustomValues($params);
+                break;
+        }
+        $custom_values_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render('@metademands/field_customvalue_values.html.twig', [
+            'show_header'        => $show_header,
+            'has_duplicates'     => $has_duplicates,
+            'is_not_sequential'  => $is_not_sequential,
+            'fix_ranks_html'     => $fix_ranks_html,
+            'custom_values_html' => $custom_values_html,
+        ]);
     }
 
 
