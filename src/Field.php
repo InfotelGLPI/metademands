@@ -46,6 +46,7 @@ use DbUtils;
 use Document;
 use Entity;
 use Glpi\DBAL\QueryExpression;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Features\Clonable;
 use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
 use Glpi\ItemTranslation\Context\TranslationHandler;
@@ -546,7 +547,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $this->fields['color'] = '#000';
         }
 
-        // Data saved in session
         $sessionId = $ID > 0 ? $ID : 0;
         if (isset($_SESSION['glpi_plugin_metademands_fields'][$sessionId])) {
             foreach ($_SESSION['glpi_plugin_metademands_fields'][$sessionId] as $key => $value) {
@@ -555,89 +555,39 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             unset($_SESSION['glpi_plugin_metademands_fields']);
         }
 
-        $this->showFormHeader($options);
-
-        echo Html::hidden(
-            'plugin_metademands_metademands_id',
-            ['value' => $this->fields["plugin_metademands_metademands_id"]]
-        );
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Field', 'metademands') . "</td>";
-        echo "<td>";
-
-        $randType = self::dropdownFieldTypes(
+        ob_start();
+        $type_rand = self::dropdownFieldTypes(
             self::$field_types,
             ['metademands_id' => $this->fields["plugin_metademands_metademands_id"]]
         );
-        $paramsType = [
-            'value' => '__VALUE__',
-            'step' => 'listfieldbytype',
-        ];
-        Ajax::updateItemOnSelectEvent(
-            'dropdown_type' . $randType,
-            "show_listfields_by_type",
-            PLUGIN_METADEMANDS_WEBDIR
-            . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-            $paramsType
-        );
+        $type_html = ob_get_clean();
 
-        echo "<div id='show_listfields_by_type'>";
-        echo "</div>";
-
-        echo "<div id='show_fields_infos'>";
-        echo "</div>";
-
-        echo "</td>";
-        echo "</tr>";
-
-
-        // BLOCK
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Block', 'metademands') . "</td>";
-        echo "<td>";
-
-        $values = [];
-
-        $randRank = \Dropdown::showNumber('rank', [
+        ob_start();
+        $rank_rand = \Dropdown::showNumber('rank', [
             'value' => $this->fields["rank"],
-            'min' => 1,
-            'max' => self::MAX_FIELDS,
+            'min'   => 1,
+            'max'   => self::MAX_FIELDS,
         ]);
-        $paramsRank = [
-            'rank' => '__VALUE__',
-            'step' => 'order',
-            'fields_id' => $this->fields['id'],
-            'metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-            'previous_fields_id' => $this->fields['plugin_metademands_fields_id'],
-        ];
-        Ajax::updateItemOnSelectEvent(
-            'dropdown_rank' . $randRank,
-            "show_order",
-            PLUGIN_METADEMANDS_WEBDIR
-            . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-            $paramsRank
-        );
-        echo "</td>";
-        echo "</tr>";
+        $rank_html = ob_get_clean();
 
-        // ORDER
-        echo "<tr class='tab_bg_1'>";
-        if ($this->fields['type'] != "title-block") {
-            echo "<td>" . __('Display field after', 'metademands') . "</td>";
-            echo "<td>";
-            echo "<span id='show_order'>";
-            $this->showOrderDropdown(
-                $this->fields
-            );
-            echo "</span>";
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
-        }
-        echo "</tr>";
+        ob_start();
+        $this->showOrderDropdown($this->fields);
+        $order_html = ob_get_clean();
 
-        $this->showFormButtons(['colspan' => 2]);
+        TemplateRenderer::getInstance()->display('@metademands/field_existing_form.html.twig', [
+            'action'         => Toolbox::getItemTypeFormURL(Field::class),
+            'metademand_id'  => $this->fields['plugin_metademands_metademands_id'],
+            'field_id'       => $this->fields['id'] ?? 0,
+            'prev_fields_id' => $this->fields['plugin_metademands_fields_id'] ?? 0,
+            'type_html'      => $type_html,
+            'type_rand'      => $type_rand,
+            'rank_html'      => $rank_html,
+            'rank_rand'      => $rank_rand,
+            'order_html'     => $order_html,
+            'is_title_block' => ($this->fields['type'] ?? '') === 'title-block',
+            'plugin_web_dir' => PLUGIN_METADEMANDS_WEBDIR,
+        ]);
+
         return true;
     }
 
@@ -692,8 +642,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             unset($_SESSION['glpi_plugin_metademands_fields']);
         }
 
-        $this->showFormHeader($options);
-
+        // --- Warnings ---
         $metademand_fields = new self();
         $metafield_itil = false;
         if ($metafields = $metademand_fields->find([
@@ -711,349 +660,143 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 $categories = json_decode($metademand->fields['itilcategories_id'], true);
             }
         }
+        $metafield_itil_warning = ($metafield_itil == false && count($categories) > 1);
+        $basket_warning = ($metademand->fields['is_basket'] == 0
+            && in_array($this->fields['type'] ?? '', ['basket', 'free_input']));
 
-        echo Html::hidden(
-            'plugin_metademands_metademands_id',
-            ['value' => $this->fields["plugin_metademands_metademands_id"]]
-        );
-
-        if ($metafield_itil == false && count($categories) > 1) {
-            echo "<div class='alert alert-warning d-flex'>";
-            echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;" . __(
-                    'Please add a type category field',
-                    'metademands'
-                );
-            echo "</div>";
-        }
-
-        echo "<tr class='tab_bg_1'>";
-
-        // LABEL
-        echo "<td>" . __('Label') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
-        echo "<td>";
-        if (isset($this->fields["name"])) {
-            $name = stripslashes($this->fields["name"]);
-        } else {
-            $name = "";
-        }
-        echo Html::input('name', ['value' => $name, 'size' => 40]);
+        $customvalues_warning = false;
         if ($ID > 0) {
-            echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
-            echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
-        } else {
-            echo Html::hidden('entities_id', ['value' => $item->fields["entities_id"]]);
-            echo Html::hidden('is_recursive', ['value' => $item->fields["is_recursive"]]);
-        }
-        echo "</td>";
-
-        echo "<td colspan='2'>";
-        echo "</td>";
-        echo "</tr>";
-
-        // LABEL 2
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Additional label', 'metademands');
-        if ($ID > 0) {
-            if ($this->fields['type'] == "datetime_interval"
-                || $this->fields['type'] == "date_interval") {
-                echo "&nbsp;<span id='show_label2' style='color:red;'>&nbsp;*&nbsp;</span>";
+            $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
+            $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+            if ((in_array($this->fields['type'], $allowed_customvalues_types)
+                    || in_array($this->fields['item'], $allowed_customvalues_items))
+                && !in_array($this->fields["item"], self::$field_specificobjects)
+                && $this->fields['item'] != "Appliance"
+                && $this->fields['item'] != "Group") {
+                $field_custom = new FieldCustomvalue();
+                if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
+                    $customvalues_warning = true;
+                }
             }
-        } else {
-            echo "&nbsp;<span id='show_label2' style='color:red;display:none;'>&nbsp;*&nbsp;</span>";
         }
 
-        echo "</td>";
-        echo "<td>";
-        $label2 = $this->fields['label2'];
-        Html::textarea([
-            'name' => 'label2',
-            'value' => $label2,
-            'enable_richtext' => true,
-            'enable_fileupload' => false,
-            'enable_images' => true,
-            'cols' => 50,
-            'rows' => 3,
-        ]);
-        echo "</td>";
+        // --- Type dropdown (logique conditionnelle complexe) ---
+        $type_rand = null;
+        $ajax_url  = PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewtypefields.php?id=" . $this->fields['id'];
+        $params_type = [
+            'value'         => '__VALUE__',
+            'type'          => '__VALUE__',
+            'item'          => $this->fields['item'] ?? '',
+            'metademands_id'=> $this->fields["plugin_metademands_metademands_id"],
+            'change_type'   => 1,
+        ];
 
-        // COMMENT
-        echo "<td>" . __('Comments') . "</td>";
-        echo "<td>";
-        $comment = $this->fields['comment'];
-        Html::textarea([
-            'name' => 'comment',
-            'value' => $comment,
-            'enable_richtext' => true,
-            'enable_fileupload' => false,
-            'enable_images' => false,
-            'cols' => 50,
-            'rows' => 3,
-        ]);
-
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        // TYPE
-        echo "<td>" . __('Type') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
-        echo "<td>";
-
+        ob_start();
         if ($ID < 1) {
-            $randType = self::dropdownFieldTypes(self::$field_types, [
-                'value' => $this->fields["type"],
+            $type_rand = self::dropdownFieldTypes(self::$field_types, [
+                'value'          => $this->fields["type"] ?? '',
                 'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
             ]);
-
-            $paramsType = [
-                'value' => '__VALUE__',
-                'type' => '__VALUE__',
-                'item' => $this->fields['item'],
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'change_type' => 1,
-            ];
-            Ajax::updateItemOnSelectEvent(
-                'dropdown_type' . $randType,
-                "show_values",
-                PLUGIN_METADEMANDS_WEBDIR
-                . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                $paramsType
-            );
+            Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
         } else {
             if (in_array($this->fields["type"], self::$field_title_types)) {
-                $randType = self::dropdownFieldTypes(self::$field_title_types, [
-                    'value' => $this->fields["type"],
+                $type_rand = self::dropdownFieldTypes(self::$field_title_types, [
+                    'value'          => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
-
-                $paramsType = [
-                    'value' => '__VALUE__',
-                    'type' => '__VALUE__',
-                    'item' => $this->fields['item'],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1,
-                ];
-                Ajax::updateItemOnSelectEvent(
-                    'dropdown_type' . $randType,
-                    "show_values",
-                    PLUGIN_METADEMANDS_WEBDIR
-                    . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                    $paramsType
-                );
+                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
             } elseif (in_array($this->fields["type"], self::$field_customvalues_types)) {
                 if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
-                    $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
-                        'value' => $this->fields["type"],
+                    $type_rand = self::dropdownFieldTypes(["dropdown_multiple"], [
+                        'value'          => $this->fields["type"],
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                     ]);
-
-                    $paramsType = [
-                        'value' => '__VALUE__',
-                        'type' => '__VALUE__',
-                        'item' => $this->fields['item'],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1,
-                    ];
-                    Ajax::updateItemOnSelectEvent(
-                        'dropdown_type' . $randType,
-                        "show_values",
-                        PLUGIN_METADEMANDS_WEBDIR
-                        . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                        $paramsType
-                    );
+                    Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
                 } else {
                     if ($this->fields["item"] == "other" || $this->fields["type"] == "radio" || $this->fields["type"] == "checkbox") {
-                        $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
-                            'value' => $this->fields["type"],
+                        $type_rand = self::dropdownFieldTypes(self::$field_customvalues_types, [
+                            'value'          => $this->fields["type"],
                             'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                         ]);
-
-                        $paramsType = [
-                            'value' => '__VALUE__',
-                            'type' => '__VALUE__',
-                            'item' => $this->fields['item'],
-                            'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                            'change_type' => 1,
-                        ];
-                        Ajax::updateItemOnSelectEvent(
-                            'dropdown_type' . $randType,
-                            "show_values",
-                            PLUGIN_METADEMANDS_WEBDIR
-                            . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                            $paramsType
-                        );
+                        Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
                     } else {
                         echo self::getFieldTypesName($this->fields['type']);
                         echo Html::hidden('type', ['value' => $this->fields['type']]);
                     }
                 }
             } elseif (in_array($this->fields["type"], self::$field_text_types)) {
-                $randType = self::dropdownFieldTypes(self::$field_text_types, [
-                    'value' => $this->fields["type"],
+                $type_rand = self::dropdownFieldTypes(self::$field_text_types, [
+                    'value'          => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
-
-                $paramsType = [
-                    'value' => '__VALUE__',
-                    'type' => '__VALUE__',
-                    'item' => $this->fields['item'],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1,
-                ];
-                Ajax::updateItemOnSelectEvent(
-                    'dropdown_type' . $randType,
-                    "show_values",
-                    PLUGIN_METADEMANDS_WEBDIR
-                    . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                    $paramsType
-                );
+                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
             } elseif (in_array($this->fields["type"], self::$field_date_types)) {
-                $randType = self::dropdownFieldTypes(self::$field_date_types, [
-                    'value' => $this->fields["type"],
+                $type_rand = self::dropdownFieldTypes(self::$field_date_types, [
+                    'value'          => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
-
-                $paramsType = [
-                    'value' => '__VALUE__',
-                    'type' => '__VALUE__',
-                    'item' => $this->fields['item'],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1,
-                ];
-                Ajax::updateItemOnSelectEvent(
-                    'dropdown_type' . $randType,
-                    "show_values",
-                    PLUGIN_METADEMANDS_WEBDIR
-                    . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                    $paramsType
-                );
+                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
             } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
-                $randType = self::dropdownFieldTypes(self::$field_dropdown_types, [
-                    'value' => $this->fields["type"],
+                $type_rand = self::dropdownFieldTypes(self::$field_dropdown_types, [
+                    'value'          => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                 ]);
-
-                $paramsType = [
-                    'value' => '__VALUE__',
-                    'type' => '__VALUE__',
-                    'item' => $this->fields['item'],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1,
-                ];
-                Ajax::updateItemOnSelectEvent(
-                    'dropdown_type' . $randType,
-                    "show_values",
-                    PLUGIN_METADEMANDS_WEBDIR
-                    . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                    $paramsType
-                );
+                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
             } elseif ($this->fields["type"] == "dropdown_multiple") {
                 if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
                     echo self::getFieldTypesName($this->fields['type']);
                     echo Html::hidden('type', ['value' => $this->fields['type']]);
-                    $randType = mt_rand();
+                    $type_rand = mt_rand();
                 } else {
-                    $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
-                        'value' => $this->fields["type"],
+                    $type_rand = self::dropdownFieldTypes(["dropdown_multiple"], [
+                        'value'          => $this->fields["type"],
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                     ]);
-
-                    $paramsType = [
-                        'value' => '__VALUE__',
-                        'type' => '__VALUE__',
-                        'item' => $this->fields['item'],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1,
-                    ];
-                    Ajax::updateItemOnSelectEvent(
-                        'dropdown_type' . $randType,
-                        "show_values",
-                        PLUGIN_METADEMANDS_WEBDIR
-                        . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                        $paramsType
-                    );
+                    Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
                 }
             } else {
                 echo self::getFieldTypesName($this->fields['type']);
                 echo Html::hidden('type', ['value' => $this->fields['type']]);
             }
         }
-        if ($metademand->fields['is_basket'] == 0
-            && ($this->fields['type'] == 'basket' || $this->fields['type'] == 'free_input')) {
-            echo "<span class='alert alert-warning d-flex'>";
-            echo __('Remember to activate basket mode on your metademand !', 'metademands');
-            echo "</span>";
-        }
-        echo "</td>";
+        $type_html = ob_get_clean();
 
-        echo "<td>" . __('Block', 'metademands') . "</td>";
-        echo "<td>";
-        $randRank = \Dropdown::showNumber('rank', [
+        // --- Rank ---
+        ob_start();
+        $rank_rand = \Dropdown::showNumber('rank', [
             'value' => $this->fields["rank"],
-            'min' => 1,
-            'max' => self::MAX_FIELDS,
+            'min'   => 1,
+            'max'   => self::MAX_FIELDS,
         ]);
-        $paramsRank = [
-            'rank' => '__VALUE__',
-            'step' => 'order',
-            'fields_id' => $this->fields['id'],
-            'metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-            'previous_fields_id' => $this->fields['plugin_metademands_fields_id'],
+        $rank_html = ob_get_clean();
+
+        // --- Item/Objet ---
+        $item_label_html = '';
+        $params_item = [
+            'value'          => '__VALUE__',
+            'type'           => '__VALUE__',
+            'item'           => $this->fields['item'] ?? '',
+            'step'           => 'object',
+            'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+            'change_type'    => 1,
         ];
-        Ajax::updateItemOnSelectEvent(
-            'dropdown_rank' . $randRank,
-            "show_order",
-            PLUGIN_METADEMANDS_WEBDIR
-            . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-            $paramsRank
-        );
-        echo "</td>";
-
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        // ITEM
-        //Display for dropdown list
-        echo "<td style='vertical-align: top;'>";
-        if ($ID < 1) {
-            echo "<span id='show_item_object' style='display:none'>";
-            echo __('Object', 'metademands') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
-            echo "</span>";
-
-            //Display to add a title
-            echo "<span id='show_item_label_title' style='display:none'>";
-
-            echo "</span>";
-        } else {
-            echo __('Object', 'metademands');
+        if ($type_rand) {
+            $params_item['rand'] = $type_rand;
         }
-        echo "</td>";
-        echo "<td>";
-        if ($ID < 1) {
-            echo "<span id='show_item' >";
-            $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
-            echo "</span>";
-            $paramsType = [
-                'value' => '__VALUE__',
-                'type' => '__VALUE__',
-                'item' => $this->fields['item'],
-                'step' => 'object',
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'change_type' => 1,
-            ];
-            if ($randType) {
-                $paramsType['rand'] = $randType;
-            }
-            Ajax::updateItemOnSelectEvent(
-                'dropdown_type' . $randType,
-                "show_item",
-                PLUGIN_METADEMANDS_WEBDIR
-                . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                $paramsType
-            );
 
-            echo "<span id='show_item_title' style='display:none'>";
+        ob_start();
+        if ($ID < 1) {
+            $item_label_html = '<span id="show_item_object" style="display:none">'
+                . __('Object', 'metademands')
+                . '<span style="color:red">&nbsp;*&nbsp;</span></span>'
+                . '<span id="show_item_label_title" style="display:none"></span>';
+            echo '<span id="show_item">';
+            self::dropdownFieldItems($this->fields["type"] ?? '', ['value' => $this->fields["item"] ?? '']);
+            echo '</span>';
+            Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_item", $ajax_url, $params_item);
+            echo '<span id="show_item_title" style="display:none">';
         } else {
+            $item_label_html = __('Object', 'metademands');
             if ($this->fields["type"] == "dropdown_meta") {
                 $metademand_custom = new FieldCustomvalue();
                 if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $this->fields['id']])) {
@@ -1066,109 +809,71 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     echo Html::hidden('item', ['value' => $this->fields['item']]);
                 }
             } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
-                echo "<span id='show_item' >";
-                $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
-                echo "</span>";
-                $paramsType = [
-                    'value' => '__VALUE__',
-                    'type' => '__VALUE__',
-                    'item' => $this->fields['item'],
-                    'step' => 'object',
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    'change_type' => 1,
-                ];
-                if (isset($randType)) {
-                    $paramsType['rand'] = $randType;
-                }
-                Ajax::updateItemOnSelectEvent(
-                    'dropdown_type' . $randType,
-                    "show_item",
-                    PLUGIN_METADEMANDS_WEBDIR
-                    . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                    $paramsType
-                );
-
-                echo "<span id='show_item_title' style='display:none'>";
+                echo '<span id="show_item">';
+                self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
+                echo '</span>';
+                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_item", $ajax_url, $params_item);
+                echo '<span id="show_item_title" style="display:none">';
             } elseif ($this->fields["type"] == "dropdown_multiple") {
-                $randType = mt_rand();
-                if ($this->fields["type"] == "dropdown_multiple" && $this->fields["item"] == "other") {
+                if ($this->fields["item"] == "other") {
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                     echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
                 } else {
-                    echo "<span id='show_item' >";
-                    $randItem = self::dropdownFieldItems($this->fields["type"], [
-                        'value' => $this->fields["item"],
+                    echo '<span id="show_item">';
+                    self::dropdownFieldItems($this->fields["type"], [
+                        'value'    => $this->fields["item"],
                         'criteria' => Dropdownmultiple::$dropdown_multiple_items,
                     ]);
-                    echo "</span>";
-                    $paramsType = [
-                        'value' => '__VALUE__',
-                        'type' => '__VALUE__',
-                        'item' => $this->fields['item'],
-                        'step' => 'object',
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1,
-                    ];
-                    if (isset($randType)) {
-                        $paramsType['rand'] = $randType;
-                    }
-                    Ajax::updateItemOnSelectEvent(
-                        'dropdown_type' . $randType,
-                        "show_item",
-                        PLUGIN_METADEMANDS_WEBDIR
-                        . "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                        $paramsType
-                    );
-
-                    echo "<span id='show_item_title' style='display:none'>";
+                    echo '</span>';
+                    Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_item", $ajax_url, $params_item);
+                    echo '<span id="show_item_title" style="display:none">';
                 }
             } else {
                 echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                 echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
             }
         }
+        $item_value_html = ob_get_clean();
 
-        // ORDER
-        if ($this->fields['type'] != "title-block") {
-            echo "<td>" . __('Display field after', 'metademands') . "</td>";
-            echo "<td>";
+        // --- Ordre ---
+        ob_start();
+        $this->showOrderDropdown($this->fields);
+        $order_html = ob_get_clean();
 
-            echo "<span id='show_order'>";
-            $this->showOrderDropdown(
-                $this->fields
-            );
-            echo "</span>";
-            echo "</td>";
+        // --- Entités ---
+        if ($ID < 1 && isset($item)) {
+            $entities_id  = $item->fields["entities_id"];
+            $is_recursive = $item->fields["is_recursive"];
         } else {
-            echo "<td colspan='2'></td>";
+            $entities_id  = $this->fields["entities_id"] ?? 0;
+            $is_recursive = $this->fields["is_recursive"] ?? 0;
         }
 
+        TemplateRenderer::getInstance()->display('@metademands/field_form.html.twig', [
+            'action'                 => Toolbox::getItemTypeFormURL(Field::class),
+            'metademand_id'          => $this->fields['plugin_metademands_metademands_id'],
+            'field_id'               => $this->fields['id'] ?? 0,
+            'is_new'                 => $ID < 1,
+            'entities_id'            => $entities_id,
+            'is_recursive'           => $is_recursive,
+            'item_name'              => stripslashes($this->fields['name'] ?? ''),
+            'label2'                 => $this->fields['label2'] ?? '',
+            'comment'                => $this->fields['comment'] ?? '',
+            'show_label2_required'   => $ID > 0 && in_array($this->fields['type'] ?? '', ['datetime_interval', 'date_interval']),
+            'metafield_itil_warning' => $metafield_itil_warning,
+            'type_html'              => $type_html,
+            'basket_warning'         => $basket_warning,
+            'rank_html'              => $rank_html,
+            'rank_rand'              => $rank_rand,
+            'item_label_html'        => $item_label_html,
+            'item_value_html'        => $item_value_html,
+            'is_title_block'         => ($this->fields['type'] ?? '') === 'title-block',
+            'order_html'             => $order_html,
+            'customvalues_warning'   => $customvalues_warning,
+            'prev_fields_id'         => $this->fields['plugin_metademands_fields_id'] ?? 0,
+            'plugin_web_dir'         => PLUGIN_METADEMANDS_WEBDIR,
+        ]);
 
-        echo "</tr>";
-
-        if ($ID > 0) {
-            $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-            $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-
-            if (isset($field->fields['type'])
-                && (in_array($field->fields['type'], $allowed_customvalues_types)
-                    || in_array($field->fields['item'], $allowed_customvalues_items))
-                && !in_array($this->fields["item"], self::$field_specificobjects)
-                && $field->fields['item'] != "Appliance"
-                && $field->fields['item'] != "Group") {
-                $field_custom = new FieldCustomvalue();
-                if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
-                    echo "<div class='alert alert-warning d-flex'>";
-                    echo "<b>" . __(
-                            'Warning : there is no custom values for this object',
-                            'metademands'
-                        ) . "</b></div>";
-                }
-            }
-        }
-
-        $this->showFormButtons(['colspan' => 2]);
         return true;
     }
 
@@ -1186,49 +891,70 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         $canedit = $item->can($item->getID(), UPDATE);
 
         if ($canedit) {
-            echo "<div id='viewfieldmeta" . $item->getID() . "$rand'></div>\n";
+            $modal_new_id      = "metaFieldNewModal{$rand}";
+            $modal_existing_id = "metaFieldExistingModal{$rand}";
+            $params_new        = json_encode([
+                'type'                          => __CLASS__,
+                'parenttype'                    => get_class($item),
+                $item->getForeignKeyField()     => $item->getID(),
+                'id'                            => -1,
+            ]);
+            $params_existing   = json_encode([
+                'type'                          => __CLASS__,
+                'parenttype'                    => get_class($item),
+                $item->getForeignKeyField()     => $item->getID(),
+                'id'                            => -1,
+            ]);
+            $url_new      = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
+            $url_existing = PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewexistingsubitem.php";
 
-            echo "<script type='text/javascript' >\n";
-            echo "function addFieldmeta" . $item->getID() . "$rand() {\n";
-            $params = [
-                'type' => __CLASS__,
-                'parenttype' => get_class($item),
-                $item->getForeignKeyField() => $item->getID(),
-                'id' => -1,
-            ];
-            Ajax::updateItemJsCode(
-                "viewfieldmeta" . $item->getID() . "$rand",
-                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                $params
-            );
-            echo "};";
-            echo "</script>\n";
+            // Modals Bootstrap 5
+            echo "
+            <div class='modal fade' id='$modal_new_id' tabindex='-1'>
+                <div class='modal-dialog modal-lg'>
+                    <div class='modal-content'>
+                        <div class='modal-header'>
+                            <h5 class='modal-title'>" . __('Add a new field', 'metademands') . "</h5>
+                            <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+                        </div>
+                        <div id='{$modal_new_id}_body' class='modal-body'></div>
+                    </div>
+                </div>
+            </div>
+            <div class='modal fade' id='$modal_existing_id' tabindex='-1'>
+                <div class='modal-dialog modal-lg'>
+                    <div class='modal-content'>
+                        <div class='modal-header'>
+                            <h5 class='modal-title'>" . __('Add an existing field', 'metademands') . "</h5>
+                            <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+                        </div>
+                        <div id='{$modal_existing_id}_body' class='modal-body'></div>
+                    </div>
+                </div>
+            </div>";
+
+            echo "<script>
+            function addFieldmeta{$item->getID()}{$rand}() {
+                $.post('{$url_new}', {$params_new}, function(html) {
+                    $('#{$modal_new_id}_body').html(html);
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_new_id}')).show();
+                });
+            }
+            function addExistingFieldmeta{$item->getID()}{$rand}() {
+                $.post('{$url_existing}', {$params_existing}, function(html) {
+                    $('#{$modal_existing_id}_body').html(html);
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_existing_id}')).show();
+                });
+            }
+            </script>";
+
             echo "<div class='center'>"
                 . "<a class='submit btn btn-primary' href='javascript:addFieldmeta"
                 . $item->getID() . "$rand();'>" . __('Add a new field', 'metademands')
                 . "</a>&nbsp;";
-
             echo "<a class='submit btn btn-primary' href='javascript:addExistingFieldmeta"
-                . $item->getID() . "$rand();'>" . __('Add a existing field', 'metademands')
+                . $item->getID() . "$rand();'>" . __('Add an existing field', 'metademands')
                 . "</a></div><br>";
-
-            echo "<div id='viewexistingfieldmeta" . $item->getID() . "$rand'></div>\n";
-
-            echo "<script type='text/javascript' >\n";
-            echo "function addExistingFieldmeta" . $item->getID() . "$rand() {\n";
-            $params = [
-                'type' => __CLASS__,
-                'parenttype' => get_class($item),
-                $item->getForeignKeyField() => $item->getID(),
-                'id' => -1,
-            ];
-            Ajax::updateItemJsCode(
-                "viewexistingfieldmeta" . $item->getID() . "$rand",
-                PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewexistingsubitem.php",
-                $params
-            );
-            echo "};";
-            echo "</script>\n";
         }
 
         $cond['plugin_metademands_metademands_id'] = $item->getID();

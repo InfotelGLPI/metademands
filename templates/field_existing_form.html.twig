@@ -1,0 +1,86 @@
+{#
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+ @copyright Copyright (C) 2026-2026 by Metademands plugin team.
+ @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+ @link      https://github.com/InfotelGLPI/Metademands
+ -------------------------------------------------------------------------
+#}
+
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+
+<form name="form" method="post" action="{{ action }}">
+    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
+    {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
+    {{ inputs.hidden('id', field_id) }}
+
+    <div class="card mt-2">
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <label class="col-4 col-form-label fw-bold">{{ __('Field', 'metademands') }}</label>
+                <div class="col-8">
+                    {{ type_html|raw }}
+                    {% do call('Ajax::updateItemOnEvent', [
+                        'dropdown_type' ~ type_rand,
+                        'show_listfields_by_type',
+                        plugin_web_dir ~ '/ajax/viewtypefields.php?id=' ~ field_id,
+                        {'value': '__VALUE__', 'step': 'listfieldbytype'}
+                    ]) %}
+                    <div id="show_listfields_by_type" class="mt-2"></div>
+                    <div id="show_fields_infos" class="mt-2"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-4 col-form-label fw-bold">{{ __('Block', 'metademands') }}</label>
+                <div class="col-8">
+                    {{ rank_html|raw }}
+                    {% do call('Ajax::updateItemOnSelectEvent', [
+                        'dropdown_rank' ~ rank_rand,
+                        'show_order',
+                        plugin_web_dir ~ '/ajax/viewtypefields.php?id=' ~ field_id,
+                        {'rank': '__VALUE__', 'step': 'order', 'fields_id': field_id,
+                         'metademands_id': metademand_id, 'previous_fields_id': prev_fields_id}
+                    ]) %}
+                </div>
+            </div>
+
+            {% if not is_title_block %}
+            <div class="row mb-3">
+                <label class="col-4 col-form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
+                <div class="col-8">
+                    <span id="show_order">{{ order_html|raw }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button class="btn btn-primary" type="submit" name="add" value="1">
+                <i class="ti ti-device-floppy"></i>
+                <span>{{ _x('button', 'Add') }}</span>
+            </button>
+        </div>
+    </div>
+</form>

@@ -28,14 +28,13 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Basketline;
 use GlpiPlugin\Metademands\Field;
-use GlpiPlugin\Metademands\FieldOption;
-use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
-use GlpiPlugin\Metademands\Group;
 
+Session::checkLoginUser();
 
 $metademands_id      = (int) ($_POST['metademands_id'] ?? 0);
 $form_metademands_id = (int) ($_POST['form_metademands_id'] ?? 0);
@@ -53,7 +52,7 @@ $metademands = new Metademand();
 $fields = new Field();
 
 if (!$metademands->getFromDB($form_metademands_id) || !$metademands->can($form_metademands_id, READ)) {
-    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+    throw new AccessDeniedHttpException();
 }
 
 $KO = false;
