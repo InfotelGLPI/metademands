@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-18 16:49+0000\n"
+"POT-Creation-Date: 2026-05-19 07:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,7 +179,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: src/FieldCustomvalue.php:590
+#: src/FieldCustomvalue.php:592
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
@@ -519,7 +519,7 @@ msgstr ""
 #: src/Fields/Dropdownmultiple.php:516 src/Fields/Dropdownmultiple.php:603
 #: src/Fields/Radio.php:303 src/Fields/Yesno.php:166
 #: src/Fields/Dropdownmeta.php:1210 src/Fields/Checkbox.php:290
-#: src/FieldCustomvalue.php:641
+#: src/FieldCustomvalue.php:643
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
@@ -1586,7 +1586,7 @@ msgstr ""
 msgid "Please come back later"
 msgstr ""
 
-#: src/FieldCustomvalue.php:591
+#: src/FieldCustomvalue.php:593
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1651,7 +1651,7 @@ msgstr ""
 
 #: src/Fields/Dropdownmultiple.php:578 src/Fields/Radio.php:278
 #: src/Fields/Freetable.php:365 src/Fields/Dropdownmeta.php:1157
-#: src/Fields/Checkbox.php:265 src/FieldCustomvalue.php:622
+#: src/Fields/Checkbox.php:265 src/FieldCustomvalue.php:624
 #: src/Freetablefield.php:424
 msgid "Rank"
 msgstr ""
@@ -1727,7 +1727,7 @@ msgstr ""
 msgid "Requester name"
 msgstr ""
 
-#: src/FieldCustomvalue.php:579
+#: src/FieldCustomvalue.php:581
 msgid "Reset and import custom values"
 msgstr ""
 
@@ -2450,7 +2450,7 @@ msgid ""
 "form fields, making your life easier :)"
 msgstr ""
 
-#: src/FieldCustomvalue.php:725
+#: src/FieldCustomvalue.php:727
 msgid "You can't add a custom value without name"
 msgstr ""
 
