@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20 10:31+0000\n"
+"POT-Creation-Date: 2026-05-20 11:46+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -81,7 +81,7 @@ msgstr "Activer la validation du responsable"
 msgid "Active"
 msgstr "Active"
 
-#: src/MailTask.php:247 src/TicketTask.php:383
+#: templates/mailtask_form.html.twig:53 templates/mailtask_form.html.twig:60
 msgid "Actors"
 msgstr "Acteurs"
 
@@ -120,7 +120,7 @@ msgstr "Ajouter un nouveau champ"
 msgid "Add a new option"
 msgstr "Ajouter une nouvelle option"
 
-#: src/Task.php:545
+#: src/Task.php:551
 msgid "Add a task"
 msgstr "Ajouter une sous-demande"
 
@@ -226,6 +226,11 @@ msgstr "Êtes-vous sûr de vouloir supprimer cet objet ?"
 msgid "Arrival date"
 msgstr "Date d'arrivée"
 
+#: templates/tickettask_form_section.html.twig:125
+#: templates/tickettask_form_section.html.twig:134
+msgid "Assigned to"
+msgstr "Assigné à"
+
 #: src/Form.php:803 src/Form.php:976
 msgid "Associated form"
 msgid_plural "Associated forms"
@@ -272,8 +277,8 @@ msgstr "Lier à la valeur de cette case à cocher"
 msgid "Block"
 msgstr "Bloc"
 
-#: src/MailTask.php:205 src/TicketTask.php:233 src/FieldOption.php:1610
-#: src/Task.php:820 src/Task.php:1223 src/Step.php:406 src/Step.php:680
+#: src/MailTask.php:176 src/TicketTask.php:226 src/FieldOption.php:1610
+#: src/Task.php:826 src/Task.php:1229 src/Step.php:406 src/Step.php:680
 #: src/Step.php:694
 #, php-format
 msgid "Block %s"
@@ -288,7 +293,7 @@ msgstr "Affichage en bloc"
 msgid "Block overview"
 msgstr "Aperçu du bloc"
 
-#: src/TicketTask.php:258 src/Task.php:600
+#: src/Task.php:606 templates/tickettask_form_section.html.twig:56
 msgid "Block parent ticket resolution"
 msgstr "Bloquer la résolution du ticket parent"
 
@@ -296,7 +301,8 @@ msgstr "Bloquer la résolution du ticket parent"
 msgid "Block title"
 msgstr "Titre de bloc"
 
-#: src/MailTask.php:197 src/TicketTask.php:226 src/Task.php:597
+#: src/Task.php:603 templates/tickettask_form_section.html.twig:46
+#: templates/mailtask_form.html.twig:45
 msgid "Block to use"
 msgstr "Bloc à utiliser"
 
@@ -329,6 +335,7 @@ msgstr ""
 " continuer ?"
 
 #: templates/metademand.html.twig:164
+#: templates/tickettask_form_section.html.twig:72
 msgid "Category"
 msgstr "Catégorie"
 
@@ -491,7 +498,7 @@ msgstr "Créer une métademande"
 msgid "Create a metademand"
 msgstr "Créer une métademande"
 
-#: src/TicketTask.php:267
+#: templates/tickettask_form_section.html.twig:63
 msgid "Create after the task"
 msgstr "Créer après la sous-demande"
 
@@ -676,6 +683,8 @@ msgstr "Suivi de la demande"
 msgid "Departure date"
 msgstr "Date de départ"
 
+#: templates/tickettask_form_section.html.twig:175
+#: templates/mailtask_form.html.twig:75
 #: templates/basketobject_form.html.twig:51
 msgid "Description"
 msgstr "Description"
@@ -825,7 +834,7 @@ msgstr "Editer la tâche de ticket"
 msgid "Edit translation"
 msgstr "Editer la traduction"
 
-#: src/MailTask.php:359
+#: src/MailTask.php:266
 msgid "Email sent"
 msgstr "Email envoyé"
 
@@ -866,6 +875,10 @@ msgstr "Activer la transformation d'un ticket en méta-demande"
 #: templates/item_translations.html.twig:58
 msgid "Enter translation"
 msgstr "Entrer la traduction"
+
+#: templates/tickettask_form_section.html.twig:69
+msgid "Entity"
+msgstr "Entité"
 
 #: src/Condition.php:469 templates/condition_form.html.twig:48
 #: templates/condition_for_metademand.html.twig:77
@@ -921,7 +934,7 @@ msgstr ""
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr "Exporter la métademande en XML pour l'utiliser sur un autre GLPI"
 
-#: src/MailTask.php:353
+#: src/MailTask.php:260
 msgid "Fail to send email"
 msgstr "Echec de l'envoi du courriel"
 
@@ -1000,7 +1013,7 @@ msgstr "Le nom du formulaire est requis"
 msgid "Form requester"
 msgstr "Demandeur du formulaire"
 
-#: src/MailTask.php:225 src/TicketTask.php:253 src/Task.php:599
+#: src/Task.php:605 templates/tickettask_form_section.html.twig:52
 msgid "Format the description of the childs ticket as a table"
 msgstr "Formatter la description du ticket enfant sous forme de tableau"
 
@@ -1038,7 +1051,11 @@ msgstr "Total général (HT)"
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
-#: templates/group.html.twig:43 templates/step_form.html.twig:53
+#: templates/tickettask_form_section.html.twig:96
+#: templates/tickettask_form_section.html.twig:115
+#: templates/tickettask_form_section.html.twig:134
+#: templates/mailtask_form.html.twig:60 templates/group.html.twig:43
+#: templates/step_form.html.twig:53
 msgid "Group"
 msgstr "Groupe"
 
@@ -1265,7 +1282,7 @@ msgstr "Lancer une validation"
 msgid "Ldap Dropdown"
 msgstr "Liste déroulante LDAP"
 
-#: src/Task.php:596
+#: src/Task.php:602
 msgid "Level"
 msgstr "Ordre"
 
@@ -1647,6 +1664,11 @@ msgstr[0] "Type d'objet"
 msgstr[1] "Types d'objet"
 msgstr[2] "Types d'objet"
 
+#: templates/tickettask_form_section.html.twig:107
+#: templates/tickettask_form_section.html.twig:115
+msgid "Observer"
+msgstr "Observateur"
+
 #: src/Fields/Basket.php:2180
 msgid "On catalog"
 msgstr "Sur catalogue"
@@ -1835,7 +1857,11 @@ msgstr "Lecture seule"
 msgid "Readonly"
 msgstr "Lecture seule"
 
-#: src/Task.php:773
+#: templates/mailtask_form.html.twig:53 templates/mailtask_form.html.twig:60
+msgid "Recipient"
+msgstr "Rédacteur"
+
+#: src/Task.php:779
 msgid "Recipients"
 msgstr "Destinataires"
 
@@ -1879,6 +1905,15 @@ msgstr "Signaler un problème"
 msgid "Report an incident"
 msgstr "Signaler un incident"
 
+#: templates/tickettask_form_section.html.twig:154
+msgid "Request source"
+msgstr "Source de la demande"
+
+#: templates/tickettask_form_section.html.twig:88
+#: templates/tickettask_form_section.html.twig:96
+msgid "Requester"
+msgstr "Demandeur"
+
 #: src/TicketField.php:234
 msgid "Requester email"
 msgstr "Email du demandeur"
@@ -1914,7 +1949,7 @@ msgstr[2] "Gestion des droits"
 msgid "Right to update a meta-demand form from the ticket"
 msgstr "Droit de mettre à jour un formulaire de méta-demande depuis le ticket"
 
-#: src/Task.php:799 src/Task.php:808
+#: src/Task.php:805 src/Task.php:814
 msgid "Root"
 msgstr "Racine"
 
@@ -2101,6 +2136,10 @@ msgstr "Affichage divisé"
 msgid "Start the download"
 msgstr "Commencer le téléchargement"
 
+#: templates/tickettask_form_section.html.twig:146
+msgid "Status"
+msgstr "Statut"
+
 #: src/Stepform.php:905 src/Stepform.php:1042
 msgid "Step"
 msgstr "Etape"
@@ -2163,16 +2202,16 @@ msgstr "Cible du suivi"
 msgid "Target ticket(s)"
 msgstr "Ticket(s) cible(s)"
 
-#: src/Ticket_Task.php:65 src/MailTask.php:70 src/TicketTask.php:72
-#: src/Ticket_Metademand.php:74 src/MetademandTask.php:63
+#: src/Ticket_Task.php:65 src/MailTask.php:71 src/TicketTask.php:72
+#: src/Ticket_Metademand.php:74 src/MetademandTask.php:64
 msgid "Task creation"
 msgstr "Création des sous-demandes"
 
-#: src/Task.php:341
+#: src/Task.php:344
 msgid "Task type"
 msgstr "Type de sous-demande"
 
-#: src/Task.php:580
+#: src/Task.php:586
 msgid "Tasks"
 msgstr "Sous-demandes"
 
@@ -2212,8 +2251,8 @@ msgstr "Zone de commentaire"
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: src/TicketTask.php:789 src/Metademand.php:747 src/Metademand.php:853
-#: src/Task.php:1065
+#: src/TicketTask.php:602 src/Metademand.php:747 src/Metademand.php:853
+#: src/Task.php:1071
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 "La catégorie est liée à une méta-demande. Merci d'en sélectionner une autre"
@@ -2372,7 +2411,7 @@ msgstr ""
 "Ce bloc est déjà utilisé par un autre champ. Vous pouvez rencontrer des "
 "problèmes si la valeur à vérifier est déjà utilisée"
 
-#: src/MetademandTask.php:162
+#: templates/metademandtask_form.html.twig:38
 msgid "This demand is already used in"
 msgstr "Cette demande est déja utilisée dans"
 
@@ -2423,6 +2462,11 @@ msgstr "Technicien des tickets cibles"
 #: src/Fields/Time.php:58
 msgid "Time"
 msgstr "Heure"
+
+#: templates/tickettask_form_section.html.twig:167
+#: templates/mailtask_form.html.twig:68
+msgid "Title"
+msgstr "Titre"
 
 #: src/Metademand.php:1172 templates/metademand.html.twig:216
 msgid "Title color"
@@ -2526,7 +2570,7 @@ msgctxt "button"
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: src/Task.php:1200
+#: src/Task.php:1206
 msgctxt "button"
 msgid "Update block to use"
 msgstr "Mettre à jour le bloc à utiliser"
@@ -2548,7 +2592,8 @@ msgstr "Utiliser une popup de vérification pour les valeurs vides"
 msgid "Use as basket"
 msgstr "Utiliser comme un panier"
 
-#: src/MailTask.php:186 src/TicketTask.php:221 src/Task.php:598
+#: src/Task.php:604 templates/tickettask_form_section.html.twig:44
+#: templates/mailtask_form.html.twig:40
 msgid "Use block"
 msgstr "Utiliser les blocs"
 
@@ -2587,6 +2632,13 @@ msgstr "Utiliser ce champ comme champ des tickets enfants"
 #: front/step.form.php:63
 msgid "Used blocks are mandatory"
 msgstr "Les blocs à utiliser sont obligatoires"
+
+#: templates/tickettask_form_section.html.twig:88
+#: templates/tickettask_form_section.html.twig:107
+#: templates/tickettask_form_section.html.twig:125
+#: templates/mailtask_form.html.twig:53
+msgid "User"
+msgstr "Utilisateur"
 
 #: src/NotificationTargetStepform.php:174 src/Stepform.php:1054
 msgid "User in charge of the next step"
@@ -2760,7 +2812,7 @@ msgstr ""
 msgid "You don't have the right to update tickets"
 msgstr "Vous n'avez pas le droit de mettre à jour les tickets"
 
-#: src/Task.php:441
+#: src/Task.php:447
 msgid "You don't have the ticket creation right"
 msgstr "Vous n'avez pas le droit de créer des tickets"
 
