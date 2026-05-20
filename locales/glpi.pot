@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20 10:25+0000\n"
+"POT-Creation-Date: 2026-05-20 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,11 +107,6 @@ msgstr ""
 msgid "Add a group"
 msgstr ""
 
-#: templates/item_translations.html.twig:73
-#: templates/item_translations.html.twig:124
-msgid "Add a language"
-msgstr ""
-
 #: src/Field.php:918 src/Field.php:963
 msgid "Add a new field"
 msgstr ""
@@ -146,6 +141,11 @@ msgstr ""
 
 #: src/Fields/Upload.php:60
 msgid "Add attachment"
+msgstr ""
+
+#: templates/item_translations.html.twig:73
+#: templates/item_translations.html.twig:124
+msgid "Add language"
 msgstr ""
 
 #: src/Wizard.php:1637 src/Wizard.php:1816
