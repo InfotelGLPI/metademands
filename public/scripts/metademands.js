@@ -1220,8 +1220,27 @@ async function plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, met
     const goingForward = targetTabIndex > metademandparams.currentTab;
 
     if (goingForward) {
-        // Validation du step courant
-        if (!plugin_metademands_wizard_validateForm(metademandparams)) return;
+        // Valider tous les tabs intermédiaires (du tab courant jusqu'au tab cible exclu)
+        const originalTab = metademandparams.currentTab;
+        for (let checkIdx = originalTab; checkIdx < targetTabIndex; checkIdx++) {
+            metademandparams.currentTab = checkIdx;
+            if (!plugin_metademands_wizard_validateForm(metademandparams)) {
+                // Si le tab défaillant n'est pas le tab courant, naviguer vers lui
+                if (checkIdx !== originalTab && tabs[originalTab] !== undefined) {
+                    tabs[originalTab].style.display = 'none';
+                }
+                const failingBlocAttr = tabs[checkIdx]?.firstChild?.getAttribute('bloc-id');
+                const failingBlockId = failingBlocAttr ? parseInt(failingBlocAttr.replace('bloc', '')) : null;
+                if (failingBlockId !== null) {
+                    document.querySelectorAll('a[id^="ablock"]').forEach(a => a.classList.remove('active'));
+                    document.getElementById('ablock' + failingBlockId)?.classList.add('active');
+                    document.getElementById('ablock' + failingBlockId)?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+                plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
+                return;
+            }
+        }
+        metademandparams.currentTab = originalTab;
 
         // Confirmation si aucune valeur saisie dans le step courant
         if (metademandparams.useconfirm > 0 && metademandparams.edit_model == 0) {
