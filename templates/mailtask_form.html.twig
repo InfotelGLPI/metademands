@@ -1,0 +1,81 @@
+{#
+-------------------------------------------------------------------------
+Metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the Metademands Development Team.
+
+-------------------------------------------------------------------------
+
+LICENSE
+
+This file is part of Metademands.
+
+Metademands is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+Metademands is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------
+@copyright Copyright (C) 2026-2026 by Metademands plugin team.
+@license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+@link      https://github.com/InfotelGLPI/Metademands
+-------------------------------------------------------------------------
+#}
+
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+
+{% do call('Html::requireJs', ['tinymce']) %}
+
+{{ inputs.hidden('itilcategories_id', 0) }}
+{{ inputs.hidden('formatastable', 1) }}
+{{ inputs.hidden('mailtask_id', mailtask_id) }}
+
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">{{ __('Use block', 'metademands') }}</label>
+    <div class="col-8">{{ use_block_html|raw }}</div>
+</div>
+
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">{{ __('Block to use', 'metademands') }}</label>
+    <div class="col-8">{{ block_use_html|raw }}</div>
+</div>
+
+<hr class="my-3">
+
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">
+        {{ __('Actors', 'metademands') }} — {{ __('Recipient') }} ({{ __('User') }})
+    </label>
+    <div class="col-8">{{ user_recipient_html|raw }}</div>
+</div>
+
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">
+        {{ __('Actors', 'metademands') }} — {{ __('Recipient') }} ({{ __('Group') }})
+    </label>
+    <div class="col-8">{{ group_recipient_html|raw }}</div>
+</div>
+
+<hr class="my-3">
+
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">{{ __('Title') }}</label>
+    <div class="col-8">
+        <input type="text" class="form-control" name="name" value="{{ name }}">
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">{{ __('Description') }}</label>
+    <div class="col-8">
+        {% do call('Html::textarea', [{'name': 'content', 'value': content,
+            'enable_richtext': true, 'enable_fileupload': false,
+            'enable_images': false, 'rows': 3}]) %}
+    </div>
+</div>

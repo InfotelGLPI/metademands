@@ -33,6 +33,7 @@ namespace GlpiPlugin\Metademands;
 use CommonDBChild;
 use CommonITILActor;
 use DBConnection;
+use Glpi\Application\View\TemplateRenderer;
 use GLPIMailer;
 use GLPINetwork;
 use Html;
@@ -128,33 +129,28 @@ class MailTask extends CommonDBChild
 
     public static function showMailTaskForm($metademands_id, $tasktype, $input = [])
     {
-
         $metademands = new Metademand();
         $metademands->getFromDB($metademands_id);
 
-        // Default values
         $values = [
-            'mailtask_id' => 0,
-            'itilcategories_id' => 0,
-            'type' => \Ticket::DEMAND_TYPE,
-            'parent_tasks_id' => 0,
-            'plugin_metademands_tasks_id' => 0,
-            'content' => ' ',
-            'name' => ' ',
-            'block_use' => 1,
-            'useBlock' => 1,
+            'mailtask_id'                    => 0,
+            'itilcategories_id'              => 0,
+            'type'                           => \Ticket::DEMAND_TYPE,
+            'parent_tasks_id'                => 0,
+            'plugin_metademands_tasks_id'    => 0,
+            'content'                        => ' ',
+            'name'                           => ' ',
+            'block_use'                      => 1,
+            'useBlock'                       => 1,
             'block_parent_ticket_resolution' => 0,
-            'formatastable' => 1,
-            'entities_id' => 0,
-            'is_recursive' => 0];
-        // Init values
+            'formatastable'                  => 1,
+            'entities_id'                    => 0,
+            'is_recursive'                   => 0,
+        ];
         foreach ($input as $key => $val) {
             $values[$key] = $val;
         }
 
-        //      $values['block_use'] = json_decode($values['block_use']);
-
-        // Restore saved value or override with page parameter
         if (isset($_SESSION["metademandsHelpdeskSaved"])) {
             foreach ($_SESSION["metademandsHelpdeskSaved"] as $name => $value) {
                 $values[$name] = $value;
@@ -162,42 +158,17 @@ class MailTask extends CommonDBChild
             unset($_SESSION["metademandsHelpdeskSaved"]);
         }
 
-        if ($values['block_use'] != null
-            && !is_array($values['block_use'])) {
+        if ($values['block_use'] != null && !is_array($values['block_use'])) {
             $values['block_use'] = json_decode($values['block_use'], true);
         }
         if ($values['block_use'] == null) {
             $values['block_use'] = [];
         }
 
-        // Clean text fields
         $values['name'] = stripslashes($values['name']);
         $values['type'] = $metademands->getField("type");
 
-        // In percent
-        $colsize1 = '13';
-        $colsize3 = '87';
-
-        echo "<div>";
-        echo "<table class='tab_cadre_fixe' id='mainformtable'>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<th>" . sprintf(__('%1$s'), __('Use block', 'metademands')) . "</th>";
-        echo "<td>";
-
-        \Dropdown::showYesNo('useBlock', $values['useBlock']);
-
-        echo "</td>";
-        echo "<td colspan='4'></td>";
-
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
-        echo "<td>";
-
-        $field = new Field();
+        $field  = new Field();
         $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
         $blocks = [];
         foreach ($fields as $f) {
@@ -209,112 +180,48 @@ class MailTask extends CommonDBChild
         if (!is_array($values['block_use'])) {
             $values['block_use'] = [$values['block_use']];
         }
-        \Dropdown::showFromArray(
-            'block_use',
-            $blocks,
-            ['values' => $values['block_use'],
-                'width' => '100%',
-                'multiple' => true,
-                'entity' => $_SESSION['glpiactiveentities']]
-        );
-        echo "</td>";
-        echo "<td colspan='4'></td>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
 
-        echo "<th>" . sprintf(__('%1$s'), __('Format the description of the childs ticket as a table', 'metademands')) . "</th>";
-        echo "<td>";
-        \Dropdown::showYesNo('formatastable', $values['formatastable']);
-        echo "</td>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<th>" . __('Category') . "</th>";
-        echo "<td>";
-        ITILCategory::dropdown([
-            'name' => 'itilcategories_id',
-            'value' => $values['itilcategories_id'],
+        ob_start();
+        \Dropdown::showYesNo('useBlock', $values['useBlock']);
+        $use_block_html = ob_get_clean();
+
+        ob_start();
+        \Dropdown::showFromArray('block_use', $blocks, [
+            'values'   => $values['block_use'],
+            'width'    => '100%',
+            'multiple' => true,
+            'entity'   => $_SESSION['glpiactiveentities'],
         ]);
-        echo "</td>";
-        echo "<td colspan='4'></td>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='4'></td>";
-        echo "</tr>";
-        echo "<td colspan='4'></td>";
-        echo "</table>";
+        $block_use_html = ob_get_clean();
 
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<th rowspan='3' width='$colsize1%'>" . __('Actors', 'metademands') . "</th>";
-        echo "<th>" . __('Recipient') . "</th>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
         $ticket = new \Ticket();
-        // Requester user
-        //         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
-        User::dropdown(['name' => 'users_id_recipient',
-            'value' => $values['users_id_recipient'] ?? 0,
+        ob_start();
+        User::dropdown([
+            'name'   => 'users_id_recipient',
+            'value'  => $values['users_id_recipient'] ?? 0,
             'entity' => $metademands->fields["entities_id"],
-            'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
-        echo "</td>";
-        echo "<td>";
-        echo "</td>";
+            'right'  => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
+        ]);
+        $user_recipient_html = ob_get_clean();
 
-        echo "<td>";
-        echo "</td>";
-        echo "</tr>";
+        ob_start();
+        \Dropdown::show('Group', [
+            'name'      => 'groups_id_recipient',
+            'value'     => $values['groups_id_recipient'] ?? 0,
+            'entity'    => $metademands->fields["entities_id"],
+            'condition' => ['is_requester' => 1],
+        ]);
+        $group_recipient_html = ob_get_clean();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        // Requester Group
-        //         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
-        \Dropdown::show('Group', ['name' => 'groups_id_recipient',
-            'value' => $values['groups_id_recipient'] ?? 0,
-            'entity' => $metademands->fields["entities_id"],
-            'condition' => ['is_requester' => 1]]);
-        echo "</td>";
-        echo "<td>";
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        echo "<table class='tab_cadre_fixe'>";
-        // Title
-        echo "<tr class='tab_bg_1'>";
-        echo "<th>" . __('Title') . "</th>";
-        echo "<td width='$colsize3%'>";
-        $name = $values['name'] ?? '';
-        echo Html::input('name', ['value' => $name, 'size' => 90]);
-        echo "</td>";
-        echo "</tr>";
-
-        // Description
-        echo "<tr class='tab_bg_1'>";
-        echo "<th width='$colsize1%'>" . __('Description') . "</th>";
-        echo "<td width='$colsize3%'>";
-
-        $rand = mt_rand();
-        $rand_text = mt_rand();
-        Html::initEditorSystem("content" . $rand, $rand, true);
-        if (!isset($values['content'])) {
-            $content = '';
-        } else {
-            $content = $values['content'];
-        }
-        echo "<div id='content$rand_text'>";
-        Html::textarea(['name' => 'content',
-            'value' => stripslashes($content),
-            'id' => 'content' . $rand,
-            'rows' => 3,
-            'enable_richtext' => true,
-            'enable_fileupload' => false,
-            'enable_images' => false]);
-        echo "</div>";
-        echo Html::hidden('mailtask_id', ['value' => $values['mailtask_id']]);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-
-        echo "</div>";
+        TemplateRenderer::getInstance()->display('@metademands/mailtask_form.html.twig', [
+            'use_block_html'       => $use_block_html,
+            'block_use_html'       => $block_use_html,
+            'user_recipient_html'  => $user_recipient_html,
+            'group_recipient_html' => $group_recipient_html,
+            'name'                 => $values['name'] ?? '',
+            'content'              => stripslashes($values['content'] ?? ''),
+            'mailtask_id'          => $values['mailtask_id'],
+        ]);
     }
 
 

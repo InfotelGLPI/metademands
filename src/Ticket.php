@@ -645,75 +645,75 @@ class Ticket extends CommonDBTM
      *
      * @return bool (print the helpdesk)
      */
-    public static function showFormHelpdesk($ticket_template = false, $values = [])
-    {
-        global $CFG_GLPI;
-
-        if (!Session::haveRight("ticket", CREATE)) {
-            return false;
-        }
-
-        $entities_id = $_SESSION['glpiactive_entity'];
-
-        $fields = ['itilcategories_id' => 0,
-            'content'           => '',
-            'name'              => '',
-            'type'              => 0,
-            'urgency'           => 0,
-            'entities_id'       => $entities_id];
-
-        $tt = new TicketTemplate();
-        if ($ticket_template) {
-            $tt->getFromDBWithData($ticket_template, true);
-        } else {
-            $tt->getEmpty();
-        }
-
-        if (!empty($values)) {
-            foreach ($values as $key => $value) {
-                $fields[$key] = $value;
-            }
-        }
-
-        echo Html::hidden('_from_helpdesk', ['value' => 1]);
-        echo Html::hidden('requesttypes_id', ['value' => RequestType::getDefault('helpdesk')]);
-        echo Html::hidden('entities_id', ['value' => $entities_id]);
-
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-        // URGENCY
-        if ($CFG_GLPI['urgency_mask'] != (1 << 3)) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Urgency');
-            echo $tt->getMandatoryMark('urgency') . "</td>";
-            echo "<td>";
-            \Ticket::dropdownUrgency();
-            echo "</td></tr>";
-        }
-
-        // TITLE
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Title');
-        echo $tt->getMandatoryMark('name');
-        echo "</td>";
-        echo "<td>";
-        echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
-        echo "</td></tr>";
-
-        // CONTENT
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Description');
-        echo $tt->getMandatoryMark('content');
-        echo "</td>";
-        echo "<td>";
-        Html::textarea(['name'            => 'content',
-            'value'           => $fields['content'],
-            'cols'       => 80,
-            'rows'       => 14,
-            'enable_richtext' => false]);
-        echo "</td></tr>";
-
-        echo "</table></div>";
-    }
+//    public static function showFormHelpdesk($ticket_template = false, $values = [])
+//    {
+//        global $CFG_GLPI;
+//
+//        if (!Session::haveRight("ticket", CREATE)) {
+//            return false;
+//        }
+//
+//        $entities_id = $_SESSION['glpiactive_entity'];
+//
+//        $fields = ['itilcategories_id' => 0,
+//            'content'           => '',
+//            'name'              => '',
+//            'type'              => 0,
+//            'urgency'           => 0,
+//            'entities_id'       => $entities_id];
+//
+//        $tt = new TicketTemplate();
+//        if ($ticket_template) {
+//            $tt->getFromDBWithData($ticket_template, true);
+//        } else {
+//            $tt->getEmpty();
+//        }
+//
+//        if (!empty($values)) {
+//            foreach ($values as $key => $value) {
+//                $fields[$key] = $value;
+//            }
+//        }
+//
+//        echo Html::hidden('_from_helpdesk', ['value' => 1]);
+//        echo Html::hidden('requesttypes_id', ['value' => RequestType::getDefault('helpdesk')]);
+//        echo Html::hidden('entities_id', ['value' => $entities_id]);
+//
+//        echo "<div class='center'><table class='tab_cadre_fixe'>";
+//        // URGENCY
+//        if ($CFG_GLPI['urgency_mask'] != (1 << 3)) {
+//            echo "<tr class='tab_bg_1'>";
+//            echo "<td>" . __('Urgency');
+//            echo $tt->getMandatoryMark('urgency') . "</td>";
+//            echo "<td>";
+//            \Ticket::dropdownUrgency();
+//            echo "</td></tr>";
+//        }
+//
+//        // TITLE
+//        echo "<tr class='tab_bg_1'>";
+//        echo "<td>" . __('Title');
+//        echo $tt->getMandatoryMark('name');
+//        echo "</td>";
+//        echo "<td>";
+//        echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
+//        echo "</td></tr>";
+//
+//        // CONTENT
+//        echo "<tr class='tab_bg_1'>";
+//        echo "<td>" . __('Description');
+//        echo $tt->getMandatoryMark('content');
+//        echo "</td>";
+//        echo "<td>";
+//        Html::textarea(['name'            => 'content',
+//            'value'           => $fields['content'],
+//            'cols'       => 80,
+//            'rows'       => 14,
+//            'enable_richtext' => false]);
+//        echo "</td></tr>";
+//
+//        echo "</table></div>";
+//    }
 
     /**
      * @param $ID

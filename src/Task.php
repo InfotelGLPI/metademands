@@ -337,34 +337,40 @@ class Task extends CommonDBChild
 
             $this->showFormHeader($options);
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td class='center'>" . __('Task type', 'metademands') . "&nbsp;:&nbsp;";
-
-            $task_types = self::getTaskTypes($item->getID());
-
-            // Only one metademand can be selected
-            $metademand_tasks = $this->find(['plugin_metademands_metademands_id' => $item->getID(),
-                'type'                              => self::METADEMAND_TYPE]);
-            if (count($metademand_tasks)) {
-                unset($task_types[self::METADEMAND_TYPE]);
-            }
             if ($ID > 0) {
                 $valType = $this->fields['type'];
             } else {
-                $valType = 0;
-            }
-            $rand   = \Dropdown::showFromArray('taskType', $task_types, ['value' => $valType]);
-            $params = ['taskType'                          => '__VALUE__',
-                'plugin_metademands_metademands_id' => $item->getID()];
-            Ajax::updateItemOnSelectEvent(
-                "dropdown_taskType$rand",
-                "show_add_task_form",
-                PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
-                $params
-            );
-            echo "</td>";
-            echo "</tr>";
+                echo "<tr class='tab_bg_1'>";
+                echo "<td class='center'>" . __('Task type', 'metademands') . "&nbsp;";
 
+                $task_types = self::getTaskTypes($item->getID());
+
+                // Only one metademand can be selected
+                $metademand_tasks = $this->find([
+                    'plugin_metademands_metademands_id' => $item->getID(),
+                    'type' => self::METADEMAND_TYPE
+                ]);
+                if (count($metademand_tasks)) {
+                    unset($task_types[self::METADEMAND_TYPE]);
+                }
+
+                $valType = 0;
+
+                $rand = \Dropdown::showFromArray('taskType', $task_types, ['value' => $valType]);
+                $params = [
+                    'taskType' => '__VALUE__',
+                    'plugin_metademands_metademands_id' => $item->getID()
+                ];
+                Ajax::updateItemOnSelectEvent(
+                    "dropdown_taskType$rand",
+                    "show_add_task_form",
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
+                    $params
+                );
+
+                echo "</td>";
+                echo "</tr>";
+            }
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>";
             echo "<span id='show_add_task_form'>";
@@ -571,19 +577,19 @@ class Task extends CommonDBChild
             echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/treetable/treetable.js");
             echo "<div class='left first-bloc'>";
             if ($canedit && $solved) {
-                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-                $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
+                Html::openMassiveActionsForm('masstasks' .  $rand);
+                $massiveactionparams = ['item' => __CLASS__, 'container' => 'masstasks' .  $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
             echo "<table id='tree-table' class='tab_cadre_fixehov'>";
             echo "<tr class='tab_bg_2'>";
-            echo "<th class='left b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
+            echo "<th class='left b' colspan='12'>" . __('Tasks', 'metademands') . "</th>";
             echo "</tr>";
 
             echo "<tr class='tab_bg_2'>";
             echo "<th width='10'>";
             if ($canedit && $solved) {
-                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo Html::getCheckAllAsCheckbox('masstasks' .  $rand);
             }
             echo "</th>";
             //            echo "<th class='center b'>#</th>";

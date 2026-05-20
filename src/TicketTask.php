@@ -156,35 +156,29 @@ class TicketTask extends CommonDBChild
      */
     public static function showTicketTaskForm($metademands_id, $canchangeorder, $tasktype, $input = [])
     {
-
         $metademands = new Metademand();
         $metademands->getFromDB($metademands_id);
 
-        // Default values
         $values = [
-            'tickettask_id' => 0,
-            'itilcategories_id' => 0,
-            'parent_tasks_id' => 0,
-            'plugin_metademands_tasks_id' => 0,
-            'content' => " ",
-            'name' => " ",
-            'block_use' => 1,
-            'useBlock' => 1,
+            'tickettask_id'                  => 0,
+            'itilcategories_id'              => 0,
+            'parent_tasks_id'                => 0,
+            'plugin_metademands_tasks_id'    => 0,
+            'content'                        => ' ',
+            'name'                           => ' ',
+            'block_use'                      => 1,
+            'useBlock'                       => 1,
             'block_parent_ticket_resolution' => 1,
-            'formatastable' => 1,
-            'entities_id' => 0,
-            'is_recursive' => 0];
-
-        // Init values
+            'formatastable'                  => 1,
+            'entities_id'                    => 0,
+            'is_recursive'                   => 0,
+        ];
         foreach ($input as $key => $val) {
             $values[$key] = $val;
         }
 
-
-        //      $values['block_use'] = json_decode($values['block_use']);
         $ticket = new \Ticket();
 
-        // Restore saved value or override with page parameter
         if (isset($_SESSION["metademandsHelpdeskSaved"])) {
             foreach ($_SESSION["metademandsHelpdeskSaved"] as $name => $value) {
                 $values[$name] = $value;
@@ -192,40 +186,39 @@ class TicketTask extends CommonDBChild
             unset($_SESSION["metademandsHelpdeskSaved"]);
         }
 
-        if ($values['block_use'] != null
-            && !is_array($values['block_use'])) {
+        if ($values['block_use'] != null && !is_array($values['block_use'])) {
             $values['block_use'] = json_decode($values['block_use'], true);
         }
         if ($values['block_use'] == null) {
             $values['block_use'] = [];
         }
 
-        // Clean text fields
         $values['name'] = stripslashes($values['name']);
         $values['type'] = $metademands->getField("type");
 
-        if ($tasktype == Task::TICKET_TYPE) {
-            // Get Template
+        $is_ticket_type = ($tasktype == Task::TICKET_TYPE);
+        $tt             = null;
+        if ($is_ticket_type) {
             $tt = $ticket->getITILTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
         }
-        // In percent
-        $colsize1 = '13';
-        $colsize3 = '87';
 
-        echo "<div>";
-        if ($tasktype == Task::TICKET_TYPE) {
-            echo "<table class='tab_cadre_fixe' id='mainformtable'>";
+        // --- Section 1 : Bloc / Format / Entite / Categorie (TICKET_TYPE uniquement) ---
+        $use_block_html                      = '';
+        $block_use_html                      = '';
+        $format_as_table_html                = '';
+        $block_parent_ticket_resolution_html = '';
+        $parent_tasks_html                   = '';
+        $entity_html                         = '';
+        $category_html                       = '';
+        $category_mark                       = '';
+        $tickettemplates_id                  = 0;
 
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<th>" . sprintf(__('%1$s'), __('Use block', 'metademands')) . "</th>";
-            echo "<td>";
+        if ($is_ticket_type) {
+            ob_start();
             \Dropdown::showYesNo('useBlock', $values['useBlock']);
-            echo "</td>";
+            $use_block_html = ob_get_clean();
 
-            echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
-            echo "<td>";
-            $field = new Field();
+            $field  = new Field();
             $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
             $blocks = [];
             foreach ($fields as $f) {
@@ -237,389 +230,209 @@ class TicketTask extends CommonDBChild
             if (!is_array($values['block_use'])) {
                 $values['block_use'] = [$values['block_use']];
             }
-            \Dropdown::showFromArray(
-                'block_use',
-                $blocks,
-                ['values' => $values['block_use'],
-                    'width' => '100%',
-                    'multiple' => true,
-                    'entity' => $_SESSION['glpiactiveentities']]
-            );
-            echo "</td>";
-            echo "</tr>";
+            ob_start();
+            \Dropdown::showFromArray('block_use', $blocks, [
+                'values'   => $values['block_use'],
+                'width'    => '100%',
+                'multiple' => true,
+                'entity'   => $_SESSION['glpiactiveentities'],
+            ]);
+            $block_use_html = ob_get_clean();
 
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<th>" . sprintf(__('%1$s'), __('Format the description of the childs ticket as a table', 'metademands')) . "</th>";
-            echo "<td>";
+            ob_start();
             \Dropdown::showYesNo('formatastable', $values['formatastable']);
-            echo "</td>";
+            $format_as_table_html = ob_get_clean();
 
-            echo "<th>" . sprintf(__('%1$s'), __('Block parent ticket resolution', 'metademands')) . "</th>";
-            echo "<td>";
+            ob_start();
             \Dropdown::showYesNo('block_parent_ticket_resolution', $values['block_parent_ticket_resolution']);
-            echo "</td>";
-
-            echo "</tr>";
+            $block_parent_ticket_resolution_html = ob_get_clean();
 
             if ($canchangeorder) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<th>" . __('Create after the task', 'metademands') . "</th>";
-                echo "<td >";
-                \Dropdown::show(
-                    Task::class,
-                    ['name' => 'parent_tasks_id',
-                        'value' => $values['parent_tasks_id'],
-                        'entity' => $metademands->fields["entities_id"],
-                        'condition' => ['type' => Task::TICKET_TYPE,
-                            'plugin_metademands_metademands_id' => $metademands->fields["id"],
-                            'id' => ['<>', $values['plugin_metademands_tasks_id']]]]
-                );
-                echo "</td>";
-                echo "<td colspan='2'></td>";
-                echo "</tr>";
+                ob_start();
+                \Dropdown::show(Task::class, [
+                    'name'      => 'parent_tasks_id',
+                    'value'     => $values['parent_tasks_id'],
+                    'entity'    => $metademands->fields["entities_id"],
+                    'condition' => [
+                        'type'                              => Task::TICKET_TYPE,
+                        'plugin_metademands_metademands_id' => $metademands->fields["id"],
+                        'id'                                => ['<>', $values['plugin_metademands_tasks_id']],
+                    ],
+                ]);
+                $parent_tasks_html = ob_get_clean();
             }
 
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<th>" . __('Entity') . "</th>";
-            echo "<td>";
-            //            Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"]]);
-
-            $rand = Entity::dropdown(['name' => 'entities_id', 'value' => $values["entities_id"], 'on_change' => 'entity_cat()']);
+            ob_start();
+            $rand = Entity::dropdown([
+                'name'      => 'entities_id',
+                'value'     => $values["entities_id"],
+                'on_change' => 'entity_cat()',
+            ]);
             echo "<script type='text/javascript'>";
             echo "function entity_cat(){";
-            $params = ['action' => 'showcategories',
-                'entities_id' => '__VALUE__',
-                'type' => $values['type'],
-                'itilcategories_id' => $values['itilcategories_id'] ?? 0];
+            $params = ['action' => 'showcategories', 'entities_id' => '__VALUE__', 'type' => $values['type'], 'itilcategories_id' => $values['itilcategories_id'] ?? 0];
             Ajax::updateItemJsCode('ticket_category', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
-
-            $params = ['action' => 'users_id_requester',
-                'entities_id' => '__VALUE__',
-                'type' => $values['type'],
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
-                'users_id_requester' => $values['users_id_requester'] ?? 0];
+            $params = ['action' => 'users_id_requester', 'entities_id' => '__VALUE__', 'type' => $values['type'], 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER), 'users_id_requester' => $values['users_id_requester'] ?? 0];
             Ajax::updateItemJsCode('ticket_users_id_requester', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
-
-            $params = ['action' => 'users_id_observer',
-                'entities_id' => '__VALUE__',
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
-                'users_id_observer' => $values['users_id_observer'] ?? 0];
+            $params = ['action' => 'users_id_observer', 'entities_id' => '__VALUE__', 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER), 'users_id_observer' => $values['users_id_observer'] ?? 0];
             Ajax::updateItemJsCode('ticket_users_id_observer', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
-
-            $params = ['action' => 'users_id_assign',
-                'entities_id' => '__VALUE__',
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
-                'users_id_assign' => $values['users_id_assign'] ?? 0];
+            $params = ['action' => 'users_id_assign', 'entities_id' => '__VALUE__', 'type' => $values['type'], 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN), 'users_id_assign' => $values['users_id_assign'] ?? 0];
             Ajax::updateItemJsCode('ticket_users_id_assign', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
-
-            $params = ['action' => 'groups_id_requester',
-                'entities_id' => '__VALUE__',
-                'condition' => ['is_requester' => 1],
-                'groups_id_requester' => $values['groups_id_requester'] ?? 0];
+            $params = ['action' => 'groups_id_requester', 'entities_id' => '__VALUE__', 'condition' => ['is_requester' => 1], 'groups_id_requester' => $values['groups_id_requester'] ?? 0];
             Ajax::updateItemJsCode('ticket_groups_id_requester', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
-
-            $params = ['action' => 'groups_id_observer',
-                'entities_id' => '__VALUE__',
-                'condition' => ['is_watcher' => 1],
-                'groups_id_observer' => $values['groups_id_observer'] ?? 0];
+            $params = ['action' => 'groups_id_observer', 'entities_id' => '__VALUE__', 'condition' => ['is_watcher' => 1], 'groups_id_observer' => $values['groups_id_observer'] ?? 0];
             Ajax::updateItemJsCode('ticket_groups_id_observer', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
-
-            $params = ['action' => 'groups_id_assign',
-                'entities_id' => '__VALUE__',
-                'condition' => ['is_assign' => 1],
-                'groups_id_assign' => $values['groups_id_assign'] ?? 0];
+            $params = ['action' => 'groups_id_assign', 'entities_id' => '__VALUE__', 'condition' => ['is_assign' => 1], 'groups_id_assign' => $values['groups_id_assign'] ?? 0];
             Ajax::updateItemJsCode('ticket_groups_id_assign', PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php', $params, 'dropdown_entities_id' . $rand);
             echo ";\n";
             echo "}";
             echo "</script>";
-            echo "</td>";
-            echo "</tr>";
+            $entity_html = ob_get_clean();
 
-            echo "</td>";
-
-            echo "<th>" . sprintf(
-                __('%1$s%2$s'),
-                __('Category'),
-                $tt->getMandatoryMark('itilcategories_id')
-            ) . "</th>";
-            echo "<td>";
-
-            echo "<span id='ticket_category'>";
-
-            $condition = [];
-            switch ($values['type']) {
-                case \Ticket::DEMAND_TYPE:
-                    $condition = ['is_request' => 1];
-                    break;
-
-                default: // Ticket::INCIDENT_TYPE :
-                    $condition = ['is_incident' => 1];
-            }
-            $opt = ['value' => $values['itilcategories_id'],
-                'condition' => $condition,
-                'entity' => $metademands->fields["entities_id"]];
-
+            $category_mark = $tt->getMandatoryMark('itilcategories_id');
+            $condition = ($values['type'] == \Ticket::DEMAND_TYPE) ? ['is_request' => 1] : ['is_incident' => 1];
+            $opt = ['value' => $values['itilcategories_id'], 'condition' => $condition, 'entity' => $metademands->fields["entities_id"]];
             if ($values['itilcategories_id'] && $tt->isMandatoryField("itilcategories_id")) {
                 $opt['display_emptychoice'] = false;
             }
-
+            ob_start();
             ITILCategory::dropdown($opt);
+            $category_html = ob_get_clean();
 
-            echo "</span>";
-            echo "</td>";
-
-            echo "</table>";
-        }
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<th rowspan='3' width='$colsize1%'>" . __('Actors', 'metademands') . "</th>";
-        if ($tasktype == Task::TICKET_TYPE) {
-            if ($tt->isMandatoryField('_users_id_requester') || $tt->isMandatoryField('_groups_id_requester')) {
-                echo "<th>" . __('Requester') . "</th>";
-            } else {
-                echo "<th>";
-                echo "</th>";
-            }
-            if ($tt->isMandatoryField('_users_id_observer') || $tt->isMandatoryField('_groups_id_observer')) {
-                echo "<th>" . __('Observer') . "</th>";
-            } else {
-                echo "<th>";
-                echo "</th>";
+            if (isset($tt->fields['id'])) {
+                $tickettemplates_id = $tt->fields['id'];
             }
         }
-        echo "<th>" . __('Assigned to') . "</th>";
-        echo "</tr>";
 
-        echo "<tr class='tab_bg_1'>";
-        if ($tasktype == Task::TICKET_TYPE) {
+        // --- Section 2 : Acteurs ---
+        $show_requester_header    = false;
+        $show_observer_header     = false;
+        $requester_user_mark      = '';
+        $requester_group_mark     = '';
+        $observer_user_mark       = '';
+        $observer_group_mark      = '';
+        $assign_user_mark         = '';
+        $assign_group_mark        = '';
+        $users_id_requester_html  = '';
+        $users_id_observer_html   = '';
+        $groups_id_requester_html = '';
+        $groups_id_observer_html  = '';
+
+        if ($is_ticket_type) {
+            $show_requester_header = $tt->isMandatoryField('_users_id_requester') || $tt->isMandatoryField('_groups_id_requester');
+            $show_observer_header  = $tt->isMandatoryField('_users_id_observer')  || $tt->isMandatoryField('_groups_id_observer');
+            $assign_user_mark  = $tt->getMandatoryMark('_users_id_assign');
+            $assign_group_mark = $tt->getMandatoryMark('_groups_id_assign');
+
             if ($tt->isMandatoryField('_users_id_requester')) {
-                echo "<td>";
-                // Requester user
-                //         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
-                echo "<span id='ticket_users_id_requester'>";
-                echo $tt->getMandatoryMark('_users_id_requester');
-                User::dropdown(['name' => 'users_id_requester',
-                    'value' => $values['users_id_requester'] ?? 0,
-                    'entity' => $metademands->fields["entities_id"],
-                    'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
-                echo "</span>";
-                echo "</td>";
-            } else {
-                echo "<td>";
-                echo "</td>";
+                $requester_user_mark = $tt->getMandatoryMark('_users_id_requester');
+                ob_start();
+                User::dropdown(['name' => 'users_id_requester', 'value' => $values['users_id_requester'] ?? 0, 'entity' => $metademands->fields["entities_id"], 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
+                $users_id_requester_html = ob_get_clean();
             }
-            if ($tt->isMandatoryField('_users_id_observer')) {
-                echo "<td>";
-                // Observer user
-                //         echo CommonITILObject::getActorIcon('user', CommonITILActor::OBSERVER) . '&nbsp;';
-                echo "<span id='ticket_users_id_observer'>";
-                echo $tt->getMandatoryMark('_users_id_observer');
-                User::dropdown(['name' => 'users_id_observer',
-                    'value' => $values['users_id_observer'] ?? 0,
-                    'entity' => $metademands->fields["entities_id"],
-                    'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)]);
-                echo "</span>";
-                echo "</td>";
-            } else {
-                echo "<td>";
-                echo "</td>";
-            }
-        }
-        echo "<td>";
-        // Assign user
-        //      echo CommonITILObject::getActorIcon('user', CommonITILActor::ASSIGN) . '&nbsp;';
-        if ($tasktype == Task::TICKET_TYPE) {
-            echo $tt->getMandatoryMark('_users_id_assign');
-        }
-        echo "<span id='ticket_users_id_assign'>";
-        User::dropdown(['name' => 'users_id_assign',
-            'value' => $values['users_id_assign'] ?? 0,
-            'entity' => $metademands->fields["entities_id"],
-            'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)]);
-        echo "</span>";
-        echo "</td>";
-        echo "</tr>";
 
-        echo "<tr class='tab_bg_1'>";
-        if ($tasktype == Task::TICKET_TYPE) {
+            if ($tt->isMandatoryField('_users_id_observer')) {
+                $observer_user_mark = $tt->getMandatoryMark('_users_id_observer');
+                ob_start();
+                User::dropdown(['name' => 'users_id_observer', 'value' => $values['users_id_observer'] ?? 0, 'entity' => $metademands->fields["entities_id"], 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)]);
+                $users_id_observer_html = ob_get_clean();
+            }
+
             if ($tt->isMandatoryField('_groups_id_requester')) {
-                echo "<td>";
-                // Requester Group
-                //         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
-                echo "<span id='ticket_groups_id_requester'>";
-                echo $tt->getMandatoryMark('_groups_id_requester');
-                \Dropdown::show('Group', ['name' => 'groups_id_requester',
-                    'value' => $values['groups_id_requester'] ?? 0,
-                    'entity' => $metademands->fields["entities_id"],
-                    'condition' => ['is_requester' => 1]]);
-                echo "</span>";
-                echo "</td>";
-            } else {
-                echo "<td>";
-                echo "</td>";
+                $requester_group_mark = $tt->getMandatoryMark('_groups_id_requester');
+                ob_start();
+                \Dropdown::show('Group', ['name' => 'groups_id_requester', 'value' => $values['groups_id_requester'] ?? 0, 'entity' => $metademands->fields["entities_id"], 'condition' => ['is_requester' => 1]]);
+                $groups_id_requester_html = ob_get_clean();
             }
 
             if ($tt->isMandatoryField('_groups_id_observer')) {
-                echo "<td>";
-                // Observer Group
-                //         echo CommonITILObject::getActorIcon('group', CommonITILActor::OBSERVER) . '&nbsp;';
-                echo "<span id='ticket_groups_id_observer'>";
-                echo $tt->getMandatoryMark('_groups_id_observer');
-                \Dropdown::show('Group', ['name' => 'groups_id_observer',
-                    'value' => $values['groups_id_observer'] ?? 0,
-                    'entity' => $metademands->fields["entities_id"],
-                    'condition' => ['is_watcher' => 1]]);
-                echo "</span>";
-                echo "</td>";
-
-            } else {
-                echo "<td>";
-                echo "</td>";
+                $observer_group_mark = $tt->getMandatoryMark('_groups_id_observer');
+                ob_start();
+                \Dropdown::show('Group', ['name' => 'groups_id_observer', 'value' => $values['groups_id_observer'] ?? 0, 'entity' => $metademands->fields["entities_id"], 'condition' => ['is_watcher' => 1]]);
+                $groups_id_observer_html = ob_get_clean();
             }
         }
-        echo "<td>";
-        // Assign Group
-        //      echo CommonITILObject::getActorIcon('group', CommonITILActor::ASSIGN) . '&nbsp;';
-        echo "<span id='ticket_groups_id_assign'>";
-        if ($tasktype == Task::TICKET_TYPE) {
-            echo $tt->getMandatoryMark('_groups_id_assign');
-        }
-        \Dropdown::show('Group', ['name' => 'groups_id_assign',
-            'value' => $values['groups_id_assign'] ?? 0,
-            'entity' => $metademands->fields["entities_id"],
-            'condition' => ['is_assign' => 1]]);
-        echo "</span>";
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        if ($tasktype == Task::TICKET_TYPE) {
-            echo "<table class='tab_cadre_fixe'>";
-            // Status
-            if ($tt->isMandatoryField('status') || $tt->isMandatoryField('requesttypes_id')) {
-                echo "<tr class='tab_bg_1'>";
-                if ($tt->isMandatoryField('status')) {
-                    echo "<th width='$colsize1%'>" . __('Status') . '&nbsp;:' . $tt->getMandatoryMark('status') . "</th>";
-                    echo "<td>";
 
-                    \Ticket::dropdownStatus(['value' => $values['status'] ?? \Ticket::INCOMING]);
-                    echo "</td>";
-                } else {
-                    echo "<td colspan = '2'>";
-                    echo "</td>";
-                }
-                echo "</tr>";
+        ob_start();
+        User::dropdown(['name' => 'users_id_assign', 'value' => $values['users_id_assign'] ?? 0, 'entity' => $metademands->fields["entities_id"], 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)]);
+        $users_id_assign_html = ob_get_clean();
 
-                // Request type
-                if ($tt->isMandatoryField('requesttypes_id')) {
-                    echo "<th width='$colsize1%'>" . __('Request source') . '&nbsp;:' . $tt->getMandatoryMark('requesttypes_id') . "</th>";
-                    echo "<td>";
-                    \Dropdown::show('RequestType', ['value' => $values['requesttypes_id'] ?? '']);
-                    echo "</td>";
-                } else {
-                    echo "<td colspan = '2'>";
-                    echo "</td>";
-                }
-                echo "</tr>";
+        ob_start();
+        \Dropdown::show('Group', ['name' => 'groups_id_assign', 'value' => $values['groups_id_assign'] ?? 0, 'entity' => $metademands->fields["entities_id"], 'condition' => ['is_assign' => 1]]);
+        $groups_id_assign_html = ob_get_clean();
+
+        // --- Section 3 : Statut / Type de demande (TICKET_TYPE uniquement) ---
+        $show_status      = false;
+        $show_requesttype = false;
+        $status_mark      = '';
+        $requesttype_mark = '';
+        $status_html      = '';
+        $requesttype_html = '';
+
+        if ($is_ticket_type) {
+            $show_status      = $tt->isMandatoryField('status');
+            $show_requesttype = $tt->isMandatoryField('requesttypes_id');
+
+            if ($show_status) {
+                $status_mark = $tt->getMandatoryMark('status');
+                ob_start();
+                \Ticket::dropdownStatus(['value' => $values['status'] ?? \Ticket::INCOMING]);
+                $status_html = ob_get_clean();
             }
 
-            //            if ($tt->isMandatoryField('actiontime') || $tt->isMandatoryField('itemtype')) {
-            //                // Actiontime
-            //                echo "<tr class='tab_bg_1'>";
-            //                if ($tt->isMandatoryField('actiontime')) {
-            //                    echo "<th width='$colsize1%'>" . __('Total duration') . '&nbsp;:' . $tt->getMandatoryMark('actiontime') . "</th>";
-            //                    echo "<td>";
-            //                    Dropdown::showTimeStamp('actiontime', ['addfirstminutes' => true,
-            //                                                           'value'           => isset($values['actiontime']) ? $values['actiontime'] : '']);
-            //                    echo "</td>";
-            //                } else {
-            //                    echo "<td colspan = '2'>";
-            //                    echo "</td>";
-            //                }
-            //
-            //                // Itemtype
-            //                if ($tt->isMandatoryField('itemtype')) {
-            //                    echo "<th width='$colsize1%'>" . __('Associated element') . '&nbsp;:' . $tt->getMandatoryMark('itemtype') . "</th>";
-            //                    echo "<td>";
-            //                    $dev_user_id  = 0;
-            //                    $dev_itemtype = 0;
-            //                    $dev_items_id = isset($values['itemtype']) ? $values['itemtype'] : '';
-            //                    Ticket::dropdownAllDevices(
-            //                        'itemtype',
-            //                        $dev_itemtype,
-            //                        $dev_items_id,
-            //                        1,
-            //                        $dev_user_id,
-            //                        $metademands->fields["entities_id"]
-            //                    );
-            //                    echo "</td>";
-            //                } else {
-            //                    echo "<td colspan = '2'>";
-            //                    echo "</td>";
-            //                }
-            //                echo "</tr>";
-            //            }
-            echo "</table>";
-        }
-        echo "<table class='tab_cadre_fixe'>";
-        // Title
-        echo "<tr class='tab_bg_1'>";
-        if ($tasktype == Task::TICKET_TYPE) {
-            echo "<th width='$colsize1%'>" . __('Title') . '&nbsp;' . $tt->getMandatoryMark('name') . "</th>";
-        } else {
-            echo "<th width='$colsize1%'>" . __('Title') . "</th>";
+            if ($show_requesttype) {
+                $requesttype_mark = $tt->getMandatoryMark('requesttypes_id');
+                ob_start();
+                \Dropdown::show('RequestType', ['value' => $values['requesttypes_id'] ?? '']);
+                $requesttype_html = ob_get_clean();
+            }
         }
 
-        echo "<td width='$colsize3%'>";
-        $name = $values['name'] ?? '';
-        echo Html::input('name', ['value' => $name, 'size' => 90]);
-        echo "</td>";
-        echo "</tr>";
-
-        // Description
-        echo "<tr class='tab_bg_1'>";
-        echo "<th width='$colsize1%'>" . __('Description') . "</th>";
-        echo "<td width='$colsize3%'>";
-
-        $rand = mt_rand();
-        $rand_text = mt_rand();
-        Html::initEditorSystem("content" . $rand, $rand, true);
-        if (!isset($values['content'])) {
-            $content = '';
-        } else {
-            $content = $values['content'];
-        }
-        echo "<div id='content$rand_text'>";
-        Html::textarea(['name' => 'content',
-            'value' => stripslashes($content),
-            'id' => 'content' . $rand,
-            'rows' => 3,
-            'enable_richtext' => true,
-            'enable_fileupload' => false,
-            'enable_images' => false]);
-        echo "</div>";
-
-        if ($tasktype == Task::TICKET_TYPE
-            && isset($tt->fields['id'])) {
-            echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
-        }
-
-
-        echo Html::hidden('tickettask_id', ['value' => $values['tickettask_id']]);
-
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-
-        echo "</div>";
+        TemplateRenderer::getInstance()->display('@metademands/tickettask_form_section.html.twig', [
+            'is_ticket_type'                       => $is_ticket_type,
+            'canchangeorder'                       => $canchangeorder,
+            'use_block_html'                       => $use_block_html,
+            'block_use_html'                       => $block_use_html,
+            'format_as_table_html'                 => $format_as_table_html,
+            'block_parent_ticket_resolution_html'  => $block_parent_ticket_resolution_html,
+            'parent_tasks_html'                    => $parent_tasks_html,
+            'entity_html'                          => $entity_html,
+            'category_mark'                        => $category_mark,
+            'category_html'                        => $category_html,
+            'show_requester_header'                => $show_requester_header,
+            'show_observer_header'                 => $show_observer_header,
+            'requester_user_mark'                  => $requester_user_mark,
+            'requester_group_mark'                 => $requester_group_mark,
+            'observer_user_mark'                   => $observer_user_mark,
+            'observer_group_mark'                  => $observer_group_mark,
+            'assign_user_mark'                     => $assign_user_mark,
+            'assign_group_mark'                    => $assign_group_mark,
+            'users_id_requester_html'              => $users_id_requester_html,
+            'users_id_observer_html'               => $users_id_observer_html,
+            'users_id_assign_html'                 => $users_id_assign_html,
+            'groups_id_requester_html'             => $groups_id_requester_html,
+            'groups_id_observer_html'              => $groups_id_observer_html,
+            'groups_id_assign_html'                => $groups_id_assign_html,
+            'show_status'                          => $show_status,
+            'show_requesttype'                     => $show_requesttype,
+            'status_mark'                          => $status_mark,
+            'requesttype_mark'                     => $requesttype_mark,
+            'status_html'                          => $status_html,
+            'requesttype_html'                     => $requesttype_html,
+            'title_mark'                           => $is_ticket_type ? $tt->getMandatoryMark('name') : '',
+            'name'                                 => $values['name'] ?? '',
+            'content'                              => stripslashes($values['content'] ?? ''),
+            'tickettask_id'                        => $values['tickettask_id'],
+            'tickettemplates_id'                   => $tickettemplates_id,
+        ]);
     }
+
 
     /**
      * Print the field form

@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
 use DBConnection;
+use Glpi\Application\View\TemplateRenderer;
 use Migration;
 use Session;
 
@@ -135,36 +136,33 @@ class MetademandTask extends CommonDBChild
      */
     static function showMetademandTaskForm($ID)
     {
-        // Avoid select of parent metademands
-        $used = MetademandTask::getAncestorOfMetademandTask($ID);
+        $used   = MetademandTask::getAncestorOfMetademandTask($ID);
         $used[] = $ID;
 
-        echo Metademand::getTypeName(1) . "&nbsp;:&nbsp;";
-        \Dropdown::show(
-            Metademand::class,
-            [
-                'name' => 'link_metademands_id',
-                'is_deleted' => 0,
-                'is_active' => 1,
-                'used' => $used,
-                'condition' => [
-                    'is_order' => 0,
-                    'object_to_create' => 'Ticket'
-                ]
-            ]
-        );
+        ob_start();
+        \Dropdown::show(Metademand::class, [
+            'name'      => 'link_metademands_id',
+            'is_deleted' => 0,
+            'is_active'  => 1,
+            'used'       => $used,
+            'condition'  => ['is_order' => 0, 'object_to_create' => 'Ticket'],
+        ]);
+        $dropdown_html = ob_get_clean();
 
         unset($used[array_search($ID, $used)]);
 
+        $ancestors = [];
         foreach ($used as $metademands_id) {
             if ($metademands_id > 0) {
-                echo "<br><span style='color:red'>" . __(
-                        'This demand is already used in',
-                        'metademands'
-                    ) . "&nbsp;:&nbsp;" .
-                    \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id) . "</span>";
+                $ancestors[] = \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id);
             }
         }
+
+        TemplateRenderer::getInstance()->display('@metademands/metademandtask_form.html.twig', [
+            'metademand_typename' => Metademand::getTypeName(1),
+            'dropdown_html'       => $dropdown_html,
+            'ancestors'           => $ancestors,
+        ]);
     }
 
     /**
