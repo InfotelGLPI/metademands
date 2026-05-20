@@ -28,9 +28,11 @@
 
 <div class="tab-pane fade active show" role="tabpanel">
     <div class="asset" data-select2-id="2392">
-        <form id='wizard_form' data-track-changes="false" enctype="multipart/form-data" data-submit-once="" data-select2-id="2391">
+        <form id='wizard_form' data-track-changes="false" enctype="multipart/form-data" data-submit-once=""
+              data-select2-id="2391">
             <div id="mainformtable" data-select2-id="mainformtable">
-                <div id="header_150288226" style="position:relative" class="card-header main-header d-flex flex-wrap mx-n2 mt-n2 align-items-stretch  flex-grow-1">
+                <div id="header_150288226" style="position:relative"
+                     class="card-header main-header d-flex flex-wrap mx-n2 mt-n2 align-items-stretch  flex-grow-1">
                     <h3 class="card-title d-flex align-items-center ps-4">
                         <div class="ribbon ribbon-bookmark ribbon-top ribbon-start bg-blue s-1">
                             <i class="ti ti-file fa-2x"></i>
@@ -46,15 +48,17 @@
                         <td><input type="text" name="draft_name" value="" size="40" class="form-control"></td>
                         <td>{{ metademand_name }}</td>
                         <td>
-                            <select name ='metademands_id'>
-                                <option value="{{ 0 }}" >{{ listMetademand[0] }}</option>
+                            <select name='metademands_id'>
+                                <option value="{{ 0 }}">{{ listMetademand[0] }}</option>
                                 {% for key, value in listMetademand %}
                                     {% if (value | length > 2) %}
                                         {% for data in value %}
-                                            <option value="{{ key }}" data-idcat="{{ data['itilcategory'] }}">{{ data['name'] }}</option>
+                                            <option value="{{ key }}"
+                                                    data-idcat="{{ data['itilcategory'] }}">{{ data['name'] }}</option>
                                         {% endfor %}
                                     {% else %}
-                                        <option value="{{ key }}" data-idcat="{{ value['itilcategory'] }}">{{ value['name'] }}</option>
+                                        <option value="{{ key }}"
+                                                data-idcat="{{ value['itilcategory'] }}">{{ value['name'] }}</option>
                                     {% endif %}
 
                                 {% endfor %}
@@ -65,12 +69,13 @@
                 </table>
                 <div class="row"></div>
                 <div class="card-body mx-n2 mb-4 border-top d-flex flex-row-reverse align-items-start flex-wrap">
-                    <button form='' class="btn btn-primary me-2" id="submitSave" onclick="addDraft(event)" name="add" value="1">
+                    <button form='' class="btn btn-primary me-2" id="submitSave" onclick="addDraft(event)" name="add"
+                            value="1">
                         <i class="ti ti-plus"></i>
                         <span>{{ confirmation }}</span>
                     </button>
                 </div>
-                <input type="hidden" name="_glpi_csrf_token" value="{{ _glpi_csrf_token }}" />
+                <input type="hidden" name="_glpi_csrf_token" value="{{ _glpi_csrf_token }}"/>
             </div>
         </form>
     </div>
@@ -79,13 +84,15 @@
 <script>
     function addDraft(event) {
         event.stopPropagation();
-        if(typeof tinyMCE !== 'undefined'){
+        if (typeof tinyMCE !== 'undefined') {
             tinyMCE.triggerSave();
         }
 
         jQuery('.resume_builder_input').trigger('change');
 
-        $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+        $('select[id$=\"_to\"] option').each(function () {
+            $(this).prop('selected', true);
+        });
 
         $('#ajax_loader').show();
 
@@ -99,16 +106,19 @@
         arrayDatas.push({name: 'resources_id', value: 0});
         arrayDatas.push({name: 'resources_step', value: 0});
         arrayDatas.push({name: 'plugin_metademands_drafts_id', value: 0});
-        arrayDatas.push({name: 'field_plugin_servicecatalog_itilcategories_id', value: $('#wizard_form select[name="metademands_id"]').find(':selected').data('idcat') });
+        arrayDatas.push({
+            name: 'field_plugin_servicecatalog_itilcategories_id',
+            value: $('#wizard_form select[name="metademands_id"]').find(':selected').data('idcat')
+        });
 
         $.ajax({
             url: '{{ path }}/ajax/adddraft.php',
             type: 'POST',
             data: arrayDatas,
-            success: function(response){
+            success: function (response) {
                 window.location.href = '{{ path }}/front/draft.form.php?id=' + response;
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log(xhr);
                 console.log(status);
                 console.log(error);

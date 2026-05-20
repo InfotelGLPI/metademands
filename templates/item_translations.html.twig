@@ -28,10 +28,10 @@
 
 {% macro getTranslationInput(handler, translation, language) %}
     {% set rand = random() %}
-    <input type="hidden" name="translations[{{ rand }}][itemtype]"    value="{{ get_class(handler.getItem()) }}" />
-    <input type="hidden" name="translations[{{ rand }}][items_id]"   value="{{ handler.getItem().getID() }}" />
-    <input type="hidden" name="translations[{{ rand }}][key]"        value="{{ handler.getKey() }}" />
-    <input type="hidden" name="translations[{{ rand }}][language]"   value="{{ language }}" />
+    <input type="hidden" name="translations[{{ rand }}][itemtype]" value="{{ get_class(handler.getItem()) }}"/>
+    <input type="hidden" name="translations[{{ rand }}][items_id]" value="{{ handler.getItem().getID() }}"/>
+    <input type="hidden" name="translations[{{ rand }}][key]" value="{{ handler.getKey() }}"/>
+    <input type="hidden" name="translations[{{ rand }}][language]" value="{{ language }}"/>
 
     <div class="d-flex align-items-center">
         {% if translation and translation.isPossiblyObsolete() %}
@@ -55,7 +55,7 @@
                    class="form-control"
                    value="{{ current_value|e }}"
                    placeholder="{{ __('Enter translation') }}"
-                   aria-label="{{ __('Enter translation') }}" />
+                   aria-label="{{ __('Enter translation') }}"/>
         {% endif %}
     </div>
 {% endmacro %}
@@ -66,13 +66,13 @@
 <section aria-label="{{ _n('Translation', 'Translations', get_plural_number()) }}">
 
     {% if canedit and available_languages|length > 0 %}
-    <div class="mb-2">
-        <button type="button" class="btn btn-primary"
-                data-bs-toggle="modal" data-bs-target="#metademand-add-language-modal">
-            <i class="ti ti-plus me-1"></i>
-            {{ __('Add a language') }}
-        </button>
-    </div>
+        <div class="mb-2">
+            <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#metademand-add-language-modal">
+                <i class="ti ti-plus me-1"></i>
+                {{ __('Add a language') }}
+            </button>
+        </div>
     {% endif %}
 
     {# Language list datatable #}
@@ -109,43 +109,47 @@
 
     {# Modal — add language #}
     {% if canedit and available_languages|length > 0 %}
-    <div class="modal fade" id="metademand-add-language-modal" tabindex="-1" aria-labelledby="metademand-add-language-modal-label" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST" action="{{ ajax_url }}">
-                    <input type="hidden" name="_glpi_csrf_token"    value="{{ csrf_token() }}" />
-                    <input type="hidden" name="action"              value="init_language" />
-                    <input type="hidden" name="items_id"            value="{{ item.getID() }}" />
-                    <input type="hidden" name="itemtype"            value="{{ item.getType() }}" />
-                    <input type="hidden" name="translation_class"   value="{{ translation_class }}" />
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="metademand-add-language-modal-label">{{ __('Add a language') }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
-                    </div>
-                    <div class="modal-body">
-                        {% import 'components/form/fields_macros.html.twig' as fields %}
-                        {{ fields.dropdownArrayField(
-                            'language',
-                            '',
-                            available_languages,
-                            __('Language'),
-                            {
-                                'display_emptychoice': true,
-                                'emptylabel'         : __('Select language to translate'),
-                                'full_width'         : true,
-                            }
-                        ) }}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-plus me-1"></i>{{ __('Add') }}
-                        </button>
-                    </div>
-                </form>
+        <div class="modal fade" id="metademand-add-language-modal" tabindex="-1"
+             aria-labelledby="metademand-add-language-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{{ ajax_url }}">
+                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="action" value="init_language"/>
+                        <input type="hidden" name="items_id" value="{{ item.getID() }}"/>
+                        <input type="hidden" name="itemtype" value="{{ item.getType() }}"/>
+                        <input type="hidden" name="translation_class" value="{{ translation_class }}"/>
+                        <div class="modal-header">
+                            <h5 class="modal-title"
+                                id="metademand-add-language-modal-label">{{ __('Add a language') }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="{{ __('Close') }}"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% import 'components/form/fields_macros.html.twig' as fields %}
+                            {{ fields.dropdownArrayField(
+                                'language',
+                                '',
+                                available_languages,
+                                __('Language'),
+                                {
+                                    'display_emptychoice': true,
+                                    'emptylabel'         : __('Select language to translate'),
+                                    'full_width'         : true,
+                                }
+                            ) }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-plus me-1"></i>{{ __('Add') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     {% endif %}
 
 </section>

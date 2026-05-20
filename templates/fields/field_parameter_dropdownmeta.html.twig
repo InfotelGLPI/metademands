@@ -32,34 +32,35 @@ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
     </div>
     <div class="card-body">
         {% if show_used_by_child or show_display_type or show_link_to_user %}
-        <div class="row g-2 align-items-center mb-2">
-            {% if show_used_by_child %}
-            <label class="col-sm-3 col-form-label">{{ __('Use this field for child ticket field', 'metademands') }}</label>
-            <div class="col-sm-3">{{ used_by_child_html|raw }}</div>
-            {% endif %}
-            {% if show_display_type %}
-            <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
-            <div class="col-sm-3">{{ display_type_html|raw }}</div>
-            {% endif %}
-            {% if show_link_to_user %}
-            <label class="col-sm-3 col-form-label">{{ __('Link this to a user field', 'metademands') }}</label>
-            <div class="col-sm-3">{{ link_to_user_html|raw }}</div>
-            {% endif %}
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                {% if show_used_by_child %}
+                    <label
+                        class="col-sm-3 col-form-label">{{ __('Use this field for child ticket field', 'metademands') }}</label>
+                    <div class="col-sm-3">{{ used_by_child_html|raw }}</div>
+                {% endif %}
+                {% if show_display_type %}
+                    <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
+                    <div class="col-sm-3">{{ display_type_html|raw }}</div>
+                {% endif %}
+                {% if show_link_to_user %}
+                    <label class="col-sm-3 col-form-label">{{ __('Link this to a user field', 'metademands') }}</label>
+                    <div class="col-sm-3">{{ link_to_user_html|raw }}</div>
+                {% endif %}
+            </div>
         {% endif %}
         {% if show_itil_options %}
-        <div class="row g-2 align-items-center mb-2">
-            <label class="col-sm-3 col-form-label">{{ __('Read-Only', 'metademands') }}</label>
-            <div class="col-sm-3">{{ readonly_html|raw }}</div>
-            <label class="col-sm-3 col-form-label">{{ __('Hidden field', 'metademands') }}</label>
-            <div class="col-sm-3">{{ hidden_html|raw }}</div>
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Read-Only', 'metademands') }}</label>
+                <div class="col-sm-3">{{ readonly_html|raw }}</div>
+                <label class="col-sm-3 col-form-label">{{ __('Hidden field', 'metademands') }}</label>
+                <div class="col-sm-3">{{ hidden_html|raw }}</div>
+            </div>
         {% endif %}
         {% if show_other_display_type %}
-        <div class="row g-2 align-items-center mb-2">
-            <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
-            <div class="col-sm-3">{{ other_display_type_html|raw }}</div>
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
+                <div class="col-sm-3">{{ other_display_type_html|raw }}</div>
+            </div>
         {% endif %}
     </div>
 </div>

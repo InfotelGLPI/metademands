@@ -1,30 +1,30 @@
 {#
- -------------------------------------------------------------------------
- Metademands plugin for GLPI
- Copyright (C) 2018-2026 by the Metademands Development Team.
- -------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Metademands plugin for GLPI
+Copyright (C) 2018-2026 by the Metademands Development Team.
+-------------------------------------------------------------------------
 
- LICENSE
+LICENSE
 
- This file is part of Metademands.
+This file is part of Metademands.
 
- Metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+Metademands is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- Metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+Metademands is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with Metademands. If not, see <http://www.gnu.org/licenses/>.
- -------------------------------------------------------------------------
- @copyright Copyright (C) 2026-2026 by Metademands plugin team.
- @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
- @link      https://github.com/InfotelGLPI/Metademands
- -------------------------------------------------------------------------
+You should have received a copy of the GNU General Public License
+along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------
+@copyright Copyright (C) 2026-2026 by Metademands plugin team.
+@license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+@link      https://github.com/InfotelGLPI/Metademands
+-------------------------------------------------------------------------
 #}
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
@@ -39,10 +39,10 @@
     {{ inputs.hidden('is_recursive', is_recursive) }}
 
     {% if metafield_itil_warning %}
-    <div class="alert alert-warning d-flex align-items-center mb-3">
-        <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
-        <span>{{ __('Please add a type category field', 'metademands') }}</span>
-    </div>
+        <div class="alert alert-warning d-flex align-items-center mb-3">
+            <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
+            <span>{{ __('Please add a type category field', 'metademands') }}</span>
+        </div>
     {% endif %}
 
     <div class="card mt-2">
@@ -63,7 +63,8 @@
                 <div class="col-6">
                     <label class="form-label fw-bold">
                         {{ __('Additional label', 'metademands') }}
-                        <span id="show_label2" class="text-danger"{{ not show_label2_required ? ' style="display:none;"' }}>*</span>
+                        <span id="show_label2"
+                              class="text-danger"{{ not show_label2_required ? ' style="display:none;"' }}>*</span>
                     </label>
                     {% do call('Html::textarea', [{'name': 'label2', 'value': label2,
                         'enable_richtext': true, 'enable_fileupload': false,
@@ -85,9 +86,9 @@
                     </label>
                     {{ type_html|raw }}
                     {% if basket_warning %}
-                    <div class="alert alert-warning d-flex mt-1">
-                        <span>{{ __("Remember to activate basket mode on your metademand !", 'metademands') }}</span>
-                    </div>
+                        <div class="alert alert-warning d-flex mt-1">
+                            <span>{{ __("Remember to activate basket mode on your metademand !", 'metademands') }}</span>
+                        </div>
                     {% endif %}
                 </div>
                 <div class="col-6">
@@ -98,7 +99,7 @@
                         'show_order',
                         plugin_web_dir ~ '/ajax/viewtypefields.php?id=' ~ field_id,
                         {'rank': '__VALUE__', 'step': 'order', 'fields_id': field_id,
-                         'metademands_id': metademand_id, 'previous_fields_id': prev_fields_id}
+                            'metademands_id': metademand_id, 'previous_fields_id': prev_fields_id}
                     ]) %}
                 </div>
             </div>
@@ -110,17 +111,17 @@
                     {{ item_value_html|raw }}
                 </div>
                 {% if not is_title_block %}
-                <div class="col-6">
-                    <label class="form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
-                    <span id="show_order">{{ order_html|raw }}</span>
-                </div>
+                    <div class="col-6">
+                        <label class="form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
+                        <span id="show_order">{{ order_html|raw }}</span>
+                    </div>
                 {% endif %}
             </div>
 
             {% if customvalues_warning %}
-            <div class="alert alert-warning d-flex mt-2">
-                <b>{{ __('Warning : there is no custom values for this object', 'metademands') }}</b>
-            </div>
+                <div class="alert alert-warning d-flex mt-2">
+                    <b>{{ __('Warning : there is no custom values for this object', 'metademands') }}</b>
+                </div>
             {% endif %}
 
             <div id="show_values"></div>
@@ -128,19 +129,19 @@
         </div>
         <div class="card-footer d-flex justify-content-end gap-2">
             {% if is_new %}
-            <button class="btn btn-secondary" type="submit" name="add_another" value="1">
-                <i class="ti ti-plus"></i>
-                <span>{{ __('Add and create another', 'metademands') }}</span>
-            </button>
-            <button class="btn btn-primary" type="submit" name="add" value="1">
-                <i class="ti ti-device-floppy"></i>
-                <span>{{ __('Add and close', 'metademands') }}</span>
-            </button>
+                <button class="btn btn-secondary" type="submit" name="add_another" value="1">
+                    <i class="ti ti-plus"></i>
+                    <span>{{ __('Add and create another', 'metademands') }}</span>
+                </button>
+                <button class="btn btn-primary" type="submit" name="add" value="1">
+                    <i class="ti ti-device-floppy"></i>
+                    <span>{{ __('Add and close', 'metademands') }}</span>
+                </button>
             {% else %}
-            <button class="btn btn-primary" type="submit" name="update" value="1">
-                <i class="ti ti-device-floppy"></i>
-                <span>{{ _x('button', 'Save') }}</span>
-            </button>
+                <button class="btn btn-primary" type="submit" name="update" value="1">
+                    <i class="ti ti-device-floppy"></i>
+                    <span>{{ _x('button', 'Save') }}</span>
+                </button>
             {% endif %}
         </div>
     </div>

@@ -541,7 +541,7 @@ function plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metade
             }
         }
 
-        $('#prevBtn').on('click', function () {
+        $('#prevBtn').off('click.metademands').on('click.metademands', function () {
             if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nexttitle) {
                 document.getElementById('nextBtn').style.display = 'inline';
             }
@@ -644,6 +644,7 @@ function plugin_metademands_wizard_displayStepButton(metademandparams)
         }
 
         if (metademandparams.seeform == 0) {
+            document.getElementById('nextBtn').style.display = 'inline';
             if (nextTab >= x.length) {
                 document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
             } else {
@@ -742,45 +743,20 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
         $.ajax({
             url: metademandconditionsparams.root_doc + '/ajax/condition.php',
             type: 'POST',
-            datatype: 'JSON',
+            dataType: 'JSON',
             data: formDatas,
             success: function (response) {
-                if (response) {
-                    const valid_condition = JSON.parse(response);
-                    if (valid_condition) {
-                        if (metademandconditionsparams.show_button == 1) {
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                                document.getElementById('nextBtn').style.display = 'none';
-                            }
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                                document.getElementById('nextBtn').style.display = 'none';
-                            }
-                        } else {
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                                document.getElementById('nextBtn').style.display = 'inline';
-                            }
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                                document.getElementById('nextBtn').style.display = 'inline';
-                            }
-                        }
-                    } else {
-                        if (metademandconditionsparams.show_button == 1) {
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                                document.getElementById('nextBtn').style.display = 'inline';
-                            }
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                                document.getElementById('nextBtn').style.display = 'inline';
-                            }
-                        } else {
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
-                                document.getElementById('nextBtn').style.display = 'none';
-                            }
-                            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nextsteptitle) {
-                                document.getElementById('nextBtn').style.display = 'none';
-                            }
-                        }
-                    }
+                const btn = document.getElementById('nextBtn');
+                const innerHTML = btn.innerHTML;
+                const isAnyStepTitle = innerHTML == metademandconditionsparams.submittitle;
+
+                if (!isAnyStepTitle) {
+                    return;
                 }
+
+                const valid_condition = Boolean(response);
+                const shouldShow = (metademandconditionsparams.show_button == 1) ? !valid_condition : valid_condition;
+                btn.style.display = shouldShow ? 'inline' : 'none';
             },
             error: function (xhr, status, error) {
                 console.log(xhr);

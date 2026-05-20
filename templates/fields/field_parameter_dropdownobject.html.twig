@@ -27,21 +27,21 @@ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------
 #}
 {% if rows %}
-<div class="card mt-2">
-    <div class="card-header">
-        <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
-    </div>
-    <div class="card-body">
-        {% for row in rows %}
-        <div class="row g-2 align-items-center mb-2">
-            {% for cell in row %}
-                {% if cell.colspan is not defined %}
-                <label class="col-sm-3 col-form-label">{{ cell.label }}</label>
-                <div class="col-sm-3">{{ cell.html|raw }}</div>
-                {% endif %}
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
+        </div>
+        <div class="card-body">
+            {% for row in rows %}
+                <div class="row g-2 align-items-center mb-2">
+                    {% for cell in row %}
+                        {% if cell.colspan is not defined %}
+                            <label class="col-sm-3 col-form-label">{{ cell.label }}</label>
+                            <div class="col-sm-3">{{ cell.html|raw }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 {% endif %}

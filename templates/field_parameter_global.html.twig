@@ -1,30 +1,30 @@
 {#
- -------------------------------------------------------------------------
- Metademands plugin for GLPI
- Copyright (C) 2018-2026 by the Metademands Development Team.
- -------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Metademands plugin for GLPI
+Copyright (C) 2018-2026 by the Metademands Development Team.
+-------------------------------------------------------------------------
 
- LICENSE
+LICENSE
 
- This file is part of Metademands.
+This file is part of Metademands.
 
- Metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+Metademands is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- Metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+Metademands is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with Metademands. If not, see <http://www.gnu.org/licenses/>.
- -------------------------------------------------------------------------
- @copyright Copyright (C) 2026-2026 by Metademands plugin team.
- @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
- @link      https://github.com/InfotelGLPI/Metademands
- -------------------------------------------------------------------------
+You should have received a copy of the GNU General Public License
+along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------
+@copyright Copyright (C) 2026-2026 by Metademands plugin team.
+@license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+@link      https://github.com/InfotelGLPI/Metademands
+-------------------------------------------------------------------------
 #}
 
 <div class="card">
@@ -33,42 +33,44 @@
     </div>
     <div class="card-body">
         {% if show_mandatory or show_hide_title %}
-        <div class="row g-2 align-items-center mb-2">
-            {% if show_mandatory %}
-            <label class="col-sm-3 col-form-label">{{ __('Mandatory field') }}</label>
-            <div class="col-sm-3">{{ mandatory_html|raw }}</div>
-            {% endif %}
-            {% if show_hide_title %}
-            <label class="col-sm-3 col-form-label">{{ __('Hide title', 'metademands') }}</label>
-            <div class="col-sm-3">{{ hide_title_html|raw }}</div>
-            {% endif %}
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                {% if show_mandatory %}
+                    <label class="col-sm-3 col-form-label">{{ __('Mandatory field') }}</label>
+                    <div class="col-sm-3">{{ mandatory_html|raw }}</div>
+                {% endif %}
+                {% if show_hide_title %}
+                    <label class="col-sm-3 col-form-label">{{ __('Hide title', 'metademands') }}</label>
+                    <div class="col-sm-3">{{ hide_title_html|raw }}</div>
+                {% endif %}
+            </div>
         {% endif %}
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Icon') }}</label>
             <div class="col-sm-9">{{ icon_html|raw }}</div>
         </div>
         {% if show_row_display %}
-        <div class="row g-2 align-items-center mb-2">
-            <label class="col-sm-3 col-form-label">{{ __('Takes the whole row', 'metademands') }}</label>
-            <div class="col-sm-3">{{ row_display_html|raw }}</div>
-            {% if show_is_basket %}
-            <label class="col-sm-3 col-form-label">{{ __('Display into the basket', 'metademands') }}</label>
-            <div class="col-sm-3">{{ is_basket_html|raw }}</div>
-            {% endif %}
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Takes the whole row', 'metademands') }}</label>
+                <div class="col-sm-3">{{ row_display_html|raw }}</div>
+                {% if show_is_basket %}
+                    <label class="col-sm-3 col-form-label">{{ __('Display into the basket', 'metademands') }}</label>
+                    <div class="col-sm-3">{{ is_basket_html|raw }}</div>
+                {% endif %}
+            </div>
         {% endif %}
         {% if show_used_by_ticket or show_plugin_fields %}
-        <div class="row g-2 align-items-center mb-2">
-            {% if show_used_by_ticket %}
-            <label class="col-sm-3 col-form-label">{{ __('Use this field as object field', 'metademands') }}</label>
-            <div class="{{ show_plugin_fields ? 'col-sm-3' : 'col-sm-9' }}">{{ used_by_ticket_html|raw }}</div>
-            {% endif %}
-            {% if show_plugin_fields %}
-            <label class="col-sm-3 col-form-label">{{ __('Link this to a plugin "fields" field', 'metademands') }}</label>
-            <div class="{{ show_used_by_ticket ? 'col-sm-3' : 'col-sm-9' }}">{{ plugin_fields_html|raw }}</div>
-            {% endif %}
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                {% if show_used_by_ticket %}
+                    <label
+                        class="col-sm-3 col-form-label">{{ __('Use this field as object field', 'metademands') }}</label>
+                    <div class="{{ show_plugin_fields ? 'col-sm-3' : 'col-sm-9' }}">{{ used_by_ticket_html|raw }}</div>
+                {% endif %}
+                {% if show_plugin_fields %}
+                    <label
+                        class="col-sm-3 col-form-label">{{ __('Link this to a plugin "fields" field', 'metademands') }}</label>
+                    <div class="{{ show_used_by_ticket ? 'col-sm-3' : 'col-sm-9' }}">{{ plugin_fields_html|raw }}</div>
+                {% endif %}
+            </div>
         {% endif %}
     </div>
 </div>

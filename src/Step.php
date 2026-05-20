@@ -30,14 +30,15 @@ namespace GlpiPlugin\Metademands;
 
 use Ajax;
 use CommonDBChild;
+use CommonGLPI;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Group_User;
 use Html;
 use Migration;
 use Session;
-use CommonGLPI;
 use User;
 
 if (!defined('GLPI_ROOT')) {
@@ -60,7 +61,7 @@ class Step extends CommonDBChild
      * Return the localized name of the current Type
      * Should be overloaded in each new class
      *
-     * @param integer $nb Number of items
+     * @param int $nb Number of items
      *
      * @return string
      **/
@@ -164,7 +165,7 @@ class Step extends CommonDBChild
 
 
     /**
-     * @param \CommonGLPI $item
+     * @param CommonGLPI $item
      * @param int $withtemplate
      *
      * @return array|string
@@ -356,7 +357,7 @@ class Step extends CommonDBChild
             echo "<br><div id='viewstepbybloc" . $item->getID() . "$rand'></div>\n";
 
             echo "<script type='text/javascript' >\n";
-            echo "function addstepbybloc"  . $item->getID() . "$rand() {\n";
+            echo "function addstepbybloc" . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
@@ -364,16 +365,16 @@ class Step extends CommonDBChild
                 'id' => -1,
             ];
             Ajax::updateItemJsCode(
-                "viewstepbybloc"  . $item->getID() . "$rand",
+                "viewstepbybloc" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                 $params
             );
             echo "};";
             echo "</script>\n";
-            echo "<div class='center'>" .
-                "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
-                 $item->getID() . "$rand();'>" . __('Define a new visibility', 'metademands') .
-                "</a></div>";
+            echo "<div class='center'>"
+                . "<a class='submit btn btn-primary' href='javascript:addstepbybloc"
+                 . $item->getID() . "$rand();'>" . __('Define a new visibility', 'metademands')
+                . "</a></div>";
         }
         $iterator = $DB->request([
             'FROM' => getTableForItemType(__CLASS__),
@@ -396,8 +397,8 @@ class Step extends CommonDBChild
             ]);
 
             foreach ($steps as $step) {
-                if (!isset($blocks[$f['rank']]) &&
-                    (!$self->getFromDBByCrit([
+                if (!isset($blocks[$f['rank']])
+                    && (!$self->getFromDBByCrit([
                         'plugin_metademands_metademands_id' => $item->getID(),
                         'block_id' => intval($f['rank']),
                         'id' => $step['id'],
@@ -500,11 +501,11 @@ class Step extends CommonDBChild
                     echo "<li class='step'>";
                     if ($canedit) {
                         $onhover = "style='cursor:pointer'
-                       onClick=\"viewEditstepbyblock"  . $data['id'] . "$rand();\"";
+                       onClick=\"viewEditstepbyblock" . $data['id'] . "$rand();\"";
                     }
                     if ($canedit) {
                         echo "\n<script type='text/javascript' >\n";
-                        echo "function viewEditstepbyblock"  . $data['id'] . "$rand() {\n";
+                        echo "function viewEditstepbyblock" . $data['id'] . "$rand() {\n";
                         $params = [
                             'type' => __CLASS__,
                             'parenttype' => get_class($item),
@@ -512,7 +513,7 @@ class Step extends CommonDBChild
                             'id' => $data["id"],
                         ];
                         Ajax::updateItemJsCode(
-                            "viewstepbybloc"  . $item->getID() . "$rand",
+                            "viewstepbybloc" . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
                             $params
                         );
@@ -662,30 +663,26 @@ class Step extends CommonDBChild
             // Create item
             $this->check(-1, CREATE, $options);
         }
+
         $configStep = new Configstep();
         $configStep->getFromDBByCrit([
             'plugin_metademands_metademands_id' => $item->getID(),
         ]);
-        $this->showFormHeader($options);
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Block', 'metademands') . "</td>";
-        echo "<td>";
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
 
-        $field = new Field();
-        $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
+        $field  = new Field();
+        $fields = $field->find(['plugin_metademands_metademands_id' => $item->getID()]);
         $blocks = [];
-        $self = new self();
+        $self   = new self();
 
         if (isset($configStep->fields['multiple_link_groups_blocks'])
             && $configStep->fields['multiple_link_groups_blocks'] == 1) {
             foreach ($fields as $f) {
-                $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+                $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f['rank']);
             }
         } else {
             foreach ($fields as $f) {
-                if (!isset($blocks[$f['rank']]) &&
-                    (!$self->getFromDBByCrit([
+                if (!isset($blocks[$f['rank']])
+                    && (!$self->getFromDBByCrit([
                         'plugin_metademands_metademands_id' => $item->getID(),
                         'block_id' => intval($f['rank']),
                     ])
@@ -694,44 +691,39 @@ class Step extends CommonDBChild
                             'block_id' => intval($f['rank']),
                             'id' => $ID,
                         ]))) {
-                    $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+                    $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f['rank']);
                 }
             }
         }
-
         ksort($blocks);
 
+        ob_start();
         if ($this->fields['block_id']) {
-            \Dropdown::showFromArray(
-                'block_id',
-                $blocks,
-                [
-                    'value' => $this->fields['block_id'],
-                    'width' => '100%',
-                    'entity' => $_SESSION['glpiactiveentities'],
-                ]
-            );
+            \Dropdown::showFromArray('block_id', $blocks, [
+                'value'  => $this->fields['block_id'],
+                'width'  => '100%',
+                'entity' => $_SESSION['glpiactiveentities'],
+            ]);
         } else {
-            $values = [$this->fields['block_id']];
-
-            \Dropdown::showFromArray(
-                'block_id',
-                $blocks,
-                [
-                    'values' => $values,
-                    'width' => '100%',
-                    'multiple' => true,
-                    'entity' => $_SESSION['glpiactiveentities'],
-                ]
-            );
+            \Dropdown::showFromArray('block_id', $blocks, [
+                'values'   => [$this->fields['block_id']],
+                'width'    => '100%',
+                'multiple' => true,
+                'entity'   => $_SESSION['glpiactiveentities'],
+            ]);
         }
-        echo "</td></tr>";
+        $block_dropdown_html = ob_get_clean();
 
-        if (isset($configStep->fields['supervisor_validation'])
-            && $configStep->fields['supervisor_validation'] == 0) {
-            echo "<tr class='tab_bg_1'><td>" . \Group::getTypeName() . "</td>";
-            echo "<td>";
-            $meta_group = new Group();
+        $supervisor_validation = isset($configStep->fields['supervisor_validation'])
+            ? (int) $configStep->fields['supervisor_validation']
+            : null;
+
+        $groups_dropdown_html     = '';
+        $supervisor_dropdown_html = '';
+
+        if ($supervisor_validation === 0) {
+            ob_start();
+            $meta_group  = new Group();
             $meta_groups = $meta_group->find(['plugin_metademands_metademands_id' => $item->getID()]);
             $groups = [];
             foreach ($meta_groups as $group) {
@@ -740,58 +732,39 @@ class Step extends CommonDBChild
                 $groups[$group['groups_id']] = $gr->getFriendlyName();
             }
             if (!empty($groups)) {
-                \Dropdown::showFromArray(
-                    'groups_id',
-                    $groups,
-                    [
-                        'value' => $this->fields['groups_id'],
-                        'width' => '100%',
-                        'multiple' => true,
-                        'entity' => $_SESSION['glpiactiveentities'],
-                    ]
-                );
+                \Dropdown::showFromArray('groups_id', $groups, [
+                    'value'    => $this->fields['groups_id'],
+                    'width'    => '100%',
+                    'multiple' => true,
+                    'entity'   => $_SESSION['glpiactiveentities'],
+                ]);
             } else {
                 \Group::dropdown([
-                    'name' => 'groups_id',
+                    'name'  => 'groups_id',
                     'value' => $this->fields['groups_id'],
                 ]);
             }
-            echo Html::hidden(
-                'only_by_supervisor',
-                ['value' => 0]
-            );
-            echo "</td>";
-            echo "</tr>";
+            $groups_dropdown_html = ob_get_clean();
         }
 
-
-        if (isset($configStep->fields['supervisor_validation'])
-            && $configStep->fields['supervisor_validation'] == 1) {
-            echo "<tr class='tab_bg_1'><td>" . __("Only by supervisor", 'metademands') . "</td>";
-            echo "<td>";
-            \Dropdown::showYesNo("only_by_supervisor", $this->fields['only_by_supervisor']);
-            echo Html::hidden(
-                'groups_id',
-                ['value' => 0]
-            );
-            echo "</td>";
-            echo "</tr>";
+        if ($supervisor_validation === 1) {
+            ob_start();
+            \Dropdown::showYesNo('only_by_supervisor', $this->fields['only_by_supervisor']);
+            $supervisor_dropdown_html = ob_get_clean();
         }
-        echo "<tr class='tab_bg_1'><td>" . __(
-            'Message displayed before sending to the next supervisor or user',
-            'metademands'
-        ) . "</td>";
-        echo "<td>";
-        Html::textarea([
-            'name' => 'message',
-            'value' => $this->fields['message'],
-            'enable_richtext' => false,
-            'cols' => 80,
-            'rows' => 3,
+
+        TemplateRenderer::getInstance()->display('@metademands/step_form.html.twig', [
+            'action'                   => PLUGIN_METADEMANDS_WEBDIR . '/front/step.form.php',
+            'metademand_id'            => $item->getID(),
+            'step_id'                  => $this->fields['id'] ?? 0,
+            'is_new'                   => $ID <= 0,
+            'block_dropdown_html'      => $block_dropdown_html,
+            'supervisor_validation'    => $supervisor_validation,
+            'groups_dropdown_html'     => $groups_dropdown_html,
+            'supervisor_dropdown_html' => $supervisor_dropdown_html,
+            'message'                  => $this->fields['message'] ?? '',
         ]);
-        echo "</td>";
-        echo "</tr>";
-        $this->showFormButtons($options);
+
         return true;
     }
 
@@ -1307,8 +1280,8 @@ class Step extends CommonDBChild
 
                         //Category id if have category field
                         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
-                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
-                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id']
+                            = (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                                 && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
                     }
 

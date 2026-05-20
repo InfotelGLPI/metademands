@@ -27,91 +27,95 @@ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------
 #}
 {% if rows is not empty %}
-<tr>
-    <td colspan="5" class="p-2">
-        <div id="drag">
-            <table class="w-100" style="border-collapse:collapse">
-                {% for row in rows %}
-                <tr style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)">
-                    <td class="rowhandler align-middle text-center ps-1 py-2" style="width:44px">
-                        <span class="badge rounded-pill bg-outline-secondary">{{ row.rank }}</span>
-                    </td>
-                    <td class="py-1 px-2">
-                        <form method="post" action="{{ form_target }}">
-                            <input type="hidden" name="fields_id" id="fields_id" value="{{ fields_id }}">
-                            <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
-                            <input type="hidden" name="type" id="type" value="{{ type }}">
-                            <input type="hidden" name="id[{{ row.id }}]" value="{{ row.id }}">
-                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <input type="text" id="custom_values{{ row.id }}"
-                                       name="name[{{ row.id }}]" value="{{ row.name }}"
-                                       class="form-control" style="width:200px">
-                                {% if show_comment %}
-                                <div class="input-group flex-nowrap" style="width:270px">
-                                    <span class="input-group-text text-nowrap">{{ __('Comment') }}</span>
-                                    <input type="text" id="comment_values{{ row.id }}"
-                                           name="comment[{{ row.id }}]" value="{{ row.comment }}"
-                                           class="form-control">
+    <tr>
+        <td colspan="5" class="p-2">
+            <div id="drag">
+                <table class="w-100" style="border-collapse:collapse">
+                    {% for row in rows %}
+                        <tr style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)">
+                            <td class="rowhandler align-middle text-center ps-1 py-2" style="width:44px">
+                                <span class="badge rounded-pill bg-outline-secondary">{{ row.rank }}</span>
+                            </td>
+                            <td class="py-1 px-2">
+                                <form method="post" action="{{ form_target }}">
+                                    <input type="hidden" name="fields_id" id="fields_id" value="{{ fields_id }}">
+                                    <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
+                                    <input type="hidden" name="type" id="type" value="{{ type }}">
+                                    <input type="hidden" name="id[{{ row.id }}]" value="{{ row.id }}">
+                                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <input type="text" id="custom_values{{ row.id }}"
+                                               name="name[{{ row.id }}]" value="{{ row.name }}"
+                                               class="form-control" style="width:200px">
+                                        {% if show_comment %}
+                                            <div class="input-group flex-nowrap" style="width:270px">
+                                                <span class="input-group-text text-nowrap">{{ __('Comment') }}</span>
+                                                <input type="text" id="comment_values{{ row.id }}"
+                                                       name="comment[{{ row.id }}]" value="{{ row.comment }}"
+                                                       class="form-control">
+                                            </div>
+                                        {% endif %}
+                                        <div class="d-flex align-items-center gap-1 flex-shrink-0"
+                                             id="default_values{{ row.id }}">
+                                            <span
+                                                class="text-muted small text-nowrap">{{ __('Default value', 'metademands') }}</span>
+                                            {{ row.default_html|raw }}
+                                        </div>
+                                        {% if row.icon_html %}
+                                            <div id="icon{{ row.id }}"
+                                                 class="flex-shrink-0">{{ row.icon_html|raw }}</div>
+                                        {% endif %}
+                                        <button type="submit" name="update" value=""
+                                                class="btn btn-sm btn-primary flex-shrink-0">
+                                            <i class="ti ti-device-floppy"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td class="rowhandler align-middle text-center py-1" style="width:30px">
+                                <div class="drag row" style="cursor:move">
+                                    <i class="ti ti-grip-horizontal grip-rule"></i>
                                 </div>
-                                {% endif %}
-                                <div class="d-flex align-items-center gap-1 flex-shrink-0" id="default_values{{ row.id }}">
-                                    <span class="text-muted small text-nowrap">{{ __('Default value', 'metademands') }}</span>
-                                    {{ row.default_html|raw }}
-                                </div>
-                                {% if row.icon_html %}
-                                <div id="icon{{ row.id }}" class="flex-shrink-0">{{ row.icon_html|raw }}</div>
-                                {% endif %}
-                                <button type="submit" name="update" value="" class="btn btn-sm btn-primary flex-shrink-0">
-                                    <i class="ti ti-device-floppy"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </td>
-                    <td class="rowhandler align-middle text-center py-1" style="width:30px">
-                        <div class="drag row" style="cursor:move">
-                            <i class="ti ti-grip-horizontal grip-rule"></i>
-                        </div>
-                    </td>
-                    <td class="rowhandler align-middle text-center py-1 pe-1" style="width:40px">
-                        {{ row.delete_form_html|raw }}
-                    </td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="4" class="p-0" id="show_custom_fields"></td>
-                </tr>
-            </table>
-        </div>
-        {{ js_redips|raw }}
-    </td>
-</tr>
-<tr>
-    <td colspan="5" class="px-2 pb-2">
-        {{ init_form_html|raw }}
-    </td>
-</tr>
-{{ import_html|raw }}
-{% elseif specific_dropdown_html %}
-<tr class="tab_bg_1">
-    <td colspan="5">
-        <form method="post" action="{{ form_target }}">
-            <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
-            <input type="hidden" name="type" value="{{ type }}">
-            <input type="hidden" name="item" value="{{ item }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-            <div class="d-flex align-items-center gap-2 mt-2">
-                {{ specific_dropdown_html|raw }}
-                <button type="submit" name="update" value="" class="btn btn-primary">
-                    <i class="ti ti-device-floppy"></i>
-                </button>
+                            </td>
+                            <td class="rowhandler align-middle text-center py-1 pe-1" style="width:40px">
+                                {{ row.delete_form_html|raw }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4" class="p-0" id="show_custom_fields"></td>
+                    </tr>
+                </table>
             </div>
-        </form>
-    </td>
-</tr>
+            {{ js_redips|raw }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="5" class="px-2 pb-2">
+            {{ init_form_html|raw }}
+        </td>
+    </tr>
+    {{ import_html|raw }}
+{% elseif specific_dropdown_html %}
+    <tr class="tab_bg_1">
+        <td colspan="5">
+            <form method="post" action="{{ form_target }}">
+                <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
+                <input type="hidden" name="type" value="{{ type }}">
+                <input type="hidden" name="item" value="{{ item }}">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                <div class="d-flex align-items-center gap-2 mt-2">
+                    {{ specific_dropdown_html|raw }}
+                    <button type="submit" name="update" value="" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i>
+                    </button>
+                </div>
+            </form>
+        </td>
+    </tr>
 {% else %}
-<tr class="tab_bg_1">
-    <td colspan="5" id="show_custom_fields">{{ init_form_html|raw }}</td>
-</tr>
-{{ import_html|raw }}
+    <tr class="tab_bg_1">
+        <td colspan="5" id="show_custom_fields">{{ init_form_html|raw }}</td>
+    </tr>
+    {{ import_html|raw }}
 {% endif %}

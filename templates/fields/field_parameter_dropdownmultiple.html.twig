@@ -36,20 +36,22 @@ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
             <div class="col-sm-3">{{ display_type_html|raw }}</div>
         </div>
         {% if is_user %}
-        <div class="row g-2 align-items-center mb-2">
-            <label class="col-sm-3 col-form-label">{{ __('Only users of my groups', 'metademands') }}</label>
-            <div class="col-sm-3">{{ user_group_html|raw }}</div>
-        </div>
-        <div class="row g-2 align-items-center mb-2">
-            <label class="col-sm-3 col-form-label">{{ __('Use id of requester by default', 'metademands') }}</label>
-            <div class="col-sm-3">{{ default_use_id_requester_html|raw }}</div>
-            <label class="col-sm-3 col-form-label">{{ __('Use id of supervisor requester by default', 'metademands') }}</label>
-            <div class="col-sm-3">{{ default_use_id_requester_supervisor_html|raw }}</div>
-        </div>
-        <div class="row g-2 align-items-center mb-2">
-            <label class="col-sm-3 col-form-label">{{ __('Informations to display in ticket and PDF', 'metademands') }}</label>
-            <div class="col-sm-9">{{ informations_to_display_html|raw }}</div>
-        </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Only users of my groups', 'metademands') }}</label>
+                <div class="col-sm-3">{{ user_group_html|raw }}</div>
+            </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Use id of requester by default', 'metademands') }}</label>
+                <div class="col-sm-3">{{ default_use_id_requester_html|raw }}</div>
+                <label
+                    class="col-sm-3 col-form-label">{{ __('Use id of supervisor requester by default', 'metademands') }}</label>
+                <div class="col-sm-3">{{ default_use_id_requester_supervisor_html|raw }}</div>
+            </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label
+                    class="col-sm-3 col-form-label">{{ __('Informations to display in ticket and PDF', 'metademands') }}</label>
+                <div class="col-sm-9">{{ informations_to_display_html|raw }}</div>
+            </div>
         {% endif %}
     </div>
 </div>

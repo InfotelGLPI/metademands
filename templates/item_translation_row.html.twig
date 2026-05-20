@@ -86,10 +86,10 @@
      aria-labelledby="metademand-tr-modal-title-{{ lang }}">
     <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
         <form class="modal-content" method="POST" action="{{ ajax_url }}">
-            <input type="hidden" name="_glpi_csrf_token"   value="{{ csrf_token() }}" />
-            <input type="hidden" name="action"             value="save_translations" />
-            <input type="hidden" name="translation_class"  value="{{ translation_class }}" />
-            <input type="hidden" name="meta_translation_id" value="{{ translation.getID() }}" />
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="action" value="save_translations"/>
+            <input type="hidden" name="translation_class" value="{{ translation_class }}"/>
+            <input type="hidden" name="meta_translation_id" value="{{ translation.getID() }}"/>
 
             <div class="modal-header border-bottom-0">
                 <h5 class="modal-title" id="metademand-tr-modal-title-{{ lang }}">
@@ -120,45 +120,45 @@
 
             <div class="modal-footer border-top-0">
                 {% if canedit %}
-                <div class="d-flex flex-row-reverse w-100">
-                    <button class="btn btn-primary ms-2" type="submit" name="save"
-                            aria-label="{{ __('Save translation') }}">
-                        <i class="ti ti-device-floppy me-2"></i>{{ __('Save') }}
-                    </button>
-                    <button class="btn btn-ghost-danger" type="submit" name="delete"
-                            form="metademand-tr-delete-{{ lang }}"
-                            aria-label="{{ __('Delete translation') }}">
-                        <i class="ti ti-trash me-2"></i>{{ __('Delete') }}
-                    </button>
-                </div>
+                    <div class="d-flex flex-row-reverse w-100">
+                        <button class="btn btn-primary ms-2" type="submit" name="save"
+                                aria-label="{{ __('Save translation') }}">
+                            <i class="ti ti-device-floppy me-2"></i>{{ __('Save') }}
+                        </button>
+                        <button class="btn btn-ghost-danger" type="submit" name="delete"
+                                form="metademand-tr-delete-{{ lang }}"
+                                aria-label="{{ __('Delete translation') }}">
+                            <i class="ti ti-trash me-2"></i>{{ __('Delete') }}
+                        </button>
+                    </div>
                 {% else %}
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="ti ti-x me-2"></i>{{ __('Close') }}
-                </button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-2"></i>{{ __('Close') }}
+                    </button>
                 {% endif %}
             </div>
         </form>
 
         {% if canedit %}
-        <form id="metademand-tr-delete-{{ lang }}"
-              method="POST" action="{{ ajax_url }}" hidden>
-            <input type="hidden" name="_glpi_csrf_token"    value="{{ csrf_token() }}" />
-            <input type="hidden" name="action"              value="delete_language" />
-            <input type="hidden" name="translation_class"   value="{{ translation_class }}" />
-            <input type="hidden" name="items_id"            value="{{ metademand.getID() }}" />
-            <input type="hidden" name="itemtype"            value="{{ metademand.getType() }}" />
-            <input type="hidden" name="language"            value="{{ lang }}" />
-        </form>
+            <form id="metademand-tr-delete-{{ lang }}"
+                  method="POST" action="{{ ajax_url }}" hidden>
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="action" value="delete_language"/>
+                <input type="hidden" name="translation_class" value="{{ translation_class }}"/>
+                <input type="hidden" name="items_id" value="{{ metademand.getID() }}"/>
+                <input type="hidden" name="itemtype" value="{{ metademand.getType() }}"/>
+                <input type="hidden" name="language" value="{{ lang }}"/>
+            </form>
         {% endif %}
     </div>
 </div>
 
 {% macro getTranslationInput(handler, translation, language) %}
     {% set rand = random() %}
-    <input type="hidden" name="translations[{{ rand }}][itemtype]"  value="{{ get_class(handler.getItem()) }}" />
-    <input type="hidden" name="translations[{{ rand }}][items_id]" value="{{ handler.getItem().getID() }}" />
-    <input type="hidden" name="translations[{{ rand }}][key]"      value="{{ handler.getKey() }}" />
-    <input type="hidden" name="translations[{{ rand }}][language]" value="{{ language }}" />
+    <input type="hidden" name="translations[{{ rand }}][itemtype]" value="{{ get_class(handler.getItem()) }}"/>
+    <input type="hidden" name="translations[{{ rand }}][items_id]" value="{{ handler.getItem().getID() }}"/>
+    <input type="hidden" name="translations[{{ rand }}][key]" value="{{ handler.getKey() }}"/>
+    <input type="hidden" name="translations[{{ rand }}][language]" value="{{ language }}"/>
 
     <div class="d-flex align-items-center">
         {% if translation and translation.isPossiblyObsolete() %}
@@ -179,7 +179,7 @@
                    name="translations[{{ rand }}][translations][one]"
                    class="form-control"
                    value="{{ current_value|e }}"
-                   placeholder="{{ __('Enter translation') }}" />
+                   placeholder="{{ __('Enter translation') }}"/>
         {% endif %}
     </div>
 {% endmacro %}

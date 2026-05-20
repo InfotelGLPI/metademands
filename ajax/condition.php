@@ -78,4 +78,9 @@ if (isset($_POST['metademands_id'])
         $predicate .= ")";
     }
 }
-echo json_encode($predicate);
+$result_bool = false;
+if (!empty($predicate)) {
+    // phpcs:ignore Squiz.PHP.Eval
+    eval('$result_bool = (bool)(' . $predicate . ');');
+}
+echo json_encode($result_bool);

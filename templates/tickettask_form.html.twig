@@ -1,30 +1,30 @@
 {#
- -------------------------------------------------------------------------
- Metademands plugin for GLPI
- Copyright (C) 2018-2026 by the Metademands Development Team.
- -------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Metademands plugin for GLPI
+Copyright (C) 2018-2026 by the Metademands Development Team.
+-------------------------------------------------------------------------
 
- LICENSE
+LICENSE
 
- This file is part of Metademands.
+This file is part of Metademands.
 
- Metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+Metademands is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- Metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+Metademands is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with Metademands. If not, see <http://www.gnu.org/licenses/>.
- -------------------------------------------------------------------------
- @copyright Copyright (C) 2026-2026 by Metademands plugin team.
- @license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
- @link      https://github.com/InfotelGLPI/Metademands
- -------------------------------------------------------------------------
+You should have received a copy of the GNU General Public License
+along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------
+@copyright Copyright (C) 2026-2026 by Metademands plugin team.
+@license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+@link      https://github.com/InfotelGLPI/Metademands
+-------------------------------------------------------------------------
 #}
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
@@ -60,19 +60,19 @@
 
                     <div class="d-flex justify-content-end gap-2 mt-3">
                         {% if canedit %}
-                        <button type="submit" name="{{ is_new ? 'add' : 'update' }}" value="1"
-                                class="btn btn-primary">
-                            <i class="ti ti-device-floppy"></i>
-                            <span>{{ is_new ? _x('button', 'Add') : _x('button', 'Save') }}</span>
-                        </button>
+                            <button type="submit" name="{{ is_new ? 'add' : 'update' }}" value="1"
+                                    class="btn btn-primary">
+                                <i class="ti ti-device-floppy"></i>
+                                <span>{{ is_new ? _x('button', 'Add') : _x('button', 'Save') }}</span>
+                            </button>
                         {% endif %}
                         {% if can_delete %}
-                        <button type="submit" name="delete" value="1"
-                                class="btn btn-danger"
-                                onclick="return confirm('{{ __('Are you sure you want to delete this item?')|e('js') }}');">
-                            <i class="ti ti-trash"></i>
-                            <span>{{ _x('button', 'Delete') }}</span>
-                        </button>
+                            <button type="submit" name="delete" value="1"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('{{ __('Are you sure you want to delete this item?')|e('js') }}');">
+                                <i class="ti ti-trash"></i>
+                                <span>{{ _x('button', 'Delete') }}</span>
+                            </button>
                         {% endif %}
                     </div>
                 </form>
@@ -82,5 +82,5 @@
 </div>
 
 <script>
-bootstrap.Modal.getOrCreateInstance(document.getElementById('{{ modal_id }}')).show();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('{{ modal_id }}')).show();
 </script>

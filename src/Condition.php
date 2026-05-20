@@ -36,6 +36,7 @@ use CommonGLPI;
 use CommonITILObject;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Dropdown;
 use GlpiPlugin\Metademands\Fields\Yesno;
@@ -374,145 +375,58 @@ class Condition extends CommonDBChild
     public function showForMetademand($item)
     {
         $canedit = $item->can($item->fields['id'], UPDATE);
-        if ($canedit) {
-            echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL(
-                Metademand::class
-            ) . "'>";
-            echo Html::hidden('id', ['value' => $item->fields['id']]);
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr>";
-            echo "<th colspan='2'> " . __('Rule', 'metademands') . " </th>";
-            echo "</tr>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Submit button display', 'metademands') . "</td>";
-            echo "<td>";
-            $options = [
-                'value' => $item->fields['show_rule'],
-            ];
-            \Dropdown::showFromArray(
-                'show_rule',
-                self::getEnumShowRule(),
-                $options
-            );
-            echo "</td>";
-            echo "<tr>";
-            echo "<td class='tab_bg_2 center' colspan='4'>";
-            echo "<input class='btn btn-primary' type='submit' name='apply_rule' value=\""
-                . _sx("button", __('Apply', 'metademands')) . "\" class='submit'>";
-            echo "</td>";
-            echo "<tr>";
-            echo "</table>";
-            Html::closeForm();
-            $rand = mt_rand();
-
-            if ($item->fields['show_rule'] != self::SHOW_RULE_ALWAYS) {
-                echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL(
-                    Condition::class
-                ) . "'>";
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr>";
-                echo "<th> " . __('Logical operator', 'metademands') . " </th>";
-                echo "<th>" . __('Field', 'metademands') . " <span style='color : red'> *</span></th>";
-                echo "<th>" . __('Field type', 'metademands') . "</th>";
-                echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
-                echo "<th>" . __('Value to check', 'metademands') . "</th>";
-                echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
-                echo "<h6 style='color: royalblue'>" . __(
-                    'Order of execution and grouping of conditions',
-                    'metademands'
-                ) . "</h6>";
-                echo "</th>";
-                echo "<th></th>";
-
-
-                $field = new Field();
-
-                $fields = $field->find(
-                    [
-                        'type' => self::$field_types_available,
-                        'plugin_metademands_metademands_id' => $item->fields['id'],
-                    ]
-                );
-                $dropdown_fields = [];
-                foreach ($fields as $f) {
-                    $dropdown_fields[$f['id']] = stripslashes($f['name']) . " (" . $f['id'] . ") ";
-                }
-                echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
-                echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-                echo "<tr>";
-                echo "<td>";
-                \Dropdown::showFromArray(
-                    'show_logic',
-                    self::getEnumShowLogic(),
-                );
-                echo "</td>";
-
-                echo "<td>";
-
-                \Dropdown::showFromArray(
-                    'plugin_metademands_fields_id',
-                    $dropdown_fields,
-                    [
-                        'rand' => $rand,
-                        'display_emptychoice' => true,
-                    ]
-                );
-                echo "</td>";
-                echo "<td>";
-                Ajax::updateItemOnSelectEvent(
-                    "dropdown_plugin_metademands_fields_id$rand",
-                    "show_type_field$rand",
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_type_field.php",
-                    [
-                        'fields_id' => '__VALUE__',
-                        'rand' => $rand,
-                    ]
-                );
-                echo "<span id = 'show_type_field$rand'>";
-                echo "</span>";
-                echo "</td>";
-
-                echo "<td>";
-                Ajax::updateItemOnSelectEvent(
-                    "dropdown_plugin_metademands_fields_id$rand",
-                    "show_dropdown_condition_$rand",
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_conditions.php",
-                    [
-                        'fields_id' => '__VALUE__',
-                        'rand' => $rand,
-                    ]
-                );
-                echo "<span id = 'show_dropdown_condition_$rand'>";
-
-                echo "</span>";
-                echo "</td>";
-                echo "<td>";
-                Ajax::updateItemOnSelectEvent(
-                    "dropdown_plugin_metademands_fields_id$rand",
-                    "show_value_to_check_$rand",
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_check_value.php",
-                    [
-                        'fields_id' => '__VALUE__',
-                        'rand' => $rand,
-                    ]
-                );
-
-                echo "<span id = 'show_value_to_check_$rand'>";
-
-                echo "</span>";
-                echo "</td>";
-                echo "<td>";
-                \Dropdown::showNumber('order');
-                echo "</td>";
-                echo "<td>";
-                echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
-                echo "</td>";
-                echo "</tr>";
-                echo "</table>";
-                Html::closeForm();
-            }
-            self::listConditions($item);
+        if (!$canedit) {
+            return;
         }
+
+        $rand = mt_rand();
+
+        ob_start();
+        \Dropdown::showFromArray('show_rule', self::getEnumShowRule(), [
+            'value' => $item->fields['show_rule'],
+        ]);
+        $show_rule_html = ob_get_clean();
+
+        $field  = new Field();
+        $fields = $field->find([
+            'type'                              => self::$field_types_available,
+            'plugin_metademands_metademands_id' => $item->fields['id'],
+        ]);
+        $dropdown_fields = [];
+        foreach ($fields as $f) {
+            $dropdown_fields[$f['id']] = stripslashes($f['name']) . ' (' . $f['id'] . ') ';
+        }
+
+        ob_start();
+        \Dropdown::showFromArray('show_logic', self::getEnumShowLogic());
+        $show_logic_html = ob_get_clean();
+
+        ob_start();
+        \Dropdown::showFromArray('plugin_metademands_fields_id', $dropdown_fields, [
+            'rand'                => $rand,
+            'display_emptychoice' => true,
+        ]);
+        $fields_dropdown_html = ob_get_clean();
+
+        ob_start();
+        \Dropdown::showNumber('order');
+        $order_dropdown_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@metademands/condition_for_metademand.html.twig', [
+            'rule_action'         => Toolbox::getItemTypeFormURL(Metademand::class),
+            'condition_action'    => Toolbox::getItemTypeFormURL(Condition::class),
+            'metademand_id'       => $item->fields['id'],
+            'show_rule'           => $item->fields['show_rule'],
+            'show_rule_always'    => self::SHOW_RULE_ALWAYS,
+            'show_rule_html'      => $show_rule_html,
+            'show_logic_html'     => $show_logic_html,
+            'fields_dropdown_html' => $fields_dropdown_html,
+            'order_dropdown_html'  => $order_dropdown_html,
+            'rand'                => $rand,
+            'plugin_web_dir'      => PLUGIN_METADEMANDS_WEBDIR,
+        ]);
+
+        self::listConditions($item);
     }
 
 
@@ -524,7 +438,7 @@ class Condition extends CommonDBChild
         $field = new Field();
         $rand = mt_rand();
         $canedit = $item->can($item->fields['id'], UPDATE);
-
+        echo "<br><br>";
         if ($canedit) {
             echo "<div id='viewcondition" . $item->getID() . "$rand'></div>\n";
         }
@@ -542,7 +456,7 @@ class Condition extends CommonDBChild
 
             echo "<div class ='left'>";
             echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-            echo "<th colspan='3'>" . __("List of conditions", 'metademands') . "</th></tr><tr>";
+            echo "<th colspan='8'>" . __("List of conditions", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
                 echo "<th width='10'>";
                 echo Html::getCheckAllAsCheckbox('massMetaCondition' . $rand);
@@ -945,8 +859,6 @@ class Condition extends CommonDBChild
      */
     public function showForm($ID = -1, $options = [])
     {
-        global $PLUGIN_HOOKS;
-
         if (isset($options['parent']) && !empty($options['parent'])) {
             $item = $options['parent'];
         }
@@ -961,125 +873,63 @@ class Condition extends CommonDBChild
         }
         $this->initForm($ID, $options);
         $rand = mt_rand();
-        $field = new Field();
 
-        $fields = $field->find(
-            [
-                'type' => self::$field_types_available,
-                'plugin_metademands_metademands_id' => $item->fields['id'],
-            ]
-        );
+        $field  = new Field();
+        $fields = $field->find([
+            'type'                              => self::$field_types_available,
+            'plugin_metademands_metademands_id' => $item->fields['id'],
+        ]);
         $dropdown_fields = [];
         foreach ($fields as $f) {
-            $dropdown_fields[$f['id']] = stripslashes($f['name']) . " (" . $f['id'] . ") ";
+            $dropdown_fields[$f['id']] = stripslashes($f['name']) . ' (' . $f['id'] . ') ';
         }
-        echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL(
-            Condition::class
-        ) . "'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr>";
-        echo "<th> " . __('Logical operator', 'metademands') . " </th>";
-        echo "<th>" . __('Field', 'metademands') . " <span style='color : red'> *</span></th>";
-        echo "<th>" . __('Field type', 'metademands') . "</th>";
-        echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
-        echo "<th>" . __('Value to check', 'metademands') . "</th>";
-        echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
-        echo "<h6 style='color: royalblue'>" . __(
-            'Order of execution and grouping of conditions',
-            'metademands'
-        ) . "</h6>";
-        echo "</th>";
-        echo "<th></th>";
-        echo "</tr>";
-        echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-        echo Html::hidden('id', ['value' => $ID]);
-        echo "<tr>";
-        echo "<td>";
-        \Dropdown::showFromArray(
-            'show_logic',
-            self::getEnumShowLogic(),
-            ['value' => $this->fields['show_logic']]
-        );
-        echo "</td>";
 
-        echo "<td>";
+        ob_start();
+        \Dropdown::showFromArray('show_logic', self::getEnumShowLogic(), [
+            'value' => $this->fields['show_logic'],
+        ]);
+        $show_logic_html = ob_get_clean();
 
-        \Dropdown::showFromArray(
-            'plugin_metademands_fields_id',
-            $dropdown_fields,
-            [
-                'rand' => $rand,
-                'display_emptychoice' => true,
-                'value' => $this->fields['plugin_metademands_fields_id'],
-            ]
-        );
-        echo "</td>";
-        echo "<td>";
-        Ajax::updateItemOnSelectEvent(
-            "dropdown_plugin_metademands_fields_id$rand",
-            "show_type_field$rand",
-            PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_type_field.php",
-            [
-                'fields_id' => '__VALUE__',
-                'rand' => $rand,
-            ]
-        );
-        echo "<span id = 'show_type_field$rand'>";
-        echo Field::getFieldTypesName($this->fields['type']);
-        echo "</span>";
-        echo "</td>";
+        ob_start();
+        \Dropdown::showFromArray('plugin_metademands_fields_id', $dropdown_fields, [
+            'rand'                => $rand,
+            'display_emptychoice' => true,
+            'value'               => $this->fields['plugin_metademands_fields_id'],
+        ]);
+        $fields_dropdown_html = ob_get_clean();
 
-        echo "<td>";
-        Ajax::updateItemOnSelectEvent(
-            "dropdown_plugin_metademands_fields_id$rand",
-            "show_dropdown_condition_$rand",
-            PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_conditions.php",
-            [
-                'fields_id' => '__VALUE__',
-                'rand' => $rand,
-            ]
-        );
-        echo "<span id = 'show_dropdown_condition_$rand'>";
-        $options = [
+        $type_field_html = Field::getFieldTypesName($this->fields['type']);
+
+        ob_start();
+        \Dropdown::showFromArray('show_condition', Condition::getEnumShowCondition($this->fields['type']), [
             'display_emptychoice' => false,
-            'value' => $this->fields['show_condition'],
-            'rand' => $rand,
-        ];
-        \Dropdown::showFromArray(
-            'show_condition',
-            Condition::getEnumShowCondition($this->fields['type']),
-            $options
-        );
-        echo "</span>";
-        echo "</td>";
-        echo "<td>";
-        Ajax::updateItemOnSelectEvent(
-            "dropdown_plugin_metademands_fields_id$rand",
-            "show_value_to_check_$rand",
-            PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_check_value.php",
-            [
-                'fields_id' => '__VALUE__',
-                'rand' => $rand,
-            ]
-        );
+            'value'               => $this->fields['show_condition'],
+            'rand'                => $rand,
+        ]);
+        $condition_dropdown_html = ob_get_clean();
 
-        echo "<span id = 'show_value_to_check_$rand'>";
+        ob_start();
         self::showCheckValue($this->fields['plugin_metademands_fields_id'], $ID);
-        echo "</span>";
-        echo "</td>";
-        echo "<td>";
-        $option = [
-            'value' => $this->fields['order'],
-        ];
-        \Dropdown::showNumber('order', $option);
-        echo "</td>";
-        echo "<td>";
-        echo Html::submit(_sx('button', __('Update')), ['name' => 'update', 'class' => 'btn btn-primary']);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        Html::closeForm();
+        $check_value_html = ob_get_clean();
+
+        ob_start();
+        \Dropdown::showNumber('order', ['value' => $this->fields['order']]);
+        $order_dropdown_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@metademands/condition_form.html.twig', [
+            'action'                  => Toolbox::getItemTypeFormURL(Condition::class),
+            'metademand_id'           => $item->fields['id'],
+            'condition_id'            => $ID,
+            'show_logic_html'         => $show_logic_html,
+            'fields_dropdown_html'    => $fields_dropdown_html,
+            'type_field_html'         => $type_field_html,
+            'condition_dropdown_html' => $condition_dropdown_html,
+            'check_value_html'        => $check_value_html,
+            'order_dropdown_html'     => $order_dropdown_html,
+            'rand'                    => $rand,
+            'plugin_web_dir'          => PLUGIN_METADEMANDS_WEBDIR,
+        ]);
+
         return true;
     }
 

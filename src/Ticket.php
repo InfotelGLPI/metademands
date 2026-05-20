@@ -686,7 +686,7 @@ class Ticket extends CommonDBTM
             echo "<td>" . __('Urgency');
             echo $tt->getMandatoryMark('urgency') . "</td>";
             echo "<td>";
-            \Ticket::dropdownUrgency("urgency");
+            \Ticket::dropdownUrgency();
             echo "</td></tr>";
         }
 
