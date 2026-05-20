@@ -574,102 +574,71 @@ class Dropdownmultiple extends CommonDBTM
                 Html::closeForm();
             } else {
                 if ($params['item'] != 'Location') {
+                    $target   = FieldCustomvalue::getFormURL();
+                    $maxrank  = 0;
+                    $rows     = [];
+
                     if (is_array($custom_values) && !empty($custom_values)) {
-                        echo "<div id='drag'>";
-                        echo "<table class='tab_cadre_fixe'>";
                         foreach ($custom_values as $key => $value) {
-                            $target = FieldCustomvalue::getFormURL();
-                            echo "<tr class='tab_bg_1'>";
-
-                            echo "<td class='rowhandler control center'>";
-                            echo __('Rank', 'metademands') . " " . $value['rank'];
-                            echo "</td>";
-
-                            // Formulaire de mise à jour dans sa propre cellule (HTML5 valide)
-                            echo "<td class='rowhandler control center' colspan='3'>";
-                            echo "<form method='post' action=\"$target\">";
-                            echo "<div class='d-flex align-items-center gap-2 flex-wrap'>";
-                            if (isset($params['plugin_metademands_fields_id'])) {
-                                echo Html::hidden(
-                                    'fields_id',
-                                    ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
-                                );
-                                echo Html::hidden(
-                                    'plugin_metademands_fields_id',
-                                    ['value' => $params["plugin_metademands_fields_id"]]
-                                );
-                                echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
-                            }
-                            echo Html::hidden('id[' . $key . ']', ['value' => $key]);
-
-                            echo "<span id='custom_values$key'>";
-                            echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 30]);
-                            echo "</span>";
-
-                            echo "<span id='default_values$key'>";
-                            echo _n('Default value', 'Default values', 1, 'metademands') . " ";
+                            ob_start();
                             \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                            echo "</span>";
+                            $default_html = ob_get_clean();
 
-                            echo Html::submit("", [
-                                'name' => 'update',
-                                'class' => 'btn btn-primary',
-                                'icon' => 'ti ti-device-floppy',
-                            ]);
-                            echo "</div>";
-                            Html::closeForm();
-                            echo "</td>";
-
-                            echo "<td class='rowhandler control center'>";
-                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
-                            echo "</div>";
-                            echo "</td>";
-
-                            // Formulaire de suppression dans sa propre cellule (non imbriqué)
-                            echo "<td class='rowhandler control center'>";
+                            ob_start();
                             Html::showSimpleForm(
                                 $target,
                                 'delete',
                                 _x('button', 'Delete permanently'),
                                 [
-                                    'customvalues_id' => $key,
-                                    'rank' => $value['rank'],
+                                    'customvalues_id'              => $key,
+                                    'rank'                          => $value['rank'],
                                     'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                                 ],
                                 'ti-circle-x',
-                                "class='btn btn-primary'"
+                                "class='btn btn-sm btn-danger'"
                             );
-                            echo "</td>";
+                            $delete_form_html = ob_get_clean();
 
-                            echo "</tr>";
-
+                            $rows[] = [
+                                'id'               => $key,
+                                'rank'             => $value['rank'],
+                                'name'             => $value['name'],
+                                'comment'          => '',
+                                'default_html'     => $default_html,
+                                'icon_html'        => '',
+                                'delete_form_html' => $delete_form_html,
+                            ];
                             $maxrank = $value['rank'];
                         }
-                        echo "</table>";
-                        echo "</div>";
-                        echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
-                        echo '</td>';
-
-                        echo "<tr class='tab_bg_1'>";
-                        echo "<td colspan='4' align='left' id='show_custom_fields'>";
-                        FieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"]);
-                        echo "</td>";
-                        echo "</tr>";
-                        FieldCustomvalue::importCustomValue($params);
-                    } else {
-                        $target = FieldCustomvalue::getFormURL();
-                        echo "<form method='post' action=\"$target\">";
-                        echo "<div class='d-flex align-items-center gap-2 mt-2' id='show_custom_fields'>";
-                        if (isset($params['plugin_metademands_fields_id'])) {
-                            echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                            echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                        }
-                        FieldCustomvalue::initCustomValue(-1, false, true, $params["plugin_metademands_fields_id"]);
-                        echo "</div>";
-                        Html::closeForm();
-                        FieldCustomvalue::importCustomValue($params);
                     }
+
+                    $init_maxrank = !empty($rows) ? $maxrank : -1;
+                    ob_start();
+                    FieldCustomvalue::initCustomValue($init_maxrank, false, true, $params["plugin_metademands_fields_id"]);
+                    $init_form_html = ob_get_clean();
+
+                    ob_start();
+                    FieldCustomvalue::importCustomValue($params);
+                    $import_html = ob_get_clean();
+
+                    ob_start();
+                    echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
+                    $js_redips = ob_get_clean();
+
+                    TemplateRenderer::getInstance()->display(
+                        '@metademands/fields/field_customvalue_list.html.twig',
+                        [
+                            'rows'                   => $rows,
+                            'form_target'            => $target,
+                            'fields_id'              => $params['plugin_metademands_fields_id'] ?? '',
+                            'type'                   => $params['type'] ?? '',
+                            'show_comment'           => false,
+                            'init_form_html'         => $init_form_html,
+                            'import_html'            => $import_html,
+                            'specific_dropdown_html' => '',
+                            'js_redips'              => $js_redips,
+                        ]
+                    );
                 }
             }
         }

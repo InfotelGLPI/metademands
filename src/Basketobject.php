@@ -30,12 +30,14 @@ namespace GlpiPlugin\Metademands;
 use CommonDBTM;
 use DBConnection;
 use GlpiPlugin\Orderfollowup\Material;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
 use Glpi\ItemTranslation\Context\TranslationHandler;
 use Html;
 use Migration;
 use Plugin;
 use Session;
+use Toolbox;
 use PluginOrdermaterialMaterial;
 
 if (!defined('GLPI_ROOT')) {
@@ -233,58 +235,25 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
      */
     function showForm($ID, $options = [])
     {
-
         $this->initForm($ID, $options);
-        $this->showFormHeader($options);
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2'>" . __('Designation', 'metademands') . "<span style='color : red'> *</span></td>";
-        echo "<td colspan='2'>";
-        $options = [
-            'value' => $this->fields['name']
-        ];
-        echo Html::input('name', $options);
-        echo "</td>";
-        echo "<td colspan='4'></td>";
-        echo "</tr>";
+        ob_start();
+        \Dropdown::show(Basketobjecttype::class, [
+            'name'  => 'plugin_metademands_basketobjecttypes_id',
+            'value' => $this->fields['plugin_metademands_basketobjecttypes_id'],
+        ]);
+        $type_dropdown_html = ob_get_clean();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2'>" . __('Description') . "</td>";
-        echo "<td colspan='6'>";
-        $options = [
-            'value' => $this->fields['description'],
-            'name' => 'description',
-            'cols' => 5,
-            'rows' => 5
-        ];
-        Html::textarea($options);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class = 'tab_bg_1'>";
-        echo "<td colspan='2'>" . __('Reference', 'metademands') . " <span style='color : red'> *</span></td>";
-        echo "<td colspan='2'>";
-        $options = [
-            'value' => $this->fields['reference']
-        ];
-        echo Html::input('reference', $options);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class = 'tab_bg_1'>";
-        echo "<td colspan='2'>" . Basketobjecttype::getTypeName() . "<span style='color : red'> *</span></td>";
-        echo "<td colspan='2'>";
-        $options = [
-            'name' => 'plugin_metademands_basketobjecttypes_id',
-            'value' => $this->fields['plugin_metademands_basketobjecttypes_id']
-        ];
-        \Dropdown::show(Basketobjecttype::class, $options);
-        echo "</td>";
-
-        echo "</tr>";
-
-        $this->showFormButtons($options);
-
+        TemplateRenderer::getInstance()->display('@metademands/basketobject_form.html.twig', [
+            'action'             => Toolbox::getItemTypeFormURL(Basketobject::class),
+            'item_id'            => $this->fields['id'] ?? 0,
+            'is_new'             => $ID <= 0,
+            'name'               => $this->fields['name'] ?? '',
+            'description'        => $this->fields['description'] ?? '',
+            'reference'          => $this->fields['reference'] ?? '',
+            'type_name'          => Basketobjecttype::getTypeName(),
+            'type_dropdown_html' => $type_dropdown_html,
+        ]);
 
         return true;
     }

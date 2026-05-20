@@ -32,52 +32,46 @@ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
 
 <form name="form" method="post" action="{{ action }}">
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
-    {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
-    {% if not is_new %}{{ inputs.hidden('id', step_id) }}{% endif %}
+    {% if not is_new %}{{ inputs.hidden('id', item_id) }}{% endif %}
 
     <div class="card mt-2">
         <div class="card-body">
 
             <div class="row mb-3">
                 <label class="col-4 col-form-label">
-                    {{ __('Block', 'metademands') }}
+                    {{ __('Designation', 'metademands') }}
+                    <span class="text-danger">*</span>
                 </label>
                 <div class="col-8">
-                    {{ block_dropdown_html|raw }}
+                    <input type="text" class="form-control" name="name" value="{{ name }}">
                 </div>
             </div>
 
-            {% if supervisor_validation is not null and supervisor_validation == 0 %}
-                <div class="row mb-3">
-                    <label class="col-4 col-form-label">
-                        {{ __('Group') }}
-                    </label>
-                    <div class="col-8">
-                        {{ groups_dropdown_html|raw }}
-                        {{ inputs.hidden('only_by_supervisor', 0) }}
-                    </div>
+            <div class="row mb-3">
+                <label class="col-4 col-form-label">{{ __('Description') }}</label>
+                <div class="col-8">
+                    {% do call('Html::textarea', [{'name': 'description', 'value': description,
+                        'enable_richtext': false, 'cols': 5, 'rows': 5}]) %}
                 </div>
-            {% endif %}
-
-            {% if supervisor_validation is not null and supervisor_validation == 1 %}
-                <div class="row mb-3">
-                    <label class="col-4 col-form-label">
-                        {{ __('Only by supervisor', 'metademands') }}
-                    </label>
-                    <div class="col-8">
-                        {{ supervisor_dropdown_html|raw }}
-                        {{ inputs.hidden('groups_id', 0) }}
-                    </div>
-                </div>
-            {% endif %}
+            </div>
 
             <div class="row mb-3">
                 <label class="col-4 col-form-label">
-                    {{ __('Message displayed before sending to the next supervisor or user', 'metademands') }}
+                    {{ __('Reference', 'metademands') }}
+                    <span class="text-danger">*</span>
                 </label>
                 <div class="col-8">
-                    {% do call('Html::textarea', [{'name': 'message', 'value': message,
-                        'enable_richtext': false, 'cols': 80, 'rows': 3}]) %}
+                    <input type="text" class="form-control" name="reference" value="{{ reference }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-4 col-form-label">
+                    {{ type_name }}
+                    <span class="text-danger">*</span>
+                </label>
+                <div class="col-8">
+                    {{ type_dropdown_html|raw }}
                 </div>
             </div>
 

@@ -872,6 +872,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'customvalues_warning'   => $customvalues_warning,
             'prev_fields_id'         => $this->fields['plugin_metademands_fields_id'] ?? 0,
             'plugin_web_dir'         => PLUGIN_METADEMANDS_WEBDIR,
+            'can_delete'             => $ID > 0 && $this->can($ID, UPDATE),
         ]);
 
         return true;
