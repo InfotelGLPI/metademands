@@ -1138,100 +1138,36 @@ class Dropdownmeta extends CommonDBTM
     {
         global $CFG_GLPI;
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='5'>";
-        $maxrank = 0;
         $custom_values = $params['custom_values'];
         $default_values = $params['default_values'];
+        $target = FieldCustomvalue::getFormURL();
+        $maxrank = 0;
+        $rows = [];
 
-        if (is_array($custom_values)
-            && !empty($custom_values)) {
-            echo "<div id='drag'>";
-            echo "<table class='tab_cadre_fixe'>";
-
+        if (is_array($custom_values) && !empty($custom_values)) {
             foreach ($custom_values as $key => $value) {
-                $target = FieldCustomvalue::getFormURL();
-                echo "<tr class='tab_bg_1'>";
+                ob_start();
+                \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
+                $default_html = ob_get_clean();
 
-                echo "<td class='rowhandler control center'>";
-                echo __('Rank', 'metademands') . " " . $value['rank'];
-                echo "</td>";
-
-                // Formulaire de mise à jour dans sa propre cellule (HTML5 valide)
-                echo "<td class='rowhandler control center' colspan='4'>";
-                echo "<form method='post' action=\"$target\">";
-                echo "<div class='d-flex align-items-center gap-2 flex-wrap'>";
-                if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden(
-                        'fields_id',
-                        ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id']
-                    );
-                    echo Html::hidden(
-                        'plugin_metademands_fields_id',
-                        ['value' => $params["plugin_metademands_fields_id"]]
-                    );
-                    echo Html::hidden('type', ['value' => $params["type"], 'id' => 'type']);
-                }
-                echo Html::hidden('id[' . $key . ']', ['value' => $key]);
-
-                echo "<span id='custom_values$key'>";
-                echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 30]);
-                echo "</span>";
-
-                if (isset($params["display_type"])
-                    && $params["display_type"] == self::BLOCK_DISPLAY) {
-                    echo "<span id='comment_values$key'>";
-                    echo __('Comment') . " ";
-                    echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 30]);
-                    echo "</span>";
-                }
-
-                echo "<span id='icon$key'>";
                 $icon_selector_id = 'icon_' . mt_rand();
+                ob_start();
                 echo Html::select(
                     'icon[' . $key . ']',
                     [$value['icon'] => $value['icon']],
-                    [
-                        'id' => $icon_selector_id,
-                        'selected' => $value['icon'],
-                        'style' => 'width:175px;',
-                    ]
+                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;']
                 );
                 echo Html::script('js/modules/Form/WebIconSelector.js');
-                echo Html::scriptBlock("$(
-                    function() {
+                echo Html::scriptBlock("$(function() {
                     import('/js/modules/Form/WebIconSelector.js').then((m) => {
-                       var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-                       icon_selector.init();
-                       });
-                    }
-                 );");
-                $blank = "_blank_picture[$key]";
-                echo "&nbsp;<input type='checkbox' name='$blank'>&nbsp;" . __('Clear');
-                echo "</span>";
+                        var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+                        icon_selector.init();
+                    });
+                });");
+                echo "&nbsp;<input type='checkbox' name='_blank_picture[{$key}]'>&nbsp;" . __('Clear');
+                $icon_html = ob_get_clean();
 
-                echo "<span id='default_values$key'>";
-                echo _n('Default value', 'Default values', 1, 'metademands') . " ";
-                \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                echo "</span>";
-
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
-                ]);
-                echo "</div>";
-                Html::closeForm();
-                echo "</td>";
-
-                echo "<td class='rowhandler control center'>";
-                echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
-                echo "</div>";
-                echo "</td>";
-
-                // Formulaire de suppression dans sa propre cellule (non imbriqué)
-                echo "<td class='rowhandler control center'>";
+                ob_start();
                 Html::showSimpleForm(
                     $target,
                     'delete',
@@ -1242,122 +1178,91 @@ class Dropdownmeta extends CommonDBTM
                         'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                     ],
                     'ti-circle-x',
-                    "class='btn btn-primary'"
+                    "class='btn btn-sm btn-danger'"
                 );
-                echo "</td>";
+                $delete_form_html = ob_get_clean();
 
-                echo "</tr>";
-
+                $rows[] = [
+                    'id' => $key,
+                    'rank' => $value['rank'],
+                    'name' => $value['name'],
+                    'comment' => $value['comment'] ?? '',
+                    'default_html' => $default_html,
+                    'icon_html' => $icon_html,
+                    'delete_form_html' => $delete_form_html,
+                ];
                 $maxrank = $value['rank'];
             }
-            echo "</table>";
-            echo "</div>";
-            echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
-            echo '</td>';
+        }
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='5' align='left' id='show_custom_fields'>";
-            FieldCustomvalue::initCustomValue(
-                $maxrank,
-                false,
-                true,
-                $params["plugin_metademands_fields_id"]
-            );
-            echo "</td>";
-            echo "</tr>";
+        $item = $params['item'] ?? '';
+        $init_form_html = '';
+        $import_html = '';
+        $specific_dropdown_html = '';
+
+        if (!in_array($item, Field::$field_specificobjects)) {
+            $init_maxrank = $maxrank > 0 ? $maxrank : -1;
+            ob_start();
+            FieldCustomvalue::initCustomValue($init_maxrank, false, true, $params["plugin_metademands_fields_id"], true);
+            $init_form_html = ob_get_clean();
+
+            ob_start();
             FieldCustomvalue::importCustomValue($params);
+            $import_html = ob_get_clean();
         } else {
-            $target = FieldCustomvalue::getFormURL();
-            if (!in_array($params["item"], Field::$field_specificobjects)) {
-                echo "<form method='post' action=\"$target\">";
-                echo "<div class='d-flex align-items-center gap-2 mt-2' id='show_custom_fields'>";
-                if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+            $options = [];
+            if (is_array($default_values) && count($default_values) > 0) {
+                foreach ($default_values as $key => $default_value) {
+                    $options['value'] = $default_value;
                 }
-                FieldCustomvalue::initCustomValue(
-                    -1,
-                    false,
-                    true,
-                    $params["plugin_metademands_fields_id"]
-                );
-                echo "</div>";
-                Html::closeForm();
-                FieldCustomvalue::importCustomValue($params);
-            } elseif ($params['item'] == 'urgency'
-                || $params['item'] == 'impact'
-                || $params['item'] == 'priority') {
-                $default_values = $params['default_values'];
-                if (is_array($default_values) && count($default_values) > 0) {
-                    foreach ($default_values as $key => $default_value) {
-                        $options['value'] = $default_value;
-                    }
-                }
-                echo "<form method='post' action=\"$target\">";
-                if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                    echo Html::hidden('type', ['value' => $params["type"]]);
-                    echo Html::hidden('item', ['value' => $params["item"]]);
-                }
-                echo "<div class='d-flex align-items-center gap-2 mt-2'>";
-                $options['name'] = "default[1]";
-                $options['display_emptychoice'] = true;
-                if ($params['item'] == 'urgency') {
-                    \Ticket::dropdownUrgency($options);
-                } elseif ($params['item'] == 'impact') {
-                    \Ticket::dropdownImpact($options);
-                } elseif ($params['item'] == 'priority') {
-                    \Ticket::dropdownPriority($options);
-                }
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
-                ]);
-                echo "</div>";
-                Html::closeForm();
-            } elseif ($params['item'] == 'mydevices') {
-                $default_values = $params['default_values'];
+            }
+            $options['name'] = "default[1]";
+            $options['display_emptychoice'] = true;
 
-                echo "<form method='post' action=\"$target\">";
-                if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                    echo Html::hidden('type', ['value' => $params["type"]]);
-                    echo Html::hidden('item', ['value' => $params["item"]]);
-                }
-                echo "<div class='d-flex align-items-center gap-2 mt-2'>";
-
+            ob_start();
+            if ($item == 'urgency') {
+                \Ticket::dropdownUrgency($options);
+            } elseif ($item == 'impact') {
+                \Ticket::dropdownImpact($options);
+            } elseif ($item == 'priority') {
+                \Ticket::dropdownPriority($options);
+            } elseif ($item == 'mydevices') {
                 $list = [];
-
                 foreach ($CFG_GLPI['assignable_types'] as $itemtype) {
-                    if (!($item = getItemForItemtype($itemtype))) {
+                    if (!($obj = getItemForItemtype($itemtype))) {
                         continue;
                     }
-                    if ($item->canView()) {
-                        $list[$itemtype] = $item->getTypeName();
+                    if ($obj->canView()) {
+                        $list[$itemtype] = $obj->getTypeName();
                     }
                 }
-
-                \Dropdown::showFromArray(
-                    "default",
-                    $list,
-                    [
-                        'values' => $default_values,
-                        'multiple' => true,
-                    ]
-                );
-
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
+                \Dropdown::showFromArray("default", $list, [
+                    'values' => $default_values,
+                    'multiple' => true,
                 ]);
-                echo "</div>";
-                Html::closeForm();
             }
+            $specific_dropdown_html = ob_get_clean();
         }
-        echo "</td>";
-        echo "</tr>";
+
+        ob_start();
+        echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
+        $js_redips = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display(
+            '@metademands/fields/field_customvalue_list.html.twig',
+            [
+                'rows' => $rows,
+                'form_target' => $target,
+                'fields_id' => $params['plugin_metademands_fields_id'] ?? '',
+                'type' => $params['type'] ?? '',
+                'item' => $item,
+                'show_comment' => isset($params["display_type"]) && $params["display_type"] == self::BLOCK_DISPLAY,
+                'init_form_html' => $init_form_html,
+                'import_html' => $import_html,
+                'specific_dropdown_html' => $specific_dropdown_html,
+                'js_redips' => $js_redips,
+            ]
+        );
     }
 
     public static function showFieldParameters($params): string

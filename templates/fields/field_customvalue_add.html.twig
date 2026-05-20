@@ -1,0 +1,60 @@
+{#
+-------------------------------------------------------------------------
+Metademands plugin for GLPI
+Copyright (C) 2018-2026 by the Metademands Development Team.
+-------------------------------------------------------------------------
+
+LICENSE
+
+This file is part of Metademands.
+
+Metademands is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+Metademands is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------
+@copyright Copyright (C) 2026-2026 by Metademands plugin team.
+@license   GPLv2 https://www.gnu.org/licenses/gpl-2.0.html
+@link      https://github.com/InfotelGLPI/Metademands
+-------------------------------------------------------------------------
+#}
+<form method="post" action="{{ form_target }}">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="rank" value="{{ rank }}">
+    <input type="hidden" name="fields_id" value="{{ fields_id }}">
+    <div class="d-flex align-items-center gap-2 flex-wrap py-1 px-2" style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)">
+        <span class="badge rounded-pill bg-outline-secondary flex-shrink-0" style="margin-right: 15px;">{{ rank }}</span>
+        <input type="text" id="custom_values{{ rank }}"
+               name="custom_values[{{ rank }}]"
+               class="form-control" style="width:200px"
+               placeholder="{{ __('Value', 'metademands') }}">
+        {% if display_comment %}
+        <div class="input-group flex-nowrap" style="width:270px">
+            <span class="input-group-text text-nowrap">{{ __('Comment') }}</span>
+            <input type="text" id="comment_values{{ rank }}"
+                   name="comment_values[{{ rank }}]"
+                   class="form-control">
+        </div>
+        {% endif %}
+        {% if display_default %}
+        <div class="d-flex align-items-center gap-1 flex-shrink-0" id="default_values{{ rank }}">
+            <span class="text-muted small text-nowrap">{{ __('Default value', 'metademands') }}</span>
+            {{ default_html|raw }}
+        </div>
+        {% endif %}
+        {% if display_icon %}
+        <div id="icon{{ rank }}" class="flex-shrink-0">{{ icon_html|raw }}</div>
+        {% endif %}
+        <button type="submit" name="add" value="" class="btn btn-sm btn-primary flex-shrink-0">
+            <i class="ti ti-device-floppy"></i>
+        </button>
+    </div>
+</form>

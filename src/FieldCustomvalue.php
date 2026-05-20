@@ -31,6 +31,7 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBChild;
+use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
@@ -38,7 +39,6 @@ use GlpiPlugin\Metademands\Fields\Dropdownmeta;
 use Html;
 use Migration;
 use Session;
-use CommonGLPI;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -470,7 +470,7 @@ class FieldCustomvalue extends CommonDBChild
      * @param bool $display_comment
      * @param bool $display_default
      */
-    public static function initCustomValue($count, $display_comment = false, $display_default = false, $plugin_metademands_fields_id = 0)
+    public static function initCustomValue($count, $display_comment = false, $display_default = false, $plugin_metademands_fields_id = 0, $display_icon = false)
     {
 
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
@@ -480,8 +480,9 @@ class FieldCustomvalue extends CommonDBChild
         echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => $display_comment]);
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
+        echo Html::hidden('display_icon', ['id' => 'display_icon', 'value' => $display_icon]);
 
-        echo "&nbsp;<i class='ti ti-square-plus btn btn-primary' style='cursor:pointer;'
+        echo "&nbsp;<i class='ti ti-square-plus btn btn-sm btn-success' style='cursor:pointer;'
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
@@ -533,58 +534,48 @@ class FieldCustomvalue extends CommonDBChild
      * @param $display_comment
      * @param $display_default
      */
-    public static function addNewValue($rank, $display_comment, $display_default, $fields_id)
+    public static function addNewValue($rank, $display_comment, $display_default, $fields_id, $display_icon = false)
     {
-
-        $target = self::getFormURL();
-        echo "<form method='post' action=\"$target\">";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'custom_values' . $rank . '\'>';
-        echo __('Rank', 'metademands') . ' ' . $rank . ' ';
-        $name = "custom_values[$rank]";
-        echo Html::input($name, ['size' => 50]);
-        echo "</span>";
-        echo "</td>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'comment_values' . $rank . '\'>';
-        if ($display_comment) {
-            echo " " . __('Comment') . " ";
-            $name = "comment_values[$rank]";
-            echo Html::input($name, ['size' => 30]);
-        }
-        echo "</span>";
-        echo "</td>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'default_values' . $rank . '\'>';
+        $default_html = '';
         if ($display_default) {
-            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-            $name = "default_values[$rank]";
-            $value = 0;
-            \Dropdown::showYesNo($name, $value);
+            ob_start();
+            \Dropdown::showYesNo("default_values[$rank]", 0);
+            $default_html = ob_get_clean();
         }
 
-        echo "</span>";
-        echo "</td>";
-        echo "</tr>";
+        $icon_html = '';
+        if ($display_icon) {
+            $icon_selector_id = 'icon_' . mt_rand();
+            ob_start();
+            echo Html::select(
+                "icon[$rank]",
+                ['' => ''],
+                ['id' => $icon_selector_id, 'selected' => '', 'style' => 'width:175px;']
+            );
+            echo Html::script('js/modules/Form/WebIconSelector.js');
+            echo Html::scriptBlock("$(function() {
+                import('/js/modules/Form/WebIconSelector.js').then((m) => {
+                    var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+                    icon_selector.init();
+                });
+            });");
+            echo "&nbsp;<input type='checkbox' name='_blank_picture[{$rank}]'>&nbsp;" . __('Clear');
+            $icon_html = ob_get_clean();
+        }
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo Html::submit("", ['name'  => 'add',
-            'class' => 'btn btn-primary',
-            'icon'  => 'ti ti-device-floppy']);
-
-        echo Html::hidden('rank', ['value' => $rank]);
-        echo Html::hidden('fields_id', ['value' => $fields_id]);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "</table>";
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display(
+            '@metademands/fields/field_customvalue_add.html.twig',
+            [
+                'form_target'     => self::getFormURL(),
+                'rank'            => $rank,
+                'fields_id'       => $fields_id,
+                'display_comment' => (bool) $display_comment,
+                'display_default' => (bool) $display_default,
+                'default_html'    => $default_html,
+                'display_icon'    => (bool) $display_icon,
+                'icon_html'       => $icon_html,
+            ]
+        );
     }
 
 

@@ -38,6 +38,7 @@
 
             var display_comment = $('#display_comment').val();
             var display_default = $('#display_default').val();
+            var display_icon = $('#display_icon').val();
             $.ajax({
                 url: object.params.root_doc + '/ajax/addnewvalue.php',
                 type: "POST",
@@ -46,6 +47,7 @@
                     'action': 'add',
                     'display_comment': display_comment,
                     'display_default': display_default,
+                    'display_icon': display_icon,
                     'field_id': field_id,
                     'count': $('#count_custom_values').val()
                 },

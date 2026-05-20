@@ -9,6 +9,7 @@ var plugin_metademands_orderredipsInit;   // function sets dropMode parameter
 plugin_metademands_redipsInit = function () {
     // reference to the REDIPS.drag lib
     var rd = REDIPS.drag;
+    rd.style.borderEnabled = '';
     // initialization
     rd.init();
 

@@ -52,7 +52,8 @@ switch ($_POST['action']) {
                     $_POST['count'],
                     $_POST['display_comment'],
                     $_POST['display_default'],
-                    $_POST['field_id']
+                    $_POST['field_id'],
+                    in_array($type, ['checkbox', 'radio', 'dropdown_meta'])
                 );
             } else {
                 Freetablefield::addNewValue(
