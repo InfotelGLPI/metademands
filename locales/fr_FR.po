@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20 10:25+0000\n"
+"POT-Creation-Date: 2026-05-20 10:31+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -112,11 +112,6 @@ msgstr "Ajouter un champ"
 msgid "Add a group"
 msgstr "Ajouter un groupe"
 
-#: templates/item_translations.html.twig:73
-#: templates/item_translations.html.twig:124
-msgid "Add a language"
-msgstr "Ajouter une langue"
-
 #: src/Field.php:918 src/Field.php:963
 msgid "Add a new field"
 msgstr "Ajouter un nouveau champ"
@@ -152,6 +147,11 @@ msgstr "Ajouter et créer un nouveau"
 #: src/Fields/Upload.php:60
 msgid "Add attachment"
 msgstr "Ajouter une pièce jointe"
+
+#: templates/item_translations.html.twig:73
+#: templates/item_translations.html.twig:124
+msgid "Add language"
+msgstr "Ajouter une langue"
 
 #: src/Wizard.php:1637 src/Wizard.php:1816
 msgctxt "button"
