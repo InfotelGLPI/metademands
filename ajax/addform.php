@@ -191,9 +191,18 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                     $block_controlled = count($ctrl_opts) > 0;
                                     foreach ($ctrl_opts as $ctrl_opt) {
                                         $submitted_cv = $post[$ctrl_opt['plugin_metademands_fields_id']] ?? null;
+                                        if (is_object($submitted_cv)) {
+                                            $submitted_cv = null;
+                                        }
                                         $cv = $ctrl_opt['check_value'];
-                                        if ($submitted_cv !== null && (string) $submitted_cv !== '0'
+                                        if ($submitted_cv !== null && is_scalar($submitted_cv) && (string) $submitted_cv !== '0'
                                             && ((string) $submitted_cv === (string) $cv
+                                                || (int) $cv === 0
+                                                || (int) $cv === -1)) {
+                                            $block_shown = true;
+                                            break;
+                                        } elseif (is_array($submitted_cv) && !empty(array_filter($submitted_cv))
+                                            && (in_array((string) $cv, array_map('strval', $submitted_cv))
                                                 || (int) $cv === 0
                                                 || (int) $cv === -1)) {
                                             $block_shown = true;

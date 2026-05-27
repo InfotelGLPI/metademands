@@ -304,8 +304,16 @@ if ($nofreetable == false) {
                                     if ((int) $hb > 0) {
                                         $controlled_block_ranks[(int) $hb] = true;
                                         $submitted = $post[$cond_id] ?? null;
-                                        if ($submitted !== null && (string) $submitted !== '0'
+                                        if (is_object($submitted)) {
+                                            $submitted = null;
+                                        }
+                                        if ($submitted !== null && is_scalar($submitted) && (string) $submitted !== '0'
                                             && ((string) $submitted === (string) $check_val
+                                                || (int) $check_val === 0
+                                                || (int) $check_val === -1)) {
+                                            $shown_block_ranks[(int) $hb] = true;
+                                        } elseif (is_array($submitted) && !empty(array_filter($submitted))
+                                            && (in_array((string) $check_val, array_map('strval', $submitted))
                                                 || (int) $check_val === 0
                                                 || (int) $check_val === -1)) {
                                             $shown_block_ranks[(int) $hb] = true;
