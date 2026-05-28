@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-27 15:45+0000\n"
+"POT-Creation-Date: 2026-05-28 07:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -204,7 +204,7 @@ msgctxt "button"
 msgid "Apply"
 msgstr ""
 
-#: src/FieldCustomvalue.php:514
+#: src/FieldCustomvalue.php:518
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
@@ -740,7 +740,7 @@ msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr ""
 
-#: src/Tools.php:512 src/FieldCustomvalue.php:363
+#: src/Tools.php:512 src/FieldCustomvalue.php:367
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -879,7 +879,7 @@ msgid "Estimated unit price"
 msgstr ""
 
 #: src/Freetablefield.php:291 ajax/viewfieldinfos.php:55
-#: templates/field_customvalue_form.html.twig:45
+#: templates/field_customvalue_form.html.twig:60
 #: templates/field_parameter_form.html.twig:66
 msgid "Example"
 msgstr ""
@@ -936,7 +936,7 @@ msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
 
 #: src/Freetablefield.php:280 ajax/viewfieldinfos.php:44
-#: templates/field_customvalue_form.html.twig:37
+#: templates/field_customvalue_form.html.twig:52
 #: templates/field_parameter_form.html.twig:58
 msgid "Field informations"
 msgstr ""
@@ -1721,7 +1721,7 @@ msgstr ""
 msgid "Please come back later"
 msgstr ""
 
-#: src/FieldCustomvalue.php:515
+#: src/FieldCustomvalue.php:519
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1875,7 +1875,7 @@ msgstr ""
 msgid "Requester name"
 msgstr ""
 
-#: src/FieldCustomvalue.php:503
+#: src/FieldCustomvalue.php:507
 msgid "Reset and import custom values"
 msgstr ""
 
@@ -2449,7 +2449,7 @@ msgstr ""
 #: src/Freetablefield.php:437
 #: templates/fields/field_parameter_color.html.twig:39
 #: templates/metademand.html.twig:119
-#: templates/field_customvalue_form.html.twig:41
+#: templates/field_customvalue_form.html.twig:56
 #: templates/field_parameter_form.html.twig:62
 #: templates/field_form.html.twig:83
 msgid "Type"
@@ -2666,7 +2666,7 @@ msgid ""
 "form fields, making your life easier :)"
 msgstr ""
 
-#: src/FieldCustomvalue.php:639
+#: src/FieldCustomvalue.php:643
 msgid "You can't add a custom value without name"
 msgstr ""
 
