@@ -298,10 +298,14 @@ class FieldCustomvalue extends CommonDBChild
         }
 
         TemplateRenderer::getInstance()->display('@metademands/field_customvalue_form.html.twig', [
-            'field_custom_values_html' => $field_custom_values_html,
-            'is_new'                   => $ID <= 0,
-            'field_type_name'          => $ID > 0 ? Field::getFieldTypesName($params['type']) : '',
-            'field_example_html'       => $field_example_html,
+            'field_custom_values_html'      => $field_custom_values_html,
+            'is_new'                        => $ID <= 0,
+            'field_type_name'               => $ID > 0 ? Field::getFieldTypesName($params['type']) : '',
+            'field_example_html'            => $field_example_html,
+            'form_target'                   => self::getFormURL(),
+            'fields_type'                   => $params['type'] ?? '',
+            'fields_item'                   => $params['item'] ?? '',
+            'plugin_metademands_fields_id'  => $metademand_fields->getID(),
         ]);
 
         return true;

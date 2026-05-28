@@ -25,11 +25,26 @@
  --------------------------------------------------------------------------
  #}
 
+{% set custom_types = ['yesno', 'link', 'number', 'range', 'basket'] %}
+{% if fields_type in custom_types %}
+<form method="post" action="{{ form_target }}">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="type" value="{{ fields_type }}">
+    <input type="hidden" name="item" value="{{ fields_item }}">
+    <input type="hidden" name="plugin_metademands_fields_id" value="{{ plugin_metademands_fields_id }}">
+    <div class="card mt-2">
+        <div class="card-body">
+            {{ field_custom_values_html|raw }}
+        </div>
+    </div>
+</form>
+{% else %}
 <div class="card mt-2">
     <div class="card-body">
         {{ field_custom_values_html|raw }}
     </div>
 </div>
+{% endif %}
 
 {% if not is_new %}
     <div class="card mt-2">

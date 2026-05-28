@@ -4,6 +4,7 @@
          <file>tests/MetademandTest.php</file>
          <file>tests/StepTest.php</file>
          <file>tests/AddObjectsTest.php</file>
+         <file>tests/FieldCustomvalueTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>
