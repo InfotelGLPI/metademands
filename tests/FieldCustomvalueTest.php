@@ -116,7 +116,7 @@ class FieldCustomvalueTest extends DbTestCase
 
         $meta  = $this->createMetademand();
         $field = $this->createField($meta->getID(), 'number');
-        $this->createFieldParameter($field->getID(), [0, 100, 5, 1]);
+        $this->createFieldParameter($field->getID(), ['0', '100', '5', '1']);
 
         $field->getFromDB($field->getID());
         $params = Field::getAllParamsFromField($field);
@@ -139,7 +139,7 @@ class FieldCustomvalueTest extends DbTestCase
 
         $meta  = $this->createMetademand();
         $field = $this->createField($meta->getID(), 'range');
-        $this->createFieldParameter($field->getID(), [10, 50, 2, 0]);
+        $this->createFieldParameter($field->getID(), ['10', '50', '2', '0']);
 
         $field->getFromDB($field->getID());
         $params = Field::getAllParamsFromField($field);
@@ -181,7 +181,7 @@ class FieldCustomvalueTest extends DbTestCase
 
         $meta  = $this->createMetademand();
         $field = $this->createField($meta->getID(), 'basket');
-        $this->createFieldParameter($field->getID(), [1, 0]);
+        $this->createFieldParameter($field->getID(), ['1', '0']);
 
         $field->getFromDB($field->getID());
         $params = Field::getAllParamsFromField($field);
@@ -201,7 +201,7 @@ class FieldCustomvalueTest extends DbTestCase
         $this->login('glpi', 'glpi');
 
         $meta  = $this->createMetademand();
-        $field = $this->createField($meta->getID(), 'checkbox');
+        $field = $this->createField($meta->getID(), 'checkbox', 'checkbox');
 
         $this->createItem(FieldCustomvalue::class, [
             'plugin_metademands_fields_id' => $field->getID(),
@@ -235,7 +235,7 @@ class FieldCustomvalueTest extends DbTestCase
         $this->login('glpi', 'glpi');
 
         $meta  = $this->createMetademand();
-        $field = $this->createField($meta->getID(), 'radio');
+        $field = $this->createField($meta->getID(), 'radio', 'radio');
 
         $this->createItem(FieldCustomvalue::class, [
             'plugin_metademands_fields_id' => $field->getID(),
@@ -312,7 +312,7 @@ class FieldCustomvalueTest extends DbTestCase
         $this->login('glpi', 'glpi');
 
         $meta  = $this->createMetademand();
-        $field = $this->createField($meta->getID(), 'checkbox');
+        $field = $this->createField($meta->getID(), 'checkbox', 'checkbox');
 
         $this->createItem(FieldCustomvalue::class, [
             'plugin_metademands_fields_id' => $field->getID(),
