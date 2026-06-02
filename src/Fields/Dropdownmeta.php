@@ -361,6 +361,7 @@ class Dropdownmeta extends CommonDBTM
                                 'is_mandatory' => $data['is_mandatory'] ?? 0,
                                 'users_id' => Session::getLoginUserID(),
                                 'limit' => $default_values,
+                                'required' => $data['is_mandatory'] ?? 0,
                             ];
                             $p['selected_itemtype'] = "";
                             $p['selected_items_id'] = 0;
@@ -411,6 +412,7 @@ class Dropdownmeta extends CommonDBTM
                                 'rand' => $rand,
                                 'name' => $_POST["field"],
                                 'value' => $data['value'] ?? 0,
+                                'required' => $data['is_mandatory'] ?? 0,
                             ];
                             $field .= Field::dropdownMyDevices(
                                 Session::getLoginUserID(),
