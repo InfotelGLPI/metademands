@@ -5219,14 +5219,14 @@ JAVASCRIPT
                 case 'title':
                 case 'title-block':
 
-                    $use_tilte_block = true;
+                $use_title_block = true;
                     $config_data = PluginMetademandsConfig::getInstance();
                     $conf_use_title_block = $config_data['use_title_block'];
                     if ($conf_use_title_block) {
-                        $use_tilte_block = self::checkEmptyBlock($parent_fields, $field['rank']);
+                        $use_title_block = self::checkEmptyBlock($parent_fields, $field['rank']);
                     }
 
-                    if ($use_tilte_block) {
+                    if ($use_title_block) {
 
                         $class::displayFieldItems(
                             $result,
