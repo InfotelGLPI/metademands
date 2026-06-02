@@ -9253,4 +9253,31 @@ HTML;
             }
         }
     }
+
+    public static function cronMetademandsGlobalStatus($task = null)
+    {
+        global $DB;
+
+        $cron_status = 0;
+        $nb = 0;
+        $ticket_metademand = new PluginMetademandsTicket_Metademand();
+        if ($notclosedmetademands = $ticket_metademand->find(['NOT' => ['status' => $ticket_metademand::CLOSED]])) {
+            foreach ($notclosedmetademands as $notclosedmetademand) {
+                $ticket = new Ticket();
+                if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
+                    if ($ticket->fields['status'] != CommonITILObject::CLOSED) {
+                        self::changeMetademandGlobalStatus($ticket);
+                        $cron_status = 1;
+                        $nb++;
+                        $task->setVolume($nb);
+                        if ($nb) {
+                            $task->log(__('Metademands statuses updated', 'metademands'));
+                        }
+                    }
+                }
+            }
+        }
+
+        return $cron_status;
+    }
 }

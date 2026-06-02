@@ -739,6 +739,9 @@ function plugin_metademands_install() {
                            VALUES ('PluginMetademandsDraft','$num','$rank','0');");
         }
     }
+
+    CronTask::Register('PluginMetademandsMetademand', 'metademandsGlobalStatus', DAY_TIMESTAMP, ['state' => 0]);
+
     PluginMetademandsProfile::initProfile();
     PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
 
@@ -759,6 +762,9 @@ function plugin_metademands_install() {
  */
 function plugin_metademands_uninstall() {
     global $DB;
+
+    CronTask::unregister('PluginMetademandsMetademand');
+
 
     $options = ['itemtype' => 'PluginMetademandsInterticketfollowup',
                 'event'    => 'add_interticketfollowup',
