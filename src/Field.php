@@ -911,7 +911,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             // Modals Bootstrap 5
             echo "
             <div class='modal fade' id='$modal_new_id' tabindex='-1'>
-                <div class='modal-dialog modal-lg'>
+                <div class='modal-dialog modal-xl'>
                     <div class='modal-content'>
                         <div class='modal-header'>
                             <h5 class='modal-title'>" . __('Add a new field', 'metademands') . "</h5>
@@ -4425,7 +4425,7 @@ border-style: none !important; border-color: initial !important;border-image: in
             $return .= \Dropdown::showFromArray(
                 $params['name'],
                 $my_devices,
-                ['rand' => $rand, 'display' => false, 'value' => $params['value']]
+                ['rand' => $rand, 'display' => false, 'value' => $params['value'], 'required' => $params['required']]
             );
             $return .= "</span>";
 
