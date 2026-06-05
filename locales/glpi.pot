@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-02 09:58+0000\n"
+"POT-Creation-Date: 2026-06-05 07:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -277,7 +277,7 @@ msgid "Block %s"
 msgstr ""
 
 #: src/Fields/Radio.php:355 src/Fields/Dropdown.php:514
-#: src/Fields/Dropdownmeta.php:1331 src/Fields/Checkbox.php:342
+#: src/Fields/Dropdownmeta.php:1333 src/Fields/Checkbox.php:342
 msgid "Block display"
 msgstr ""
 
@@ -370,8 +370,8 @@ msgstr ""
 
 #: src/Fields/Radio.php:354 src/Fields/Dropdownmultiple.php:651
 #: src/Fields/Dropdown.php:498 src/Fields/Dropdown.php:513
-#: src/Fields/Yesno.php:198 src/Fields/Dropdownmeta.php:1283
-#: src/Fields/Dropdownmeta.php:1330 src/Fields/Checkbox.php:341
+#: src/Fields/Yesno.php:198 src/Fields/Dropdownmeta.php:1285
+#: src/Fields/Dropdownmeta.php:1332 src/Fields/Checkbox.php:341
 msgid "Classic display"
 msgstr ""
 
@@ -680,7 +680,7 @@ msgstr ""
 msgid "Designation"
 msgstr ""
 
-#: src/Field.php:3914 src/Fields/Dropdownmeta.php:962
+#: src/Field.php:3914 src/Fields/Dropdownmeta.php:964
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -1081,7 +1081,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1284
+#: src/Fields/Dropdownmeta.php:1286
 msgid "Icon display"
 msgstr ""
 
@@ -1469,7 +1469,7 @@ msgstr ""
 #: src/Fields/Dropdownmultiple.php:1163 src/Fields/Dropdownmultiple.php:1336
 #: src/Fields/Dropdown.php:841 src/Fields/Textarea.php:307
 #: src/Fields/Email.php:334 src/Fields/Yesno.php:455 src/Fields/Url.php:301
-#: src/Fields/Dropdownmeta.php:1726 src/Fields/Checkbox.php:625
+#: src/Fields/Dropdownmeta.php:1728 src/Fields/Checkbox.php:625
 msgid "Next"
 msgstr ""
 
@@ -1510,7 +1510,7 @@ msgstr ""
 msgid "No empty field options founded"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:858
+#: src/Fields/Dropdownmeta.php:860
 msgid "No equipment founded"
 msgstr ""
 
@@ -1561,8 +1561,8 @@ msgstr ""
 #: src/Fields/Ldapdropdown.php:330 src/Fields/Ldapdropdown.php:366
 #: src/Fields/Radio.php:407 src/Fields/Radio.php:420 src/Fields/Basket.php:566
 #: src/Fields/Dropdownmultiple.php:873 src/Fields/Dropdown.php:619
-#: src/Fields/Dropdown.php:655 src/Fields/Dropdownmeta.php:1478
-#: src/Fields/Dropdownmeta.php:1488 src/Fields/Dropdownmeta.php:1509
+#: src/Fields/Dropdown.php:655 src/Fields/Dropdownmeta.php:1480
+#: src/Fields/Dropdownmeta.php:1490 src/Fields/Dropdownmeta.php:1511
 #: src/Fields/Checkbox.php:392 src/Fields/Checkbox.php:405
 msgid "Not null value"
 msgstr ""
@@ -1932,7 +1932,7 @@ msgstr ""
 #: src/Fields/Dropdownmultiple.php:1161 src/Fields/Dropdownmultiple.php:1334
 #: src/Fields/Dropdown.php:840 src/Fields/Textarea.php:305
 #: src/Fields/Email.php:332 src/Fields/Yesno.php:453 src/Fields/Url.php:299
-#: src/Fields/Dropdownmeta.php:1724 src/Fields/Checkbox.php:623
+#: src/Fields/Dropdownmeta.php:1726 src/Fields/Checkbox.php:623
 #: src/Basketline.php:192
 msgctxt "button"
 msgid "Save & Post"
@@ -2593,7 +2593,7 @@ msgstr ""
 #: src/Fields/Ldapdropdown.php:280 src/Fields/Radio.php:371
 #: src/Fields/Basket.php:565 src/Fields/Dropdownmultiple.php:713
 #: src/Fields/Dropdown.php:540 src/Fields/Yesno.php:222
-#: src/Fields/Dropdownmeta.php:1360 src/Fields/Checkbox.php:358
+#: src/Fields/Dropdownmeta.php:1362 src/Fields/Checkbox.php:358
 #: templates/condition_form.html.twig:48
 #: templates/condition_for_metademand.html.twig:77
 msgid "Value to check"
