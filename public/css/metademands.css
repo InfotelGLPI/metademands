@@ -748,18 +748,18 @@ select.chained-select {
     vertical-align: middle;
     width: 70px;
     height: 70px;
+}
 
-    i {
-        font-size: 3em;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+.md-cat-icon-stack i {
+    font-size: 3em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
-        &.sm-size {
-            font-size: 1em;
-        }
-    }
+.md-cat-icon-stack i.sm-size {
+    font-size: 1em;
 }
 
 .md-fav-icon-stack {
