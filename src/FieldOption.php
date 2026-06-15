@@ -506,7 +506,7 @@ class FieldOption extends CommonDBChild
                     echo "<th>" . __('Type of value to check', 'metademands') . "</th>";
                     echo "<th>" . __('Value to check', 'metademands') . "</th>";
                     echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
-                    echo "<th>" . __('Assign ticket to this technicians group') . "</th>";
+                    echo "<th>" . __('Assign the ticket to these technicians groups') . "</th>";
                     echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
                     echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
                     echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
@@ -1324,9 +1324,9 @@ class FieldOption extends CommonDBChild
 
         if ($assignGroupTech) {
             echo "<tr><td colspan='2'>";
-            echo __('Assign ticket to this technicians group', 'metademands');
+            echo __('Assign the ticket to these technicians groups', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
-                    'If the value selected equals the value to check, tech group will be assign automatically',
+                    'If the selected value matches the value to be checked, a technical group will be automatically assigned',
                     'metademands'
                 ) . '</span>';
             echo "<div class='alert alert-danger'>" .
