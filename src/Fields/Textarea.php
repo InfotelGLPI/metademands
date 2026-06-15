@@ -165,7 +165,9 @@ class Textarea extends CommonDBTM
                      $('select[name=\"hidden_block\"]').val(),
                      JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                      $('select[name=\"users_id_validate\"]').val(),
-                     $('select[name=\"checkbox_id\"]').val(),0
+                     $('select[name=\"checkbox_id\"]').val(),
+                     0,
+                     0
               ];
 
                  reloadviewOption(formOption);

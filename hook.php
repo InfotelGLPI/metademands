@@ -224,6 +224,11 @@ function plugin_metademands_install()
         if (!$DB->tableExists("glpi_plugin_metademands_pluginfields", false)) {
             Pluginfields::install($migration);
         }
+
+        //version 3.4.5
+        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "assign_tech_group")) {
+            FieldOption::install($migration);
+        }
     }
 
     //DisplayPreferences Migration

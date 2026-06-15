@@ -613,6 +613,7 @@ class Basket extends CommonDBTM
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val(),
+                         0,
                          0
                   ];
 
