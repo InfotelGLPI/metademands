@@ -1,7 +1,8 @@
-# Plugin Metademands for GLPI
+## Metademands plugin for GLPI
 
-This plugin is on Transifex - Help us to translate :
-https://www.transifex.com/infotelGLPI/GLPI_metademands/
+[![License](https://img.shields.io/badge/License-GNU%20v2-blue.svg?style=flat-square)](https://github.com/InfotelGLPI/metademands/blob/master/LICENSE)
+[![Web](https://img.shields.io/badge/Web-Infotel-blue.svg?style=flat-square)](https://blogglpi.infotel.com)
+[![Translate](https://img.shields.io/badge/Translate-Transifex-cyan)](https://explore.transifex.com/infotelGLPI/GLPI_metademands/)
 
 ![Plugin metademands](https://raw.githubusercontent.com/InfotelGLPI/metademands/master/public/screenshots/Bloc2.png "Plugin metademands")
 
