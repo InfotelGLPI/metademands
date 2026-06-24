@@ -380,6 +380,12 @@ class Metademand_Resource extends CommonDBTM
         $content .= "<td>" . __("Resource manager", "resources") . "</td>";
         $content .= "<td>" . getUserName($resource->fields['users_id'], 0, true) . "</td>";
         $content .= "</tr>";
+        if (!empty($resource->fields['comment'])) {
+            $content .= "<tr>";
+            $content .= "<td>" . __("Description") . "</td>";
+            $content .= "<td>" . $resource->fields['comment'] . "</td>";
+            $content .= "</tr>";
+        }
 
         return $content;
 
