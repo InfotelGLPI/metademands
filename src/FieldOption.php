@@ -199,6 +199,12 @@ class FieldOption extends CommonDBChild
             $migration->addField($table, "check_value_regex", " TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
+
+        //version 3.5.14
+        if (!$DB->fieldExists($table, "assign_tech_group")) {
+            $migration->addField($table, "assign_tech_group", " varchar(255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table);
+        }
     }
 
     public static function uninstall()
@@ -455,6 +461,7 @@ class FieldOption extends CommonDBChild
                         users_id_validate : value[7],
                         checkbox_id : value[8],
                         check_type_value : value[9],
+                        assign_tech_group : value[10],
                         }
                     );\n";
                 echo "}\n";
@@ -499,6 +506,7 @@ class FieldOption extends CommonDBChild
                     echo "<th>" . __('Type of value to check', 'metademands') . "</th>";
                     echo "<th>" . __('Value to check', 'metademands') . "</th>";
                     echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
+                    echo "<th>" . __('Assign the ticket to these technicians groups') . "</th>";
                     echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
                     echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
                     echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
@@ -599,6 +607,23 @@ class FieldOption extends CommonDBChild
                                 }
                             } else {
                                 echo $tasks->getName();
+                            }
+                        }
+                        echo "</td>";
+
+                        echo "<td $onhover>";
+                        $assigntechgroups = json_decode($data["assign_tech_group"], true);
+                        $i = 0;
+                        if (is_array($assigntechgroups)) {
+                            $nb = count($assigntechgroups);
+                            if ($nb > 0) {
+                                foreach ($assigntechgroups as $assigntechgroup) {
+                                    $i++;
+                                    echo Dropdown::getDropdownName('glpi_groups',$assigntechgroup);
+                                    if ($i < $nb) {
+                                        echo ", ";
+                                    }
+                                }
                             }
                         }
                         echo "</td>";
@@ -781,6 +806,12 @@ class FieldOption extends CommonDBChild
             $params['childs_blocks'] = [];
         }
 
+        if ($this->fields['assign_tech_group'] != null) {
+            $params['assign_tech_group'] = json_decode($this->fields['assign_tech_group'], true);
+        } else {
+            $params['assign_tech_group'] = [];
+        }
+
         //Hook to get values saves from plugin
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -831,6 +862,9 @@ class FieldOption extends CommonDBChild
                 }
                 if (isset($_POST['check_value_regex']) && empty($params['check_value_regex'])) {
                     $params['check_value_regex'] = $_POST['check_value_regex'];
+                }
+                if (isset($_POST['assign_tech_group']) && empty($params['assign_tech_group'])) {
+                    $params['assign_tech_group'] = json_decode($_POST['assign_tech_group']);
                 }
             }
             if ($params['check_type_value'] == 2) {
@@ -1167,7 +1201,8 @@ class FieldOption extends CommonDBChild
                      JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                      $('select[name=\"users_id_validate\"]').val(),
                      $('select[name=\"checkbox_id\"]').val(),
-                     $('select[name=\"check_type_value\"]').val()
+                     $('select[name=\"check_type_value\"]').val(),
+                     JSON.stringify($('select[name=\"assign_tech_group\"]').val())
               ];
                  reloadviewOption(formOption);
              });";
@@ -1201,6 +1236,7 @@ class FieldOption extends CommonDBChild
         $task = 1;
         $field = 1;
         $hidden = 1;
+        $assignGroupTech = 1;
 
         if ($params['type'] == "textarea"
         && isset($params['use_richtext'])
@@ -1209,6 +1245,13 @@ class FieldOption extends CommonDBChild
             $field = 0;
             $hidden = 0;
         }
+
+        if ($params['check_type_value'] == 2 ||
+            !$params['type'] == "radio" && !$params['type'] == "checkbox" && !$params['dropdown_multiple'] &&
+            !$params['dropdown'] && !$params['dropdown_meta'] && !$params['dropdown_object']) {
+            $assignGroupTech = 0;
+        }
+
 
         $field_id = $params['plugin_metademands_fields_id'];
         $metademands_id = $params["plugin_metademands_metademands_id"];
@@ -1276,6 +1319,33 @@ class FieldOption extends CommonDBChild
             }
 
             Dropdown::showFromArray('fields_link', $data, ['value' => $params['fields_link']]);
+            echo "</td></tr>";
+        }
+
+        if ($assignGroupTech) {
+            echo "<tr><td colspan='2'>";
+            echo __('Assign the ticket to these technicians groups', 'metademands');
+            echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
+                    'If the selected value matches the value to be checked, a technical group will be automatically assigned',
+                    'metademands'
+                ) . '</span>';
+            echo "<div class='alert alert-danger'>" .
+                __('With this option, some assignment rules will not be respected.','metademands') ;
+            if ((new Plugin())->isActivated('escalade')) {
+                echo '</br>' . __('The rules of the escalade plugin will not be taken into account.','metademands');
+            }
+            echo "</div>";
+
+            echo "</td>";
+            echo "<td>";
+
+            $group = new \Group();
+            $groupfind = $group->find();
+            $groupdata = [];
+            foreach ($groupfind as $id => $value) {
+                $groupdata[$id] = $value['name'];
+            }
+            Dropdown::showFromArray('assign_tech_group', $groupdata, ['multiple' => true, 'values' => $params['assign_tech_group']]);
             echo "</td></tr>";
         }
         if ($hidden) {

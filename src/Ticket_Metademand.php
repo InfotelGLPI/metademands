@@ -156,6 +156,62 @@ class Ticket_Metademand extends CommonDBTM
         $DB->dropTable(self::getTable(), true);
     }
 
+    public static function post_add_ticket($datas) {
+        global $DB;
+        $fields = new Field();
+        $fieldOption = new FieldOption();
+        $groupticket = new \Group_Ticket();
+        $ticketuser = new \Ticket_User();
+
+        $assigntech = [];
+
+        $reelassigntech = [];
+
+        foreach ($fields->find(['plugin_metademands_metademands_id' => $datas->input['plugin_metademands_metademands_id']]) as $idField => $valueField) {
+            foreach ($fieldOption->find(['plugin_metademands_fields_id' => $idField]) as $idOption => $valueOption) {
+                if ($valueOption['assign_tech_group'] != '[]') {
+                    $assigntech[$idField][$valueOption['check_value']][] = json_decode($valueOption['assign_tech_group']);
+                }
+            }
+        }
+
+        foreach ($_SESSION['plugin_metademands'][$datas->input['plugin_metademands_metademands_id']]['fields'] as $fieldsid => $value) {
+            if (is_array($value)) {
+                foreach ($value as $valueKey => $valueValue) {
+                    if (isset($assigntech[$fieldsid]) && isset($assigntech[$fieldsid][$valueValue])) {
+                        foreach ($assigntech[$fieldsid][$valueValue] as $valuetechs) {
+                            foreach ($valuetechs as $valuetech) {
+                                $reelassigntech[$valuetech] = true;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (isset($assigntech[$fieldsid]) && isset($assigntech[$fieldsid][$value])) {
+                    foreach ($assigntech[$fieldsid][$value] as $valuetechs) {
+                        foreach ($valuetechs as $valuetech) {
+                            $reelassigntech[$valuetech] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty($reelassigntech)) {
+            foreach ($ticketuser->find(['tickets_id' => $datas->input['parent_tickets_id'], 'type' => \Ticket_User::ASSIGN]) as $id => $value) {
+                $ticketuser->delete(['id' => $id]);
+            }
+
+            foreach ($groupticket->find(['tickets_id' => $datas->input['parent_tickets_id'], 'type' => \Group_Ticket::ASSIGN]) as $id => $value) {
+                $groupticket->delete(['id' => $id]);
+            }
+
+            foreach ($reelassigntech as $id => $value) {
+                $DB->insert($groupticket->getTable(), ['tickets_id' => $datas->input['parent_tickets_id'], 'type' => \Group_Ticket::ASSIGN, 'groups_id' => $id]);
+            }
+        }
+    }
+
     /**
      * Display tab for each users
      *

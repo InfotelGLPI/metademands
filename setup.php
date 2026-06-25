@@ -52,6 +52,7 @@ use GlpiPlugin\Metademands\Profile;
 use GlpiPlugin\Metademands\Servicecatalog;
 use GlpiPlugin\Metademands\Stepform;
 use GlpiPlugin\Metademands\Ticket;
+use GlpiPlugin\Metademands\Ticket_Metademand;
 use GlpiPlugin\Metademands\TicketField;
 use GlpiPlugin\Resources\ContractType;
 
@@ -184,6 +185,8 @@ function plugin_init_metademands()
         $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands'] = [
             'Ticket'
                 => [Ticket::class, 'pre_add_ticket'],
+            Ticket_Metademand::class
+            =>[Ticket_Metademand::class, 'post_add_ticket'],
         ];
 
         $PLUGIN_HOOKS[Hooks::ITEM_TRANSFER]['metademands'] = 'plugin_item_transfer_metademands';

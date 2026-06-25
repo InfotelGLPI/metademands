@@ -228,6 +228,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `parent_field_id`              int unsigned NOT NULL DEFAULT '0',
     `check_type_value`             int unsigned NOT NULL DEFAULT '1',
     `check_value_regex`            TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `assign_tech_group`            varchar(255) NOT NULL DEFAULT '[]',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)

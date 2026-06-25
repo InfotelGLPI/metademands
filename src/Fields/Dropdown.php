@@ -557,7 +557,9 @@ class Dropdown extends CommonDBTM
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val(),
-                         $('select[name=\"check_type_value\"]').val()
+                         $('select[name=\"check_type_value\"]').val(),
+                         JSON.stringify($('select[name=\"assign_tech_group[]\"]').val())
+                         
                   ];
 
                      reloadviewOption(formOption);
@@ -578,7 +580,8 @@ class Dropdown extends CommonDBTM
                          JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
                          $('select[name=\"users_id_validate\"]').val(),
                          $('select[name=\"checkbox_id\"]').val(),
-                         $('select[name=\"check_type_value\"]').val()
+                         $('select[name=\"check_type_value\"]').val(),
+                         JSON.stringify($('select[name=\"assign_tech_group[]\"]').val())
                   ];
 
                      reloadviewOption(formOption);

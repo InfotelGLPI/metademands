@@ -51,6 +51,12 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
         } else {
             $_POST["childs_blocks"] = json_encode([]);
         }
+
+        if (isset($_POST["assign_tech_group"]) && $_POST['check_type_value'] != 2) {
+            $_POST["assign_tech_group"] = json_encode($_POST["assign_tech_group"]);
+        } else {
+            $_POST["assign_tech_group"] = json_encode([]);
+        }
 //   // Check update rights for fields
         $field->check(-1, CREATE, $_POST);
         $field->add($_POST);
@@ -62,6 +68,12 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
             $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
         } else {
             $_POST["childs_blocks"] = json_encode([]);
+        }
+
+        if (isset($_POST["assign_tech_group"]) && $_POST['check_type_value'] != 2) {
+            $_POST["assign_tech_group"] = json_encode($_POST["assign_tech_group"]);
+        } else {
+            $_POST["assign_tech_group"] = json_encode([]);
         }
 
         //    Check update rights for fields
