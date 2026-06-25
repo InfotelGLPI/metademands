@@ -76,6 +76,37 @@ class PluginMetademandsMetademand extends CommonDBTM
         self::$SON_PREFIX = $config['son_ticket_tag'] . ' ';
     }
 
+    /*
+     * Create a verification, to know if we need to put the title of the block
+     *
+     */
+
+    private static function checkEmptyBlock(array $parent_fields, int $rank): bool
+    {
+        $data_fields = $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'];
+        $type_to_check = ['dropdown_object', 'dropdown_ldap', 'dropdown', 'dropdown_multiple',
+            'checkbox', 'dropdown_meta', 'radio', 'textarea', 'text', 'tel', 'email'];
+
+        $write_title = false;
+        foreach ($parent_fields as $parent_field) {
+            if ($parent_field['rank'] == $rank) {
+                if (in_array($parent_field['type'], $type_to_check)) {
+                    $id = $parent_field['id'];
+                    if (isset($data_fields[$id])) {
+                        if (is_string(($data_fields[$id])) && $data_fields[$id] != '') {
+                            $write_title = true;
+                        } elseif (is_array(($data_fields[$id])) && count($data_fields[$id]) > 0) {
+                            $write_title = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $write_title;
+
+    }
+
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()
@@ -5184,20 +5215,30 @@ JAVASCRIPT
             || in_array($field['type'], $types)) {
 
             $class = PluginMetademandsField::getClassFromType($field['type']);
-
             switch ($field['type']) {
                 case 'title':
                 case 'title-block':
-                    $class::displayFieldItems(
-                        $result,
-                        $formatAsTable,
-                        $style_title,
-                        $label,
-                        $field,
-                        $return_value,
-                        $lang,
-                        $is_order
-                    );
+
+                $use_title_block = true;
+                    $config_data = PluginMetademandsConfig::getInstance();
+                    $conf_use_title_block = $config_data['use_title_block'];
+                    if ($conf_use_title_block) {
+                        $use_title_block = self::checkEmptyBlock($parent_fields, $field['rank']);
+                    }
+
+                    if ($use_title_block) {
+
+                        $class::displayFieldItems(
+                            $result,
+                            $formatAsTable,
+                            $style_title,
+                            $label,
+                            $field,
+                            $return_value,
+                            $lang,
+                            $is_order
+                        );
+                    }
                     break;
                 case 'dropdown_object':
                 case 'dropdown_ldap':
@@ -9211,5 +9252,32 @@ HTML;
                 }
             }
         }
+    }
+
+    public static function cronMetademandsGlobalStatus($task = null)
+    {
+        global $DB;
+
+        $cron_status = 0;
+        $nb = 0;
+        $ticket_metademand = new PluginMetademandsTicket_Metademand();
+        if ($notclosedmetademands = $ticket_metademand->find(['NOT' => ['status' => $ticket_metademand::CLOSED]])) {
+            foreach ($notclosedmetademands as $notclosedmetademand) {
+                $ticket = new Ticket();
+                if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
+                    if ($ticket->fields['status'] != CommonITILObject::CLOSED) {
+                        self::changeMetademandGlobalStatus($ticket);
+                        $cron_status = 1;
+                        $nb++;
+                        $task->setVolume($nb);
+                        if ($nb) {
+                            $task->log(__('Metademands statuses updated', 'metademands'));
+                        }
+                    }
+                }
+            }
+        }
+
+        return $cron_status;
     }
 }
