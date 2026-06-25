@@ -557,8 +557,8 @@ class Export extends CommonDBTM
                 }
 
                 //            if($key == 'name' || $key == 'completename' || $key == 'comments' || $key == 'label2')
-                if ($value != null) {
-                    $value = htmlspecialchars($value, ENT_NOQUOTES);
+                if ($value !== null) {
+                    $value = htmlspecialchars((string)$value, ENT_NOQUOTES, 'UTF-8');
                     $parent->addChild($key, $value);
                 }
             }
@@ -1357,6 +1357,7 @@ class Export extends CommonDBTM
         $xml = simplexml_load_file($file);
         $json = json_encode($xml);
         $datas = json_decode($json, true);
+        $datas = self::normalizeXmlData($datas) ?? [];
         $metademand = new Metademand();
         $oldId = $datas['id'];
         unset($datas['id']);
@@ -1961,5 +1962,19 @@ class Export extends CommonDBTM
         unlink($file);
 
         return $newIDMeta;
+    }
+
+    private static function normalizeXmlData($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+        if (count($data) === 0) {
+            return null;
+        }
+        foreach ($data as $k => $v) {
+            $data[$k] = self::normalizeXmlData($v);
+        }
+        return $data;
     }
 }
