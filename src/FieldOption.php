@@ -200,7 +200,7 @@ class FieldOption extends CommonDBChild
             $migration->migrationOneTable($table);
         }
 
-        //version 3.5.14
+        //version 3.6.0
         if (!$DB->fieldExists($table, "assign_tech_group")) {
             $migration->addField($table, "assign_tech_group", " varchar(255) NOT NULL DEFAULT '[]'");
             $migration->migrationOneTable($table);
@@ -1340,7 +1340,7 @@ class FieldOption extends CommonDBChild
             echo "<td>";
 
             $group = new \Group();
-            $groupfind = $group->find();
+            $groupfind = $group->find(['is_assign' => 1]);
             $groupdata = [];
             foreach ($groupfind as $id => $value) {
                 $groupdata[$id] = $value['name'];

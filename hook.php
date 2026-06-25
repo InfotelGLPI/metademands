@@ -225,7 +225,7 @@ function plugin_metademands_install()
             Pluginfields::install($migration);
         }
 
-        //version 3.4.5
+        //version 3.6.0
         if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "assign_tech_group")) {
             FieldOption::install($migration);
         }
