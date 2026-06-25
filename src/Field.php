@@ -2618,7 +2618,9 @@ border-style: none !important; border-color: initial !important;border-image: in
             if ($data['type'] != 'informations') {
                 if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
                     echo "<div class='alert alert-secondary' $style>";
+                    echo "<div class='remove-last-tinymce-margin'>";
                     echo RichText::getSafeHtml($label2);
+                    echo "</div>";
                     echo "</div>";
                 }
             }
@@ -4422,10 +4424,11 @@ border-style: none !important; border-color: initial !important;border-image: in
             }
 
             $return = "<span id='show_items_id_requester'>";
+            $required = $params['required'] ?? 0;
             $return .= \Dropdown::showFromArray(
                 $params['name'],
                 $my_devices,
-                ['rand' => $rand, 'display' => false, 'value' => $params['value'], 'required' => $params['required']]
+                ['rand' => $rand, 'display' => false, 'value' => $params['value'], 'required' => $required]
             );
             $return .= "</span>";
 

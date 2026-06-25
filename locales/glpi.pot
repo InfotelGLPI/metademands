@@ -157,7 +157,7 @@ msgstr ""
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:3234 src/Field.php:3319 src/Field.php:4713
+#: src/Field.php:3236 src/Field.php:3321 src/Field.php:4716
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr ""
@@ -680,7 +680,7 @@ msgstr ""
 msgid "Designation"
 msgstr ""
 
-#: src/Field.php:3914 src/Fields/Dropdownmeta.php:964
+#: src/Field.php:3916 src/Fields/Dropdownmeta.php:964
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -950,7 +950,7 @@ msgstr ""
 msgid "Fill out a form"
 msgstr ""
 
-#: src/Field.php:4535
+#: src/Field.php:4538
 #: templates/fields/field_parameter_ldapdropdown.html.twig:36
 msgid "Filter"
 msgstr ""
@@ -1413,11 +1413,11 @@ msgstr ""
 msgid "Minimal mandatory"
 msgstr ""
 
-#: src/Field.php:3419
+#: src/Field.php:3421
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3418
+#: src/Field.php:3420
 msgid "Modify icon"
 msgstr ""
 
@@ -1669,7 +1669,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3310
+#: src/Field.php:3312
 msgid "Order"
 msgstr ""
 
@@ -2682,7 +2682,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:3446 src/Field.php:3466
+#: src/Field.php:3448 src/Field.php:3468
 msgid "You cannot do this for this field"
 msgstr ""
 
