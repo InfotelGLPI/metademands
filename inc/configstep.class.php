@@ -190,7 +190,7 @@ class PluginMetademandsConfigstep extends CommonDBTM
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo __('Move to the next group even if you can continue', 'metademands');
+        echo __('Having the option to continue or move on to the next group', 'metademands');
         echo "</td>";
         echo "<td>";
         Dropdown::showYesNo("change_step_by_step_option", $confStep->fields['change_step_by_step_option']);
