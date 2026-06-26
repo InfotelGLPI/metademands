@@ -1090,9 +1090,15 @@ class Step extends CommonDBChild
 
             if (count($steps) > 0) {
                 foreach ($steps as $s) {
-                    $res = $group->getFromDBByCrit(['id' => $s['groups_id']]);
-                    if ($res) {
-                        $nextGroups[$group->fields['id']] = $group->fields['name'];
+                    if ($s['groups_id'] > 0) {
+                        $res = $group->getFromDBByCrit(['id' => $s['groups_id']]);
+                        if ($res) {
+                            $nextGroups[$group->fields['id']] = $group->fields['name'];
+                        }
+                    } else {
+                        foreach ($group->find() as $g) {
+                            $nextGroups[$g['id']] = $g['name'];
+                        }
                     }
                 }
                 echo "<tr class='tab_bg_1'>";
