@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-27 09:30+0000\n"
+"POT-Creation-Date: 2026-06-29 11:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -871,7 +871,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr ""
 
-#: src/Step.php:1292
+#: src/Step.php:1298
 msgid "Error assigning to next group"
 msgstr ""
 
@@ -1059,6 +1059,10 @@ msgstr ""
 
 #: src/GroupConfig.php:60
 msgid "Groups visibility"
+msgstr ""
+
+#: templates/configstep.html.twig:64
+msgid "Having the option to continue or move on to the next group"
 msgstr ""
 
 #: templates/fields/field_parameter_dropdownmeta.html.twig:54
@@ -1435,10 +1439,6 @@ msgstr ""
 
 #: src/Wizard.php:402 src/Wizard.php:412
 msgid "More informations"
-msgstr ""
-
-#: templates/configstep.html.twig:64
-msgid "Move to the next group even if you can continue"
 msgstr ""
 
 #: src/Field.php:1460
@@ -2035,7 +2035,7 @@ msgstr ""
 msgid "Select language to translate"
 msgstr ""
 
-#: src/Step.php:1101
+#: src/Step.php:1107
 msgid "Select the next group"
 msgstr ""
 
@@ -2295,7 +2295,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr ""
 
-#: src/Step.php:632 src/Step.php:964 src/Step.php:1144
+#: src/Step.php:632 src/Step.php:964 src/Step.php:1150
 msgid "There is a problem with the setup"
 msgstr ""
 
@@ -2576,7 +2576,7 @@ msgstr ""
 msgid "User information to get"
 msgstr ""
 
-#: src/Step.php:1036 src/Step.php:1154
+#: src/Step.php:1036 src/Step.php:1160
 msgctxt "button"
 msgid "Validate"
 msgstr ""
