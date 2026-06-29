@@ -76,7 +76,8 @@ class Dropdown extends CommonDBTM
 
     public static function getLocations(
         $entities_id = 0,
-        int $root_items_id = 0
+        int $root_items_id = 0,
+        int $location_depth = 0
     ) {
         /** @var DBmysql $DB */
         global $DB;
@@ -114,12 +115,12 @@ class Dropdown extends CommonDBTM
             return $a['name'] <=> $b['name'];
         });
 
-        $locs = self::buildLocationTree($locations, $root_items_id);
+        $locs = self::buildLocationTree($locations, $root_items_id, $location_depth);
 
         return $locs;
     }
 
-    public static function buildLocationTree(array $locations, int $root_items_id = 0)
+    public static function buildLocationTree(array $locations, int $root_items_id = 0, int $location_depth = 0)
     {
         $indexed = [];
         foreach ($locations as $loc) {
@@ -136,7 +137,7 @@ class Dropdown extends CommonDBTM
         if ($root_items_id > 0 && isset($indexed[$root_items_id])) {
             $result = [];
             foreach ($indexed[$root_items_id]['children'] as $child) {
-                $result[$child['name']] = self::transformNode($child);
+                $result[$child['name']] = self::transformNode($child, $location_depth, 1);
             }
             return $result;
         }
@@ -145,28 +146,29 @@ class Dropdown extends CommonDBTM
         $result = [];
 
         foreach ($roots as $root) {
-            $result[$root['name']] = self::transformNode($root);
+            $result[$root['name']] = self::transformNode($root, $location_depth, 1);
         }
 
         return $result;
     }
 
-    public static function transformNode($node)
+    public static function transformNode($node, int $location_depth = 0, int $current_depth = 1)
     {
-        if (empty($node['children'])) {
-            // C’est une feuille
+        // If depth limit reached, expose node as a leaf (selectable, no sub-levels shown)
+        $depth_reached = $location_depth > 0 && $current_depth >= $location_depth;
+
+        if (empty($node['children']) || $depth_reached) {
             return [$node['id'] => $node['name']];
         }
 
         $result = [];
 
         foreach ($node['children'] as $child) {
-            if (empty($child['children'])) {
-                // Si c’est une feuille, clé = ID
+            $child_depth_reached = $location_depth > 0 && ($current_depth + 1) >= $location_depth;
+            if (empty($child['children']) || $child_depth_reached) {
                 $result[$child['id']] = $child['name'];
             } else {
-                // Si a des enfants, clé = nom, valeur = récursif
-                $result[$child['name']] = self::transformNode($child);
+                $result[$child['name']] = self::transformNode($child, $location_depth, $current_depth + 1);
             }
         }
         return $result;
@@ -178,7 +180,8 @@ class Dropdown extends CommonDBTM
         echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/cascading-dropdowns/jquery.chained.selects.js");
 
         $root_items_id = (int) ($opt['root_items_id'] ?? 0);
-        $locations = self::getLocations($_SESSION['glpiactiveentities'], $root_items_id);
+        $location_depth = (int) ($opt['location_depth'] ?? 0);
+        $locations = self::getLocations($_SESSION['glpiactiveentities'], $root_items_id, $location_depth);
         $locations_json = json_encode($locations);
         $name = $opt['name'];
         $id = $opt['fields_id'];
@@ -275,19 +278,49 @@ class Dropdown extends CommonDBTM
                     $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-                        $root_items_id = (int) ($data['root_items_id'] ?? 0);
+                        $root_items_id  = (int) ($data['root_items_id'] ?? 0);
+                        $location_depth = (int) ($data['location_depth'] ?? 0);
+                        $allowed_ids = null;
                         if ($root_items_id > 0) {
                             $dbu = new DbUtils();
                             $sons = $dbu->getSonsOf(Location::getTable(), $root_items_id);
                             unset($sons[$root_items_id]);
-                            $options['condition'] = ['id' => $sons];
+                            $allowed_ids = array_keys($sons);
+                        }
+                        if ($location_depth > 0) {
+                            global $DB;
+                            $root_level = 0;
+                            if ($root_items_id > 0) {
+                                $row = $DB->request([
+                                    'SELECT' => ['level'],
+                                    'FROM'   => Location::getTable(),
+                                    'WHERE'  => ['id' => $root_items_id],
+                                ])->current();
+                                $root_level = (int) ($row['level'] ?? 0);
+                            }
+                            $max_level = $root_level + $location_depth;
+                            $depth_ids = [];
+                            foreach ($DB->request([
+                                'SELECT' => ['id'],
+                                'FROM'   => Location::getTable(),
+                                'WHERE'  => ['level' => ['<=', $max_level]],
+                            ]) as $row) {
+                                $depth_ids[] = $row['id'];
+                            }
+                            $allowed_ids = ($allowed_ids !== null)
+                                ? array_values(array_intersect($allowed_ids, $depth_ids))
+                                : $depth_ids;
+                        }
+                        if ($allowed_ids !== null) {
+                            $options['condition'] = ['id' => $allowed_ids];
                         }
                         $field            .= Location::dropdown($options);
                     } else {
-                        $opt['value'] = $value;
-                        $opt['fields_id'] = $_POST['fields_id'];
-                        $opt['required'] = ($data['is_mandatory'] == 1 ? "required" : "");
-                        $opt['root_items_id'] = (int) ($data['root_items_id'] ?? 0);
+                        $opt['value']          = $value;
+                        $opt['fields_id']      = $_POST['fields_id'] ?? $data['id'];
+                        $opt['required']       = ($data['is_mandatory'] == 1 ? "required" : "");
+                        $opt['root_items_id']  = (int) ($data['root_items_id'] ?? 0);
+                        $opt['location_depth'] = (int) ($data['location_depth'] ?? 0);
                         $field .= self::locationDropdown($opt);
                     }
                 }
@@ -492,6 +525,7 @@ class Dropdown extends CommonDBTM
         $show_display_type = !$show_location_options;
         $display_type_html = '';
         $root_items_html = '';
+        $location_depth_html = '';
 
         if ($show_location_options) {
             $disp = [];
@@ -508,6 +542,15 @@ class Dropdown extends CommonDBTM
                 'display_emptychoice' => true,
             ]);
             $root_items_html = ob_get_clean();
+
+            $depths = [0 => __('No limit', 'metademands')];
+            for ($i = 1; $i <= 6; $i++) {
+                $depths[$i] = sprintf(_n('%d level', '%d levels', $i, 'metademands'), $i);
+            }
+            $location_depth_html = \Dropdown::showFromArray("location_depth", $depths, [
+                'value'   => $params['location_depth'] ?? 0,
+                'display' => false,
+            ]);
         } else {
             $disp = [];
             $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
@@ -521,14 +564,15 @@ class Dropdown extends CommonDBTM
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_dropdown.html.twig',
             [
-                'show_used_by_child'    => $show_used_by_child,
-                'used_by_child_html'    => $used_by_child_html,
-                'show_link_to_user'     => $show_link_to_user,
-                'link_to_user_html'     => $link_to_user_html,
-                'show_location_options' => $show_location_options,
-                'show_display_type'     => $show_display_type,
-                'display_type_html'     => $display_type_html,
-                'root_items_html'       => $root_items_html,
+                'show_used_by_child'      => $show_used_by_child,
+                'used_by_child_html'      => $used_by_child_html,
+                'show_link_to_user'       => $show_link_to_user,
+                'link_to_user_html'       => $link_to_user_html,
+                'show_location_options'   => $show_location_options,
+                'show_display_type'       => $show_display_type,
+                'display_type_html'       => $display_type_html,
+                'root_items_html'         => $root_items_html,
+                'location_depth_html'     => $location_depth_html,
             ]
         );
     }
@@ -559,7 +603,7 @@ class Dropdown extends CommonDBTM
                          $('select[name=\"checkbox_id\"]').val(),
                          $('select[name=\"check_type_value\"]').val(),
                          JSON.stringify($('select[name=\"assign_tech_group[]\"]').val())
-                         
+
                   ];
 
                      reloadviewOption(formOption);

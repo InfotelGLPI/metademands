@@ -161,6 +161,8 @@ CREATE TABLE `glpi_plugin_metademands_fieldparameters`
     `authldaps_id`                        int unsigned                    DEFAULT 0,
     `ldap_attribute`                      int                             DEFAULT 0,
     `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
+    `root_items_id`                       int unsigned                    DEFAULT 0,
+    `location_depth`                      int                             DEFAULT 0,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB

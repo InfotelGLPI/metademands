@@ -486,7 +486,7 @@ class FieldOption extends CommonDBChild
                     Html::showMassiveActions($massiveactionparams);
                 }
 
-                $colspan = 12;
+                $colspan = 13;
                 if ($item->fields['type'] == "parent_field") {
                     $colspan = 3;
                 }
@@ -1247,8 +1247,12 @@ class FieldOption extends CommonDBChild
         }
 
         if ($params['check_type_value'] == 2 ||
-            !$params['type'] == "radio" && !$params['type'] == "checkbox" && !$params['dropdown_multiple'] &&
-            !$params['dropdown'] && !$params['dropdown_meta'] && !$params['dropdown_object']) {
+            !$params['type'] == "radio"
+            && !$params['type'] == "checkbox"
+            && !$params['type'] == "dropdown_multiple"
+            && !$params['type'] == "dropdown"
+            && !$params['type'] == "dropdown_meta"
+            && !$params['type'] == "dropdown_object") {
             $assignGroupTech = 0;
         }
 

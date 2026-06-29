@@ -50,6 +50,10 @@
                 <label class="col-sm-3 col-form-label">{{ __('Root location', 'metademands') }}</label>
                 <div class="col-sm-3">{{ root_items_html|raw }}</div>
             </div>
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Maximum depth', 'metademands') }}</label>
+                <div class="col-sm-3">{{ location_depth_html|raw }}</div>
+            </div>
         {% elseif show_display_type %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>

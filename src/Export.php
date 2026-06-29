@@ -1156,6 +1156,7 @@ class Export extends CommonDBTM
                                 "problem"
                             ],
                             "root_items_id" => 0,
+                            "location_depth" => 0,
                             "subtree_depth" => 0
                         ];
                     } else {
