@@ -1144,7 +1144,7 @@ class Dropdownmeta extends CommonDBTM
         $custom_values = $params['custom_values'];
         $default_values = $params['default_values'];
         $target = FieldCustomvalue::getFormURL();
-        $maxrank = 0;
+        $maxrank = -1;
         $rows = [];
 
         if (is_array($custom_values) && !empty($custom_values)) {
@@ -1204,9 +1204,8 @@ class Dropdownmeta extends CommonDBTM
         $specific_dropdown_html = '';
 
         if (!in_array($item, Field::$field_specificobjects)) {
-            $init_maxrank = $maxrank > 0 ? $maxrank : -1;
             ob_start();
-            FieldCustomvalue::initCustomValue($init_maxrank, false, true, $params["plugin_metademands_fields_id"], true);
+            FieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"], true);
             $init_form_html = ob_get_clean();
 
             ob_start();

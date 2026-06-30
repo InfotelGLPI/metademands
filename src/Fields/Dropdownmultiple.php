@@ -474,7 +474,7 @@ class Dropdownmultiple extends CommonDBTM
 
         echo "<tr>";
         echo "<td>";
-        $maxrank = 0;
+        $maxrank = -1;
 
         $dbu = new DbUtils();
         if ($params["item"] != "User") {
@@ -613,9 +613,8 @@ class Dropdownmultiple extends CommonDBTM
                         }
                     }
 
-                    $init_maxrank = !empty($rows) ? $maxrank : -1;
                     ob_start();
-                    FieldCustomvalue::initCustomValue($init_maxrank, false, true, $params["plugin_metademands_fields_id"]);
+                    FieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"]);
                     $init_form_html = ob_get_clean();
 
                     ob_start();

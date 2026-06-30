@@ -263,7 +263,7 @@ class Radio extends CommonDBTM
     {
         $custom_values = $params['custom_values'];
         $target = FieldCustomvalue::getFormURL();
-        $maxrank = 0;
+        $maxrank = -1;
         $rows = [];
 
         if (is_array($custom_values) && !empty($custom_values)) {
@@ -319,9 +319,8 @@ class Radio extends CommonDBTM
             }
         }
 
-        $init_maxrank = $maxrank > 0 ? $maxrank : -1;
         ob_start();
-        FieldCustomvalue::initCustomValue($init_maxrank, true, true, $params["plugin_metademands_fields_id"], true);
+        FieldCustomvalue::initCustomValue($maxrank, true, true, $params["plugin_metademands_fields_id"], true);
         $init_form_html = ob_get_clean();
 
         ob_start();
