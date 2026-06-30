@@ -90,7 +90,7 @@ if (isset($_POST["add"])) {
     $task->check(-1, UPDATE, $_POST);
 
     $input = $_POST;
-    $input['type'] = $_POST['taskType'];
+    $input['type'] = $_POST['taskType'] ?? 0;
     $input['content'] = $_POST['content'];
     if ($input['type'] == Task::MAIL_TYPE) {
         $input['id'] = $_POST['mailtask_id'];

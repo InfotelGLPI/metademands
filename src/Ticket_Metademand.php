@@ -170,12 +170,13 @@ class Ticket_Metademand extends CommonDBTM
         foreach ($fields->find(['plugin_metademands_metademands_id' => $datas->input['plugin_metademands_metademands_id']]) as $idField => $valueField) {
             foreach ($fieldOption->find(['plugin_metademands_fields_id' => $idField]) as $idOption => $valueOption) {
                 if ($valueOption['assign_tech_group'] != '[]') {
-                    $assigntech[$idField][$valueOption['check_value']][] = json_decode($valueOption['assign_tech_group']);
+                    $assigntech[$idField][$valueOption['check_value']][] = json_decode($valueOption['assign_tech_group'], true);
                 }
             }
         }
 
-        foreach ($_SESSION['plugin_metademands'][$datas->input['plugin_metademands_metademands_id']]['fields'] as $fieldsid => $value) {
+        $session_fields = $_SESSION['plugin_metademands'][$datas->input['plugin_metademands_metademands_id'] ?? 0]['fields'] ?? null;
+        foreach (is_array($session_fields) ? $session_fields : [] as $fieldsid => $value) {
             if (is_array($value)) {
                 foreach ($value as $valueKey => $valueValue) {
                     if (isset($assigntech[$fieldsid]) && isset($assigntech[$fieldsid][$valueValue])) {

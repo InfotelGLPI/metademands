@@ -1157,10 +1157,16 @@ class Export extends CommonDBTM
                             ],
                             "root_items_id" => 0,
                             "location_depth" => 0,
-                            "subtree_depth" => 0
+                            "subtree_depth" => 0,
+                            "selectable_tree_root" => false,
                         ];
                     } else {
-                        $question['extra_data'] = ["itemtype" => $params['item']];
+                        $question['extra_data'] = [
+                            "itemtype"             => $params['item'],
+                            "root_items_id"        => 0,
+                            "subtree_depth"        => 0,
+                            "selectable_tree_root" => false,
+                        ];
                     }
                     $question['default_value'] = ["items_id" => 0];
                 } else {
