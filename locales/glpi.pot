@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 16:06+0000\n"
+"POT-Creation-Date: 2026-06-30 07:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -287,8 +287,8 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1333 src/Fields/Checkbox.php:342
-#: src/Fields/Radio.php:355 src/Fields/Dropdown.php:557
+#: src/Fields/Dropdownmeta.php:1332 src/Fields/Checkbox.php:341
+#: src/Fields/Radio.php:354 src/Fields/Dropdown.php:557
 msgid "Block display"
 msgstr ""
 
@@ -379,9 +379,9 @@ msgstr ""
 msgid "Choose a template"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1285 src/Fields/Dropdownmeta.php:1332
-#: src/Fields/Checkbox.php:341 src/Fields/Dropdownmultiple.php:651
-#: src/Fields/Yesno.php:198 src/Fields/Radio.php:354
+#: src/Fields/Dropdownmeta.php:1284 src/Fields/Dropdownmeta.php:1331
+#: src/Fields/Checkbox.php:340 src/Fields/Dropdownmultiple.php:650
+#: src/Fields/Yesno.php:198 src/Fields/Radio.php:353
 #: src/Fields/Dropdown.php:532 src/Fields/Dropdown.php:556
 msgid "Classic display"
 msgstr ""
@@ -774,7 +774,7 @@ msgstr ""
 msgid "Done on"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:652
+#: src/Fields/Dropdownmultiple.php:651
 msgid "Double column display"
 msgstr ""
 
@@ -1098,7 +1098,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1286
+#: src/Fields/Dropdownmeta.php:1285
 msgid "Icon display"
 msgstr ""
 
@@ -1487,10 +1487,10 @@ msgstr ""
 #: src/FieldOption.php:2252 src/Wizard.php:1386 src/Wizard.php:1631
 #: src/Wizard.php:1772 src/Wizard.php:1781 src/Wizard.php:1821
 #: src/Wizard.php:1827 src/Wizard.php:2387 src/Wizard.php:2390
-#: src/Fields/Dropdownmeta.php:1730 src/Fields/Textarea.php:309
-#: src/Fields/Email.php:335 src/Fields/Checkbox.php:626
-#: src/Fields/Dropdownmultiple.php:1165 src/Fields/Dropdownmultiple.php:1338
-#: src/Fields/Yesno.php:456 src/Fields/Radio.php:612
+#: src/Fields/Dropdownmeta.php:1729 src/Fields/Textarea.php:309
+#: src/Fields/Email.php:335 src/Fields/Checkbox.php:625
+#: src/Fields/Dropdownmultiple.php:1164 src/Fields/Dropdownmultiple.php:1337
+#: src/Fields/Yesno.php:456 src/Fields/Radio.php:611
 #: src/Fields/Dropdownobject.php:1242 src/Fields/Text.php:341
 #: src/Fields/Tel.php:342 src/Fields/Basket.php:836 src/Fields/Dropdown.php:888
 #: src/Fields/Url.php:303
@@ -1583,11 +1583,11 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1482 src/Fields/Dropdownmeta.php:1492
-#: src/Fields/Dropdownmeta.php:1513 src/Fields/Ldapdropdown.php:331
-#: src/Fields/Ldapdropdown.php:367 src/Fields/Checkbox.php:393
-#: src/Fields/Checkbox.php:406 src/Fields/Dropdownmultiple.php:875
-#: src/Fields/Radio.php:408 src/Fields/Radio.php:421
+#: src/Fields/Dropdownmeta.php:1481 src/Fields/Dropdownmeta.php:1491
+#: src/Fields/Dropdownmeta.php:1512 src/Fields/Ldapdropdown.php:331
+#: src/Fields/Ldapdropdown.php:367 src/Fields/Checkbox.php:392
+#: src/Fields/Checkbox.php:405 src/Fields/Dropdownmultiple.php:874
+#: src/Fields/Radio.php:407 src/Fields/Radio.php:420
 #: src/Fields/Dropdownobject.php:1009 src/Fields/Dropdownobject.php:1012
 #: src/Fields/Dropdownobject.php:1022 src/Fields/Dropdownobject.php:1044
 #: src/Fields/Dropdownobject.php:1060 src/Fields/Dropdownobject.php:1071
@@ -1955,11 +1955,11 @@ msgid "Save"
 msgstr ""
 
 #: src/FieldOption.php:2250 src/Basketline.php:192 src/Wizard.php:1626
-#: src/Wizard.php:1812 src/Fields/Dropdownmeta.php:1728
+#: src/Wizard.php:1812 src/Fields/Dropdownmeta.php:1727
 #: src/Fields/Textarea.php:307 src/Fields/Email.php:333
-#: src/Fields/Checkbox.php:624 src/Fields/Dropdownmultiple.php:1163
-#: src/Fields/Dropdownmultiple.php:1336 src/Fields/Yesno.php:454
-#: src/Fields/Radio.php:610 src/Fields/Dropdownobject.php:1241
+#: src/Fields/Checkbox.php:623 src/Fields/Dropdownmultiple.php:1162
+#: src/Fields/Dropdownmultiple.php:1335 src/Fields/Yesno.php:454
+#: src/Fields/Radio.php:609 src/Fields/Dropdownobject.php:1241
 #: src/Fields/Text.php:339 src/Fields/Tel.php:340 src/Fields/Basket.php:835
 #: src/Fields/Basket.php:1851 src/Fields/Dropdown.php:887
 #: src/Fields/Url.php:301
@@ -2622,10 +2622,10 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: src/Field.php:1310 src/FieldOption.php:507 src/Fields/Dropdownmeta.php:1362
-#: src/Fields/Ldapdropdown.php:280 src/Fields/Checkbox.php:358
-#: src/Fields/Dropdownmultiple.php:713 src/Fields/Yesno.php:222
-#: src/Fields/Radio.php:371 src/Fields/Dropdownobject.php:900
+#: src/Field.php:1310 src/FieldOption.php:507 src/Fields/Dropdownmeta.php:1361
+#: src/Fields/Ldapdropdown.php:280 src/Fields/Checkbox.php:357
+#: src/Fields/Dropdownmultiple.php:712 src/Fields/Yesno.php:222
+#: src/Fields/Radio.php:370 src/Fields/Dropdownobject.php:900
 #: src/Fields/Basket.php:565 src/Fields/Dropdown.php:584 src/Condition.php:469
 #: src/Condition.php:571 templates/condition_for_metademand.html.twig:77
 #: templates/condition_form.html.twig:48
