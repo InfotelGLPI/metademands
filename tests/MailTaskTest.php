@@ -285,6 +285,8 @@ class MailTaskTest extends DbTestCase
             $CFG_GLPI['from_email']      = $orig_from;
             $CFG_GLPI['from_email_name'] = $orig_name;
             $CFG_GLPI['smtp_mode']       = $orig_mode;
+            // sendMail() adds a session message on failure; consume it so tearDown does not complain
+            $_SESSION['MESSAGE_AFTER_REDIRECT'] = [];
         }
     }
 
@@ -314,6 +316,7 @@ class MailTaskTest extends DbTestCase
             $CFG_GLPI['from_email']      = $orig_from;
             $CFG_GLPI['from_email_name'] = $orig_name;
             $CFG_GLPI['smtp_mode']       = $orig_mode;
+            $_SESSION['MESSAGE_AFTER_REDIRECT'] = [];
         }
     }
 
@@ -368,6 +371,9 @@ class MailTaskTest extends DbTestCase
             $mail_attempted = in_array(__('Email sent', 'metademands'), $flat_messages)
                 || in_array(__('Fail to send email', 'metademands'), $flat_messages);
 
+            // Consume messages before tearDown checks the session
+            $_SESSION['MESSAGE_AFTER_REDIRECT'] = [];
+
             $this->assertTrue(
                 $mail_attempted,
                 'sendMail() must have been called: either "Email sent" or "Fail to send email" '
@@ -377,6 +383,7 @@ class MailTaskTest extends DbTestCase
             $CFG_GLPI['from_email']      = $orig_from;
             $CFG_GLPI['from_email_name'] = $orig_name;
             $CFG_GLPI['smtp_mode']       = $orig_mode;
+            $_SESSION['MESSAGE_AFTER_REDIRECT'] = [];
         }
     }
 }
