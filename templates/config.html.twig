@@ -36,9 +36,9 @@
         </div>
         <div class="card-body">
             <div class="row">
-                {{ fields.dropdownYesNo('simpleticket_to_metademand', config.simpleticket_to_metademand,
+                {{ fields.sliderField('simpleticket_to_metademand', config.simpleticket_to_metademand,
                     __('Enable the update / add of simple ticket to metademand', 'metademands')) }}
-                {{ fields.dropdownYesNo('display_type', config.display_type,
+                {{ fields.sliderField('display_type', config.display_type,
                     __('Enable display metademands via icons', 'metademands')) }}
             </div>
             <div class="row">
@@ -48,13 +48,13 @@
                     __('Son ticket tag', 'metademands')) }}
             </div>
             <div class="row">
-                {{ fields.dropdownYesNo('childs_parent_content', config.childs_parent_content,
+                {{ fields.sliderField('childs_parent_content', config.childs_parent_content,
                     __('Childs tickets get parent content', 'metademands')) }}
-                {{ fields.dropdownYesNo('create_pdf', config.create_pdf,
+                {{ fields.sliderField('create_pdf', config.create_pdf,
                     __('Create PDF', 'metademands')) }}
             </div>
             <div class="row">
-                {{ fields.dropdownYesNo('use_draft', config.use_draft,
+                {{ fields.sliderField('use_draft', config.use_draft,
                     __('Use drafts', 'metademands')) }}
                 <input type="hidden" name="show_form_changes" value="0">
                 {{ fields.nullField() }}
@@ -65,13 +65,13 @@
                 {% endset %}
                 {{ fields.htmlField('languageTech', language_html,
                     __('Language Tech', 'metademands')) }}
-                {{ fields.dropdownYesNo('display_buttonlist_servicecatalog', config.display_buttonlist_servicecatalog,
+                {{ fields.sliderField('display_buttonlist_servicecatalog', config.display_buttonlist_servicecatalog,
                     __('Display metademands list into ServiceCatalog plugin', 'metademands')) }}
             </div>
             <div class="row">
-                {{ fields.dropdownYesNo('add_groups_with_regex', config.add_groups_with_regex,
+                {{ fields.sliderField('add_groups_with_regex', config.add_groups_with_regex,
                     __('Allow adding groups by regex', 'metademands')) }}
-                {{ fields.dropdownYesNo('see_top', config.see_top,
+                {{ fields.sliderField('see_top', config.see_top,
                     __('See top metademands', 'metademands')) }}
             </div>
             <div class="row">

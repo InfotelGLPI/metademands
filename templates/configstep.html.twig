@@ -37,30 +37,30 @@
         </div>
         <div class="card-body">
             <div class="row">
-                {{ fields.dropdownYesNo('see_blocks_as_tab', confstep_fields.see_blocks_as_tab|default(0),
+                {{ fields.sliderField('see_blocks_as_tab', confstep_fields.see_blocks_as_tab|default(0),
                     __('See blocks as tab', 'metademands')) }}
-                {{ fields.dropdownYesNo('supervisor_validation', confstep_fields.supervisor_validation|default(0),
+                {{ fields.sliderField('supervisor_validation', confstep_fields.supervisor_validation|default(0),
                     __('Activate supervisor validation', 'metademands')) }}
             </div>
 
             {% if confstep_fields.supervisor_validation|default(0) == 0 %}
                 <div class="row">
-                    {{ fields.dropdownYesNo('link_user_block', confstep_fields.link_user_block|default(0),
+                    {{ fields.sliderField('link_user_block', confstep_fields.link_user_block|default(0),
                         __('The user must select a defined user of the selected groups', 'metademands')) }}
-                    {{ fields.dropdownYesNo('multiple_link_groups_blocks', confstep_fields.multiple_link_groups_blocks|default(0),
+                    {{ fields.sliderField('multiple_link_groups_blocks', confstep_fields.multiple_link_groups_blocks|default(0),
                         __('Link multiple groups to a block', 'metademands')) }}
                 </div>
             {% endif %}
 
             <div class="row">
-                {{ fields.dropdownYesNo('add_user_as_requester', confstep_fields.add_user_as_requester|default(0),
+                {{ fields.sliderField('add_user_as_requester', confstep_fields.add_user_as_requester|default(0),
                     __('Add all form actors as ticket requester', 'metademands')) }}
                 {{ fields.dropdownArrayField('step_by_step_interface', confstep_fields.step_by_step_interface|default(0),
                     enum_interface, __('Interface', 'metademands')) }}
             </div>
 
             <div class="row">
-                {{ fields.dropdownYesNo('change_step_by_step_option', confstep_fields.change_step_by_step_option|default(0),
+                {{ fields.sliderField('change_step_by_step_option', confstep_fields.change_step_by_step_option|default(0),
                     __('Having the option to continue or move on to the next group', 'metademands')) }}
                 {{ fields.nullField() }}
             </div>

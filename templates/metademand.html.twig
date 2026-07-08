@@ -66,18 +66,18 @@
 
                         {# Nom + Actif #}
                         {{ fields.autoNameField('name', item, __('Name'), withtemplate) }}
-                        {{ fields.dropdownYesNo('is_active', item.fields['is_active'], __('Active')) }}
+                        {{ fields.sliderField('is_active', item.fields['is_active']|default(0), __('Active')) }}
 
                         {# Modification avant / après validation #}
-                        {{ fields.dropdownYesNo('can_update', item.fields['can_update'],
+                        {{ fields.sliderField('can_update', item.fields['can_update'],
                             __('Allow form modification before validation', 'metademands')) }}
-                        {{ fields.dropdownYesNo('can_clone', item.fields['can_clone'],
+                        {{ fields.sliderField('can_clone', item.fields['can_clone'],
                             __('Allow form modification after validation', 'metademands')) }}
 
                         {# Mode pas à pas + mode maintenance #}
-                        {{ fields.dropdownYesNo('step_by_step_mode', item.fields['step_by_step_mode'],
+                        {{ fields.sliderField('step_by_step_mode', item.fields['step_by_step_mode'],
                             __('Step-by-step mode', 'metademands')) }}
-                        {{ fields.dropdownYesNo('maintenance_mode', item.fields['maintenance_mode'],
+                        {{ fields.sliderField('maintenance_mode', item.fields['maintenance_mode'],
                             __('Maintenance mode')) }}
 
                         {# Objet à créer #}
@@ -173,7 +173,7 @@
                         {{ fields.nullField() }}
 
                         {# Formulaire multiple + panier unique #}
-                        {{ fields.dropdownYesNo('is_order', item.fields['is_order'],
+                        {{ fields.sliderField('is_order', item.fields['is_order'],
                             __('Permit multiple form', 'metademands')) }}
                         {% if item.fields['is_order'] == 1 %}
                             {% set create_one_html %}
@@ -190,16 +190,16 @@
                         {% endif %}
 
                         {# Panier + Masquer le titre #}
-                        {{ fields.dropdownYesNo('is_basket', item.fields['is_basket'],
+                        {{ fields.sliderField('is_basket', item.fields['is_basket'],
                             __('Use as basket', 'metademands')) }}
-                        {{ fields.dropdownYesNo('hide_title', item.fields['hide_title'],
+                        {{ fields.sliderField('hide_title', item.fields['hide_title'],
                             __('Hide title', 'metademands')) }}
 
                         {# Champs spécifiques aux tickets #}
                         {% if item.fields['object_to_create'] == 'Ticket' %}
-                            {{ fields.dropdownYesNo('validation_subticket', item.fields['validation_subticket'],
+                            {{ fields.sliderField('validation_subticket', item.fields['validation_subticket'],
                                 __('Need validation to create subticket', 'metademands')) }}
-                            {{ fields.dropdownYesNo('hide_no_field', item.fields['hide_no_field'],
+                            {{ fields.sliderField('hide_no_field', item.fields['hide_no_field'],
                                 __('Hide the "No" and empty values of fields in the tickets', 'metademands')) }}
                         {% endif %}
 
@@ -216,19 +216,19 @@
                         {# Tâches / tickets enfants (seulement pour un item existant) #}
                         {% if not item.isNewItem() %}
                             {% if item.fields['object_to_create'] == 'Ticket' %}
-                                {{ fields.dropdownYesNo('force_create_tasks', item.fields['force_create_tasks'],
+                                {{ fields.sliderField('force_create_tasks', item.fields['force_create_tasks'],
                                     __('Create tasks (not child tickets)', 'metademands')) }}
                             {% else %}
                                 <input type="hidden" name="force_create_tasks" value="1">
                                 {{ fields.nullField() }}
                             {% endif %}
-                            {{ fields.dropdownYesNo('initial_requester_childs_tickets',
+                            {{ fields.sliderField('initial_requester_childs_tickets',
                                 item.fields['initial_requester_childs_tickets'],
                                 __('Define initial requester as requester for child tickets', 'metademands')) }}
                         {% endif %}
 
                         {# Confirmation valeurs vides #}
-                        {{ fields.dropdownYesNo('use_confirm', item.fields['use_confirm'],
+                        {{ fields.sliderField('use_confirm', item.fields['use_confirm'],
                             __('Use a confirm popup check for empty values', 'metademands')) }}
                         {{ fields.nullField() }}
 
