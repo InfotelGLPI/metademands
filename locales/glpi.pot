@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 07:54+0000\n"
+"POT-Creation-Date: 2026-07-01 16:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -282,7 +282,7 @@ msgstr ""
 
 #: src/FieldOption.php:1685 src/MailTask.php:175 src/Step.php:407
 #: src/Step.php:681 src/Step.php:695 src/Task.php:825 src/Task.php:1228
-#: src/TicketTask.php:225
+#: src/TicketTask.php:230
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -348,7 +348,7 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: src/Ticket_Metademand.php:826 src/Metademand.php:3664
+#: src/Ticket_Metademand.php:827 src/Metademand.php:3664
 #: src/Metademand.php:6090
 msgid "Child Ticket"
 msgstr ""
@@ -413,7 +413,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/Ticket_Metademand.php:449
+#: src/Ticket_Metademand.php:450
 msgctxt "status"
 msgid "Closed"
 msgstr ""
@@ -1176,7 +1176,7 @@ msgid ""
 "the user"
 msgstr ""
 
-#: src/Export.php:1304
+#: src/Export.php:1310
 msgid "Import"
 msgstr ""
 
@@ -1192,7 +1192,7 @@ msgstr ""
 msgid "In progress"
 msgstr ""
 
-#: src/Ticket_Metademand.php:443
+#: src/Ticket_Metademand.php:444
 msgctxt "status"
 msgid "In progress"
 msgstr ""
@@ -1299,7 +1299,7 @@ msgid_plural "Link with metademands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Ticket_Metademand.php:234 src/Ticket_Metademand.php:238
+#: src/Ticket_Metademand.php:235 src/Ticket_Metademand.php:239
 msgid "Linked opened tickets"
 msgstr ""
 
@@ -1397,7 +1397,7 @@ msgstr ""
 msgid "Metademand approver"
 msgstr ""
 
-#: src/Export.php:1295
+#: src/Export.php:1301
 msgid "Metademand file to import"
 msgstr ""
 
@@ -1542,7 +1542,7 @@ msgstr ""
 msgid "No existing forms founded"
 msgstr ""
 
-#: src/Export.php:1332
+#: src/Export.php:1338
 msgid "No file specified"
 msgstr ""
 
@@ -1554,7 +1554,7 @@ msgstr ""
 msgid "No limit"
 msgstr ""
 
-#: src/Export.php:1201
+#: src/Export.php:1207
 msgid "No link"
 msgstr ""
 
@@ -1725,7 +1725,7 @@ msgstr ""
 msgid "Parent ticket tag"
 msgstr ""
 
-#: src/Ticket_Metademand.php:838 src/Metademand.php:3682
+#: src/Ticket_Metademand.php:839 src/Metademand.php:3682
 #: src/Metademand.php:6106
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
@@ -2215,7 +2215,7 @@ msgstr ""
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: src/Task.php:1070 src/TicketTask.php:601 src/Metademand.php:746
+#: src/Task.php:1070 src/TicketTask.php:736 src/Metademand.php:746
 #: src/Metademand.php:852
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
@@ -2238,7 +2238,7 @@ msgid ""
 "The fields are not ordered correctly, you will not be able to order them!"
 msgstr ""
 
-#: src/Export.php:1347
+#: src/Export.php:1353
 msgid "The file is not an XML file"
 msgstr ""
 
@@ -2423,7 +2423,7 @@ msgstr ""
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: src/Ticket_Metademand.php:446
+#: src/Ticket_Metademand.php:447
 msgctxt "status"
 msgid "To close"
 msgstr ""
