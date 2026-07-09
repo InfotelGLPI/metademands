@@ -434,25 +434,25 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
         }
         //orderfollowup0
         if (params.orderfollowupisactive) {
-            showConfirmButton();
+            showConfirmButton(field_id);
         }
     }
 }
 
 //orderfollowup
-function showConfirmButton()
+function showConfirmButton(field_id)
 {
-    var tabdatas = $('[id^=line_]');
+    var tabdatas = $('[id^=line_' + field_id + '_]');
     $('#nextBtn').hide();
 
     if (tabdatas.length == 0) {
-        $('#add_freeinputs').css('display', 'none');
+        $('#add_freeinputs_' + field_id).css('display', 'none');
         $('#div_save_draft').css('display', 'none');
         if ($('#button_save_mydraft')) {
             $('#button_save_mydraft').css('display', 'none');
         }
     } else {
-        $('#add_freeinputs').css('display', 'inline-block');
+        $('#add_freeinputs_' + field_id).css('display', 'inline-block');
         $('#div_save_draft').css('display', 'inline-block');
         if ($('#button_save_mydraft')) {
             $('#button_save_mydraft').css('display', 'inline-block');
@@ -478,7 +478,7 @@ function removeLine(l, field_id, newparams)
     });
     var tabdatas = $('[id^=line_' + field_id + '_]');
     if (tabdatas.length == 0) {
-        $('#add_freetables' + field_id).css('display', 'none');
+        $('#add_freeinputs_' + field_id).css('display', 'none');
         $('#div_save_draft').css('display', 'none');
         if ($('#button_save_mydraft')) {
             $('#button_save_mydraft').css('display', 'none');
