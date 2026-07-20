@@ -90,6 +90,52 @@ class Configstep extends CommonDBTM
     }
 
 
+    /**
+     * Whitelist and cast the writable columns to prevent mass-assignment
+     * from a raw $_POST passed by the controller.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    private function normalizeInput(array $input): array
+    {
+        $int_fields = [
+            'plugin_metademands_metademands_id',
+            'see_blocks_as_tab',
+            'link_user_block',
+            'multiple_link_groups_blocks',
+            'add_user_as_requester',
+            'supervisor_validation',
+            'step_by_step_interface',
+            'change_step_by_step_option',
+        ];
+
+        $clean = [];
+        foreach ($int_fields as $field) {
+            if (array_key_exists($field, $input)) {
+                $clean[$field] = (int) $input[$field];
+            }
+        }
+        if (isset($input['id'])) {
+            $clean['id'] = (int) $input['id'];
+        }
+
+        return $clean;
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        $input = $this->normalizeInput($input);
+        unset($input['id']);
+        return $input;
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        return $this->normalizeInput($input);
+    }
+
     public static function install(Migration $migration)
     {
         global $DB;

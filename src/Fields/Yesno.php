@@ -339,7 +339,7 @@ class Yesno extends CommonDBTM
                         $custom_values = FieldParameter::_unserialize($data['custom']);
                         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                             if ($custom_values == $idc) {
-                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $custom_values . "').trigger('change');";
+                                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $custom_values, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                             }
                         } else {
                             if ($custom_values == 1 && $custom_values == $idc) {
@@ -354,7 +354,7 @@ class Yesno extends CommonDBTM
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 } else {
                     if ($data['value'] == 2) {
                         $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
@@ -447,7 +447,7 @@ class Yesno extends CommonDBTM
             if (isset($data['value']) && is_array($data['value'])) {
                 $values = $data['value'];
                 foreach ($values as $value) {
-                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 }
             }
 
@@ -619,7 +619,7 @@ class Yesno extends CommonDBTM
                         $custom_values = FieldParameter::_unserialize($data['custom']);
                         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                             if ($custom_values == $idc) {
-                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $custom_values . "').trigger('change');";
+                                $post_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $custom_values, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                             }
                         } else {
                             if ($custom_values == 1 && $custom_values == $idc) {
@@ -635,7 +635,7 @@ class Yesno extends CommonDBTM
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 } else {
                     if ($data['value'] == 2) {
                         $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";

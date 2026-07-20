@@ -55,6 +55,9 @@ if (isset($_POST["add_groups"])) {
     }
     Html::back();
 } else if (isset($_POST["define_visibility"])) {
+    // Editing a meta-demand's group visibility is a configuration change:
+    // require the plugin UPDATE right (add()/update() do not check rights).
+    Session::checkRight('plugin_metademands', UPDATE);
 
     $groupconfig = new GroupConfig();
     if (!$groupconfig->getFromDBByCrit(['plugin_metademands_metademands_id'=> $_POST['plugin_metademands_metademands_id']])) {

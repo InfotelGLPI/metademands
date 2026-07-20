@@ -40,14 +40,11 @@ if (isset($_POST["step"])) {
       case 'metademands':
          $metademands = new Metademand();
          $wizard = new Wizard();
-         $dbu = new DbUtils();
 
-         $condition = '';
-         if (!empty($_POST["family"])) {
-            $children = $dbu->getSonsOf('glpi_itilcategories', $_POST["family"]);
-            $condition = " AND `".$metademands->getTable()."`.`itilcategories_id` IN ('".implode("','", $children)."')";
-         }
-         $data = $metademands->listMetademands(false, ['condition' => $condition]);
+         // NOTE: listMetademands() builds a fixed $DB->request() query and does not honor any
+         // 'condition' parameter, so no raw SQL fragment is built here (avoids a latent SQL
+         // injection vector). The 'family' filter is currently not applied by this listing.
+         $data = $metademands->listMetademands(false, []);
          $data[0] = \Dropdown::EMPTY_VALUE;
          ksort($data);
          \Dropdown::showFromArray('metademands_id', $data, ['width' => 150]);

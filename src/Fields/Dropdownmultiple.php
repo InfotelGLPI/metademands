@@ -536,7 +536,7 @@ class Dropdownmultiple extends CommonDBTM
 
                     echo "<td>";
                     echo "<span id='custom_values$key'>";
-                    echo $v["name"];
+                    echo htmlspecialchars((string) $v["name"], ENT_QUOTES, 'UTF-8');
                     echo "</span>";
                     echo "</td>";
 
@@ -966,7 +966,7 @@ class Dropdownmultiple extends CommonDBTM
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
                     foreach ($values as $value) {
-                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $value . "').trigger('change');";
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                     }
                 }
 
@@ -1070,7 +1070,7 @@ class Dropdownmultiple extends CommonDBTM
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
                     foreach ($values as $value) {
-                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $value . "').trigger('change');";
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                     }
                 }
 
@@ -1515,7 +1515,7 @@ class Dropdownmultiple extends CommonDBTM
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
                     foreach ($values as $value) {
-                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $value . "').trigger('change');";
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                     }
                 }
 
@@ -1701,7 +1701,7 @@ class Dropdownmultiple extends CommonDBTM
                 if (isset($data['value']) && is_array($data['value'])) {
                     $values = $data['value'];
                     foreach ($values as $value) {
-                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $value . "').trigger('change');";
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                     }
                 }
 

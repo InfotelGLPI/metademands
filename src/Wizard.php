@@ -356,12 +356,12 @@ class Wizard extends CommonDBTM
         echo "<h2 class='card-title mb-2 text-break' $style_title_color>";
 
         if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-            echo $meta->getName();
+            echo htmlspecialchars((string) $meta->getName(), ENT_QUOTES, 'UTF-8');
         } else {
-            echo $n;
+            echo htmlspecialchars((string) $n, ENT_QUOTES, 'UTF-8');
         }
         if (isset($parameters['cat_name'])) {
-            echo $parameters['cat_name'];
+            echo htmlspecialchars((string) $parameters['cat_name'], ENT_QUOTES, 'UTF-8');
         }
         if (isset($parameters['itilcategories_id'])
             && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
@@ -369,7 +369,7 @@ class Wizard extends CommonDBTM
             if (is_array($cats) && count($cats) > 1) {
                 $itilCategory = new ITILCategory();
                 if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
-                    echo " - " . $itilCategory->fields['completename'];
+                    echo " - " . htmlspecialchars((string) $itilCategory->fields['completename'], ENT_QUOTES, 'UTF-8');
                 }
             }
         }

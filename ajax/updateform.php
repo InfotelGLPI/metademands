@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Form;
@@ -44,7 +45,11 @@ $KO = true;
 $form = new Form();
 
 if (isset($_POST['save_model'])) {
-    $form->getFromDB($_POST['plugin_metademands_forms_id']);
+    $users_id = Session::getLoginUserID();
+    $form_id  = (int) ($_POST['plugin_metademands_forms_id'] ?? 0);
+    if (!$form->getFromDB($form_id) || (int) $form->fields['users_id'] !== $users_id) {
+        throw new AccessDeniedHttpException();
+    }
     if ($form->fields['is_model'] == 0) {
         $input = ['name' => $_POST['form_name'],
             'plugin_metademands_metademands_id' => $form->fields['plugin_metademands_metademands_id'],

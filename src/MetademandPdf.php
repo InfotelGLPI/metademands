@@ -795,7 +795,7 @@ class MetademandPdf extends FPDF
                                         $name = $values[$k];
                                         $prefix = $prefixes[$k];
                                         $valid_name = str_replace($prefix, "", $name);
-                                        $value[] .= $valid_name;
+                                        $value[] = $valid_name;
                                     }
                                     $value = implode(', ', $value);
                                     if ($value != null) {
@@ -813,7 +813,7 @@ class MetademandPdf extends FPDF
                                         $name = $file['_filename'];
                                         $prefix = $file['_prefix_filename'];
                                         $valid_name = str_replace($prefix, "", $name);
-                                        $value[] .= $valid_name;
+                                        $value[] = $valid_name;
                                     }
                                 }
                                 $value = implode(', ', $value);
@@ -1019,7 +1019,7 @@ class MetademandPdf extends FPDF
                                 foreach ($custom_values as $k => $v) {
                                     $checked = isset($values[$k]) ? 1 : 0;
                                     if ($checked) {
-                                        $custom_checkbox[] .= $v;
+                                        $custom_checkbox[] = $v;
                                     }
                                 }
                                 $value = implode(', ', $custom_checkbox);

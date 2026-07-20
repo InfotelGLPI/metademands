@@ -1,0 +1,11 @@
+{#
+ # Hidden line-total input, returned by ajax/totalrow.php.
+ # check / name / key come from the request: rendered through Twig
+ # auto-escaping (HTML attribute context) to prevent reflected XSS.
+ #}
+<input class="form-check-input" type="hidden"
+       check="{{ check }}"
+       name="{{ name }}"
+       key="{{ key }}"
+       id="{{ name }}"
+       value="{{ key }}">

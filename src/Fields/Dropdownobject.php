@@ -1137,7 +1137,7 @@ class Dropdownobject extends CommonDBTM
         if (count($check_values) > 0) {
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
             }
 
 
@@ -1423,7 +1423,7 @@ class Dropdownobject extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value']) &&  $data['value'] > 0) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
             }
 
             if (count($check_values) > 0) {

@@ -713,11 +713,13 @@ class Interticketfollowup extends CommonITILObject
 
     public static function getItemLinkClass(): string
     {
-        // TODO: Implement getItemLinkClass() method.
+        // Minimal implementation: default to the core Item_Ticket link class.
+        return \Item_Ticket::class;
     }
 
     public static function getContentTemplatesParametersClassInstance(): CommonITILObjectParameters
     {
-        // TODO: Implement getContentTemplatesParametersClassInstance() method.
+        // Minimal implementation: default to the core Ticket content-template parameters.
+        return new \Glpi\ContentTemplates\Parameters\TicketParameters();
     }
 }

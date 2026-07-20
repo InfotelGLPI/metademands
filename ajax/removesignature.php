@@ -36,10 +36,16 @@ Session::checkLoginUser();
 $ok = false;
 
 if (isset($_POST['datasign']) && isset($_POST['metademands_id'])) {
-    $datasign = $_POST['datasign'];
-    // Validate: no path traversal, signature files only
-    if (preg_match('/^sign-[\w.-]+\.(?:png|jpg|jpeg|gif)$/i', $datasign)) {
+    $datasign = (string) $_POST['datasign'];
+    // Only delete a signature this user actually created (tracked in session at
+    // upload time). Prevents deleting another user's signature via a forged path.
+    // deletePicture() additionally confines removal to GLPI_PICTURE_DIR.
+    if (
+        isset($_SESSION['plugin_metademands']['signatures'][$datasign])
+        && !str_contains($datasign, '..')
+    ) {
         Toolbox::deletePicture($datasign);
+        unset($_SESSION['plugin_metademands']['signatures'][$datasign]);
         $ok = true;
     }
 }

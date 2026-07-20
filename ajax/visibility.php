@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Form;
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -36,8 +37,13 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 $KO = true;
+$users_id                          = Session::getLoginUserID();
+$form_id                           = (int) $_POST['plugin_metademands_forms_id'];
 
 $form = new Form();
+if (!$form->getFromDB($form_id) || (int) $form->fields['users_id'] !== $users_id) {
+    throw new AccessDeniedHttpException();
+}
 
 if (isset($_POST['save_model'])) {
     $input = [

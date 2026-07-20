@@ -632,7 +632,7 @@ class FieldOption extends CommonDBChild
                         $fields = new Field();
                         $fields_data = $fields->find(['id' => $data['fields_link']]);
                         foreach ($fields_data as $id => $value) {
-                            echo $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
+                            echo $value['rank'] . " - " . htmlspecialchars((string) $value['name'], ENT_QUOTES, 'UTF-8');
                         }
                         echo "</td>";
 
@@ -644,7 +644,7 @@ class FieldOption extends CommonDBChild
                             if (isset($value['name'])) {
                                 $name = $value['name'];
                             }
-                            echo $value['rank'] . " - " . urldecode(html_entity_decode($name));
+                            echo $value['rank'] . " - " . htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
                         }
                         echo "</td>";
 
@@ -1104,7 +1104,7 @@ class FieldOption extends CommonDBChild
         $class = Field::getClassFromType($params['type']);
 
         if ($params['check_type_value'] == 2) {
-            echo $params['check_value_regex'];
+            echo htmlspecialchars((string) $params['check_value_regex'], ENT_QUOTES, 'UTF-8');
         } else {
             switch ($params['type']) {
                 case 'title-block':
@@ -1145,7 +1145,7 @@ class FieldOption extends CommonDBChild
                         if (empty(trim($field->fields['name']))) {
                             echo "ID - " . $params['parent_field_id'];
                         } else {
-                            echo $field->fields['name'];
+                            echo htmlspecialchars((string) $field->fields['name'], ENT_QUOTES, 'UTF-8');
                         }
                     }
                     break;

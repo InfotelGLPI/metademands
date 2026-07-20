@@ -31,6 +31,8 @@ use GlpiPlugin\Metademands\Configstep;
 
 Session::checkLoginUser();
 
+Session::checkRight('plugin_metademands', UPDATE);
+
 $stepConfig = new Configstep();
 
 if (isset($_POST['update_configstep']) && isset($_POST['plugin_metademands_metademands_id'])) {

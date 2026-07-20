@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Orderfollowup\Metademand;
 use PluginOrdermaterialMetademand;
 
@@ -54,7 +55,7 @@ if (isset($_POST['action'])) {
                         echo Html::formatNumber($totalrow, false, 2);
                         echo " €";
                     } else {
-                        echo $totalrow;
+                        echo htmlspecialchars((string) $totalrow);
                     }
                 }
                 if (Plugin::isPluginActive('orderfollowup')) {
@@ -68,11 +69,15 @@ if (isset($_POST['action'])) {
                         echo Html::formatNumber($totalrow, false, 2);
                         echo " €";
                     } else {
-                        echo $totalrow;
+                        echo htmlspecialchars((string) $totalrow);
                     }
                 }
 
-                echo "<input class='form-check-input' type='hidden' check='" . $_POST['check'] . "' name='" . $_POST['name'] . "' key='" . $_POST['key'] . "' id='" . $_POST['name'] . "' value='" . $_POST['key'] . "'>";
+                TemplateRenderer::getInstance()->display('@metademands/forms/totalrow_hidden.html.twig', [
+                    'check' => $_POST['check'] ?? '',
+                    'name'  => $_POST['name'] ?? '',
+                    'key'   => $_POST['key'] ?? '',
+                ]);
 //                if (!isset($_SESSION['plugin_metademands']['total_order'])) {
 //                    $_SESSION['plugin_metademands']['total_order'] = $totalrow;
 //                } else {

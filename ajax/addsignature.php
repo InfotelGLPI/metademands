@@ -50,6 +50,11 @@ if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {
     $prefix   = '';
     $dest = Toolbox::savePicture($filepath, $prefix);
 
+    if ($dest !== false) {
+        // Remember signatures created by this user so that only they may delete
+        // them later (see removesignature.php) — prevents cross-user deletion.
+        $_SESSION['plugin_metademands']['signatures'][$dest] = true;
+    }
 }
 
 echo $dest;

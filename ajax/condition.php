@@ -77,9 +77,51 @@ if (isset($_POST['metademands_id'])
         $predicate .= ")";
     }
 }
+// Safe boolean evaluation (replaces eval()): the predicate only ever contains
+// booleans (0/1), && , || and parentheses. Parse with a shunting-yard to RPN and
+// evaluate natively, honouring PHP precedence (&& tighter than ||) — no code exec.
+$evaluate = static function (string $expr): bool {
+    preg_match_all('/&&|\|\||[01()]/', $expr, $matches);
+    $prec = ['||' => 1, '&&' => 2];
+    $output = [];
+    $ops = [];
+    foreach ($matches[0] as $token) {
+        if ($token === '0' || $token === '1') {
+            $output[] = ($token === '1');
+        } elseif ($token === '&&' || $token === '||') {
+            while (!empty($ops) && end($ops) !== '(' && $prec[end($ops)] >= $prec[$token]) {
+                $output[] = array_pop($ops);
+            }
+            $ops[] = $token;
+        } elseif ($token === '(') {
+            $ops[] = $token;
+        } elseif ($token === ')') {
+            while (!empty($ops) && end($ops) !== '(') {
+                $output[] = array_pop($ops);
+            }
+            array_pop($ops); // discard the matching '('
+        }
+    }
+    while (!empty($ops)) {
+        $output[] = array_pop($ops);
+    }
+
+    $stack = [];
+    foreach ($output as $token) {
+        if (is_bool($token)) {
+            $stack[] = $token;
+            continue;
+        }
+        $right = array_pop($stack);
+        $left = array_pop($stack);
+        $stack[] = ($token === '&&') ? ($left && $right) : ($left || $right);
+    }
+
+    return (bool) array_pop($stack);
+};
+
 $result_bool = false;
 if (!empty($predicate)) {
-    // phpcs:ignore Squiz.PHP.Eval
-    eval('$result_bool = (bool)(' . $predicate . ');');
+    $result_bool = $evaluate($predicate);
 }
 echo json_encode($result_bool);

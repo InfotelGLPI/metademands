@@ -32,7 +32,7 @@ use GlpiPlugin\Metademands\Field;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
-Session::checkLoginUser();
+Session::checkRight("plugin_metademands", UPDATE);
 
 if (isset($_POST['fields_id'])) {
     $fields_id = $_POST['fields_id'];

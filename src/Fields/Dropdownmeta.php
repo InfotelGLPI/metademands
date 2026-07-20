@@ -758,7 +758,7 @@ class Dropdownmeta extends CommonDBTM
                                             onclick='changeBackgroundColor(\"$varname\",\"md_buttonelt_color\")'>";
 
                             $value = $itemtype . "_" . $items_id;
-                            echo "<input type='radio' class='my_items' name='" . $values['name'] . "' value='$value' $checked>";
+                            echo "<input type='radio' class='my_items' name='" . htmlspecialchars((string) $values['name'], ENT_QUOTES, 'UTF-8') . "' value='$value' $checked>";
 
                             echo "<div class='center'>";
                             $icon = self::getIconForType($itemtype);
@@ -1013,7 +1013,7 @@ class Dropdownmeta extends CommonDBTM
                                             onclick='changeBackgroundColor(\"$varname\",\"md_buttonelt_color\")'>";
 
                                 $value = $itemtype_groups . "_" . $items_id;
-                                echo "<input type='radio' class='my_items' name='" . $values['name'] . "' value='$value' $checked>";
+                                echo "<input type='radio' class='my_items' name='" . htmlspecialchars((string) $values['name'], ENT_QUOTES, 'UTF-8') . "' value='$value' $checked>";
 
                                 echo "<div class='center'>";
                                 $icon = self::getIconForType($itemtype_groups);
@@ -1717,10 +1717,10 @@ class Dropdownmeta extends CommonDBTM
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     if ($values) {
-                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').prop('checked', true).trigger('change');";
+                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").prop('checked', true).trigger('change');";
                     }
                 } else {
-                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                    $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 }
             }
 
@@ -1939,7 +1939,7 @@ class Dropdownmeta extends CommonDBTM
                         $pre_onchange .= "$('[id=\"field[" . $id . "][" . $values . "]\"]').prop('checked', true).trigger('change');";
                     }
                 } else {
-                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                    $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 }
             }
 
@@ -2369,7 +2369,7 @@ class Dropdownmeta extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                 }
-                $result[$field['rank']]['content'] .= $custom_values[$field['value']];
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) $custom_values[$field['value']], ENT_QUOTES, 'UTF-8');
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td>";
                 }

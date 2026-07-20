@@ -51,7 +51,9 @@ if ($metademands->fields['step_by_step_mode'] == 1
     if ($msg) {
         $submitmsg = $msg;
         $submitstepmsg = $msg;
-        echo $msg;
+        // The step message is a plain-text field (see step_form.html.twig, enable_richtext=false)
+        // configured by a form manager and shown to end users: escape it to prevent stored XSS.
+        echo htmlspecialchars((string) $msg, ENT_QUOTES, 'UTF-8');
     } else {
         echo "";
     }

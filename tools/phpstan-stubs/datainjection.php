@@ -27,31 +27,39 @@
  --------------------------------------------------------------------------
  */
 
-Session::checkLoginUser();
-header("Content-Type: text/html; charset=UTF-8");
-//Html::header_nocache();
-if (!isset($_POST['tickets_id'])) {
-   $_POST['tickets_id'] = 0;
+/**
+ * PHPStan-only stub for the optional `datainjection` plugin dependency.
+ *
+ * BasketobjectInjection integrates with datainjection only when that plugin is
+ * installed. This stub lets static analysis resolve the referenced symbols
+ * without relying on the datainjection plugin being present on disk, so the
+ * analysis stays independent of the deployment layout (marketplace/, plugins/,
+ * or absent). It is never loaded at runtime and is stripped from the release
+ * archive (tools/).
+ */
+
+interface PluginDatainjectionInjectionInterface
+{
 }
 
-switch ($_POST['action']) {
-//   case 'setTicketLinkFields':
-//      $tickets = new Ticket();
-//      $tickets->getFromDB($_POST['tickets_id']);
-//      if (!isset($tickets->fields['entities_id'])) {
-//         $tickets->fields['entities_id'] = $_SESSION['glpiactive_entity'];
-//      }
-//
-//      $parent_groups_tickets_data = $tickets->getGroups(CommonITILActor::ASSIGN);
-//
-//      if (!empty($parent_groups_tickets_data)) {
-//         $_SESSION["saveInput"]['Ticket']['_groups_id_requester'] = $parent_groups_tickets_data[0]['groups_id'];
-//      }
-//      $_SESSION["saveInput"]['Ticket']['entities_id'] = $tickets->fields['entities_id'];
-//      $_SESSION["saveInput"]['Ticket']['_link']       = ['tickets_id_2' => $_POST['tickets_id'], 'link' => ''];
-//
-//      echo true;
-//      break;
-//
+class PluginDatainjectionCommonInjectionLib
+{
+    public function __construct($injectionClass, $values, $options = []) {}
 
+    public static function getBlacklistedOptions($itemtype): array
+    {
+        return [];
+    }
+
+    public static function addToSearchOptions($tab, $options, $injectionClass): array
+    {
+        return [];
+    }
+
+    public function processAddOrUpdate(): void {}
+
+    public function getInjectionResults(): array
+    {
+        return [];
+    }
 }

@@ -35,9 +35,18 @@ if (isset($_POST['regex']) && isset($_POST['valeur'])) {
     if (strpos($_POST['valeur'], Dropdown::EMPTY_VALUE) !== false) {
         $_POST['valeur'] = str_replace(Dropdown::EMPTY_VALUE, '', $_POST['valeur']);
     }
-    $saved_limit = ini_set('pcre.backtrack_limit', 100000);
+    // Both pattern and subject are client-supplied: cap their length and tighten
+    // the PCRE backtracking/recursion limits so a pathological (ReDoS) pattern
+    // aborts quickly (reported as invalid_regex) instead of burning CPU.
+    if (strlen($_POST['regex']) > 500 || strlen($_POST['valeur']) > 2000) {
+        echo 'invalid_regex';
+        return;
+    }
+    $saved_bt = ini_set('pcre.backtrack_limit', 10000);
+    $saved_rc = ini_set('pcre.recursion_limit', 1000);
     $result = @preg_match($_POST['regex'], $_POST['valeur']);
-    ini_set('pcre.backtrack_limit', $saved_limit);
+    ini_set('pcre.backtrack_limit', $saved_bt);
+    ini_set('pcre.recursion_limit', $saved_rc);
     if ($result === false) {
         echo 'invalid_regex';
     } elseif ($result) {

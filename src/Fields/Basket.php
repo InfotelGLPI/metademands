@@ -694,7 +694,7 @@ class Basket extends CommonDBTM
         if (count($check_values) > 0) {
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
             }
 
             if ($withquantity == false) {
@@ -829,7 +829,7 @@ class Basket extends CommonDBTM
         if (count($check_values) > 0) {
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
             }
 
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
@@ -1012,7 +1012,7 @@ class Basket extends CommonDBTM
 
             //Si la valeur est en session
             if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('" . $data['value'] . "').trigger('change');";
+                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
             }
 
             if ($withquantity == false) {
@@ -1327,7 +1327,7 @@ class Basket extends CommonDBTM
 
                 if (empty($label = Field::displayField($field->fields['id'], 'name'))) {
                     $label = $field->fields['name'];
-                    echo $label;
+                    echo htmlspecialchars((string) $label);
                 }
 
                 if ($field->fields['type'] == "date_interval") {
@@ -1423,7 +1423,7 @@ class Basket extends CommonDBTM
                         echo Yesno::getFieldValue($values);
                         break;
                     default:
-                        echo $value;
+                        echo htmlspecialchars((string) $value);
                         break;
                 }
                 echo "</td>";
@@ -2139,7 +2139,7 @@ class Basket extends CommonDBTM
                     $result[$field['rank']]['content'] .= "<tr>";
                     $result[$field['rank']]['content'] .= "<td $style_td>";
                 }
-                $result[$field['rank']]['content'] .= $material->fields['reference'];
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) $material->fields['reference'], ENT_QUOTES, 'UTF-8');
 
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td>";
@@ -2148,7 +2148,7 @@ class Basket extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "<td $style_td>";
                 }
-                $result[$field['rank']]['content'] .= ($field['value']);
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) $field['value'], ENT_QUOTES, 'UTF-8');
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td>";
                 }
@@ -2156,7 +2156,7 @@ class Basket extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "<td $style_td>";
                 }
-                $result[$field['rank']]['content'] .= $material->fields['description'];
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) $material->fields['description'], ENT_QUOTES, 'UTF-8');
 
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td>";

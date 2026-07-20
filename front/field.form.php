@@ -116,10 +116,10 @@ if (isset($_POST["add_another"])) {
         unset($_SESSION['glpi_plugin_metademands_fields']);
     }
 
+    // Redirect to an internally computed URL (never rebuild it from the
+    // client-controlled Referer header, which enables an open redirect).
     $meta_id = (int)($_POST["plugin_metademands_metademands_id"] ?? 0);
-    $referer = htmlspecialchars_decode($_SERVER['HTTP_REFERER'] ?? '');
-    $sep = strpos($referer, '?') !== false ? '&' : '?';
-    Html::redirect($referer . $sep . 'open_add_field=' . $meta_id);
+    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $meta_id . "&open_add_field=" . $meta_id);
 } elseif (isset($_POST["add"])) {
     if (isset($_POST["plugin_metademands_metademands_id"])) {
         $meta = new Metademand();

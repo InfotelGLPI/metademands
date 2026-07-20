@@ -1420,7 +1420,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                                 if (empty(trim($field->fields['name']))) {
                                     echo " ( ID - " . $value['parent_field_id'] . ")";
                                 } else {
-                                    echo " (" . $field->fields['name'] . ")";
+                                    echo " (" . htmlspecialchars((string) $field->fields['name'], ENT_QUOTES, 'UTF-8') . ")";
                                 }
                             }
                         }
@@ -2537,11 +2537,11 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "<div $required class='col-form-label metademand-label'>";
 
                     if ($data['icon']) {
-                        $icon = $data['icon'];
+                        $icon = htmlspecialchars((string) $data['icon'], ENT_QUOTES, 'UTF-8');
                         echo "<i class='ti $icon'></i>&nbsp;";
                     }
 
-                    echo $label . " $upload";
+                    echo htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8') . " $upload";
 
                     if ($debug) {
                         echo " (ID:" . $data['id'] . ")";
@@ -2924,7 +2924,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                                                     foreach ($parameters['custom_values'] as $key => $label) {
                                                         $checked = isset($checkboxes[$key]) ? 1 : 0;
                                                         if ($checked) {
-                                                            $custom_checkbox[] .= $label;
+                                                            $custom_checkbox[] = $label;
                                                             $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='checkbox'>";
                                                         }
                                                     }

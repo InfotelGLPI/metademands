@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Stepform;
 use GlpiPlugin\Metademands\Stepform_Value;
@@ -38,13 +39,38 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO = false;
-
 $metademands = new Metademand();
 $wizard      = new Wizard();
 $form        = new Stepform();
 
-if ($form->getFromDB($_POST['plugin_metademands_stepforms_id'])) {
+// A step-form may only be loaded by its owner, its direct destinee, or a member
+// of the destination group (when not assigned to a specific user). Mirrors the
+// access model of Stepform::getWaitingForms() and prevents IDOR by id enumeration.
+$form_id  = (int) ($_POST['plugin_metademands_stepforms_id'] ?? 0);
+$users_id = Session::getLoginUserID();
+
+$can_load = false;
+if ($form->getFromDB($form_id)) {
+    if (
+        (int) $form->fields['users_id'] === $users_id
+        || (int) $form->fields['users_id_dest'] === $users_id
+    ) {
+        $can_load = true;
+    } elseif (
+        (int) $form->fields['users_id_dest'] === 0
+        && (int) $form->fields['groups_id_dest'] > 0
+    ) {
+        $group_user = new Group_User();
+        $can_load = (bool) $group_user->getFromDBByCrit([
+            'users_id'  => $users_id,
+            'groups_id' => (int) $form->fields['groups_id_dest'],
+        ]);
+    }
+}
+if (!$can_load) {
+    throw new AccessDeniedHttpException();
+}
+
     unset($_SESSION['plugin_metademands']);
     $metademands->getFromDB($_POST['metademands_id']);
     Stepform_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_stepforms_id']);
@@ -68,11 +94,5 @@ if ($form->getFromDB($_POST['plugin_metademands_stepforms_id'])) {
 //    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_stepforms_id']               = $_POST['plugin_metademands_stepforms_id'];
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['block_id']                                      = $form->fields['block_id'];
-} else {
-    $KO = true;
-}
-if ($KO === false) {
-    echo 0;
-} else {
-    echo $KO;
-}
+
+echo 0;

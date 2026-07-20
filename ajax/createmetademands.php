@@ -34,6 +34,7 @@ use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Metademands\Group;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 //use PluginOrderprojectsMetademand;
 
 if (isset($_POST['see_basket_summary'])) {
@@ -141,7 +142,15 @@ if ($nofreetable == false) {
             }
         }
 
-        $metademands->getFromDB($_POST['form_metademands_id']);
+        // Rendering a meta-demand summary discloses its structure: enforce the same access
+        // check as the sibling branch below (prevents cross-entity/rights enumeration by id).
+        if (
+            !$metademands->getFromDB($_POST['form_metademands_id'])
+            || !($metademands->canCreate() || Group::isUserHaveRight($_POST['form_metademands_id']))
+            || !Session::haveAccessToEntity($metademands->fields['entities_id'])
+        ) {
+            throw new AccessDeniedHttpException();
+        }
 
         if ($metademands->fields['is_basket'] == 1) {
             echo Basket::displayBasketSummary($post);

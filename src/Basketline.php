@@ -432,9 +432,15 @@ class Basketline extends CommonDBTM
             foreach ($input['field_basket_' . $line] as $fields_id => $value) {
 
                 //get id from form_metademands_id & $id
-                $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
-                    'plugin_metademands_fields_id' => $fields_id,
-                    'line' => $input['update_basket_line']]);
+                // Scope to the current user so a self-service user cannot overwrite another user's basket line (IDOR).
+                if (
+                    !$this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
+                        'plugin_metademands_fields_id' => $fields_id,
+                        'line' => $input['update_basket_line'],
+                        'users_id' => Session::getLoginUserID()])
+                ) {
+                    continue;
+                }
 
                 $value2 = "";
                 if ($this->fields['name'] != "ITILCategory_Metademands") {
@@ -475,12 +481,16 @@ class Basketline extends CommonDBTM
 
         if (isset($input['basket_plugin_servicecatalog_itilcategories_id'])) {
 
-            $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
-                'name' => "ITILCategory_Metademands",
-                'line' => $input['update_basket_line']]);
-
-            $this->update(['value' => $input['basket_plugin_servicecatalog_itilcategories_id'],
-                'id' => $this->fields['id']]);
+            // Same IDOR guard: only update the ITIL category line owned by the current user.
+            if (
+                $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
+                    'name' => "ITILCategory_Metademands",
+                    'line' => $input['update_basket_line'],
+                    'users_id' => Session::getLoginUserID()])
+            ) {
+                $this->update(['value' => $input['basket_plugin_servicecatalog_itilcategories_id'],
+                    'id' => $this->fields['id']]);
+            }
         }
 
 
@@ -504,9 +514,16 @@ class Basketline extends CommonDBTM
     function deleteFileFromBasket($input)
     {
 
-        $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['metademands_id'],
-            'plugin_metademands_fields_id' => $input['plugin_metademands_fields_id'],
-            'line' => $input['idline']]);
+        // Scope the lookup to the current user: basket line numbers are small shared integers,
+        // so without users_id a self-service user could delete another user's attached file (IDOR).
+        if (
+            !$this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['metademands_id'],
+                'plugin_metademands_fields_id' => $input['plugin_metademands_fields_id'],
+                'line' => $input['idline'],
+                'users_id' => Session::getLoginUserID()])
+        ) {
+            return;
+        }
 
         $files = json_decode($this->fields['value'], 1);
         unset($files[$input['id']]);

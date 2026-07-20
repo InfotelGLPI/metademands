@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Draft_Value;
 use GlpiPlugin\Metademands\Field;
@@ -195,7 +196,12 @@ if (isset($_POST['save_draft'])) {
             $inputs['date'] = date('Y-m-d H:i:s');
 
             if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
-                $draft_id = $_POST['plugin_metademands_drafts_id'];
+                $draft_id = (int) $_POST['plugin_metademands_drafts_id'];
+
+                // Drafts are personal: only the owner may overwrite one (prevents IDOR).
+                if (!$drafts->getFromDB($draft_id) || (int) $drafts->fields['users_id'] !== Session::getLoginUserID()) {
+                    throw new AccessDeniedHttpException();
+                }
 
                 $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
                 if (count($metademands_data)) {

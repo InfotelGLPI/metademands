@@ -127,6 +127,19 @@ class Ldapdropdown extends CommonDBTM
         $param = new FieldParameter();
         if ($param->getFromDB($post['condition']['plugin_metademands_fieldparameters_id'])) {
 
+            // Only serve LDAP values when the referenced field parameter belongs to a metademand
+            // the caller can actually access (rights + entity scope) — do not trust session alone.
+            $field = new Field();
+            $meta  = new Metademand();
+            if (
+                !$field->getFromDB((int) $param->fields['plugin_metademands_fields_id'])
+                || !$meta->getFromDB((int) $field->fields['plugin_metademands_metademands_id'])
+                || !($meta->canCreate() || \GlpiPlugin\Metademands\Group::isUserHaveRight($meta->getID()))
+                || !\Session::haveAccessToEntity((int) $meta->fields['entities_id'])
+            ) {
+                return "";
+            }
+
             $values = ['ldap_auth'=> $param->fields['authldaps_id'],
                 'ldap_attribute' => $param->fields['ldap_attribute'],
                 'ldap_filter' => html_entity_decode($param->fields['ldap_filter'])];

@@ -41,7 +41,7 @@ $ticketField = new TicketField();
 
 if (isset($_POST["add"])) {
    // Check update rights for fields
-    $ticketField->can(-1, UPDATE, $_POST);
+    $ticketField->check(-1, UPDATE, $_POST);
     $_POST['value'] = $_POST[$_POST['field']];
     $_POST['id'] = $ticketField->add($_POST);
 
@@ -49,16 +49,18 @@ if (isset($_POST["add"])) {
 } elseif (isset($_POST["update"])) {
    // Check update rights for fields
     $_POST['value'] = $_POST[$_POST['field']];
-    $ticketField->can(-1, UPDATE, $_POST);
+    $ticketField->check(-1, UPDATE, $_POST);
     $ticketField->update($_POST);
 
     Html::back();
 } elseif (isset($_POST["purge"])) {
    // Check update rights for fields
-    $ticketField->can(-1, UPDATE, $_POST);
+    $ticketField->check(-1, UPDATE, $_POST);
     $ticketField->delete($_POST, 1);
     $ticketField->redirectToList();
 } elseif (isset($_POST['template_sync'])) {
+    // Syncing mandatory template fields is a configuration change: require the plugin update right.
+    Session::checkRight('plugin_metademands', UPDATE);
     TicketField::updateMandatoryTicketFields($_POST);
     Html::back();
 } else {

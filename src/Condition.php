@@ -610,7 +610,7 @@ class Condition extends CommonDBChild
                 $item = new $itemType();
                 $item->getFromDB($condition->fields['items_id']);
                 $url = $item->getLinkURL();
-                echo "<a href='$url' style='color:royalblue;'>" . $item->fields['name'] . " (" . $item->fields['id'] . ") </a>";
+                echo "<a href='$url' style='color:royalblue;'>" . htmlspecialchars((string) $item->fields['name'], ENT_QUOTES, 'UTF-8') . " (" . $item->fields['id'] . ") </a>";
                 break;
 
             case 'text':

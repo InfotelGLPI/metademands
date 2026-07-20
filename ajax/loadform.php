@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Form;
 use GlpiPlugin\Metademands\Form_Value;
 use GlpiPlugin\Metademands\Metademand;
@@ -38,14 +39,21 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO = false;
-
 $metademands = new Metademand();
 $wizard      = new Wizard();
 $form      = new Form();
 
+// Only the owner may load a form, except public models (is_model && !is_private)
+// which are meant to be shared. Prevents IDOR on other users' private forms.
+$form_id = (int) ($_POST['plugin_metademands_forms_id'] ?? 0);
+if (
+    !$form->getFromDB($form_id)
+    || ((int) $form->fields['users_id'] !== Session::getLoginUserID()
+        && !((int) $form->fields['is_model'] === 1 && (int) $form->fields['is_private'] === 0))
+) {
+    throw new AccessDeniedHttpException();
+}
 
-if ($form->getFromDB($_POST['plugin_metademands_forms_id'])) {
     //   unset($_SESSION['plugin_metademands']);
     $metademands->getFromDB($_POST['metademands_id']);
 
@@ -79,11 +87,5 @@ if ($form->getFromDB($_POST['plugin_metademands_forms_id'])) {
     //   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id']                  = $_POST['plugin_metademands_forms_id'];
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name']                = $form_name;
-} else {
-    $KO = true;
-}
-if ($KO === false) {
-    echo 0;
-} else {
-    echo $KO;
-}
+
+echo 0;

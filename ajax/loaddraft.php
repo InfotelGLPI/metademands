@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Draft_Value;
 use GlpiPlugin\Metademands\Metademand;
@@ -38,13 +39,16 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO = false;
-
 $metademands = new Metademand();
 $wizard      = new Wizard();
 $draft      = new Draft();
 
-if ($draft->getFromDB($_POST['plugin_metademands_drafts_id'])) {
+// Drafts are personal: only the owner may load one (prevents IDOR).
+$draft_id = (int) ($_POST['plugin_metademands_drafts_id'] ?? 0);
+if (!$draft->getFromDB($draft_id) || (int) $draft->fields['users_id'] !== Session::getLoginUserID()) {
+    throw new AccessDeniedHttpException();
+}
+
     $metademands->getFromDB($_POST['metademands_id']);
     Draft_Value::loadDraftValues($_POST['metademands_id'], $_POST['plugin_metademands_drafts_id']);
     $draft_name = $draft->getField('name');
@@ -68,11 +72,5 @@ if ($draft->getFromDB($_POST['plugin_metademands_drafts_id'])) {
 //   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id']                  = $_POST['plugin_metademands_drafts_id'];
     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name']                = $draft_name;
-} else {
-    $KO = true;
-}
-if ($KO === false) {
-    echo 0;
-} else {
-    echo $KO;
-}
+
+echo 0;

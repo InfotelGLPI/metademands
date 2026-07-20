@@ -1,0 +1,3715 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Loose comparison using \=\= between 0 and 0 will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: ajax/adddraft.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 3
+			path: ajax/adddraft.php
+
+		-
+			message: '#^Loose comparison using \=\= between 0 and 0 will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: ajax/addform.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: ajax/addform.php
+
+		-
+			message: '#^Loose comparison using \=\= between false and false will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: ajax/createmetademands.php
+
+		-
+			message: '#^Variable \$parameters might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: ajax/createmetademands.php
+
+		-
+			message: '#^Variable \$post might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: ajax/createmetademands.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: ajax/dropdownITILCategories.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: ajax/dropdownMassiveActionField.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: ajax/dropdownMassiveActionField.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: ajax/dropdownMassiveActionField.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: ajax/getNextMessage.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: ajax/getldapvalues.php
+
+		-
+			message: '#^Class AuthLDAP referenced with incorrect case\: AuthLdap\.$#'
+			identifier: class.nameCase
+			count: 1
+			path: ajax/ldap_filter.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 3
+			path: ajax/massiveaction.php
+
+		-
+			message: '#^Parameter \#5 \$preview of static method GlpiPlugin\\Metademands\\Wizard\:\:showMetademands\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ajax/previewMetademand.php
+
+		-
+			message: '#^Variable \$fields_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: ajax/show_conditions.php
+
+		-
+			message: '#^Variable \$rand might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: ajax/show_conditions.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Metademand\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ajax/totalrow.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class PluginOrdermaterialMetademand\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ajax/totalrow.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Metademand not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ajax/totalrow.php
+
+		-
+			message: '#^Instantiated class PluginOrdermaterialMetademand not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ajax/totalrow.php
+
+		-
+			message: '#^Instantiated class Glpi\\Exception\\Http\\ForbiddenHttpException not found\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ajax/translations.php
+
+		-
+			message: '#^Throwing object of an unknown class Glpi\\Exception\\Http\\ForbiddenHttpException\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ajax/translations.php
+
+		-
+			message: '#^Variable \$criteria might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: ajax/type_object.php
+
+		-
+			message: '#^Loose comparison using \=\= between 0 and 0 will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: ajax/updateform.php
+
+		-
+			message: '#^Call to an undefined method CommonDBTM\:\:showExistingForm\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ajax/viewexistingsubitem.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/basketobject.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/basketobjecttranslation.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/basketobjecttypetranslation.form.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: front/condition.form.php
+
+		-
+			message: '#^Variable \$type might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: front/condition.form.php
+
+		-
+			message: '#^Call to static method showDefaultHeaderHelpdesk\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/draft.form.php
+
+		-
+			message: '#^Call to static method showDefaultHeaderHelpdesk\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/draft.php
+
+		-
+			message: '#^Call to static method showDefaultHeaderHelpdesk\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/draftcreation.php
+
+		-
+			message: '#^Variable \$send might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: front/export.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/field.form.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and 0 will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: front/field.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/fieldcustomvalue.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/fieldoption.form.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and 0 will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: front/fieldparameter.form.php
+
+		-
+			message: '#^Variable \$custom_values might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: front/fieldparameter.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/fieldtranslation.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/freetablefield.form.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: front/interticketfollowup.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/metademand.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/metademandtranslation.form.php
+
+		-
+			message: '#^Result of static method Html\:\:popFooter\(\) \(void\) is used\.$#'
+			identifier: staticMethod.void
+			count: 2
+			path: front/nextGroup.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/step.form.php
+
+		-
+			message: '#^Call to static method showDefaultHeaderHelpdesk\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/stepform.php
+
+		-
+			message: '#^Call to static method showNavBarFooter\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/stepform.php
+
+		-
+			message: '#^Offset ''plugin_metademands…'' on non\-empty\-array\<mixed\> in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: front/task.form.php
+
+		-
+			message: '#^Variable \$input in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: front/task.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/ticketfield.form.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/tools.form.php
+
+		-
+			message: '#^Parameter \#2 \$history of method CommonDBTM\:\:update\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/tools.form.php
+
+		-
+			message: '#^Call to static method showDefaultHeaderHelpdesk\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/wizard.form.php
+
+		-
+			message: '#^Call to static method showNavBarFooter\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Main\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/wizard.form.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: front/wizard.form.php
+
+		-
+			message: '#^Constant PLUGIN_SERVICECATALOG_WEBDIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: front/wizard.form.php
+
+		-
+			message: '#^Parameter \#5 \$on_order of static method GlpiPlugin\\Metademands\\Wizard\:\:checkvalues\(\) expects false, true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/wizard.form.php
+
+		-
+			message: '#^Variable \$content might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: front/wizard.form.php
+
+		-
+			message: '#^Array has 3 duplicate keys with value ''glpi_plugin_metademands_tickettasks'' \("glpi_plugin_metademands_tickettasks", "glpi_plugin_metademands_tickettasks", "glpi_plugin_metademands_tickettasks"\)\.$#'
+			identifier: array.duplicateKey
+			count: 2
+			path: hook.php
+
+		-
+			message: '#^Function plugin_metademands_addLeftJoin\(\) has invalid return type Left\.$#'
+			identifier: class.notFound
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^Function plugin_metademands_addLeftJoin\(\) never returns Left so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^Function plugin_metademands_addLeftJoin\(\) should return Left\|string but returns array\<string, array\<string, array\<string, array\<array\<string, array\<string, int\>\>\|string\>\>\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^Missing PHPDoc tag @var for global variable \$INJECTABLE_TYPES$#'
+			identifier: glpi.missingGlobalVarType
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 3
+			path: hook.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 7
+			path: hook.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''ITILCategory'' \(''ITILCategory'', ''ITILCategory''\)\.$#'
+			identifier: array.duplicateKey
+			count: 2
+			path: setup.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\ContractType not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: setup.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: setup.php
+
+		-
+			message: '#^Parameter \#1 \$provider of method Glpi\\Form\\ServiceCatalog\\HomeSearchManager\:\:registerPluginProvider\(\) expects Glpi\\Form\\ServiceCatalog\\Provider\\LeafProviderInterface\<covariant Glpi\\Form\\ServiceCatalog\\ServiceCatalogLeafInterface\>, GlpiPlugin\\Metademands\\Form\\MetademandProvider given\.$#'
+			identifier: argument.type
+			count: 1
+			path: setup.php
+
+		-
+			message: '#^Parameter \#1 \$provider of method Glpi\\Form\\ServiceCatalog\\ServiceCatalogManager\:\:registerPluginProvider\(\) expects Glpi\\Form\\ServiceCatalog\\Provider\\ItemProviderInterface\<covariant Glpi\\Form\\ServiceCatalog\\ServiceCatalogItemInterface\>, GlpiPlugin\\Metademands\\Form\\MetademandProvider given\.$#'
+			identifier: argument.type
+			count: 1
+			path: setup.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: setup.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/AbstractMetademandTranslation.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<array\{_prefix_filename\: mixed, _tag_filename\: mixed, _filename\: mixed\}\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Basketline.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: src/Basketline.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$preview$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Basketline.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/Basketline.php
+
+		-
+			message: '#^Parameter \#2 \$associative of function json_decode expects bool\|null, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Basketline.php
+
+		-
+			message: '#^Call to static method rawSearchOptionsToAdd\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Material\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Basketobject.php
+
+		-
+			message: '#^Call to static method rawSearchOptionsToAdd\(\) on an unknown class PluginOrdermaterialMaterial\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Basketobject.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Basketobject.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/BasketobjectInjection.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/BasketobjectTranslation.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Basketobjecttype.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/BasketobjecttypeTranslation.php
+
+		-
+			message: '#^Property GlpiPlugin\\Metademands\\CheckSchema\:\:\$table is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/CheckSchema.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/CheckSchema.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/CheckSchema.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Condition.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: src/Condition.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Condition.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/Condition.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Condition.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:showConfigForm\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Config.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Config\:\:showConfigForm\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Config.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Config.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Configstep.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Configstep\:\:getTabNameForItem\(\) should return array\|string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Configstep.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Configstep\:\:getTabNameForItem\(\) should return array\|string but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Configstep.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Configstep\:\:showForMetademand\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Configstep.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Configstep.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Configstep.php
+
+		-
+			message: '#^Parameter \#5 \$preview of static method GlpiPlugin\\Metademands\\Wizard\:\:constructForm\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Draft.php
+
+		-
+			message: '#^Static method CommonGLPI\:\:getMenuName\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Draft.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Export.php
+
+		-
+			message: '#^Instanceof between mixed and CommonTreeDropdown will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: src/Export.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<array\{id\: mixed, uuid\: string, name\: mixed, type\: mixed, is_mandatory\: mixed, vertical_rank\: mixed, horizontal_rank\: null, description\: mixed, \.\.\.\}\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: src/Export.php
+
+		-
+			message: '#^Right side of \|\| is always true\.$#'
+			identifier: booleanOr.rightAlwaysTrue
+			count: 1
+			path: src/Export.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Export.php
+
+		-
+			message: '#^Variable \$file might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Export.php
+
+		-
+			message: '#^Variable \$questions might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Export.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 3
+			path: src/Export.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''display_type'' \(''display_type'', ''display_type''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Binary operation "\." between ''dropdown_type'' and GlpiPlugin\\Metademands\\Fields\\Dropdown results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 10
+			path: src/Field.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{\}\|array\{mixed\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-list\<mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Loose comparison using \!\= between ''Monitor''\|''Peripheral''\|''Phone''\|''Printer'' and ''Software'' will always evaluate to true\.$#'
+			identifier: notEqual.alwaysTrue
+			count: 2
+			path: src/Field.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:addPluginTextFieldItems\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownFieldItems\(\) should return int\|string\|false but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownFieldTypes\(\) should return GlpiPlugin\\Metademands\\Fields\\Dropdown but returns int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownMyDevices\(\) with return type void returns string but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:getCloneRelations\(\) should return array\<''CommonDBTM''\> but returns array\{''GlpiPlugin\\\\Metademands\\\\FieldParameter'', ''GlpiPlugin\\\\Metademands\\\\FieldOption'', ''GlpiPlugin\\\\Metademands\\\\FieldCustomvalue'', ''GlpiPlugin\\\\Metademands\\\\FieldTranslation'', ''GlpiPlugin\\\\Metademands\\\\Freetablefield''\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$config_link$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$filter$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     \* ", expected type at offset 119 on line 7$#'
+			identifier: phpDoc.parseError
+			count: 2
+			path: src/Field.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 3
+			path: src/Field.php
+
+		-
+			message: '#^Parameter \#2 \$right of static method Session\:\:haveRight\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Field.php
+
+		-
+			message: '#^Result of static method GlpiPlugin\\Metademands\\Field\:\:addPluginTextFieldItems\(\) \(void\) is used\.$#'
+			identifier: staticMethod.void
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 4
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$field_custom might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$field_parentmeta might not be defined\.$#'
+			identifier: variable.undefined
+			count: 6
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$fields in empty\(\) is never defined\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$item in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$meta_parent_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$newcase might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$options might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: src/Field.php
+
+		-
+			message: '#^Variable \$parameters might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Field.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Field.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\n     \*", expected variable at offset 80 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$comment$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$default$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$display_comment$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$display_default$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$options$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$values$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/FieldCustomvalue.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Loose comparison using \=\= between true and ''checkbox'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Loose comparison using \=\= between true and ''dropdown'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Loose comparison using \=\= between true and ''dropdown_meta'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Loose comparison using \=\= between true and ''dropdown_multiple'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Loose comparison using \=\= between true and ''dropdown_object'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\FieldOption\:\:showChildsBlocksDropdown\(\) should return int\|string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\FieldOption\:\:showLinkHtml\(\) should return string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/FieldOption.php
+
+		-
+			message: '#^Offset mixed on array\{\} in isset\(\) does not exist\.$#'
+			identifier: isset.offset
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\r\\n     \*", expected variable at offset 85 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$display$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$field$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$hidden$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$task$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 116 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Variable \$arrayValues on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Variable \$childs_blocks in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 2
+			path: src/FieldOption.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 11
+			path: src/FieldOption.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/FieldOption.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Call to method find\(\) on an unknown class PluginFieldsContainer\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Call to method find\(\) on an unknown class PluginFieldsField\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Instantiated class PluginFieldsContainer not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Instantiated class PluginFieldsField not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\FieldParameter\:\:_serialize\(\) should return string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/FieldParameter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\n     \*", expected variable at offset 80 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 2
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Variable \$fieldformvalue might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Variable \$newid might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/FieldParameter.php
+
+		-
+			message: '#^Variable \$tt might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/FieldParameter.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/FieldTranslation.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Orderfollowup\\Material\.$#'
+			identifier: class.notFound
+			count: 15
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class PluginOrdermaterialMaterial\.$#'
+			identifier: class.notFound
+			count: 12
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to method find\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Order\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Material\.$#'
+			identifier: class.notFound
+			count: 10
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Metademand\.$#'
+			identifier: class.notFound
+			count: 21
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class PluginOrdermaterialMaterial\.$#'
+			identifier: class.notFound
+			count: 9
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class PluginOrdermaterialMetademand\.$#'
+			identifier: class.notFound
+			count: 16
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to static method getTable\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Material\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to static method getTable\(\) on an unknown class PluginOrdermaterialMaterial\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Material not found\.$#'
+			identifier: class.notFound
+			count: 10
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Metademand not found\.$#'
+			identifier: class.notFound
+			count: 21
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Order not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Instantiated class PluginOrdermaterialMaterial not found\.$#'
+			identifier: class.notFound
+			count: 9
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Instantiated class PluginOrdermaterialMetademand not found\.$#'
+			identifier: class.notFound
+			count: 16
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Fields\\Basket\:\:checkMandatoryFields\(\) should return bool but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Variable \$value in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 2
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Basket.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: src/Fields/Checkbox.php
+
+		-
+			message: '#^Call to function is_array\(\) with list will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Checkbox.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Checkbox.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Date.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Dateinterval.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Datetime.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Datetimeinterval.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: src/Fields/Dropdown.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Fields/Dropdown.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 2
+			path: src/Fields/Dropdown.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$DB contains unknown class GlpiPlugin\\Metademands\\Fields\\DBmysql\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Fields/Dropdown.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Dropdown.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Class GlpiPlugin\\Badges\\Badge not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 4
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Loose comparison using \=\= between 0 and 1 will always evaluate to false\.$#'
+			identifier: equal.alwaysFalse
+			count: 1
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Parameter \#2 \$id of static method Dropdown\:\:getDropdownName\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Parameter \#2 \$right of static method Session\:\:haveRight\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 2
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Result of static method GlpiPlugin\\Metademands\\Field\:\:dropdownMyDevices\(\) \(void\) is used\.$#'
+			identifier: staticMethod.void
+			count: 1
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Variable \$itemtype might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Dropdownmeta.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<mixed, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Fields/Dropdownmultiple.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 5
+			path: src/Fields/Dropdownmultiple.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Fields/Dropdownmultiple.php
+
+		-
+			message: '#^Call to function is_array\(\) with list will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Dropdownmultiple.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 6
+			path: src/Fields/Dropdownmultiple.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Dropdownmultiple.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Fields/Dropdownobject.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Fields/Dropdownobject.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: src/Fields/Dropdownobject.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: src/Fields/Dropdownobject.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Dropdownobject.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Email.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Email.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Orderfollowup\\Config\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Config\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Config not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Fields\\Freetable\:\:checkMandatoryFields\(\) should return bool but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^Variable \$total might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Freetable.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Information.php
+
+		-
+			message: '#^Parameter \#2 \$associative of function json_decode expects bool\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Fields/Ldapdropdown.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Fields/Ldapdropdown.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Ldapdropdown.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Link.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Number.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: src/Fields/Radio.php
+
+		-
+			message: '#^Call to function is_array\(\) with list will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Radio.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Radio.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Range.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Signature.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Tel.php
+
+		-
+			message: '#^Comparison operation "\>" between 0 and 0 is always false\.$#'
+			identifier: greater.alwaysFalse
+			count: 1
+			path: src/Fields/Tel.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Tel.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Text.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Text.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Textarea.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: src/Fields/Textarea.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$name$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Fields/Textarea.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Textarea.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Time.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Title.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Titleblock.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$fields$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Fields/Upload.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Upload.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Fields/Url.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Url.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<non\-empty\-list\<mixed\>\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: src/Fields/Yesno.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Fields/Yesno.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Form.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Form.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 3
+			path: src/Form.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Form\:\:showFormsForItilObject\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/Form.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Form\:\:showFormsForUser\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/Form.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Form\:\:showPublicFormsForMetademand\(\) should return string but returns true\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Form.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 3
+			path: src/Form.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Form\\MetademandProvider\:\:getItems\(\) should return array\<GlpiPlugin\\Metademands\\Form\\MetademandProvider\> but returns list\<GlpiPlugin\\Metademands\\Metademand\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Form/MetademandProvider.php
+
+		-
+			message: '#^Type GlpiPlugin\\Metademands\\Form\\MetademandProvider in generic type Glpi\\Form\\ServiceCatalog\\Provider\\LeafProviderInterface\<GlpiPlugin\\Metademands\\Form\\MetademandProvider\> in PHPDoc tag @implements is not subtype of template type T of Glpi\\Form\\ServiceCatalog\\ServiceCatalogLeafInterface of interface Glpi\\Form\\ServiceCatalog\\Provider\\LeafProviderInterface\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Form/MetademandProvider.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Freetablefield.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\r\\n     \*", expected variable at offset 83 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Freetablefield.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$display_comment$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Freetablefield.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$display_default$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Freetablefield.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/Freetablefield.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Freetablefield.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Group\:\:showConfigForMetademand\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Group\:\:showForMetademand\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/GroupConfig.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/GroupConfig.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Interticketfollowup\:\:getDefaultValues\(\) should return array but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Interticketfollowup.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Interticketfollowup\:\:prepareInputForAdd\(\) should return array but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Interticketfollowup.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Interticketfollowup\:\:showForm\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Interticketfollowup.php
+
+		-
+			message: '#^Variable \$follows might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Interticketfollowup.php
+
+		-
+			message: '#^Variable \$list_tickets might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Interticketfollowup.php
+
+		-
+			message: '#^Offset ''name'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/MailTask.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/MailTask.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/MailTask.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 9
+			path: src/Metademand.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 4
+			path: src/Metademand.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class PluginFieldsField\.$#'
+			identifier: class.notFound
+			count: 20
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to an undefined method CommonDBTM\:\:executeDuplicate\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to method getField\(\) on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class PluginFieldsContainer\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class PluginFieldsField\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Metademand\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to method updateFieldsValues\(\) on an unknown class PluginFieldsContainer\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Call to static method getUsedConfig\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Category\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Cannot assign offset ''content'' to string\.$#'
+			identifier: offsetAssign.dimType
+			count: 23
+			path: src/Metademand.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 8
+			path: src/Metademand.php
+
+		-
+			message: '#^Constant PLUGIN_SERVICECATALOG_WEBDIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Metademand not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Instantiated class PluginFieldsContainer not found\.$#'
+			identifier: class.notFound
+			count: 4
+			path: src/Metademand.php
+
+		-
+			message: '#^Instantiated class PluginFieldsField not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 7
+			path: src/Metademand.php
+
+		-
+			message: '#^Loose comparison using \=\= between ''Ticket'' and ''Ticket'' will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Metademand\:\:addObjects\(\) should return array but returns false\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Metademand\:\:showPluginForTicket\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Offset ''tasks'' on list\<mixed\> in isset\(\) does not exist\.$#'
+			identifier: isset.offset
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\r\\n     \* ", expected type at offset 150 on line 8$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 8
+			path: src/Metademand.php
+
+		-
+			message: '#^Parameter \#1 \$checkitem \(null\) of method GlpiPlugin\\Metademands\\Metademand\:\:getSpecificMassiveActions\(\) should be compatible with parameter \$checkitem \(CommonDBTM\) of method CommonDBTM\:\:getSpecificMassiveActions\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Parameter \#1 \$history \(int\) of method GlpiPlugin\\Metademands\\Metademand\:\:post_updateItem\(\) should be compatible with parameter \$history \(bool\) of method CommonDBTM\:\:post_updateItem\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Parameter \#1 \$history of method CommonDBTM\:\:post_updateItem\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Parameter \#2 \$length of static method Html\:\:resume_text\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Parameter \#6 \$bypass of static method GlpiPlugin\\Metademands\\Metademand\:\:getContentForUser\(\) expects false, true given\.$#'
+			identifier: argument.type
+			count: 20
+			path: src/Metademand.php
+
+		-
+			message: '#^Property GlpiPlugin\\Metademands\\Metademand\:\:\$config is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Static method GlpiPlugin\\Metademands\\Metademand\:\:compareValueToOption\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Undefined variable\: \$PLUGIN_HOOKS$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$add_validation might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$childticket might not be defined\.$#'
+			identifier: variable.undefined
+			count: 11
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$colors in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$comment on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$icon might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$icon_color might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$inputField might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$inputFieldMain might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$params might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$parent_tickets_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$resource might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$resource_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$resultat in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$validatortype might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^Variable \$values_form might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Metademand.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Access to an undefined property GlpiPlugin\\Metademands\\MetademandPdf\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Access to an undefined property GlpiPlugin\\Metademands\\MetademandPdf\:\:\$label_width\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Access to an undefined property GlpiPlugin\\Metademands\\MetademandPdf\:\:\$title_width\.$#'
+			identifier: property.notFound
+			count: 9
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Call to method getFromDBByCrit\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Metademand\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Call to static method displayFieldPDF\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Freeinput\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Orderfollowup\\Metademand not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 2
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Parameter \#10 \$size of method GlpiPlugin\\Metademands\\MetademandPdf\:\:MultiCellValue\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 24
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Parameter \#2 \$associative of function json_decode expects bool\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Parameter \#2 \$id of static method Dropdown\:\:getDropdownName\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Parameter \#7 \$bold of method GlpiPlugin\\Metademands\\MetademandPdf\:\:CellTitleValue\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 8
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Parameter \#9 \$bold of method GlpiPlugin\\Metademands\\MetademandPdf\:\:MultiCellValue\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 25
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Variable \$data might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Variable \$header might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Variable \$label2 might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^Variable \$w might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/MetademandPdf.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/MetademandTask.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 3
+			path: src/MetademandTask.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/MetademandTask.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/MetademandTranslation.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class PluginFieldsContainer\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class PluginFieldsField\.$#'
+			identifier: class.notFound
+			count: 24
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class PluginFieldsContainer\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class PluginFieldsField\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Expression "\$f\[''plugin_metademands_fields_id''\]" on a separate line does not do anything\.$#'
+			identifier: expr.resultUnused
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Instantiated class PluginFieldsContainer not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Instantiated class PluginFieldsField not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 2
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\MetademandValidation\:\:getSpecificValueToDisplay\(\) has invalid return type GlpiPlugin\\Metademands\\a\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\MetademandValidation\:\:getSpecificValueToDisplay\(\) should return GlpiPlugin\\Metademands\\a but returns string\.$#'
+			identifier: return.type
+			count: 2
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/MetademandValidation.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 21
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method getField\(\) on an unknown class GlpiPlugin\\Resources\\ContractType\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method getField\(\) on an unknown class GlpiPlugin\\Resources\\Service\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Resources\\ContractType\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Resources\\Service\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method useSecondaryService\(\) on an unknown class GlpiPlugin\\Resources\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Call to method useServiceDepartmentAD\(\) on an unknown class GlpiPlugin\\Resources\\Config\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\ContractType not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Resources\\Config not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Resources\\ContractType not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Resources\\Service not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Metademand_Resource\:\:showPluginForResource\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Parameter \$resources of method GlpiPlugin\\Metademands\\Metademand_Resource\:\:redirectFormForResource\(\) has invalid type GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Metademand_Resource.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getAllStatusArray\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$entity \(string\) of method GlpiPlugin\\Metademands\\NotificationTargetInterticketfollowup\:\:__construct\(\) is incompatible with type int\|null\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$event \(string\) of method GlpiPlugin\\Metademands\\NotificationTargetInterticketfollowup\:\:addNotificationTargets\(\) is incompatible with type int\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\NotificationTargetInterticketfollowup\:\:addSpecificTargets\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 2
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Result of method DBmysqlIterator\:\:next\(\) \(void\) is used\.$#'
+			identifier: method.void
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Variable \$list_tickets might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Variable \$tickets_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/NotificationTargetInterticketfollowup.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$event \(string\) of method GlpiPlugin\\Metademands\\NotificationTargetStepform\:\:addNotificationTargets\(\) is incompatible with type int\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 3
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\NotificationTargetStepform\:\:addSpecificTargets\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 2
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\NotificationTargetStepform\:\:addSpecificTargets\(\) with return type void returns null but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Parameter \#1 \$item of method GlpiPlugin\\Metademands\\NotificationTargetStepform\:\:getDataForObject\(\) expects CommonDBTM, CommonGLPI\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Result of method NotificationTarget\<CommonGLPI\>\:\:addForGroup\(\) \(void\) is used\.$#'
+			identifier: method.void
+			count: 1
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/NotificationTargetStepform.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$profiles_id$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Servicecatalog\:\:getLinkList\(\) should return string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Servicecatalog.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Servicecatalog\:\:getLinkURL\(\) should return string but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Servicecatalog.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 2
+			path: src/Servicecatalog.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Servicecatalog.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Comparison operation "\>" between 7 and 1 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Loose comparison using \=\= between 0 and 0 will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Loose comparison using \=\= between 7 and 0 will always evaluate to false\.$#'
+			identifier: equal.alwaysFalse
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Loose comparison using \=\= between 7 and 1 will always evaluate to false\.$#'
+			identifier: equal.alwaysFalse
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Step\:\:getTabNameForItem\(\) should return array\|string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Step\:\:getTabNameForItem\(\) should return array\|string but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Step\:\:showModalForm\(\) should return string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/Step.php
+
+		-
+			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 129 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 2
+			path: src/Step.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 8
+			path: src/Step.php
+
+		-
+			message: '#^Variable \$meta_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: src/Step.php
+
+		-
+			message: '#^Variable \$onhover might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Step.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Stepform.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$history \(int\) of method GlpiPlugin\\Metademands\\Stepform\:\:post_updateItem\(\) is incompatible with type bool\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Stepform.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 2
+			path: src/Stepform.php
+
+		-
+			message: '#^Undefined variable\: \$meta$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Stepform.php
+
+		-
+			message: '#^Variable \$meta in empty\(\) is never defined\.$#'
+			identifier: empty.variable
+			count: 2
+			path: src/Stepform.php
+
+		-
+			message: '#^Variable \$meta in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 2
+			path: src/Stepform.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Stepform_Actor.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^Function addParentAndChildren not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: src/Task.php
+
+		-
+			message: '#^Inner named functions are not supported by PHPStan\. Consider refactoring to an anonymous function, class method, or a top\-level\-defined function\. See issue \#165 \(https\://github\.com/phpstan/phpstan/issues/165\) for more details\.$#'
+			identifier: function.inner
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Task\:\:getChildrenForLevel\(\) should return array but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Task\:\:getTaskTypeName\(\) should return string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Task\:\:processMassiveActionsForOneItemtype\(\) has invalid return type GlpiPlugin\\Metademands\\nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 2
+			path: src/Task.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 6
+			path: src/Task.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 13
+			path: src/Task.php
+
+		-
+			message: '#^Variable \$options might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Task.php
+
+		-
+			message: '#^Left side of \|\| is always false\.$#'
+			identifier: booleanOr.leftAlwaysFalse
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Ticket\:\:post_update_ticket\(\) should return GlpiPlugin\\Metademands\\Ticket but returns Ticket\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Ticket\:\:pre_update_ticket\(\) should return GlpiPlugin\\Metademands\\Ticket but returns Ticket\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Ticket\:\:uploadTicketDocument\(\) should return true but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$ticket with type GlpiPlugin\\Metademands\\Ticket is incompatible with native type Ticket\.$#'
+			identifier: parameter.phpDocType
+			count: 4
+			path: src/Ticket.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/TicketField.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 5
+			path: src/TicketField.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\TicketField\:\:showFromMetademand\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/TicketField.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/TicketField.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 2
+			path: src/TicketField.php
+
+		-
+			message: '#^Variable \$default_value might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/TicketField.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/TicketField.php
+
+		-
+			message: '#^Offset ''name'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 3
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \#1 \$force_template of method CommonITILObject\:\:getITILTemplateToUse\(\) expects int, false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/TicketTask.php
+
+		-
+			message: '#^Variable \$mandatory_missing might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Variable \$message might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Variable \$tt might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Ticket_Field.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/Ticket_Field.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Ticket_Field.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Call to method getField\(\) on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Cannot assign offset ''content'' to string\.$#'
+			identifier: offsetAssign.dimType
+			count: 17
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Resources\\Resource not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Loose comparison using \=\= between false and true will always evaluate to false\.$#'
+			identifier: equal.alwaysFalse
+			count: 2
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Parameter \#6 \$bypass of static method GlpiPlugin\\Metademands\\Metademand\:\:getContentForUser\(\) expects false, true given\.$#'
+			identifier: argument.type
+			count: 12
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 10
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Static method GlpiPlugin\\Metademands\\Metademand\:\:getContentForUser\(\) invoked with 4 parameters, 5\-6 required\.$#'
+			identifier: arguments.count
+			count: 5
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Undefined variable\: \$line$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Undefined variable\: \$resource$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Undefined variable\: \$resource_id$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Undefined variable\: \$task$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Undefined variable\: \$values$#'
+			identifier: variable.undefined
+			count: 18
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Variable \$input in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Variable \$line in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Variable \$line might not be defined\.$#'
+			identifier: variable.undefined
+			count: 18
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Variable \$resource_id in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Variable \$task in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 2
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Variable \$values in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 18
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Ticket_Metademand.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Ticket_Task\:\:getFirstTicket\(\) has invalid return type GlpiPlugin\\Metademands\\a\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Ticket_Task\:\:getSpecificValueToDisplay\(\) has invalid return type GlpiPlugin\\Metademands\\a\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Ticket_Task\:\:getSpecificValueToDisplay\(\) should return GlpiPlugin\\Metademands\\a but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Ticket_Task.php
+
+		-
+			message: '#^Parameter \#2 \$history of method CommonDBTM\:\:update\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Tools.php
+
+		-
+			message: '#^Property GlpiPlugin\\Metademands\\Tools\:\:\$table is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Tools.php
+
+		-
+			message: '#^Access to constant BOOTSTRAPPED on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Access to constant BOOTSTRAPPED_COLOR on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Servicecatalog\\Category\.$#'
+			identifier: class.notFound
+			count: 11
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<mixed, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to function is_array\(\) with list will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''GlpiPlugin\\\\Servicecatalog\\\\Config'' and ''getMultiEntityRedir…'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''GlpiPlugin\\\\Servicecatalog\\\\Config'' and ''getTicketRedirection'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''GlpiPlugin…'' and ''getDetailBeforeForm…'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to method getDetailBeforeFormRedirect\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to method getFromDBByCategory\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Category\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to method getLayout\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to method getforceBackgroundColor\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to method seeCategoryDetails\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to static method displayField\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Category\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to static method getConfig\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Config\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Wizard.php
+
+		-
+			message: '#^Call to static method getTreeCategoryFriendlyName\(\) on an unknown class GlpiPlugin\\Servicecatalog\\Category\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Class GlpiPlugin\\Servicecatalog\\Config not found\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Wizard.php
+
+		-
+			message: '#^Comparison operation "\>" between 0 and 2 is always false\.$#'
+			identifier: greater.alwaysFalse
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Constant PLUGIN_RESOURCES_WEBDIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Constant PLUGIN_SERVICECATALOG_WEBDIR not found\.$#'
+			identifier: constant.notFound
+			count: 10
+			path: src/Wizard.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Servicecatalog\\Category not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Servicecatalog\\Config not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Method GlpiPlugin\\Metademands\\Wizard\:\:showWizard\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^PHPDoc tag @return with type bool\|int is not subtype of native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 9
+			path: src/Wizard.php
+
+		-
+			message: '#^Parameter \#2 \$associative of function json_decode expects bool\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Parameter \#3 \$type of static method GlpiPlugin\\Metademands\\Wizard\:\:selectMetademands\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Property CommonDBTM\:\:\$fields \(array\<string, mixed\>\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Right side of \|\| is always false\.$#'
+			identifier: booleanOr.rightAlwaysFalse
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$ID$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$alert$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$alert_regex$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$block_id$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$changestepbystepoption$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$confirmmsg$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$edit_model$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$havenextuser$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$is_order$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$json_all_meta_fields$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$listStepBlocks$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$meta$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$nameform$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$nextsteptitle$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$nexttitle$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$paramUrl$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$richtext_id$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$root_doc$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$see_summary$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$seeform$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$show_button$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$show_rule$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$submitsteptitle$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$submittitle$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$token$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$updatestepform$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$use_as_step$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$use_condition$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$use_richtext$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Undefined variable\: \$useconfirm$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$ID might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$blocks might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$crit in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$meta in empty\(\) is never defined\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$meta in isset\(\) is never defined\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Wizard.php
+
+		-
+			message: '#^Variable \$title_color in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Wizard.php
