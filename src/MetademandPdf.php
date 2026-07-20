@@ -34,7 +34,7 @@ use DbUtils;
 use Document;
 use Document_Item;
 use Dropdown;
-use Fpdf\Fpdf;
+use FPDF;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Freetable;
@@ -53,7 +53,7 @@ define('EURO', chr(128));
  * Class Pdf
  */
 #[AllowDynamicProperties]
-class MetademandPdf extends Fpdf
+class MetademandPdf extends FPDF
 {
 
     /* Constantes pour paramétrer certaines données. */
@@ -474,6 +474,9 @@ class MetademandPdf extends Fpdf
             }
             $this->Ln();
         }
+        // Closing line
+        $this->Cell($w * $nb, 0, '', 'T');
+        $this->Ln();
     }
 
     function BasicTableFreeInputs($header, $data, $color = '')
@@ -1171,6 +1174,7 @@ class MetademandPdf extends Fpdf
                             break;
 
                         case 'freetable':
+                            $rendered = false;
                             if (Plugin::isPluginActive('orderfollowup')) {
                                 $ordermaterialmeta = new OrderMetademand();
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
@@ -1184,9 +1188,16 @@ class MetademandPdf extends Fpdf
                                         }
                                         $header = end($header);
                                         $this->BasicTableFreeInputs($header, $data, '');
+                                        $rendered = true;
                                     }
                                 }
-                            } else {
+                            }
+                            // Fallback: render the free table directly from the submitted
+                            // values. This covers orderfollowup being inactive, the field not
+                            // being a purchase order, and — most importantly — ticket-creation
+                            // time, when the freeinputs table has no rows yet so the branch
+                            // above renders nothing.
+                            if (!$rendered) {
                                 $items = Freetable::displayFieldPDF($elt, $fields, $label);
                                 $data = [];
 

@@ -3118,6 +3118,13 @@ border-style: none !important; border-color: initial !important;border-image: in
      */
     public function prepareInputForAdd($input)
     {
+        // A new field always relies on the AUTO_INCREMENT primary key. Forms post
+        // an empty 'id', which MySQL rejects as "Incorrect integer value: ''"
+        // (and fails hard in strict mode); drop it so the key is auto-generated.
+        if (isset($input['id']) && !is_numeric($input['id'])) {
+            unset($input['id']);
+        }
+
         // legacy support
         if (isset($input['existing_field_id']) && isset($input['item']) && $input['item'] == 'User') {
             if (isset($input['informations_to_display']) && $input['informations_to_display'] == '[]') {

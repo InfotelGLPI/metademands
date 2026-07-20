@@ -2,12 +2,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "autoloader-suffix": "GlpiPluginMetademands"
+        "autoloader-suffix": "GlpiPluginMetademands",
+        "platform": {
+            "ext-gd": "8.3"
+        }
     },
     "require-dev": {
         "glpi-project/tools": "^0.8"
     },
     "require": {
-        "fpdf/fpdf": "^1.86"
+        "setasign/fpdf": "^1.9"
     }
 }

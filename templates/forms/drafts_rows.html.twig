@@ -1,0 +1,32 @@
+{#
+ # Draft table rows, returned by ajax/deletedraft.php to refresh the #bodyDraft
+ # tbody after a deletion.
+ # The draft title (entry.name) is user-controlled: rendered through Twig
+ # auto-escaping to prevent stored XSS.
+ #}
+{% for entry in entries %}
+    <tr class="tab_bg_1">
+        <td>{{ entry.name }}</td>
+        <td>{{ entry.date }}</td>
+        <td>
+            <button form="" class="submit btn btn-success btn-sm"
+                    onclick="loadDraft({{ entry.id }})">
+                <i class="ti ti-cloud-download pointer"
+                   title="{{ _x('button', 'Load draft', 'metademands') }}"
+                   data-hasqtip="0" aria-hidden="true"></i>
+            </button>
+        </td>
+        <td>
+            <button form="" class="submit btn btn-danger btn-sm"
+                    onclick="deleteDraft({{ entry.id }})">
+                <i class="ti ti-trash pointer"
+                   title="{{ _x('button', 'Delete draft', 'metademands') }}"
+                   data-hasqtip="0" aria-hidden="true"></i>
+            </button>
+        </td>
+    </tr>
+{% else %}
+    <tr class="tab_bg_1">
+        <td colspan="4" class="center">{{ __('No draft available for this form', 'metademands') }}</td>
+    </tr>
+{% endfor %}

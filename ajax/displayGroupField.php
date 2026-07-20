@@ -30,7 +30,7 @@
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkRight("ticket", UPDATE);
+Session::checkRight("plugin_metademands", UPDATE);
 
 switch ($_POST['create_subticket']) {
    case '1':

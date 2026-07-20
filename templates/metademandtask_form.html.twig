@@ -30,6 +30,11 @@
     <div class="col-8">{{ dropdown_html|raw }}</div>
 </div>
 
+<div class="row mb-3">
+    <label class="col-4 col-form-label fw-bold">{{ entity_label }}</label>
+    <div class="col-8">{{ entity_dropdown_html|raw }}</div>
+</div>
+
 {% for ancestor_name in ancestors %}
     <div class="text-danger small mt-1">
         {{ __('This demand is already used in', 'metademands') }}&nbsp;: {{ ancestor_name }}

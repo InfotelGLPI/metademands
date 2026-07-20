@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Draft_Value;
 
@@ -41,7 +43,7 @@ $draft_id                          = (int) $_POST['drafts_id'];
 
 $self = new Draft();
 if (!$self->getFromDB($draft_id) || (int) $self->fields['users_id'] !== $users_id) {
-    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+    throw new AccessDeniedHttpException();
 }
 $self->deleteByCriteria(['id' => $draft_id]);
 
@@ -55,27 +57,15 @@ if ($_POST['self_delete'] == true) {
     unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name']);
     unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields']);
 }
-$return = "";
-if (count($drafts) > 0) {
-    foreach ($drafts as $draft) {
-        $return .= "<tr class='tab_bg_1'>";
-        $return .= "<td>" . $draft['name'] . "</td>";
-        $return .= "<td>" . Html::convDateTime($draft['date']) . "</td>";
-        $return .= "<td>";
-        $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadDraft(" . $draft['id'] . ")\">";
-        $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx('button', 'Load draft', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true'></i>";
-        $return .= "</button>";
-        $return .= "</td>";
-        $return .= "<td>";
-        $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteDraft(" . $draft['id'] . ")\">";
-        $return .= "<i class='ti ti-trash pointer' title='" . _sx('button', 'Delete draft', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true'></i>";
-        $return .= "</button>";
-        $return .= "</tr>";
-    }
-} else {
-    $return .= "<tr class='tab_bg_1'><td colspan='4' class='center'>" . __('No draft available for this form', 'metademands') . "</td></tr>";
+$entries = [];
+foreach ($drafts as $draft) {
+    $entries[] = [
+        'id'   => (int) $draft['id'],
+        'name' => $draft['name'],
+        'date' => Html::convDateTime($draft['date']),
+    ];
 }
 
-echo $return;
+TemplateRenderer::getInstance()->display('@metademands/forms/drafts_rows.html.twig', [
+    'entries' => $entries,
+]);

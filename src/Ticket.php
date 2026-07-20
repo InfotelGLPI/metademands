@@ -331,6 +331,42 @@ class Ticket extends CommonDBTM
         return true;
     }
 
+    /**
+     * Abort the creation of a ticket solution when the parent metademand ticket
+     * still has blocking child tickets open.
+     *
+     * In GLPI 11 a solution is an ITILSolution created BEFORE the parent ticket
+     * status flips to SOLVED (see ITILSolution::post_addItem). Blocking the
+     * ticket status update in pre_update_ticket therefore strips the status
+     * change but leaves the solution persisted. We must forbid the ITILSolution
+     * creation itself here: setting $item->input to false makes CommonDBTM::add
+     * stop before inserting the row.
+     *
+     * @param \CommonDBTM $item the ITILSolution being added
+     *
+     * @return \CommonDBTM
+     */
+    public static function pre_add_solution(\CommonDBTM $item)
+    {
+        if (!isset($item->input['itemtype'], $item->input['items_id'])
+            || $item->input['itemtype'] != \Ticket::class) {
+            return $item;
+        }
+
+        $parent = new \Ticket();
+        if (!$parent->getFromDB($item->input['items_id'])) {
+            return $item;
+        }
+
+        // checkSonTicketsStatus adds the error message and returns false when a
+        // blocking child ticket is still open.
+        if (self::checkSonTicketsStatus($parent) === false) {
+            $item->input = false;
+        }
+
+        return $item;
+    }
+
 
     /**
      * @param       $tickets_id
@@ -438,6 +474,72 @@ class Ticket extends CommonDBTM
                     $data['type']       = Task::TICKET_TYPE;
                     $ticket_task_data[] = $data;
                     $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive, $seesolved);
+                }
+            }
+
+            // Get child-launched sub-metademand son tickets via the core relation.
+            // A sub-metademand launched from within another metademand is the ROOT
+            // of its own instance: its glpi_plugin_metademands_tickets_metademands
+            // row is self-parented (tickets_id = parent_tickets_id = its own id),
+            // so the metademand-son query above (keyed on parent_tickets_id =
+            // $tickets_id) never matches it. The only reliable mother -> sub-
+            // metademand link is the core Ticket_Ticket SON_OF relation created at
+            // launch time (tickets_id_1 = son, tickets_id_2 = parent).
+            $ticket_ticket = new \Ticket_Ticket();
+            $son_links     = $ticket_ticket->find([
+                'tickets_id_2' => $tickets_id,
+                'link'         => \Ticket_Ticket::SON_OF,
+            ]);
+            foreach ($son_links as $son_link) {
+                $son_id = $son_link['tickets_id_1'];
+
+                // Keep only sons that are a sub-metademand root (self-parented row):
+                // this excludes plain ticket-task children, which are already
+                // collected above and carry no self-referencing metademand row.
+                $son_metademand = new Ticket_Metademand();
+                if (!$son_metademand->getFromDBByCrit([
+                    'tickets_id'        => $son_id,
+                    'parent_tickets_id' => $son_id,
+                ])) {
+                    continue;
+                }
+                $son_metademands_id = $son_metademand->fields['plugin_metademands_metademands_id'];
+
+                // Skip deleted and (unless requested) solved/closed sons.
+                $son_ticket = new \Ticket();
+                if (!$son_ticket->getFromDB($son_id) || $son_ticket->fields['is_deleted'] == 1) {
+                    continue;
+                }
+                if ($seesolved == false
+                    && in_array($son_ticket->fields['status'], [\Ticket::SOLVED, \Ticket::CLOSED])) {
+                    continue;
+                }
+
+                // Dedup against tickets already collected in this call tree.
+                $used = false;
+                foreach ($ticket_task_data as $values) {
+                    if ($values['tickets_id'] == $son_id) {
+                        $used = true;
+                        break;
+                    }
+                }
+                if (!$used) {
+                    $ticket_task_data[] = [
+                        'metademands_id'    => $son_metademands_id,
+                        'tickets_id'        => $son_id,
+                        'parent_tickets_id' => $tickets_id,
+                        'type'              => Task::METADEMAND_TYPE,
+                        'level'             => 1,
+                    ];
+                    if ($recursive) {
+                        $ticket_task_data = self::getSonTickets(
+                            $son_id,
+                            $son_metademands_id,
+                            $ticket_task_data,
+                            $recursive,
+                            $seesolved
+                        );
+                    }
                 }
             }
 

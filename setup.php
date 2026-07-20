@@ -187,6 +187,12 @@ function plugin_init_metademands()
                 => [Ticket::class, 'pre_add_ticket'],
             Ticket_Metademand::class
             =>[Ticket_Metademand::class, 'post_add_ticket'],
+            // In GLPI 11 a solution is a separate ITILSolution created BEFORE the
+            // parent ticket flips to SOLVED, so blocking the ticket status update
+            // alone no longer prevents the solution from being persisted. Abort
+            // the solution creation itself when child tickets are still open.
+            'ITILSolution'
+                => [Ticket::class, 'pre_add_solution'],
         ];
 
         $PLUGIN_HOOKS[Hooks::ITEM_TRANSFER]['metademands'] = 'plugin_item_transfer_metademands';

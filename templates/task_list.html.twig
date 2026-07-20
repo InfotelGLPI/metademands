@@ -1,0 +1,181 @@
+{#
+ -------------------------------------------------------------------------
+ metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the metademands Development Team.
+
+ https://github.com/InfotelGLPI/metademands
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of metademands.
+
+ metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+{% if canedit and solved %}
+    <div id="{{ viewchild_id }}"></div>
+{% endif %}
+
+{% if scripts is not empty %}
+    <script type="text/javascript">{{ scripts|raw }}</script>
+{% endif %}
+
+{% if canedit and solved %}
+    <div class="center">
+        <a class="submit btn btn-primary" href="javascript:addchild{{ item.getID() }}{{ rand }}();">
+            {{ __('Add a task', 'metademands') }}
+        </a>
+    </div>
+    <br>
+{% endif %}
+
+<div class="center first-bloc">
+    <table class="tab_cadre_fixe">
+        <tr class="tab_bg_1 center">
+            <td>
+                <a href="#" class="submit btn btn-primary" data-bs-toggle="modal"
+                   data-bs-target="#tags" title="{{ __('Show list of available tags') }}">
+                    {{ __('Show list of available tags') }}
+                </a>
+                {{ tags_modal|raw }}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{% if entries|length > 0 %}
+    {{ call('Html::script', [treetable_js])|raw }}
+
+    <div class="left first-bloc">
+        {% if canedit and solved %}
+            {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+            {{ call('Html::showMassiveActions', [{
+                'item': itemtype,
+                'container': mass_container,
+                'display': false
+            }])|raw }}
+        {% endif %}
+
+        <table id="tree-table" class="tab_cadre_fixehov">
+            <tr class="tab_bg_2">
+                <th class="left b" colspan="12">{{ __('Tasks', 'metademands') }}</th>
+            </tr>
+            <tr class="tab_bg_2">
+                <th width="10">
+                    {% if canedit and solved %}
+                        {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
+                    {% endif %}
+                </th>
+                <th class="center b" width="6%">{{ __('ID') }}</th>
+                <th class="center b">{{ __('Name') }}</th>
+                <th class="center b">{{ __('Entity') }}</th>
+                <th class="center b">{{ __('Type') }}</th>
+                <th class="center b">{{ __('Category') }}</th>
+                <th class="center b">{{ __('Assigned to') }}</th>
+                <th class="center b">{{ __('Level', 'metademands') }}</th>
+                <th class="center b">{{ __('Block to use', 'metademands') }}</th>
+                <th class="center b">{{ __('Use block', 'metademands') }}</th>
+                <th class="center b">{{ __('Format the description of the childs ticket as a table', 'metademands') }}</th>
+                <th class="center b">{{ __('Block parent ticket resolution', 'metademands') }}</th>
+            </tr>
+
+            {% for entry in entries %}
+                {% set onhover = entry.edit_fn is not empty %}
+                {% set cell_attrs %}{% if onhover %}style="cursor:pointer" onclick="{{ entry.edit_fn }}();"{% endif %}{% endset %}
+                <tr class="tab_bg_1 {{ entry.row_class }}"
+                    {% if entry.row_style is not empty %}style="{{ entry.row_style }}"{% endif %}
+                    data-id="{{ entry.id }}" data-parent="{{ entry.parent }}" data-level="{{ entry.level }}">
+
+                    {# Massive action checkbox #}
+                    <td {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %} width="10">
+                        {% if canedit and solved %}
+                            {{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}
+                        {% endif %}
+                    </td>
+
+                    {# ID (name column anchor for treetable) #}
+                    <td data-column="name">{{ entry.id }}</td>
+
+                    {# Name #}
+                    <td {{ cell_attrs|raw }} {% if not onhover and entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.name|raw }}
+                    </td>
+
+                    {# Entity #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.entity }}
+                    </td>
+
+                    {# Type #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.type }}
+                    </td>
+
+                    {# Category #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.category }}
+                    </td>
+
+                    {# Assigned to #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.assign|raw }}
+                    </td>
+
+                    {# Level #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        <div class="center">{{ entry.level_label }}</div>
+                    </td>
+
+                    {# Block to use #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.block|raw }}
+                    </td>
+
+                    {# Use block #}
+                    <td {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.useblock }}
+                    </td>
+
+                    {# Format description as table #}
+                    <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.formatastable }}
+                    </td>
+
+                    {# Block parent ticket resolution #}
+                    <td {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
+                        {{ entry.block_parent }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% if canedit and solved %}
+            {{ call('Html::showMassiveActions', [{
+                'item': itemtype,
+                'container': mass_container,
+                'ontop': false,
+                'display': false
+            }])|raw }}
+            {{ call('Html::closeForm', [false])|raw }}
+        {% endif %}
+    </div>
+{% else %}
+    <div class="center first-bloc">
+        <table class="tab_cadre_fixe">
+            <tr class="tab_bg_1"><td class="center">{{ __('No results found') }}</td></tr>
+        </table>
+    </div>
+{% endif %}

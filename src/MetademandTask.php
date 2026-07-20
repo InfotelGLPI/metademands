@@ -96,6 +96,7 @@ class MetademandTask extends CommonDBChild
                         `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
                         `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
                         `plugin_metademands_tasks_id`       int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `destination_entities_id`           int NOT NULL DEFAULT '-1',
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
                         KEY `entities_id` (`entities_id`),
@@ -111,6 +112,12 @@ class MetademandTask extends CommonDBChild
             if (!isIndex($table, "entities_id")) {
                 $migration->addKey($table, "entities_id");
             }
+            $migration->migrationOneTable($table);
+        }
+        // destination entity of the ticket created by the linked sub-metademand
+        // (-1 = no override, use the active entity)
+        if (!$DB->fieldExists($table, "destination_entities_id")) {
+            $migration->addField($table, "destination_entities_id", "int NOT NULL DEFAULT '-1'");
             $migration->migrationOneTable($table);
         }
         //version 3.3.0
@@ -134,7 +141,7 @@ class MetademandTask extends CommonDBChild
      *
      * @throws \GlpitestSQLError
      */
-    static function showMetademandTaskForm($ID)
+    static function showMetademandTaskForm($ID, $selected_entity = -1)
     {
         $used   = MetademandTask::getAncestorOfMetademandTask($ID);
         $used[] = $ID;
@@ -149,6 +156,24 @@ class MetademandTask extends CommonDBChild
         ]);
         $dropdown_html = ob_get_clean();
 
+        // Destination entity of the ticket created by the linked sub-metademand
+        // (-1 = no override, use the active entity of the requester).
+        // We build the option list from every entity the current user can reach
+        // through their profile (recursively) instead of using the standard AJAX
+        // Entity::dropdown: the latter only lists the *currently active* entities
+        // (both client- and server-side, via Session::getMatchingActiveEntities),
+        // which would make it impossible to pick a destination entity outside the
+        // one the administrator is currently positioned in.
+        $entities = [-1 => __('Active entity', 'metademands')];
+        foreach (\Profile_User::getUserEntities($_SESSION['glpiID'], true) as $entity_id) {
+            $entities[$entity_id] = \Dropdown::getDropdownName('glpi_entities', $entity_id);
+        }
+        ob_start();
+        \Dropdown::showFromArray('destination_entities_id', $entities, [
+            'value' => $selected_entity,
+        ]);
+        $entity_dropdown_html = ob_get_clean();
+
         unset($used[array_search($ID, $used)]);
 
         $ancestors = [];
@@ -159,9 +184,11 @@ class MetademandTask extends CommonDBChild
         }
 
         TemplateRenderer::getInstance()->display('@metademands/metademandtask_form.html.twig', [
-            'metademand_typename' => Metademand::getTypeName(1),
-            'dropdown_html'       => $dropdown_html,
-            'ancestors'           => $ancestors,
+            'metademand_typename'  => Metademand::getTypeName(1),
+            'dropdown_html'        => $dropdown_html,
+            'entity_label'         => __('Destination entity', 'metademands'),
+            'entity_dropdown_html' => $entity_dropdown_html,
+            'ancestors'            => $ancestors,
         ]);
     }
 

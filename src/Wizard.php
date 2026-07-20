@@ -962,8 +962,13 @@ class Wizard extends CommonDBTM
                 ]
             )]];
 
+        // Honor recursivity: a metademand shared from an ancestor entity (is_recursive = 1)
+        // must be listed in child entities, so enable the recursive restriction (4th arg).
         $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_plugin_metademands_metademands'
+                'glpi_plugin_metademands_metademands',
+                '',
+                '',
+                true
             );
 
         $metademands = [];

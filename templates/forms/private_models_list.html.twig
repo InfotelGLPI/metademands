@@ -1,0 +1,240 @@
+{#
+ # "New model" creation input + private form models list, shown in the wizard.
+ # The form title (entry.name) is user-controlled. It is rendered through Twig
+ # auto-escaping in HTML contexts and through the `js` escaper in the inline
+ # onclick handler, to prevent stored XSS.
+ #}
+<span>
+    <div class="card-header">
+        {{ __('New model', 'metademands') }} <span class="red">*</span>
+    </div>
+    <table class="tab_cadre_fixe">
+        <tr>
+            <td colspan="4" class="center">
+                <br>
+                {{ call('Html::input', ['form_name', {
+                    'maxlength': 250,
+                    'size': 40,
+                    'placeholder': __('Form name', 'metademands')
+                }])|raw }}
+                <br>
+                {{ call('Html::submit', [_x('button', 'Save as model', 'metademands'), {
+                    'name': 'save_form',
+                    'form': '',
+                    'id': 'FormAdd' ~ rand,
+                    'icon': 'ti ti-cloud-upload pointer',
+                    'class': 'btn btn-success btn-sm'
+                }])|raw }}
+                &nbsp;
+                {{ call('Html::submit', [_x('button', 'Clean form', 'metademands'), {
+                    'name': 'clean_form',
+                    'icon': 'ti ti-playlist-x pointer',
+                    'class': 'btn btn-warning btn-sm'
+                }])|raw }}
+            </td>
+        </tr>
+    </table>
+
+    {% if entries is not empty %}
+        <table class="tab_cadre_fixe">
+            <thead>
+                <tr>
+                    <th colspan="6">{{ __('Your private models', 'metademands') }}</th>
+                </tr>
+            </thead>
+            <tbody id="bodyForm">
+                {% for entry in entries %}
+                    {% set tooltip_content %}
+                        {{ __('Name') }} : {{ entry.name }}<br>
+                        {{ __('Date') }} : {{ entry.date }}
+                        {% if entry.url %}<br>{{ __('URL') }} : {{ entry.url|raw }}{% endif %}
+                    {% endset %}
+                    <tr>
+                        <td>{{ entry.meta_name }} / {{ entry.date }}</td>
+                        <td>
+                            {{ call('Html::showToolTip', [tooltip_content, {'awesome-class': 'ti ti-info-circle', 'display': false}])|raw }}
+                        </td>
+                        <td>
+                            {% if can_public %}
+                                {% if entry.is_private %}
+                                    <button form="" class="submit btn btn-success btn-sm"
+                                            onclick="changeVisibility({{ entry.id }}, 0)">
+                                        <i class="ti ti-lock-open pointer"
+                                           title="{{ _x('button', 'Define as public', 'metademands') }}"
+                                           data-hasqtip="0" aria-hidden="true"></i>
+                                    </button>
+                                {% else %}
+                                    <button form="" class="submit btn btn-danger btn-sm"
+                                            onclick="changeVisibility({{ entry.id }}, 1)">
+                                        <i class="ti ti-lock pointer"
+                                           title="{{ _x('button', 'Define as private', 'metademands') }}"
+                                           data-hasqtip="0" aria-hidden="true"></i>
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button form="" class="submit btn btn-success btn-sm"
+                                    onclick="loadForm({{ entry.id }})">
+                                <i class="ti ti-cloud-download pointer"
+                                   title="{{ _x('button', 'Load form', 'metademands') }}"
+                                   data-hasqtip="0" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        {% if entry.id == form_id %}
+                            <td>
+                                <button class="submit btn btn-success btn-sm"
+                                        onclick="event.preventDefault();event.stopPropagation();updateForm({{ entry.id }}, '{{ entry.name|e('js') }}')">
+                                    <i class="ti ti-device-floppy pointer"
+                                       title="{{ _x('button', 'Save model', 'metademands') }}"
+                                       data-hasqtip="0" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        {% endif %}
+                        <td>
+                            <button form="" class="submit btn btn-danger btn-sm"
+                                    onclick="deleteForm({{ entry.id }})">
+                                <i class="ti ti-trash pointer"
+                                   title="{{ _x('button', 'Delete form', 'metademands') }}"
+                                   data-hasqtip="0" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <script>
+        var meta_id = {{ meta_id }};
+        var step = {{ step }};
+        var itilcategories_id = {{ itilcategories_id }};
+
+        function deleteForm(form_id) {
+            var self_delete = false;
+            if ({{ form_id }} == form_id) {
+                self_delete = true;
+            }
+            $('#ajax_loader').show();
+            $.ajax({
+                url: '{{ webdir }}/ajax/deleteform.php',
+                type: 'POST',
+                data: {
+                    users_id: {{ users_id }},
+                    plugin_metademands_metademands_id: meta_id,
+                    forms_id: form_id,
+                    self_delete: self_delete
+                },
+                success: function(response) {
+                    $('#bodyForm').html(response);
+                    $('#ajax_loader').hide();
+                    if (self_delete) {
+                        document.location.reload();
+                    }
+                }
+            });
+        }
+
+        $('#FormAdd{{ rand }}').click(function() {
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+            jQuery('.resume_builder_input').trigger('change');
+            $('select[id$="_to"] option').each(function() { $(this).prop('selected', true); });
+            $('#ajax_loader').show();
+            var arrayDatas = $('#wizard_form').serializeArray();
+            arrayDatas.push({name: "save_form", value: true});
+            arrayDatas.push({name: "is_model", value: 1});
+            $.ajax({
+                url: '{{ webdir }}/ajax/addform.php',
+                type: 'POST',
+                data: arrayDatas,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    document.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
+                }
+            });
+        });
+
+        function updateForm(form_id, form_name) {
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+            jQuery('.resume_builder_input').trigger('change');
+            $('select[id$="_to"] option').each(function() { $(this).prop('selected', true); });
+            $('#ajax_loader').show();
+            var arrayDatas = $('#wizard_form').serializeArray();
+            arrayDatas.push({name: "save_model", value: true});
+            arrayDatas.push({name: "is_model", value: 1});
+            arrayDatas.push({name: "plugin_metademands_forms_id", value: form_id});
+            arrayDatas.push({name: "form_name", value: form_name});
+            $.ajax({
+                url: '{{ webdir }}/ajax/updateform.php',
+                type: 'POST',
+                data: arrayDatas,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    document.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
+                }
+            });
+        }
+
+        function changeVisibility(form_id, is_private) {
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+            jQuery('.resume_builder_input').trigger('change');
+            $('select[id$="_to"] option').each(function() { $(this).prop('selected', true); });
+            $('#ajax_loader').show();
+            var arrayDatas = $('#wizard_form').serializeArray();
+            arrayDatas.push({name: "save_model", value: true});
+            arrayDatas.push({name: "is_model", value: 1});
+            arrayDatas.push({name: "is_private", value: is_private});
+            arrayDatas.push({name: "plugin_metademands_forms_id", value: form_id});
+            $.ajax({
+                url: '{{ webdir }}/ajax/visibility.php',
+                type: 'POST',
+                data: arrayDatas,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    document.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
+                }
+            });
+        }
+
+        function loadForm(form_id) {
+            $('#ajax_loader').show();
+            var data_send = $('#wizard_form').serializeArray();
+            data_send.push({name: 'plugin_metademands_forms_id', value: form_id},
+                           {name: 'metademands_id', value: meta_id});
+            $.ajax({
+                url: '{{ webdir }}/ajax/loadform.php',
+                type: 'POST',
+                data: data_send,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    if (response == 1) {
+                        document.location.reload();
+                    } else {
+                        window.location.href = '{{ webdir }}/front/wizard.form.php?itilcategories_id=' + itilcategories_id + '&metademands_id=' + meta_id + '&step=' + step;
+                    }
+                }
+            });
+        }
+    </script>
+</span>

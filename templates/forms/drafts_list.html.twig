@@ -1,0 +1,200 @@
+{#
+ # "New draft" creation input + user's drafts list, shown in the wizard.
+ # The draft title (entry.name) is user-controlled. It is rendered through Twig
+ # auto-escaping in HTML contexts and through the `js` escaper in the inline
+ # onclick handler, to prevent stored XSS.
+ #}
+<span>
+    <script>
+        $('[name="wizard_form"]').submit(function() {
+            $('#ajax_loader').show();
+            $('[name="from"]').html('');
+            var val = $("input[type=submit][clicked=true]").attr('draft_id');
+            if (val) {
+                $('#plugin_metademands_drafts_id').val(val);
+            }
+        });
+        $("form input[type=submit]").click(function() {
+            $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
+            $(this).attr("clicked", "true");
+        });
+    </script>
+
+    <div class="card-header">
+        {{ __('New draft', 'metademands') }} <span class="red">*</span>
+    </div>
+    <table class="tab_cadre_fixe">
+        <tr>
+            <td colspan="4" class="center">
+                <br>
+                {{ call('Html::input', ['draft_name', {
+                    'value': '',
+                    'maxlength': 250,
+                    'size': 40,
+                    'placeholder': __('Draft name', 'metademands')
+                }])|raw }}
+                <br>
+                {{ call('Html::submit', [_x('button', 'Save as draft', 'metademands'), {
+                    'name': 'save_draft',
+                    'form': '',
+                    'id': 'submitSave',
+                    'icon': 'ti ti-cloud-upload pointer',
+                    'class': 'btn btn-success btn-sm'
+                }])|raw }}
+                &nbsp;
+                {{ call('Html::submit', [_x('button', 'Clean form', 'metademands'), {
+                    'name': 'clean_form',
+                    'icon': 'ti ti-playlist-x pointer',
+                    'class': 'btn btn-warning btn-sm'
+                }])|raw }}
+                <br>
+            </td>
+        </tr>
+    </table>
+
+    <table class="tab_cadre_fixe">
+        <div class="card-header">{{ __('Your drafts', 'metademands') }}</div>
+        <tbody id="bodyDraft">
+            {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.date }}</td>
+                    <td>
+                        <button form="" class="submit btn btn-success btn-sm"
+                                onclick="loadDraft({{ entry.id }})">
+                            <i class="ti ti-cloud-download pointer"
+                               title="{{ _x('button', 'Load draft', 'metademands') }}"
+                               data-hasqtip="0" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                    {% if entry.id == draft_id %}
+                        <td>
+                            <button class="submit btn btn-success btn-sm"
+                                    onclick="event.preventDefault();event.stopPropagation();udpateDraft({{ entry.id }}, '{{ entry.name|e('js') }}')">
+                                <i class="ti ti-device-floppy pointer"
+                                   title="{{ _x('button', 'Save draft', 'metademands') }}"
+                                   data-hasqtip="0" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    {% endif %}
+                    <td>
+                        <button form="" class="submit btn btn-danger btn-sm"
+                                onclick="deleteDraft({{ entry.id }})">
+                            <i class="ti ti-trash pointer"
+                               title="{{ _x('button', 'Delete draft', 'metademands') }}"
+                               data-hasqtip="0" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="center">{{ __('No draft available for this form', 'metademands') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {{ call('Html::hidden', ['plugin_metademands_drafts_id', {'value': draft_id, 'id': 'plugin_metademands_drafts_id'}])|raw }}
+
+    <script>
+        var meta_id = {{ meta_id }};
+        var step = {{ step }};
+
+        function deleteDraft(draft_id) {
+            var self_delete = false;
+            if ({{ draft_id }} == draft_id) {
+                self_delete = true;
+            }
+            $('#ajax_loader').show();
+            $.ajax({
+                url: '{{ webdir }}/ajax/deletedraft.php',
+                type: 'POST',
+                data: {
+                    users_id: {{ users_id }},
+                    plugin_metademands_metademands_id: meta_id,
+                    drafts_id: draft_id,
+                    self_delete: self_delete
+                },
+                success: function(response) {
+                    $('#bodyDraft').html(response);
+                    $('#ajax_loader').hide();
+                    if (self_delete) {
+                        document.location.reload();
+                    }
+                }
+            });
+        }
+
+        function loadDraft(draft_id) {
+            $('#ajax_loader').show();
+            var data_send = $('#wizard_form').serializeArray();
+            data_send.push({name: 'plugin_metademands_drafts_id', value: draft_id},
+                           {name: 'metademands_id', value: meta_id});
+            $.ajax({
+                url: '{{ webdir }}/ajax/loaddraft.php',
+                type: 'POST',
+                data: data_send,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    if (response == 1) {
+                        document.location.reload();
+                    } else {
+                        window.location.href = '{{ webdir }}/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
+                    }
+                }
+            });
+        }
+
+        function udpateDraft(draft_id, draft_name) {
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+            jQuery('.resume_builder_input').trigger('change');
+            $('select[id$="_to"] option').each(function() { $(this).prop('selected', true); });
+            $('#ajax_loader').show();
+            var arrayDatas = $('#wizard_form').serializeArray();
+            arrayDatas.push({name: "save_draft", value: true});
+            arrayDatas.push({name: "plugin_metademands_drafts_id", value: draft_id});
+            arrayDatas.push({name: "draft_name", value: draft_name});
+            $.ajax({
+                url: '{{ webdir }}/ajax/adddraft.php',
+                type: 'POST',
+                data: arrayDatas,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    document.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
+                }
+            });
+        }
+
+        $('#submitSave').click(function() {
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+            jQuery('.resume_builder_input').trigger('change');
+            $('select[id$="_to"] option').each(function() { $(this).prop('selected', true); });
+            $('#ajax_loader').show();
+            var arrayDatas = $('#wizard_form').serializeArray();
+            arrayDatas.push({name: "save_draft", value: true});
+            $.ajax({
+                url: '{{ webdir }}/ajax/adddraft.php',
+                type: 'POST',
+                data: arrayDatas,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    document.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
+                }
+            });
+        });
+    </script>
+</span>

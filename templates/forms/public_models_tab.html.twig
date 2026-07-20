@@ -1,0 +1,63 @@
+{#
+ # Public form models list, shown on the Metademand item tab.
+ # The form title (entry.name) is user-controlled: rendered through Twig
+ # auto-escaping to prevent stored XSS.
+ #}
+{% if entries is not empty %}
+    <table class="tab_cadre_fixe">
+        <thead>
+            <tr>
+                <th colspan="4">{{ __('Public models', 'metademands') }}</th>
+            </tr>
+            <tr>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Creation date') }}</th>
+                <th>{{ __('Created by', 'metademands') }}</th>
+                <th>{{ _x('button', 'Load form', 'metademands') }}</th>
+            </tr>
+        </thead>
+        <tbody id="bodyForm">
+            {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.created_by }}</td>
+                    <td>
+                        <button form="" class="submit btn btn-success btn-sm"
+                                onclick="loadForm({{ entry.id }})">
+                            <i class="ti ti-cloud-download pointer"
+                               title="{{ _x('button', 'Load form', 'metademands') }}"
+                               data-hasqtip="0" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+<script>
+    var meta_id = {{ meta_id }};
+    var step = {{ step }};
+    var itilcategories_id = {{ itilcategories_id }};
+    function loadForm(form_id) {
+        $('#ajax_loader').show();
+        var data_send = $('#wizard_form').serializeArray();
+        data_send.push({name: 'plugin_metademands_forms_id', value: form_id},
+                       {name: 'metademands_id', value: meta_id},
+                       {name: 'edit_model', value: 1});
+        $.ajax({
+            url: '{{ webdir }}/ajax/loadform.php',
+            type: 'POST',
+            data: data_send,
+            success: function(response) {
+                $('#ajax_loader').hide();
+                if (response == 1) {
+                    document.location.reload();
+                } else {
+                    window.location.href = '{{ webdir }}/front/wizard.form.php?itilcategories_id=' + itilcategories_id + '&metademands_id=' + meta_id + '&step=' + step;
+                }
+            }
+        });
+    }
+</script>

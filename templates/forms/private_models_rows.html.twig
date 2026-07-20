@@ -1,0 +1,34 @@
+{#
+ # Private form models table rows, returned by ajax/deleteform.php to refresh
+ # the #bodyForm tbody after a deletion.
+ # The form title (entry.name) is user-controlled: rendered through Twig
+ # auto-escaping to prevent stored XSS.
+ #}
+{% if entries is not empty %}
+    {% for entry in entries %}
+        <tr class="tab_bg_1">
+            <td>{{ entry.name }}</td>
+            <td>{{ entry.date }}</td>
+            <td>
+                <button form="" class="submit btn btn-success btn-sm"
+                        onclick="loadForm({{ entry.id }})">
+                    <i class="ti ti-cloud-download pointer"
+                       title="{{ _x('button', 'Load form', 'metademands') }}"
+                       data-hasqtip="0" aria-hidden="true"></i>
+                </button>
+            </td>
+            <td>
+                <button form="" class="submit btn btn-danger btn-sm"
+                        onclick="deleteForm({{ entry.id }})">
+                    <i class="ti ti-trash pointer"
+                       title="{{ _x('button', 'Delete form', 'metademands') }}"
+                       data-hasqtip="0" aria-hidden="true"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr class="tab_bg_1">
+        <td colspan="4" class="center">{{ __('No existing forms founded', 'metademands') }}</td>
+    </tr>
+{% endif %}

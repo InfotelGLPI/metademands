@@ -1855,8 +1855,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 $query['WHERE'] = $query['WHERE'] + [$this->getTable() . ".object_to_create" => $type];
             }
 
+            // Honor recursivity: a metademand shared from an ancestor entity (is_recursive = 1)
+            // must be listed in child entities, so enable the recursive restriction (4th arg).
             $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
-                    $this->getTable()
+                    $this->getTable(),
+                    '',
+                    '',
+                    true
                 );
 
             $iterator = $DB->request($query);
@@ -1931,8 +1936,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         ];
 
 
+        // Honor recursivity: a metademand shared from an ancestor entity (is_recursive = 1)
+        // must be listed in child entities, so enable the recursive restriction (4th arg).
         $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
-                $this->getTable()
+                $this->getTable(),
+                '',
+                '',
+                true
             );
 
         $iterator = $DB->request($query);
@@ -2399,6 +2409,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         }
                     }
                     $entities_id = $_SESSION['glpiactive_entity'];
+                    // A linked sub-metademand can target a specific destination entity
+                    // configured on its metademand task; honor it when this metademand is
+                    // launched as a child (its ticket must be created in that entity, not
+                    // in the active one). -1 means "no override, keep the active entity".
+                    $ancestor = $_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'] ?? 0;
+                    if (!empty($ancestor)) {
+                        $metatask = new MetademandTask();
+                        if ($metatask->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])
+                            && isset($metatask->fields['destination_entities_id'])
+                            && $metatask->fields['destination_entities_id'] >= 0) {
+                            $entities_id = $metatask->fields['destination_entities_id'];
+                        }
+                    }
                     if (!Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])){
                         $entities_id = $metademand->fields['entities_id'];
                         $message = __('This metademand cannot be used with this entity', 'metademands');

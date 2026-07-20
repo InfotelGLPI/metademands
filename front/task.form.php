@@ -73,7 +73,8 @@ if (isset($_POST["add"])) {
          } else if($_POST['taskType'] == Task::METADEMAND_TYPE){
             if ($_POST['link_metademands_id']) {
                $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
-                                     'plugin_metademands_metademands_id' => $_POST['link_metademands_id']]);
+                                     'plugin_metademands_metademands_id' => $_POST['link_metademands_id'],
+                                     'destination_entities_id'           => $_POST['destination_entities_id'] ?? -1]);
             }
          } else if ($_POST['taskType'] == Task::MAIL_TYPE){
              $_POST['plugin_metademands_tasks_id'] = $tasks_id;

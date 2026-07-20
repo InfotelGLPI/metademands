@@ -528,349 +528,220 @@ class Task extends CommonDBChild
 
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
+
+        // Shared container that AJAX-loads the add/edit sub-item form
+        $viewchild_id = "viewchild" . $item->getID() . $rand;
+        $viewsubitem_url = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
+
+        // Build the JS function bodies once and hand them to the template. We keep
+        // Ajax::updateItemJsCode (framework helper) rather than duplicating its logic.
+        $scripts = [];
         if ($canedit && $solved) {
-            echo "<div id='viewchild" . $item->getID() . "$rand'></div>\n";
-
-            echo "<script type='text/javascript' >\n";
-            echo "function addchild" . $item->getID() . "$rand() {\n";
-            $params = ['type' => __CLASS__,
-                'parenttype' => get_class($item),
-                $item->getForeignKeyField() => $item->getID(),
-                'id' => -1,
-                'solved' => $solved];
-            Ajax::updateItemJsCode(
-                "viewchild" . $item->getID() . "$rand",
-                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                $params
-            );
-            echo "};";
-            echo "</script>\n";
-            echo "<div class='center'>"
-                . "<a class='submit btn btn-primary' href='javascript:addchild"
-                 . $item->getID() . "$rand();'>" . __('Add a task', 'metademands')
-                . "</a></div><br>";
-        }
-
-        echo "<div class='center first-bloc'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1 center'>";
-        echo "<td>";
-
-        echo "<a href='#' class='submit btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __('Show list of available tags') . "' >";
-        echo __('Show list of available tags');
-        echo "</a>";
-        echo Ajax::createIframeModalWindow(
-            'tags',
-            PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->getID(),
-            ['title'   => __('Show list of available tags'),
-                'display' => false]
-        );
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        echo "</div>";
-
-        if (count($tasks)) {
-            //            Session::initNavigateListItems(TicketTask::class, self::getTypeName(1));
-
-            echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/treetable/treetable.js");
-            echo "<div class='left first-bloc'>";
-            if ($canedit && $solved) {
-                Html::openMassiveActionsForm('masstasks' .  $rand);
-                $massiveactionparams = ['item' => __CLASS__, 'container' => 'masstasks' .  $rand];
-                Html::showMassiveActions($massiveactionparams);
-            }
-            echo "<table id='tree-table' class='tab_cadre_fixehov'>";
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left b' colspan='12'>" . __('Tasks', 'metademands') . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_2'>";
-            echo "<th width='10'>";
-            if ($canedit && $solved) {
-                echo Html::getCheckAllAsCheckbox('masstasks' .  $rand);
-            }
-            echo "</th>";
-            //            echo "<th class='center b'>#</th>";
-            echo "<th class='center b' width='6%'>" . __('ID') . "</th>";
-            echo "<th class='center b'>" . __('Name') . "</th>";
-            echo "<th class='center b'>" . __('Entity') . "</th>";
-            echo "<th class='center b'>" . __('Type') . "</th>";
-            echo "<th class='center b'>" . __('Category') . "</th>";
-            echo "<th class='center b'>" . __('Assigned to') . "</th>";
-            echo "<th class='center b'>" . __('Level', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Use block', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Format the description of the childs ticket as a table', 'metademands') . "</th>";
-            echo "<th class='center b'>" . __('Block parent ticket resolution', 'metademands') . "</th>";
-            echo "</tr>";
-
-            $tasks = $this->sortByParentChild($tasks);
-
-            foreach ($tasks as $key => $value) {
-
-                $id = $value['tasks_id'];
-                if ($value['type'] == Task::MAIL_TYPE) {
-                    $mailtask = new MailTask();
-                    $mailtask->getFromDBByCrit(['plugin_metademands_tasks_id' => $id]);
-                }
-
-                $class = "";
-                $metaclass = "metademand_metademandtasks";
-                $fieldopt = new FieldOption();
-                if ($fieldopt->find(["plugin_metademands_tasks_id" => $id])) {
-                    if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
-                        $class = "linkedtooption";
-                    } else {
-                        $class = "metatooption";
-                        $metaclass = "";
-                    }
-                }
-
-                $style = "";
-                if ($value['type'] == Task::TICKET_TYPE) {
-                    if ($value['level'] > 1) {
-                        $style = "style='background-color:#ebebeb'";
-                    }
-                }
-
-                echo "<tr class='tab_bg_1 $class' $style data-id='$id' data-parent='" . $value['parent_task'] . "' data-level='" . $value['level'] . "'>";
-
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
-                    $color_class = '';
-                } else {
-                    $color_class = "class='$metaclass'";
-                }
-
-                $onhover = '';
-                if ($canedit && ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE)) {
-                    $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditchild" . $id . "$rand();\"";
-                }
-
-                if ($canedit && $solved) {
-                    echo "<td $color_class width='10'>";
-                    Html::showMassiveActionCheckBox(__CLASS__, $id);
-                    echo "</td>";
-                } else {
-                    echo "<td $color_class width='10'></td>";
-                }
-
-                // ID
-                $color_class = '';
-
-                echo "<td data-column='name'>";
-                if ($canedit) {
-                    echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditchild" . $id . "$rand() {\n";
-                    $params = ['type' => __CLASS__,
+            $scripts[] = "function addchild" . $item->getID() . $rand . "() {"
+                . Ajax::updateItemJsCode(
+                    $viewchild_id,
+                    $viewsubitem_url,
+                    [
+                        'type' => self::class,
                         'parenttype' => get_class($item),
                         $item->getForeignKeyField() => $item->getID(),
-                        'id' => $id,
-                        'solved' => $solved];
-                    Ajax::updateItemJsCode(
-                        "viewchild" . $item->getID() . "$rand",
-                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        $params
-                    );
-                    echo "};";
-                    echo "</script>\n";
-                }
-
-                echo $id;
-                echo "</td>";
-
-                //                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
-                //                    echo "<td $onhover>";
-                //                    $width = 0;
-
-                //                    $name = "#metademandTicketTask" . $value['tickettasks_id'];
-                //                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . TicketTask::getTypeName() . "' >";
-                //                    echo $value['tickettasks_id'];
-                //                    echo "</a>";
-                //                    echo Ajax::createIframeModalWindow(
-                //                        'metademandTicketTask' . $value['tickettasks_id'],
-                //                        Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-                //                        ['title'         => TicketTask::getTypeName(),
-                //                         'display'       => false,
-                //                         'reloadonclose' => true]
-                //                    );
-                //
-                //               //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-                //               //                                             ['title' => TicketTask::getTypeName(), 'reloadonclose' => true]);
-                //               //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
-                //                    echo "</td>";
-                //                } else {
-                //                    $color_class = "class='metademand_metademandtasks'";
-                //                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL(Metademand::class) .
-                //                         "?id=" . $value['link_metademands_id'] . "'>" . $value['link_metademands_id'] . "</a></td>";
-                //                }
-
-                // Name
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
-
-                    //                    $width = 0;
-                    //                    $name  = "#metademandTicketTask" . $value['tickettasks_id'];
-                    //                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . TicketTask::getTypeName() . "' >";
-                    echo "<td $onhover>";
-                    echo $value['tickettasks_name'];
-                    //                    echo "</a>";
-                    //                    echo Ajax::createIframeModalWindow(
-                    //                        'metademandTicketTask' . $value['tickettasks_id'],
-                    //                        Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-                    //                        ['title'         => TicketTask::getTypeName(),
-                    //                         'display'       => false,
-                    //                         'reloadonclose' => true]
-                    //                    );
-
-                    //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL(TicketTask::class) . "?id=" . $value['tickettasks_id'],
-                    //                                             ['title' => TicketTask::getTypeName(), 'reloadonclose' => true]);
-                    //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
-                    echo "</td>";
-                } else {
-                    $color_class = "class='$metaclass'";
-                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL(Metademand::class)
-                        . "?id=" . $value['link_metademands_id'] . "'>" . \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
-                }
-
-                // Entity
-                echo "<td $onhover $color_class>" . \Dropdown::getDropdownName("glpi_entities", $value['entities_id']) . "</td>";
-
-                // Type
-                echo "<td $onhover $color_class>" . self::getTaskTypeName($value['type']) . "</td>";
-
-                $cat = "";
-                if ($value['type'] == self::TICKET_TYPE) {
-                    if (isset($value['itilcategories_id']) && $value['itilcategories_id'] > 0) {
-                        $cat = \Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
-                    }
-                } elseif ($value['type'] == self::MAIL_TYPE) {
-                    if (isset($mailtask->fields['itilcategories_id']) && $mailtask->fields['itilcategories_id'] > 0) {
-                        $cat = \Dropdown::getDropdownName("glpi_itilcategories", $mailtask->fields['itilcategories_id']);
-                    }
-                }
-                if ($value['type'] == self::TASK_TYPE) {
-                    $cat = "---";
-                }
-                echo "<td $onhover $color_class>";
-                echo $cat;
-                echo "</td>";
-
-                //assign
-                $techdata = "";
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
-
-                    if ($value['type'] != self::MAIL_TYPE) {
-                        if (isset($value['users_id_assign'])
-                            && $value['users_id_assign'] > 0) {
-                            $techdata .= getUserName($value['users_id_assign'], 0, true);
-                            $techdata .= "<br>";
-                        }
-                        if (isset($value['groups_id_assign'])
-                            && $value['groups_id_assign'] > 0) {
-                            $techdata .= \Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
-                        }
-                    }
-
-                    if ($value['type'] == self::MAIL_TYPE
-                        && (isset($mailtask->fields['users_id_recipient']) || isset($mailtask->fields['groups_id_recipient']))
-                        && ($mailtask->fields['users_id_recipient'] > 0 || $mailtask->fields['groups_id_recipient'] > 0)) {
-                        $techdata .= __('Recipients', 'metademands') . " : <br>";
-                        if (isset($mailtask->fields['users_id_recipient'])
-                            && $mailtask->fields['users_id_recipient'] > 0) {
-                            $techdata .= getUserName($mailtask->fields['users_id_recipient'], 0, true);
-                        }
-                        if (isset($mailtask->fields['groups_id_recipient'])
-                            && $mailtask->fields['groups_id_recipient'] > 0) {
-                            $techdata .= \Dropdown::getDropdownName(
-                                "glpi_groups",
-                                $mailtask->fields['groups_id_recipient']
-                            );
-                        }
-                    }
-                }
-                echo "<td $onhover $color_class>";
-                echo $techdata;
-                echo "</td>";
-
-                // Order
-                if ($value['type'] == self::TICKET_TYPE) {
-                    if ($value['level'] > 1) {
-                        echo "<td $onhover $color_class>";
-                        echo "<div class='center'>" . $value['level'] . "</div>";
-                        echo "</td>";
-                    } else {
-                        echo "<td $onhover $color_class>";
-                        echo "<div class='center'>" . __('Root', 'metademands') . "</div>";
-                        echo "</td>";
-                    }
-                } elseif ($value['type'] == self::TASK_TYPE) {
-                    echo "<td $onhover $color_class>";
-                    echo "<div class='center'>---</div>";
-                    echo "</td>";
-                } else {
-                    echo "<td $onhover $color_class>";
-                    echo "<div class='center'>" . __('Root', 'metademands') . "</div>";
-                    echo "</td>";
-                }
-
-                $blocks = json_decode($value['block_use']);
-                if (!empty($blocks)) {
-                    $blocktext = "";
-                    $i         = 0;
-                    foreach ($blocks as $block) {
-                        if ($i != 0) {
-                            $blocktext .= " <br>";
-                        }
-                        $blocktext .= sprintf(__("Block %s", 'metademands'), $block);
-                        $i++;
-                    }
-                } else {
-                    $blocktext = __('All');
-                }
-                if ($value['type'] == self::TASK_TYPE) {
-                    $blocktext = "---";
-                }
-                echo "<td $onhover $color_class>";
-                echo $blocktext;
-                echo "</td>";
-                echo "<td $color_class>";
-                if ($value['type'] == self::TASK_TYPE) {
-                    echo "---";
-                } else {
-                    echo \Dropdown::getYesNo($value['useBlock']);
-                }
-                echo "</td>";
-                echo "<td $onhover $color_class>";
-                if ($value['type'] == self::TASK_TYPE) {
-                    echo "---";
-                } else {
-                    echo \Dropdown::getYesNo($value['formatastable']);
-                }
-                echo "</td>";
-                echo "<td $color_class>";
-                if ($value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
-                    echo "---";
-                } else {
-                    echo \Dropdown::getYesNo($value['block_parent_ticket_resolution']);
-                }
-                echo "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-
-            if ($canedit && count($tasks) && $solved) {
-                $massiveactionparams['ontop'] = false;
-                Html::showMassiveActions($massiveactionparams);
-                Html::closeForm();
-            }
-            echo "</div>";
-        } else {
-            echo "<div class='center first-bloc'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
-            echo "</table></div>";
+                        'id' => -1,
+                        'solved' => $solved,
+                    ],
+                    "",
+                    false
+                )
+                . "};";
         }
+
+        $tags_modal = Ajax::createIframeModalWindow(
+            'tags',
+            PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->getID(),
+            [
+                'title' => __('Show list of available tags'),
+                'display' => false,
+            ]
+        );
+
+        $entries = [];
+        $tasks = $this->sortByParentChild($tasks);
+
+        foreach ($tasks as $value) {
+            $id = $value['tasks_id'];
+            $is_basic = ($value['type'] == self::TICKET_TYPE
+                || $value['type'] == self::TASK_TYPE
+                || $value['type'] == self::MAIL_TYPE);
+
+            $mailtask = null;
+            if ($value['type'] == self::MAIL_TYPE) {
+                $mailtask = new MailTask();
+                $mailtask->getFromDBByCrit(['plugin_metademands_tasks_id' => $id]);
+            }
+
+            // Row highlight + optional link to a field option
+            $row_class = "";
+            $meta_class = "metademand_metademandtasks";
+            $fieldopt = new FieldOption();
+            if ($fieldopt->find(["plugin_metademands_tasks_id" => $id])) {
+                if ($is_basic) {
+                    $row_class = "linkedtooption";
+                } else {
+                    $row_class = "metatooption";
+                    $meta_class = "";
+                }
+            }
+            // Cells of a metademand row carry the meta css class, basic rows carry none
+            $td_class = $is_basic ? "" : $meta_class;
+
+            $row_style = "";
+            if ($value['type'] == self::TICKET_TYPE && $value['level'] > 1) {
+                $row_style = "background-color:#ebebeb";
+            }
+
+            // Clickable (edit) only for basic rows; metademand rows link to their form
+            $edit_fn = "";
+            if ($canedit && $is_basic) {
+                $edit_fn = "viewEditchild" . $id . $rand;
+                $scripts[] = "function " . $edit_fn . "() {"
+                    . Ajax::updateItemJsCode(
+                        $viewchild_id,
+                        $viewsubitem_url,
+                        [
+                            'type' => self::class,
+                            'parenttype' => get_class($item),
+                            $item->getForeignKeyField() => $item->getID(),
+                            'id' => $id,
+                            'solved' => $solved,
+                        ],
+                        "",
+                        false
+                    )
+                    . "};";
+            }
+
+            // Name
+            if ($is_basic) {
+                $name_html = $value['tickettasks_name'];
+            } else {
+                $name_html = "<a href='" . Toolbox::getItemTypeFormURL(Metademand::class)
+                    . "?id=" . $value['link_metademands_id'] . "'>"
+                    . \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id'])
+                    . "</a>";
+            }
+
+            // Entity: for a metademand sub-request, show the configured destination
+            // entity of its ticket (destination_entities_id). The sentinel -1 means
+            // "no override, use the requester's active entity at launch time".
+            if ($value['type'] == self::METADEMAND_TYPE && !empty($value['link_metademands_id'])) {
+                if (isset($value['destination_entities_id']) && $value['destination_entities_id'] >= 0) {
+                    $entity_name = \Dropdown::getDropdownName("glpi_entities", $value['destination_entities_id']);
+                } else {
+                    $entity_name = __('Active entity', 'metademands');
+                }
+            } else {
+                $entity_name = \Dropdown::getDropdownName("glpi_entities", $value['entities_id']);
+            }
+
+            // Category
+            $cat = "";
+            if ($value['type'] == self::TICKET_TYPE) {
+                if (isset($value['itilcategories_id']) && $value['itilcategories_id'] > 0) {
+                    $cat = \Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
+                }
+            } elseif ($value['type'] == self::MAIL_TYPE) {
+                if (isset($mailtask->fields['itilcategories_id']) && $mailtask->fields['itilcategories_id'] > 0) {
+                    $cat = \Dropdown::getDropdownName("glpi_itilcategories", $mailtask->fields['itilcategories_id']);
+                }
+            } elseif ($value['type'] == self::TASK_TYPE) {
+                $cat = "---";
+            }
+
+            // Assigned to / recipients
+            $techdata = "";
+            if ($is_basic) {
+                if ($value['type'] != self::MAIL_TYPE) {
+                    if (isset($value['users_id_assign']) && $value['users_id_assign'] > 0) {
+                        $techdata .= getUserName($value['users_id_assign'], 0, true);
+                        $techdata .= "<br>";
+                    }
+                    if (isset($value['groups_id_assign']) && $value['groups_id_assign'] > 0) {
+                        $techdata .= \Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
+                    }
+                }
+
+                if ($value['type'] == self::MAIL_TYPE
+                    && (isset($mailtask->fields['users_id_recipient']) || isset($mailtask->fields['groups_id_recipient']))
+                    && ($mailtask->fields['users_id_recipient'] > 0 || $mailtask->fields['groups_id_recipient'] > 0)) {
+                    $techdata .= __('Recipients', 'metademands') . " : <br>";
+                    if (isset($mailtask->fields['users_id_recipient']) && $mailtask->fields['users_id_recipient'] > 0) {
+                        $techdata .= getUserName($mailtask->fields['users_id_recipient'], 0, true);
+                    }
+                    if (isset($mailtask->fields['groups_id_recipient']) && $mailtask->fields['groups_id_recipient'] > 0) {
+                        $techdata .= \Dropdown::getDropdownName("glpi_groups", $mailtask->fields['groups_id_recipient']);
+                    }
+                }
+            }
+
+            // Level
+            if ($value['type'] == self::TICKET_TYPE) {
+                $level_html = ($value['level'] > 1) ? $value['level'] : __('Root', 'metademands');
+            } elseif ($value['type'] == self::TASK_TYPE) {
+                $level_html = "---";
+            } else {
+                $level_html = __('Root', 'metademands');
+            }
+
+            // Blocks to use
+            $blocks = json_decode($value['block_use']);
+            if (!empty($blocks)) {
+                $block_parts = [];
+                foreach ($blocks as $block) {
+                    $block_parts[] = sprintf(__("Block %s", 'metademands'), $block);
+                }
+                $block_html = implode(" <br>", $block_parts);
+            } else {
+                $block_html = __('All');
+            }
+            if ($value['type'] == self::TASK_TYPE) {
+                $block_html = "---";
+            }
+
+            $entries[] = [
+                'id' => $id,
+                'parent' => $value['parent_task'],
+                'level' => $value['level'],
+                'row_class' => $row_class,
+                'row_style' => $row_style,
+                'td_class' => $td_class,
+                'edit_fn' => $edit_fn,
+                'name' => $name_html,
+                'entity' => $entity_name,
+                'type' => self::getTaskTypeName($value['type']),
+                'category' => $cat,
+                'assign' => $techdata,
+                'level_label' => $level_html,
+                'block' => $block_html,
+                'useblock' => ($value['type'] == self::TASK_TYPE) ? "---" : \Dropdown::getYesNo($value['useBlock']),
+                'formatastable' => ($value['type'] == self::TASK_TYPE) ? "---" : \Dropdown::getYesNo($value['formatastable']),
+                'block_parent' => ($value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE)
+                    ? "---"
+                    : \Dropdown::getYesNo($value['block_parent_ticket_resolution']),
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/task_list.html.twig', [
+            'item' => $item,
+            'rand' => $rand,
+            'canedit' => $canedit,
+            'solved' => $solved,
+            'itemtype' => self::class,
+            'mass_container' => 'masstasks' . $rand,
+            'viewchild_id' => $viewchild_id,
+            'treetable_js' => PLUGIN_METADEMANDS_WEBDIR . "/lib/treetable/treetable.js",
+            'scripts' => implode("\n", $scripts),
+            'tags_modal' => $tags_modal,
+            'entries' => $entries,
+        ]);
     }
 
     /**
@@ -897,6 +768,7 @@ class Task extends CommonDBChild
                 'glpi_plugin_metademands_tasks.name AS tickettasks_name',
                 'glpi_plugin_metademands_metademandtasks.id AS metademandtask_id',
                 'glpi_plugin_metademands_metademandtasks.plugin_metademands_metademands_id AS link_metademands_id',
+                'glpi_plugin_metademands_metademandtasks.destination_entities_id AS destination_entities_id',
                 'glpi_plugin_metademands_tasks.type',
                 'glpi_plugin_metademands_tasks.plugin_metademands_tasks_id AS parent_task',
                 'glpi_plugin_metademands_tasks.plugin_metademands_metademands_id AS parent_metademand',

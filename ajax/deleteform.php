@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Form;
 use GlpiPlugin\Metademands\Form_Value;
 
@@ -41,7 +43,7 @@ $form_id                           = (int) $_POST['forms_id'];
 
 $self = new Form();
 if (!$self->getFromDB($form_id) || (int) $self->fields['users_id'] !== $users_id) {
-    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+    throw new AccessDeniedHttpException();
 }
 $self->deleteByCriteria(['id' => $form_id]);
 
@@ -55,27 +57,15 @@ if ($_POST['self_delete'] == true) {
     unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id']);
     unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name']);
 }
-$return = "";
-if (count($forms) > 0) {
-    foreach ($forms as $form) {
-        $return .= "<tr class='tab_bg_1'>";
-        $return .= "<td>" . $form['name'] . "</td>";
-        $return .= "<td>" . Html::convDateTime($form['date']) . "</td>";
-        $return .= "<td>";
-        $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
-        $return .= "<i class='ti ti-cloud-download pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true'></i>";
-        $return .= "</button>";
-        $return .= "</td>";
-        $return .= "<td>";
-        $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
-        $return .= "<i class='ti ti-trash pointer pointer' title='" . _sx('button', 'Delete form', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true'></i>";
-        $return .= "</button>";
-        $return .= "</tr>";
-    }
-} else {
-    $return .= "<tr class='tab_bg_1'><td colspan='4' class='center'>" . __("No existing forms founded", 'metademands') . "</td></tr>";
+$entries = [];
+foreach ($forms as $form) {
+    $entries[] = [
+        'id'   => (int) $form['id'],
+        'name' => $form['name'],
+        'date' => Html::convDateTime($form['date']),
+    ];
 }
 
-echo $return;
+TemplateRenderer::getInstance()->display('@metademands/forms/private_models_rows.html.twig', [
+    'entries' => $entries,
+]);

@@ -47,7 +47,7 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 $KO = false;
-$step = $_POST['step'] + 1;
+$step = ($_POST['step'] ?? 0) + 1;
 $metademands = new Metademand();
 $wizard = new Wizard();
 $fields = new Field();

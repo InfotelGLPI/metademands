@@ -1,0 +1,65 @@
+{#
+ # Public form models list, shown in the wizard.
+ # The form title (entry.name) is user-controlled: rendered through Twig
+ # auto-escaping to prevent stored XSS.
+ #}
+<span>
+    {% if entries is not empty %}
+        <table class="tab_cadre_fixe">
+            <thead>
+                <tr>
+                    <th colspan="6">{{ __('Public models', 'metademands') }}</th>
+                </tr>
+            </thead>
+            <tbody id="bodyForm">
+                {% for entry in entries %}
+                    {% set tooltip_content %}
+                        {{ __('Name') }} : {{ entry.name }}<br>
+                        {{ __('Date') }} : {{ entry.date }}<br>
+                        {{ __('Created by', 'metademands') }} : {{ entry.created_by }}
+                        {% if entry.url %}<br>{{ __('URL') }} : {{ entry.url|raw }}{% endif %}
+                    {% endset %}
+                    <tr>
+                        <td>{{ entry.name }} ({{ entry.meta_name }})</td>
+                        <td>
+                            {{ call('Html::showToolTip', [tooltip_content, {'awesome-class': 'ti ti-info-circle', 'display': false}])|raw }}
+                        </td>
+                        <td>
+                            <button form="" class="submit btn btn-success btn-sm"
+                                    onclick="loadForm({{ entry.id }})">
+                                <i class="ti ti-cloud-download pointer"
+                                   title="{{ _x('button', 'Load form', 'metademands') }}"
+                                   data-hasqtip="0" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <script>
+        var meta_id = {{ meta_id }};
+        var step = {{ step }};
+        var itilcategories_id = {{ itilcategories_id }};
+        function loadForm(form_id) {
+            $('#ajax_loader').show();
+            var data_send = $('#wizard_form').serializeArray();
+            data_send.push({name: 'plugin_metademands_forms_id', value: form_id},
+                           {name: 'metademands_id', value: meta_id});
+            $.ajax({
+                url: '{{ webdir }}/ajax/loadform.php',
+                type: 'POST',
+                data: data_send,
+                success: function(response) {
+                    $('#ajax_loader').hide();
+                    if (response == 1) {
+                        document.location.reload();
+                    } else {
+                        window.location.href = '{{ webdir }}/front/wizard.form.php?itilcategories_id=' + itilcategories_id + '&metademands_id=' + meta_id + '&step=' + step;
+                    }
+                }
+            });
+        }
+    </script>
+</span>

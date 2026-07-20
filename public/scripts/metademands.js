@@ -795,34 +795,8 @@ async function plugin_metademands_wizard_nextBtn(n, firstnumTab, metademandparam
         const currentBlocAttr = x[metademandparams.currentTab]?.firstChild?.getAttribute('bloc-id');
         const id_bloc = currentBlocAttr ? parseInt(currentBlocAttr.replace('bloc', '')) : 0;
         const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
-        const inputs = div.querySelectorAll('input, select, textarea');
 
-        let uneValeurSaisie = false;
-        inputs.forEach(input => {
-
-            if ((input.type === 'checkbox' || input.type === 'radio') && input.checked) {
-                uneValeurSaisie = true;
-            } else if (input.tagName === 'SELECT') {
-                const isYesNo = input.classList.contains("yesno");
-                const value = input.value;
-
-                if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
-                    uneValeurSaisie = true;
-                }
-            } else if (input.tagName === 'TEXTAREA') {
-                let value = input.value;
-
-                if (window.tinymce && tinymce.get(input.id)) {
-                    value = tinymce.get(input.id).getContent({ format: 'text' });
-                }
-
-                if (value.trim() !== '') {
-                    uneValeurSaisie = true;
-                }
-            }
-        });
-
-        if (!uneValeurSaisie) {
+        if (!plugin_metademands_wizard_stepHasInput(div)) {
             const confirmation = await showBootstrapConfirmationModal(metademandparams.confirmmsg);
             if (!confirmation) {
                 return false;
@@ -1153,6 +1127,56 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas)
 
 }
 
+/**
+ * Returns true when at least one *visible* field of the given block holds a
+ * user-entered value. Fields located in a collapsed sub-block (bloc-id in
+ * display:none) are ignored, so a hidden dropdown keeping its default value no
+ * longer prevents the "no value entered" confirmation popup from showing.
+ * Mirrors the visibility filter of plugin_metademands_wizard_validateForm().
+ *
+ * @param {Element|null} div block wrapper ([bloc-id="blocN"]) to inspect
+ * @returns {boolean}
+ */
+function plugin_metademands_wizard_stepHasInput(div)
+{
+    // Block not found: keep previous behaviour (do not prompt, let navigation proceed)
+    if (!div) {
+        return true;
+    }
+
+    let hasInput = false;
+    div.querySelectorAll('input, select, textarea').forEach(input => {
+        // Skip fields sitting in a hidden (collapsed) sub-block
+        const bloc = input.closest('[bloc-id]');
+        if (!bloc || bloc.style.display === 'none') {
+            return;
+        }
+
+        if ((input.type === 'checkbox' || input.type === 'radio') && input.checked) {
+            hasInput = true;
+        } else if (input.tagName === 'SELECT') {
+            const isYesNo = input.classList.contains('yesno');
+            const value = input.value;
+
+            if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
+                hasInput = true;
+            }
+        } else if (input.tagName === 'TEXTAREA') {
+            let value = input.value;
+
+            if (window.tinymce && tinymce.get(input.id)) {
+                value = tinymce.get(input.id).getContent({ format: 'text' });
+            }
+
+            if (value.trim() !== '') {
+                hasInput = true;
+            }
+        }
+    });
+
+    return hasInput;
+}
+
 function showBootstrapConfirmationModal(message)
 {
     return new Promise((resolve) => {
@@ -1247,32 +1271,9 @@ async function plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, met
             const currentBlocAttr = tabs[metademandparams.currentTab]?.firstChild?.getAttribute('bloc-id');
             const id_bloc = currentBlocAttr ? parseInt(currentBlocAttr.replace('bloc', '')) : 0;
             const div = document.querySelector('[bloc-id="bloc' + id_bloc + '"]');
-            if (div) {
-                const inputs = div.querySelectorAll('input, select, textarea');
-                let uneValeurSaisie = false;
-                inputs.forEach(input => {
-                    if ((input.type === 'checkbox' || input.type === 'radio') && input.checked) {
-                        uneValeurSaisie = true;
-                    } else if (input.tagName === 'SELECT') {
-                        const isYesNo = input.classList.contains('yesno');
-                        const value = input.value;
-                        if ((isYesNo && value === '2') || (!isYesNo && (value !== '0' && value !== ''))) {
-                            uneValeurSaisie = true;
-                        }
-                    } else if (input.tagName === 'TEXTAREA') {
-                        let value = input.value;
-                        if (window.tinymce && tinymce.get(input.id)) {
-                            value = tinymce.get(input.id).getContent({ format: 'text' });
-                        }
-                        if (value.trim() !== '') {
-                            uneValeurSaisie = true;
-                        }
-                    }
-                });
-                if (!uneValeurSaisie) {
-                    const confirmed = await showBootstrapConfirmationModal(metademandparams.confirmmsg);
-                    if (!confirmed) return;
-                }
+            if (!plugin_metademands_wizard_stepHasInput(div)) {
+                const confirmed = await showBootstrapConfirmationModal(metademandparams.confirmmsg);
+                if (!confirmed) return;
             }
         }
     }
