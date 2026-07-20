@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-20 08:44+0000\n"
+"POT-Creation-Date: 2026-07-20 22:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -316,7 +316,7 @@ msgstr ""
 msgid "Block to use"
 msgstr ""
 
-#: src/Configstep.php:155
+#: src/Configstep.php:201
 msgid "Both"
 msgstr ""
 
@@ -804,7 +804,7 @@ msgstr ""
 msgid "Draft name"
 msgstr ""
 
-#: ajax/adddraft.php:186
+#: ajax/adddraft.php:187
 msgid "Draft name is required"
 msgstr ""
 
@@ -1626,8 +1626,8 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:874 src/Fields/Ldapdropdown.php:331
-#: src/Fields/Ldapdropdown.php:367 src/Fields/Dropdownobject.php:1009
+#: src/Fields/Dropdownmultiple.php:874 src/Fields/Ldapdropdown.php:344
+#: src/Fields/Ldapdropdown.php:380 src/Fields/Dropdownobject.php:1009
 #: src/Fields/Dropdownobject.php:1012 src/Fields/Dropdownobject.php:1022
 #: src/Fields/Dropdownobject.php:1044 src/Fields/Dropdownobject.php:1060
 #: src/Fields/Dropdownobject.php:1071 src/Fields/Radio.php:407
@@ -2300,11 +2300,11 @@ msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
 msgstr ""
 
-#: src/Basketline.php:498
+#: src/Basketline.php:508
 msgid "The line has been deleted"
 msgstr ""
 
-#: src/Basketline.php:487
+#: src/Basketline.php:497
 msgid "The line has been updated"
 msgstr ""
 
@@ -2365,11 +2365,11 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: ajax/createmetademands.php:239
+#: ajax/createmetademands.php:248
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/createmetademands.php:386 ajax/addform.php:227
+#: ajax/createmetademands.php:395 ajax/addform.php:227
 #, php-format
 msgid "There is no line on the mandatory table %s"
 msgstr ""
@@ -2674,7 +2674,7 @@ msgid "Value"
 msgstr ""
 
 #: src/Field.php:1310 src/FieldOption.php:507
-#: src/Fields/Dropdownmultiple.php:712 src/Fields/Ldapdropdown.php:280
+#: src/Fields/Dropdownmultiple.php:712 src/Fields/Ldapdropdown.php:293
 #: src/Fields/Dropdownobject.php:900 src/Fields/Radio.php:370
 #: src/Fields/Checkbox.php:357 src/Fields/Yesno.php:222
 #: src/Fields/Dropdown.php:584 src/Fields/Dropdownmeta.php:1361
