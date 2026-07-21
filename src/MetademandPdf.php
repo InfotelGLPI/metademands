@@ -34,7 +34,6 @@ use DbUtils;
 use Document;
 use Document_Item;
 use Dropdown;
-use FPDF;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Freetable;
@@ -48,19 +47,25 @@ use GlpiPlugin\Orderfollowup\Freeinput;
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-define('EURO', chr(128));
+// TCPDF is UTF-8 native: use the real euro codepoint, not the CP1252 byte chr(128).
+if (!defined('EURO')) {
+    define('EURO', "\u{20AC}");
+}
 /**
  * Class Pdf
  */
 #[AllowDynamicProperties]
-class MetademandPdf extends FPDF
+class MetademandPdf extends \TCPDF
 {
 
     /* Constantes pour paramétrer certaines données. */
     var $line_height = 6;     // Hauteur d'une ligne simple.
     var $multiline_height = 6;     // Hauteur d'un textarea
     var $linebreak_height = 6;     // Hauteur d'une break.
-    var $bgcolor = 'grey';
+    // NOTE: do NOT name this "bgcolor" — TCPDF already declares a protected $bgcolor
+    // property (the current fill-color array) and overwrites it on every fill, which would
+    // turn this string into an array and make SetBackgroundColor() fall through to white.
+    var $default_bgcolor = 'grey';
     var $value_width = 45;
     var $pol_def = 'Helvetica'; // Police par défaut;
     var $title_size = 13;      // Taille du titre.
@@ -86,7 +91,21 @@ class MetademandPdf extends FPDF
      */
     public function __construct($title, $subtitle, $id)
     {
-        parent::__construct('P', 'mm', 'A4');
+        parent::__construct('P', 'mm', 'A4', true, 'UTF-8');
+
+        // TCPDF defaults (15 mm side margins, 27 mm top, ~1+ mm cell padding) differ from FPDF's
+        // (10 mm margins). The layout below is hand-positioned for FPDF geometry, so we restore it:
+        //  - 10 mm left/right margins  → MultiCell(page_width) no longer overflows the right margin;
+        //  - top margin set below the header banner → after TCPDF re-homes the cursor to (lMargin,
+        //    tMargin) once Header() has run (see TCPDF::setHeader), page content starts under the
+        //    header instead of painting over it;
+        //  - zero horizontal cell padding to keep the tight FPDF cell widths.
+        $this->SetMargins($this->margin_left, $this->margin_top + $this->header_height, $this->margin_left);
+        $this->SetHeaderMargin($this->margin_top);
+        $this->SetAutoPageBreak(false);
+        // FPDF's default cell margin is 1 mm horizontally; restore it so text isn't glued to the
+        // cell borders. Vertical padding stays 0 so row heights keep matching $line_height.
+        $this->setCellPaddings(1, 0, 1, 0);
 
         $this->title = $title;
         $this->subtitle = $subtitle;
@@ -257,10 +276,10 @@ class MetademandPdf extends FPDF
 
         $this->SetX($this->margin_left + $largeurCoteTitre);
 
-        $this->CellTitleValue($largeurCaseTitre, 5, Toolbox::decodeFromUtf8($title), 'LR', 'C', '', 1, $this->title_size, 'black');
+        $this->CellTitleValue($largeurCaseTitre, 5, $title, 'LR', 'C', '', 1, $this->title_size, 'black');
         $this->SetY($this->GetY() + 5);
         $this->SetX($this->margin_left + $largeurCoteTitre);
-        $this->CellTitleValue($largeurCaseTitre, 10, Toolbox::decodeFromUtf8($subtitle), 'BLR', 'C', '', 0, $this->font_size, 'black');
+        $this->CellTitleValue($largeurCaseTitre, 10, $subtitle, 'BLR', 'C', '', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() - 10);
 
 
@@ -270,7 +289,7 @@ class MetademandPdf extends FPDF
         $this->SetY($this->GetY() + 5);
         $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
 
-        $this->CellTitleValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'LR', 'C', 'grey', 0, $this->font_size, 'black');
+        $this->CellTitleValue($largeurCoteTitre, 5, __('Created on', 'metademands'), 'LR', 'C', 'grey', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() + 5);
         $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
         $this->CellTitleValue($largeurCoteTitre, 10, Html::convDate(date('Y-m-d')), 'BLR', 'C', 'grey', 0, $this->font_size, 'black');
@@ -321,7 +340,7 @@ class MetademandPdf extends FPDF
         }
         $this->SetBackgroundColor($color);
         $this->SetFontNormal($fontColor, $bold, $size);
-        $this->Cell($w, $h, $value, $border, 0, $align, 1);
+        $this->Cell($w, $h, $value, $border, 0, $align, true);
     }
 
     /**
@@ -349,7 +368,7 @@ class MetademandPdf extends FPDF
         $x = $this->GetX();
 
         //Draw label
-        $this->SetBackgroundColor($this->bgcolor);
+        $this->SetBackgroundColor($this->default_bgcolor);
         $this->SetFontNormal($fontColor, $bold, $size);
         //Calculate label
         //      $width = $this->GetStringWidth($label) + ($this->cMargin * 2);
@@ -394,7 +413,7 @@ class MetademandPdf extends FPDF
 
     function BasicTable($header, $data, $color = '')
     {
-        $this->SetBackgroundColor($this->bgcolor);
+        $this->SetBackgroundColor($this->default_bgcolor);
         $w = array(20, 80, 80, 15, 30, 30, 20); //275
         for ($i=0; $i<count($header); $i++) {
             $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
@@ -427,15 +446,15 @@ class MetademandPdf extends FPDF
         $this->Ln();
         $this->Cell(195, 6, "", 0, 0, 'C', true);
         $grandtotal = __('Grand total (HT)', 'orderfollowup');
-        $this->SetBackgroundColor($this->bgcolor);
-        $this->Cell(60, 6, Toolbox::decodeFromUtf8($grandtotal), 1, 0, 'C', true);
+        $this->SetBackgroundColor($this->default_bgcolor);
+        $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
         $this->SetBackgroundColor($color);
         $this->Cell(20, 6, Html::formatNumber($total, false, 2)." ".EURO, 1, 0, 'L', $fill);
     }
 
     function BasicTableFreeTable($header, $data, $color = "")
     {
-        $this->SetBackgroundColor($this->bgcolor);
+        $this->SetBackgroundColor($this->default_bgcolor);
 
         $nb = count($header);
 
@@ -481,7 +500,7 @@ class MetademandPdf extends FPDF
 
     function BasicTableFreeInputs($header, $data, $color = '')
     {
-        $this->SetBackgroundColor($this->bgcolor);
+        $this->SetBackgroundColor($this->default_bgcolor);
         $w = array(30, 80, 100, 15, 30, 20);//190
         for ($i=0; $i<count($header); $i++) {
             $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
@@ -514,8 +533,8 @@ class MetademandPdf extends FPDF
         $this->Ln();
         $this->Cell(195, 6, "", 0, 0, 'C', true);
         $grandtotal = __('Grand total (TTC)', 'orderfollowup');
-        $this->SetBackgroundColor($this->bgcolor);
-        $this->Cell(60, 6, Toolbox::decodeFromUtf8($grandtotal), 1, 0, 'C', true);
+        $this->SetBackgroundColor($this->default_bgcolor);
+        $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
         $this->SetBackgroundColor($color);
         $this->Cell(20, 6, Html::formatNumber($total, false, 2)." ".EURO, 1, 0, 'L', $fill);
 
@@ -523,8 +542,8 @@ class MetademandPdf extends FPDF
         $this->Ln();
         $this->Cell(195, 6, "", 0, 0, 'C', true);
         $grandtotalHT = __('Grand total (HT)', 'orderfollowup')." ".__('(if VAT 20%)', 'orderfollowup');
-        $this->SetBackgroundColor($this->bgcolor);
-        $this->Cell(60, 6, Toolbox::decodeFromUtf8($grandtotalHT), 1, 0, 'C', true);
+        $this->SetBackgroundColor($this->default_bgcolor);
+        $this->Cell(60, 6, $grandtotalHT, 1, 0, 'C', true);
         $this->SetBackgroundColor($color);
         $totalHT = $total / 1.2;
         $this->Cell(20, 6, Html::formatNumber($totalHT, false, 2)." ".EURO, 1, 0, 'L', $fill);
@@ -599,7 +618,10 @@ class MetademandPdf extends FPDF
                 }
             }
             if (count($widths) > 0) {
-                $max_width = max($widths);
+                // $max_width is the exact string width of the widest label. Add the horizontal
+                // cell padding (2 x 1 mm) plus a small safety margin so the widest label never
+                // wraps to a second line inside its own cell (MultiCell wraps on width overflow).
+                $max_width = max($widths) + 4;
                 $this->label_width = $max_width;
                 $this->value_width = $this->page_width - $max_width;
             }
@@ -718,7 +740,6 @@ class MetademandPdf extends FPDF
                         }
                         $label = str_replace("’", "'", $label);
                         if ($label != null) {
-                            $label = Toolbox::decodeFromUtf8($label);
                         }
                     }
                     $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
@@ -740,7 +761,7 @@ class MetademandPdf extends FPDF
                         case 'title':
                         case 'title-block':
                             // Draw line
-                            $this->MultiCellValue($this->title_width, $this->line_height, $elt['type'], $label, '', 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black');
+                            $this->MultiCellValue($this->title_width, $this->line_height, $elt['type'], $label, '', 'LRBT', 'C', $this->default_bgcolor, 1, $this->subtitle_size, 'black');
                             break;
 
                         case 'linebreak':
@@ -756,7 +777,6 @@ class MetademandPdf extends FPDF
                         case 'range':
                             $value = $fields[$elt['id']];
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
                                 // Draw line
                                 $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             }
@@ -767,7 +787,6 @@ class MetademandPdf extends FPDF
                             $value = RichText::getTextFromHtml($value);
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
 
                                 // Draw line
                                 $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -799,7 +818,6 @@ class MetademandPdf extends FPDF
                                     }
                                     $value = implode(', ', $value);
                                     if ($value != null) {
-                                        $value = Toolbox::decodeFromUtf8($value);
 
                                         // Draw line
                                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -818,7 +836,6 @@ class MetademandPdf extends FPDF
                                 }
                                 $value = implode(', ', $value);
                                 if ($value != null) {
-                                    $value = Toolbox::decodeFromUtf8($value);
 
                                     // Draw line
                                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -907,7 +924,6 @@ class MetademandPdf extends FPDF
                                     break;
                             }
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
                                 // Draw line
                                 $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             }
@@ -920,7 +936,6 @@ class MetademandPdf extends FPDF
                             }
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
 
                                 // Draw line
                                 $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -950,7 +965,6 @@ class MetademandPdf extends FPDF
                                 $value = implode(', ', $parseValue);
 
                                 if ($value != null) {
-                                    $value = Toolbox::decodeFromUtf8($value);
 
                                     // Draw line
                                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -998,7 +1012,6 @@ class MetademandPdf extends FPDF
                                 $value = implode("", $parseValue);
 
                                 if ($value != null) {
-                                    $value = Toolbox::decodeFromUtf8($value);
 
                                     // Draw line
                                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -1025,7 +1038,6 @@ class MetademandPdf extends FPDF
                                 $value = implode(', ', $custom_checkbox);
 
                                 if ($value != null) {
-                                    $value = Toolbox::decodeFromUtf8($value);
 
                                     // Draw line
                                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -1050,7 +1062,6 @@ class MetademandPdf extends FPDF
                                 }
 
                                 if ($value != null && isset($fields[$elt['id']]) && $fields[$elt['id']] != null) {
-                                    $value = Toolbox::decodeFromUtf8($value);
                                     // Draw line
                                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                                 }
@@ -1061,7 +1072,6 @@ class MetademandPdf extends FPDF
                             $value = Html::convDate($fields[$elt['id']]);
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
 
                                 // Draw line
                                 $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -1072,7 +1082,6 @@ class MetademandPdf extends FPDF
                             $value = $fields[$elt['id']];
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
 
                                 // Draw line
                                 $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -1083,7 +1092,6 @@ class MetademandPdf extends FPDF
                             $value = Html::convDateTime($fields[$elt['id']]);
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
 
                                 // Draw line
                                 $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -1095,10 +1103,8 @@ class MetademandPdf extends FPDF
                             $value2 = Html::convDate($fields[$elt['id'] . "-2"]);
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
                             }
                             if ($value2 != null) {
-                                $value2 = Toolbox::decodeFromUtf8($value2);
                             }
                             if (!empty($elt['label2'])) {
                                 //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
@@ -1107,7 +1113,6 @@ class MetademandPdf extends FPDF
                                 }
                                 $label2 = str_replace("’", "'", $label2);
                                 if ($label2 != null) {
-                                    $label2 = Toolbox::decodeFromUtf8($label2);
                                 }
 
                                 $label2 = RichText::getTextFromHtml($label2);
@@ -1122,10 +1127,8 @@ class MetademandPdf extends FPDF
                             $value2 = Html::convDateTime($fields[$elt['id'] . "-2"]);
 
                             if ($value != null) {
-                                $value = Toolbox::decodeFromUtf8($value);
                             }
                             if ($value2 != null) {
-                                $value2 = Toolbox::decodeFromUtf8($value2);
                             }
                             if (!empty($elt['label2'])) {
                                 //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
@@ -1134,7 +1137,6 @@ class MetademandPdf extends FPDF
                                 }
                                 $label2 = str_replace("’", "'", $label2);
                                 if ($label2 != null) {
-                                    $label2 = Toolbox::decodeFromUtf8($label2);
                                 }
 
                                 $label2 = RichText::getTextFromHtml($label2);
@@ -1277,7 +1279,7 @@ class MetademandPdf extends FPDF
      */
     public function drawPdf($form, $fields, $metademands_id, $parent_tickets_id, $with_basket = false)
     {
-        $this->AliasNbPages();
+        // TCPDF manages the total-page-count alias ({nb}) automatically — no AliasNbPages() call needed.
         if (Plugin::isPluginActive('orderfollowup')) {
             $this->AddPage("L");
         } else {

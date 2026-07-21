@@ -17,7 +17,6 @@
         "phpunit/phpunit": "^11.5"
     },
     "require": {
-        "setasign/fpdf": "^1.9",
         "php": ">=8.2"
     },
     "scripts": {
