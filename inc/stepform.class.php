@@ -634,7 +634,7 @@ class PluginMetademandsStepform extends CommonDBTM
                      </script>";
     }
 
-    public static function getWaitingFormsByMaker()
+    public static function getWaitingFormsByMaker($forms = [])
     {
         $stepform   = new PluginMetademandsStepform();
         $stepformActors = new PluginMetademandsStepform_Actor();
@@ -653,6 +653,11 @@ class PluginMetademandsStepform extends CommonDBTM
                 if (Session::getLoginUserID() == $formActor['users_id']) {
                     $waitingForms[$id] = $form;
                 }
+            }
+        }
+        foreach ($forms as $id => $form) {
+            if (array_key_exists($id, $waitingForms)) {
+                unset($waitingForms[$id]);
             }
         }
         return $waitingForms;
