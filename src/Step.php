@@ -846,6 +846,10 @@ class Step extends CommonDBChild
             $return = true;
         }
 
+        if (!$return && count($groups_id) > 0 && ($groups_id[0] === 0 || $groups_id[0] === '0')) {
+            $return = true;
+        }
+
         return $return;
     }
 
