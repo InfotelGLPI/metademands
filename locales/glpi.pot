@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-20 22:49+0000\n"
+"POT-Creation-Date: 2026-07-21 09:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgstr[1] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/MetademandPdf.php:525 src/Fields/Freetable.php:297
+#: src/MetademandPdf.php:544 src/Fields/Freetable.php:297
 #: src/Fields/Freetable.php:707
 msgid "(if VAT 20%)"
 msgstr ""
@@ -531,7 +531,7 @@ msgstr ""
 msgid "Created by"
 msgstr ""
 
-#: src/MetademandPdf.php:273
+#: src/MetademandPdf.php:292
 msgid "Created on"
 msgstr ""
 
@@ -1052,13 +1052,13 @@ msgstr ""
 msgid "Grand total"
 msgstr ""
 
-#: src/MetademandPdf.php:429 src/MetademandPdf.php:525
+#: src/MetademandPdf.php:448 src/MetademandPdf.php:544
 #: src/Fields/Freetable.php:297 src/Fields/Freetable.php:707
 #: src/Fields/Basket.php:1829 src/Fields/Basket.php:2325
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/MetademandPdf.php:516 src/Fields/Freetable.php:296
+#: src/MetademandPdf.php:535 src/Fields/Freetable.php:296
 #: src/Fields/Freetable.php:706
 msgid "Grand total (TTC)"
 msgstr ""
