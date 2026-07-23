@@ -379,7 +379,7 @@ CREATE TABLE `glpi_plugin_metademands_metademandtasks`
     `entities_id`                       int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_tasks_id`       int unsigned NOT NULL DEFAULT '0',
-    `destination_entities_id`           int NOT NULL DEFAULT '-1',
+    `destination_entities_id`           int unsigned DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `entities_id` (`entities_id`),

@@ -2412,13 +2412,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     // A linked sub-metademand can target a specific destination entity
                     // configured on its metademand task; honor it when this metademand is
                     // launched as a child (its ticket must be created in that entity, not
-                    // in the active one). -1 means "no override, keep the active entity".
+                    // in the active one). NULL means "no override, keep the active entity".
                     $ancestor = $_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'] ?? 0;
                     if (!empty($ancestor)) {
                         $metatask = new MetademandTask();
                         if ($metatask->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])
                             && isset($metatask->fields['destination_entities_id'])
-                            && $metatask->fields['destination_entities_id'] >= 0) {
+                            && $metatask->fields['destination_entities_id'] !== null) {
                             $entities_id = $metatask->fields['destination_entities_id'];
                         }
                     }

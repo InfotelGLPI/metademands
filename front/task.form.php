@@ -72,9 +72,16 @@ if (isset($_POST["add"])) {
             $tickettask->add($_POST);
          } else if($_POST['taskType'] == Task::METADEMAND_TYPE){
             if ($_POST['link_metademands_id']) {
+               // The dropdown uses -1 as the "active entity" option; store it as
+               // NULL (no override). Any real entity id (including the root, 0)
+               // is stored as-is.
+               $destination_entity = $_POST['destination_entities_id'] ?? null;
+               $destination_entity = (is_numeric($destination_entity) && $destination_entity >= 0)
+                   ? (int)$destination_entity
+                   : null;
                $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
                                      'plugin_metademands_metademands_id' => $_POST['link_metademands_id'],
-                                     'destination_entities_id'           => $_POST['destination_entities_id'] ?? -1]);
+                                     'destination_entities_id'           => $destination_entity]);
             }
          } else if ($_POST['taskType'] == Task::MAIL_TYPE){
              $_POST['plugin_metademands_tasks_id'] = $tasks_id;

@@ -630,10 +630,10 @@ class Task extends CommonDBChild
             }
 
             // Entity: for a metademand sub-request, show the configured destination
-            // entity of its ticket (destination_entities_id). The sentinel -1 means
+            // entity of its ticket (destination_entities_id). The NULL sentinel means
             // "no override, use the requester's active entity at launch time".
             if ($value['type'] == self::METADEMAND_TYPE && !empty($value['link_metademands_id'])) {
-                if (isset($value['destination_entities_id']) && $value['destination_entities_id'] >= 0) {
+                if (isset($value['destination_entities_id']) && $value['destination_entities_id'] !== null) {
                     $entity_name = \Dropdown::getDropdownName("glpi_entities", $value['destination_entities_id']);
                 } else {
                     $entity_name = __('Active entity', 'metademands');

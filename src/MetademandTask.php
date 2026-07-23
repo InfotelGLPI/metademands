@@ -96,7 +96,7 @@ class MetademandTask extends CommonDBChild
                         `entities_id`                       int {$default_key_sign} NOT NULL DEFAULT '0',
                         `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
                         `plugin_metademands_tasks_id`       int {$default_key_sign} NOT NULL DEFAULT '0',
-                        `destination_entities_id`           int NOT NULL DEFAULT '-1',
+                        `destination_entities_id`           int {$default_key_sign} DEFAULT NULL,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
                         KEY `entities_id` (`entities_id`),
@@ -115,10 +115,42 @@ class MetademandTask extends CommonDBChild
             $migration->migrationOneTable($table);
         }
         // destination entity of the ticket created by the linked sub-metademand
-        // (-1 = no override, use the active entity)
+        // (NULL = no override, use the active entity)
         if (!$DB->fieldExists($table, "destination_entities_id")) {
-            $migration->addField($table, "destination_entities_id", "int NOT NULL DEFAULT '-1'");
+            $migration->addField($table, "destination_entities_id", "int {$default_key_sign} DEFAULT NULL");
             $migration->migrationOneTable($table);
+        } else {
+            // Legacy installs declared this column as a signed FK with a "-1"
+            // sentinel meaning "active entity". That negative default makes it
+            // incompatible with the migration:unsigned_keys console command.
+            // Convert it to an unsigned nullable FK using NULL as the sentinel.
+            // The column is nulled out *before* switching to unsigned, otherwise
+            // MySQL would turn the signed "-1" into 4294967295 (or error out in
+            // strict mode).
+            $field_info = $DB->getField($table, "destination_entities_id");
+            $is_signed  = isset($field_info["Type"])
+                && stripos($field_info["Type"], "unsigned") === false;
+            if ($is_signed) {
+                $migration->changeField(
+                    $table,
+                    "destination_entities_id",
+                    "destination_entities_id",
+                    "int DEFAULT NULL"
+                );
+                $migration->migrationOneTable($table);
+                $DB->update(
+                    $table,
+                    ["destination_entities_id" => null],
+                    ["destination_entities_id" => -1]
+                );
+                $migration->changeField(
+                    $table,
+                    "destination_entities_id",
+                    "destination_entities_id",
+                    "int {$default_key_sign} DEFAULT NULL"
+                );
+                $migration->migrationOneTable($table);
+            }
         }
         //version 3.3.0
         if (!isIndex($table, "plugin_metademands_metademands_id")) {
