@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
 if (Plugin::isPluginActive("metademands")) {
@@ -36,8 +37,9 @@ if (Plugin::isPluginActive("metademands")) {
         throw new AccessDeniedHttpException();
     }
 } else {
-    Html::header(__('Setup'), '', "config", "plugin");
-    echo "<div class='alert alert-warning d-flex'>";
-    echo "<b>" . __('Please activate the plugin', 'metademands') . "</b></div>";
+    Html::header(__s('Setup'), '', "config", "plugin");
+    TemplateRenderer::getInstance()->display('@metademands/plugin_inactive.html.twig', [
+        'message' => __('Please activate the plugin', 'metademands'),
+    ]);
     Html::footer();
 }

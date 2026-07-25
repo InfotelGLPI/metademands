@@ -1,6 +1,4 @@
-<?php
-
-/*
+{#
  -------------------------------------------------------------------------
  metademands plugin for GLPI
  Copyright (C) 2018-2026 by the metademands Development Team.
@@ -25,26 +23,8 @@
  You should have received a copy of the GNU General Public License
  along with metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
- */
+ #}
 
-use PhpCsFixer\Config;
-use PhpCsFixer\Finder;
-
-$finder = Finder::create()
-    ->in(__DIR__)
-    ->name('*.php')
-    ->exclude('vendor')
-    ->exclude('tests/config')
-    ->ignoreVCSIgnored(true);
-
-$config = new Config();
-
-$rules = [
-    '@PER-CS2.0'                  => true,
-    'trailing_comma_in_multiline' => ['elements' => ['arguments', 'array_destructuring', 'arrays']],
-];
-
-return $config
-    ->setRules($rules)
-    ->setFinder($finder)
-    ->setUsingCache(false);
+<div class="alert alert-important alert-warning d-flex">
+    <b>{{ message }}</b>
+</div>

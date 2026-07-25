@@ -145,7 +145,7 @@ function plugin_metademands_install()
         Draft::install($migration);
         Draft_Value::install($migration);
         Field::install($migration);
-
+        FieldParameter::install($migration);
         FieldTranslation::install($migration);
         Form::install($migration);
         Form_Value::install($migration);

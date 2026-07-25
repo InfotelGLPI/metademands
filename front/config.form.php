@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Menu;
 
@@ -55,8 +56,9 @@ if (Plugin::isPluginActive("metademands")) {
    }
 
 } else {
-   Html::header(__('Setup'), '', "helpdesk", Menu::class, "config");
-   echo "<div class='alert alert-warning d-flex'>";
-   echo "<b>".__('Please activate the plugin', 'metademands')."</b></div>";
-   Html::footer();
+    Html::header(__s('Setup'), '', "config", "plugin");
+    TemplateRenderer::getInstance()->display('@metademands/plugin_inactive.html.twig', [
+        'message' => __('Please activate the plugin', 'metademands'),
+    ]);
+    Html::footer();
 }

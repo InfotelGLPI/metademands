@@ -41,6 +41,22 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 
 Session::checkLoginUser();
 
+// PII guard: only derive data from another user's groups when the caller may read that
+// user (self or READ right, entity scope included) — prevents enumeration by id.
+$md_can_read_target_user = static function (): bool {
+    if (!isset($_POST['users_id']) || is_array($_POST['users_id'])) {
+        return false;
+    }
+    $uid = (int) $_POST['users_id'];
+    if ($uid <= 0) {
+        return false;
+    }
+    if ($uid === (int) Session::getLoginUserID()) {
+        return true;
+    }
+    return (new User())->can($uid, READ);
+};
+
 if (!isset($_POST['fieldname'])) {
     $_POST['fieldname'] = "field";
 }
@@ -80,7 +96,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         $name = $_POST['field'];
     }
 
-    if (!empty($fieldparameter->fields['custom']) && isset($_POST["users_id"])) {
+    if (!empty($fieldparameter->fields['custom']) && isset($_POST["users_id"]) && $md_can_read_target_user()) {
 
         $condition = ['is_requester' => 1] + getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["users_id"], $condition);
@@ -110,7 +126,7 @@ $val = 0;
 if (isset($_POST['users_id']) && !is_array($_POST["users_id"]) && $_POST["users_id"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     $user = new User();
-    if ($user->getFromDB($_POST["users_id"])) {
+    if ($user->getFromDB($_POST["users_id"]) && $md_can_read_target_user()) {
         $val = Field::getUserGroup(
             $_SESSION['glpiactiveentities'],
             $_POST["users_id"],

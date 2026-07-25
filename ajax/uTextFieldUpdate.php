@@ -38,8 +38,15 @@ Session::checkLoginUser();
 
 $user = new User();
 $data = [];
-if (isset($_GET['id']) && $_GET["id"] > 0) {
-    $user->getFromDB($_GET['id']);
+$id = (int) ($_GET['id'] ?? 0);
+// Only expose a user's personal data (email/phone/mobile/registration number)
+// when the caller may actually read that user: themselves, or with the User READ
+// right on an accessible entity. Prevents PII harvesting by id enumeration.
+if (
+    $id > 0
+    && $user->getFromDB($id)
+    && ($id === (int) Session::getLoginUserID() || $user->can($id, READ))
+) {
     // see field.class.php used_by_ticket dropdown definition
     $data = [
         5 => $user->getDefaultEmail(),

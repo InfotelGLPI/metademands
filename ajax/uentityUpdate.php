@@ -73,8 +73,14 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 
 $val = 0;
 if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
+    $users_id = (int) $_POST["users_id"];
     $user = new User();
-    if ($user->getFromDB($_POST["users_id"])) {
+    // Only expose another user's entities when the caller may read that user
+    // (self or READ right, entity scope included) — prevents PII enumeration by id.
+    if (
+        $user->getFromDB($users_id)
+        && ($users_id === (int) Session::getLoginUserID() || $user->can($users_id, READ))
+    ) {
         $val = Profile_User::getUserEntitiesForRight(
             $user->getID(),
             Ticket::$rightname,

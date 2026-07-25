@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 
 header("Content-Type: text/html; charset=UTF-8");
@@ -52,6 +53,6 @@ if (
     ) {
         $item->showExistingForm($_POST["id"], ['parent' => $parent]);
     } else {
-        echo __('Access denied');
+        throw new AccessDeniedHttpException();
     }
 }
