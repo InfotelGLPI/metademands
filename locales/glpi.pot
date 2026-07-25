@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-23 15:41+0000\n"
+"POT-Creation-Date: 2026-07-25 14:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -391,8 +391,8 @@ msgstr ""
 msgid "Classic display"
 msgstr ""
 
-#: templates/forms/drafts_list.html.twig:45
-#: templates/forms/private_models_list.html.twig:29
+#: templates/forms/drafts_list.html.twig:66
+#: templates/forms/private_models_list.html.twig:50
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
@@ -523,8 +523,8 @@ msgstr ""
 msgid "Create tasks (not child tickets)"
 msgstr ""
 
-#: templates/forms/public_models_list.html.twig:19
-#: templates/forms/public_models_tab.html.twig:15
+#: templates/forms/public_models_list.html.twig:41
+#: templates/forms/public_models_tab.html.twig:37
 msgid "Created by"
 msgstr ""
 
@@ -532,7 +532,7 @@ msgstr ""
 msgid "Created on"
 msgstr ""
 
-#: templates/forms/public_models_tab.html.twig:14
+#: templates/forms/public_models_tab.html.twig:36
 msgid "Creation date"
 msgstr ""
 
@@ -552,9 +552,9 @@ msgstr ""
 
 #: src/Fields/Date.php:58 src/Freetablefield.php:221
 #: templates/interticketfollowup_form.html.twig:63
-#: templates/forms/public_models_list.html.twig:18
-#: templates/forms/user_forms_list.html.twig:13
-#: templates/forms/private_models_list.html.twig:49
+#: templates/forms/public_models_list.html.twig:40
+#: templates/forms/user_forms_list.html.twig:35
+#: templates/forms/private_models_list.html.twig:70
 msgid "Date"
 msgid_plural "Dates"
 msgstr[0] ""
@@ -611,12 +611,12 @@ msgstr ""
 msgid "Define a private / public model"
 msgstr ""
 
-#: templates/forms/private_models_list.html.twig:70
+#: templates/forms/private_models_list.html.twig:91
 msgctxt "button"
 msgid "Define as private"
 msgstr ""
 
-#: templates/forms/private_models_list.html.twig:63
+#: templates/forms/private_models_list.html.twig:84
 msgctxt "button"
 msgid "Define as public"
 msgstr ""
@@ -634,15 +634,15 @@ msgstr ""
 msgid "Define visibility"
 msgstr ""
 
-#: templates/forms/drafts_list.html.twig:84
-#: templates/forms/drafts_rows.html.twig:23
+#: templates/forms/drafts_list.html.twig:105
+#: templates/forms/drafts_rows.html.twig:44
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
 #: src/Stepform.php:730 src/Stepform.php:914 src/Stepform.php:1068
-#: templates/forms/private_models_rows.html.twig:24
-#: templates/forms/private_models_list.html.twig:98
+#: templates/forms/private_models_rows.html.twig:45
+#: templates/forms/private_models_list.html.twig:119
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
@@ -796,7 +796,7 @@ msgid "Double column display"
 msgstr ""
 
 #: front/draftcreation.php:55 src/Draft.php:528 src/Draft.php:535
-#: templates/forms/drafts_list.html.twig:34
+#: templates/forms/drafts_list.html.twig:55
 msgid "Draft name"
 msgstr ""
 
@@ -1009,7 +1009,7 @@ msgid_plural "Forms in progress"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/forms/private_models_list.html.twig:18
+#: templates/forms/private_models_list.html.twig:39
 msgid "Form name"
 msgstr ""
 
@@ -1289,7 +1289,7 @@ msgstr ""
 msgid "Level"
 msgstr ""
 
-#: templates/forms/user_forms_list.html.twig:62
+#: templates/forms/user_forms_list.html.twig:84
 msgid "Limited to your last 20 forms"
 msgstr ""
 
@@ -1345,19 +1345,19 @@ msgstr ""
 msgid "List of visibilities"
 msgstr ""
 
-#: templates/forms/drafts_list.html.twig:66
-#: templates/forms/drafts_rows.html.twig:15
+#: templates/forms/drafts_list.html.twig:87
+#: templates/forms/drafts_rows.html.twig:36
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
 #: src/Form.php:498 src/Form.php:589
-#: templates/forms/public_models_list.html.twig:31
-#: templates/forms/user_forms_list.html.twig:26
-#: templates/forms/public_models_tab.html.twig:16
-#: templates/forms/public_models_tab.html.twig:29
-#: templates/forms/private_models_rows.html.twig:16
-#: templates/forms/private_models_list.html.twig:80
+#: templates/forms/public_models_list.html.twig:53
+#: templates/forms/user_forms_list.html.twig:48
+#: templates/forms/public_models_tab.html.twig:38
+#: templates/forms/public_models_tab.html.twig:51
+#: templates/forms/private_models_rows.html.twig:37
+#: templates/forms/private_models_list.html.twig:101
 msgctxt "button"
 msgid "Load form"
 msgstr ""
@@ -1493,10 +1493,10 @@ msgid "My values"
 msgstr ""
 
 #: templates/task_list.html.twig:83 templates/metademand.html.twig:68
-#: templates/group.html.twig:90 templates/forms/public_models_list.html.twig:17
-#: templates/forms/user_forms_list.html.twig:12
-#: templates/forms/public_models_tab.html.twig:13
-#: templates/forms/private_models_list.html.twig:48
+#: templates/group.html.twig:90 templates/forms/public_models_list.html.twig:39
+#: templates/forms/user_forms_list.html.twig:34
+#: templates/forms/public_models_tab.html.twig:35
+#: templates/forms/private_models_list.html.twig:69
 msgid "Name"
 msgstr ""
 
@@ -1505,7 +1505,7 @@ msgid "Need validation to create subticket"
 msgstr ""
 
 #: front/draftcreation.php:54 front/draft.php:40
-#: templates/forms/drafts_list.html.twig:24
+#: templates/forms/drafts_list.html.twig:45
 msgid "New draft"
 msgstr ""
 
@@ -1513,7 +1513,7 @@ msgstr ""
 msgid "New inter ticket followup"
 msgstr ""
 
-#: templates/forms/private_models_list.html.twig:9
+#: templates/forms/private_models_list.html.twig:30
 msgid "New model"
 msgstr ""
 
@@ -1551,8 +1551,8 @@ msgstr ""
 msgid "No conditions founded"
 msgstr ""
 
-#: front/draft.form.php:54 templates/forms/drafts_list.html.twig:91
-#: templates/forms/drafts_rows.html.twig:30
+#: front/draft.form.php:54 templates/forms/drafts_list.html.twig:112
+#: templates/forms/drafts_rows.html.twig:51
 msgid "No draft available for this form"
 msgstr ""
 
@@ -1573,7 +1573,7 @@ msgid "No equipment founded"
 msgstr ""
 
 #: src/Wizard.php:891 src/Wizard.php:1113
-#: templates/forms/private_models_rows.html.twig:32
+#: templates/forms/private_models_rows.html.twig:53
 msgid "No existing forms founded"
 msgstr ""
 
@@ -1774,7 +1774,7 @@ msgstr[1] ""
 msgid "Permit multiple form"
 msgstr ""
 
-#: front/config.php:45 front/config.form.php:60 front/tools.php:41
+#: front/config.php:46 front/config.form.php:61 front/tools.php:42
 msgid "Please activate the plugin"
 msgstr ""
 
@@ -1828,8 +1828,8 @@ msgid_plural "Public model forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/forms/public_models_list.html.twig:11
-#: templates/forms/public_models_tab.html.twig:10
+#: templates/forms/public_models_list.html.twig:33
+#: templates/forms/public_models_tab.html.twig:32
 msgid "Public models"
 msgstr ""
 
@@ -2011,22 +2011,22 @@ msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: src/Draft.php:456 src/Draft.php:538 templates/forms/drafts_list.html.twig:37
+#: src/Draft.php:456 src/Draft.php:538 templates/forms/drafts_list.html.twig:58
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: templates/forms/private_models_list.html.twig:21
+#: templates/forms/private_models_list.html.twig:42
 msgctxt "button"
 msgid "Save as model"
 msgstr ""
 
-#: templates/forms/drafts_list.html.twig:75
+#: templates/forms/drafts_list.html.twig:96
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: templates/forms/private_models_list.html.twig:89
+#: templates/forms/private_models_list.html.twig:110
 msgctxt "button"
 msgid "Save model"
 msgstr ""
@@ -2536,9 +2536,9 @@ msgid "Type of value to check"
 msgstr ""
 
 #: templates/metademand.html.twig:166
-#: templates/forms/public_models_list.html.twig:20
-#: templates/forms/user_forms_list.html.twig:14
-#: templates/forms/private_models_list.html.twig:50
+#: templates/forms/public_models_list.html.twig:42
+#: templates/forms/user_forms_list.html.twig:36
+#: templates/forms/private_models_list.html.twig:71
 msgid "URL"
 msgstr ""
 
@@ -2846,7 +2846,7 @@ msgid "Your created forms"
 msgstr ""
 
 #: front/draft.form.php:39 front/draftcreation.php:52 front/draft.php:37
-#: src/Wizard.php:503 templates/forms/drafts_list.html.twig:56
+#: src/Wizard.php:503 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr ""
 
@@ -2875,7 +2875,7 @@ msgstr ""
 msgid "Your models"
 msgstr ""
 
-#: templates/forms/private_models_list.html.twig:42
+#: templates/forms/private_models_list.html.twig:63
 msgid "Your private models"
 msgstr ""
 
