@@ -29,18 +29,34 @@
 
 use GlpiPlugin\Metademands\MetademandValidation;
 
-Session::checkLoginUser();
-
-Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
+// Require the dedicated business right: this endpoint both discloses (GET) and
+// performs (POST) the validation of a metademand. It is gated for the button in
+// MetademandValidation::showActionsForm() but must also be enforced server-side.
+Session::checkRight('plugin_metademands_validatemeta', READ);
 
 $metavalidation = new MetademandValidation();
+
+// The target ticket id is user-controlled in both branches. Validate it and
+// enforce entity access + ticket visibility before loading/validating anything,
+// otherwise a validator could act on a ticket from another entity (IDOR).
+$tickets_id = (int) ($_REQUEST['tickets_id'] ?? 0);
+if ($tickets_id <= 0) {
+   throw new \Glpi\Exception\Http\BadRequestHttpException();
+}
+
+$ticket = new Ticket();
+if (!$ticket->can($tickets_id, READ)) {
+   throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
+Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
 
 if (isset($_POST['action'])) {
    $metavalidation->validateMeta($_REQUEST);
 
 } else {
 
-   $params['tickets_id'] = $_GET['tickets_id'];
+   $params['tickets_id'] = $tickets_id;
    $metavalidation->viewValidation($params);
 }
 

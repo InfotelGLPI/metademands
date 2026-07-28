@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Step;
 
 header("Content-Type: text/html; charset=UTF-8");
@@ -38,11 +39,21 @@ $groupUser = new Group_User();
 
 $step = new Step();
 
-if (isset($_POST['next_groups_id'])
-    && $_POST['next_groups_id'] > 0) {
+$next_groups_id = isset($_POST['next_groups_id']) ? (int) $_POST['next_groups_id'] : 0;
+
+if ($next_groups_id > 0) {
+    // This endpoint returns the full member list of the requested group. Without an entity
+    // check any authenticated requester could enumerate the membership of arbitrary groups
+    // (including groups in entities they cannot access). Validate the group against the
+    // caller's own perimeter, mirroring ajax/showfieldsbyentity.php.
+    $group = new Group();
+    if (!$group->getFromDB($next_groups_id)
+        || !Session::haveAccessToEntity($group->fields['entities_id'], $group->fields['is_recursive'])) {
+        throw new AccessDeniedHttpException();
+    }
 
     $groupUsers = $groupUser->find([
-        'groups_id' => $_POST['next_groups_id']
+        'groups_id' => $next_groups_id
     ]);
     if (count($groupUsers) > 0) {
         $step->displayNextUser($groupUsers);
