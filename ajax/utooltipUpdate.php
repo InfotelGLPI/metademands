@@ -53,12 +53,27 @@ if (empty($_POST['users_id']) || (int)$_POST['users_id'] === 0) {
 
 $content = " ";
 $user = new User();
-if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
+if (isset($_POST['users_id']) && (int) $_POST["users_id"] > 0) {
 
-    $user_id = $_POST['users_id'];
+    $user_id = (int) $_POST['users_id'];
     $field_id = $_POST['id_fielduser'];
+
+    // Determine whether the caller may view this user's information: their own supervisor
+    // (legitimate wizard default, even across entities), or anyone the requester lookup
+    // legitimately allows (self, User READ, or same entity scope — see Config helper).
+    // Prevents PII disclosure via an arbitrary users_id.
+    $me = new User();
+    $my_supervisor = 0;
+    if ($me->getFromDB(Session::getLoginUserID())) {
+        $my_supervisor = (int) ($me->fields['users_id_supervisor'] ?? 0);
+    }
+
     $user_tooltip = new User();
-    if ($user_id > 0 && $user_tooltip->getFromDB($user_id)) {
+    if (
+        ($user_id === $my_supervisor
+            || \GlpiPlugin\Metademands\Config::canCurrentUserViewRequester($user_id))
+        && $user_tooltip->getFromDB($user_id)
+    ) {
         $display = "alert-info";
         $color = "#000";
         $class = "class='alert $display alert-dismissible fade show informations'";

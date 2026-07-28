@@ -85,8 +85,15 @@ $val = 0;
 if (isset($_POST['users_id'])
     && $_POST["users_id"] > 0
     && $default_use_id_requester_supervisor == 1) {
+    $users_id = (int) $_POST["users_id"];
     $user = new User();
-    if ($user->getFromDB($_POST["users_id"])) {
+    // Only expose another user's profile attribute when the requester lookup legitimately
+    // allows it (self, User READ, or same entity scope) — prevents PII enumeration by id
+    // while keeping "fill a form for another user" working (see Config helper).
+    if (
+        \GlpiPlugin\Metademands\Config::canCurrentUserViewRequester($users_id)
+        && $user->getFromDB($users_id)
+    ) {
         $val = $user->fields['users_id_supervisor'];
     }
 }

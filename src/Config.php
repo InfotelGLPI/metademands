@@ -82,6 +82,38 @@ class Config extends CommonDBTM
         return "ti ti-share";
     }
 
+    /**
+     * Whether the current user may read $requested_users_id's profile attributes
+     * (location / title / supervisor / tooltip) through the requester-driven form
+     * lookups. Mirrors the entity boundary of the requester dropdown itself
+     * (Dropdownobject: right 'all' scoped to $_SESSION['glpiactiveentities']), so a
+     * user building a form for someone else keeps working, while enumeration of every
+     * user's PII by an arbitrary users_id — across entities the caller cannot see — is
+     * blocked. Self and full-interface callers (User READ) are always allowed.
+     *
+     * @param int $requested_users_id
+     * @return bool
+     */
+    public static function canCurrentUserViewRequester(int $requested_users_id): bool
+    {
+        // Non-positive id means "no requester selected" (defaults to self).
+        if ($requested_users_id <= 0 || $requested_users_id === (int) Session::getLoginUserID()) {
+            return true;
+        }
+
+        // Full-interface callers who may read users (technicians / admins) are always allowed.
+        if (Session::haveRight(\User::$rightname, READ)) {
+            return true;
+        }
+
+        // Otherwise the target must share at least one entity the caller can currently see,
+        // exactly as the requester dropdown is entity-restricted.
+        $my_entities     = $_SESSION['glpiactiveentities'] ?? [];
+        $target_entities = \Profile_User::getUserEntities($requested_users_id, true);
+
+        return count(array_intersect((array) $my_entities, $target_entities)) > 0;
+    }
+
     public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, UPDATE);
