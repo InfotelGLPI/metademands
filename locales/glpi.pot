@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-28 19:44+0000\n"
+"POT-Creation-Date: 2026-07-30 11:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -640,7 +640,7 @@ msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: src/Stepform.php:730 src/Stepform.php:914 src/Stepform.php:1068
+#: src/Stepform.php:730 src/Stepform.php:914 src/Stepform.php:1075
 #: templates/forms/private_models_rows.html.twig:45
 #: templates/forms/private_models_list.html.twig:119
 msgctxt "button"
@@ -896,7 +896,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr ""
 
-#: src/Step.php:1298
+#: src/Step.php:1302
 msgid "Error assigning to next group"
 msgstr ""
 
@@ -1003,7 +1003,7 @@ msgstr ""
 msgid "Form choice"
 msgstr ""
 
-#: src/Stepform.php:647 src/Stepform.php:1003
+#: src/Stepform.php:647 src/Stepform.php:1010
 msgid "Form in progress"
 msgid_plural "Forms in progress"
 msgstr[0] ""
@@ -1070,7 +1070,7 @@ msgstr ""
 msgid "Group child ticket"
 msgstr ""
 
-#: src/NotificationTargetStepform.php:173 src/Stepform.php:1046
+#: src/NotificationTargetStepform.php:173 src/Stepform.php:1053
 msgid "Group in charge of the next step"
 msgstr ""
 
@@ -1535,7 +1535,7 @@ msgid "Next group in charge of demand"
 msgstr ""
 
 #: front/nextGroup.form.php:81 front/nextGroup.form.php:88
-#: front/nextGroup.form.php:98 src/Step.php:954
+#: front/nextGroup.form.php:98 src/Step.php:958
 msgid "Next recipient"
 msgstr ""
 
@@ -2089,7 +2089,7 @@ msgstr ""
 msgid "Select language to translate"
 msgstr ""
 
-#: src/Step.php:1107
+#: src/Step.php:1111
 msgid "Select the next group"
 msgstr ""
 
@@ -2151,7 +2151,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: src/Stepform.php:904 src/Stepform.php:1041
+#: src/Stepform.php:904 src/Stepform.php:1048
 msgid "Step"
 msgstr ""
 
@@ -2353,7 +2353,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr ""
 
-#: src/Step.php:632 src/Step.php:964 src/Step.php:1150
+#: src/Step.php:632 src/Step.php:968 src/Step.php:1154
 msgid "There is a problem with the setup"
 msgstr ""
 
@@ -2418,7 +2418,7 @@ msgstr ""
 msgid "This form is in maintenance mode"
 msgstr ""
 
-#: src/Step.php:927
+#: src/Step.php:931
 msgid "This group is already assigned to this block"
 msgstr ""
 
@@ -2628,7 +2628,7 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: src/NotificationTargetStepform.php:174 src/Stepform.php:1053
+#: src/NotificationTargetStepform.php:174 src/Stepform.php:1060
 msgid "User in charge of the next step"
 msgstr ""
 
@@ -2638,7 +2638,7 @@ msgstr ""
 msgid "User information to get"
 msgstr ""
 
-#: src/Step.php:1036 src/Step.php:1160
+#: src/Step.php:1040 src/Step.php:1164
 msgctxt "button"
 msgid "Validate"
 msgstr ""
@@ -2829,7 +2829,7 @@ msgstr ""
 msgid "You have to select an item"
 msgstr ""
 
-#: src/Step.php:906 src/Step.php:1051
+#: src/Step.php:910 src/Step.php:1055
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 
@@ -2862,7 +2862,7 @@ msgid ""
 "the following information."
 msgstr ""
 
-#: src/Step.php:897 src/Step.php:1026
+#: src/Step.php:901 src/Step.php:1030
 msgid "Your form will be validated by your supervisor"
 msgstr ""
 
