@@ -955,7 +955,7 @@ class Stepform extends CommonDBTM
                      </script>";
     }
 
-    public static function getWaitingFormsByMaker()
+    public static function getWaitingFormsByMaker($forms = [])
     {
         $stepform   = new Stepform();
         $stepformActors = new Stepform_Actor();
@@ -976,6 +976,13 @@ class Stepform extends CommonDBTM
                 }
             }
         }
+
+        foreach ($forms as $id => $form) {
+            if (array_key_exists($id, $waitingForms)) {
+                unset($waitingForms[$id]);
+            }
+        }
+
         return $waitingForms;
     }
 
