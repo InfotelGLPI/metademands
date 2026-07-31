@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 09:17+0000\n"
+"POT-Creation-Date: 2026-07-31 10:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,8 @@ msgstr[1] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/Fields/Freetable.php:297 src/Fields/Freetable.php:707
-#: src/MetademandPdf.php:544
+#: src/Fields/Freetable.php:297 src/Fields/Freetable.php:726
+#: src/MetademandPdf.php:564
 msgid "(if VAT 20%)"
 msgstr ""
 
@@ -702,7 +702,7 @@ msgstr ""
 
 #: src/Basketobject.php:147 src/Basketobject.php:271 src/Fields/Basket.php:162
 #: src/Fields/Basket.php:1529 src/Fields/Basket.php:2056
-#: src/Fields/Basket.php:2407 templates/basketobject_form.html.twig:39
+#: src/Fields/Basket.php:2420 templates/basketobject_form.html.twig:39
 msgid "Designation"
 msgstr ""
 
@@ -1048,14 +1048,14 @@ msgstr ""
 msgid "Grand total"
 msgstr ""
 
-#: src/Fields/Freetable.php:297 src/Fields/Freetable.php:707
+#: src/Fields/Freetable.php:297 src/Fields/Freetable.php:726
 #: src/Fields/Basket.php:1836 src/Fields/Basket.php:2332
-#: src/MetademandPdf.php:448 src/MetademandPdf.php:544
+#: src/MetademandPdf.php:464 src/MetademandPdf.php:564
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:296 src/Fields/Freetable.php:706
-#: src/MetademandPdf.php:535
+#: src/Fields/Freetable.php:296 src/Fields/Freetable.php:725
+#: src/MetademandPdf.php:555
 msgid "Grand total (TTC)"
 msgstr ""
 
@@ -1838,8 +1838,8 @@ msgid "Publisher"
 msgstr ""
 
 #: src/Fields/Basket.php:189 src/Fields/Basket.php:1581
-#: src/Fields/Basket.php:2077 src/Fields/Basket.php:2413
-#: src/Fields/Basket.php:2456
+#: src/Fields/Basket.php:2077 src/Fields/Basket.php:2422
+#: src/Fields/Basket.php:2462
 msgid "Quantity"
 msgstr ""
 
@@ -1878,7 +1878,7 @@ msgstr ""
 
 #: src/Basketobject.php:164 src/Fields/Basket.php:160
 #: src/Fields/Basket.php:1528 src/Fields/Basket.php:2054
-#: src/Fields/Basket.php:2405 templates/basketobject_form.html.twig:57
+#: src/Fields/Basket.php:2419 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr ""
 
@@ -2504,7 +2504,7 @@ msgstr ""
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:146 src/Fields/Freetable.php:658
+#: src/Fields/Freetable.php:146 src/Fields/Freetable.php:677
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2543,7 +2543,7 @@ msgid "URL"
 msgstr ""
 
 #: src/Fields/Basket.php:180 src/Fields/Basket.php:1571
-#: src/Fields/Basket.php:2073 src/Fields/Basket.php:2419
+#: src/Fields/Basket.php:2073 src/Fields/Basket.php:2428
 msgid "Unit"
 msgstr ""
 
