@@ -147,7 +147,7 @@ if ($nofreetable == false) {
         if (
             !$metademands->getFromDB($_POST['form_metademands_id'])
             || !($metademands->canCreate() || Group::isUserHaveRight($_POST['form_metademands_id']))
-            || !Session::haveAccessToEntity($metademands->fields['entities_id'])
+            || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])
         ) {
             throw new AccessDeniedHttpException();
         }

@@ -135,7 +135,7 @@ class Ldapdropdown extends CommonDBTM
                 !$field->getFromDB((int) $param->fields['plugin_metademands_fields_id'])
                 || !$meta->getFromDB((int) $field->fields['plugin_metademands_metademands_id'])
                 || !($meta->canCreate() || \GlpiPlugin\Metademands\Group::isUserHaveRight($meta->getID()))
-                || !\Session::haveAccessToEntity((int) $meta->fields['entities_id'])
+                || !\Session::haveAccessToEntity((int) $meta->fields['entities_id'], $meta->fields['is_recursive'])
             ) {
                 return "";
             }

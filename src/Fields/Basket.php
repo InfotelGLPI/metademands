@@ -490,7 +490,14 @@ class Basket extends CommonDBTM
         $field .= "</table>";
 
         if ($nb > 1) {
-            $field .= "<script>basketSearchInit($search_id);</script>";
+            // basketSearchInit() lives in metademands.js, loaded in the footer via the
+            // ADD_JAVASCRIPT hook. This inline script runs at parse time, before the footer
+            // script exists, so defer the call until the function is defined.
+            $field .= "<script>";
+            $field .= "(function(){var run=function(){basketSearchInit($search_id);};";
+            $field .= "if(typeof basketSearchInit==='function'){run();}";
+            $field .= "else{document.addEventListener('DOMContentLoaded',run);}})();";
+            $field .= "</script>";
         }
 
         echo $field;
