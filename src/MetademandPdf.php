@@ -414,8 +414,18 @@ class MetademandPdf extends \TCPDF
     function BasicTable($header, $data, $color = '')
     {
         $this->SetBackgroundColor($this->default_bgcolor);
-        $w = array(20, 80, 80, 15, 30, 30, 20); //275
-        for ($i=0; $i<count($header); $i++) {
+
+        // Basket column schema: Reference, Designation, Description, Quantity, Unit,
+        // [Unit price (HT), Total (HT)]. The last two columns exist only when the basket
+        // field has "with unit price (HT)" enabled, so Basket::displayFieldPDF omits them
+        // otherwise. The table adapts to the actual number of columns instead of assuming 7,
+        // and the grand total row (which only makes sense with prices) is drawn accordingly.
+        $nb = count($header);
+        $all_w = array(20, 80, 80, 15, 30, 30, 20); //275
+        $w = array_slice($all_w, 0, $nb);
+        $has_price = $nb >= 7;
+
+        for ($i = 0; $i < $nb; $i++) {
             $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
         }
         $this->Ln();
@@ -425,31 +435,38 @@ class MetademandPdf extends \TCPDF
         $fill = false;
         $total = 0;
         foreach ($data as $row) {
-            $this->Cell($w[0], 6, $row[0], 'LR', 0, 'L', $fill);
-            $row[1] = Toolbox::substr($row[1], 0, 40) . "...";
-            $row[2] = Toolbox::substr($row[2], 0, 40) . "...";
-            $this->Cell($w[1], 6, $row[1], 'LR', 0, 'L', $fill);
-            $this->Cell($w[2], 6, $row[2], 'LR', 0, 'L', $fill);
-            $this->Cell($w[3], 6, $row[3], 'LR', 0, 'L', $fill);
-            $row[4] = Toolbox::substr($row[4], 0, 20);
-            $this->Cell($w[4], 6, $row[4], 'LR', 0, 'L', $fill);
-            $this->Cell($w[5], 6, $row[5]." ".EURO, 'LR', 0, 'L', $fill);
-            $this->Cell($w[6], 6, $row[6]." ".EURO, 'LR', 0, 'L', $fill);
+            for ($i = 0; $i < $nb; $i++) {
+                $val = $row[$i] ?? '';
+                if (($i === 1 || $i === 2) && Toolbox::strlen($val) > 40) {
+                    // Designation / Description: keep the cell on a single line.
+                    $val = Toolbox::substr($val, 0, 40) . "...";
+                } elseif ($i === 4) {
+                    $val = Toolbox::substr($val, 0, 20);
+                }
+                if ($has_price && ($i === 5 || $i === 6)) {
+                    $val = $val . " " . EURO;
+                }
+                $this->Cell($w[$i], 6, $val, 'LR', 0, 'L', $fill);
+            }
             $this->Ln();
             $fill = !$fill;
 
-            $total += $row[6];
+            if ($has_price) {
+                $total += $row[6];
+            }
         }
         // Closing line
         $this->Cell(array_sum($w), 0, '', 'T');
-
         $this->Ln();
-        $this->Cell(195, 6, "", 0, 0, 'C', true);
-        $grandtotal = __('Grand total (HT)', 'orderfollowup');
-        $this->SetBackgroundColor($this->default_bgcolor);
-        $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
-        $this->SetBackgroundColor($color);
-        $this->Cell(20, 6, Html::formatNumber($total, false, 2)." ".EURO, 1, 0, 'L', $fill);
+
+        if ($has_price) {
+            $this->Cell(195, 6, "", 0, 0, 'C', true);
+            $grandtotal = __('Grand total (HT)', 'orderfollowup');
+            $this->SetBackgroundColor($this->default_bgcolor);
+            $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
+            $this->SetBackgroundColor($color);
+            $this->Cell(20, 6, Html::formatNumber($total, false, 2)." ".EURO, 1, 0, 'L', $fill);
+        }
     }
 
     function BasicTableFreeTable($header, $data, $color = "")
@@ -458,6 +475,9 @@ class MetademandPdf extends \TCPDF
 
         $nb = count($header);
 
+        // Spread the columns evenly across the printable width (190 mm). Falls back to a
+        // computed width when there are more than 6 columns so $w is never undefined.
+        $w = $nb > 0 ? 190 / $nb : 190;
         if ($nb == 1) {
             $w = 190;
         }
@@ -1200,25 +1220,15 @@ class MetademandPdf extends \TCPDF
                             // time, when the freeinputs table has no rows yet so the branch
                             // above renders nothing.
                             if (!$rendered) {
-                                $items = Freetable::displayFieldPDF($elt, $fields, $label);
-                                $data = [];
+                                // displayFieldPDF returns the column titles and the data rows
+                                // already aligned, so the PDF header no longer depends on the
+                                // submitted values (an empty cell used to drop column titles).
+                                $result = Freetable::displayFieldPDF($elt, $fields, $label);
+                                $header = $result['header'] ?? [];
+                                $data   = $result['rows'] ?? [];
 
-                                if (count($items)) {
-                                    foreach ($items as $field_id => $values) {
-                                        if ($field_id == $elt['id']) {
-                                            foreach ($values as $id => $table) {
-                                                foreach ($table as $title => $value) {
-                                                    $header[$field_id][] = $title;
-                                                    $data[$id][] = $value;
-                                                }
-                                            }
-                                        }
-                                    }
-
+                                if (count($header) && count($data)) {
                                     $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, "", 'LRBT', 'L', '', 0, '', 'black');
-                                    $header = end($header);
-                                    $header = array_unique($header);
-
                                     $this->BasicTableFreeTable($header, $data, $label);
                                 }
                             }

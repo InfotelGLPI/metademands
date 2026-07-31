@@ -324,7 +324,7 @@ class Freetable extends CommonDBTM
             $field .= "<tr class='tab_bg_1'>";
             $field .= "<td colspan='8' style ='text-align:center;'>";
             $field .= "<button onclick='saveInput_{$rand}()' type = 'button' id='add_freeinputs_{$rand}' class='btn btn-primary' style='display: none;'>";
-            $field .= "<span>" . __('Validate the basket', 'orderfollowup') . "</span>";
+            $field .= "<span>" . __('Validate the basket', 'metademands') . "</span>";
             $field .= "</button>";
             $field .= "</td>";
             $field .= "</tr>";
@@ -535,40 +535,59 @@ class Freetable extends CommonDBTM
         return $field['value'];
     }
 
+    /**
+     * Build the free table for the PDF export.
+     *
+     * Returns the column titles and the data rows separately so the PDF stays aligned:
+     *  - 'header' holds every defined column label, ordered by rank (same authoritative
+     *    source as the on-screen HTML rendering in displayFieldItems);
+     *  - 'rows'   holds one entry per submitted line, each cell aligned to that column
+     *    order (missing/empty cells become '').
+     *
+     * The previous implementation derived the header by scraping the submitted row data,
+     * so an empty cell in a row produced non-contiguous keys (array_unique keeps original
+     * keys) and the column titles fell out of the PDF table. Sourcing the header from the
+     * column definitions makes it independent of the submitted values.
+     *
+     * @return array{header: string[], rows: array<int, string[]>}
+     */
     public static function displayFieldPDF($elt, $fields, $label)
     {
-        $values = [];
-
-        $values_elt = $fields[$elt['id']] ?? [];
-
-        if (is_array($values_elt) && count($values_elt) > 0) {
-            foreach ($values_elt as $k => $value_elt) {
-                foreach ($value_elt as $internal_name => $value) {
-                    $field_custom = new MetaFreetablefield();
-                    if ($customs = $field_custom->find([
-                        "internal_name" => $internal_name,
-                        "plugin_metademands_fields_id" => $elt['id'],
-                    ])) {
-                        if (count($customs) > 0) {
-                            foreach ($customs as $id => $custom) {
-                                $translated_col = Field::displayField($elt['id'], 'freetablecol' . $custom['rank']);
-                                $col_label = $translated_col !== '' ? $translated_col : $custom['name'];
-                                $values[$elt['id']][$k][Toolbox::decodeFromUtf8($col_label)] = $value;
-                            }
-                        }
-                        //TODO
-                        //                        if (Plugin::isPluginActive('orderfollowup')) {
-                        //                            $total = $item['unitprice'] * $item['quantity'];
-                        //                            $values[$id][Toolbox::decodeFromUtf8(
-                        //                                __('Total (TTC)', 'orderfollowup')
-                        //                            )] = Html::formatNumber($total, false, 2);
-                        //                        }
-                    }
-                }
+        // Authoritative column list (internal_name => label), ordered by rank.
+        $columns = [];
+        $field_custom = new MetaFreetablefield();
+        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $elt['id']], "rank")) {
+            foreach ($customs as $custom) {
+                $translated_col = Field::displayField($elt['id'], 'freetablecol' . $custom['rank']);
+                // Keep the label UTF-8: MetademandPdf extends \TCPDF (UTF-8 native).
+                // decodeFromUtf8() would turn it into ISO-8859-1 and drop the accents,
+                // which is exactly what made the accented column titles disappear.
+                $columns[$custom['internal_name']] = $translated_col !== '' ? $translated_col : $custom['name'];
             }
         }
 
-        return $values;
+        if (count($columns) === 0) {
+            return ['header' => [], 'rows' => []];
+        }
+
+        $rows = [];
+        $values_elt = $fields[$elt['id']] ?? [];
+        if (is_array($values_elt)) {
+            foreach ($values_elt as $value_elt) {
+                if (!is_array($value_elt)) {
+                    continue;
+                }
+                // Align every cell to the column order; keep empty cells as '' so the row
+                // width always matches the header width.
+                $row = [];
+                foreach ($columns as $internal_name => $col_label) {
+                    $row[] = $value_elt[$internal_name] ?? '';
+                }
+                $rows[] = $row;
+            }
+        }
+
+        return ['header' => array_values($columns), 'rows' => $rows];
     }
 
     public static function displayFieldItems(

@@ -2386,7 +2386,7 @@ class Basket extends CommonDBTM
             $quantities = $_SESSION['plugin_metademands'][$elt['plugin_metademands_metademands_id']]['quantities'];
         }
 
-        $materials = $fields[$elt['id']];
+        $materials = $fields[$elt['id']] ?? [];
 
         if (Plugin::isPluginActive('orderfollowup')) {
             $values = [];
@@ -2395,55 +2395,61 @@ class Basket extends CommonDBTM
                 ['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']]
             )) {
                 $order = new Order();
-                $orders = $order->find(['tickets_id' => $fields['tickets_id']]);
+                $orders = $order->find(['tickets_id' => $fields['tickets_id'] ?? 0]);
+
+                // "With unit price (HT)" option of the basket field (custom index 1).
+                // When disabled, the unit price / total / grand total columns must not
+                // appear in the PDF (index 0 is the "with quantity" option).
+                $with_price = false;
+                $fieldparam = new FieldParameter();
+                if ($fieldparam->getFromDBByCrit(['plugin_metademands_fields_id' => $elt['id']])) {
+                    $custom_values = FieldParameter::_unserialize($fieldparam->fields['custom']);
+                    $with_price = isset($custom_values[1]) && $custom_values[1] == 1;
+                }
 
                 foreach ($orders as $id => $item) {
                     $material = new Basketobject();
                     $material->getFromDB($item['plugin_metademands_basketobjects_id']);
 
-                    $values[$id][Toolbox::decodeFromUtf8(
-                        __('Reference', 'metademands')
-                    )] = $material->fields['reference'];
-                    $values[$id][Toolbox::decodeFromUtf8(__('Designation', 'metademands'))] = Toolbox::decodeFromUtf8(
-                        $material->getName()
-                    );
-                    $values[$id][Toolbox::decodeFromUtf8(__('Description'))] = Toolbox::decodeFromUtf8(
-                        $material->fields['description']
-                    );
-                    $values[$id][Toolbox::decodeFromUtf8(__('Quantity', 'metademands'))] = $item['quantity'];
+                    // MetademandPdf extends \TCPDF, which is UTF-8 native. Feeding it
+                    // ISO-8859-1 (what Toolbox::decodeFromUtf8() produces) drops every
+                    // accented character — that is why the "Référence"/"Désignation"/
+                    // "Quantité"/"Unité" column titles and the "Unité" cell vanished from
+                    // the basket table. Keep the strings UTF-8: no decode on the PDF path.
+                    $values[$id][__('Reference', 'metademands')] = $material->fields['reference'];
+                    $values[$id][__('Designation', 'metademands')] = $material->getName();
+                    $values[$id][__('Description')] = $material->fields['description'];
+                    $values[$id][__('Quantity', 'metademands')] = $item['quantity'];
 
                     $ordermaterial = new Material();
                     if ($ordermaterial->getFromDBByCrit(
                         ['plugin_metademands_basketobjects_id' => $item['plugin_metademands_basketobjects_id']]
                     )) {
-                        $values[$id][Toolbox::decodeFromUtf8(__('Unit', 'orderfollowup'))] = Toolbox::decodeFromUtf8(
-                            $ordermaterial->fields['unit']
-                        );
+                        $values[$id][__('Unit', 'orderfollowup')] = $ordermaterial->fields['unit'];
 
-                        //                        $fieldmeta = new Field();
-                        //                        $fieldmeta->getFromDB($field['id']);
-                        //                        $withquantity = false;
-                        //                        $custom_values = FieldParameter::_unserialize($fieldmeta->fields['custom_values']);
-                        //
-                        //                        if (isset($custom_values[1]) && $custom_values[1] == 1) {
+                        if ($with_price) {
+                            $values[$id][__('Unit price (HT)', 'orderfollowup')]
+                                = Html::formatNumber($ordermaterial->fields['unit_price'], false, 2);
 
-                        $values[$id][Toolbox::decodeFromUtf8(
-                            __('Unit price (HT)', 'orderfollowup')
-                        )] = Html::formatNumber($ordermaterial->fields['unit_price'], false, 2);
-
-                        $total = $ordermaterial->fields['unit_price'] * $item['quantity'];
-                        $values[$id][Toolbox::decodeFromUtf8(__('Total (HT)', 'orderfollowup'))] = Html::formatNumber(
-                            $total,
-                            false,
-                            2
-                        );
-                        //                        }
+                            $total = $ordermaterial->fields['unit_price'] * $item['quantity'];
+                            $values[$id][__('Total (HT)', 'orderfollowup')] = Html::formatNumber(
+                                $total,
+                                false,
+                                2
+                            );
+                        }
                     }
                 }
 
                 return $values;
             }
-        } else {
+        }
+
+        // Fallback: plain material listing. Reached when orderfollowup is inactive, or when
+        // it is active but this basket is not linked to an order metademand. Without it the
+        // orderfollowup branch above would fall through and return null, leaving the PDF
+        // basket empty for every non-order basket while orderfollowup is installed.
+        if (is_array($materials)) {
             foreach ($materials as $id => $mat_id) {
                 $material = new Basketobject();
                 $material->getFromDB($id);
@@ -2458,11 +2464,9 @@ class Basket extends CommonDBTM
                 }
                 $value .= "\n";
             }
-            if ($value != null) {
-                $value = Toolbox::decodeFromUtf8($value);
-            }
-
-            return $value;
         }
+        // No decodeFromUtf8 here: the value goes to TCPDF (UTF-8 native).
+
+        return $value;
     }
 }
