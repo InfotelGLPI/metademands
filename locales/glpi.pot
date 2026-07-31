@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-30 11:31+0000\n"
+"POT-Creation-Date: 2026-07-31 09:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "(if VAT 20%)"
 msgstr ""
 
-#: src/Fields/Basket.php:1816
+#: src/Fields/Basket.php:1823
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
@@ -67,7 +67,7 @@ msgstr ""
 msgid "AND"
 msgstr ""
 
-#: src/Fields/Basket.php:542
+#: src/Fields/Basket.php:549
 msgid "Accessory"
 msgstr ""
 
@@ -264,7 +264,7 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: src/Fields/Basket.php:1510
+#: src/Fields/Basket.php:1517
 msgid "Basket summary"
 msgstr ""
 
@@ -701,8 +701,8 @@ msgid "Description"
 msgstr ""
 
 #: src/Basketobject.php:147 src/Basketobject.php:271 src/Fields/Basket.php:162
-#: src/Fields/Basket.php:1522 src/Fields/Basket.php:2049
-#: src/Fields/Basket.php:2400 templates/basketobject_form.html.twig:39
+#: src/Fields/Basket.php:1529 src/Fields/Basket.php:2056
+#: src/Fields/Basket.php:2407 templates/basketobject_form.html.twig:39
 msgid "Designation"
 msgstr ""
 
@@ -904,8 +904,8 @@ msgstr ""
 msgid "Error when creating export archive"
 msgstr ""
 
-#: src/Fields/Basket.php:171 src/Fields/Basket.php:1554
-#: src/Fields/Basket.php:2076
+#: src/Fields/Basket.php:171 src/Fields/Basket.php:1561
+#: src/Fields/Basket.php:2083
 msgid "Estimated unit price"
 msgstr ""
 
@@ -1044,12 +1044,12 @@ msgstr ""
 msgid "Glpi Object"
 msgstr ""
 
-#: src/Fields/Basket.php:1804
+#: src/Fields/Basket.php:1811
 msgid "Grand total"
 msgstr ""
 
 #: src/Fields/Freetable.php:297 src/Fields/Freetable.php:707
-#: src/Fields/Basket.php:1829 src/Fields/Basket.php:2325
+#: src/Fields/Basket.php:1836 src/Fields/Basket.php:2332
 #: src/MetademandPdf.php:448 src/MetademandPdf.php:544
 msgid "Grand total (HT)"
 msgstr ""
@@ -1521,7 +1521,7 @@ msgstr ""
 #: src/Wizard.php:1786 src/Wizard.php:1826 src/Wizard.php:1832
 #: src/Wizard.php:2392 src/Wizard.php:2395 src/Fields/Text.php:341
 #: src/Fields/Yesno.php:456 src/Fields/Checkbox.php:625
-#: src/Fields/Basket.php:836 src/Fields/Radio.php:611
+#: src/Fields/Basket.php:843 src/Fields/Radio.php:611
 #: src/Fields/Textarea.php:309 src/Fields/Dropdownmeta.php:1729
 #: src/Fields/Email.php:335 src/Fields/Dropdown.php:888 src/Fields/Tel.php:342
 #: src/Fields/Dropdownobject.php:1242 src/Fields/Dropdownmultiple.php:1164
@@ -1581,7 +1581,7 @@ msgstr ""
 msgid "No file specified"
 msgstr ""
 
-#: src/Fields/Basket.php:1924
+#: src/Fields/Basket.php:1931
 msgid "No items on basket"
 msgstr ""
 
@@ -1623,7 +1623,7 @@ msgid "Not empty"
 msgstr ""
 
 #: src/Fields/Checkbox.php:392 src/Fields/Checkbox.php:405
-#: src/Fields/Basket.php:566 src/Fields/Radio.php:407 src/Fields/Radio.php:420
+#: src/Fields/Basket.php:573 src/Fields/Radio.php:407 src/Fields/Radio.php:420
 #: src/Fields/Ldapdropdown.php:344 src/Fields/Ldapdropdown.php:380
 #: src/Fields/Dropdownmeta.php:1481 src/Fields/Dropdownmeta.php:1491
 #: src/Fields/Dropdownmeta.php:1512 src/Fields/Dropdown.php:666
@@ -1688,13 +1688,13 @@ msgstr[1] ""
 msgid "Observer"
 msgstr ""
 
-#: src/Fields/Basket.php:2182
+#: src/Fields/Basket.php:2189
 msgid "On catalog"
 msgstr ""
 
 #: src/Fields/Basket.php:276 src/Fields/Basket.php:432
-#: src/Fields/Basket.php:533 src/Fields/Basket.php:1672
-#: src/Fields/Basket.php:1765 src/Fields/Basket.php:2174
+#: src/Fields/Basket.php:540 src/Fields/Basket.php:1679
+#: src/Fields/Basket.php:1772 src/Fields/Basket.php:2181
 msgid "On quotation"
 msgstr ""
 
@@ -1745,7 +1745,7 @@ msgstr ""
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: src/Fields/Basket.php:2057
+#: src/Fields/Basket.php:2064
 msgid "Order type"
 msgstr ""
 
@@ -1837,9 +1837,9 @@ msgstr ""
 msgid "Publisher"
 msgstr ""
 
-#: src/Fields/Basket.php:189 src/Fields/Basket.php:1574
-#: src/Fields/Basket.php:2070 src/Fields/Basket.php:2406
-#: src/Fields/Basket.php:2449
+#: src/Fields/Basket.php:189 src/Fields/Basket.php:1581
+#: src/Fields/Basket.php:2077 src/Fields/Basket.php:2413
+#: src/Fields/Basket.php:2456
 msgid "Quantity"
 msgstr ""
 
@@ -1877,8 +1877,8 @@ msgid "Recipients"
 msgstr ""
 
 #: src/Basketobject.php:164 src/Fields/Basket.php:160
-#: src/Fields/Basket.php:1521 src/Fields/Basket.php:2047
-#: src/Fields/Basket.php:2398 templates/basketobject_form.html.twig:57
+#: src/Fields/Basket.php:1528 src/Fields/Basket.php:2054
+#: src/Fields/Basket.php:2405 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr ""
 
@@ -1995,7 +1995,7 @@ msgstr ""
 
 #: src/Wizard.php:1631 src/Wizard.php:1817 src/Basketline.php:192
 #: src/Fields/Text.php:339 src/Fields/Yesno.php:454 src/Fields/Checkbox.php:623
-#: src/Fields/Basket.php:835 src/Fields/Basket.php:1851
+#: src/Fields/Basket.php:842 src/Fields/Basket.php:1858
 #: src/Fields/Radio.php:609 src/Fields/Textarea.php:307
 #: src/Fields/Dropdownmeta.php:1727 src/Fields/Email.php:333
 #: src/Fields/Dropdown.php:887 src/Fields/Tel.php:340
@@ -2493,14 +2493,14 @@ msgid "Tools"
 msgstr ""
 
 #: src/Fields/Basket.php:208 src/Fields/Basket.php:213
-#: src/Fields/Basket.php:1588 src/Fields/Basket.php:1594
-#: src/Fields/Basket.php:1600 src/Fields/Basket.php:2330
-#: src/Fields/Basket.php:2337
+#: src/Fields/Basket.php:1595 src/Fields/Basket.php:1601
+#: src/Fields/Basket.php:1607 src/Fields/Basket.php:2337
+#: src/Fields/Basket.php:2344
 msgid "Total"
 msgstr ""
 
-#: src/Fields/Basket.php:202 src/Fields/Basket.php:1583
-#: src/Fields/Basket.php:2099 src/Fields/Basket.php:2428
+#: src/Fields/Basket.php:202 src/Fields/Basket.php:1590
+#: src/Fields/Basket.php:2106 src/Fields/Basket.php:2435
 msgid "Total (HT)"
 msgstr ""
 
@@ -2542,13 +2542,13 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: src/Fields/Basket.php:180 src/Fields/Basket.php:1564
-#: src/Fields/Basket.php:2066 src/Fields/Basket.php:2412
+#: src/Fields/Basket.php:180 src/Fields/Basket.php:1571
+#: src/Fields/Basket.php:2073 src/Fields/Basket.php:2419
 msgid "Unit"
 msgstr ""
 
-#: src/Fields/Basket.php:183 src/Fields/Basket.php:1567
-#: src/Fields/Basket.php:2088 src/Fields/Basket.php:2424
+#: src/Fields/Basket.php:183 src/Fields/Basket.php:1574
+#: src/Fields/Basket.php:2095 src/Fields/Basket.php:2431
 msgid "Unit price (HT)"
 msgstr ""
 
@@ -2670,7 +2670,7 @@ msgid "Value"
 msgstr ""
 
 #: src/Condition.php:469 src/Condition.php:571 src/Fields/Yesno.php:222
-#: src/Fields/Checkbox.php:357 src/Fields/Basket.php:565
+#: src/Fields/Checkbox.php:357 src/Fields/Basket.php:572
 #: src/Fields/Radio.php:370 src/Fields/Ldapdropdown.php:293
 #: src/Fields/Dropdownmeta.php:1361 src/Fields/Dropdown.php:584
 #: src/Fields/Dropdownobject.php:900 src/Fields/Dropdownmultiple.php:712
@@ -2717,7 +2717,7 @@ msgstr ""
 msgid "What you want to do ?"
 msgstr ""
 
-#: src/Fields/Basket.php:506
+#: src/Fields/Basket.php:513
 msgid "With quantity"
 msgstr ""
 
@@ -2725,7 +2725,7 @@ msgstr ""
 msgid "With this option, some assignment rules will not be respected."
 msgstr ""
 
-#: src/Fields/Basket.php:518
+#: src/Fields/Basket.php:525
 msgid "With unit price (HT)"
 msgstr ""
 
