@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 10:06+0000\n"
+"POT-Creation-Date: 2026-08-01 08:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -335,7 +335,7 @@ msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: src/Wizard.php:2514 src/Draft.php:469
+#: src/Wizard.php:2514 src/Draft.php:472
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -795,7 +795,7 @@ msgstr ""
 msgid "Double column display"
 msgstr ""
 
-#: front/draftcreation.php:55 src/Draft.php:528 src/Draft.php:535
+#: front/draftcreation.php:55 src/Draft.php:531 src/Draft.php:538
 #: templates/forms/drafts_list.html.twig:55
 msgid "Draft name"
 msgstr ""
@@ -1551,7 +1551,7 @@ msgstr ""
 msgid "No conditions founded"
 msgstr ""
 
-#: front/draft.form.php:54 templates/forms/drafts_list.html.twig:112
+#: front/draft.form.php:64 templates/forms/drafts_list.html.twig:112
 #: templates/forms/drafts_rows.html.twig:51
 msgid "No draft available for this form"
 msgstr ""
@@ -2011,7 +2011,7 @@ msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: src/Draft.php:456 src/Draft.php:538 templates/forms/drafts_list.html.twig:58
+#: src/Draft.php:459 src/Draft.php:541 templates/forms/drafts_list.html.twig:58
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
@@ -2361,11 +2361,11 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: ajax/createmetademands.php:248
+#: ajax/createmetademands.php:261
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/createmetademands.php:395 ajax/addform.php:227
+#: ajax/createmetademands.php:408 ajax/addform.php:227
 #, php-format
 msgid "There is no line on the mandatory table %s"
 msgstr ""
@@ -2845,7 +2845,7 @@ msgstr ""
 msgid "Your created forms"
 msgstr ""
 
-#: front/draft.form.php:39 front/draftcreation.php:52 front/draft.php:37
+#: front/draft.form.php:40 front/draftcreation.php:52 front/draft.php:37
 #: src/Wizard.php:503 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr ""
