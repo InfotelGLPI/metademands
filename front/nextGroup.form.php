@@ -78,14 +78,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
 
     if ($KO === false) {
         $_SESSION['plugin_metademands'][$user_id]['redirect_wizard'] = true;
-        Html::popHeader(__('Next recipient', 'metademands'), $_SERVER['PHP_SELF'], true);
+        Html::popHeader(__('Next recipient', 'metademands'), '', true);
         $display = "<div class='alert alert-info alert-info d-flex'>";
         $display .= "$msg";
         $display .= "</div>";
         $display .= Html::popFooter();
         echo $display;
     } else {
-        Html::popHeader(__('Next recipient', 'metademands'), $_SERVER['PHP_SELF'], true);
+        Html::popHeader(__('Next recipient', 'metademands'), '', true);
         $msg = __('A problem occurred, the form was not sent', 'metademands');
         $display = "<div class='alert alert-info alert-info d-flex'>";
         $display .= "$msg";

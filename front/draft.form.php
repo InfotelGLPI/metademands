@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 
 Session::checkLoginUser();
@@ -41,10 +42,19 @@ if (Plugin::isPluginActive('servicecatalog')
     $draft_id = 0;
 
     if (isset($_GET['id'])) {
-        $draft_id = $_GET['id'];
+        $draft_id = (int) $_GET['id'];
     }
 
     if ($draft_id > 0) {
+
+        // Drafts are personal: mirror the AJAX siblings and require ownership
+        // before loading/rendering, so an authenticated requester cannot read
+        // another user's draft by incrementing the id (IDOR).
+        $draft = new Draft();
+        if (!$draft->getFromDB($draft_id)
+            || (int) $draft->fields['users_id'] !== Session::getLoginUserID()) {
+            throw new AccessDeniedHttpException();
+        }
 
         $datas = Draft::loadDatasDraft($draft_id);
         Draft::showDraft($datas);

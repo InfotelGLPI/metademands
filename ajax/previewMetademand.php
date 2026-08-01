@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -35,7 +36,20 @@ Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-$metademands_id = $_REQUEST['metademands_id'];
+$metademands_id = (int) ($_REQUEST['metademands_id'] ?? 0);
+
+// plugin_metademands UPDATE is a global right bit, not scoped per entity, so
+// revalidate the entity perimeter on the loaded meta-demand before rendering
+// its full structure. Prevents cross-entity disclosure via id enumeration.
+$metademand = new Metademand();
+if (!$metademand->getFromDB($metademands_id)
+    || !Session::haveAccessToEntity(
+        $metademand->fields['entities_id'],
+        $metademand->fields['is_recursive']
+    )) {
+    throw new AccessDeniedHttpException();
+}
+
 $step = Metademand::STEP_SHOW;
 $current_ticket = 0;
 $meta_validated = 0;

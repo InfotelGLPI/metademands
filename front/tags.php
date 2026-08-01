@@ -30,7 +30,7 @@
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\TicketField;
 
-Html::popHeader(__('List of available tags'), $_SERVER['PHP_SELF']);
+Html::popHeader(__('List of available tags'), '');
 
 if (isset($_GET["metademands_id"])) {
    Session::checkCentralAccess();

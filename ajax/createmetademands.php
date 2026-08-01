@@ -183,6 +183,19 @@ if ($nofreetable == false) {
             $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
             $metademands->getFromDB($_POST['form_metademands_id']);
 
+            // Entity scope (anti-IDOR): plugin CREATE is a global bit, so mirror the
+            // see_basket_summary branch above and require access to the targeted
+            // meta-demand's entity before validating fields and staging the session
+            // (STEP_CREATE) - otherwise a user could drive a meta-demand of an entity
+            // outside his scope by enumerating form_metademands_id.
+            if (!isset($metademands->fields['entities_id'])
+                || !Session::haveAccessToEntity(
+                    $metademands->fields['entities_id'],
+                    $metademands->fields['is_recursive']
+                )) {
+                throw new AccessDeniedHttpException();
+            }
+
             $meta = [];
 //            if (Plugin::isPluginActive('orderprojects')
 //                && $metademands->fields['is_order'] == 1) {

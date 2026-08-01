@@ -300,11 +300,14 @@ class Draft extends CommonDBTM
         $metademands = new Metademand();
         $draft = new Draft();
 
+        // Drafts are personal: scope the lookup to the current user so this
+        // single source cannot be used to load another user's draft (IDOR).
         $requester = $DB->request([
             'SELECT' => ['name', 'plugin_metademands_metademands_id'],
             'FROM' => $draft::getTable(),
             'WHERE' => [
-                'id' => $id_draft,
+                'id'       => $id_draft,
+                'users_id' => Session::getLoginUserID(),
             ],
             'LIMIT' => '1',
         ])->current();

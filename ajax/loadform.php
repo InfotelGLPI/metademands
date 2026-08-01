@@ -54,8 +54,19 @@ if (
     throw new AccessDeniedHttpException();
 }
 
-    //   unset($_SESSION['plugin_metademands']);
-    $metademands->getFromDB($_POST['metademands_id']);
+// Correlate the requested metademands_id with the loaded form (it must be the
+// form's own meta-demand) and require entity access on it, before it keys any
+// $_SESSION state. Prevents polluting the session of an unrelated meta-demand
+// via a mismatched metademands_id.
+$metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+if ((int) $form->fields['plugin_metademands_metademands_id'] !== $metademands_id
+    || !$metademands->getFromDB($metademands_id)
+    || !Session::haveAccessToEntity(
+        $metademands->fields['entities_id'],
+        $metademands->fields['is_recursive']
+    )) {
+    throw new AccessDeniedHttpException();
+}
 
     Form_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
     $form_name = $form->getField('name');

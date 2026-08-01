@@ -38,7 +38,9 @@ use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\TicketField;
 use GlpiPlugin\Metademands\Group;
 
-Html::header(Metademand::getTypeName(2), $_SERVER['PHP_SELF'], "plugins", Metademand::class);
+// Do not forward the client-controllable PHP_SELF/PATH_INFO to Html::header(); the
+// $url param is unused in GLPI 11, pass an empty string (as elsewhere in the plugin).
+Html::header(Metademand::getTypeName(2), '', "plugins", Metademand::class);
 
 if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) && isset($_POST["itemtype"])) {
 
