@@ -386,6 +386,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                 'rand' => $rand,
                                 'name' => $_POST["field"],
                                 'value' => $data['value'] ?? 0,
+                                'required' => $data['is_mandatory'] ?? 0,
                             ];
                             $field .= PluginMetademandsField::dropdownMyDevices(
                                 Session::getLoginUserID(),

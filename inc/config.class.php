@@ -175,6 +175,15 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+       echo "<tr>";
+       echo "<td>";
+       echo __('Use the title block if no value is provided', 'metademands');
+       echo "</td>";
+       echo "<td>";
+       Dropdown::showYesNo('use_title_block', $config['use_title_block']);
+       echo "</td>";
+       echo "</tr>";
+
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
       echo __('Childs tickets get parent content', 'metademands');

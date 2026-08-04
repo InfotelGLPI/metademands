@@ -4455,7 +4455,7 @@ JAVASCRIPT
             $return .= Dropdown::showFromArray(
                 $params['name'],
                 $my_devices,
-                ['rand' => $rand, 'display' => false, 'value' => $params['value']]
+                ['rand' => $rand, 'display' => false, 'value' => $params['value'], 'required' => $params['required']]
             );
             $return .= "</span>";
 
