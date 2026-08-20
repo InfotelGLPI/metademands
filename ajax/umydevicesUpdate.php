@@ -87,6 +87,18 @@ if (isset($_POST['fields_id'])
 
 $rand = mt_rand();
 
+// IDOR guard mirroring the sibling u*Update endpoints (ulocation/umanager/uentity/...):
+// only list another user's assigned devices (name + serial/otherserial) when the caller
+// may legitimately view that requester (self, User READ, or same perimeter). Otherwise
+// fall back to the session user so the field still renders without leaking another
+// user's hardware inventory by iterating users_id.
+$requested_users_id = (int) ($_POST['users_id'] ?? 0);
+if ($requested_users_id <= 0
+    || !\GlpiPlugin\Metademands\Config::canCurrentUserViewRequester($requested_users_id)) {
+    $requested_users_id = (int) Session::getLoginUserID();
+}
+$_POST['users_id'] = $requested_users_id;
+
 $p = [
     'rand' => "",
     'name' => $_POST['field'],

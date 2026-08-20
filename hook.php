@@ -677,7 +677,10 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                             $_SESSION['glpigroups']
                         ) . "')) ";
                     } else {
-                        return " $link (`glpi_groups_metademands`.`id` IN ('" . $val . "')) ";
+                        // Cast to int: $val is an id coming straight from the search
+                        // criterion value; the core wraps our returned string in a raw
+                        // QueryExpression, so an unescaped concat is a SQL injection sink.
+                        return " $link (`glpi_groups_metademands`.`id` IN ('" . (int) $val . "')) ";
                     }
                     break;
                 case 'notequals':
@@ -698,10 +701,14 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                     if ($val === '0') {
                         return " ";
                     }
-                    return " $link (`glpi_users_metademands`.`id` IN ('" . $val . "')) ";
+                    // Cast to int: id from the search criterion value, concatenated raw
+                    // into a QueryExpression by the core — a SQL injection sink otherwise.
+                    return " $link (`glpi_users_metademands`.`id` IN ('" . (int) $val . "')) ";
                     break;
                 case 'notequals':
-                    return " $link (`glpi_users_metademands`.`id` NOT IN ('" . $val . "')) ";
+                    // Cast to int: id from the search criterion value, concatenated raw
+                    // into a QueryExpression by the core — a SQL injection sink otherwise.
+                    return " $link (`glpi_users_metademands`.`id` NOT IN ('" . (int) $val . "')) ";
                     break;
                 case 'contains':
                     return " ";

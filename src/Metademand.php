@@ -8713,74 +8713,37 @@ HTML;
 
         $templates = $dbu->getAllDataFromTable($this->getTable(), $restrict);
 
-        if (Session::isMultiEntitiesMode()) {
-            $colsup = 1;
-        } else {
-            $colsup = 0;
-        }
+        $multi_entities = Session::isMultiEntitiesMode();
+        $colsup         = $multi_entities ? 1 : 0;
 
-        echo "<div class='center'><table class='tab_cadre'>";
-        if ($add) {
-            echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Choose a template', 'metademands') . " - " . self::getTypeName(
-                2
-            ) . "</th>";
-        } else {
-            echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Templates') . " - " . self::getTypeName(2) . "</th>";
-        }
-
-        echo "</tr>";
-        if ($add) {
-            echo "<tr>";
-            echo "<td colspan='" . (2 + $colsup) . "' class='center tab_bg_1'>";
-            echo "<a href=\"$target?id=-1&amp;withtemplate=2\">&nbsp;&nbsp;&nbsp;" . __(
-                'Blank Template'
-            ) . "&nbsp;&nbsp;&nbsp;</a></td>";
-            echo "</tr>";
-        }
-
+        // Render through Twig so the template name ($templname, from the raw
+        // `template_name` column) is auto-escaped instead of concatenated into
+        // an <a> verbatim (stored XSS defense). The delete form carries its own
+        // CSRF token, mirroring Html::showSimpleForm().
+        $rows = [];
         foreach ($templates as $template) {
             $templname = $template["template_name"];
             if ($_SESSION["glpiis_ids_visible"] || empty($template["template_name"])) {
                 $templname .= "(" . $template["id"] . ")";
             }
 
-            echo "<tr>";
-            echo "<td class='center tab_bg_1'>";
-            if (!$add) {
-                echo "<a href=\"$target?id=" . $template["id"] . "&amp;withtemplate=1\">&nbsp;&nbsp;&nbsp;$templname&nbsp;&nbsp;&nbsp;</a></td>";
-
-                if (Session::isMultiEntitiesMode()) {
-                    echo "<td class='center tab_bg_2'>";
-                    echo Dropdown::getDropdownName("glpi_entities", $template['entities_id']);
-                    echo "</td>";
-                }
-                echo "<td class='center tab_bg_2'>";
-                Html::showSimpleForm(
-                    $target,
-                    'purge',
-                    _x('button', 'Delete permanently'),
-                    ['id' => $template["id"], 'withtemplate' => 1],
-                );
-                echo "</td>";
-            } else {
-                echo "<a href=\"$target?id=" . $template["id"] . "&amp;withtemplate=2\">&nbsp;&nbsp;&nbsp;$templname&nbsp;&nbsp;&nbsp;</a></td>";
-
-                if (Session::isMultiEntitiesMode()) {
-                    echo "<td class='center tab_bg_2'>";
-                    echo Dropdown::getDropdownName("glpi_entities", $template['entities_id']);
-                    echo "</td>";
-                }
-            }
-            echo "</tr>";
+            $rows[] = [
+                'id'          => (int) $template["id"],
+                'name'        => $templname,
+                'entity_name' => $multi_entities
+                    ? Dropdown::getDropdownName("glpi_entities", $template['entities_id'])
+                    : '',
+            ];
         }
-        if (!$add) {
-            echo "<tr>";
-            echo "<td colspan='" . (2 + $colsup) . "' class='tab_bg_2 center'>";
-            echo "<b><a href=\"$target?withtemplate=1\">" . __('Add a template') . "</a></b>";
-            echo "</td>";
-            echo "</tr>";
-        }
-        echo "</table></div>";
+
+        TemplateRenderer::getInstance()->display('@metademands/list_of_templates.html.twig', [
+            'add'                => (bool) $add,
+            'target'             => $target,
+            'colsup'             => $colsup,
+            'multi_entities'     => $multi_entities,
+            'metademand_typename' => self::getTypeName(2),
+            'templates'          => $rows,
+        ]);
     }
 
     /**

@@ -1,0 +1,85 @@
+{#
+ -------------------------------------------------------------------------
+ metademands plugin for GLPI
+ Copyright (C) 2018-2026 by the metademands Development Team.
+
+ https://github.com/InfotelGLPI/metademands
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of metademands.
+
+ metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+{% set colspan = 2 + colsup %}
+
+<div class="center">
+    <table class="tab_cadre">
+        <tr>
+            <th colspan="{{ colspan }}">
+                {% if add %}
+                    {{ __('Choose a template', 'metademands') }} - {{ metademand_typename }}
+                {% else %}
+                    {{ __('Templates') }} - {{ metademand_typename }}
+                {% endif %}
+            </th>
+        </tr>
+
+        {% if add %}
+            <tr>
+                <td colspan="{{ colspan }}" class="center tab_bg_1">
+                    <a href="{{ target }}?id=-1&amp;withtemplate=2">&nbsp;&nbsp;&nbsp;{{ __('Blank Template') }}&nbsp;&nbsp;&nbsp;</a>
+                </td>
+            </tr>
+        {% endif %}
+
+        {% for template in templates %}
+            <tr>
+                <td class="center tab_bg_1">
+                    {% if not add %}
+                        <a href="{{ target }}?id={{ template.id }}&amp;withtemplate=1">&nbsp;&nbsp;&nbsp;{{ template.name }}&nbsp;&nbsp;&nbsp;</a>
+                    {% else %}
+                        <a href="{{ target }}?id={{ template.id }}&amp;withtemplate=2">&nbsp;&nbsp;&nbsp;{{ template.name }}&nbsp;&nbsp;&nbsp;</a>
+                    {% endif %}
+                </td>
+                {% if multi_entities %}
+                    <td class="center tab_bg_2">{{ template.entity_name }}</td>
+                {% endif %}
+                {% if not add %}
+                    <td class="center tab_bg_2">
+                        <form method="post" action="{{ target }}" style="display:inline">
+                            <input type="hidden" name="id" value="{{ template.id }}">
+                            <input type="hidden" name="withtemplate" value="1">
+                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" name="purge" value="1" class="btn btn-sm btn-outline-danger">
+                                {{ _x('button', 'Delete permanently') }}
+                            </button>
+                        </form>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+
+        {% if not add %}
+            <tr>
+                <td colspan="{{ colspan }}" class="tab_bg_2 center">
+                    <b><a href="{{ target }}?withtemplate=1">{{ __('Add a template') }}</a></b>
+                </td>
+            </tr>
+        {% endif %}
+    </table>
+</div>

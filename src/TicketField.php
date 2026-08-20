@@ -212,38 +212,17 @@ class TicketField extends CommonDBChild
         $self = new self();
         $tags = $self->getTags($id);
 
-        echo "<div class='center'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th>" . __('Tag') . "</th>
-                <th>" . __('Label') . "</th>
-            </tr>";
-        echo "<tr>
-                  <td>#requester.login#</td>
-                  <td>" . __('Requester login', 'metademands') . "</td>
-               </tr>";
-        echo "<tr>
-                  <td>#requester.name#</td>
-                  <td>" . __('Requester name', 'metademands') . "</td>
-               </tr>";
-        echo "<tr>
-                  <td>#requester.firstname#</td>
-                  <td>" . __('Requester firstname', 'metademands') . "</td>
-               </tr>";
-        echo "<tr>
-                  <td>#requester.email#</td>
-                  <td>" . __('Requester email', 'metademands') . "</td>
-               </tr>";
-        echo "<tr>
-                  <td>#entity#</td>
-                  <td>" . __('Entity') . "</td>
-               </tr>";
+        // Render through Twig so field names ($tag / $values, stored raw in the
+        // database) are auto-escaped instead of echoed into HTML verbatim
+        // (stored XSS defense).
+        $rows = [];
         foreach ($tags as $tag => $values) {
-            echo "<tr>
-                  <td>#" . $tag . "#</td>
-                  <td>" . $values . "</td>
-               </tr>";
+            $rows[] = ['tag' => $tag, 'label' => $values];
         }
-        echo "</table></div>";
+
+        TemplateRenderer::getInstance()->display('@metademands/available_tags.html.twig', [
+            'tags' => $rows,
+        ]);
     }
 
 

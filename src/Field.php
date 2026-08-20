@@ -1157,7 +1157,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             foreach ($blocks as $idblock => $block) {
                 $nameblock = $block;
                 echo "<li class='nav-item'>";
-                echo "<a class='nav-link tablinks' id='ablock$idblock' href='#block" . $idblock . "' data-toggle='tab'>" . $nameblock . "</a>";
+                echo "<a class='nav-link tablinks' id='ablock$idblock' href='#block" . $idblock . "' data-toggle='tab'>" . htmlspecialchars((string) $nameblock, ENT_QUOTES, 'UTF-8') . "</a>";
                 echo "</li>";
             }
             echo "</ul>";
@@ -1401,7 +1401,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     if (empty(trim($name))) {
                         echo __('ID') . " - " . $value['id'];
                     } else {
-                        echo $name;
+                        echo htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
                     }
                     echo "</a>";
                     echo "</div>";

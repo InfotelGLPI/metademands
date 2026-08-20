@@ -27,17 +27,33 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\TicketField;
+
+if (!isset($_GET["metademands_id"])) {
+    throw new BadRequestHttpException();
+}
+
+Session::checkCentralAccess();
+
+// checkCentralAccess() only proves access to the central interface: without a
+// business-right + entity check any technician could enumerate other entities'
+// form structures (field names, exposed user fields) by iterating
+// metademands_id (IDOR). Enforce the plugin READ right and the entity scope on
+// the targeted meta-demand, mirroring the plugin's other rendering endpoints
+// (previewMetademand.php / createmetademands.php).
+$meta = new Metademand();
+if (!$meta->getFromDB((int) $_GET["metademands_id"])
+    || !Session::haveAccessToEntity($meta->fields['entities_id'], $meta->fields['is_recursive'])
+    || !($meta->canView() || Group::isUserHaveRight($meta->getID()))) {
+    throw new AccessDeniedHttpException();
+}
 
 Html::popHeader(__('List of available tags'), '');
 
-if (isset($_GET["metademands_id"])) {
-   Session::checkCentralAccess();
-    TicketField::showAvailableTags($_GET["metademands_id"]);
-
-} else {
-    throw new BadRequestHttpException();
-}
+TicketField::showAvailableTags($_GET["metademands_id"]);
 
 Html::popFooter();
