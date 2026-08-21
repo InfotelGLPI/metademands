@@ -359,8 +359,14 @@ class Freetable extends CommonDBTM
             $target = MetaFreetablefield::getFormURL();
             echo "<form method='post' action=\"$target\">";
             echo "<table class='tab_cadre_fixe'>";
+            $reorder_url = PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php';
+            $md_params   = htmlspecialchars(json_encode([
+                'field_id' => $params['plugin_metademands_fields_id'] ?? '',
+                'type'     => $params['type'] ?? 'freetable',
+            ]), ENT_QUOTES);
+            echo "<tbody data-md-sortable data-md-url='$reorder_url' data-md-params='$md_params'>";
             foreach ($custom_values as $key => $value) {
-                echo "<tr class='tab_bg_1'>";
+                echo "<tr class='tab_bg_1' data-md-order='" . $value['rank'] . "'>";
 
                 echo "<td class='rowhandler control center'>";
                 echo __('Rank', 'metademands') . " " . $value['rank'] . " ";
@@ -441,7 +447,7 @@ class Freetable extends CommonDBTM
                 echo "</td>";
 
                 echo "<td class='rowhandler control center'>";
-                echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                echo "<div class=\"drag row md-sort-handle\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                 echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
                 echo "</div>";
                 echo "</td>";
@@ -474,11 +480,11 @@ class Freetable extends CommonDBTM
 
                 $maxrank = $value['rank'];
             }
+            echo "</tbody>";
             echo Html::hidden('plugin_metademands_fields_id', ['value' => $params['plugin_metademands_fields_id']]);
             echo "</table>";
             Html::closeForm();
             echo "</div>";
-            echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_freetableredipsInit()});');
 
             if ($nbfields < 6) {
                 echo "<tr class='tab_bg_1'>";

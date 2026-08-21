@@ -29,9 +29,6 @@
 
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
-
-Session::checkLoginUser();
-
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
 Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);

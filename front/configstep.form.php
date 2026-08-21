@@ -29,8 +29,6 @@
 
 use GlpiPlugin\Metademands\Configstep;
 
-Session::checkLoginUser();
-
 Session::checkRight('plugin_metademands', UPDATE);
 
 $stepConfig = new Configstep();

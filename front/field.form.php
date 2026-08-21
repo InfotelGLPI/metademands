@@ -33,8 +33,6 @@ use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 
-Session::checkLoginUser();
-
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }

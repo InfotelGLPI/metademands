@@ -30,8 +30,6 @@
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\GroupConfig;
 
-Session::checkLoginUser();
-
 $group = new Group();
 
 if (isset($_POST["add_groups"])) {

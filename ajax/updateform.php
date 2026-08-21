@@ -38,8 +38,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $KO = true;
 
 $form = new Form();

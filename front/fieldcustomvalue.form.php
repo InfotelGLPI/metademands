@@ -32,8 +32,6 @@ use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Menu;
 
-Session::checkLoginUser();
-
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }

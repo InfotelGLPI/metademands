@@ -27,8 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-Session::checkLoginUser();
-
 if (isset($_POST["search"])) {
     $_SESSION['plugin_metademands_searchresults'][$_POST["plugin_metademands_metademands_id"]] = $_POST;
 }

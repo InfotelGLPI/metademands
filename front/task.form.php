@@ -32,8 +32,6 @@ use GlpiPlugin\Metademands\TicketTask;
 use GlpiPlugin\Metademands\MetademandTask;
 use GlpiPlugin\Metademands\MailTask;
 
-Session::checkLoginUser();
-
 if (empty($_GET["id"])) {
    $_GET["id"] = "";
 }

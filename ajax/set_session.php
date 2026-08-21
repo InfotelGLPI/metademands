@@ -33,8 +33,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $KO = false;
 
 if (isset($_REQUEST["tasks_id"]) && $_REQUEST["tasks_id"] > 0) {

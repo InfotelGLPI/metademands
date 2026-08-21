@@ -37,8 +37,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $metademands = new Metademand();
 $wizard      = new Wizard();
 $form        = new Stepform();

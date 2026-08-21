@@ -39,8 +39,6 @@ if (strpos($_SERVER['PHP_SELF'], "uentityUpdate.php")) {
     Html::header_nocache();
 }
 
-Session::checkLoginUser();
-
 if (!isset($_POST['fieldname'])) {
     $_POST['fieldname'] = "field";
 }

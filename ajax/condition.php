@@ -31,8 +31,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
 

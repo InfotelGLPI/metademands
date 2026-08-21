@@ -30,8 +30,6 @@
 use GlpiPlugin\Metademands\Configstep;
 use GlpiPlugin\Metademands\Step;
 
-Session::checkLoginUser();
-
 // We manage the display of the drop-down lists of the groups of the next
 // and/or the display of the drop-down lists of the users linked to the group
 global $CFG_GLPI;

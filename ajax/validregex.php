@@ -27,8 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-Session::checkLoginUser();
-
 header('Content-Type: text/plain; charset=UTF-8');
 
 if (isset($_POST['regex']) && isset($_POST['valeur'])) {

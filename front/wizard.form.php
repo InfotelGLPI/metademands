@@ -37,8 +37,6 @@ use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Main;
 
-Session::checkLoginUser();
-
 global $CFG_GLPI;
 
 $wizard = new Wizard();

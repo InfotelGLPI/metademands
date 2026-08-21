@@ -35,8 +35,6 @@ use GlpiPlugin\Metademands\Form_Value;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $users_id                          = Session::getLoginUserID();
 $plugin_metademands_metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
 $form_id                           = (int) $_POST['forms_id'];

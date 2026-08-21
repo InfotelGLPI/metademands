@@ -29,9 +29,6 @@
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
-
-Session::checkLoginUser();
-
 use GlpiPlugin\Servicecatalog\Main;
 
 if (Plugin::isPluginActive('servicecatalog')

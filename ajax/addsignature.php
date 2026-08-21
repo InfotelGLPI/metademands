@@ -31,8 +31,6 @@ header("Content-Type: text/html; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $dest = false;
 
 if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {

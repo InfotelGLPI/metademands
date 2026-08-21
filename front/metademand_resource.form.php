@@ -29,8 +29,6 @@
 
 use GlpiPlugin\Metademands\Metademand_Resource;
 
-Session::checkLoginUser();
-
 $metademand_resource = new Metademand_Resource();
 
 if (isset($_POST["update"])) {

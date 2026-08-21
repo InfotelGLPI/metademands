@@ -35,8 +35,6 @@ use GlpiPlugin\Metademands\TicketTask;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 if (isset($_POST["taskType"])) {
    switch ($_POST["taskType"]) {
        case Task::MAIL_TYPE:

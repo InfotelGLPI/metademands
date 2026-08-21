@@ -33,8 +33,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $return = Step::showStep();
 echo json_encode($return);
 

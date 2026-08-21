@@ -31,8 +31,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $data_by_free = [];
 
 $fields_id = $_POST['datas']['fields_id'];

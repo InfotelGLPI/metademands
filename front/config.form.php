@@ -31,8 +31,6 @@ use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Menu;
 
-Session::checkLoginUser();
-
 if (Plugin::isPluginActive("metademands")) {
 
    Session::checkRight("config", UPDATE);

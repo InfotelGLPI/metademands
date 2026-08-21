@@ -1246,10 +1246,6 @@ class Dropdownmeta extends CommonDBTM
             $specific_dropdown_html = ob_get_clean();
         }
 
-        ob_start();
-        echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
-        $js_redips = ob_get_clean();
-
         TemplateRenderer::getInstance()->display(
             '@metademands/fields/field_customvalue_list.html.twig',
             [
@@ -1262,7 +1258,7 @@ class Dropdownmeta extends CommonDBTM
                 'init_form_html' => $init_form_html,
                 'import_html' => $import_html,
                 'specific_dropdown_html' => $specific_dropdown_html,
-                'js_redips' => $js_redips,
+                'reorder_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
             ]
         );
     }

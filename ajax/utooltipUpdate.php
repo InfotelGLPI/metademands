@@ -36,7 +36,7 @@ if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
     Html::header_nocache();
 }
 
-Session::checkLoginUser();
+
 $fieldUser = new Field();
 
 // Quand users_id est 0 (ex. initialisation select2), calculer la valeur par défaut

@@ -41,8 +41,6 @@ use GlpiPlugin\Metademands\MetademandTranslation;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $action            = $_POST['action']            ?? '';
 $translation_class = $_POST['translation_class'] ?? '';
 $language          = $_POST['language']          ?? '';

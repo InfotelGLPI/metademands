@@ -34,8 +34,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $KO = true;
 $users_id                          = Session::getLoginUserID();
 $form_id                           = (int) $_POST['plugin_metademands_forms_id'];

@@ -30,8 +30,12 @@
         <td colspan="5" class="p-2">
             <div id="drag">
                 <table class="w-100" style="border-collapse:collapse">
+                    <tbody data-md-sortable
+                           data-md-url="{{ reorder_url }}"
+                           data-md-params='{{ {'field_id': fields_id, 'type': type}|json_encode }}'>
                     {% for row in rows %}
-                        <tr style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)">
+                        <tr style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)"
+                            data-md-order="{{ row.rank }}">
                             <td class="rowhandler align-middle text-center ps-1 py-2" style="width:44px">
                                 <span class="badge rounded-pill bg-outline-secondary">{{ row.rank }}</span>
                             </td>
@@ -72,7 +76,7 @@
                                 </form>
                             </td>
                             <td class="rowhandler align-middle text-center py-1" style="width:30px">
-                                <div class="drag row" style="cursor:move">
+                                <div class="drag row md-sort-handle" style="cursor:move">
                                     <i class="ti ti-grip-horizontal grip-rule"></i>
                                 </div>
                             </td>
@@ -81,12 +85,14 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    </tbody>
+                    <tbody>
                     <tr>
                         <td colspan="4" class="p-0" id="show_custom_fields"></td>
                     </tr>
+                    </tbody>
                 </table>
             </div>
-            {{ js_redips|raw }}
         </td>
     </tr>
     <tr>

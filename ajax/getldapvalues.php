@@ -43,6 +43,4 @@ if (!Plugin::isPluginActive('metademands')) {
     throw new NotFoundHttpException();
 }
 
-Session::checkLoginUser();
-
 echo Ldapdropdown::getDropdownValue($_POST);

@@ -33,8 +33,6 @@ use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
-Session::checkLoginUser();
-
 $metademands_id      = (int) ($_POST['metademands_id'] ?? 0);
 $form_metademands_id = (int) ($_POST['form_metademands_id'] ?? 0);
 

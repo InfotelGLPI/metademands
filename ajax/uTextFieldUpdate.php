@@ -34,8 +34,6 @@ if (strpos($_SERVER['PHP_SELF'], "uTextFieldUpdate.php")) {
     Html::header_nocache();
 }
 
-Session::checkLoginUser();
-
 $user = new User();
 $data = [];
 $id = (int) ($_GET['id'] ?? 0);

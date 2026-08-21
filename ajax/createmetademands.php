@@ -45,8 +45,6 @@ if (isset($_POST['see_basket_summary'])) {
 
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $KO = false;
 $step = ($_POST['step'] ?? 0) + 1;
 $metademands = new Metademand();

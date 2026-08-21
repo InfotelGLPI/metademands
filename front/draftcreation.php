@@ -31,8 +31,6 @@ use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Servicecatalog\Main;
 
-Session::checkLoginUser();
-
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
     $meta = new Metademand();
     $option['empty_value'] = true;

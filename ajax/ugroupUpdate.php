@@ -39,8 +39,6 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
     Html::header_nocache();
 }
 
-Session::checkLoginUser();
-
 // PII guard: only derive data from another user's groups when the caller may read that
 // user (self or READ right, entity scope included) — prevents enumeration by id.
 $md_can_read_target_user = static function (): bool {

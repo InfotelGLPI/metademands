@@ -31,8 +31,6 @@ use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\TicketField;
 
-Session::checkLoginUser();
-
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }

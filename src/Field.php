@@ -1296,6 +1296,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 //                echo "<tr class='tab_bg_2'>";
                 //                echo "<th class='center b' colspan='12'>" . __('Form fields', 'metademands') . " ".$blocks[$idblock]."</th>";
                 //                echo "</tr>";
+                echo "<thead>";
                 echo "<tr>";
                 if ($canedit) {
                     echo "<th width='10'>";
@@ -1315,6 +1316,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 echo "<th class='center b'>" . __('Launch a task with the field', 'metademands') . "</th>";
                 echo "<th class='center b' style='width: 70px;'>" . __('Actions', 'metademands') . "</th>";
                 echo "</tr>";
+                echo "</thead>";
+                $md_reorder_url = PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorderfields.php';
+                $md_params      = htmlspecialchars(json_encode([
+                    'plugin_metademands_metademands_id' => $item->getID(),
+                    'rank'                              => $idblock,
+                ]), ENT_QUOTES);
+                echo "<tbody data-md-sortable data-md-url='$md_reorder_url' data-md-params='$md_params'>";
 
                 // Init navigation list for field items
                 Session::initNavigateListItems($self->getType(), self::getTypeName(1));
@@ -1336,7 +1344,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 foreach ($data as $value) {
                     Session::addToNavigateListItems($self->getType(), $value['id']);
 
-                    echo "<tr class='tab_bg_1'>";
+                    echo "<tr class='tab_bg_1' data-md-order='" . $value['order'] . "'>";
                     if ($canedit) {
                         echo "<td class='rowhandler control center'>";
                         //                        echo "<div class=\"drag\">";
@@ -1555,7 +1563,7 @@ border-style: none !important; border-color: initial !important;border-image: in
 
                     $form = self::getFormURL();
                     echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                    echo "<div class=\"drag row md-sort-handle\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                     $debug = (isset($_SESSION['glpi_use_mode'])
                     && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
                     if ($debug) {
@@ -1579,6 +1587,7 @@ border-style: none !important; border-color: initial !important;border-image: in
                     echo "</td>";
                     echo "</tr>";
                 }
+                echo "</tbody>";
                 echo "</table>";
                 echo "</div>";
 
@@ -1587,12 +1596,6 @@ border-style: none !important; border-color: initial !important;border-image: in
                     Html::showMassiveActions($massiveactionparams);
                     Html::closeForm();
                 }
-
-                $plugin_metademands_metademands_id = $value['plugin_metademands_metademands_id'];
-                echo "<script type='text/javascript' >\n";
-                echo "$(document).ready(function() {
-                plugin_metademands_orderredipsInit($rand, $plugin_metademands_metademands_id )});";
-                echo "\n</script>";
             } else {
                 echo "<div class='center first-bloc'>";
                 echo "<table class='tab_cadre_fixe'>";

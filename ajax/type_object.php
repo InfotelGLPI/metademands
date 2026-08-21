@@ -34,6 +34,8 @@ Html::header_nocache();
 
 Session::checkCentralAccess();
 
+Session::checkRight("plugin_metademands", READ);
+
 global $PLUGIN_HOOKS;
 
 if ($_POST['object_to_create'] != null) {

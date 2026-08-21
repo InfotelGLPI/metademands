@@ -35,8 +35,6 @@ use GlpiPlugin\Metademands\Draft_Value;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $users_id                          = Session::getLoginUserID();
 $plugin_metademands_metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
 $draft_id                          = (int) $_POST['drafts_id'];

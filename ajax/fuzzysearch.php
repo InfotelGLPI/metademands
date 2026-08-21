@@ -34,8 +34,6 @@ $AJAX_INCLUDE = 1;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $type   = $_POST['type'] ?? $_GET['type'] ?? '';
 echo Metademand::fuzzySearch($action, $type);

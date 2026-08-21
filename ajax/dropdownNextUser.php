@@ -33,8 +33,6 @@ use GlpiPlugin\Metademands\Step;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $groupUser = new Group_User();
 
 $step = new Step();

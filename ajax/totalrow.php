@@ -34,8 +34,6 @@ use PluginOrdermaterialMetademand;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 if (isset($_POST['action'])) {
 
     switch ($_POST['action']) {

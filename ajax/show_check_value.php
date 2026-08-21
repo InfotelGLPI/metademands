@@ -32,8 +32,6 @@ use GlpiPlugin\Metademands\Condition;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
-
 $show_check_value = true;
 
 if (isset($_POST['show_condition'])) {

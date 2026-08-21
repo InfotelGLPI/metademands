@@ -33,8 +33,6 @@ use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Ticket_Metademand;
 use GlpiPlugin\Metademands\Ticket;
 
-Session::checkLoginUser();
-
 $fup = new Interticketfollowup();
 
 if (!isset($_POST['itemtype']) || !class_exists($_POST['itemtype'])) {
