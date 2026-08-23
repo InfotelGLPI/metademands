@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-23 18:36+0000\n"
+"POT-Creation-Date: 2026-08-23 18:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/Metademand.php:4848
+#: src/Metademand.php:4876
 #, php-format
 msgid "%1$s %2$s successfully created"
 msgstr ""
@@ -198,11 +198,11 @@ msgstr ""
 msgid "Allow adding groups by regex"
 msgstr ""
 
-#: src/Metademand.php:1193 templates/metademand.html.twig:75
+#: src/Metademand.php:1221 templates/metademand.html.twig:75
 msgid "Allow form modification after validation"
 msgstr ""
 
-#: src/Metademand.php:1185 templates/metademand.html.twig:73
+#: src/Metademand.php:1213 templates/metademand.html.twig:73
 msgid "Allow form modification before validation"
 msgstr ""
 
@@ -257,7 +257,7 @@ msgstr ""
 msgid "Attribute ticket to "
 msgstr ""
 
-#: src/Metademand.php:1176 templates/metademand.html.twig:210
+#: src/Metademand.php:1204 templates/metademand.html.twig:210
 msgid "Background color"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: src/Metademand.php:6084 src/Ticket_Metademand.php:831
+#: src/Metademand.php:6112 src/Ticket_Metademand.php:831
 msgid "Child Ticket"
 msgstr ""
 
@@ -426,7 +426,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#: src/Metademand.php:7269
+#: src/Metademand.php:7297
 msgid "Coming"
 msgstr ""
 
@@ -466,7 +466,7 @@ msgstr ""
 msgid "Configuration of the meta-demand plugin"
 msgstr ""
 
-#: src/Metademand.php:7854
+#: src/Metademand.php:7882
 msgid "Configure demands"
 msgstr ""
 
@@ -506,7 +506,7 @@ msgstr ""
 msgid "Create after the task"
 msgstr ""
 
-#: src/Metademand.php:1131 templates/metademand.html.twig:187
+#: src/Metademand.php:1159 templates/metademand.html.twig:187
 msgid "Create one ticket for all lines of the basket"
 msgstr ""
 
@@ -673,7 +673,7 @@ msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
 
-#: src/Metademand.php:4835
+#: src/Metademand.php:4863
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
@@ -682,11 +682,11 @@ msgstr ""
 msgid "Demand Progression"
 msgstr ""
 
-#: src/Metademand.php:4830
+#: src/Metademand.php:4858
 msgid "Demand add failed"
 msgstr ""
 
-#: src/Metademand.php:7010
+#: src/Metademand.php:7038
 msgid "Demand followup"
 msgstr ""
 
@@ -779,7 +779,7 @@ msgstr ""
 msgid "Do you want to see them ?"
 msgstr ""
 
-#: src/Metademand.php:6860
+#: src/Metademand.php:6888
 msgid "Do you want to validate her?"
 msgstr ""
 
@@ -808,7 +808,7 @@ msgstr ""
 msgid "Dropdown values"
 msgstr ""
 
-#: src/Metademand.php:7045 src/Metademand.php:7193
+#: src/Metademand.php:7073 src/Metademand.php:7221
 msgid "Due date"
 msgstr ""
 
@@ -906,7 +906,7 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: src/Metademand.php:7032
+#: src/Metademand.php:7060
 msgid "Existing childs tickets"
 msgstr ""
 
@@ -918,7 +918,7 @@ msgstr ""
 msgid "Export JSON"
 msgstr ""
 
-#: src/Metademand.php:7707 src/Export.php:164 src/Export.php:192
+#: src/Metademand.php:7735 src/Export.php:164 src/Export.php:192
 msgid "Export XML"
 msgstr ""
 
@@ -976,7 +976,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Wizard.php:1246 src/Metademand.php:8581
+#: src/Wizard.php:1246 src/Metademand.php:8609
 msgid "Find a form"
 msgstr ""
 
@@ -1088,7 +1088,7 @@ msgstr ""
 msgid "Hide button in menu"
 msgstr ""
 
-#: src/Metademand.php:1115 templates/metademand.html.twig:203
+#: src/Metademand.php:1143 templates/metademand.html.twig:203
 msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr ""
 
@@ -1147,7 +1147,7 @@ msgstr ""
 msgid "Impossible to read the CSV file"
 msgstr ""
 
-#: src/Metademand.php:8540
+#: src/Metademand.php:8568
 msgid "In progress"
 msgstr ""
 
@@ -1348,7 +1348,7 @@ msgstr[1] ""
 msgid "Meta-demands linked"
 msgstr ""
 
-#: src/Metademand.php:9091
+#: src/Metademand.php:9119
 msgid "Metademand"
 msgstr ""
 
@@ -1360,7 +1360,7 @@ msgstr ""
 msgid "Metademand file to import"
 msgstr ""
 
-#: src/Metademand.php:6858
+#: src/Metademand.php:6886
 msgid "Metademand need a validation"
 msgstr ""
 
@@ -1370,7 +1370,7 @@ msgstr ""
 
 #: src/MetademandValidation.php:73 src/MetademandValidation.php:464
 #: src/MetademandValidation.php:473 src/MetademandValidation.php:496
-#: src/Metademand.php:6872
+#: src/Metademand.php:6900
 msgid "Metademand validation"
 msgstr ""
 
@@ -1383,15 +1383,15 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: front/tools.form.php:61 src/Metademand.php:9078
+#: front/tools.form.php:61 src/Metademand.php:9106
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: hook.php:1023 src/Metademand.php:8098
+#: hook.php:1023 src/Metademand.php:8126
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1040 src/Metademand.php:8180
+#: hook.php:1040 src/Metademand.php:8208
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -1464,7 +1464,7 @@ msgstr ""
 msgid "Next recipient"
 msgstr ""
 
-#: src/Metademand.php:7183
+#: src/Metademand.php:7211
 msgid "Next tickets"
 msgstr ""
 
@@ -1590,12 +1590,12 @@ msgstr ""
 msgid "Object"
 msgstr ""
 
-#: src/Metademand.php:1149 templates/metademand.html.twig:93
+#: src/Metademand.php:1177 templates/metademand.html.twig:93
 #: templates/metademand.html.twig:105
 msgid "Object to create"
 msgstr ""
 
-#: src/Metademand.php:764 src/Metademand.php:886
+#: src/Metademand.php:791 src/Metademand.php:914
 msgid "Object to create is mandatory"
 msgstr ""
 
@@ -1666,7 +1666,7 @@ msgid_plural "Parameters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Metademand.php:7030
+#: src/Metademand.php:7058
 msgid "Parent ticket"
 msgstr ""
 
@@ -1674,14 +1674,14 @@ msgstr ""
 msgid "Parent ticket tag"
 msgstr ""
 
-#: src/Metademand.php:3685 src/Metademand.php:6100
+#: src/Metademand.php:3713 src/Metademand.php:6128
 #: src/Ticket_Metademand.php:843
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Metademand.php:1123 templates/metademand.html.twig:177
+#: src/Metademand.php:1151 templates/metademand.html.twig:177
 msgid "Permit multiple form"
 msgstr ""
 
@@ -1728,7 +1728,7 @@ msgstr ""
 msgid "Previous user"
 msgstr ""
 
-#: src/Metademand.php:8489
+#: src/Metademand.php:8517
 msgid "Progression of your demand"
 msgstr ""
 
@@ -1887,11 +1887,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: hook.php:1006 src/Metademand.php:7937
+#: hook.php:1006 src/Metademand.php:7965
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1057 src/Metademand.php:8005
+#: hook.php:1057 src/Metademand.php:8033
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -2075,7 +2075,7 @@ msgid_plural "Step-by-Step blocks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Metademand.php:1236 templates/metademand.html.twig:79
+#: src/Metademand.php:1264 templates/metademand.html.twig:79
 msgid "Step-by-step mode"
 msgstr ""
 
@@ -2160,7 +2160,7 @@ msgstr ""
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: src/Task.php:942 src/TicketTask.php:736 src/Metademand.php:743
+#: src/Task.php:942 src/TicketTask.php:736 src/Metademand.php:770
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -2231,7 +2231,7 @@ msgstr ""
 msgid "The user must select a defined user of the selected groups"
 msgstr ""
 
-#: src/Metademand.php:2789
+#: src/Metademand.php:2817
 msgid "There is a problem on object creation"
 msgstr ""
 
@@ -2243,7 +2243,7 @@ msgstr ""
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: src/Metademand.php:7290
+#: src/Metademand.php:7318
 msgid "There is no childs tickets"
 msgstr ""
 
@@ -2272,7 +2272,7 @@ msgstr ""
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: src/Metademand.php:7796
+#: src/Metademand.php:7824
 msgid "This action requires PHP extension zip"
 msgstr ""
 
@@ -2296,7 +2296,7 @@ msgstr ""
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: front/wizard.form.php:132 src/Metademand.php:2416
+#: front/wizard.form.php:132 src/Metademand.php:2444
 msgid "This metademand cannot be used with this entity"
 msgstr ""
 
@@ -2304,7 +2304,7 @@ msgstr ""
 msgid "This reference already exists"
 msgstr ""
 
-#: src/Metademand.php:4841
+#: src/Metademand.php:4869
 #, php-format
 msgid "Ticket \"%s\" successfully updated"
 msgstr ""
@@ -2332,7 +2332,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/Metademand.php:1167 templates/metademand.html.twig:214
+#: src/Metademand.php:1195 templates/metademand.html.twig:214
 msgid "Title color"
 msgstr ""
 
@@ -2448,7 +2448,7 @@ msgstr ""
 msgid "Use a confirm popup check for empty values"
 msgstr ""
 
-#: src/Metademand.php:1201 templates/metademand.html.twig:194
+#: src/Metademand.php:1229 templates/metademand.html.twig:194
 msgid "Use as basket"
 msgstr ""
 
@@ -2543,7 +2543,7 @@ msgstr ""
 msgid "Value to check"
 msgstr ""
 
-#: src/Tools.php:113 src/Metademand.php:9046
+#: src/Tools.php:113 src/Metademand.php:9074
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
@@ -2737,15 +2737,15 @@ msgstr ""
 msgid "button"
 msgstr ""
 
-#: src/Metademand.php:1636
+#: src/Metademand.php:1664
 msgid "field add on demand"
 msgstr ""
 
-#: src/Metademand.php:1640
+#: src/Metademand.php:1668
 msgid "field delete on demand"
 msgstr ""
 
-#: src/Metademand.php:1638
+#: src/Metademand.php:1666
 msgid "field update on demand"
 msgstr ""
 
