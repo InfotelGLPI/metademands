@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-23 18:51+0000\n"
+"POT-Creation-Date: 2026-08-23 19:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,7 @@ msgstr ""
 msgid "A new form has been created"
 msgstr ""
 
-#: front/nextGroup.form.php:87
+#: front/nextGroup.form.php:90
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
@@ -277,15 +277,15 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Step.php:440 src/Step.php:525 src/Wizard.php:2246 src/Field.php:1146
+#: src/Step.php:441 src/Step.php:526 src/Wizard.php:2246 src/Field.php:1146
 #: src/Field.php:3314 src/Field.php:4568
 #: templates/field_existing_form.html.twig:54 templates/field_form.html.twig:93
 #: templates/step_form.html.twig:40
 msgid "Block"
 msgstr ""
 
-#: src/Task.php:699 src/Task.php:1100 src/Step.php:401 src/Step.php:674
-#: src/Step.php:688 src/TicketTask.php:230 src/MailTask.php:175
+#: src/Task.php:699 src/Task.php:1100 src/Step.php:402 src/Step.php:675
+#: src/Step.php:689 src/TicketTask.php:230 src/MailTask.php:175
 #: src/FieldOption.php:1686
 #, php-format
 msgid "Block %s"
@@ -602,7 +602,7 @@ msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Step.php:371
+#: src/Step.php:372
 msgid "Define a new visibility"
 msgstr ""
 
@@ -668,7 +668,7 @@ msgstr ""
 msgid "Delete translation"
 msgstr ""
 
-#: src/Step.php:594
+#: src/Step.php:595
 msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
@@ -888,7 +888,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr ""
 
-#: src/Step.php:1294
+#: src/Step.php:1366
 msgid "Error assigning to next group"
 msgstr ""
 
@@ -1274,7 +1274,7 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: src/Step.php:470
+#: src/Step.php:471
 msgid "List of visibilities"
 msgstr ""
 
@@ -1459,8 +1459,8 @@ msgstr ""
 msgid "Next group in charge of demand"
 msgstr ""
 
-#: front/nextGroup.form.php:79 front/nextGroup.form.php:86
-#: front/nextGroup.form.php:96 src/Step.php:950
+#: front/nextGroup.form.php:82 front/nextGroup.form.php:89
+#: front/nextGroup.form.php:99 src/Step.php:951
 msgid "Next recipient"
 msgstr ""
 
@@ -1534,7 +1534,7 @@ msgstr ""
 msgid "No spaces, no special characters"
 msgstr ""
 
-#: src/Step.php:612
+#: src/Step.php:613
 msgid "No visibility defined"
 msgstr ""
 
@@ -1637,7 +1637,7 @@ msgstr ""
 msgid "Only users of my groups"
 msgstr ""
 
-#: src/Step.php:574
+#: src/Step.php:575
 msgid "Only visible by supervisor"
 msgstr ""
 
@@ -2069,7 +2069,7 @@ msgstr ""
 msgid "Step for number"
 msgstr ""
 
-#: src/Step.php:70
+#: src/Step.php:71
 msgid "Step-by-Step block"
 msgid_plural "Step-by-Step blocks"
 msgstr[0] ""
@@ -2079,7 +2079,7 @@ msgstr[1] ""
 msgid "Step-by-step mode"
 msgstr ""
 
-#: src/Step.php:523
+#: src/Step.php:524
 msgid "Sub Block"
 msgstr ""
 
@@ -2181,12 +2181,12 @@ msgstr ""
 msgid "The file is not an XML file"
 msgstr ""
 
-#: front/nextGroup.form.php:69
+#: front/nextGroup.form.php:72
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
 msgstr ""
 
-#: front/nextGroup.form.php:63
+#: front/nextGroup.form.php:66
 #, php-format
 msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
@@ -2200,7 +2200,7 @@ msgstr ""
 msgid "The line has been updated"
 msgstr ""
 
-#: src/Step.php:606
+#: src/Step.php:607
 msgid "The object is created"
 msgstr ""
 
@@ -2239,7 +2239,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr ""
 
-#: src/Step.php:626 src/Step.php:960 src/Step.php:1146
+#: src/Step.php:627 src/Step.php:961 src/Step.php:1147
 msgid "There is a problem with the setup"
 msgstr ""
 
@@ -2292,7 +2292,7 @@ msgstr ""
 msgid "This form is in maintenance mode"
 msgstr ""
 
-#: src/Step.php:923
+#: src/Step.php:924
 msgid "This group is already assigned to this block"
 msgstr ""
 
@@ -2552,7 +2552,7 @@ msgstr ""
 msgid "Visibility"
 msgstr ""
 
-#: src/Step.php:578
+#: src/Step.php:579
 msgid "Visible by all"
 msgstr ""
 
@@ -2709,7 +2709,7 @@ msgid ""
 "the following information."
 msgstr ""
 
-#: src/Step.php:1022
+#: src/Step.php:1023
 msgid "Your form will be validated by your supervisor"
 msgstr ""
 
