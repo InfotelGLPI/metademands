@@ -35,6 +35,7 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\RichText\RichText;
 use Group_User;
 use Html;
@@ -1201,6 +1202,66 @@ class Step extends CommonDBChild
         );
     }
 
+    /**
+     * Check whether the current user is legitimately entitled to advance the
+     * given step form. A client-supplied step form id must never be trusted on
+     * its own: the caller must be the author of the form, its dedicated
+     * recipient user, a member of its recipient group (when no dedicated
+     * recipient user is set), or an explicit actor of the form. Mirrors the
+     * recipient logic of Stepform::getWaitingForms() and prevents reassigning
+     * another user's workflow step (IDOR) via front/nextGroup.form.php.
+     *
+     * @param int|string $stepforms_id
+     * @return bool
+     */
+    public static function canActOnStepform($stepforms_id)
+    {
+        $stepforms_id = (int) $stepforms_id;
+        if ($stepforms_id <= 0) {
+            return false;
+        }
+
+        $form = new Stepform();
+        if (!$form->getFromDB($stepforms_id)) {
+            return false;
+        }
+
+        $user_id = (int) Session::getLoginUserID();
+
+        // Author of the step form.
+        if ((int) $form->fields['users_id'] === $user_id) {
+            return true;
+        }
+
+        // Dedicated recipient user.
+        if ((int) $form->fields['users_id_dest'] === $user_id) {
+            return true;
+        }
+
+        // Recipient group member, only when no dedicated recipient user is set.
+        if ((int) $form->fields['users_id_dest'] === 0
+            && (int) $form->fields['groups_id_dest'] > 0) {
+            $group_user = new Group_User();
+            if (count($group_user->find([
+                'users_id'  => $user_id,
+                'groups_id' => (int) $form->fields['groups_id_dest'],
+            ])) > 0) {
+                return true;
+            }
+        }
+
+        // Explicit actor of the step form.
+        $actor = new Stepform_Actor();
+        if (count($actor->find([
+            'plugin_metademands_stepforms_id' => $stepforms_id,
+            'users_id'                        => $user_id,
+        ])) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static function nextUser()
     {
         $KO = false;
@@ -1210,6 +1271,17 @@ class Step extends CommonDBChild
         $user_id = Session::getLoginUserID();
 
         if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
+            // Fail closed against IDOR: when the client targets an existing step
+            // form, verify the current user is entitled to advance it before any
+            // session mutation or DB write. Prevents hijacking another user's
+            // workflow step by posting an arbitrary step form id.
+            if (!empty($_POST['plugin_metademands_stepforms_id'])
+                && !self::canActOnStepform($_POST['plugin_metademands_stepforms_id'])) {
+                throw new AccessDeniedHttpException(
+                    'You are not allowed to forward this step form.',
+                );
+            }
+
             $nblines = 0;
             $KO = false;
 

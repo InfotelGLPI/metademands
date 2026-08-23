@@ -53,7 +53,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     if (isset($_POST['next_groups_id'])) {
         $_SESSION ['plugin_metademands'][$user_id]['groups_id_dest'] = $_POST['next_groups_id'];
         $res = $group->getFromDBByCrit(['id' => $_POST['next_groups_id']]);
-        $groupName = $group->fields['name'];
+        // Group names are stored unescaped (GLPI 10+/11); this legacy echo path
+        // is not Twig-autoescaped, so neutralize the value before it is embedded
+        // in the confirmation alert to prevent stored XSS.
+        $groupName = htmlspecialchars((string) $group->fields['name'], ENT_QUOTES, 'UTF-8');
     }
     if (isset($_POST['next_users_id'])
         && $_POST['next_users_id'] != 0) {

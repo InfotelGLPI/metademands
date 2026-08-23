@@ -28,3 +28,12 @@ parameters:
     # can differ between the two. Tolerate baseline entries that do not reproduce on
     # the runner instead of failing on the drift.
     reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # GLPI_ALLOW_IFRAME_IN_RICH_TEXT is a config-overridable core constant
+        # (config/local_define.php). On the pristine runner core PHPStan resolves it
+        # to its literal default and flags this guard branch as dead, while a locally
+        # modified core does not narrow it. The branch mirrors the core rich-text
+        # renderer and must stay; ignore the environment-dependent narrowing here.
+        -
+            identifier: booleanNot.alwaysFalse
+            path: src/Fields/Textarea.php
