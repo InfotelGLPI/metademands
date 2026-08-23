@@ -697,12 +697,6 @@ parameters:
 			path: src/Field.php
 
 		-
-			message: '#^Binary operation "\." between ''dropdown_type'' and GlpiPlugin\\Metademands\\Fields\\Dropdown results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 9
-			path: src/Field.php
-
-		-
 			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -753,12 +747,6 @@ parameters:
 		-
 			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownFieldItems\(\) should return int\|string\|false but return statement is missing\.$#'
 			identifier: return.missing
-			count: 1
-			path: src/Field.php
-
-		-
-			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownFieldTypes\(\) should return GlpiPlugin\\Metademands\\Fields\\Dropdown but returns int\|string\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Field.php
 
@@ -1633,8 +1621,8 @@ parameters:
 			path: src/Fields/Textarea.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
 			count: 1
 			path: src/Fields/Textarea.php
 
@@ -3705,11 +3693,5 @@ parameters:
 		-
 			message: '#^Variable \$meta in isset\(\) is never defined\.$#'
 			identifier: isset.variable
-			count: 1
-			path: src/Wizard.php
-
-		-
-			message: '#^Variable \$title_color in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.variable
 			count: 1
 			path: src/Wizard.php

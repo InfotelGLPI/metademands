@@ -718,6 +718,32 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * Restrict the style-color fields to a strict hex color so a crafted value
+     * cannot break out of the style='...' attributes they are injected into when
+     * a metademand is rendered (stored-XSS defense, closing the sink class at the
+     * source; the rendering in Wizard/Basketline also escapes for existing data).
+     * An invalid value is dropped: on add the column keeps its default, on update
+     * it keeps its previous value.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    public static function sanitizeColorInput($input)
+    {
+        foreach (['title_color', 'background_color'] as $color_field) {
+            if (
+                isset($input[$color_field])
+                && $input[$color_field] !== ''
+                && !preg_match('/^#[0-9A-Fa-f]{3,8}$/', (string) $input[$color_field])
+            ) {
+                unset($input[$color_field]);
+            }
+        }
+        return $input;
+    }
+
+    /**
      * @param array $input
      *
      * @return array|bool
@@ -725,6 +751,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     public function prepareInputForAdd($input)
     {
         global $DB;
+        $input = self::sanitizeColorInput($input);
         $cat_already_store = false;
         if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
             //retrieve all multiple cats from all metademands
@@ -794,6 +821,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     public function prepareInputForUpdate($input)
     {
         global $DB;
+        $input = self::sanitizeColorInput($input);
         $cat_already_store = false;
 
         if (isset($input['itilcategories_id'])) {

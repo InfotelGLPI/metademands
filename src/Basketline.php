@@ -112,7 +112,7 @@ class Basketline extends CommonDBTM
                 $meta = new Metademand();
                 if ($meta->getFromDB($metademands_id)) {
                     if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                        $title_color = $meta->fields['title_color'];
+                        $title_color = htmlspecialchars($meta->fields['title_color'], ENT_QUOTES);
                     }
                 }
 

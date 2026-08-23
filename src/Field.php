@@ -1664,7 +1664,7 @@ border-style: none !important; border-color: initial !important;border-image: in
      * @param  $name
      * @param array $param
      *
-     * @return Dropdown of types
+     * @return integer|string dropdown id/rand as returned by \Dropdown::showFromArray()
      * @throws \GlpitestSQLError
      */
     public static function dropdownFieldTypes($type_fields, $param = [])

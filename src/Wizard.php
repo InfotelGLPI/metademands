@@ -238,7 +238,7 @@ class Wizard extends CommonDBTM
         $meta = new Metademand();
         if ($meta->getFromDB($item->fields['id'])) {
             if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                $background_color = $meta->fields['background_color'];
+                $background_color = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
             }
         }
         echo "<tr><td>";
@@ -284,11 +284,11 @@ class Wizard extends CommonDBTM
         $background_color = $title_color = "#000";
         $style_title_color = "";
         if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-            $title_color = $meta->fields['title_color'];
+            $title_color = htmlspecialchars($meta->fields['title_color'], ENT_QUOTES);
             $style_title_color = "style='color: $title_color;'";
         }
         if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-            $background_color = $meta->fields['background_color'];
+            $background_color = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
         }
 
         $style_background = "style='background-color: $background_color!important;'";
@@ -1308,7 +1308,7 @@ class Wizard extends CommonDBTM
                         $sizespan = "1em";
                         $title_color = "";
                         if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                            $title_color = $meta->fields['title_color'];
+                            $title_color = htmlspecialchars($meta->fields['title_color'], ENT_QUOTES);
                         }
                         if (!empty($title_color)) {
                             $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
@@ -2642,7 +2642,7 @@ class Wizard extends CommonDBTM
         }
         if (isset($metademands->fields['background_color'])
             && !empty($metademands->fields['background_color'])) {
-            $background_color = $metademands->fields['background_color'];
+            $background_color = htmlspecialchars($metademands->fields['background_color'], ENT_QUOTES);
             $style .= "background-color:" . $background_color . ";";
         }
         $styleasTab = "";
@@ -2979,7 +2979,7 @@ class Wizard extends CommonDBTM
             } else {
                 $background_color = "";
                 if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                    $background_color = $meta->fields['background_color'];
+                    $background_color = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
                 }
                 echo "<div class=\"row class1\" style='background-color: " . $background_color . ";$style_left_right'>";
             }
