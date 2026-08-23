@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -43,7 +43,6 @@ use Session;
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-
 
 /**
  * Checkbox Class
@@ -72,7 +71,6 @@ class Checkbox extends CommonDBTM
         if (empty($comment = Field::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-
 
         $field = "";
         if (!empty($data['custom_values'])) {
@@ -126,7 +124,7 @@ class Checkbox extends CommonDBTM
                                 $comment = Field::displayCustomvaluesField(
                                     $data['id'],
                                     $key,
-                                    "comment"
+                                    "comment",
                                 )
                             )) {
                                 $comment = $label['comment'];
@@ -136,7 +134,7 @@ class Checkbox extends CommonDBTM
                                 [
                                     'awesome-class' => 'ti ti-info-circle',
                                     'display' => false,
-                                ]
+                                ],
                             );
                             $field .= "</span>";
                         }
@@ -167,7 +165,6 @@ class Checkbox extends CommonDBTM
                             $field .= "</span>";
                         }
 
-
                         $field .= "<div class='text-start'>";
                         $field .= "<div class='d-flex align-items-center'>";
                         //                        $field .= "<div class='fw-bold'>";
@@ -184,7 +181,7 @@ class Checkbox extends CommonDBTM
                                 $comment = Field::displayCustomvaluesField(
                                     $data['id'],
                                     $key,
-                                    "comment"
+                                    "comment",
                                 )
                             )) {
                                 $comment = $label['comment'];
@@ -207,7 +204,7 @@ class Checkbox extends CommonDBTM
                     $childs_blocks = [];
                     $fieldopt = new FieldOption();
                     if ($opts = $fieldopt->find(
-                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key]
+                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key],
                     )) {
                         foreach ($opts as $opt) {
                             if (!empty($opt['childs_blocks'])) {
@@ -264,7 +261,7 @@ class Checkbox extends CommonDBTM
                 echo Html::select(
                     'icon[' . $key . ']',
                     [$value['icon'] => $value['icon']],
-                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;']
+                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;'],
                 );
                 echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock("$(
@@ -289,7 +286,7 @@ class Checkbox extends CommonDBTM
                         'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                     ],
                     'ti-circle-x',
-                    "class='btn btn-sm btn-danger'"
+                    "class='btn btn-sm btn-danger'",
                 );
                 $delete_form_html = ob_get_clean();
 
@@ -326,7 +323,7 @@ class Checkbox extends CommonDBTM
                 'import_html' => $import_html,
                 'specific_dropdown_html' => '',
                 'reorder_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-            ]
+            ],
         );
     }
 
@@ -342,7 +339,7 @@ class Checkbox extends CommonDBTM
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_checkbox_radio.html.twig',
-            ['display_type_html' => $display_type_html]
+            ['display_type_html' => $display_type_html],
         );
     }
 
@@ -376,7 +373,6 @@ class Checkbox extends CommonDBTM
                      reloadviewOption(formOption);
                  });";
 
-
         echo " </script>";
 
         echo FieldOption::showLinkHtml($item->getID(), $params);
@@ -392,7 +388,7 @@ class Checkbox extends CommonDBTM
         \Dropdown::showFromArray(
             "check_value",
             $elements,
-            ['value' => $params['check_value'], 'used' => $already_used]
+            ['value' => $params['check_value'], 'used' => $already_used],
         );
     }
 
@@ -487,12 +483,12 @@ class Checkbox extends CommonDBTM
             $onchange .= "var tohide = {};";
             $display = [];
 
-//            foreach ($check_values as $idc => $check_value) {
-//                foreach ($check_value['fields_link'] as $fields_link) {
-//                    $onchange .= " if ($fields_link in tohide) {} else {tohide[$fields_link] = true;}
-//                    ";
-//                }
-//            }
+            //            foreach ($check_values as $idc => $check_value) {
+            //                foreach ($check_value['fields_link'] as $fields_link) {
+            //                    $onchange .= " if ($fields_link in tohide) {} else {tohide[$fields_link] = true;}
+            //                    ";
+            //                }
+            //            }
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
@@ -505,13 +501,13 @@ class Checkbox extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['fields_link'] as $fields_link) {
                     $onchange .= "if (this.checked) {";
-//                    $onchange .= " if ($(this).val() == $idc || $idc == -1) {
-//                                if ($fields_link in tohide) {
-//                                } else {
-//                                    tohide[$fields_link] = true;
-//                                }
-//                                tohide[$fields_link] = false;
-//                            }";
+                    //                    $onchange .= " if ($(this).val() == $idc || $idc == -1) {
+                    //                                if ($fields_link in tohide) {
+                    //                                } else {
+                    //                                    tohide[$fields_link] = true;
+                    //                                }
+                    //                                tohide[$fields_link] = false;
+                    //                            }";
 
                     if (isset($data['value']) && is_array($data['value'])) {
                         $values = $data['value'];
@@ -555,7 +551,6 @@ class Checkbox extends CommonDBTM
                                 });
                             }";
 
-
                     $onchange .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                 var id = '#metademands_wizard_red'+ key;
@@ -587,7 +582,7 @@ class Checkbox extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -619,9 +614,8 @@ class Checkbox extends CommonDBTM
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
-                'metademands'
+                'metademands',
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -648,7 +642,6 @@ class Checkbox extends CommonDBTM
                             }
                             tohide[$tasks_id] = false;
                         }";
-
 
                     $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
@@ -774,12 +767,12 @@ class Checkbox extends CommonDBTM
             $onchange .= "var tohide = {};";
             $display = [];
 
-//            foreach ($check_values as $idc => $check_value) {
-//                foreach ($check_value['hidden_link'] as $hidden_link) {
-//                    $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
-//                    ";
-//                }
-//            }
+            //            foreach ($check_values as $idc => $check_value) {
+            //                foreach ($check_value['hidden_link'] as $hidden_link) {
+            //                    $onchange .= " if ($hidden_link in tohide) {} else {tohide[$hidden_link] = true;}
+            //                    ";
+            //                }
+            //            }
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
@@ -793,13 +786,13 @@ class Checkbox extends CommonDBTM
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     $onchange .= " if (this.checked){";
                     //                                        foreach ($hidden_link as $key => $fields) {
-//                    $onchange .= " if ($(this).val() == $idc || $idc == -1) {
-//                            if ($hidden_link in tohide) {
-//                            } else {
-//                                tohide[$hidden_link] = true;
-//                            }
-//                            tohide[$hidden_link] = false;
-//                        }";
+                    //                    $onchange .= " if ($(this).val() == $idc || $idc == -1) {
+                    //                            if ($hidden_link in tohide) {
+                    //                            } else {
+                    //                                tohide[$hidden_link] = true;
+                    //                            }
+                    //                            tohide[$hidden_link] = false;
+                    //                        }";
 
                     if (isset($data['value']) && is_array($data['value'])) {
                         $values = $data['value'];
@@ -863,7 +856,7 @@ class Checkbox extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -952,7 +945,7 @@ class Checkbox extends CommonDBTM
                                                 foreach ($childs_blocks as $childs) {
                                                     $options = getAllDataFromTable(
                                                         'glpi_plugin_metademands_fieldoptions',
-                                                        ['hidden_block' => $childs]
+                                                        ['hidden_block' => $childs],
                                                     );
                                                     if (count($options) == 0) {
                                                         $script2 .= "
@@ -961,7 +954,7 @@ class Checkbox extends CommonDBTM
                                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                  " . FieldOption::setMandatoryBlockFields(
                                                             $metaid,
-                                                            $childs
+                                                            $childs,
                                                         );
                                                     }
                                                 }
@@ -989,7 +982,7 @@ class Checkbox extends CommonDBTM
                                 foreach ($childs_blocks as $childs) {
                                     $options = getAllDataFromTable(
                                         'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]
+                                        ['hidden_block' => $childs],
                                     );
                                     if (count($options) == 0) {
                                         $script .= "if (document.getElementById('ablock" . $childs . "'))
@@ -1014,7 +1007,6 @@ class Checkbox extends CommonDBTM
                     $script .= " } else { ";
 
                     //if reload form
-
 
                     $script .= "if($(this).val() == $idc){
                             if (document.getElementById('ablock" . $hidden_block . "'))
@@ -1056,7 +1048,7 @@ class Checkbox extends CommonDBTM
                                             foreach ($childs_blocks as $childs) {
                                                 $options = getAllDataFromTable(
                                                     'glpi_plugin_metademands_fieldoptions',
-                                                    ['hidden_block' => $childs]
+                                                    ['hidden_block' => $childs],
                                                 );
                                                 if (count($options) == 0) {
                                                     $script2 .= "if (document.getElementById('ablock" . $childs . "'))
@@ -1064,7 +1056,7 @@ class Checkbox extends CommonDBTM
                                                          $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . FieldOption::setMandatoryBlockFields(
                                                         $metaid,
-                                                        $childs
+                                                        $childs,
                                                     );
                                                 }
                                             }
@@ -1128,7 +1120,7 @@ class Checkbox extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }

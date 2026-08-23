@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -303,7 +303,7 @@ class FieldOption extends CommonDBChild
                                 if ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "informations") {
                                     $data[$id] = $value['rank'] . " - " . urldecode(
-                                        html_entity_decode($value['name'])
+                                        html_entity_decode($value['name']),
                                     );
                                 }
                             }
@@ -343,7 +343,7 @@ class FieldOption extends CommonDBChild
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             $dbu->getTableForItemType(FieldOption::class),
-            ["plugin_metademands_fields_id" => $item->getID()]
+            ["plugin_metademands_fields_id" => $item->getID()],
         );
     }
 
@@ -440,7 +440,7 @@ class FieldOption extends CommonDBChild
                 Ajax::updateItemJsCode(
                     "viewoption" . $item->getID() . "$rand",
                     $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                    $params
+                    $params,
                 );
                 echo ";\n}\n";
 
@@ -535,7 +535,7 @@ class FieldOption extends CommonDBChild
                         $custom_values = [];
                         if ($customs = $metademand_custom->find(
                             ["plugin_metademands_fields_id" => $item->getID()],
-                            "rank"
+                            "rank",
                         )) {
                             if (count($customs) > 0) {
                                 $custom_values = $customs;
@@ -544,7 +544,7 @@ class FieldOption extends CommonDBChild
                     } else {
                         $metademand_params = new FieldParameter();
                         $metademand_params->getFromDBByCrit(
-                            ["plugin_metademands_fields_id" => $item->getID()]
+                            ["plugin_metademands_fields_id" => $item->getID()],
                         );
                         $custom_values = $metademand_params->fields['custom'];
                     }
@@ -577,7 +577,7 @@ class FieldOption extends CommonDBChild
                         Ajax::updateItemJsCode(
                             "viewoption" . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params
+                            $params,
                         );
                         echo ";\n};";
                         echo "</script>\n";
@@ -598,11 +598,11 @@ class FieldOption extends CommonDBChild
                             if ($tasks->fields['type'] == Task::METADEMAND_TYPE) {
                                 $metatask = new MetademandTask();
                                 if ($metatask->getFromDBByCrit(
-                                    ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']]
+                                    ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']],
                                 )) {
                                     echo Dropdown::getDropdownName(
                                         'glpi_plugin_metademands_metademands',
-                                        $metatask->fields['plugin_metademands_metademands_id']
+                                        $metatask->fields['plugin_metademands_metademands_id'],
                                     );
                                 }
                             } else {
@@ -619,7 +619,7 @@ class FieldOption extends CommonDBChild
                             if ($nb > 0) {
                                 foreach ($assigntechgroups as $assigntechgroup) {
                                     $i++;
-                                    echo Dropdown::getDropdownName('glpi_groups',$assigntechgroup);
+                                    echo Dropdown::getDropdownName('glpi_groups', $assigntechgroup);
                                     if ($i < $nb) {
                                         echo ", ";
                                     }
@@ -768,12 +768,12 @@ class FieldOption extends CommonDBChild
             }
             $metademand_params = new FieldParameter();
             $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $item->getID()]
+                ["plugin_metademands_fields_id" => $item->getID()],
             );
         } else {
             $metademand_params = new FieldParameter();
             $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $item->getID()]
+                ["plugin_metademands_fields_id" => $item->getID()],
             );
             $custom_values = $metademand_params->fields['custom'];
         }
@@ -1071,7 +1071,7 @@ class FieldOption extends CommonDBChild
                 $metademand_parent = new Metademand();
                 // list of parents
                 $metademands_parent = MetademandTask::getAncestorOfMetademandTask(
-                    $params["plugin_metademands_metademands_id"]
+                    $params["plugin_metademands_metademands_id"],
                 );
                 $fieldclass = new Field();
                 foreach ($metademands_parent as $parent_id) {
@@ -1086,7 +1086,7 @@ class FieldOption extends CommonDBChild
                         //formatting the name to display (Name of metademand - Father's Field Label - type)
                         foreach ($datas_fields as $data_field) {
                             $fields[$data_field['id']] = $name_metademand . " - " . $data_field['name'] . " - " . Field::getFieldTypesName(
-                                $data_field['type']
+                                $data_field['type'],
                             );
                         }
                     }
@@ -1177,7 +1177,7 @@ class FieldOption extends CommonDBChild
         Dropdown::showFromArray(
             "check_type_value",
             [Dropdown::EMPTY_VALUE, __('Value', 'metademands'), __('Regex', 'metademands')],
-            ['value' => $value]
+            ['value' => $value],
         );
         echo "<script type = \"text/javascript\">
                  $('td select[name=check_type_value]').on('change', function() {
@@ -1210,8 +1210,9 @@ class FieldOption extends CommonDBChild
         echo "</td>";
     }
 
-    public static function showRegexInput($value){
-        echo Html::input('check_value', ['value'=>$value]);
+    public static function showRegexInput($value)
+    {
+        echo Html::input('check_value', ['value' => $value]);
         echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\">";
         echo        "<i class=\"fas fa-check\"></i>";
         echo    "</button>";
@@ -1279,7 +1280,7 @@ class FieldOption extends CommonDBChild
             echo __('Launch a task with the field', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the task is created',
-                'metademands'
+                'metademands',
             ) . '</span>';
             echo '</td><td>';
             $tasksusedarray = [];
@@ -1297,7 +1298,7 @@ class FieldOption extends CommonDBChild
             echo __('Make this field mandatory', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the field becomes mandatory',
-                'metademands'
+                'metademands',
             ) . '</span>';
             echo "</td>";
             echo "<td>";
@@ -1317,7 +1318,7 @@ class FieldOption extends CommonDBChild
                 if ($value['item'] != "ITILCategory_Metademands"
                     && $value['item'] != "informations") {
                     $data[$id] = $value['rank'] . " - " . urldecode(
-                        html_entity_decode($value['name'])
+                        html_entity_decode($value['name']),
                     );
                 }
             }
@@ -1330,13 +1331,13 @@ class FieldOption extends CommonDBChild
             echo "<tr><td colspan='2'>";
             echo __('Assign the ticket to these technicians groups', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
-                    'If the selected value matches the value to be checked, a technical group will be automatically assigned',
-                    'metademands'
-                ) . '</span>';
+                'If the selected value matches the value to be checked, a technical group will be automatically assigned',
+                'metademands',
+            ) . '</span>';
             echo "<div class='alert alert-danger'>" .
-                __('With this option, some assignment rules will not be respected.','metademands') ;
+                __('With this option, some assignment rules will not be respected.', 'metademands') ;
             if ((new Plugin())->isActivated('escalade')) {
-                echo '</br>' . __('The rules of the escalade plugin will not be taken into account.','metademands');
+                echo '</br>' . __('The rules of the escalade plugin will not be taken into account.', 'metademands');
             }
             echo "</div>";
 
@@ -1357,7 +1358,7 @@ class FieldOption extends CommonDBChild
             echo __('Display this hidden field', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the field becomes visible',
-                'metademands'
+                'metademands',
             ) . '</span>';
             echo "</td>";
             echo "<td>";
@@ -1375,7 +1376,7 @@ class FieldOption extends CommonDBChild
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands") {
                     $data[$id] = $value['rank'] . " - " . urldecode(
-                        html_entity_decode($value['name'])
+                        html_entity_decode($value['name']),
                     );
                 }
             }
@@ -1399,7 +1400,7 @@ class FieldOption extends CommonDBChild
             echo __('Display this hidden block', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the block becomes visible',
-                'metademands'
+                'metademands',
             ) . '</span>';
             echo "</td>";
             echo "<td>";
@@ -1415,7 +1416,7 @@ class FieldOption extends CommonDBChild
                 foreach ($fields as $field) {
                     $fieldoptions = new self();
                     $fieldscheck = $fieldoptions->find(
-                        ['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']]
+                        ['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']],
                     );
                     foreach ($fieldscheck as $fieldschec) {
                         $hidden_blocks[] = $field['id'];
@@ -1425,7 +1426,7 @@ class FieldOption extends CommonDBChild
                     echo "<span class='alert alert-warning d-flex'>";
                     echo __(
                         'This block is already used by another field. You can have some problems if the save value to check is used',
-                        'metademands'
+                        'metademands',
                     );
                     echo "</span>";
                 }
@@ -1449,7 +1450,7 @@ class FieldOption extends CommonDBChild
             echo __('Display this hidden block in the same block', 'metademands');
             echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                 'If the value selected equals the value to check, the block becomes visible on the same block',
-                'metademands'
+                'metademands',
             ) . '</span>';
             echo "</td>";
             echo "<td>";
@@ -1489,7 +1490,7 @@ class FieldOption extends CommonDBChild
                 echo __('Childs blocks', 'metademands');
                 echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                     'If child blocks exist, these blocks are hidden when you deselect the option configured',
-                    'metademands'
+                    'metademands',
                 ) . '</span>';
                 echo "</td>";
                 echo "<td>";
@@ -1519,7 +1520,7 @@ class FieldOption extends CommonDBChild
                     echo __('Launch a validation', 'metademands');
                     echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                         'If the value selected equals the value to check, the validation is sent to the user',
-                        'metademands'
+                        'metademands',
                     ) . '</span>';
                     echo "</td>";
                     echo "<td>";
@@ -1564,7 +1565,7 @@ class FieldOption extends CommonDBChild
                 echo __('Bind to the value of this checkbox', 'metademands');
                 echo '</br><span class="alert alert-danger metademands_wizard_comments">' . __(
                     'If the selected value is equal to the value to check, the checkbox value is set',
-                    'metademands'
+                    'metademands',
                 ) . '</span>';
                 echo "</td>";
                 echo "<td>";
@@ -1591,7 +1592,7 @@ class FieldOption extends CommonDBChild
                     'dropdown_checkbox_id' . $randcheck,
                     "checkbox_value",
                     $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_WEBDIR . "/ajax/checkboxValues.php",
-                    $paramsajax
+                    $paramsajax,
                 );
 
                 $arrayValues = [];
@@ -1600,7 +1601,7 @@ class FieldOption extends CommonDBChild
                     $field_custom = new FieldCustomvalue();
                     if ($customs = $field_custom->find(
                         ["plugin_metademands_fields_id" => $params['checkbox_id']],
-                        "rank"
+                        "rank",
                     )) {
                         if (count($customs) > 0) {
                             foreach ($customs as $custom) {
@@ -1714,7 +1715,7 @@ class FieldOption extends CommonDBChild
                 'width' => '100%',
                 'multiple' => true,
                 'entity' => $_SESSION['glpiactiveentities'],
-            ]
+            ],
         );
     }
 
@@ -1917,7 +1918,7 @@ class FieldOption extends CommonDBChild
             case 'basket':
             case 'text':
                 $class::blocksHiddenScript($data);
-            break;
+                break;
             case 'dropdown_meta':
                 $class::blocksHiddenScript($data, $itilcategories_id);
                 break;
@@ -2250,7 +2251,7 @@ class FieldOption extends CommonDBChild
         $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
         $nextsteptitle =  __(
             'Next',
-            'metademands'
+            'metademands',
         ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
         if ($blockid > 0) {
@@ -2260,7 +2261,7 @@ class FieldOption extends CommonDBChild
                 foreach ($fields_data as $data) {
                     $fieldparameter = new FieldParameter();
                     if ($fieldparameter->getFromDBByCrit(
-                        ['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1]
+                        ['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1],
                     )) {
                         $id = $data['id'];
                         if ($id > 0) {
@@ -2391,7 +2392,7 @@ class FieldOption extends CommonDBChild
         $script = '';
         $fieldoptions = new FieldOption();
         $fields_data = $fieldoptions->find(
-            ['plugin_metademands_fields_id' => $field_id, 'hidden_link' => $hidden_link]
+            ['plugin_metademands_fields_id' => $field_id, 'hidden_link' => $hidden_link],
         );
 
         if (is_array($fields_data) && count($fields_data) > 0) {
@@ -2555,7 +2556,7 @@ class FieldOption extends CommonDBChild
                             $test = Ticket_Field::isCheckValueOKFieldsLinks(
                                 $post[$id],
                                 $idc,
-                                $value['type']
+                                $value['type'],
                             );
                         } else {
                             $test = false;
@@ -2611,7 +2612,7 @@ class FieldOption extends CommonDBChild
                                 $test = Ticket_Field::isCheckValueOKFieldsLinks(
                                     $post[$id],
                                     $idc,
-                                    $value['type']
+                                    $value['type'],
                                 );
                             } else {
                                 $test = false;

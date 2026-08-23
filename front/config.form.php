@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Application\View\TemplateRenderer;
@@ -33,25 +33,25 @@ use GlpiPlugin\Metademands\Menu;
 
 if (Plugin::isPluginActive("metademands")) {
 
-   Session::checkRight("config", UPDATE);
+    Session::checkRight("config", UPDATE);
 
-   $config = new Config();
+    $config = new Config();
 
-   if (isset($_POST["update_config"])) {
-      $config_data = Config::getInstance();
-      if (empty($config_data)) {
-         $config->add($_POST);
-      } else {
-         $_POST['id'] = 1;
-         $config->update($_POST);
-      }
-      Html::back();
+    if (isset($_POST["update_config"])) {
+        $config_data = Config::getInstance();
+        if (empty($config_data)) {
+            $config->add($_POST);
+        } else {
+            $_POST['id'] = 1;
+            $config->update($_POST);
+        }
+        Html::back();
 
-   } else {
-      Html::header(__('Setup'), '', "helpdesk", Menu::class, "config");
-      $config->display($_GET);
-      Html::footer();
-   }
+    } else {
+        Html::header(__('Setup'), '', "helpdesk", Menu::class, "config");
+        $config->display($_GET);
+        Html::footer();
+    }
 
 } else {
     Html::header(__s('Setup'), '', "config", "plugin");

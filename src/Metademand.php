@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -104,7 +104,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     public const DONE = 2; // done
     public const FAIL = 3; // Failed
 
-
     public $dohistory = true;
     private $config;
 
@@ -149,7 +148,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
-
 
     public static function install(Migration $migration)
     {
@@ -242,7 +240,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     [
                         'itilcategories_id' => $transient_metademand['itil_categories'],
                     ],
-                    [ 'id' => $transient_metademand['metademands_id']]
+                    [ 'id' => $transient_metademand['metademands_id']],
                 );
                 $DB->doQuery($query);
             }
@@ -295,7 +293,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 [
                     'object_to_create' => 'Ticket',
                 ],
-                [1]
+                [1],
             );
             $DB->doQuery($query);
         }
@@ -421,8 +419,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsMetademand'
-            ]
+                'itemtype' => 'PluginMetademandsMetademand',
+            ],
         );
         $DB->doQuery($query);
 
@@ -432,8 +430,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsMetademand'
-            ]
+                'itemtype' => 'PluginMetademandsMetademand',
+            ],
         );
         $DB->doQuery($query);
 
@@ -443,8 +441,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsMetademand'
-            ]
+                'itemtype' => 'PluginMetademandsMetademand',
+            ],
         );
         $DB->doQuery($query);
 
@@ -469,7 +467,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             'NotificationTemplate',
             'Notification'];
         foreach ($itemtypes as $itemtype) {
-            $item = new $itemtype;
+            $item = new $itemtype();
             $item->deleteByCriteria(['itemtype' => self::class]);
         }
     }
@@ -487,12 +485,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $dbu = new DbUtils();
         if ($item->getType() == 'Ticket' && ($dbu->countElementsInTable(
             "glpi_plugin_metademands_tickets_metademands",
-            ["tickets_id" => $item->fields['id']]
+            ["tickets_id" => $item->fields['id']],
         )
             || $dbu->countElementsInTable(
                 "glpi_plugin_metademands_tickets_tasks",
-                ["tickets_id" => $item->fields['id']]
-                ))) {
+                ["tickets_id" => $item->fields['id']],
+            ))) {
             if (!$withtemplate
                 && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
                 if ($item->getType() == 'Ticket' && $this->canView()) {
@@ -504,7 +502,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $ticket_metademand_data = reset($ticket_metademand_data);
                         $tickets_found = Ticket::getSonTickets(
                             $item->fields['id'],
-                            $ticket_metademand_data['plugin_metademands_metademands_id']
+                            $ticket_metademand_data['plugin_metademands_metademands_id'],
                         );
                         $total = 0;
                         foreach ($tickets_found as $ticket_found) {
@@ -522,7 +520,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         if (count($ticket_task_data)) {
                             $tickets_found = Ticket::getAncestorTickets(
                                 $item->fields['id'],
-                                true
+                                true,
                             );
                         }
                         $total = (is_array($tickets_found)) ? count($tickets_found) : 0;
@@ -531,7 +529,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                     return self::createTabEntry(
                         $name,
-                        $total
+                        $total,
                     );
                 }
             } else {
@@ -547,7 +545,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $ticket_metademand_datas['plugin_metademands_metademands_id'],
                         [],
                         true,
-                        true
+                        true,
                     );
                 }
                 if (count($tickets_found) > 0
@@ -557,7 +555,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $name = __('Demand Progression', 'metademands');
                     return self::createTabEntry(
                         $name,
-                        1
+                        1,
                     );
                 }
             }
@@ -647,7 +645,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return $ong;
     }
 
-
     /**
      * @param        $object
      * @param string $type
@@ -699,7 +696,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         // Redirect if not linked to a resource contract type
                         if (!$dbu->countElementsInTable(
                             "glpi_plugin_metademands_metademands_resources",
-                            ["plugin_metademands_metademands_id" => $meta_concerned]
+                            ["plugin_metademands_metademands_id" => $meta_concerned],
                         )) {
                             unset($_SESSION['plugin_metademands']);
                             return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id="
@@ -789,7 +786,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return $input;
     }
 
-
     /**
      * @param array $input
      *
@@ -843,14 +839,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $cat_already_store = !empty(
                                 array_intersect(
                                     $cats,
-                                    json_decode($data['itilcategories_id'])
+                                    json_decode($data['itilcategories_id']),
                                 )
                             );
                         }
                         if ($cat_already_store) {
                             $error = __(
                                 'The category is related to a demand. Thank you to select another',
-                                'metademands'
+                                'metademands',
                             );
                             Session::addMessageAfterRedirect($error, false, ERROR);
                             return false;
@@ -879,7 +875,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 && count($metademands_data['tasks']) > 0) {
                 $error = __(
                     'There are sub-metademands or this is a sub-metademand. This metademand cannot be in basket mode',
-                    'metademands'
+                    'metademands',
                 );
                 Session::addMessageAfterRedirect($error, false, ERROR);
                 return false;
@@ -920,14 +916,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             [
                 'plugin_metademands_metademands_id' => $this->fields['id'],
                 'step_by_step_interface' => Configstep::BOTH_INTERFACE,
-            ]
+            ],
         );
 
         if (isset($this->input["metademands_oldID"])) {
             // ADD fields
             $fields = Field::getItemsAssociatedTo(
                 Metademand::class,
-                $this->input["metademands_oldID"]
+                $this->input["metademands_oldID"],
             );
             if (!empty($fields)) {
                 foreach ($fields as $field) {
@@ -976,7 +972,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             // ADD tasks
             $tasks = Task::getItemsAssociatedTo(
                 Metademand::class,
-                $this->input["metademands_oldID"]
+                $this->input["metademands_oldID"],
             );
             if (!empty($tasks)) {
                 foreach ($tasks as $task) {
@@ -987,7 +983,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                     $fields_task = TicketTask::getItemsAssociatedTo(
                         Task::class,
-                        $task->fields["id"]
+                        $task->fields["id"],
                     );
                     if (!empty($fields_task)) {
                         $override_input['plugin_metademands_tasks_id'] = $idtask;
@@ -999,7 +995,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 // ADD ticket fields
                 $ticketfields = TicketField::getItemsAssociatedTo(
                     Metademand::class,
-                    $this->input["metademands_oldID"]
+                    $this->input["metademands_oldID"],
                 );
                 if (!empty($ticketfields)) {
                     foreach ($ticketfields as $ticketfield) {
@@ -1012,7 +1008,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             // ADD groups
             $groups = Group::getItemsAssociatedTo(
                 Metademand::class,
-                $this->input["metademands_oldID"]
+                $this->input["metademands_oldID"],
             );
             if (!empty($groups)) {
                 foreach ($groups as $group) {
@@ -1023,7 +1019,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             // ADD steps
             $steps = Step::getItemsAssociatedTo(
                 Metademand::class,
-                $this->input["metademands_oldID"]
+                $this->input["metademands_oldID"],
             );
             if (!empty($steps)) {
                 foreach ($steps as $step) {
@@ -1278,7 +1274,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return $tab;
     }
 
-
     /**
      * @param string $field
      * @param array|string $values
@@ -1309,7 +1304,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                                 $new_drop = Dropdownmeta::getPluginDropdownItilcategoryName(
                                     $plug,
-                                    $category
+                                    $category,
                                 );
                                 if (Plugin::isPluginActive($plug) && $new_drop > 0) {
                                     $display .= $new_drop . "<br>";
@@ -1355,14 +1350,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 
-
     public static function registerType($type)
     {
         if (!in_array($type, self::$types)) {
             self::$types[] = $type;
         }
     }
-
 
     /**
      * Type than could be linked to a Rack
@@ -1478,7 +1471,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return true;
     }
 
-
     /**
      * @param $metademands_id
      */
@@ -1488,7 +1480,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
         echo __(
             'Tasks tree cannot be changed as unresolved related tickets exist or activate maintenance mode',
-            'metademands'
+            'metademands',
         );
 
         echo "<br><br><form name='task_form' id='task_form' method='post'
@@ -1531,7 +1523,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     ITILCategory::getTable(),
                     'entities_id',
                     $_SESSION['glpiactiveentities'],
-                    true
+                    true,
                 );
 
                 $dbu = new DbUtils();
@@ -1594,7 +1586,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         'width' => '100%',
                         'multiple' => true,
                         'entity' => $_SESSION['glpiactiveentities'],
-                    ]
+                    ],
                 );
                 break;
             case 'tickettemplates_id':
@@ -1612,7 +1604,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         'id' => $icon_selector_id,
                         'selected' => $this->fields['icon'],
                         'style' => 'width:175px;',
-                    ]
+                    ],
                 );
 
                 echo Html::script('js/modules/Form/WebIconSelector.js');
@@ -1799,7 +1791,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     //      return $response;
     //   }
 
-
     /**
      * @param bool $forceview
      * @param array $options
@@ -1827,23 +1818,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
             $query
                 = [
-                'SELECT' => [$this->getTable().".name",
-                    $this->getTable().".id",
-                    "glpi_entities.completename AS entities_name"],
-                'FROM' => $this->getTable(),
-                'INNER JOIN'       => [
-                    'glpi_entities' => [
-                        'ON' => [
-                            $this->getTable() => 'entities_id',
-                            'glpi_entities'          => 'id'
-                        ]
-                    ]
-                ],
-                'WHERE' => [$this->getTable().".is_active" => 1,
-                    $this->getTable().".is_deleted" => 0,
-                    $this->getTable().".is_template" => 0],
-                'ORDERBY' => $this->getTable().".name"
-            ];
+                    'SELECT' => [$this->getTable() . ".name",
+                        $this->getTable() . ".id",
+                        "glpi_entities.completename AS entities_name"],
+                    'FROM' => $this->getTable(),
+                    'INNER JOIN'       => [
+                        'glpi_entities' => [
+                            'ON' => [
+                                $this->getTable() => 'entities_id',
+                                'glpi_entities'          => 'id',
+                            ],
+                        ],
+                    ],
+                    'WHERE' => [$this->getTable() . ".is_active" => 1,
+                        $this->getTable() . ".is_deleted" => 0,
+                        $this->getTable() . ".is_template" => 0],
+                    'ORDERBY' => $this->getTable() . ".name",
+                ];
 
             $type = \Ticket::DEMAND_TYPE;
             if (isset($params['type'])) {
@@ -1858,11 +1849,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             // Honor recursivity: a metademand shared from an ancestor entity (is_recursive = 1)
             // must be listed in child entities, so enable the recursive restriction (4th arg).
             $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
-                    $this->getTable(),
-                    '',
-                    '',
-                    true
-                );
+                $this->getTable(),
+                '',
+                '',
+                true,
+            );
 
             $iterator = $DB->request($query);
 
@@ -1871,7 +1862,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     if ($this->canCreate() || Group::isUserHaveRight($data['id'])) {
                         if (!$dbu->countElementsInTable(
                             "glpi_plugin_metademands_metademands_resources",
-                            ["plugin_metademands_metademands_id" => $data['id']]
+                            ["plugin_metademands_metademands_id" => $data['id']],
                         )) {
                             if (empty($name = self::displayField($data['id'], 'name'))) {
                                 $name = $data['name'];
@@ -1900,7 +1891,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $query_cat = [
             'SELECT' => ["name", "id"],
-            'FROM' => "glpi_itilcategories"
+            'FROM' => "glpi_itilcategories",
         ];
 
         $iterator_cat = $DB->request($query_cat);
@@ -1916,34 +1907,33 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $query
             = [
-            'SELECT' => [$this->getTable().".name",
-                $this->getTable().".id",
-                $this->getTable().".itilcategories_id",
-                "glpi_entities.completename AS entities_name"],
-            'FROM' => $this->getTable(),
-            'INNER JOIN'       => [
-                'glpi_entities' => [
-                    'ON' => [
-                        $this->getTable() => 'entities_id',
-                        'glpi_entities'          => 'id'
-                    ]
-                ]
-            ],
-            'WHERE' => [$this->getTable().".is_active" => 1,
-                $this->getTable().".is_deleted" => 0,
-                $this->getTable().".is_template" => 0],
-            'ORDERBY' => $this->getTable().".name"
-        ];
-
+                'SELECT' => [$this->getTable() . ".name",
+                    $this->getTable() . ".id",
+                    $this->getTable() . ".itilcategories_id",
+                    "glpi_entities.completename AS entities_name"],
+                'FROM' => $this->getTable(),
+                'INNER JOIN'       => [
+                    'glpi_entities' => [
+                        'ON' => [
+                            $this->getTable() => 'entities_id',
+                            'glpi_entities'          => 'id',
+                        ],
+                    ],
+                ],
+                'WHERE' => [$this->getTable() . ".is_active" => 1,
+                    $this->getTable() . ".is_deleted" => 0,
+                    $this->getTable() . ".is_template" => 0],
+                'ORDERBY' => $this->getTable() . ".name",
+            ];
 
         // Honor recursivity: a metademand shared from an ancestor entity (is_recursive = 1)
         // must be listed in child entities, so enable the recursive restriction (4th arg).
         $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
-                $this->getTable(),
-                '',
-                '',
-                true
-            );
+            $this->getTable(),
+            '',
+            '',
+            true,
+        );
 
         $iterator = $DB->request($query);
 
@@ -2003,7 +1993,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             $field = new Field();
             $fields_data = $field->find(
                 ['plugin_metademands_metademands_id' => $metademands_id],
-                ['rank', 'order']
+                ['rank', 'order'],
             );
 
             // Construct array
@@ -2033,28 +2023,28 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $fields_data[$id]["options"][$check_value]['check_type_value'] = $opt['check_type_value'] ?? 0;
                                 if ($opt['plugin_metademands_tasks_id']) {
                                     $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'][] = $opt['plugin_metademands_tasks_id'];
-                                } elseif(isset($fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'])) {
+                                } elseif (isset($fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'])) {
                                     $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'] = $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'];
                                 } else {
                                     $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'] = [];
                                 }
                                 if ($opt['fields_link']) {
                                     $fields_data[$id]["options"][$check_value]['fields_link'][] = $opt['fields_link'];
-                                } elseif(isset($fields_data[$id]["options"][$check_value]['fields_link'])) {
+                                } elseif (isset($fields_data[$id]["options"][$check_value]['fields_link'])) {
                                     $fields_data[$id]["options"][$check_value]['fields_link'] = $fields_data[$id]["options"][$check_value]['fields_link'];
                                 } else {
                                     $fields_data[$id]["options"][$check_value]['fields_link'] = [];
                                 }
                                 if ($opt['hidden_link']) {
                                     $fields_data[$id]["options"][$check_value]['hidden_link'][] = $opt['hidden_link'];
-                                } elseif(isset($fields_data[$id]["options"][$check_value]['hidden_link'])) {
+                                } elseif (isset($fields_data[$id]["options"][$check_value]['hidden_link'])) {
                                     $fields_data[$id]["options"][$check_value]['hidden_link'] = $fields_data[$id]["options"][$check_value]['hidden_link'];
                                 } else {
                                     $fields_data[$id]["options"][$check_value]['hidden_link'] = [];
                                 }
                                 if ($opt['hidden_block']) {
                                     $fields_data[$id]["options"][$check_value]['hidden_block'][] = $opt['hidden_block'];
-                                } elseif(isset($fields_data[$id]["options"][$check_value]['hidden_block'])) {
+                                } elseif (isset($fields_data[$id]["options"][$check_value]['hidden_block'])) {
                                     $fields_data[$id]["options"][$check_value]['hidden_block'] = $fields_data[$id]["options"][$check_value]['hidden_block'];
                                 } else {
                                     $fields_data[$id]["options"][$check_value]['hidden_block'] = [];
@@ -2087,7 +2077,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     Task::MAIL_TYPE,
                                 ],
                             ],
-                        ]
+                        ],
                     );
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
@@ -2102,7 +2092,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     Task::MAIL_TYPE,
                                 ],
                             ],
-                        ]
+                        ],
                     );
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
@@ -2343,11 +2333,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                     }
 
-
                     // preload FieldOption for all submitted field IDs (batch, avoids N+1)
                     $submitted_field_ids = array_filter(
                         array_map(fn($k) => (int) str_replace("-2", "", (string) $k), array_keys($values['fields'])),
-                        fn($id) => $id > 0
+                        fn($id) => $id > 0,
                     );
                     FieldOption::preloadForFields($submitted_field_ids);
 
@@ -2422,11 +2411,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $entities_id = $metatask->fields['destination_entities_id'];
                         }
                     }
-                    if (!Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])){
+                    if (!Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])) {
                         $entities_id = $metademand->fields['entities_id'];
                         $message = __('This metademand cannot be used with this entity', 'metademands');
                         Session::addMessageAfterRedirect($message, false, ERROR);
-
 
                         if (Session::getCurrentInterface() != 'central'
                             && Plugin::isPluginActive('servicecatalog')) {
@@ -2457,7 +2445,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $stepformActor = new Stepform_Actor();
                             if (isset($values['plugin_metademands_stepforms_id'])) {
                                 $stepformActors = $stepformActor->find(
-                                    ['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']]
+                                    ['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']],
                                 );
                                 foreach ($stepformActors as $actor) {
                                     $parent_fields['_users_id_requester'][] = $actor['users_id'];
@@ -2482,7 +2470,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $itilcategory,
                         $values,
                         $parent_fields['_users_id_requester'],
-                        $parent_fields['entities_id']
+                        $parent_fields['entities_id'],
                     );
                     $list_fields = $line['form'];
 
@@ -2564,8 +2552,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $parent_ticketfields["_add_validation"] = '0';
                                         $parent_fields["validatortype"] = 'user';
                                         $parent_ticketfields["validatortype"] = 'user';
-                                        $parent_fields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int)$v[$id]];
-                                        $parent_ticketfields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int)$v[$id]];
+                                        $parent_fields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int) $v[$id]];
+                                        $parent_ticketfields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int) $v[$id]];
                                     }
                                     if ($fields_values['used_by_ticket'] == 13) {
                                         if ($fields_values['type'] == "dropdown_meta"
@@ -2636,8 +2624,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $parent_fields["validatortype"] = $validatortype;
                         $parent_ticketfields["validatortype"] = $validatortype;
                         $validation_targets = array_map(
-                            fn($uid) => ['itemtype_target' => User::class, 'items_id_target' => (int)$uid],
-                            $users_id_validate
+                            fn($uid) => ['itemtype_target' => User::class, 'items_id_target' => (int) $uid],
+                            $users_id_validate,
                         );
                         if (!isset($parent_fields["_validation_targets"])) {
                             $parent_fields["_validation_targets"] = [];
@@ -2695,7 +2683,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $pluginfields_for_meta = [];
                         if (Plugin::isPluginActive('fields')) {
                             $pluginfields_for_meta = (new Pluginfields())->find(
-                                ['plugin_metademands_metademands_id' => $form_metademands_id]
+                                ['plugin_metademands_metademands_id' => $form_metademands_id],
                             );
                         }
 
@@ -2707,7 +2695,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $fields_container = new PluginFieldsContainer();
                                 if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                                     if ($fields_container->getFromDB(
-                                        $fields_field->fields['plugin_fields_containers_id']
+                                        $fields_field->fields['plugin_fields_containers_id'],
                                     )) {
                                         if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                             if ($fields_field->fields['type'] === 'dropdown') {
@@ -2722,7 +2710,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                                                     $field_custom = new FieldCustomvalue();
                                                     if ($customs = $field_custom->find(
-                                                        ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                                        ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']],
                                                     )) {
                                                         if (count($customs) > 0) {
                                                             foreach ($customs as $custom) {
@@ -2812,7 +2800,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id'])) {
                             $draft = new Draft();
                             $draft->deleteByCriteria(
-                                ['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id']]
+                                ['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id']],
                             );
                         }
                         //Link object to forms_id
@@ -2836,7 +2824,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $fields_container = new PluginFieldsContainer();
                                     if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                                         if ($fields_container->getFromDB(
-                                            $fields_field->fields['plugin_fields_containers_id']
+                                            $fields_field->fields['plugin_fields_containers_id'],
                                         )) {
 
                                             if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
@@ -2853,7 +2841,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                                                             $field_custom = new FieldCustomvalue();
                                                             if ($customs = $field_custom->find(
-                                                                ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                                                ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']],
                                                             )) {
                                                                 if (count($customs) > 0) {
                                                                     foreach ($customs as $custom) {
@@ -2924,7 +2912,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $values_form,
                                         $metademand->getID(),
                                         $parent_tickets_id,
-                                        false
+                                        false,
                                     );
                                 } elseif ($metademand->fields['is_order'] == 1) {
                                     if ($metademand->fields['create_one_ticket'] == 0) {
@@ -2945,7 +2933,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $values_form,
                                         $metademand->getID(),
                                         $parent_tickets_id,
-                                        true
+                                        true,
                                     );
                                 }
                                 $docPdf->Close();
@@ -2955,7 +2943,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $name,
                                     $object_class,
                                     $object->getID(),
-                                    $_SESSION['glpiactive_entity']
+                                    $_SESSION['glpiactive_entity'],
                                 );
                             }
                         }
@@ -3048,7 +3036,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $line['form'],
                                     $values['fields'],
                                     $parent_tickets_id,
-                                    $input
+                                    $input,
                                 );
                             }
                             if (isset($_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'])) {
@@ -3082,7 +3070,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 foreach ($meta_tasks as $meta_task) {
                                     if (Ticket_Field::checkTicketCreation(
                                         $meta_task['tasks_id'],
-                                        $parent_tickets_id
+                                        $parent_tickets_id,
                                     )) {
                                         $input = [];
                                         if ($object_class == 'Problem') {
@@ -3126,7 +3114,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $field = Field::getCachedField((int) $title) ?? new Field();
                                                             $fields = $field->fields;
 
-
                                                             $fields['value'] = $values['fields'][$title];
 
                                                             $fields['value2'] = '';
@@ -3144,13 +3131,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             if ($value != null) {
                                                                 $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                                     "#" . $title . "#",
                                                                     $value,
-                                                                    $line['tasks'][$key]['tickettasks_name']
+                                                                    $line['tasks'][$key]['tickettasks_name'],
                                                                 );
                                                             }
                                                         } else {
@@ -3167,7 +3154,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $title,
-                                                                            $line['tasks'][$key]['tickettasks_name']
+                                                                            $line['tasks'][$key]['tickettasks_name'],
                                                                         );
                                                                     }
                                                                 }
@@ -3179,7 +3166,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $title,
                                                                 $line['tasks'][$key]['tickettasks_name'],
-                                                                true
+                                                                true,
                                                             );
                                                         }
                                                     }
@@ -3194,7 +3181,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             if (isset($values['fields'][$title])) {
                                                                 $field = Field::getCachedField((int) $title) ?? new Field();
                                                                 $fields = $field->fields;
-
 
                                                                 $fields['value'] = $values['fields'][$title];
 
@@ -3213,7 +3199,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $fields,
                                                                     $result,
                                                                     $parent_fields_id,
-                                                                    true
+                                                                    true,
                                                                 );
                                                                 $str = str_replace("#" . $title . "#", $value, $str);
                                                                 if (!is_null($value) && !empty($value)) {
@@ -3233,7 +3219,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                                 $users_id,
                                                                                 $_SESSION['glpiactive_entity'],
                                                                                 $title,
-                                                                                $str
+                                                                                $str,
                                                                             );
                                                                         }
                                                                     }
@@ -3245,7 +3231,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $_SESSION['glpiactive_entity'],
                                                                     $title,
                                                                     $str,
-                                                                    true
+                                                                    true,
                                                                 );
                                                             }
                                                         }
@@ -3258,23 +3244,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                             "[" . $match . "]",
                                                             $str,
-                                                            $line['tasks'][$key]['tickettasks_name']
+                                                            $line['tasks'][$key]['tickettasks_name'],
                                                         );
                                                         $l['tickettasks_name'] = str_replace(
                                                             "[" . $match . "]",
                                                             $str,
-                                                            $l['tickettasks_name']
+                                                            $l['tickettasks_name'],
                                                         );
                                                     } else {
                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                             "[" . $match . "]",
                                                             "<@" . $str . "@>",
-                                                            $line['tasks'][$key]['tickettasks_name']
+                                                            $line['tasks'][$key]['tickettasks_name'],
                                                         );
                                                         $l['tickettasks_name'] = str_replace(
                                                             "[" . $match . "]",
                                                             "<@" . $str . "@>",
-                                                            $l['tickettasks_name']
+                                                            $l['tickettasks_name'],
                                                         );
                                                     }
                                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
@@ -3284,12 +3270,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                 "<@",
                                                 "[",
-                                                $line['tasks'][$key]['tickettasks_name']
+                                                $line['tasks'][$key]['tickettasks_name'],
                                             );
                                             $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                 "@>",
                                                 "]",
-                                                $line['tasks'][$key]['tickettasks_name']
+                                                $line['tasks'][$key]['tickettasks_name'],
                                             );
                                             $l['tickettasks_name'] = str_replace("<@", "[", $l['tickettasks_name']);
                                             $l['tickettasks_name'] = str_replace("@>", "]", $l['tickettasks_name']);
@@ -3299,7 +3285,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 if (isset($values['fields'][$title])) {
                                                     $field = Field::getCachedField((int) $title) ?? new Field();
                                                     $fields = $field->fields;
-
 
                                                     $fields['value'] = $values['fields'][$title];
 
@@ -3320,13 +3305,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $fields,
                                                         $result,
                                                         $parent_fields_id,
-                                                        true
+                                                        true,
                                                     );
                                                     if ($value != null) {
                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                             "#" . $title . "#",
                                                             $value,
-                                                            $line['tasks'][$key]['tickettasks_name']
+                                                            $line['tasks'][$key]['tickettasks_name'],
                                                         );
                                                     }
                                                 } else {
@@ -3343,7 +3328,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $users_id,
                                                                     $_SESSION['glpiactive_entity'],
                                                                     $title,
-                                                                    $line['tasks'][$key]['tickettasks_name']
+                                                                    $line['tasks'][$key]['tickettasks_name'],
                                                                 );
                                                             }
                                                         }
@@ -3355,11 +3340,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $_SESSION['glpiactive_entity'],
                                                         $title,
                                                         $line['tasks'][$key]['tickettasks_name'],
-                                                        true
+                                                        true,
                                                     );
                                                 }
                                             }
-
 
                                             //replace #id# in content with the value
                                             do {
@@ -3367,7 +3351,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 if (empty($match) && $l['content'] != null) {
                                                     //TODO all $l['content'];
                                                     $l['content'] = RichText::getTextFromHtml(
-                                                        $l['content']
+                                                        $l['content'],
                                                     );
 
                                                     $explodeContent = explode("#", $l['content']);
@@ -3382,7 +3366,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         if (isset($values['fields'][$content])) {
                                                             $field = Field::getCachedField((int) $content) ?? new Field();
                                                             $fields = $field->fields;
-
 
                                                             $fields['value'] = $values['fields'][$content];
 
@@ -3403,7 +3386,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             if ($fields['type'] == "textarea") {
                                                                 if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -3414,7 +3397,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $line['tasks'][$key]['content'] = str_replace(
                                                                     "#" . $content . "#",
                                                                     $value,
-                                                                    $line['tasks'][$key]['content']
+                                                                    $line['tasks'][$key]['content'],
                                                                 );
                                                             }
                                                         } else {
@@ -3431,7 +3414,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $content,
-                                                                            $line['tasks'][$key]['content']
+                                                                            $line['tasks'][$key]['content'],
                                                                         );
                                                                     }
                                                                 }
@@ -3443,7 +3426,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $content,
                                                                 $line['tasks'][$key]['content'],
-                                                                true
+                                                                true,
                                                             );
                                                         }
                                                     }
@@ -3458,7 +3441,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             if (isset($values['fields'][$content])) {
                                                                 $field = Field::getCachedField((int) $content) ?? new Field();
                                                                 $fields = $field->fields;
-
 
                                                                 $fields['value'] = $values['fields'][$content];
 
@@ -3477,7 +3459,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $fields,
                                                                     $result,
                                                                     $parent_fields_id,
-                                                                    true
+                                                                    true,
                                                                 );
                                                                 if ($fields['type'] == "textarea") {
                                                                     if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -3502,7 +3484,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                                 $users_id,
                                                                                 $_SESSION['glpiactive_entity'],
                                                                                 $content,
-                                                                                $str
+                                                                                $str,
                                                                             );
                                                                         }
                                                                     }
@@ -3514,7 +3496,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $_SESSION['glpiactive_entity'],
                                                                     $content,
                                                                     $str,
-                                                                    true
+                                                                    true,
                                                                 );
                                                             }
                                                         }
@@ -3527,26 +3509,26 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $line['tasks'][$key]['content'] = str_replace(
                                                             "[" . $match . "]",
                                                             $str,
-                                                            $line['tasks'][$key]['content']
+                                                            $line['tasks'][$key]['content'],
                                                         );
                                                         $l['content'] = str_replace(
                                                             "[" . $match . "]",
                                                             $str,
-                                                            $l['content']
+                                                            $l['content'],
                                                         );
                                                     } else {
                                                         if ($line['tasks'][$key]['content'] != null) {
                                                             $line['tasks'][$key]['content'] = str_replace(
                                                                 "[" . $match . "]",
                                                                 "<@" . $str . "@>",
-                                                                $line['tasks'][$key]['content']
+                                                                $line['tasks'][$key]['content'],
                                                             );
                                                         }
                                                         if ($l['content'] != null) {
                                                             $l['content'] = str_replace(
                                                                 "[" . $match . "]",
                                                                 "<@" . $str . "@>",
-                                                                $l['content']
+                                                                $l['content'],
                                                             );
                                                         }
                                                     }
@@ -3558,12 +3540,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $line['tasks'][$key]['content'] = str_replace(
                                                     "<@",
                                                     "[",
-                                                    $line['tasks'][$key]['content']
+                                                    $line['tasks'][$key]['content'],
                                                 );
                                                 $line['tasks'][$key]['content'] = str_replace(
                                                     "@>",
                                                     "]",
-                                                    $line['tasks'][$key]['content']
+                                                    $line['tasks'][$key]['content'],
                                                 );
                                             }
                                             if ($l['content'] != null) {
@@ -3584,7 +3566,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $field = Field::getCachedField((int) $content) ?? new Field();
                                                         $fields = $field->fields;
 
-
                                                         $fields['value'] = $values['fields'][$content];
 
                                                         $fields['value2'] = '';
@@ -3604,7 +3585,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $fields,
                                                             $result,
                                                             $parent_fields_id,
-                                                            true
+                                                            true,
                                                         );
                                                         if ($fields['type'] == "textarea") {
                                                             if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -3615,7 +3596,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $line['tasks'][$key]['content'] = str_replace(
                                                                 "#" . $content . "#",
                                                                 $value,
-                                                                $line['tasks'][$key]['content']
+                                                                $line['tasks'][$key]['content'],
                                                             );
                                                         }
                                                     } else {
@@ -3632,7 +3613,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                         $users_id,
                                                                         $_SESSION['glpiactive_entity'],
                                                                         $content,
-                                                                        $line['tasks'][$key]['content']
+                                                                        $line['tasks'][$key]['content'],
                                                                     );
                                                                 }
                                                             }
@@ -3644,7 +3625,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $_SESSION['glpiactive_entity'],
                                                             $content,
                                                             $line['tasks'][$key]['content'],
-                                                            true
+                                                            true,
                                                         );
                                                     }
                                                 }
@@ -3671,7 +3652,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $line['form'],
                                                         $metademand->getID(),
                                                         $values,
-                                                        ['formatastable' => $l['formatastable']]
+                                                        ['formatastable' => $l['formatastable']],
                                                     );
 
                                                 } else {
@@ -3685,13 +3666,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $content = "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>";
                                                     $content .= "<tr><th colspan='2'>" . __(
                                                         'Child Ticket',
-                                                        'metademands'
+                                                        'metademands',
                                                     )
                                                         . "</th></tr><tr><td colspan='2'>";
                                                 }
 
                                                 $content .= RichText::getSafeHtml(
-                                                    $son_ticket_data['content']
+                                                    $son_ticket_data['content'],
                                                 );
 
                                                 if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
@@ -3699,12 +3680,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 }
                                             }
 
-
                                             if (!empty($parent_fields_content['content'])) {
                                                 $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
                                                 $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
                                                     . "</th></tr><tr><td colspan='2'>" . RichText::getSafeHtml(
-                                                        $parent_fields_content['content']
+                                                        $parent_fields_content['content'],
                                                     );
                                                 $content .= "</td></tr></table><br>";
                                             }
@@ -3728,7 +3708,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $field = Field::getCachedField((int) $title) ?? new Field();
                                                             $fields = $field->fields;
 
-
                                                             $fields['value'] = $values['fields'][$title];
 
                                                             $fields['value2'] = '';
@@ -3746,12 +3725,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                                 "#" . $title . "#",
                                                                 $value,
-                                                                $line['tasks'][$key]['tickettasks_name']
+                                                                $line['tasks'][$key]['tickettasks_name'],
                                                             );
                                                         } else {
 
@@ -3768,7 +3747,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $title,
-                                                                            $line['tasks'][$key]['tickettasks_name']
+                                                                            $line['tasks'][$key]['tickettasks_name'],
                                                                         );
                                                                     }
                                                                 }
@@ -3787,7 +3766,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $field = Field::getCachedField((int) $title) ?? new Field();
                                                                 $fields = $field->fields;
 
-
                                                                 $fields['value'] = $values['fields'][$title];
 
                                                                 $fields['value2'] = '';
@@ -3805,7 +3783,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $fields,
                                                                     $result,
                                                                     $parent_fields_id,
-                                                                    true
+                                                                    true,
                                                                 );
                                                                 $str = str_replace("#" . $title . "#", $value, $str);
                                                                 if (!is_null($value) && !empty($value)) {
@@ -3825,7 +3803,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                                 $_SESSION['glpiactive_entity'],
                                                                                 $users_id,
                                                                                 $title,
-                                                                                $str
+                                                                                $str,
                                                                             );
                                                                         }
                                                                     }
@@ -3837,7 +3815,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $_SESSION['glpiactive_entity'],
                                                                     $title,
                                                                     $str,
-                                                                    true
+                                                                    true,
                                                                 );
                                                             }
                                                         }
@@ -3882,7 +3860,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $field = Field::getCachedField((int) $content) ?? new Field();
                                                             $fields = $field->fields;
 
-
                                                             $fields['value'] = $values['fields'][$content];
 
                                                             $fields['value2'] = '';
@@ -3900,7 +3877,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             if ($fields['type'] == "textarea") {
                                                                 if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -3910,7 +3887,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $line['tasks'][$key]['content'] = str_replace(
                                                                 "#" . $content . "#",
                                                                 $value,
-                                                                $son_ticket_data['content']
+                                                                $son_ticket_data['content'],
                                                             );
                                                         } else {
                                                             $explodeContent2 = explode(".", $content);
@@ -3926,7 +3903,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $content,
-                                                                            $son_ticket_data['content']
+                                                                            $son_ticket_data['content'],
                                                                         );
                                                                     }
                                                                 }
@@ -3945,7 +3922,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $field = Field::getCachedField((int) $content) ?? new Field();
                                                                 $fields = $field->fields;
 
-
                                                                 $fields['value'] = $values['fields'][$content];
 
                                                                 $fields['value2'] = '';
@@ -3963,7 +3939,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $fields,
                                                                     $result,
                                                                     $parent_fields_id,
-                                                                    true
+                                                                    true,
                                                                 );
                                                                 if ($fields['type'] == "textarea") {
                                                                     if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -3988,7 +3964,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                                 $users_id,
                                                                                 $_SESSION['glpiactive_entity'],
                                                                                 $content,
-                                                                                $str
+                                                                                $str,
                                                                             );
                                                                         }
                                                                     }
@@ -4000,7 +3976,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $_SESSION['glpiactive_entity'],
                                                                     $content,
                                                                     $str,
-                                                                    true
+                                                                    true,
                                                                 );
                                                             }
                                                         }
@@ -4013,26 +3989,26 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $line['tasks'][$key]['content'] = str_replace(
                                                             "[" . $match . "]",
                                                             $str,
-                                                            $son_ticket_data['content']
+                                                            $son_ticket_data['content'],
                                                         );
                                                         $l['content'] = str_replace(
                                                             "[" . $match . "]",
                                                             $str,
-                                                            $l['content']
+                                                            $l['content'],
                                                         );
                                                     } else {
                                                         if ($line['tasks'][$key]['content'] != null) {
                                                             $line['tasks'][$key]['content'] = str_replace(
                                                                 "[" . $match . "]",
                                                                 "<@" . $str . "@>",
-                                                                $son_ticket_data['content']
+                                                                $son_ticket_data['content'],
                                                             );
                                                         }
                                                         if ($l['content'] != null) {
                                                             $l['content'] = str_replace(
                                                                 "[" . $match . "]",
                                                                 "<@" . $str . "@>",
-                                                                $son_ticket_data['content']
+                                                                $son_ticket_data['content'],
                                                             );
                                                         }
                                                     }
@@ -4044,12 +4020,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $line['tasks'][$key]['content'] = str_replace(
                                                     "<@",
                                                     "[",
-                                                    $line['tasks'][$key]['content']
+                                                    $line['tasks'][$key]['content'],
                                                 );
                                                 $line['tasks'][$key]['content'] = str_replace(
                                                     "@>",
                                                     "]",
-                                                    $line['tasks'][$key]['content']
+                                                    $line['tasks'][$key]['content'],
                                                 );
                                             }
                                             if ($l['content'] != null) {
@@ -4071,7 +4047,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $field = Field::getCachedField((int) $content) ?? new Field();
                                                         $fields = $field->fields;
 
-
                                                         $fields['value'] = $values['fields'][$content];
 
                                                         $fields['value2'] = '';
@@ -4091,7 +4066,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $fields,
                                                             $result,
                                                             $parent_fields_id,
-                                                            true
+                                                            true,
                                                         );
                                                         if ($fields['type'] == "textarea") {
                                                             if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -4101,7 +4076,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $line['tasks'][$key]['content'] = str_replace(
                                                             "#" . $content . "#",
                                                             $value,
-                                                            $line['tasks'][$key]['content']
+                                                            $line['tasks'][$key]['content'],
                                                         );
                                                     } else {
                                                         $explodeContent2 = explode(".", $content);
@@ -4117,7 +4092,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                         $users_id,
                                                                         $_SESSION['glpiactive_entity'],
                                                                         $content,
-                                                                        $line['tasks'][$key]['content']
+                                                                        $line['tasks'][$key]['content'],
                                                                     );
                                                                 }
                                                             }
@@ -4129,7 +4104,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $_SESSION['glpiactive_entity'],
                                                             $content,
                                                             $line['tasks'][$key]['content'],
-                                                            true
+                                                            true,
                                                         );
                                                     }
                                                 }
@@ -4139,7 +4114,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $user = new User();
                                             if (isset($mail->fields['groups_id_recipient']) && $mail->fields['groups_id_recipient'] > 0) {
                                                 $users = Group_User::getGroupUsers(
-                                                    $mail->fields['groups_id_recipient']
+                                                    $mail->fields['groups_id_recipient'],
                                                 );
                                                 foreach ($users as $usr) {
                                                     $address = $email->find(['users_id' => $usr['id']], [], 1);
@@ -4155,7 +4130,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $address = $email->find(
                                                     ['users_id' => $mail->fields['users_id_recipient']],
                                                     [],
-                                                    1
+                                                    1,
                                                 );
                                                 $user->getFromDB($mail->fields['users_id_recipient']);
                                                 if (count($address) > 0) {
@@ -4169,7 +4144,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 MailTask::sendMail(
                                                     $line['tasks'][$key]['tickettasks_name'],
                                                     $recipients,
-                                                    $line['tasks'][$key]['content']
+                                                    $line['tasks'][$key]['content'],
                                                 );
                                             }
 
@@ -4183,13 +4158,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $parent_tickets_id,
                                             self::mergeFields(
                                                 $parent_fields,
-                                                $parent_ticketfields
+                                                $parent_ticketfields,
                                             ),
                                             $parent_tickets_id,
                                             $line['tasks'],
                                             $tasklevel,
                                             $inputField,
-                                            $inputFieldMain
+                                            $inputFieldMain,
                                         )) {
                                             $KO[] = 1;
                                         }
@@ -4199,7 +4174,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             foreach ($meta_tasks as $meta_task) {
                                                 if (Ticket_Field::checkTicketCreation(
                                                     $meta_task['tasks_id'],
-                                                    $parent_tickets_id
+                                                    $parent_tickets_id,
                                                 )) {
                                                     $ticket_task = new \TicketTask();
                                                     $input = [];
@@ -4230,7 +4205,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $resource = new Resource();
                                                 if ($resource->getFromDB($resource_id)) {
                                                     $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField(
-                                                        'name'
+                                                        'name',
                                                     ) . " " . $resource->getField('firstname');
                                                 }
                                                 $line['tasks'][$key]['items_id'] = [Resource::class => [$resource_id]];
@@ -4260,13 +4235,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $fields,
                                                             $result,
                                                             $parent_fields_id,
-                                                            true
+                                                            true,
                                                         );
                                                         if ($value != null) {
                                                             $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                                 "#" . $title . "#",
                                                                 $value,
-                                                                $line['tasks'][$key]['tickettasks_name']
+                                                                $line['tasks'][$key]['tickettasks_name'],
                                                             );
                                                         }
                                                     } else {
@@ -4283,7 +4258,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                         $users_id,
                                                                         $_SESSION['glpiactive_entity'],
                                                                         $title,
-                                                                        $line['tasks'][$key]['tickettasks_name']
+                                                                        $line['tasks'][$key]['tickettasks_name'],
                                                                     );
                                                                 }
                                                             }
@@ -4295,7 +4270,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $_SESSION['glpiactive_entity'],
                                                             $title,
                                                             $line['tasks'][$key]['tickettasks_name'],
-                                                            true
+                                                            true,
                                                         );
                                                     }
                                                 }
@@ -4327,7 +4302,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             $str = str_replace("#" . $title . "#", $value, $str);
                                                             if (!is_null($value) && !empty($value)) {
@@ -4347,7 +4322,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $title,
-                                                                            $str
+                                                                            $str,
                                                                         );
                                                                     }
                                                                 }
@@ -4359,7 +4334,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $title,
                                                                 $str,
-                                                                true
+                                                                true,
                                                             );
                                                         }
                                                     }
@@ -4372,23 +4347,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                         "[" . $match . "]",
                                                         $str,
-                                                        $line['tasks'][$key]['tickettasks_name']
+                                                        $line['tasks'][$key]['tickettasks_name'],
                                                     );
                                                     $l['tickettasks_name'] = str_replace(
                                                         "[" . $match . "]",
                                                         $str,
-                                                        $l['tickettasks_name']
+                                                        $l['tickettasks_name'],
                                                     );
                                                 } else {
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                         "[" . $match . "]",
                                                         "<@" . $str . "@>",
-                                                        $line['tasks'][$key]['tickettasks_name']
+                                                        $line['tasks'][$key]['tickettasks_name'],
                                                     );
                                                     $l['tickettasks_name'] = str_replace(
                                                         "[" . $match . "]",
                                                         "<@" . $str . "@>",
-                                                        $l['tickettasks_name']
+                                                        $l['tickettasks_name'],
                                                     );
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
@@ -4398,12 +4373,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                             "<@",
                                             "[",
-                                            $line['tasks'][$key]['tickettasks_name']
+                                            $line['tasks'][$key]['tickettasks_name'],
                                         );
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                             "@>",
                                             "]",
-                                            $line['tasks'][$key]['tickettasks_name']
+                                            $line['tasks'][$key]['tickettasks_name'],
                                         );
                                         $l['tickettasks_name'] = str_replace("<@", "[", $l['tickettasks_name']);
                                         $l['tickettasks_name'] = str_replace("@>", "]", $l['tickettasks_name']);
@@ -4434,13 +4409,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $fields,
                                                     $result,
                                                     $parent_fields_id,
-                                                    true
+                                                    true,
                                                 );
                                                 if ($value != null) {
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace(
                                                         "#" . $title . "#",
                                                         $value,
-                                                        $line['tasks'][$key]['tickettasks_name']
+                                                        $line['tasks'][$key]['tickettasks_name'],
                                                     );
                                                 }
                                             } else {
@@ -4457,7 +4432,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $users_id,
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $title,
-                                                                $line['tasks'][$key]['tickettasks_name']
+                                                                $line['tasks'][$key]['tickettasks_name'],
                                                             );
                                                         }
                                                     }
@@ -4470,7 +4445,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $_SESSION['glpiactive_entity'],
                                                     $title,
                                                     $line['tasks'][$key]['tickettasks_name'],
-                                                    true
+                                                    true,
                                                 );
                                             }
                                         }
@@ -4481,7 +4456,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             if (empty($match)) {
                                                 if ($l['content'] != null) {
                                                     $l['content'] = RichText::getTextFromHtml(
-                                                        $l['content']
+                                                        $l['content'],
                                                     );
                                                     $explodeContent = explode("#", $l['content']);
                                                     foreach ($explodeContent as $content) {
@@ -4512,7 +4487,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             if ($fields['type'] == "textarea") {
                                                                 if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -4522,7 +4497,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $line['tasks'][$key]['content'] = str_replace(
                                                                 "#" . $content . "#",
                                                                 $value,
-                                                                $line['tasks'][$key]['content']
+                                                                $line['tasks'][$key]['content'],
                                                             );
                                                         } else {
                                                             $explodeContent2 = explode(".", $content);
@@ -4538,7 +4513,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $content,
-                                                                            $line['tasks'][$key]['content']
+                                                                            $line['tasks'][$key]['content'],
                                                                         );
                                                                     }
                                                                 }
@@ -4550,7 +4525,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $content,
                                                                 $line['tasks'][$key]['content'],
-                                                                true
+                                                                true,
                                                             );
                                                         }
                                                     }
@@ -4584,7 +4559,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $fields,
                                                                 $result,
                                                                 $parent_fields_id,
-                                                                true
+                                                                true,
                                                             );
                                                             if ($fields['type'] == "textarea") {
                                                                 if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -4610,7 +4585,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                             $users_id,
                                                                             $_SESSION['glpiactive_entity'],
                                                                             $content,
-                                                                            $str
+                                                                            $str,
                                                                         );
                                                                     }
                                                                 }
@@ -4622,7 +4597,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $content,
                                                                 $str,
-                                                                true
+                                                                true,
                                                             );
                                                         }
                                                     }
@@ -4635,23 +4610,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $line['tasks'][$key]['content'] = str_replace(
                                                         "[" . $match . "]",
                                                         $str,
-                                                        $line['tasks'][$key]['content']
+                                                        $line['tasks'][$key]['content'],
                                                     );
                                                     $l['content'] = str_replace(
                                                         "[" . $match . "]",
                                                         $str,
-                                                        $l['content']
+                                                        $l['content'],
                                                     );
                                                 } else {
                                                     $line['tasks'][$key]['content'] = str_replace(
                                                         "[" . $match . "]",
                                                         "<@" . $str . "@>",
-                                                        $line['tasks'][$key]['content']
+                                                        $line['tasks'][$key]['content'],
                                                     );
                                                     $l['content'] = str_replace(
                                                         "[" . $match . "]",
                                                         "<@" . $str . "@>",
-                                                        $l['content']
+                                                        $l['content'],
                                                     );
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
@@ -4662,12 +4637,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $line['tasks'][$key]['content'] = str_replace(
                                                 "<@",
                                                 "[",
-                                                $line['tasks'][$key]['content']
+                                                $line['tasks'][$key]['content'],
                                             );
                                             $line['tasks'][$key]['content'] = str_replace(
                                                 "@>",
                                                 "]",
-                                                $line['tasks'][$key]['content']
+                                                $line['tasks'][$key]['content'],
                                             );
                                         }
                                         if (!empty($l['content'])) {
@@ -4707,7 +4682,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $fields,
                                                         $result,
                                                         $parent_fields_id,
-                                                        true
+                                                        true,
                                                     );
                                                     if ($fields['type'] == "textarea") {
                                                         if ($line['tasks'][$key]["formatastable"] == 0) {
@@ -4717,7 +4692,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $line['tasks'][$key]['content'] = str_replace(
                                                         "#" . $content . "#",
                                                         $value,
-                                                        $line['tasks'][$key]['content']
+                                                        $line['tasks'][$key]['content'],
                                                     );
                                                 } else {
                                                     $explodeContent2 = explode(".", $content);
@@ -4733,7 +4708,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                     $users_id,
                                                                     $_SESSION['glpiactive_entity'],
                                                                     $content,
-                                                                    $line['tasks'][$key]['content']
+                                                                    $line['tasks'][$key]['content'],
                                                                 );
                                                             }
                                                         }
@@ -4745,7 +4720,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $_SESSION['glpiactive_entity'],
                                                         $content,
                                                         $line['tasks'][$key]['content'],
-                                                        true
+                                                        true,
                                                     );
                                                 }
                                             }
@@ -4756,10 +4731,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     foreach ($tasks as $key => $val) {
                                         if (Ticket_Field::checkTicketCreation(
                                             $val['tasks_id'],
-                                            $parent_tickets_id
+                                            $parent_tickets_id,
                                         )) {
                                             $tasks[$key]['tickettasks_name'] = addslashes(
-                                                urlencode($val['tickettasks_name'])
+                                                urlencode($val['tickettasks_name']),
                                             );
                                             if (isset($input['items_id'][Resource::class])) {
                                                 if ($resource->getFromDB($resource_id)) {
@@ -4769,7 +4744,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             }
                                             if ($val['tasks_completename'] != null) {
                                                 $tasks[$key]['tasks_completename'] = addslashes(
-                                                    urlencode($val['tasks_completename'])
+                                                    urlencode($val['tasks_completename']),
                                                 );
                                             }
                                             if (!empty($val['content'])) {
@@ -4859,13 +4834,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $message = sprintf(
                         __('Demand "%s" added with success', 'metademands'),
                         "<a href='" . $object_class::getFormURL(
-                        ) . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>"
+                        ) . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>",
                     );
                 } else {
                     $message = sprintf(
                         __('Ticket "%s" successfully updated', 'metademands'),
                         "<a href='" . $object_class::getFormURL() . "?id=" . $object->getID() . "'>" . $object->getID(
-                        ) . "</a>"
+                        ) . "</a>",
                     );
                 }
             } else {
@@ -4873,7 +4848,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     __('%1$s %2$s successfully created', 'metademands'),
                     $object_class::getTypeName(1),
                     "<a href='" . $object_class::getFormURL(
-                    ) . "?id=" . $object->fields['id'] . "'>" . $object->fields['id'] . "</a>"
+                    ) . "?id=" . $object->fields['id'] . "'>" . $object->fields['id'] . "</a>",
                 );
             }
             //launch child meta if needed
@@ -4886,11 +4861,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     }
                     Html::redirect(
                         Wizard::getFormURL(
-                        ) . "?ancestor_tickets_id=" . $parent_tickets_id . "&metademands_id=" . $child_meta . "&step=" . self::STEP_SHOW
+                        ) . "?ancestor_tickets_id=" . $parent_tickets_id . "&metademands_id=" . $child_meta . "&step=" . self::STEP_SHOW,
                     );
                 }
             }
-
 
             if (isset($_SESSION['plugin_metademands'])) {
                 unset($_SESSION['plugin_metademands']);
@@ -4899,7 +4873,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         return ['message' => $message, 'id' => $ancestor_tickets_id];
     }
-
 
     /**
      * @param $parent_fields
@@ -5151,7 +5124,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $options['formatastable'],
                                 $langTech,
                                 $color,
-                                $have_freetable
+                                $have_freetable,
                             );
                             unset($colors[$key]);
                             if (!isset($options['formatastable'])
@@ -5172,7 +5145,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $options['formatastable'],
                         $langTech,
                         '',
-                        $have_freetable
+                        $have_freetable,
                     );
 
                     if (!isset($options['formatastable'])
@@ -5229,7 +5202,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if (Plugin::isPluginActive('orderfollowup')) {
                 $ordermaterialmeta = new OrderMetademand();
                 if ($ordermaterialmeta->getFromDBByCrit(
-                    ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']]
+                    ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']],
                 )) {
                     $style_title .= " style='color:$color'";
                 } else {
@@ -5242,7 +5215,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if (Plugin::isPluginActive('orderfollowup')) {
                 $ordermaterialmeta = new OrderMetademand();
                 if ($ordermaterialmeta->getFromDBByCrit(
-                    ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']]
+                    ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']],
                 )) {
                     $style_title .= " ";
                 } else {
@@ -5295,7 +5268,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $field,
                         $return_value,
                         $lang,
-                        $is_order
+                        $is_order,
                     );
                     break;
                 case 'dropdown_object':
@@ -5313,7 +5286,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $field,
                                 $return_value,
                                 $lang,
-                                $is_order
+                                $is_order,
                             );
                         }
                     }
@@ -5332,7 +5305,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $field,
                             $return_value,
                             $lang,
-                            $is_order
+                            $is_order,
                         );
                     }
                     break;
@@ -5348,7 +5321,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $field,
                             $return_value,
                             $lang,
-                            $is_order
+                            $is_order,
                         );
                     }
                     break;
@@ -5380,7 +5353,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $field,
                             $return_value,
                             $lang,
-                            $is_order
+                            $is_order,
                         );
                     }
 
@@ -5390,14 +5363,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     if (isset($field['parent_field_id']) && $metademand_field->getFromDB($field['parent_field_id'])) {
                         $parent_field = $field;
                         $custom_values = FieldParameter::_unserialize(
-                            $metademand_field->fields['custom_values']
+                            $metademand_field->fields['custom_values'],
                         );
                         foreach ($custom_values as $k => $val) {
                             if (!empty(
                                 $ret = Field::displayField(
                                     $field["parent_field_id"],
                                     "custom" . $k,
-                                    $lang
+                                    $lang,
                                 )
                             )) {
                                 $custom_values[$k] = $ret;
@@ -5416,7 +5389,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             false,
                             false,
                             $lang,
-                            $is_order
+                            $is_order,
                         );
                     }
 
@@ -5434,7 +5407,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $formatAsTable,
                                     $style_title,
                                     $label,
-                                    $field
+                                    $field,
                                 );
                                 $result[$field['rank']]['content'] .= $content;
                             }
@@ -5542,7 +5515,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $fields,
                                             $result,
                                             $parent_fields_id,
-                                            true
+                                            true,
                                         );
                                         if ($v != null) {
                                             $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
@@ -5561,7 +5534,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $users_id,
                                                         $_SESSION['glpiactive_entity'],
                                                         $title,
-                                                        $value['value']
+                                                        $value['value'],
                                                     );
                                                 }
                                             }
@@ -5579,7 +5552,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $value['value'] = str_replace(
                                                             "#" . $title . "#",
                                                             $v,
-                                                            $value['value']
+                                                            $value['value'],
                                                         );
                                                     }
                                                 }
@@ -5593,7 +5566,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $value['value'] = str_replace(
                                                             "#" . $title . "#",
                                                             $v,
-                                                            $value['value']
+                                                            $value['value'],
                                                         );
                                                     }
                                                 }
@@ -5607,7 +5580,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $value['value'] = str_replace(
                                                             "#" . $title . "#",
                                                             $v,
-                                                            $value['value']
+                                                            $value['value'],
                                                         );
                                                     }
                                                 }
@@ -5621,7 +5594,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $value['value'] = str_replace(
                                                             "#" . $title . "#",
                                                             $v,
-                                                            $value['value']
+                                                            $value['value'],
                                                         );
                                                     }
                                                 }
@@ -5645,7 +5618,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $field = Field::getCachedField((int) $title) ?? new Field();
                                             $fields = $field->fields;
 
-
                                             $fields['value'] = $values['fields'][$title];
 
                                             $fields['value2'] = '';
@@ -5663,7 +5635,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $fields,
                                                 $result,
                                                 $parent_fields_id,
-                                                true
+                                                true,
                                             );
                                             if ($v != null) {
                                                 $str = str_replace("#" . $title . "#", $v, $str);
@@ -5721,7 +5693,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $value['value'] = str_replace(
                                                         "#" . $title . "#",
                                                         $v,
-                                                        $value['value']
+                                                        $value['value'],
                                                     );
                                                     break;
                                             }
@@ -5737,7 +5709,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $value['value'] = str_replace(
                                         "[" . $match . "]",
                                         "<@" . $str . "@>",
-                                        $value['value']
+                                        $value['value'],
                                     );
                                 }
                             }
@@ -5751,7 +5723,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             if (isset($values['fields'][$title])) {
                                 $field = Field::getCachedField((int) $title) ?? new Field();
                                 $fields = $field->fields;
-
 
                                 $fields['value'] = $values['fields'][$title];
 
@@ -5817,7 +5788,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         if ($value['item'] == '_tasktemplates_id') {
                             $inputs[$value['item']] = array_merge(
                                 $inputs[$value['item']] ?? [],
-                                [json_decode($value['value'], true)]
+                                [json_decode($value['value'], true)],
                             );
                         } else {
                             $inputs[$value['item']] = json_decode($value['value'], true);
@@ -5900,7 +5871,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     // Skip ticket creation if not allowed by metademand form
                     if (!Ticket_Field::checkTicketCreation(
                         $son_ticket_data['tasks_id'],
-                        $ancestor_tickets_id
+                        $ancestor_tickets_id,
                     )) {
                         continue;
                     }
@@ -5909,7 +5880,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         0,
                         $ticketParent->fields['type'],
                         $son_ticket_data['itilcategories_id'],
-                        $ticketParent->fields['entities_id']
+                        $ticketParent->fields['entities_id'],
                     );
                     $predefined_fields = $tt->predefined;
 
@@ -5986,7 +5957,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $line['form'],
                                                 $meta->getID(),
                                                 [$values_form],
-                                                ['formatastable' => $task->fields['formatastable']]
+                                                ['formatastable' => $task->fields['formatastable']],
                                             );
                                         } else {
                                             $parent_fields_content['content'] = $parent_fields['content'];
@@ -6128,7 +6099,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
                             $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
                                 . "</th></tr><tr><td colspan='2'>" . RichText::getSafeHtml(
-                                    $parent_fields_content['content']
+                                    $parent_fields_content['content'],
                                 );
                             //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                             $content .= "</td></tr></table><br>";
@@ -6219,7 +6190,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     // task - ticket relation for next tickets
                     if (!Ticket_Field::checkTicketCreation(
                         $son_ticket_data['tasks_id'],
-                        $parent_tickets_id
+                        $parent_tickets_id,
                     )) {
                         continue;
                     }
@@ -6279,18 +6250,18 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     'glpi_plugin_metademands_tasks' => [
                         'ON' => [
                             'glpi_plugin_metademands_tasks' => 'id',
-                            'glpi_plugin_metademands_tickettasks'          => 'plugin_metademands_tasks_id'
-                        ]
+                            'glpi_plugin_metademands_tickettasks'          => 'plugin_metademands_tasks_id',
+                        ],
                     ],
                     'glpi_plugin_metademands_tickets_tasks' => [
                         'ON' => [
                             'glpi_plugin_metademands_tasks' => 'id',
-                            'glpi_plugin_metademands_tickets_tasks'          => 'plugin_metademands_tasks_id'
-                        ]
-                    ]
+                            'glpi_plugin_metademands_tickets_tasks'          => 'plugin_metademands_tasks_id',
+                        ],
+                    ],
                 ],
                 'WHERE'     => [
-                    'glpi_plugin_metademands_tickets_tasks.tickets_id'  => $tickets_data['id']
+                    'glpi_plugin_metademands_tickets_tasks.tickets_id'  => $tickets_data['id'],
                 ],
             ]);
 
@@ -6313,7 +6284,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         foreach ($child_tasks_data as $child_tasks_id) {
                             $tasks_data = $task->getTasks(
                                 $data['plugin_metademands_metademands_id'],
-                                ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]
+                                ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]],
                             );
 
                             // Get parent ticket data
@@ -6361,7 +6332,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $field = Field::getCachedField((int) $title) ?? new Field();
                                             $fields = $field->fields;
 
-
                                             $fields['value'] = $values['fields'][$title];
 
                                             $fields['value2'] = '';
@@ -6379,12 +6349,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $fields,
                                                 $resultData,
                                                 $parent_fields_id,
-                                                true
+                                                true,
                                             );
                                             $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace(
                                                 "#" . $title . "#",
                                                 $value,
-                                                $tasks_data[$child_tasks_id]['tickettasks_name']
+                                                $tasks_data[$child_tasks_id]['tickettasks_name'],
                                             );
                                         } else {
                                             $explodeTitle2 = explode(".", $title);
@@ -6400,7 +6370,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                             $users_id,
                                                             $_SESSION['glpiactive_entity'],
                                                             $title,
-                                                            $tasks_data[$child_tasks_id]['tickettasks_name']
+                                                            $tasks_data[$child_tasks_id]['tickettasks_name'],
                                                         );
                                                     }
                                                 }
@@ -6413,7 +6383,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $_SESSION['glpiactive_entity'],
                                                 $title,
                                                 $tasks_data[$child_tasks_id]['tickettasks_name'],
-                                                true
+                                                true,
                                             );
                                         }
                                     }
@@ -6428,7 +6398,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             if (isset($values['fields'][$title])) {
                                                 $field = Field::getCachedField((int) $title) ?? new Field();
                                                 $fields = $field->fields;
-
 
                                                 $fields['value'] = $values['fields'][$title];
 
@@ -6447,7 +6416,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $fields,
                                                     $resultData,
                                                     $parent_fields_id,
-                                                    true
+                                                    true,
                                                 );
                                                 $str = str_replace("#" . $title . "#", $value, $str);
                                                 if (!is_null($value) && !empty($value)) {
@@ -6467,7 +6436,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $users_id,
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $title,
-                                                                $str
+                                                                $str,
                                                             );
                                                         }
                                                     }
@@ -6478,7 +6447,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $users_id,
                                                     $_SESSION['glpiactive_entity'],
                                                     $title,
-                                                    $str
+                                                    $str,
                                                 );
                                             }
                                         }
@@ -6491,23 +6460,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace(
                                             "[" . $match . "]",
                                             $str,
-                                            $tasks_data[$child_tasks_id]['tickettasks_name']
+                                            $tasks_data[$child_tasks_id]['tickettasks_name'],
                                         );
                                         $l['tickettasks_name'] = str_replace(
                                             "[" . $match . "]",
                                             $str,
-                                            $l['tickettasks_name']
+                                            $l['tickettasks_name'],
                                         );
                                     } else {
                                         $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace(
                                             "[" . $match . "]",
                                             "<@" . $str . "@>",
-                                            $tasks_data[$child_tasks_id]['tickettasks_name']
+                                            $tasks_data[$child_tasks_id]['tickettasks_name'],
                                         );
                                         $l['tickettasks_name'] = str_replace(
                                             "[" . $match . "]",
                                             "<@" . $str . "@>",
-                                            $l['tickettasks_name']
+                                            $l['tickettasks_name'],
                                         );
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
@@ -6517,12 +6486,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace(
                                 "<@",
                                 "[",
-                                $tasks_data[$child_tasks_id]['tickettasks_name']
+                                $tasks_data[$child_tasks_id]['tickettasks_name'],
                             );
                             $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace(
                                 "@>",
                                 "]",
-                                $tasks_data[$child_tasks_id]['tickettasks_name']
+                                $tasks_data[$child_tasks_id]['tickettasks_name'],
                             );
                             $l['tickettasks_name'] = str_replace("<@", "[", $l['tickettasks_name']);
                             $l['tickettasks_name'] = str_replace("@>", "]", $l['tickettasks_name']);
@@ -6532,7 +6501,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 if (isset($values['fields'][$title])) {
                                     $field = Field::getCachedField((int) $title) ?? new Field();
                                     $fields = $field->fields;
-
 
                                     $fields['value'] = $values['fields'][$title];
 
@@ -6553,12 +6521,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $fields,
                                         $resultData,
                                         $parent_fields_id,
-                                        true
+                                        true,
                                     );
                                     $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace(
                                         "#" . $title . "#",
                                         $value,
-                                        $tasks_data[$child_tasks_id]['tickettasks_name']
+                                        $tasks_data[$child_tasks_id]['tickettasks_name'],
                                     );
                                 } else {
                                     $explodeTitle2 = explode(".", $title);
@@ -6574,7 +6542,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $users_id,
                                                     $_SESSION['glpiactive_entity'],
                                                     $title,
-                                                    $tasks_data[$child_tasks_id]['tickettasks_name']
+                                                    $tasks_data[$child_tasks_id]['tickettasks_name'],
                                                 );
                                             }
                                         }
@@ -6586,7 +6554,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $_SESSION['glpiactive_entity'],
                                         $title,
                                         $tasks_data[$child_tasks_id]['tickettasks_name'],
-                                        true
+                                        true,
                                     );
                                 }
                             }
@@ -6609,7 +6577,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $field = Field::getCachedField((int) $content) ?? new Field();
                                                 $fields = $field->fields;
 
-
                                                 $fields['value'] = $values['fields'][$content];
 
                                                 $fields['value2'] = '';
@@ -6627,12 +6594,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $fields,
                                                     $resultData,
                                                     $parent_fields_id,
-                                                    true
+                                                    true,
                                                 );
                                                 $tasks_data[$child_tasks_id]['content'] = str_replace(
                                                     "#" . $content . "#",
                                                     $value,
-                                                    $tasks_data[$child_tasks_id]['content']
+                                                    $tasks_data[$child_tasks_id]['content'],
                                                 );
                                             } else {
                                                 $explodeContent2 = explode(".", $content);
@@ -6648,7 +6615,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $users_id,
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $content,
-                                                                $tasks_data[$child_tasks_id]['content']
+                                                                $tasks_data[$child_tasks_id]['content'],
                                                             );
                                                         }
                                                     }
@@ -6660,7 +6627,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $_SESSION['glpiactive_entity'],
                                                     $content,
                                                     $tasks_data[$child_tasks_id]['content'],
-                                                    true
+                                                    true,
                                                 );
                                             }
                                         }
@@ -6677,7 +6644,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 $field = Field::getCachedField((int) $content) ?? new Field();
                                                 $fields = $field->fields;
 
-
                                                 $fields['value'] = $values['fields'][$content];
 
                                                 $fields['value2'] = '';
@@ -6695,7 +6661,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $fields,
                                                     $resultData,
                                                     $parent_fields_id,
-                                                    true
+                                                    true,
                                                 );
                                                 $str = str_replace("#" . $content . "#", $value, $str);
                                                 if (!is_null($value) && !empty($value)) {
@@ -6715,7 +6681,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                                 $users_id,
                                                                 $_SESSION['glpiactive_entity'],
                                                                 $content,
-                                                                $str
+                                                                $str,
                                                             );
                                                         }
                                                     }
@@ -6727,7 +6693,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     $_SESSION['glpiactive_entity'],
                                                     $content,
                                                     $str,
-                                                    true
+                                                    true,
                                                 );
                                             }
                                         }
@@ -6740,19 +6706,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $tasks_data[$child_tasks_id]['content'] = str_replace(
                                             "[" . $match . "]",
                                             $str,
-                                            $tasks_data[$child_tasks_id]['content']
+                                            $tasks_data[$child_tasks_id]['content'],
                                         );
                                         $l['content'] = str_replace("[" . $match . "]", $str, $l['content']);
                                     } else {
                                         $tasks_data[$child_tasks_id]['content'] = str_replace(
                                             "[" . $match . "]",
                                             "<@" . $str . "@>",
-                                            $tasks_data[$child_tasks_id]['content']
+                                            $tasks_data[$child_tasks_id]['content'],
                                         );
                                         $l['content'] = str_replace(
                                             "[" . $match . "]",
                                             "<@" . $str . "@>",
-                                            $l['content']
+                                            $l['content'],
                                         );
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
@@ -6763,12 +6729,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $tasks_data[$child_tasks_id]['content'] = str_replace(
                                     "<@",
                                     "[",
-                                    $tasks_data[$child_tasks_id]['content']
+                                    $tasks_data[$child_tasks_id]['content'],
                                 );
                                 $tasks_data[$child_tasks_id]['content'] = str_replace(
                                     "@>",
                                     "]",
-                                    $tasks_data[$child_tasks_id]['content']
+                                    $tasks_data[$child_tasks_id]['content'],
                                 );
                             }
                             if ($l['content'] != null) {
@@ -6787,7 +6753,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     if (isset($values['fields'][$content])) {
                                         $field = Field::getCachedField((int) $content) ?? new Field();
                                         $fields = $field->fields;
-
 
                                         $fields['value'] = $values['fields'][$content];
 
@@ -6808,12 +6773,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $fields,
                                             $resultData,
                                             $parent_fields_id,
-                                            true
+                                            true,
                                         );
                                         $tasks_data[$child_tasks_id]['content'] = str_replace(
                                             "#" . $content . "#",
                                             $value,
-                                            $tasks_data[$child_tasks_id]['content']
+                                            $tasks_data[$child_tasks_id]['content'],
                                         );
                                     } else {
                                         $explodeContent2 = explode(".", $content);
@@ -6829,7 +6794,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                         $users_id,
                                                         $_SESSION['glpiactive_entity'],
                                                         $content,
-                                                        $tasks_data[$child_tasks_id]['content']
+                                                        $tasks_data[$child_tasks_id]['content'],
                                                     );
                                                 }
                                             }
@@ -6841,7 +6806,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $_SESSION['glpiactive_entity'],
                                             $content,
                                             $tasks_data[$child_tasks_id]['content'],
-                                            true
+                                            true,
                                         );
                                     }
                                 }
@@ -6853,7 +6818,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $ticket->fields,
                                 $tickets_found[0]['tickets_id'],
                                 $tasks_data,
-                                $data['parent_level'] + 1
+                                $data['parent_level'] + 1,
                             );
                         }
                     }
@@ -6897,7 +6862,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             echo "<a class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
                 . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>" . __(
                     'Metademand validation',
-                    'metademands'
+                    'metademands',
                 ) . "</a>";
 
             echo Ajax::createIframeModalWindow(
@@ -6909,11 +6874,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     'width' => 200,
                     'height' => 400,
                     'reloadonclose' => true,
-                ]
+                ],
             );
 
             echo "</div>";
-
 
             $sons = json_decode($metaValidation->fields['tickets_to_create'], true);
             if (is_array($sons)) {
@@ -6921,7 +6885,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 echo "<tr class='tab_bg_2'>";
                 echo "<th class='left b' colspan='4'>" . __(
                     'List of tickets / tasks which be created after validation',
-                    'metademands'
+                    'metademands',
                 ) . "</th>";
                 echo "</tr>";
                 echo "<tr class='tab_bg_2'>";
@@ -6994,7 +6958,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 $ticket_metademand_data['plugin_metademands_metademands_id'],
                 [],
                 true,
-                true
+                true,
             );
         } else {
             $ticket_task = new Ticket_Task();
@@ -7367,7 +7331,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if ($new_metademands_id = $this->add($this->fields)) {
                 $translationMeta = new MetademandTranslation();
                 $translationsMeta = $translationMeta->find(
-                    ['itemtype' => Metademand::class, "items_id" => $metademands_id]
+                    ['itemtype' => Metademand::class, "items_id" => $metademands_id],
                 );
                 foreach ($translationsMeta as $tr) {
                     $translationMeta->getFromDB($tr['id']);
@@ -7412,7 +7376,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                                         $translation = new FieldTranslation();
                                         $translations = $translation->find(
-                                            ['itemtype' => Field::class, "items_id" => $id]
+                                            ['itemtype' => Field::class, "items_id" => $id],
                                         );
                                         foreach ($translations as $tr) {
                                             $translation->getFromDB($tr['id']);
@@ -7422,7 +7386,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                                     // Add metademand group
                                     $groups_data = $groups->find(
-                                        ['plugin_metademands_metademands_id' => $metademands_id]
+                                        ['plugin_metademands_metademands_id' => $metademands_id],
                                     );
                                     if (count($groups_data)) {
                                         foreach ($groups_data as $values) {
@@ -7464,7 +7428,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     // Ticket tasks
                                     if ($values['type'] == Task::TICKET_TYPE) {
                                         $tickettasks_data = $tickettasks->find(
-                                            ['plugin_metademands_tasks_id' => $values['tasks_id']]
+                                            ['plugin_metademands_tasks_id' => $values['tasks_id']],
                                         );
                                         if (count($tickettasks_data)) {
                                             foreach ($tickettasks_data as $values) {
@@ -7477,7 +7441,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     }
                                     if ($values['type'] == Task::MAIL_TYPE) {
                                         $mailtasks_data = $mailtasks->find(
-                                            ['plugin_metademands_tasks_id' => $values['tasks_id']]
+                                            ['plugin_metademands_tasks_id' => $values['tasks_id']],
                                         );
                                         if (count($mailtasks_data)) {
                                             foreach ($mailtasks_data as $values) {
@@ -7511,7 +7475,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 if (count($tasks_data)) {
                     foreach ($tasks_data as $values) {
                         $metademandtasks_data = $metademandtasks->find(
-                            ['plugin_metademands_tasks_id' => $values['id']]
+                            ['plugin_metademands_tasks_id' => $values['id']],
                         );
                         $id = $values['id'];
                         unset($values['id']);
@@ -7692,7 +7656,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if ((!empty($ticket->fields['time_to_resolve'])
                     && ($ticket->fields['solvedate'] > $ticket->fields['time_to_resolve'])
                     || (!empty($ticket->fields['time_to_resolve']) && (strtotime(
-                        $ticket->fields['time_to_resolve']
+                        $ticket->fields['time_to_resolve'],
                     ) < time())))
                 && !in_array($ticket->fields['status'], $status)
             ) {
@@ -7743,7 +7707,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportXML'] = __('Export XML', 'metademands');
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'exportJSON'] = __(
                 'Export JSON',
-                'metademands'
+                'metademands',
             );
         }
 
@@ -7777,11 +7741,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     echo "&nbsp;";
                     echo "<button id='export_metademand' class='btn'>" . __(
                         'Start the download',
-                        'metademands'
+                        'metademands',
                     ) . "</button>";
                     echo "<br><small class='text-danger'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> " . __(
                         'This action may take some time depending on the number of selected metademands',
-                        'metademands'
+                        'metademands',
                     ) . "</small>";
                     // download done through ajax & POST request to avoid request length restriction from GET request
                     echo "<script>
@@ -7884,7 +7848,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return $forbidden;
     }
 
-
     public function displayHeader()
     {
         Html::header(
@@ -7892,7 +7855,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             '',
             "helpdesk",
             Metademand::class,
-            "metademand"
+            "metademand",
         );
     }
 
@@ -7966,7 +7929,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return $res;
     }
 
-
     public static function getRunningMetademands(array $params = []): array
     {
         $DB = DBConnection::getReadConnection();
@@ -7984,9 +7946,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'glpi_tickets' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_tickets.is_deleted' => 0,
@@ -7995,8 +7957,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             ],
         ];
         $get_running_parents_tickets_meta['WHERE'] = $get_running_parents_tickets_meta['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_tickets'
-            );
+            'glpi_tickets',
+        );
 
         $total_running_parents_meta = $DB->request($get_running_parents_tickets_meta);
 
@@ -8004,7 +7966,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         foreach ($total_running_parents_meta as $row) {
             $total_running = $row['total_running'];
         }
-
 
         $s_criteria = [
             'criteria' => [
@@ -8025,7 +7986,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         ];
 
         $url = \Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
-
 
         return [
             'number' => $total_running,
@@ -8055,27 +8015,27 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'glpi_plugin_metademands_tickets_metademands' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
-                    ]
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id',
+                    ],
                 ],
                 'glpi_plugin_metademands_tickets_tasks' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id'
-                    ]
+                        'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id',
+                    ],
                 ],
                 'glpi_groups_tickets AS glpi_groups_tickets_metademands' => [
                     'ON' => [
                         'glpi_plugin_metademands_tickets_tasks' => 'tickets_id',
-                        'glpi_groups_tickets_metademands'          => 'tickets_id'
-                    ]
+                        'glpi_groups_tickets_metademands'          => 'tickets_id',
+                    ],
                 ],
                 'glpi_groups AS glpi_groups_metademands' => [
                     'ON' => [
                         'glpi_groups_tickets_metademands' => 'groups_id',
-                        'glpi_groups_metademands'          => 'id'
-                    ]
-                ]
+                        'glpi_groups_metademands'          => 'id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_tickets.is_deleted' => 0,
@@ -8084,8 +8044,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             ],
         ];
         $get_running_parents_tickets_meta['WHERE'] = $get_running_parents_tickets_meta['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_tickets'
-            );
+            'glpi_tickets',
+        );
 
         $total_running_parents_meta = $DB->request($get_running_parents_tickets_meta);
 
@@ -8093,7 +8053,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         foreach ($total_running_parents_meta as $row) {
             $total_running = $row['total_running'];
         }
-
 
         $s_criteria = [
             'criteria' => [
@@ -8121,7 +8080,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $url = \Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
 
-
         return [
             'number' => $total_running,
             'url' => $url,
@@ -8131,7 +8089,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             'itemtype' => 'Ticket',
         ];
     }
-
 
     public static function getMetademandsToBeClosed(array $params = []): array
     {
@@ -8150,15 +8107,15 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'glpi_tickets' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
-                    ]
+                        'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id',
+                    ],
                 ],
                 'glpi_plugin_metademands_metademandvalidations' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_metademandvalidations'          => 'tickets_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_metademandvalidations'          => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_tickets.is_deleted' => 0,
@@ -8168,8 +8125,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             ],
         ];
         $get_closed_parents_tickets_meta['WHERE'] = $get_closed_parents_tickets_meta['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_tickets'
-            );
+            'glpi_tickets',
+        );
 
         $results_closed_parents = $DB->request($get_closed_parents_tickets_meta);
 
@@ -8177,7 +8134,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         foreach ($results_closed_parents as $row) {
             $total_closed = $row['total_to_closed'];
         }
-
 
         $s_criteria = [
             'criteria' => [
@@ -8233,9 +8189,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 'glpi_tickets' => [
                     'ON' => [
                         'glpi_tickets' => 'id',
-                        'glpi_plugin_metademands_metademandvalidations'          => 'tickets_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_metademandvalidations'          => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_tickets.is_deleted' => 0,
@@ -8244,8 +8200,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             ],
         ];
         $get_to_validated_meta['WHERE'] = $get_to_validated_meta['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_tickets'
-            );
+            'glpi_tickets',
+        );
 
         $results_meta_to_validated = $DB->request($get_to_validated_meta);
 
@@ -8253,7 +8209,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         foreach ($results_meta_to_validated as $row) {
             $total_to_validated = $row['total_to_validated'];
         }
-
 
         $s_criteria = [
             'criteria' => [
@@ -8295,7 +8250,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             'itemtype' => 'Ticket',
         ];
     }
-
 
     /**
      * Actions done when item is deleted from the database
@@ -8382,7 +8336,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         echo "</table></div>";
     }
 
-
     /** Display Tags available for the metademand $id
      *
      * @param $id
@@ -8397,8 +8350,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         return $res;
     }
-
-
 
     public static function getBetween($string, $start = "", $end = "")
     {
@@ -8523,7 +8474,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 $ticket_metademand_datas['plugin_metademands_metademands_id'],
                 [],
                 true,
-                true
+                true,
             );
         }
 
@@ -8565,7 +8516,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $fa = ServicecatalogCategory::getUsedConfig(
                             "inherit_config",
                             $ticket->fields['itilcategories_id'],
-                            'icon'
+                            'icon',
                         );
                     }
 
@@ -8585,7 +8536,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                     $dateEnd = (!empty($ticket->fields["solvedate"])) ? __(
                         'Done on',
-                        'metademands'
+                        'metademands',
                     ) . " " . Html::convDateTime($ticket->fields["solvedate"]) : __("In progress", 'metademands');
                     echo "<br>";
                     echo "<i class='" . $statusicon . "'></i>&nbsp;";
@@ -8600,7 +8551,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         //end ticket
         $dateEnd = (!empty($item->fields["solvedate"])) ? Html::convDateTime($item->fields["solvedate"]) : __(
             "Not yet completed",
-            'metademands'
+            'metademands',
         );
         $fa_end = (!empty($item->fields["solvedate"])) ? "ti-check" : "ti-hourglass";
 
@@ -8632,7 +8583,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         switch ($action) {
             case 'getHtml':
                 $placeholder = $title;
-                $type_safe   = htmlspecialchars((string)(int)$type, ENT_QUOTES, 'UTF-8');
+                $type_safe   = htmlspecialchars((string) (int) $type, ENT_QUOTES, 'UTF-8');
                 $html = <<<HTML
                <div class="" tabindex="-1" id="mt-fuzzysearch">
                   <div class="">
@@ -8673,13 +8624,13 @@ HTML;
                         $comment_meta = "";
                         if (empty($comm = Metademand::displayField(
                             $meta->getID(),
-                            'comment'
+                            'comment',
                         )) && !empty($meta->fields['comment'])) {
                             $comment_meta = $meta->fields['comment'];
                         } elseif (!empty(
                             $comm = Metademand::displayField(
                                 $meta->getID(),
-                                'comment'
+                                'comment',
                             ))) {
                             $comment_meta = $comm;
                         }
@@ -8789,7 +8740,7 @@ HTML;
             ITILCategory::getTable(),
             'entities_id',
             $_SESSION['glpiactiveentities'],
-            true
+            true,
         );
         if (isset($PLUGIN_HOOKS['metademands'])
             && $metademand->fields['type'] != 1
@@ -8879,26 +8830,26 @@ HTML;
         return false;
     }
 
-	public static function pluginPreItemAdd($plug)
-	{
-		global $PLUGIN_HOOKS;
+    public static function pluginPreItemAdd($plug)
+    {
+        global $PLUGIN_HOOKS;
 
-		$dbu = new DbUtils();
-		if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-			$pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
 
-			foreach ($pluginclasses as $pluginclass) {
-				if (!class_exists($pluginclass)) {
-					continue;
-				}
-				$form[$pluginclass] = [];
-				$item = $dbu->getItemForItemtype($pluginclass);
-				if ($item && is_callable([$item, 'preItemAdd'])) {
-					return $item->preItemAdd();
-				}
-			}
-		}
-	}
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'preItemAdd'])) {
+                    return $item->preItemAdd();
+                }
+            }
+        }
+    }
 
     public static function checkPluginUniqueItilcategory($plug, $dbu)
     {
@@ -9076,7 +9027,7 @@ HTML;
         $DB->update(
             Metademand::getTable(),
             ['usage_count' => new QueryExpression('usage_count + 1')],
-            ['id' => $form->getID()]
+            ['id' => $form->getID()],
         );
     }
 
@@ -9159,7 +9110,7 @@ HTML;
         $field_obj = new Field();
         $field_records = $field_obj->find(
             ['plugin_metademands_metademands_id' => $this->getID()],
-            'rank'
+            'rank',
         );
         foreach ($field_records as $field_id => $field_data) {
             $field = new Field();

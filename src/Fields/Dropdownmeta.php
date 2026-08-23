@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -52,7 +52,6 @@ use User;
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-
 
 /**
  * Dropdownmeta Class
@@ -146,7 +145,6 @@ class Dropdownmeta extends CommonDBTM
                                     $field .= "</span>";
                                 }
 
-
                                 $field .= "<div class='text-start'>";
                                 $field .= "<div class='d-flex align-items-center'>";
                                 //                        $field .= "<div class='fw-bold'>";
@@ -163,7 +161,7 @@ class Dropdownmeta extends CommonDBTM
                                         $comment = Field::displayCustomvaluesField(
                                             $data['id'],
                                             $key,
-                                            "comment"
+                                            "comment",
                                         )
                                     )) {
                                         $comment = $label['comment'];
@@ -214,7 +212,7 @@ class Dropdownmeta extends CommonDBTM
                                 'display_emptychoice' => true,
                                 'display' => false,
                                 'required' => ($data['is_mandatory'] ? "required" : ""),
-                            ]
+                            ],
                         );
                     }
                 }
@@ -259,7 +257,7 @@ class Dropdownmeta extends CommonDBTM
                     'name' => $nameitil . "_plugin_servicecatalog_itilcategories_id",
                     'right' => 'all',
                     'value' => $value,
-                    'condition' => [(new ITILCategory())::getTable().".id" => $values],
+                    'condition' => [(new ITILCategory())::getTable() . ".id" => $values],
                     'display' => false,
                     'readonly' => $readonly ?? false,
                     'class' => 'form-select itilmeta',
@@ -327,7 +325,7 @@ class Dropdownmeta extends CommonDBTM
                             $selected_itemtype = "";
 
                             $users_id = $_POST['users_id'];
-                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
+                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
 
                             if (isset($value) && !empty($value)) {
                                 $splitter = explode("_", $value);
@@ -384,7 +382,7 @@ class Dropdownmeta extends CommonDBTM
                         $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                         //                     $users_id = 0;
                         if ($data['link_to_user'] > 0) {
-                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
+                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                             $fieldUser = new Field();
                             $fieldUser->getFromDBByCrit([
                                 'id' => $data['link_to_user'],
@@ -421,7 +419,7 @@ class Dropdownmeta extends CommonDBTM
                                 0,
                                 $p,
                                 $default_values,
-                                false
+                                false,
                             );
                         }
                     }
@@ -436,7 +434,7 @@ class Dropdownmeta extends CommonDBTM
                     if (isset($itemtype) && isset($items_id)) {
                         $field .= \Dropdown::getDropdownName(
                             $dbu->getTableForItemType($itemtype),
-                            $items_id
+                            $items_id,
                         );
                     }
                 }
@@ -459,7 +457,7 @@ class Dropdownmeta extends CommonDBTM
                         0,
                         $metademand->fields['type'],
                         $itilcategories_id,
-                        $metademand->fields['entities_id']
+                        $metademand->fields['entities_id'],
                     );
                     if (isset($meta_tt->predefined['urgency'])) {
                         $options['value'] = $meta_tt->predefined['urgency'];
@@ -508,7 +506,7 @@ class Dropdownmeta extends CommonDBTM
                         0,
                         $metademand->fields['type'],
                         $itilcategories_id,
-                        $metademand->fields['entities_id']
+                        $metademand->fields['entities_id'],
                     );
                     if (isset($meta_tt->predefined['impact'])) {
                         $options['value'] = $meta_tt->predefined['impact'];
@@ -555,7 +553,7 @@ class Dropdownmeta extends CommonDBTM
                         0,
                         $metademand->fields['type'],
                         $itilcategories_id,
-                        $metademand->fields['entities_id']
+                        $metademand->fields['entities_id'],
                     );
                     if (isset($meta_tt->predefined['priority'])) {
                         $options['value'] = $meta_tt->predefined['priority'];
@@ -608,7 +606,6 @@ class Dropdownmeta extends CommonDBTM
 
         echo $field;
     }
-
 
     public static function getItemsForUser(
         $values
@@ -687,11 +684,11 @@ class Dropdownmeta extends CommonDBTM
                     $criteria = [
                         'FROM' => $itemtable,
                         'WHERE' => $where + getEntitiesRestrictCriteria(
-                                $itemtable,
-                                '',
-                                $_SESSION["glpiactive_entity"],
-                                $item->maybeRecursive()
-                            ),
+                            $itemtable,
+                            '',
+                            $_SESSION["glpiactive_entity"],
+                            $item->maybeRecursive(),
+                        ),
                         'ORDER' => $item->getNameField(),
                     ];
 
@@ -862,7 +859,7 @@ class Dropdownmeta extends CommonDBTM
                 "var tooltip = document.querySelector('.alertelt');
                          if (tooltip != null) {
                             tooltip.classList.remove('active');
-                         }"
+                         }",
             );
         }
         if (is_array($objects)
@@ -910,7 +907,7 @@ class Dropdownmeta extends CommonDBTM
                     ) {
                         $itemtable = getTableForItemType($itemtype_groups);
                         $criteria = [
-                            'SELECT' => $itemtable.'.id',
+                            'SELECT' => $itemtable . '.id',
                             'FROM' => $itemtable,
                             'LEFT JOIN'       => [
                                 'glpi_groups_items' => [
@@ -922,8 +919,8 @@ class Dropdownmeta extends CommonDBTM
                                                 'glpi_groups_items.type' => Group_Item::GROUP_TYPE_NORMAL,
                                             ],
                                         ],
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                             'WHERE' => [
                                 'glpi_groups_items.groups_id' => $groups,
@@ -931,7 +928,7 @@ class Dropdownmeta extends CommonDBTM
                                 $itemtable,
                                 '',
                                 $entity_restrict,
-                                $item->maybeRecursive()
+                                $item->maybeRecursive(),
                             ),
                             'ORDER' => $item->getNameField(),
                         ];
@@ -961,7 +958,8 @@ class Dropdownmeta extends CommonDBTM
                 }
                 if (count($devices)) {
                     echo "<br><span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __(
-                        'Devices own by my groups', 'metademands'
+                        'Devices own by my groups',
+                        'metademands',
                     ) . "</h5>";
 
                     foreach ($devices as $itemtype_groups => $list_items_id) {
@@ -1098,7 +1096,7 @@ class Dropdownmeta extends CommonDBTM
                 "var tooltip = document.querySelector('.alertelt');
                          if (tooltip != null) {
                             tooltip.classList.add('active');
-                         }"
+                         }",
             );
         }
 
@@ -1123,7 +1121,7 @@ class Dropdownmeta extends CommonDBTM
                             } else {
                                 $('.tooltipelt').hide();
                             }
-                        }"
+                        }",
         );
     }
 
@@ -1158,7 +1156,7 @@ class Dropdownmeta extends CommonDBTM
                 echo Html::select(
                     'icon[' . $key . ']',
                     [$value['icon'] => $value['icon']],
-                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;']
+                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;'],
                 );
                 echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock("$(function() {
@@ -1181,7 +1179,7 @@ class Dropdownmeta extends CommonDBTM
                         'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                     ],
                     'ti-circle-x',
-                    "class='btn btn-sm btn-danger'"
+                    "class='btn btn-sm btn-danger'",
                 );
                 $delete_form_html = ob_get_clean();
 
@@ -1259,7 +1257,7 @@ class Dropdownmeta extends CommonDBTM
                 'import_html' => $import_html,
                 'specific_dropdown_html' => $specific_dropdown_html,
                 'reorder_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-            ]
+            ],
         );
     }
 
@@ -1346,7 +1344,7 @@ class Dropdownmeta extends CommonDBTM
                 'hidden_html'             => $hidden_html,
                 'show_other_display_type' => $show_other_display_type,
                 'other_display_type_html' => $other_display_type_html,
-            ]
+            ],
         );
     }
 
@@ -1405,7 +1403,6 @@ class Dropdownmeta extends CommonDBTM
 
                  ";
 
-
                 echo " </script>";
                 break;
             default:
@@ -1438,7 +1435,7 @@ class Dropdownmeta extends CommonDBTM
                     'name' => $name,
                     'right' => 'all',
                     'value' => $params['check_value'],
-                    'condition' => [(new ITILCategory())::getTable().".id" => $values],
+                    'condition' => [(new ITILCategory())::getTable() . ".id" => $values],
                     'display' => true,
                     'used' => $already_used,
                 ];
@@ -1492,13 +1489,12 @@ class Dropdownmeta extends CommonDBTM
                     \Dropdown::showFromArray(
                         "check_value",
                         $elements,
-                        ['value' => $params['check_value'], 'used' => $already_used]
+                        ['value' => $params['check_value'], 'used' => $already_used],
                     );
                 }
                 break;
         }
     }
-
 
     public static function showParamsValueToCheck($params)
     {
@@ -1652,7 +1648,6 @@ class Dropdownmeta extends CommonDBTM
                         }";
                     }
 
-
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $fields_link;
                     }
@@ -1686,7 +1681,7 @@ class Dropdownmeta extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -1723,9 +1718,8 @@ class Dropdownmeta extends CommonDBTM
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
-                'metademands'
+                'metademands',
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -1939,7 +1933,6 @@ class Dropdownmeta extends CommonDBTM
                 }
             }
 
-
             $onchange .= "$('[name=\"$name\"]').change(async function() {";
 
             $onchange .= "var tohide = {};";
@@ -1977,7 +1970,6 @@ class Dropdownmeta extends CommonDBTM
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($check_value['hidden_link'] as $hidden_link) {
-
 
                     if (isset($data['value']) && $idc == $data['value']) {
                         $display = $hidden_link;
@@ -2020,7 +2012,7 @@ class Dropdownmeta extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -2083,7 +2075,7 @@ class Dropdownmeta extends CommonDBTM
                                         foreach ($childs_blocks as $childs) {
                                             $options = getAllDataFromTable(
                                                 'glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs]
+                                                ['hidden_block' => $childs],
                                             );
                                             if (count($options) == 0) {
                                                 $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
@@ -2091,7 +2083,7 @@ class Dropdownmeta extends CommonDBTM
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . FieldOption::setMandatoryBlockFields(
                                                     $metaid,
-                                                    $childs
+                                                    $childs,
                                                 );
                                             }
                                         }
@@ -2102,7 +2094,6 @@ class Dropdownmeta extends CommonDBTM
                     }
                 }
             }
-
 
             //by default - hide all
             $pre_onchange .= FieldOption::hideAllblockbyDefault($data);
@@ -2190,7 +2181,7 @@ class Dropdownmeta extends CommonDBTM
                                 foreach ($childs_blocks as $childs) {
                                     $options = getAllDataFromTable(
                                         'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]
+                                        ['hidden_block' => $childs],
                                     );
                                     if (count($options) == 0) {
                                         $onchange .= "if (document.getElementById('ablock" . $childs . "'))
@@ -2229,7 +2220,7 @@ class Dropdownmeta extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -2272,11 +2263,10 @@ class Dropdownmeta extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }
-
 
     public static function getFieldValue($field, $lang)
     {
@@ -2305,7 +2295,7 @@ class Dropdownmeta extends CommonDBTM
                         }
                         return \Dropdown::getDropdownName(
                             $dbu->getTableForItemType('ITILCategory'),
-                            $field['value']
+                            $field['value'],
                         );
                     case 'mydevices':
                         $splitter = explode("_", $field['value']);
@@ -2316,7 +2306,7 @@ class Dropdownmeta extends CommonDBTM
                         if (isset($items_id)) {
                             return \Dropdown::getDropdownName(
                                 $dbu->getTableForItemType($itemtype),
-                                $items_id
+                                $items_id,
                             );
                         }
                         return "";
@@ -2329,7 +2319,7 @@ class Dropdownmeta extends CommonDBTM
                     default:
                         return \Dropdown::getDropdownName(
                             $dbu->getTableForItemType($field['item']),
-                            $field['value']
+                            $field['value'],
                         );
                 }
             }

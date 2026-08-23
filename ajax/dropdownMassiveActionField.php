@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Exception\Http\NotFoundHttpException;
@@ -42,7 +42,7 @@ if (!isset($_POST["itemtype"]) || !($item = $dbu->getItemForItemtype($_POST['ite
 
 if (in_array($_POST["itemtype"], $CFG_GLPI["infocom_types"])) {
     Session::checkSeveralRightsOr([$_POST["itemtype"] => UPDATE,
-                                  "infocom"          => UPDATE]);
+        "infocom"          => UPDATE]);
 } else {
     $item->checkGlobal(UPDATE);
 }
@@ -60,7 +60,7 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
         switch ($search["table"] . "." . $search["linkfield"]) {
             case "glpi_tickets.status":
                 \Ticket::dropdownStatus(['name'  => $search["linkfield"],
-                                    'value' => $_POST["value"]]);
+                    'value' => $_POST["value"]]);
                 break;
 
             case "glpi_tickets.items_id":
@@ -89,14 +89,14 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                 \TicketValidation::dropdownStatus($search["linkfield"], ['value' => $_POST["value"]]);
                 break;
             default:
-               // Specific plugin Type case
+                // Specific plugin Type case
                 $plugdisplay = false;
                 if ($plug = isPluginItemType($_POST["itemtype"])) {
                     $plugdisplay = Plugin::doOneHook(
                         $plug['plugin'],
                         'MassiveActionsFieldsDisplay',
                         ['itemtype' => $_POST["itemtype"],
-                        'options'  => $search]
+                            'options'  => $search],
                     );
                 }
                 $already_display = false;
@@ -104,11 +104,11 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                 if (isset($search['datatype'])) {
                     switch ($search['datatype']) {
                         case "date":
-                             echo "<table><tr><td>";
-                             Html::showDateField($search["linkfield"], ['value' => $_POST['value']]);
-                             echo "</td>";
-                             $USE_TABLE       = true;
-                             $already_display = true;
+                            echo "<table><tr><td>";
+                            Html::showDateField($search["linkfield"], ['value' => $_POST['value']]);
+                            echo "</td>";
+                            $USE_TABLE       = true;
+                            $already_display = true;
                             break;
                         case "time":
                             echo "<table><tr><td>";
@@ -129,23 +129,23 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                                     $search["linkfield"],
                                     $_POST['value'],
                                     ['with_time'          => true,
-                                                        'with_future'
-                                                                             => (isset($search['maybefuture'])
-                                                                                 && $search['maybefuture']),
-                                                        'with_days'          => false,
-                                    'with_specific_date' => false]
+                                        'with_future'
+                                                             => (isset($search['maybefuture'])
+                                                                 && $search['maybefuture']),
+                                        'with_days'          => false,
+                                        'with_specific_date' => false],
                                 );
 
                                 $already_display = true;
                             }
                             break;
 
-   //                  case "itemtypename" :
-   //                     if (isset($search['itemtype_list'])) {
-   //                        \Dropdown::dropdownTypes($search["linkfield"], $_POST['value'], $CFG_GLPI[$search['itemtype_list']]);
-   //                        $already_display = true;
-   //                     }
-   //                     break;
+                            //                  case "itemtypename" :
+                            //                     if (isset($search['itemtype_list'])) {
+                            //                        \Dropdown::dropdownTypes($search["linkfield"], $_POST['value'], $CFG_GLPI[$search['itemtype_list']]);
+                            //                        $already_display = true;
+                            //                     }
+                            //                     break;
 
                         case "bool":
                             \Dropdown::showYesNo($search["linkfield"], $_POST['value']);
@@ -159,11 +159,11 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
 
                         case "text":
                             Html::textarea(['name'              => $search["linkfield"],
-                                     'cols'              => '45',
-                                     'rows'              => '5',
-                                     'value'             => stripslashes($_POST['value']),
-                                     'enable_richtext'   => true,
-                                     'enable_fileupload' => false]);
+                                'cols'              => '45',
+                                'rows'              => '5',
+                                'value'             => stripslashes($_POST['value']),
+                                'enable_richtext'   => true,
+                                'enable_fileupload' => false]);
                             $already_display = true;
                             break;
                     }
@@ -181,28 +181,28 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
         switch ($search["table"]) {
             case "glpi_users": // users
                 switch ($search["linkfield"]) {
-                   //                case "users_id_assign" :
-                   //                   User::dropdown(array('name'   => $search["linkfield"],
-                   //                                        'right'  => 'own_ticket',
-                   //                                        'entity' => $_SESSION["glpiactive_entity"]));
-                   //                   break;
+                    //                case "users_id_assign" :
+                    //                   User::dropdown(array('name'   => $search["linkfield"],
+                    //                                        'right'  => 'own_ticket',
+                    //                                        'entity' => $_SESSION["glpiactive_entity"]));
+                    //                   break;
 
                     case "users_id_tech":
                         User::dropdown(['name'   => $search["linkfield"],
-                                  'value'  => $_POST["value"],
-                                  'right'  => 'own_ticket',
-                                  'entity' => $_SESSION["glpiactive_entity"]]);
+                            'value'  => $_POST["value"],
+                            'right'  => 'own_ticket',
+                            'entity' => $_SESSION["glpiactive_entity"]]);
                         break;
 
                     default:
                         User::dropdown(['name'   => $search["linkfield"],
-                                  'value'  => $_POST["value"],
-                                  'entity' => $_SESSION["glpiactive_entity"],
-                                  'right'  => 'all']);
+                            'value'  => $_POST["value"],
+                            'entity' => $_SESSION["glpiactive_entity"],
+                            'right'  => 'all']);
                 }
                 break;
 
-            break;
+                break;
 
             case "glpi_softwareversions":
                 switch ($search["linkfield"]) {
@@ -220,7 +220,7 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
 
             default: // dropdown case
                 $plugdisplay = false;
-               // Specific plugin Type case
+                // Specific plugin Type case
                 if (($plug = isPluginItemType($_POST["itemtype"]))
                 // Specific for plugin which add link to core object
                 || ($plug = isPluginItemType($dbu->getItemTypeForTable($search['table'])))) {
@@ -228,7 +228,7 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                         $plug['plugin'],
                         'MassiveActionsFieldsDisplay',
                         ['itemtype' => $_POST["itemtype"],
-                        'options'  => $search]
+                            'options'  => $search],
                     );
                 }
                 $already_display = false;
@@ -236,11 +236,11 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                 if (isset($search['datatype'])) {
                     switch ($search['datatype']) {
                         case "date":
-                             echo "<table><tr><td>";
-                             Html::showDateField($search["linkfield"], $_POST["value"]);
-                             echo "</td>";
-                             $USE_TABLE       = true;
-                             $already_display = true;
+                            echo "<table><tr><td>";
+                            Html::showDateField($search["linkfield"], $_POST["value"]);
+                            echo "</td>";
+                            $USE_TABLE       = true;
+                            $already_display = true;
                             break;
                         case "time":
                             echo "<table><tr><td>";
@@ -264,10 +264,10 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
 
                         case "text":
                             Html::textarea(['name'             => $search["linkfield"],
-                                     'value'           => htmlspecialchars($_POST["value"] ?? '', ENT_QUOTES, 'UTF-8'),
-                                     'cols'            => 45,
-                                     'rows'            => 5,
-                                     'enable_richtext' => true]);
+                                'value'           => htmlspecialchars($_POST["value"] ?? '', ENT_QUOTES, 'UTF-8'),
+                                'cols'            => 45,
+                                'rows'            => 5,
+                                'enable_richtext' => true]);
                             $already_display = true;
                             break;
                     }
@@ -278,9 +278,9 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                     \Dropdown::show(
                         $dbu->getItemTypeForTable($search["table"]),
                         ['name'      => $search["linkfield"],
-                               'value'     => $_POST["value"],
-                               'entity'    => $_SESSION['glpiactiveentities'],
-                        'condition' => $cond]
+                            'value'     => $_POST["value"],
+                            'entity'    => $_SESSION['glpiactiveentities'],
+                            'condition' => $cond],
                     );
                 }
         }

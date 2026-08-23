@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -49,14 +49,14 @@ if (!defined('GLPI_ROOT')) {
  **/
 class Configstep extends CommonDBTM
 {
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
     public static $items_id = 'plugin_metademands_metademands_id';
 
-    const BOTH_INTERFACE = 0;
-    const ONLY_HELPDESK_INTERFACE = 1;
-    const ONLY_CENTRAL_INTERFACE = 2;
+    public const BOTH_INTERFACE = 0;
+    public const ONLY_HELPDESK_INTERFACE = 1;
+    public const ONLY_CENTRAL_INTERFACE = 2;
 
     public static $disableAutoEntityForwarding   = true;
 
@@ -75,7 +75,7 @@ class Configstep extends CommonDBTM
         return "ti ti-adjustments-pause";
     }
 
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, UPDATE);
     }
@@ -84,7 +84,7 @@ class Configstep extends CommonDBTM
     /**
      * @return bool
      */
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -223,7 +223,8 @@ class Configstep extends CommonDBTM
         }
     }
 
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
         $field = new self();
 
         if ($item->getType() == Metademand::class) {
@@ -238,7 +239,8 @@ class Configstep extends CommonDBTM
      *
      * @return bool
      */
-    function showForMetademand($item) {
+    public function showForMetademand($item)
+    {
 
         if (!$this->canView()) {
             return false;
@@ -251,7 +253,7 @@ class Configstep extends CommonDBTM
         $multipleGroup = 0;
         $addasrequester = 0;
         $confStep = new self();
-        if($confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->fields['id']])) {
+        if ($confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->fields['id']])) {
             $userLink = $confStep->fields['link_user_block'];
             $supervisor_validation = $confStep->fields['supervisor_validation'];
             $multipleGroup = $confStep->fields['multiple_link_groups_blocks'];
@@ -267,4 +269,3 @@ class Configstep extends CommonDBTM
         ]);
     }
 }
-

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Helpdesk\Tile;
@@ -104,7 +104,7 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
     #[Override]
     public function getTileUrl(): string
     {
-        $url = PLUGIN_METADEMANDS_WEBDIR.'/front/wizard.form.php';
+        $url = PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php';
         return Html::getPrefixedUrl($url);
     }
 
@@ -133,7 +133,7 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
             [
                 Item_Tile::class,
                 HelpdeskTranslation::class,
-            ]
+            ],
         );
     }
 
@@ -150,7 +150,7 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
                 name: __('Title'),
                 value: $this->getTitle(),
                 is_rich_text: false,
-                category: $category_name
+                category: $category_name,
             );
         }
         if (!empty($this->getDescription())) {
@@ -160,7 +160,7 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
                 name: __('Description'),
                 value: $this->getDescription(),
                 is_rich_text: true,
-                category: $category_name
+                category: $category_name,
             );
         }
 

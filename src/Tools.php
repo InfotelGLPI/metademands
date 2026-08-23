@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -35,8 +35,7 @@ use CommonGLPI;
 
 class Tools extends CommonDBTM
 {
-
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
     private $table = "";
 
     /**
@@ -47,7 +46,7 @@ class Tools extends CommonDBTM
      *
      * @return string
      */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Tools', 'metademands');
     }
@@ -69,7 +68,7 @@ class Tools extends CommonDBTM
      * @return string
      * @see CommonGLPI::getTabNameForItem()
      */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if ($item->getType() == Config::class) {
             return self::createTabEntry(self::getTypeName());
@@ -85,7 +84,7 @@ class Tools extends CommonDBTM
      * @return bool
      * @see CommonGLPI::displayTabContentForItem()
      */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
         if ($item->getType() == Config::class) {
             $self = new self();
@@ -168,7 +167,7 @@ class Tools extends CommonDBTM
                 echo "<td class='left'>";
                 echo \Dropdown::getDropdownName(
                     "glpi_plugin_metademands_metademands",
-                    $field->fields['plugin_metademands_metademands_id']
+                    $field->fields['plugin_metademands_metademands_id'],
                 );
                 echo "</td>";
                 echo "<td class='left'>";
@@ -244,7 +243,7 @@ class Tools extends CommonDBTM
                 echo "<td class='left'>";
                 echo \Dropdown::getDropdownName(
                     "glpi_plugin_metademands_metademands",
-                    $field->fields['plugin_metademands_metademands_id']
+                    $field->fields['plugin_metademands_metademands_id'],
                 );
                 echo "</td>";
                 echo "<td class='center'>";
@@ -253,7 +252,7 @@ class Tools extends CommonDBTM
                     'purge_emptyoptions',
                     _x('button', 'Delete permanently'),
                     ['id' => $array['id']],
-                    'fa-times-circle'
+                    'fa-times-circle',
                 );
                 echo "</td>";
                 echo "</tr>";
@@ -347,7 +346,7 @@ class Tools extends CommonDBTM
                     echo "<td class='left'>";
                     echo \Dropdown::getDropdownName(
                         "glpi_plugin_metademands_metademands",
-                        $field->fields['plugin_metademands_metademands_id']
+                        $field->fields['plugin_metademands_metademands_id'],
                     );
                     echo "</td>";
                     echo "<td class='center'>";
@@ -356,7 +355,7 @@ class Tools extends CommonDBTM
                         'fix_emptycustomvalues',
                         _x('button', 'Fix empty custom values', 'metademands'),
                         ['id' => $array['id']],
-                        'ti ti-circle-check'
+                        'ti ti-circle-check',
                     );
                     echo "</td>";
                     echo "</tr>";
@@ -461,7 +460,7 @@ class Tools extends CommonDBTM
 
                         foreach ($fields_custom as $fields_customs) {
                             if (FieldCustomvalue::isSequentialFromZero(
-                                $ranks[$field['id']]
+                                $ranks[$field['id']],
                             ) == false) {
                                 $not_ordered_fields[] = $field['id'];
                             }
@@ -502,7 +501,7 @@ class Tools extends CommonDBTM
                     echo "<td class='left'>";
                     echo \Dropdown::getDropdownName(
                         "glpi_plugin_metademands_metademands",
-                        $field_to_order->fields['plugin_metademands_metademands_id']
+                        $field_to_order->fields['plugin_metademands_metademands_id'],
                     );
                     echo "</td>";
                     echo "<td class='right'>";

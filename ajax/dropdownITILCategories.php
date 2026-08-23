@@ -1,47 +1,47 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Metademand;
 
 if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
-   header("Content-Type: text/html; charset=UTF-8");
-   Html::header_nocache();
-} else if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access this file directly");
+    header("Content-Type: text/html; charset=UTF-8");
+    Html::header_nocache();
+} elseif (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access this file directly");
 }
 
 //$opt = ['entity' => $_POST["entity_restrict"]];
-$condition  =[];
+$condition  = [];
 
 if ($_POST["type"]) {
     switch ($_POST['type']) {
-        case \Ticket::INCIDENT_TYPE :
+        case \Ticket::INCIDENT_TYPE:
             $criteria['is_incident'] = 1;
             break;
 
@@ -56,7 +56,7 @@ if ($_POST["type"]) {
 //} elseif ($this->fields['object_to_create'] == 'Change') {
 //    $criteria = ['is_change' => 1];
 //}
-if(!isset($criteria)) {
+if (!isset($criteria)) {
     $criteria = [];
 }
 
@@ -64,7 +64,7 @@ $criteria += getEntitiesRestrictCriteria(
     \ITILCategory::getTable(),
     'entities_id',
     $_SESSION['glpiactiveentities'],
-    true
+    true,
 );
 
 $dbu    = new DbUtils();
@@ -99,7 +99,7 @@ foreach ($cats as $item) {
 $used = array_unique($used);
 
 $criteria += ['NOT' => [
-    'id' => $used
+    'id' => $used,
 ]];
 if (count($used) == 0) {
     $result = $dbu->getAllDataFromTable(ITILCategory::getTable());
@@ -109,10 +109,13 @@ if (count($used) == 0) {
 
 $temp   = [];
 foreach ($result as $item) {
-   $temp[$item['id']] = html_entity_decode($item['completename']);
+    $temp[$item['id']] = html_entity_decode($item['completename']);
 }
 
-\Dropdown::showFromArray('itilcategories_id', $temp,
-                        ['width'    => '100%',
-                         'multiple' => true,
-                         'entity'   => $_POST["entity_restrict"]]);
+\Dropdown::showFromArray(
+    'itilcategories_id',
+    $temp,
+    ['width'    => '100%',
+        'multiple' => true,
+        'entity'   => $_POST["entity_restrict"]],
+);

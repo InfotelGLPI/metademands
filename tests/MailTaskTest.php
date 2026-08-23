@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Tests;
@@ -157,7 +157,7 @@ class MailTaskTest extends DbTestCase
         $found = new MailTask();
         $this->assertTrue(
             $found->getFromDBByCrit(['plugin_metademands_tasks_id' => $task->getID()]),
-            'MailTask must be retrievable from DB by its tasks_id'
+            'MailTask must be retrievable from DB by its tasks_id',
         );
         $this->assertSame('<p>Notification body</p>', $found->fields['content']);
     }
@@ -178,7 +178,7 @@ class MailTaskTest extends DbTestCase
         global $DB;
         $this->assertTrue(
             $DB->tableExists(MailTask::getTable()),
-            'Table ' . MailTask::getTable() . ' must exist'
+            'Table ' . MailTask::getTable() . ' must exist',
         );
     }
 
@@ -211,7 +211,7 @@ class MailTaskTest extends DbTestCase
         $this->assertSame(
             $count_before,
             countElementsInTable(Ticket_Ticket::getTable()),
-            'A MAIL_TYPE task must never create a Ticket_Ticket child link'
+            'A MAIL_TYPE task must never create a Ticket_Ticket child link',
         );
     }
 
@@ -246,7 +246,7 @@ class MailTaskTest extends DbTestCase
         $this->assertNotContains(
             __('Fail to send email', 'metademands'),
             $flat_messages,
-            'No mail failure must be reported when the recipient has no email address'
+            'No mail failure must be reported when the recipient has no email address',
         );
     }
 
@@ -275,11 +275,11 @@ class MailTaskTest extends DbTestCase
             $result = MailTask::sendMail(
                 'Test subject',
                 [['email' => 'recipient@test.local', 'name' => 'Recipient Test']],
-                '<p>Test body</p>'
+                '<p>Test body</p>',
             );
             $this->assertIsBool(
                 $result,
-                'sendMail() must return a boolean regardless of SMTP availability'
+                'sendMail() must return a boolean regardless of SMTP availability',
             );
         } finally {
             $CFG_GLPI['from_email']      = $orig_from;
@@ -309,7 +309,7 @@ class MailTaskTest extends DbTestCase
             $result = MailTask::sendMail(
                 'Test subject plain',
                 'recipient@test.local',
-                '<p>Test body plain</p>'
+                '<p>Test body plain</p>',
             );
             $this->assertIsBool($result, 'sendMail() must return a boolean with a string recipient');
         } finally {
@@ -360,7 +360,7 @@ class MailTaskTest extends DbTestCase
 
             $result = Metademand::addObjects(
                 $metademand->getID(),
-                ['fields' => [$field->getID() => 'World']]
+                ['fields' => [$field->getID() => 'World']],
             );
 
             $this->assertGreaterThan(0, $result['id'], 'Parent ticket must be created');
@@ -377,7 +377,7 @@ class MailTaskTest extends DbTestCase
             $this->assertTrue(
                 $mail_attempted,
                 'sendMail() must have been called: either "Email sent" or "Fail to send email" '
-                . 'must appear in the session messages when a recipient email is configured'
+                . 'must appear in the session messages when a recipient email is configured',
             );
         } finally {
             $CFG_GLPI['from_email']      = $orig_from;

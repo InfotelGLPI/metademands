@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -45,7 +45,6 @@ use User;
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-
 
 /**
  * Step Class
@@ -84,24 +83,20 @@ class Step extends CommonDBChild
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
-
     public function canCreateItem(): bool
     {
         return true;
     }
-
 
     public static function canUpdate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
-
     public static function getIcon()
     {
         return "ti ti-device-ipad-pause";
     }
-
 
     public static function install(Migration $migration)
     {
@@ -163,7 +158,6 @@ class Step extends CommonDBChild
         $forbidden[] = 'update';
         return $forbidden;
     }
-
 
     /**
      * @param CommonGLPI $item
@@ -368,7 +362,7 @@ class Step extends CommonDBChild
             Ajax::updateItemJsCode(
                 "viewstepbybloc" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                $params
+                $params,
             );
             echo "};";
             echo "</script>\n";
@@ -414,7 +408,7 @@ class Step extends CommonDBChild
             echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;";
             echo __(
                 'Be careful if all blocks are not assigned, they will be displayed to the last assigned group',
-                'metademands'
+                'metademands',
             );
             echo "</div>";
         }
@@ -423,7 +417,7 @@ class Step extends CommonDBChild
         $cond['plugin_metademands_metademands_id'] = $item->getID();
         $dataf = $fields->find(
             $cond,
-            ['rank', 'order']
+            ['rank', 'order'],
         );
         $databyblocks = [];
         $blocks = [];
@@ -452,7 +446,7 @@ class Step extends CommonDBChild
                     [
                         "plugin_metademands_fields_id" => $value['id'],
                         "hidden_block_same_block" => 1,
-                    ]
+                    ],
                 )) {
                     foreach ($opts as $opt) {
                         $subblocks[] = $opt['hidden_block'];
@@ -516,7 +510,7 @@ class Step extends CommonDBChild
                         Ajax::updateItemJsCode(
                             "viewstepbybloc" . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params
+                            $params,
                         );
                         echo "};";
                         echo "</script>\n";
@@ -550,7 +544,7 @@ class Step extends CommonDBChild
                                         'Only visible for this group',
                                         'Only visible for these groups',
                                         2,
-                                        'metademands'
+                                        'metademands',
                                     );
                                     echo "&nbsp;:<br>";
                                     foreach ($multiple_blocks[$data['block_id']] as $gid => $gdata) {
@@ -569,7 +563,7 @@ class Step extends CommonDBChild
                                     'Only visible for this group',
                                     'Only visible for these groups',
                                     1,
-                                    'metademands'
+                                    'metademands',
                                 );
                                 echo "&nbsp;:<br>";
                                 echo \Dropdown::getDropdownName(\Group::getTable(), $data['groups_id']);
@@ -586,7 +580,7 @@ class Step extends CommonDBChild
 
                     if (!empty($data['message'])) {
                         echo "<br><br><i class='ti ti-message-plus'></i>&nbsp;" . RichText::getTextFromHtml(
-                            $data['message']
+                            $data['message'],
                         );
                     }
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/step.form.php";
@@ -599,7 +593,7 @@ class Step extends CommonDBChild
                         'delete',
                         _sx('button', 'Delete visibility', 'metademands'),
                         ['id' => $data['id']],
-                        'ti-trash'
+                        'ti-trash',
                     );
                     echo "</div>";
 
@@ -631,7 +625,7 @@ class Step extends CommonDBChild
             echo "<i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;";
             echo __('There is a problem with the setup', 'metademands') . "<br>" . __(
                 'Your blocks are not all defined',
-                'metademands'
+                'metademands',
             ) . "&nbsp;";
             echo "</div>";
             echo "</div>";
@@ -640,7 +634,6 @@ class Step extends CommonDBChild
 
         return true;
     }
-
 
     /**
      * Display translation form
@@ -780,7 +773,7 @@ class Step extends CommonDBChild
         // Get metademand groups
         $metademands_groups_data = $dbu->getAllDataFromTable(
             'glpi_plugin_metademands_steps',
-            ['`plugin_metademands_metademands_id`' => $metademands_id, 'block_id' => 1, ['NOT' => ['groups_id' => 0]]]
+            ['`plugin_metademands_metademands_id`' => $metademands_id, 'block_id' => 1, ['NOT' => ['groups_id' => 0]]],
         );
 
         $metademand = new Metademand();
@@ -823,7 +816,7 @@ class Step extends CommonDBChild
             [
                 'plugin_metademands_metademands_id' => $metademand_id,
                 'block_id' => $block_id,
-            ]
+            ],
         );
         $groups_id = [];
         foreach ($steps as $step) {
@@ -840,7 +833,7 @@ class Step extends CommonDBChild
             [
                 'plugin_metademands_metademands_id' => $metademand_id,
                 'only_by_supervisor' => 1,
-            ]
+            ],
         );
         if (count($steps) > 0) {
             $return = true;
@@ -860,7 +853,7 @@ class Step extends CommonDBChild
             [
                 'plugin_metademands_metademands_id' => $metademand_id,
                 'only_by_supervisor' => 1,
-            ]
+            ],
         );
         if (isset($_SESSION['plugin_metademands'][$metademand_id]['plugin_metademands_stepforms_id'])
             && $_SESSION['plugin_metademands'][$metademand_id]['plugin_metademands_stepforms_id'] > 0) {
@@ -873,7 +866,7 @@ class Step extends CommonDBChild
 
             $msg = self::getMsgForNextBlock(
                 $metademand_id,
-                $_SESSION['plugin_metademands'][$metademand_id]['block_id']
+                $_SESSION['plugin_metademands'][$metademand_id]['block_id'],
             );
             if ($msg) {
                 echo "<div class='alert alert-info center'>";
@@ -885,7 +878,6 @@ class Step extends CommonDBChild
                 return true;
             }
         }
-
 
         if (count($steps) > 0) {
             $users_id_supervisor = 0;
@@ -899,7 +891,7 @@ class Step extends CommonDBChild
                 echo "<i class='ti ti-circle-check' style='color: orange'></i>&nbsp;";
                 echo "&nbsp;" . __(
                     'Your form will be validated by your supervisor',
-                    'metademands'
+                    'metademands',
                 ) . "&nbsp;";
                 echo getUserName($users_id_supervisor);
                 echo "</div>";
@@ -908,7 +900,7 @@ class Step extends CommonDBChild
                 echo "<i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;";
                 echo "&nbsp;" . __(
                     "You haven't defined supervisor, you cannot continue this request",
-                    'metademands'
+                    'metademands',
                 );
                 echo "</div>";
                 return false;
@@ -930,7 +922,7 @@ class Step extends CommonDBChild
             Session::addMessageAfterRedirect(
                 __('This group is already assigned to this block', 'metademands'),
                 false,
-                ERROR
+                ERROR,
             );
             $input = [];
         }
@@ -961,7 +953,7 @@ class Step extends CommonDBChild
                     'autoopen' => true,
                     'width' => 400,
                     'height' => 400,
-                ]
+                ],
             );
         } else {
             $return = "<div class='alert alert-danger d-flex'>";
@@ -1001,7 +993,7 @@ class Step extends CommonDBChild
                 if (isset($_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'])) {
                     echo Html::hidden(
                         'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']]
+                        ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']],
                     );
                 }
                 $post = $_SESSION['plugin_metademands'][$user_id];
@@ -1038,13 +1030,13 @@ class Step extends CommonDBChild
                         _sx(
                             'button',
                             'Validate',
-                            'metademands'
+                            'metademands',
                         ),
                         [
                             'name' => 'execute',
                             'id' => 'formsubmit',
                             'class' => 'btn btn-primary',
-                        ]
+                        ],
                     );
 
                     echo "</td>";
@@ -1053,7 +1045,7 @@ class Step extends CommonDBChild
                     echo "<div class='alert alert-danger alert-danger d-flex'>";
                     echo "<b>" . __(
                         "You haven't defined supervisor, you cannot continue this request",
-                        'metademands'
+                        'metademands',
                     ) . "</b></div>";
                 }
 
@@ -1067,7 +1059,7 @@ class Step extends CommonDBChild
                 if (isset($_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'])) {
                     echo Html::hidden(
                         'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']]
+                        ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']],
                     );
                 }
                 $post = $_SESSION['plugin_metademands'][$user_id];
@@ -1109,7 +1101,7 @@ class Step extends CommonDBChild
                 echo "<td colspan='2'>";
                 echo "<label class='control-label center' for='next_groups_id'>" . __(
                     'Select the next group',
-                    'metademands'
+                    'metademands',
                 ) . "&nbsp;</label>";
                 echo "</td>";
                 echo "<td colspan='2'>";
@@ -1119,7 +1111,7 @@ class Step extends CommonDBChild
                     [
                         'display_emptychoice' => true,
                         'on_change' => 'plugin_md_reloaduser()',
-                    ]
+                    ],
                 );
                 echo "</td>";
                 echo "</tr>";
@@ -1136,7 +1128,7 @@ class Step extends CommonDBChild
                     'show_users_by_group',
                     PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownNextUser.php",
                     $params,
-                    'dropdown_next_groups_id' . $rand
+                    'dropdown_next_groups_id' . $rand,
                 );
                 echo "};";
                 echo "</script>";
@@ -1162,13 +1154,13 @@ class Step extends CommonDBChild
                     _sx(
                         'button',
                         'Validate',
-                        'metademands'
+                        'metademands',
                     ),
                     [
                         'name' => 'execute',
                         'id' => 'formsubmit',
                         'class' => 'btn btn-primary',
-                    ]
+                    ],
                 );
 
                 echo "</td>";
@@ -1205,7 +1197,7 @@ class Step extends CommonDBChild
         echo \Dropdown::showFromArray(
             'next_users_id',
             $users,
-            $options
+            $options,
         );
     }
 
@@ -1301,7 +1293,7 @@ class Step extends CommonDBChild
                         Session::addMessageAfterRedirect(
                             __('Error assigning to next group', 'metademands'),
                             false,
-                            ERROR
+                            ERROR,
                         );
                         break;
                     }
@@ -1314,7 +1306,7 @@ class Step extends CommonDBChild
                     } else {
                         $inputs['groups_id_dest'] = self::getGroupForNextBlock(
                             $_POST['metademands_id'],
-                            $_POST['block_id']
+                            $_POST['block_id'],
                         );
                     }
                     $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
@@ -1350,7 +1342,6 @@ class Step extends CommonDBChild
                             $inputsUpdate['users_id_dest'] = $inputs['users_id_dest'];
                         }
 
-
                         $forms->update($inputsUpdate);
                         $actor->add([
                             'plugin_metademands_stepforms_id' => $form_new_id,
@@ -1373,7 +1364,7 @@ class Step extends CommonDBChild
                                         $_POST['metademands_id'],
                                         $line['form'],
                                         $_POST['field'],
-                                        $form_new_id
+                                        $form_new_id,
                                     );
                                 }
                             }
@@ -1393,7 +1384,7 @@ class Step extends CommonDBChild
                             unset($_SESSION['plugin_metademands'][$user_id]);
 
                             $metademands_data = Metademand::constructMetademands(
-                                $_POST['metademands_id']
+                                $_POST['metademands_id'],
                             );
 
                             if (count($metademands_data) && $form_new_id > 0) {
@@ -1404,7 +1395,7 @@ class Step extends CommonDBChild
                                             $_POST['metademands_id'],
                                             $line['form'],
                                             $_POST['field'],
-                                            $form_new_id
+                                            $form_new_id,
                                         );
                                     }
                                 }

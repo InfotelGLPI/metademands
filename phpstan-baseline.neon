@@ -699,7 +699,7 @@ parameters:
 		-
 			message: '#^Binary operation "\." between ''dropdown_type'' and GlpiPlugin\\Metademands\\Fields\\Dropdown results in an error\.$#'
 			identifier: binaryOp.invalid
-			count: 10
+			count: 9
 			path: src/Field.php
 
 		-
@@ -765,12 +765,6 @@ parameters:
 		-
 			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownMyDevices\(\) with return type void returns string but should not return anything\.$#'
 			identifier: return.void
-			count: 1
-			path: src/Field.php
-
-		-
-			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:getCloneRelations\(\) should return array\<''CommonDBTM''\> but returns array\{''GlpiPlugin\\\\Metademands\\\\FieldParameter'', ''GlpiPlugin\\\\Metademands\\\\FieldOption'', ''GlpiPlugin\\\\Metademands\\\\FieldCustomvalue'', ''GlpiPlugin\\\\Metademands\\\\FieldTranslation'', ''GlpiPlugin\\\\Metademands\\\\Freetablefield''\}\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Field.php
 
@@ -1003,7 +997,7 @@ parameters:
 			path: src/FieldOption.php
 
 		-
-			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\r\\n     \*", expected variable at offset 85 on line 4$#'
+			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\n     \*", expected variable at offset 82 on line 4$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/FieldOption.php
@@ -1033,7 +1027,7 @@ parameters:
 			path: src/FieldOption.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 116 on line 6$#'
+			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 111 on line 6$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/FieldOption.php
@@ -1639,8 +1633,8 @@ parameters:
 			path: src/Fields/Textarea.php
 
 		-
-			message: '#^Negated boolean expression is always true\.$#'
-			identifier: booleanNot.alwaysTrue
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: src/Fields/Textarea.php
 
@@ -1771,7 +1765,7 @@ parameters:
 			path: src/Freetablefield.php
 
 		-
-			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\r\\n     \*", expected variable at offset 83 on line 4$#'
+			message: '#^PHPDoc tag @param has invalid value \(item\)\: Unexpected token "\\n     \*", expected variable at offset 80 on line 4$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/Freetablefield.php
@@ -2053,7 +2047,7 @@ parameters:
 			path: src/Metademand.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\r\\n     \* ", expected type at offset 150 on line 8$#'
+			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     \* ", expected type at offset 143 on line 8$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/Metademand.php
@@ -2115,6 +2109,12 @@ parameters:
 		-
 			message: '#^Static method GlpiPlugin\\Metademands\\Metademand\:\:compareValueToOption\(\) is unused\.$#'
 			identifier: method.unused
+			count: 1
+			path: src/Metademand.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: src/Metademand.php
 
@@ -2307,19 +2307,13 @@ parameters:
 		-
 			message: '#^Variable \$header might not be defined\.$#'
 			identifier: variable.undefined
-			count: 3
+			count: 2
 			path: src/MetademandPdf.php
 
 		-
 			message: '#^Variable \$label2 might not be defined\.$#'
 			identifier: variable.undefined
 			count: 2
-			path: src/MetademandPdf.php
-
-		-
-			message: '#^Variable \$w might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
 			path: src/MetademandPdf.php
 
 		-
@@ -2767,7 +2761,7 @@ parameters:
 			path: src/Step.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 129 on line 6$#'
+			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 124 on line 6$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/Step.php
@@ -2896,6 +2890,12 @@ parameters:
 			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
 			identifier: throws.notThrowable
 			count: 6
+			path: src/Task.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
 			path: src/Task.php
 
 		-

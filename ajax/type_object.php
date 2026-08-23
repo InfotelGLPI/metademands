@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Metademand;
@@ -46,20 +46,20 @@ if ($_POST['object_to_create'] != null) {
         echo "<td>" . _n('Type', 'Types', 1) . "</td>";
         echo "<td>";
         $opt  = [
-         'display_emptychoice' => true,
+            'display_emptychoice' => true,
         ];
         $rand = \Ticket::dropdownType('type', $opt);
 
         $params = ['type'             => '__VALUE__',
-                 'value'            => 0,
-                 'object_to_create' => $object,
-                 'entity_restrict'  => $_SESSION['glpiactiveentities']];
+            'value'            => 0,
+            'object_to_create' => $object,
+            'entity_restrict'  => $_SESSION['glpiactiveentities']];
 
         Ajax::updateItemOnSelectEvent(
             "dropdown_type$rand",
             "show_category_by_type",
-            PLUGIN_METADEMANDS_WEBDIR. "/ajax/dropdownITILCategories.php",
-            $params
+            PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownITILCategories.php",
+            $params,
         );
         echo "</td>";
 
@@ -89,7 +89,7 @@ if ($_POST['object_to_create'] != null) {
             \ITILCategory::getTable(),
             'entities_id',
             $_SESSION['glpiactiveentities'],
-            true
+            true,
         );
 
         $dbu    = new DbUtils();
@@ -102,8 +102,8 @@ if ($_POST['object_to_create'] != null) {
             'itilcategories_id',
             $temp,
             ['width'    => '100%',
-                               'multiple' => true,
-            'entity'   => $_SESSION['glpiactiveentities']]
+                'multiple' => true,
+                'entity'   => $_SESSION['glpiactiveentities']],
         );
         echo "</td>";
         echo "</tr>";

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -156,7 +156,8 @@ class Ticket_Metademand extends CommonDBTM
         $DB->dropTable(self::getTable(), true);
     }
 
-    public static function post_add_ticket($datas) {
+    public static function post_add_ticket($datas)
+    {
         global $DB;
         $fields = new Field();
         $fieldOption = new FieldOption();
@@ -236,7 +237,7 @@ class Ticket_Metademand extends CommonDBTM
 
                     return self::createTabEntry(
                         __('Linked opened tickets', 'metademands'),
-                        $numrows
+                        $numrows,
                     );
                 }
                 return __('Linked opened tickets', 'metademands');
@@ -291,7 +292,7 @@ class Ticket_Metademand extends CommonDBTM
             'ORDERBY'   => 'id DESC',
         ];
         $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
-            'glpi_tickets'
+            'glpi_tickets',
         );
 
         return $query;
@@ -340,7 +341,7 @@ class Ticket_Metademand extends CommonDBTM
                         'row_num' => $i,
                         'type_for_massiveaction' => __CLASS__,
                         'id_for_massiveaction'   => $ID,
-                    ]
+                    ],
                 );
             }
             echo "</table>";
@@ -653,7 +654,7 @@ class Ticket_Metademand extends CommonDBTM
                                             $line['tasks'][$key]['content'] = str_replace(
                                                 "#" . $content . "#",
                                                 $value,
-                                                $line['tasks'][$key]['content']
+                                                $line['tasks'][$key]['content'],
                                             );
                                         }
                                     } else {
@@ -816,7 +817,7 @@ class Ticket_Metademand extends CommonDBTM
                                     $line['form'],
                                     $metademand->getID(),
                                     $values,
-                                    ['formatastable' => $l['formatastable']]
+                                    ['formatastable' => $l['formatastable']],
                                 );
                             } else {
                                 $parent_fields_content['content'] = $parent_fields['content'];
@@ -1156,13 +1157,13 @@ class Ticket_Metademand extends CommonDBTM
                         $parent_tickets_id,
                         Metademand::mergeFields(
                             $parent_fields,
-                            $parent_ticketfields
+                            $parent_ticketfields,
                         ),
                         $parent_tickets_id,
                         $line['tasks'],
                         $tasklevel,
                         $inputField,
-                        $inputFieldMain
+                        $inputFieldMain,
                     )) {
                         $KO[] = 1;
                     }
@@ -1590,7 +1591,7 @@ class Ticket_Metademand extends CommonDBTM
                 $ticket_metademand_data['plugin_metademands_metademands_id'],
                 [],
                 true,
-                true
+                true,
             );
             $metademands_id = $ticket_metademand_data['plugin_metademands_metademands_id'];
         } else {
@@ -1648,7 +1649,7 @@ class Ticket_Metademand extends CommonDBTM
                             [
                                 MetademandValidation::TO_VALIDATE,
                                 MetademandValidation::TO_VALIDATE_WITHOUTTASK,
-                            ]
+                            ],
                         )) {
                             $validation_todo = true;
                         }
@@ -1659,19 +1660,19 @@ class Ticket_Metademand extends CommonDBTM
                             [
                                 'id' => $metaStatus->fields['id'],
                                 'status' => self::TO_CLOSED,
-                            ]
+                            ],
                         );
                     } elseif ($validation_todo) {
                         $metaStatus->update(
                             [
                                 'id' => $metaStatus->fields['id'],
                                 'status' => self::RUNNING,
-                            ]
+                            ],
                         );
                     }
                 } else {
                     $metaStatus->update(
-                        ['id' => $metaStatus->fields['id'], 'status' => self::RUNNING]
+                        ['id' => $metaStatus->fields['id'], 'status' => self::RUNNING],
                     );
                 }
             }
@@ -1729,16 +1730,16 @@ class Ticket_Metademand extends CommonDBTM
 
                     if ($counterClosed == count($results_sons_ticket)) {
                         $ticket_metademand->update(
-                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED]
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED],
                         );
                     } elseif ($counterClosed < count($results_sons_ticket)) {
                         $ticket_metademand->update(
-                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING],
                         );
                     }
                 } else {
                     $ticket_metademand->update(
-                        ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                        ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING],
                     );
                 }
             }
@@ -1797,16 +1798,16 @@ class Ticket_Metademand extends CommonDBTM
 
                     if ($counterClosed == count($results_sons_ticket)) {
                         $ticket_metademand->update(
-                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED]
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::TO_CLOSED],
                         );
                     } elseif ($counterClosed < count($results_sons_ticket)) {
                         $ticket_metademand->update(
-                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING]
+                            ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::RUNNING],
                         );
                     }
                 } else {
                     $ticket_metademand->update(
-                        ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::CLOSED]
+                        ['id' => $ticket_metademand->getID(), 'status' => Ticket_Metademand::CLOSED],
                     );
                 }
             }

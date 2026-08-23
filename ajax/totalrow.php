@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Application\View\TemplateRenderer;
@@ -37,7 +37,7 @@ Html::header_nocache();
 if (isset($_POST['action'])) {
 
     switch ($_POST['action']) {
-        case "loadTotalrow" :
+        case "loadTotalrow":
 
             if (isset($_POST['quantity'])
                 && $_POST['quantity'] > 0) {
@@ -76,20 +76,20 @@ if (isset($_POST['action'])) {
                     'name'  => $_POST['name'] ?? '',
                     'key'   => $_POST['key'] ?? '',
                 ]);
-//                if (!isset($_SESSION['plugin_metademands']['total_order'])) {
-//                    $_SESSION['plugin_metademands']['total_order'] = $totalrow;
-//                } else {
-//                    $_SESSION['plugin_metademands']['total_order'] += $totalrow;
-//                }
+                //                if (!isset($_SESSION['plugin_metademands']['total_order'])) {
+                //                    $_SESSION['plugin_metademands']['total_order'] = $totalrow;
+                //                } else {
+                //                    $_SESSION['plugin_metademands']['total_order'] += $totalrow;
+                //                }
             }
 
             break;
-        case "loadGrandTotal" :
-//            if (isset($_SESSION['plugin_metademands']['total_order'])) {
-//                echo $_SESSION['plugin_metademands']['total_order']." €";
-//            } else {
-//                echo "0 €";
-//            }
+        case "loadGrandTotal":
+            //            if (isset($_SESSION['plugin_metademands']['total_order'])) {
+            //                echo $_SESSION['plugin_metademands']['total_order']." €";
+            //            } else {
+            //                echo "0 €";
+            //            }
             break;
     }
 }

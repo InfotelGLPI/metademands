@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -75,23 +75,23 @@ class Stepform extends CommonDBTM
         // Notification
         $options_notif = [
             'itemtype' => self::class,
-            'name' => 'New form completed'
+            'name' => 'New form completed',
         ];
 
         if (!countElementsInTable(
             "glpi_notificationtemplates",
-            $options_notif
+            $options_notif,
         )) {
 
             $DB->insert(
                 "glpi_notificationtemplates",
-                $options_notif
+                $options_notif,
             );
 
             foreach (
                 $DB->request([
                     'FROM' => 'glpi_notificationtemplates',
-                    'WHERE' => $options_notif
+                    'WHERE' => $options_notif,
                 ]) as $data
             ) {
                 $templates_id = $data['id'];
@@ -111,8 +111,8 @@ class Stepform extends CommonDBTM
 ##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
-##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##'
-                        ]
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##',
+                        ],
                     );
 
                     $DB->insert(
@@ -122,20 +122,20 @@ class Stepform extends CommonDBTM
                             'entities_id' => 0,
                             'itemtype' => self::class,
                             'event' => 'new_step_form',
-                            'is_recursive' => 1
-                        ]
+                            'is_recursive' => 1,
+                        ],
                     );
 
                     $options_notif = [
                         'itemtype' => self::class,
                         'name' => 'New form completed',
-                        'event' => 'new_step_form'
+                        'event' => 'new_step_form',
                     ];
 
                     foreach (
                         $DB->request([
                             'FROM' => 'glpi_notifications',
-                            'WHERE' => $options_notif
+                            'WHERE' => $options_notif,
                         ]) as $data_notif
                     ) {
                         $notification = $data_notif['id'];
@@ -145,8 +145,8 @@ class Stepform extends CommonDBTM
                                 [
                                     'notifications_id' => $notification,
                                     'mode' => 'mailing',
-                                    'notificationtemplates_id' => $templates_id
-                                ]
+                                    'notificationtemplates_id' => $templates_id,
+                                ],
                             );
                         }
                     }
@@ -156,18 +156,18 @@ class Stepform extends CommonDBTM
             // Update
             $options_notif = [
                 'itemtype' => self::class,
-                'name' => 'Form completed'
+                'name' => 'Form completed',
             ];
             // Request
             $DB->insert(
                 "glpi_notificationtemplates",
-                $options_notif
+                $options_notif,
             );
 
             foreach (
                 $DB->request([
                     'FROM' => 'glpi_notificationtemplates',
-                    'WHERE' => $options_notif
+                    'WHERE' => $options_notif,
                 ]) as $data
             ) {
                 $templates_id = $data['id'];
@@ -187,8 +187,8 @@ class Stepform extends CommonDBTM
 ##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
-##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##'
-                        ]
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##',
+                        ],
                     );
 
                     $DB->insert(
@@ -198,20 +198,20 @@ class Stepform extends CommonDBTM
                             'entities_id' => 0,
                             'itemtype' => self::class,
                             'event' => 'update_step_form',
-                            'is_recursive' => 1
-                        ]
+                            'is_recursive' => 1,
+                        ],
                     );
 
                     $options_notif = [
                         'itemtype' => self::class,
                         'name' => 'New form completed',
-                        'event' => 'update_step_form'
+                        'event' => 'update_step_form',
                     ];
 
                     foreach (
                         $DB->request([
                             'FROM' => 'glpi_notifications',
-                            'WHERE' => $options_notif
+                            'WHERE' => $options_notif,
                         ]) as $data_notif
                     ) {
                         $notification = $data_notif['id'];
@@ -221,8 +221,8 @@ class Stepform extends CommonDBTM
                                 [
                                     'notifications_id' => $notification,
                                     'mode' => 'mailing',
-                                    'notificationtemplates_id' => $templates_id
-                                ]
+                                    'notificationtemplates_id' => $templates_id,
+                                ],
                             );
                         }
                     }
@@ -270,15 +270,14 @@ class Stepform extends CommonDBTM
 
         self::addNotifications();
 
-
         $query = $DB->buildUpdate(
             'glpi_notifications',
             [
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsStepform'
-            ]
+                'itemtype' => 'PluginMetademandsStepform',
+            ],
         );
         $DB->doQuery($query);
 
@@ -288,8 +287,8 @@ class Stepform extends CommonDBTM
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsStepform'
-            ]
+                'itemtype' => 'PluginMetademandsStepform',
+            ],
         );
         $DB->doQuery($query);
     }
@@ -342,7 +341,7 @@ class Stepform extends CommonDBTM
             'FROM' => 'glpi_notificationtemplates',
             'WHERE' => $options]) as $data) {
             $options_template = [
-                'notificationtemplates_id' => $data['id']
+                'notificationtemplates_id' => $data['id'],
             ];
 
             foreach ($DB->request([
@@ -648,14 +647,12 @@ class Stepform extends CommonDBTM
 
                 return self::createTabEntry(
                     $name,
-                    $total
+                    $total,
                 );
             }
         }
         return '';
     }
-
-
 
     /**
      *
@@ -680,7 +677,6 @@ class Stepform extends CommonDBTM
 
         return true;
     }
-
 
     /**
      * @param $item
@@ -729,7 +725,7 @@ class Stepform extends CommonDBTM
                         'delete_form_from_metademands',
                         _sx('button', 'Delete form', 'metademands'),
                         ['plugin_metademands_stepforms_id' => $id],
-                        'ti-trash'
+                        'ti-trash',
                     );
                     echo "</span>";
                 }
@@ -751,7 +747,6 @@ class Stepform extends CommonDBTM
         NotificationEvent::raiseEvent("new_step_form", $this, $options);
     }
 
-
     /**
      * Actions done after the UPDATE of the item in the database
      *
@@ -769,7 +764,6 @@ class Stepform extends CommonDBTM
         NotificationEvent::raiseEvent("update_step_form", $this, $options);
         parent::post_updateItem($history); // TODO: Change the autogenerated stub
     }
-
 
     /**
      * @return array
@@ -834,7 +828,6 @@ class Stepform extends CommonDBTM
         self::showWaitingFormReadOnly();
     }
 
-
     private function showWaitingForm()
     {
         echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
@@ -842,22 +835,21 @@ class Stepform extends CommonDBTM
 
         $stepforms = self::getWaitingForms();
 
-
-            echo "<div class='row'>";
-            echo "<div class=\"col-md-12\">";
-            echo "<h4><div class='alert alert-dark' role='alert'>";
-            $icon = "ti-share";
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
-            $cnt = count($stepforms);
-            if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-            } else {
-                echo "<i class='ti $icon'></i>&nbsp;";
-            }
-            echo _n('Your form to complete', 'Your forms to complete', $cnt, 'metademands') . '   (' . $cnt . ')';
-            echo "</div></h4></div></div>";
+        echo "<div class='row'>";
+        echo "<div class=\"col-md-12\">";
+        echo "<h4><div class='alert alert-dark' role='alert'>";
+        $icon = "ti-share";
+        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+            $icon = $meta->fields['icon'];
+        }
+        $cnt = count($stepforms);
+        if (str_contains($icon, 'fa-')) {
+            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+        } else {
+            echo "<i class='ti $icon'></i>&nbsp;";
+        }
+        echo _n('Your form to complete', 'Your forms to complete', $cnt, 'metademands') . '   (' . $cnt . ')';
+        echo "</div></h4></div></div>";
 
         if (!empty($stepforms)) {
             echo "<div id='listmeta' class='row' style='padding-left: 20px;'>";
@@ -913,7 +905,7 @@ class Stepform extends CommonDBTM
                             'delete_form_from_list',
                             _sx('button', 'Delete form', 'metademands'),
                             ['plugin_metademands_stepforms_id' => $id],
-                            'ti-trash'
+                            'ti-trash',
                         );
                         echo "</span>";
                     }
@@ -988,27 +980,26 @@ class Stepform extends CommonDBTM
 
     private function showWaitingFormReadOnly()
     {
-//        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
+        //        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
         $stepforms = self::getWaitingFormsByMaker();
 
+        echo "<div class='row' style='margin-bottom: 15px; margin-top: 20px;'>";
+        echo "<div class=\"col-md-12\">";
+        echo "<h4><div class='alert alert-dark' role='alert'>";
+        $icon = "ti-share";
+        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+            $icon = $meta->fields['icon'];
+        }
+        $cnt = count($stepforms);
+        if (str_contains($icon, 'fa-')) {
+            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+        } else {
+            echo "<i class='ti $icon''></i>&nbsp;";
+        }
 
-            echo "<div class='row' style='margin-bottom: 15px; margin-top: 20px;'>";
-            echo "<div class=\"col-md-12\">";
-            echo "<h4><div class='alert alert-dark' role='alert'>";
-            $icon = "ti-share";
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
-            $cnt = count($stepforms);
-            if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-            } else {
-                echo "<i class='ti $icon''></i>&nbsp;";
-            }
-
-            echo _n('Form in progress', 'Forms in progress', $cnt, 'metademands') . '   (' . $cnt . ')';
-            echo "</div></h4></div></div>";
+        echo _n('Form in progress', 'Forms in progress', $cnt, 'metademands') . '   (' . $cnt . ')';
+        echo "</div></h4></div></div>";
 
         if (!empty($stepforms)) {
             echo "<div id='listmeta'  class='row' style='padding-left: 20px;'>";
@@ -1063,7 +1054,6 @@ class Stepform extends CommonDBTM
                         echo "</span></em>";
                     }
 
-
                     ;
                     //TODO Change to new right
                     if (Session::haveRight("plugin_metademands_cancelform", READ)) {
@@ -1074,7 +1064,7 @@ class Stepform extends CommonDBTM
                             'delete_form_from_list',
                             _sx('button', 'Delete form', 'metademands'),
                             ['plugin_metademands_stepforms_id' => $id],
-                            'ti-trash'
+                            'ti-trash',
                         );
                         echo "</span>";
                     }
@@ -1084,9 +1074,7 @@ class Stepform extends CommonDBTM
             echo "</div>";
         }
 
-
     }
-
 
     public function deleteAfterCreate($stepformID, $sendmail = false)
     {
@@ -1112,7 +1100,5 @@ class Stepform extends CommonDBTM
 
         return true;
     }
-
-
 
 }

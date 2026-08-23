@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -273,7 +273,7 @@ class Url extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -301,7 +301,7 @@ class Url extends CommonDBTM
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
-                'metademands'
+                'metademands',
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
@@ -479,7 +479,7 @@ class Url extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -544,16 +544,18 @@ class Url extends CommonDBTM
                             foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                 if ($idc == $k) {
                                     foreach ($childs_blocks as $childs) {
-                                        $options = getAllDataFromTable('glpi_plugin_metademands_fieldoptions',
-                                            ['hidden_block' => $childs]);
+                                        $options = getAllDataFromTable(
+                                            'glpi_plugin_metademands_fieldoptions',
+                                            ['hidden_block' => $childs],
+                                        );
                                         if (count($options) == 0) {
                                             $script .= "if (document.getElementById('ablock" . $childs . "'))
                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                         $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " .FieldOption::setMandatoryBlockFields(
-                                                    $metaid,
-                                                    $childs
-                                                );
+                                                     " . FieldOption::setMandatoryBlockFields(
+                                                $metaid,
+                                                $childs,
+                                            );
                                         }
                                     }
                                 }
@@ -627,7 +629,7 @@ class Url extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }

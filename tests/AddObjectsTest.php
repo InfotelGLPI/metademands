@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Tests;
@@ -134,7 +134,7 @@ class AddObjectsTest extends DbTestCase
         $ticket = new \Ticket();
         $this->assertTrue(
             $ticket->getFromDB($result['id']),
-            'Le ticket créé doit être retrouvable en base'
+            'Le ticket créé doit être retrouvable en base',
         );
     }
 
@@ -154,12 +154,12 @@ class AddObjectsTest extends DbTestCase
             [
                 'tickets_id'                        => $result['id'],
                 'plugin_metademands_metademands_id' => $metademand->getID(),
-            ]
+            ],
         );
         $this->assertSame(
             1,
             $link_count,
-            'Un lien Ticket_Metademand doit relier le ticket à la métademande'
+            'Un lien Ticket_Metademand doit relier le ticket à la métademande',
         );
     }
 
@@ -174,7 +174,7 @@ class AddObjectsTest extends DbTestCase
 
         $this->assertFalse(
             $result,
-            'addObjects() doit retourner false si la métademande n\'existe pas'
+            'addObjects() doit retourner false si la métademande n\'existe pas',
         );
     }
 
@@ -203,12 +203,12 @@ class AddObjectsTest extends DbTestCase
             [
                 'tickets_id_2' => $result['id'],
                 'link'         => Ticket_Ticket::SON_OF,
-            ]
+            ],
         );
         $this->assertGreaterThan(
             0,
             $link_count,
-            'Un lien SON_OF doit exister avec le ticket parent en tickets_id_2'
+            'Un lien SON_OF doit exister avec le ticket parent en tickets_id_2',
         );
     }
 
@@ -230,12 +230,12 @@ class AddObjectsTest extends DbTestCase
         // Le sous-ticket doit aussi avoir un enregistrement Ticket_Metademand
         $all_ticket_meta = countElementsInTable(
             Ticket_Metademand::getTable(),
-            ['plugin_metademands_metademands_id' => $metademand->getID()]
+            ['plugin_metademands_metademands_id' => $metademand->getID()],
         );
         $this->assertGreaterThanOrEqual(
             2,
             $all_ticket_meta,
-            'Le ticket parent et le sous-ticket doivent tous deux être liés à la métademande'
+            'Le ticket parent et le sous-ticket doivent tous deux être liés à la métademande',
         );
     }
 
@@ -259,12 +259,12 @@ class AddObjectsTest extends DbTestCase
             [
                 'tickets_id_1' => $result['id'],
                 'link'         => Ticket_Ticket::PARENT_OF,
-            ]
+            ],
         );
         $this->assertSame(
             0,
             $link_count,
-            'Sans tâche définie, aucun sous-ticket ne doit être créé'
+            'Sans tâche définie, aucun sous-ticket ne doit être créé',
         );
     }
 
@@ -288,7 +288,7 @@ class AddObjectsTest extends DbTestCase
         $this->assertGreaterThan(
             $count_before,
             countElementsInTable(GlpiTicketTask::getTable()),
-            'Un enregistrement TicketTask GLPI doit avoir été ajouté lors de force_create_tasks=1'
+            'Un enregistrement TicketTask GLPI doit avoir été ajouté lors de force_create_tasks=1',
         );
     }
 
@@ -309,12 +309,12 @@ class AddObjectsTest extends DbTestCase
             [
                 'tickets_id_1' => $result['id'],
                 'link'         => Ticket_Ticket::PARENT_OF,
-            ]
+            ],
         );
         $this->assertSame(
             0,
             $link_count,
-            'Avec force_create_tasks=1, aucun sous-ticket ne doit être créé'
+            'Avec force_create_tasks=1, aucun sous-ticket ne doit être créé',
         );
     }
 }

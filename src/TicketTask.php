@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -202,7 +202,7 @@ class TicketTask extends CommonDBChild
                 false,
                 $values['type'],
                 $values['itilcategories_id'],
-                $values['entities_id']
+                $values['entities_id'],
             );
         }
 
@@ -278,13 +278,13 @@ class TicketTask extends CommonDBChild
                 'action' => 'showcategories',
                 'entities_id' => '__VALUE__',
                 'type' => $values['type'],
-                'itilcategories_id' => $values['itilcategories_id'] ?? 0
+                'itilcategories_id' => $values['itilcategories_id'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_category',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             $params = [
@@ -292,26 +292,26 @@ class TicketTask extends CommonDBChild
                 'entities_id' => '__VALUE__',
                 'type' => $values['type'],
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
-                'users_id_requester' => $values['users_id_requester'] ?? 0
+                'users_id_requester' => $values['users_id_requester'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_users_id_requester',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             $params = [
                 'action' => 'users_id_observer',
                 'entities_id' => '__VALUE__',
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
-                'users_id_observer' => $values['users_id_observer'] ?? 0
+                'users_id_observer' => $values['users_id_observer'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_users_id_observer',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             $params = [
@@ -319,52 +319,52 @@ class TicketTask extends CommonDBChild
                 'entities_id' => '__VALUE__',
                 'type' => $values['type'],
                 'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
-                'users_id_assign' => $values['users_id_assign'] ?? 0
+                'users_id_assign' => $values['users_id_assign'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_users_id_assign',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             $params = [
                 'action' => 'groups_id_requester',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_requester' => 1],
-                'groups_id_requester' => $values['groups_id_requester'] ?? 0
+                'groups_id_requester' => $values['groups_id_requester'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_groups_id_requester',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             $params = [
                 'action' => 'groups_id_observer',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_watcher' => 1],
-                'groups_id_observer' => $values['groups_id_observer'] ?? 0
+                'groups_id_observer' => $values['groups_id_observer'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_groups_id_observer',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             $params = [
                 'action' => 'groups_id_assign',
                 'entities_id' => '__VALUE__',
                 'condition' => ['is_assign' => 1],
-                'groups_id_assign' => $values['groups_id_assign'] ?? 0
+                'groups_id_assign' => $values['groups_id_assign'] ?? 0,
             ];
             Ajax::updateItemJsCode(
                 'ticket_groups_id_assign',
                 PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
                 $params,
-                'dropdown_entities_id' . $rand
+                'dropdown_entities_id' . $rand,
             );
             echo ";\n";
             echo "}";
@@ -376,7 +376,7 @@ class TicketTask extends CommonDBChild
             $opt = [
                 'value' => $values['itilcategories_id'],
                 'condition' => $condition,
-                'entity' => $metademands->fields["entities_id"]
+                'entity' => $metademands->fields["entities_id"],
             ];
             if ($values['itilcategories_id'] && $tt->isMandatoryField("itilcategories_id")) {
                 $opt['display_emptychoice'] = false;
@@ -406,11 +406,11 @@ class TicketTask extends CommonDBChild
 
         if ($is_ticket_type) {
             $show_requester_header = $tt->isMandatoryField('_users_id_requester') || $tt->isMandatoryField(
-                    '_groups_id_requester'
-                ) || !$metademands->fields["initial_requester_childs_tickets"];
+                '_groups_id_requester',
+            ) || !$metademands->fields["initial_requester_childs_tickets"];
             $show_observer_header = $tt->isMandatoryField('_users_id_observer') || $tt->isMandatoryField(
-                    '_groups_id_observer'
-                );
+                '_groups_id_observer',
+            );
             $assign_user_mark = $tt->getMandatoryMark('_users_id_assign');
             $assign_group_mark = $tt->getMandatoryMark('_groups_id_assign');
 
@@ -422,8 +422,8 @@ class TicketTask extends CommonDBChild
                         'name' => 'users_id_requester',
                         'value' => $values['users_id_requester'] ?? 0,
                         'entity' => $metademands->fields["entities_id"],
-                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)
-                    ]
+                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
+                    ],
                 );
                 $users_id_requester_html = ob_get_clean();
             }
@@ -436,8 +436,8 @@ class TicketTask extends CommonDBChild
                         'name' => 'users_id_observer',
                         'value' => $values['users_id_observer'] ?? 0,
                         'entity' => $metademands->fields["entities_id"],
-                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)
-                    ]
+                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
+                    ],
                 );
                 $users_id_observer_html = ob_get_clean();
             }
@@ -451,8 +451,8 @@ class TicketTask extends CommonDBChild
                         'name' => 'groups_id_requester',
                         'value' => $values['groups_id_requester'] ?? 0,
                         'entity' => $metademands->fields["entities_id"],
-                        'condition' => ['is_requester' => 1]
-                    ]
+                        'condition' => ['is_requester' => 1],
+                    ],
                 );
                 $groups_id_requester_html = ob_get_clean();
             }
@@ -466,8 +466,8 @@ class TicketTask extends CommonDBChild
                         'name' => 'groups_id_observer',
                         'value' => $values['groups_id_observer'] ?? 0,
                         'entity' => $metademands->fields["entities_id"],
-                        'condition' => ['is_watcher' => 1]
-                    ]
+                        'condition' => ['is_watcher' => 1],
+                    ],
                 );
                 $groups_id_observer_html = ob_get_clean();
             }
@@ -479,8 +479,8 @@ class TicketTask extends CommonDBChild
                 'name' => 'users_id_assign',
                 'value' => $values['users_id_assign'] ?? 0,
                 'entity' => $metademands->fields["entities_id"],
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)
-            ]
+                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
+            ],
         );
         $users_id_assign_html = ob_get_clean();
 
@@ -491,8 +491,8 @@ class TicketTask extends CommonDBChild
                 'name' => 'groups_id_assign',
                 'value' => $values['groups_id_assign'] ?? 0,
                 'entity' => $metademands->fields["entities_id"],
-                'condition' => ['is_assign' => 1]
-            ]
+                'condition' => ['is_assign' => 1],
+            ],
         );
         $groups_id_assign_html = ob_get_clean();
 
@@ -698,7 +698,7 @@ class TicketTask extends CommonDBChild
             return [
                 'ticket_template' => $tt->fields['id'],
                 'mandatory_fields' => $mandatory_missing,
-                'message' => $message
+                'message' => $message,
             ];
         }
     }
@@ -727,7 +727,7 @@ class TicketTask extends CommonDBChild
                 $dbu = new DbUtils();
                 $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands', [
                     "`itilcategories_id`" => $input["itilcategories_id"],
-                    "`type`" => $type
+                    "`type`" => $type,
                 ]);
 
                 if (!empty($metas)) {
@@ -735,7 +735,7 @@ class TicketTask extends CommonDBChild
                     Session::addMessageAfterRedirect(
                         __('The category is related to a demand. Thank you to select another', 'metademands'),
                         false,
-                        ERROR
+                        ERROR,
                     );
                     return false;
                 }

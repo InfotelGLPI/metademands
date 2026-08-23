@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -50,7 +50,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Group extends CommonDBChild
 {
-
     public static $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
@@ -64,7 +63,7 @@ class Group extends CommonDBChild
      *
      * @return string
      */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Groups rights', 'metademands');
     }
@@ -72,7 +71,7 @@ class Group extends CommonDBChild
     /**
      * @return bool|int
      */
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -80,7 +79,7 @@ class Group extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -140,7 +139,7 @@ class Group extends CommonDBChild
      * @param int $withtemplate
      * @return array|string
      */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
 
         $dbu = new DbUtils();
@@ -150,8 +149,8 @@ class Group extends CommonDBChild
                     self::getTypeName(),
                     $dbu->countElementsInTable(
                         $this->getTable(),
-                        ["plugin_metademands_metademands_id" => $item->getID()]
-                    )
+                        ["plugin_metademands_metademands_id" => $item->getID()],
+                    ),
                 );
             }
             return self::getTypeName();
@@ -168,7 +167,7 @@ class Group extends CommonDBChild
      * @param int $withtemplate
      * @return bool|true
      */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
         $field = new self();
 
@@ -196,12 +195,12 @@ class Group extends CommonDBChild
         $criteria = [
             'SELECT' => [
                 static::getIndexName(),
-                'plugin_metademands_metademands_id AS items_id'
+                'plugin_metademands_metademands_id AS items_id',
             ],
             'FROM' => $table,
             'WHERE' => [
-                $table . '.' . 'plugin_metademands_metademands_id' => $items_id
-            ]
+                $table . '.' . 'plugin_metademands_metademands_id' => $items_id,
+            ],
         ];
 
         // Check item 1 type
@@ -230,7 +229,7 @@ class Group extends CommonDBChild
      *
      * @return bool
      */
-    function showConfigForMetademand($item)
+    public function showConfigForMetademand($item)
     {
 
         $groupconfig = new GroupConfig();
@@ -256,8 +255,8 @@ class Group extends CommonDBChild
             $visibility,
             [
                 'id' => 'visibility',
-                'value' => $groupconfig->fields['visibility']
-            ]
+                'value' => $groupconfig->fields['visibility'],
+            ],
         );
         echo "</td>";
 
@@ -275,7 +274,7 @@ class Group extends CommonDBChild
      *
      * @return bool
      */
-    function showForMetademand($item)
+    public function showForMetademand($item)
     {
 
         if (!$this->canView()) {
@@ -342,7 +341,7 @@ class Group extends CommonDBChild
      *
      * @return bool
      */
-    static function isUserHaveRight($metademands_id)
+    public static function isUserHaveRight($metademands_id)
     {
         $dbu = new DbUtils();
 
@@ -356,7 +355,7 @@ class Group extends CommonDBChild
         // Get metademand groups
         $metademands_groups_data = $dbu->getAllDataFromTable(
             'glpi_plugin_metademands_groups',
-            ['`plugin_metademands_metademands_id`' => $metademands_id]
+            ['`plugin_metademands_metademands_id`' => $metademands_id],
         );
 
         if (!empty($metademands_groups_data)) {
@@ -394,14 +393,14 @@ class Group extends CommonDBChild
     /**
      * @return array
      */
-    function rawSearchOptions()
+    public function rawSearchOptions()
     {
 
         $tab = [];
 
         $tab[] = [
             'id' => 'common',
-            'name' => self::getTypeName(1)
+            'name' => self::getTypeName(1),
         ];
 
         $tab[] = [
@@ -410,7 +409,7 @@ class Group extends CommonDBChild
             'field' => 'name',
             'name' => __('Name'),
             'datatype' => 'itemlink',
-            'itemlink_type' => $this->getType()
+            'itemlink_type' => $this->getType(),
         ];
 
         $tab[] = [
@@ -418,7 +417,7 @@ class Group extends CommonDBChild
             'table' => $this->getTable(),
             'field' => 'id',
             'name' => __('ID'),
-            'datatype' => 'number'
+            'datatype' => 'number',
         ];
 
         $tab[] = [
@@ -426,7 +425,7 @@ class Group extends CommonDBChild
             'table' => 'glpi_groups',
             'field' => 'name',
             'name' => __('Group'),
-            'datatype' => 'dropdown'
+            'datatype' => 'dropdown',
         ];
 
         return $tab;
@@ -437,7 +436,7 @@ class Group extends CommonDBChild
      *
      * @return array|bool
      */
-    function prepareInputForAdd($input)
+    public function prepareInputForAdd($input)
     {
         if (!$this->checkMandatoryFields($input)) {
             return false;
@@ -451,7 +450,7 @@ class Group extends CommonDBChild
      *
      * @return array|bool
      */
-    function prepareInputForUpdate($input)
+    public function prepareInputForUpdate($input)
     {
         if (!$this->checkMandatoryFields($input)) {
             return false;
@@ -465,7 +464,7 @@ class Group extends CommonDBChild
      *
      * @return bool
      */
-    function checkMandatoryFields($input)
+    public function checkMandatoryFields($input)
     {
         $msg = [];
         $checkKo = false;
@@ -491,7 +490,7 @@ class Group extends CommonDBChild
     /**
      * @return array
      */
-    function getForbiddenStandardMassiveAction()
+    public function getForbiddenStandardMassiveAction()
     {
         $forbidden = parent::getForbiddenStandardMassiveAction();
 

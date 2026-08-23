@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Task;
@@ -33,7 +33,7 @@ use GlpiPlugin\Metademands\MetademandTask;
 use GlpiPlugin\Metademands\MailTask;
 
 if (empty($_GET["id"])) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 
 $task           = new Task();
@@ -43,53 +43,53 @@ $mailtask = new MailTask();
 
 if (isset($_POST["add"])) {
 
-   if (isset($_POST['taskType'])) {
-      // Check update rights for clients
-      $task->check(-1, UPDATE, $_POST);
-      $_POST['plugin_metademands_tasks_id'] = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
+    if (isset($_POST['taskType'])) {
+        // Check update rights for clients
+        $task->check(-1, UPDATE, $_POST);
+        $_POST['plugin_metademands_tasks_id'] = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
 
-      if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
-         $_POST['block_use'] = json_encode([]);
-      } else {
-         $_POST['block_use'] = json_encode($_POST['block_use']);
-      }
-      $_POST['type']  = $_POST['taskType'];
-      $_POST['level'] = 1;
+        if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
+            $_POST['block_use'] = json_encode([]);
+        } else {
+            $_POST['block_use'] = json_encode($_POST['block_use']);
+        }
+        $_POST['type']  = $_POST['taskType'];
+        $_POST['level'] = 1;
 
-      if (isset($_POST['plugin_metademands_tasks_id']) && $_POST['plugin_metademands_tasks_id'] > 0) {
-         $parenttask = new Task();
-         $parenttask->getFromDB($_POST['plugin_metademands_tasks_id']);
-         $_POST['level'] = $parenttask->fields['level'] + 1;
-      }
+        if (isset($_POST['plugin_metademands_tasks_id']) && $_POST['plugin_metademands_tasks_id'] > 0) {
+            $parenttask = new Task();
+            $parenttask->getFromDB($_POST['plugin_metademands_tasks_id']);
+            $_POST['level'] = $parenttask->fields['level'] + 1;
+        }
 
-      if ($tickettask->isMandatoryField($_POST) && $tasks_id = $task->add($_POST)) {
-         if ($_POST['taskType'] == Task::TICKET_TYPE
-             || $_POST['taskType'] == Task::TASK_TYPE) {
-            $_POST['plugin_metademands_tasks_id'] = $tasks_id;
-            $_POST['type']                        = \Ticket::DEMAND_TYPE;
-            $tickettask->add($_POST);
-         } else if($_POST['taskType'] == Task::METADEMAND_TYPE){
-            if ($_POST['link_metademands_id']) {
-               // The dropdown uses -1 as the "active entity" option; store it as
-               // NULL (no override). Any real entity id (including the root, 0)
-               // is stored as-is.
-               $destination_entity = $_POST['destination_entities_id'] ?? null;
-               $destination_entity = (is_numeric($destination_entity) && $destination_entity >= 0)
-                   ? (int)$destination_entity
-                   : null;
-               $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
-                                     'plugin_metademands_metademands_id' => $_POST['link_metademands_id'],
-                                     'destination_entities_id'           => $destination_entity]);
+        if ($tickettask->isMandatoryField($_POST) && $tasks_id = $task->add($_POST)) {
+            if ($_POST['taskType'] == Task::TICKET_TYPE
+                || $_POST['taskType'] == Task::TASK_TYPE) {
+                $_POST['plugin_metademands_tasks_id'] = $tasks_id;
+                $_POST['type']                        = \Ticket::DEMAND_TYPE;
+                $tickettask->add($_POST);
+            } elseif ($_POST['taskType'] == Task::METADEMAND_TYPE) {
+                if ($_POST['link_metademands_id']) {
+                    // The dropdown uses -1 as the "active entity" option; store it as
+                    // NULL (no override). Any real entity id (including the root, 0)
+                    // is stored as-is.
+                    $destination_entity = $_POST['destination_entities_id'] ?? null;
+                    $destination_entity = (is_numeric($destination_entity) && $destination_entity >= 0)
+                        ? (int) $destination_entity
+                        : null;
+                    $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
+                        'plugin_metademands_metademands_id' => $_POST['link_metademands_id'],
+                        'destination_entities_id'           => $destination_entity]);
+                }
+            } elseif ($_POST['taskType'] == Task::MAIL_TYPE) {
+                $_POST['plugin_metademands_tasks_id'] = $tasks_id;
+                $_POST['type']                        = \Ticket::DEMAND_TYPE;
+                $mailtask->add($_POST);
             }
-         } else if ($_POST['taskType'] == Task::MAIL_TYPE){
-             $_POST['plugin_metademands_tasks_id'] = $tasks_id;
-             $_POST['type']                        = \Ticket::DEMAND_TYPE;
-             $mailtask->add($_POST);
-         }
-      }
-   }
+        }
+    }
 
-   Html::back();
+    Html::back();
 
 } if (isset($_POST["update"])) {
     // Check update rights for clients
@@ -100,7 +100,7 @@ if (isset($_POST["add"])) {
     $input['content'] = $_POST['content'];
     if ($input['type'] == Task::MAIL_TYPE) {
         $input['id'] = $_POST['mailtask_id'];
-        if($mailtask->update($input)){
+        if ($mailtask->update($input)) {
             if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
                 $input['block_use'] = json_encode([]);
             } else {

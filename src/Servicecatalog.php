@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -153,7 +153,7 @@ class Servicecatalog extends CommonGLPI
             'glpi_plugin_metademands_metademands',
             ["`is_active`"         => 1,
                 "`is_deleted`"         => 0,
-                "`type`"              => $type]
+                "`type`"              => $type],
         );
         $cats       = [];
 
@@ -182,7 +182,7 @@ class Servicecatalog extends CommonGLPI
             //Redirect if not linked to a resource contract type
             if (!$dbu->countElementsInTable(
                 "glpi_plugin_metademands_metademands_resources",
-                ["plugin_metademands_metademands_id" => $meta_concerned]
+                ["plugin_metademands_metademands_id" => $meta_concerned],
             )) {
                 return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" . $category_id . "&metademands_id=" . $meta_concerned . "&tickets_id=0&step=" . Metademand::STEP_SHOW;
             }

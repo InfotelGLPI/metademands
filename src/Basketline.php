@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -41,8 +41,7 @@ use Toolbox;
  */
 class Basketline extends CommonDBTM
 {
-
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
 
     public static function install(Migration $migration)
@@ -100,7 +99,7 @@ class Basketline extends CommonDBTM
      * @param bool $preview
      * @param       $metademands_id
      */
-    static function displayBasketSummary($metademands_id, $line = [], $post = [])
+    public static function displayBasketSummary($metademands_id, $line = [], $post = [])
     {
 
         if (count($line) > 0) {
@@ -117,16 +116,16 @@ class Basketline extends CommonDBTM
                     }
                 }
 
-//                $color = Wizard::hex2rgba($title_color, "0.03");
-//                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
-//                echo "<div class='card-header' $style_background>";
-//
-//                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-//                echo __('Your basket', 'metademands');
-//
+                //                $color = Wizard::hex2rgba($title_color, "0.03");
+                //                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+                //                echo "<div class='card-header' $style_background>";
+                //
+                //                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+                //                echo __('Your basket', 'metademands');
+                //
 
-//                echo "</h2>";
-//                echo "</div>";
+                //                echo "</h2>";
+                //                echo "</div>";
 
                 echo "<div class='row'>";
                 echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
@@ -149,7 +148,7 @@ class Basketline extends CommonDBTM
                         'metademands_id' => $metademands_id,
                     ],
                     'ti-trash',
-                    "class='btn btn-primary'"
+                    "class='btn btn-primary'",
                 );
 
                 echo "</div>";
@@ -166,9 +165,9 @@ class Basketline extends CommonDBTM
                 }
 
                 foreach ($basketLines as $idline => $fieldlines) {
-//                    echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
+                    //                    echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
                     self::retrieveDatasByType($metademands_id, $idline, $fieldlines, $line);
-//                    echo "</table>";
+                    //                    echo "</table>";
                 }
 
                 echo "<div class='row'>";
@@ -184,11 +183,11 @@ class Basketline extends CommonDBTM
                         'step' => Metademand::STEP_SHOW,
                     ],
                     '',
-                    "class='btn btn-primary'"
+                    "class='btn btn-primary'",
                 );
 
                 echo "<span style='float:right'>";
-//                $title = _sx('button', 'Send order', 'metademands');
+                //                $title = _sx('button', 'Send order', 'metademands');
                 $title = _sx('button', 'Save & Post', 'metademands');
                 $current_ticket = $post["current_ticket_id"] = $post["tickets_id"];
                 echo Html::submit($title, ['name' => 'send_order',
@@ -276,7 +275,7 @@ class Basketline extends CommonDBTM
                 continue;
             }
 
-            echo "<tr class='tab_bg_1' id-field='field_basket_".$idline . $v["id"] . "'>";
+            echo "<tr class='tab_bg_1' id-field='field_basket_" . $idline . $v["id"] . "'>";
 
             echo "<td>";
 
@@ -345,7 +344,7 @@ class Basketline extends CommonDBTM
                 'delete_basket_line' => $idline,
             ],
             'ti-trash',
-            "class='btn btn-danger'"
+            "class='btn btn-danger'",
         );
 
         echo "</td>";
@@ -360,7 +359,7 @@ class Basketline extends CommonDBTM
      *
      * @throws \GlpitestSQLError
      */
-    function addToBasket($content, $plugin_metademands_metademands_id)
+    public function addToBasket($content, $plugin_metademands_metademands_id)
     {
         global $DB;
 
@@ -400,7 +399,7 @@ class Basketline extends CommonDBTM
             }
 
             $this->add(['name' => $name,
-                'value' => isset($values['value']) ? $values['value'] : NULL,
+                'value' => isset($values['value']) ? $values['value'] : null,
                 'value2' => $values['value2'],
                 'line' => $line,
                 'plugin_metademands_fields_id' => $values['plugin_metademands_fields_id'],
@@ -414,7 +413,7 @@ class Basketline extends CommonDBTM
      * @param $input
      * @param $line
      */
-    function updateFromBasket($input, $line)
+    public function updateFromBasket($input, $line)
     {
 
 
@@ -500,7 +499,7 @@ class Basketline extends CommonDBTM
     /**
      * @param $input
      */
-    function deleteFromBasket($input)
+    public function deleteFromBasket($input)
     {
 
         $this->deleteByCriteria(['line' => $input['delete_basket_line'],
@@ -511,7 +510,7 @@ class Basketline extends CommonDBTM
     /**
      * @param $input
      */
-    function deleteFileFromBasket($input)
+    public function deleteFileFromBasket($input)
     {
 
         // Scope the lookup to the current user: basket line numbers are small shared integers,

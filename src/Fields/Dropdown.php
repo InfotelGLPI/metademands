@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -87,7 +87,7 @@ class Dropdown extends CommonDBTM
             'glpi_locations',
             '',
             $entities_id,
-            true
+            true,
         );
 
         $locations = [];
@@ -107,7 +107,7 @@ class Dropdown extends CommonDBTM
                 $location['id'],
                 Location::class,
                 'name',
-                $_SESSION['glpilanguage']
+                $_SESSION['glpilanguage'],
             ) ?: $location['name'];
             $locations[$location['id']] = $location;
         }
@@ -235,7 +235,7 @@ class Dropdown extends CommonDBTM
         switch ($data['item']) {
             case "Location" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='location_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
+                    echo "<div id='location_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['locations_id'] = $value;
                     $fieldUser             = new Field();
@@ -328,7 +328,7 @@ class Dropdown extends CommonDBTM
 
             case "UserTitle" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='title_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
+                    echo "<div id='title_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['fields_id']    = $data['id'];
                     $_POST['usertitles_id'] = $value;
@@ -371,7 +371,7 @@ class Dropdown extends CommonDBTM
                 break;
             case "UserCategory" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='category_user" . $data['link_to_user'] . $data['id']. "' class=\"input-group\">";
+                    echo "<div id='category_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['usercategories_id'] = $value;
                     $fieldUser             = new Field();
@@ -573,7 +573,7 @@ class Dropdown extends CommonDBTM
                 'display_type_html'       => $display_type_html,
                 'root_items_html'         => $root_items_html,
                 'location_depth_html'     => $location_depth_html,
-            ]
+            ],
         );
     }
 
@@ -809,7 +809,7 @@ class Dropdown extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -856,7 +856,7 @@ class Dropdown extends CommonDBTM
             }
             $onchange .= "});";
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -913,7 +913,7 @@ class Dropdown extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1058,7 +1058,7 @@ class Dropdown extends CommonDBTM
                 foreach ($check_value['hidden_link'] as $hidden_link) {
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1177,16 +1177,16 @@ class Dropdown extends CommonDBTM
                                         foreach ($childs_blocks as $childs) {
                                             $options = getAllDataFromTable(
                                                 'glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs]
+                                                ['hidden_block' => $childs],
                                             );
                                             if (count($options) == 0) {
                                                 $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                             document.getElementById('ablock" . $childs . "').style.display = 'block';
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . Fieldoption::setMandatoryBlockFields(
-                                                        $metaid,
-                                                        $childs
-                                                    );
+                                                    $metaid,
+                                                    $childs,
+                                                );
                                             }
                                         }
                                     }
@@ -1229,7 +1229,7 @@ class Dropdown extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1284,7 +1284,7 @@ class Dropdown extends CommonDBTM
                                 foreach ($childs_blocks as $childs) {
                                     $options = getAllDataFromTable(
                                         'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]
+                                        ['hidden_block' => $childs],
                                     );
                                     if (count($options) == 0) {
                                         $onchange .= "if (document.getElementById('ablock" . $childs . "'))
@@ -1323,7 +1323,7 @@ class Dropdown extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -1362,7 +1362,7 @@ class Dropdown extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }
@@ -1375,7 +1375,7 @@ class Dropdown extends CommonDBTM
                 if (!empty($field['item'])) {
                     return \Dropdown::getDropdownName(
                         $dbu->getTableForItemType($field['item']),
-                        $field['value']
+                        $field['value'],
                     );
                 }
                 return '';

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -207,7 +207,7 @@ class FieldCustomvalue extends CommonDBChild
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             $dbu->getTableForItemType(__CLASS__),
-            ["plugin_metademands_fields_id" => $item->getID()]
+            ["plugin_metademands_fields_id" => $item->getID()],
         );
     }
 
@@ -367,7 +367,7 @@ class FieldCustomvalue extends CommonDBChild
                         _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
                         ['plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"]],
                         'ti-settings',
-                        "class='btn btn-warning'"
+                        "class='btn btn-warning'",
                     );
                     $fix_ranks_html = ob_get_clean();
                 }
@@ -477,7 +477,7 @@ class FieldCustomvalue extends CommonDBChild
     {
 
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
+            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR],
         ) . ");";
 
         echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => $display_comment]);
@@ -553,7 +553,7 @@ class FieldCustomvalue extends CommonDBChild
             echo Html::select(
                 "icon[$rank]",
                 ['' => ''],
-                ['id' => $icon_selector_id, 'selected' => '', 'style' => 'width:175px;']
+                ['id' => $icon_selector_id, 'selected' => '', 'style' => 'width:175px;'],
             );
             echo Html::script('js/modules/Form/WebIconSelector.js');
             echo Html::scriptBlock("$(function() {
@@ -577,7 +577,7 @@ class FieldCustomvalue extends CommonDBChild
                 'default_html'    => $default_html,
                 'display_icon'    => (bool) $display_icon,
                 'icon_html'       => $icon_html,
-            ]
+            ],
         );
     }
 
@@ -642,7 +642,7 @@ class FieldCustomvalue extends CommonDBChild
             Session::addMessageAfterRedirect(
                 __("You can't add a custom value without name", "metademands"),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }

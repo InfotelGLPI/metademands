@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
@@ -84,14 +84,14 @@ if (isset($_POST['save_draft'])) {
                 }
             }
 
-//            if (Plugin::isPluginActive('orderfollowup')) {
-//                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-//                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-//                    foreach ($freeinputs as $freeinput) {
-//                        $_POST['freeinputs'][] = $freeinput;
-//                    }
-//                }
-//            }
+            //            if (Plugin::isPluginActive('orderfollowup')) {
+            //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+            //                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+            //                    foreach ($freeinputs as $freeinput) {
+            //                        $_POST['freeinputs'][] = $freeinput;
+            //                    }
+            //                }
+            //            }
 
             if (isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'])) {
                 $freetables = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'];
@@ -161,7 +161,7 @@ if (isset($_POST['save_draft'])) {
             $metademands->getFromDB($_POST['metademands_id']);
             if ($KO === false) {
                 // Save requester user
-//                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+                //                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                 // Case of simple ticket convertion
                 if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
                     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['items_id'];
@@ -176,7 +176,7 @@ if (isset($_POST['save_draft'])) {
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
                     (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                         && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
-//                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
+                //                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
             }
 
             $drafts = new Draft();
@@ -211,7 +211,6 @@ if (isset($_POST['save_draft'])) {
                                 $line['form'],
                                 $_POST['field'],
                                 $draft_id,
-
                             );
                         }
                     }
@@ -230,16 +229,13 @@ if (isset($_POST['save_draft'])) {
                                 $line['form'],
                                 $_POST['field'],
                                 $draft_id,
-
                             );
                         }
                     }
                 }
             }
 
-//            $_SESSION['my_last_draft'] = $draft_id;
-
-
+            //            $_SESSION['my_last_draft'] = $draft_id;
 
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id'] = $draft_id;
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name'] = $_POST['draft_name'];
@@ -256,6 +252,3 @@ if ($KO === false) {
 } else {
     echo $KO;
 }
-
-
-

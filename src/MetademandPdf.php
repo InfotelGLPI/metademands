@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -57,31 +57,30 @@ if (!defined('EURO')) {
 #[AllowDynamicProperties]
 class MetademandPdf extends \TCPDF
 {
-
     /* Constantes pour paramétrer certaines données. */
-    var $line_height = 6;     // Hauteur d'une ligne simple.
-    var $multiline_height = 6;     // Hauteur d'un textarea
-    var $linebreak_height = 6;     // Hauteur d'une break.
+    public $line_height = 6;     // Hauteur d'une ligne simple.
+    public $multiline_height = 6;     // Hauteur d'un textarea
+    public $linebreak_height = 6;     // Hauteur d'une break.
     // NOTE: do NOT name this "bgcolor" — TCPDF already declares a protected $bgcolor
     // property (the current fill-color array) and overwrites it on every fill, which would
     // turn this string into an array and make SetBackgroundColor() fall through to white.
-    var $default_bgcolor = 'grey';
-    var $value_width = 45;
-    var $pol_def = 'Helvetica'; // Police par défaut;
-    var $title_size = 13;      // Taille du titre.
-    var $subtitle_size = 12;      // Taille du titre de bloc.
-    var $font_size = 10;      // Taille des champs.
-    var $margin_top = 10;      // Marge du haut.
-    var $margin_bottom = 10;      // Marge du bas.
-    var $margin_left = 10;       // Marge de gauche et de droite accessoirement.
-    var $big_width_cell = 210;     // Largeur d'une cellule qui prend toute la page.
-    var $page_height = 297;
-    var $header_height = 30;
-    var $footer_height = 10;
-    var $page_width;
-    var $fields;
-    var $title;
-    var $subtitle;
+    public $default_bgcolor = 'grey';
+    public $value_width = 45;
+    public $pol_def = 'Helvetica'; // Police par défaut;
+    public $title_size = 13;      // Taille du titre.
+    public $subtitle_size = 12;      // Taille du titre de bloc.
+    public $font_size = 10;      // Taille des champs.
+    public $margin_top = 10;      // Marge du haut.
+    public $margin_bottom = 10;      // Marge du bas.
+    public $margin_left = 10;       // Marge de gauche et de droite accessoirement.
+    public $big_width_cell = 210;     // Largeur d'une cellule qui prend toute la page.
+    public $page_height = 297;
+    public $header_height = 30;
+    public $footer_height = 10;
+    public $page_width;
+    public $fields;
+    public $title;
+    public $subtitle;
 
     /**
      * MetademandPdf constructor.
@@ -127,27 +126,27 @@ class MetademandPdf extends \TCPDF
     /**
      * Fonctions permettant définir la couleur du texte
      */
-    function SetFontGrey()
+    public function SetFontGrey()
     {
         $this->SetTextColor(205, 205, 205);
     }
 
-    function SetFontRed()
+    public function SetFontRed()
     {
         $this->SetTextColor(255, 0, 0);
     }
 
-    function SetFontBlue()
+    public function SetFontBlue()
     {
         $this->SetTextColor(153, 204, 255);
     }
 
-    function SetFontDarkBlue()
+    public function SetFontDarkBlue()
     {
         $this->SetTextColor(0, 0, 255);
     }
 
-    function SetFontBlack()
+    public function SetFontBlack()
     {
         $this->SetTextColor(0, 0, 0);
     }
@@ -155,7 +154,7 @@ class MetademandPdf extends \TCPDF
     /**
      * @param $color
      */
-    function SetFontColor($color)
+    public function SetFontColor($color)
     {
         switch ($color) {
             case 'grey':
@@ -179,32 +178,32 @@ class MetademandPdf extends \TCPDF
     /**
      * Fonctions permettant remplir la couleur d'une cellule
      */
-    function SetBackgroundGrey()
+    public function SetBackgroundGrey()
     {
         $this->SetFillColor(225, 225, 215);
     }
 
-    function SetBackgroundHardGrey()
+    public function SetBackgroundHardGrey()
     {
         $this->SetFillColor(192, 192, 192);
     }
 
-    function SetBackgroundBlue()
+    public function SetBackgroundBlue()
     {
         $this->SetFillColor(185, 218, 255);
     }
 
-    function SetBackgroundRed()
+    public function SetBackgroundRed()
     {
         $this->SetFillColor(255, 0, 0);
     }
 
-    function SetBackgroundYellow()
+    public function SetBackgroundYellow()
     {
         $this->SetFillColor(255, 255, 204);
     }
 
-    function SetBackgroundWhite()
+    public function SetBackgroundWhite()
     {
         $this->SetFillColor(255, 255, 255);
     }
@@ -212,7 +211,7 @@ class MetademandPdf extends \TCPDF
     /**
      * @param $color
      */
-    function SetBackgroundColor($color)
+    public function SetBackgroundColor($color)
     {
         switch ($color) {
             case 'grey':
@@ -236,7 +235,7 @@ class MetademandPdf extends \TCPDF
         }
     }
 
-    function Header()
+    public function Header()
     {
 
         $this->SetXY($this->margin_left, $this->margin_top);
@@ -257,10 +256,10 @@ class MetademandPdf extends \TCPDF
                 $this->margin_left + 5,
                 $this->margin_top + $height / 3,
                 $width,
-                $height
+                $height,
             ); // x, y, w, h
         } else {
-            $this->CellTitleValue($largeurCoteTitre, 20, "ID : ".$this->id, 'TBL', 'C', 'grey', 0, $this->font_size, 'black');
+            $this->CellTitleValue($largeurCoteTitre, 20, "ID : " . $this->id, 'TBL', 'C', 'grey', 0, $this->font_size, 'black');
         }
         if (Plugin::isPluginActive('orderfollowup')) {
             $largeurCaseTitre += 85;
@@ -306,7 +305,7 @@ class MetademandPdf extends \TCPDF
      *
      * @return array
      */
-    function imageResize($width, $height, $target)
+    public function imageResize($width, $height, $target)
     {
         if ($width > $height) {
             $percentage = ($target / $width);
@@ -314,8 +313,8 @@ class MetademandPdf extends \TCPDF
             $percentage = ($target / $height);
         }
 
-        $width = round($width * $percentage, 0,PHP_ROUND_HALF_UP);
-        $height = round($height * $percentage, 0,PHP_ROUND_HALF_UP);
+        $width = round($width * $percentage, 0, PHP_ROUND_HALF_UP);
+        $height = round($height * $percentage, 0, PHP_ROUND_HALF_UP);
 
         return [$width, $height];
     }
@@ -333,7 +332,7 @@ class MetademandPdf extends \TCPDF
      * @param int $size
      * @param string $fontColor
      */
-    function CellTitleValue($w, $h, $value, $border = 'LRB', $align = 'L', $color = '', $bold = false, $size = 12, $fontColor = '')
+    public function CellTitleValue($w, $h, $value, $border = 'LRB', $align = 'L', $color = '', $bold = false, $size = 12, $fontColor = '')
     {
         if (empty($size)) {
             $size = $this->font_size;
@@ -359,7 +358,7 @@ class MetademandPdf extends \TCPDF
      * @param string $fontColor
      * @param string $link
      */
-    function MultiCellValue($w, $h, $type, $label, $values, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 10, $fontColor = '', $link = '')
+    public function MultiCellValue($w, $h, $type, $label, $values, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 10, $fontColor = '', $link = '')
     {
         if (empty($size)) {
             $size = $this->font_size;
@@ -411,7 +410,7 @@ class MetademandPdf extends \TCPDF
         }
     }
 
-    function BasicTable($header, $data, $color = '')
+    public function BasicTable($header, $data, $color = '')
     {
         $this->SetBackgroundColor($this->default_bgcolor);
 
@@ -421,7 +420,7 @@ class MetademandPdf extends \TCPDF
         // otherwise. The table adapts to the actual number of columns instead of assuming 7,
         // and the grand total row (which only makes sense with prices) is drawn accordingly.
         $nb = count($header);
-        $all_w = array(20, 80, 80, 15, 30, 30, 20); //275
+        $all_w = [20, 80, 80, 15, 30, 30, 20]; //275
         $w = array_slice($all_w, 0, $nb);
         $has_price = $nb >= 7;
 
@@ -465,11 +464,11 @@ class MetademandPdf extends \TCPDF
             $this->SetBackgroundColor($this->default_bgcolor);
             $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
             $this->SetBackgroundColor($color);
-            $this->Cell(20, 6, Html::formatNumber($total, false, 2)." ".EURO, 1, 0, 'L', $fill);
+            $this->Cell(20, 6, Html::formatNumber($total, false, 2) . " " . EURO, 1, 0, 'L', $fill);
         }
     }
 
-    function BasicTableFreeTable($header, $data, $color = "")
+    public function BasicTableFreeTable($header, $data, $color = "")
     {
         $this->SetBackgroundColor($this->default_bgcolor);
 
@@ -518,11 +517,11 @@ class MetademandPdf extends \TCPDF
         $this->Ln();
     }
 
-    function BasicTableFreeInputs($header, $data, $color = '')
+    public function BasicTableFreeInputs($header, $data, $color = '')
     {
         $this->SetBackgroundColor($this->default_bgcolor);
-        $w = array(30, 80, 100, 15, 30, 20);//190
-        for ($i=0; $i<count($header); $i++) {
+        $w = [30, 80, 100, 15, 30, 20];//190
+        for ($i = 0; $i < count($header); $i++) {
             $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
         }
         $this->Ln();
@@ -540,8 +539,8 @@ class MetademandPdf extends \TCPDF
             $this->Cell($w[2], 6, $r2, 'LR', 0, 'L', $fill);
             $this->Cell($w[3], 6, $row[3], 'LR', 0, 'L', $fill);
             $row[4] = Toolbox::substr($row[4], 0, 20);
-            $this->Cell($w[4], 6, $row[4]." ".EURO, 'LR', 0, 'L', $fill);
-            $this->Cell($w[5], 6, $row[5]." ".EURO, 'LR', 0, 'L', $fill);
+            $this->Cell($w[4], 6, $row[4] . " " . EURO, 'LR', 0, 'L', $fill);
+            $this->Cell($w[5], 6, $row[5] . " " . EURO, 'LR', 0, 'L', $fill);
             $this->Ln();
             $fill = !$fill;
 
@@ -556,17 +555,17 @@ class MetademandPdf extends \TCPDF
         $this->SetBackgroundColor($this->default_bgcolor);
         $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
         $this->SetBackgroundColor($color);
-        $this->Cell(20, 6, Html::formatNumber($total, false, 2)." ".EURO, 1, 0, 'L', $fill);
+        $this->Cell(20, 6, Html::formatNumber($total, false, 2) . " " . EURO, 1, 0, 'L', $fill);
 
 
         $this->Ln();
         $this->Cell(195, 6, "", 0, 0, 'C', true);
-        $grandtotalHT = __('Grand total (HT)', 'orderfollowup')." ".__('(if VAT 20%)', 'orderfollowup');
+        $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
         $this->SetBackgroundColor($this->default_bgcolor);
         $this->Cell(60, 6, $grandtotalHT, 1, 0, 'C', true);
         $this->SetBackgroundColor($color);
         $totalHT = $total / 1.2;
-        $this->Cell(20, 6, Html::formatNumber($totalHT, false, 2)." ".EURO, 1, 0, 'L', $fill);
+        $this->Cell(20, 6, Html::formatNumber($totalHT, false, 2) . " " . EURO, 1, 0, 'L', $fill);
     }
 
     /**
@@ -576,7 +575,7 @@ class MetademandPdf extends \TCPDF
      * @param  $bold
      * @param  $size
      */
-    function SetFontNormal($color, $bold, $size)
+    public function SetFontNormal($color, $bold, $size)
     {
         $this->SetFontColor($color);
         if ($bold) {
@@ -770,7 +769,7 @@ class MetademandPdf extends \TCPDF
                         $field_custom = new FieldCustomvalue();
                         if ($customs = $field_custom->find(
                             ["plugin_metademands_fields_id" => $elt['id']],
-                            "rank"
+                            "rank",
                         )) {
                             if (count($customs) > 0) {
                                 $elt['custom_values'] = $customs;
@@ -915,7 +914,7 @@ class MetademandPdf extends \TCPDF
                                     if (isset($itemtype) && isset($items_id)) {
                                         $value = Dropdown::getDropdownName(
                                             $dbu->getTableForItemType($itemtype),
-                                            $items_id
+                                            $items_id,
                                         );
                                     }
                                     break;
@@ -937,7 +936,7 @@ class MetademandPdf extends \TCPDF
                                         $value = ($fields[$elt['id']] != 0) ? $custom_values[$fields[$elt['id']]] : ' ';
                                     }
                                     break;
-                                //others
+                                    //others
                                 default:
                                     $value = \Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields[$elt['id']]);
                                     $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
@@ -1190,7 +1189,7 @@ class MetademandPdf extends \TCPDF
                             }
                             break;
 
-                        case 'signature' ;
+                        case 'signature' :
                             $value = GLPI_PICTURE_DIR . '/' . $fields[$elt['id']];
                             $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             break;
@@ -1254,7 +1253,7 @@ class MetademandPdf extends \TCPDF
      *
      * @param $plug
      */
-    static function displayPluginFieldPDF($plug, $elt, $fields, $label)
+    public static function displayPluginFieldPDF($plug, $elt, $fields, $label)
     {
         global $PLUGIN_HOOKS;
 
@@ -1278,7 +1277,7 @@ class MetademandPdf extends \TCPDF
     /**
      *
      */
-    function Footer()
+    public function Footer()
     {
         $this->SetY($this->page_height - $this->margin_top - $this->header_height);
     }
@@ -1310,16 +1309,16 @@ class MetademandPdf extends \TCPDF
      *
      * @return string
      */
-    static function cleanTitle($string)
+    public static function cleanTitle($string)
     {
-        $string = str_replace(array('[\', \']'), '', $string);
+        $string = str_replace(['[\', \']'], '', $string);
         $string = preg_replace('/\[.*\]/U', '', $string);
         $string = preg_replace('/&(amp;)?#?[a-z0-9]+;/i', '-', $string);
         $string = htmlentities($string, ENT_COMPAT, 'utf-8');
         $string = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $string);
         $string = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $string); // pour les ligatures e.g. '&oelig;'
         $string = preg_replace('#&[^;]+;#', '', $string); // supprime les autres caractères
-        $string = preg_replace(array('/[^a-z0-9]/i', '/[-]+/'), '-', $string);
+        $string = preg_replace(['/[^a-z0-9]/i', '/[-]+/'], '-', $string);
         return strtolower(trim($string, '-'));
     }
 

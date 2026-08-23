@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -219,8 +219,8 @@ class Task extends CommonDBChild
                     self::getTypeName(),
                     $dbu->countElementsInTable(
                         $this->getTable(),
-                        ["plugin_metademands_metademands_id" => $item->getID()]
-                    )
+                        ["plugin_metademands_metademands_id" => $item->getID()],
+                    ),
                 );
             }
             return self::getTypeName();
@@ -347,7 +347,7 @@ class Task extends CommonDBChild
                 // Only one metademand can be selected
                 $metademand_tasks = $this->find([
                     'plugin_metademands_metademands_id' => $item->getID(),
-                    'type' => self::METADEMAND_TYPE
+                    'type' => self::METADEMAND_TYPE,
                 ]);
                 if (count($metademand_tasks)) {
                     unset($task_types[self::METADEMAND_TYPE]);
@@ -358,13 +358,13 @@ class Task extends CommonDBChild
                 $rand = \Dropdown::showFromArray('taskType', $task_types, ['value' => $valType]);
                 $params = [
                     'taskType' => '__VALUE__',
-                    'plugin_metademands_metademands_id' => $item->getID()
+                    'plugin_metademands_metademands_id' => $item->getID(),
                 ];
                 Ajax::updateItemOnSelectEvent(
                     "dropdown_taskType$rand",
                     "show_add_task_form",
                     PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
-                    $params
+                    $params,
                 );
 
                 echo "</td>";
@@ -549,7 +549,7 @@ class Task extends CommonDBChild
                         'solved' => $solved,
                     ],
                     "",
-                    false
+                    false,
                 )
                 . "};";
         }
@@ -560,7 +560,7 @@ class Task extends CommonDBChild
             [
                 'title' => __('Show list of available tags'),
                 'display' => false,
-            ]
+            ],
         );
 
         $entries = [];
@@ -614,7 +614,7 @@ class Task extends CommonDBChild
                             'solved' => $solved,
                         ],
                         "",
-                        false
+                        false,
                     )
                     . "};";
             }
@@ -934,7 +934,7 @@ class Task extends CommonDBChild
             $metas = $dbu->getAllDataFromTable(
                 'glpi_plugin_metademands_metademands',
                 ["`itilcategories_id`" => $input["itilcategories_id"],
-                    "`type`"              => $meta->getField("type")]
+                    "`type`"              => $meta->getField("type")],
             );
 
             if (!empty($metas)) {
@@ -1108,7 +1108,7 @@ class Task extends CommonDBChild
                     [
                         'width'    => '100%',
                         'multiple' => true,
-                    ]
+                    ],
                 );
                 echo Html::submit(_x('button', 'Post'), ['name'  => 'massiveaction',
                     'class' => 'btn btn-primary']);

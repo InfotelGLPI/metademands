@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
@@ -84,7 +84,6 @@ if (isset($_POST['save_model'])) {
                         $form_value->getFromDB($value['plugin_metademands_forms_id']);
                         $inputv = Toolbox::convertTagToImage($value['value'], $form_value, $input, false);
 
-
                         $form_values->add(['plugin_metademands_forms_id' => $newid,
                             'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
                             'value' => $inputv,
@@ -106,7 +105,7 @@ if (isset($_POST['save_model'])) {
             'itemtype' => '',
             'date' => date('Y-m-d H:i:s'),
             'is_model' => 1,
-//            'is_private' => 1,
+            //            'is_private' => 1,
             'id' => $_POST['plugin_metademands_forms_id']];
 
         $form->update($input);
@@ -214,7 +213,7 @@ if (isset($_POST['save_model'])) {
                     }
                 }
             }
-           Form_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
+            Form_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
 
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id'] = $_POST['plugin_metademands_forms_id'];

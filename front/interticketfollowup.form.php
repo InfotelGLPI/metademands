@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Event;
@@ -38,7 +38,7 @@ $fup = new Interticketfollowup();
 if (!isset($_POST['itemtype']) || !class_exists($_POST['itemtype'])) {
     throw new BadRequestHttpException();
 }
-$track = new $_POST['itemtype'];
+$track = new $_POST['itemtype']();
 
 if (isset($_POST["add"])) {
     if (isset($_POST["targets_id"])) {
@@ -56,7 +56,7 @@ if (isset($_POST["add"])) {
                     $ticket_metademand_datas['plugin_metademands_metademands_id'],
                     [],
                     true,
-                    true
+                    true,
                 );
             }
 
@@ -65,17 +65,27 @@ if (isset($_POST["add"])) {
                 $fup->check(-1, CREATE, $_POST);
                 $fup->add($_POST);
 
-                Event::log($fup->getField('tickets_id'), strtolower($_POST['itemtype']), 4, "tracking",
+                Event::log(
+                    $fup->getField('tickets_id'),
+                    strtolower($_POST['itemtype']),
+                    4,
+                    "tracking",
                     //TRANS: %s is the user login
-                    sprintf(__('%s adds a followup'), $_SESSION["glpiname"]));
+                    sprintf(__('%s adds a followup'), $_SESSION["glpiname"]),
+                );
             }
         } else {
             $fup->check(-1, CREATE, $_POST);
             $fup->add($_POST);
 
-            Event::log($fup->getField('tickets_id'), strtolower($_POST['itemtype']), 4, "tracking",
+            Event::log(
+                $fup->getField('tickets_id'),
+                strtolower($_POST['itemtype']),
+                4,
+                "tracking",
                 //TRANS: %s is the user login
-                sprintf(__('%s adds a followup'), $_SESSION["glpiname"]));
+                sprintf(__('%s adds a followup'), $_SESSION["glpiname"]),
+            );
         }
     }
     Html::redirect($track->getFormURLWithID($_POST["tickets_id"]));

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Basketline;
@@ -35,6 +35,7 @@ use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Metademands\Group;
 use Glpi\Exception\Http\AccessDeniedHttpException;
+
 //use PluginOrderprojectsMetademand;
 
 if (isset($_POST['see_basket_summary'])) {
@@ -60,7 +61,6 @@ if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'])) 
     }
 }
 
-
 //if (isset($_POST['is_freetable'])
 //    && $_POST['is_freetable'] == 1
 //    && isset($_SESSION['plugin_orderfollowup']['freetables'])) {
@@ -73,8 +73,6 @@ if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'])) 
 //        echo $nofreetable;
 //    }
 //}
-
-
 
 $current_ticket_id = 0;
 $meta_validated = false;
@@ -105,11 +103,11 @@ if (isset($_GET['meta_validated'])) {
 }
 
 if (isset($PLUGIN_HOOKS['metademands'])) {
-	foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-		if (Plugin::isPluginActive($plug)) {
-			echo Metademand::pluginPreItemAdd($plug);
-		}
-	}
+    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+        if (Plugin::isPluginActive($plug)) {
+            echo Metademand::pluginPreItemAdd($plug);
+        }
+    }
 }
 
 if ($nofreetable == false) {
@@ -154,7 +152,6 @@ if ($nofreetable == false) {
             echo Basket::displayBasketSummary($post);
         }
 
-
         if ($metademands->fields['is_order'] == 1) {
             $metademands_data = Metademand::constructMetademands($_POST['form_metademands_id']);
             //Reorder array
@@ -169,7 +166,7 @@ if ($nofreetable == false) {
                         echo Basketline::displayBasketSummary(
                             $_POST['form_metademands_id'],
                             $line['form'],
-                            $post
+                            $post,
                         );
                     }
                 }
@@ -189,17 +186,17 @@ if ($nofreetable == false) {
             if (!isset($metademands->fields['entities_id'])
                 || !Session::haveAccessToEntity(
                     $metademands->fields['entities_id'],
-                    $metademands->fields['is_recursive']
+                    $metademands->fields['is_recursive'],
                 )) {
                 throw new AccessDeniedHttpException();
             }
 
             $meta = [];
-//            if (Plugin::isPluginActive('orderprojects')
-//                && $metademands->fields['is_order'] == 1) {
-//                $orderprojects = new PluginOrderprojectsMetademand();
-//                $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
-//            }
+            //            if (Plugin::isPluginActive('orderprojects')
+            //                && $metademands->fields['is_order'] == 1) {
+            //                $orderprojects = new PluginOrderprojectsMetademand();
+            //                $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+            //            }
 
             //            if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
             //                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
@@ -225,7 +222,7 @@ if ($nofreetable == false) {
                 }
             }
             if (count($meta) == 1) {
-//                $orderprojects->createFromMetademands($_POST);
+                //                $orderprojects->createFromMetademands($_POST);
                 Html::back();
             } else {
                 $nblines = 0;
@@ -258,7 +255,7 @@ if ($nofreetable == false) {
                         Session::addMessageAfterRedirect(
                             __("There is no line on the basket", "metademands"),
                             false,
-                            ERROR
+                            ERROR,
                         );
                     }
                 }
@@ -282,7 +279,6 @@ if ($nofreetable == false) {
                                 $post = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'];
                             }
                         }
-
 
                         foreach ($data as $idf => $form_data_fields) {
                             $fieldopt = new FieldOption();
@@ -400,14 +396,14 @@ if ($nofreetable == false) {
                                             }
                                             if (!isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm])
                                                 || count(
-                                                    $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm]
+                                                    $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['freetables'][$fm],
                                                 ) == 0) {
                                                 $translated = Field::displayField($id, 'name');
                                                 $msg = sprintf(__("There is no line on the mandatory table %s", "metademands"), $translated !== '' ? $translated : $value['name']);
                                                 Session::addMessageAfterRedirect(
                                                     $msg,
                                                     false,
-                                                    ERROR
+                                                    ERROR,
                                                 );
                                                 $KO = true;
                                             }
@@ -415,7 +411,6 @@ if ($nofreetable == false) {
                                     }
                                 }
                             }
-
 
                             $checks[] = Wizard::checkvalues($value, $id, $_POST, 'field');
                         }

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Field;
@@ -60,7 +60,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             foreach ($fields as $f) {
                 if ($fieldparameter->getFromDBByCrit([
                     'plugin_metademands_fields_id' => $f['id'],
-                    'link_to_user' => $_POST['id_fielduser']
+                    'link_to_user' => $_POST['id_fielduser'],
                 ])) {
                     if ($fieldparameter->fields['readonly'] == 1) {
                         $readonly = 1;
@@ -68,7 +68,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                     if ($fieldparameter->fields['default_use_id_requester_supervisor'] == 1) {
                         $default_use_id_requester_supervisor = 1;
                     }
-                    $display_type = (int)($fieldparameter->fields['display_type'] ?? 0);
+                    $display_type = (int) ($fieldparameter->fields['display_type'] ?? 0);
                     $id = $f['id'];
                     $_POST["field"] = $_POST['fieldname'] . "[$id]";
                     $_POST["fields_id"] = $id;
@@ -111,9 +111,9 @@ $opt = [
     'value' => $val,
     'width' => '200px',
     'used' => [
-        Session::getLoginUserID()
+        Session::getLoginUserID(),
     ],
-    'right'  => 'all'
+    'right'  => 'all',
 ];
 
 if ($readonly == 1) {
@@ -128,9 +128,9 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 if ($display_type == 1 && $id !== null) {
     $tooltip_moreparams = [
         'users_id'                           => '__VALUE__',
-        'id_fielduser'                       => (int)$id,
+        'id_fielduser'                       => (int) $id,
         'display_type'                       => 1,
-        'metademands_id'                     => (int)$_POST['metademands_id'],
+        'metademands_id'                     => (int) $_POST['metademands_id'],
         'default_use_id_requester'           => 0,
         'default_use_id_requester_supervisor' => 0,
     ];
@@ -154,17 +154,17 @@ if ($display_type == 1 && $id !== null) {
         "tooltip_user$id",
         PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
         [
-            'users_id'                           => (int)$val,
-            'id_fielduser'                       => (int)$id,
+            'users_id'                           => (int) $val,
+            'id_fielduser'                       => (int) $id,
             'display_type'                       => 1,
-            'metademands_id'                     => (int)$_POST['metademands_id'],
+            'metademands_id'                     => (int) $_POST['metademands_id'],
             'default_use_id_requester'           => 0,
             'default_use_id_requester_supervisor' => 0,
-        ]
+        ],
     );
 }
 
-$_POST['name'] = "manager_user".$_POST["id_fielduser"].$_POST['fields_id'];
+$_POST['name'] = "manager_user" . $_POST["id_fielduser"] . $_POST['fields_id'];
 $_POST['rand'] = "";
 
 Ajax::commonDropdownUpdateItem($_POST);

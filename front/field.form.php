@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Field;
@@ -116,7 +116,7 @@ if (isset($_POST["add_another"])) {
 
     // Redirect to an internally computed URL (never rebuild it from the
     // client-controlled Referer header, which enables an open redirect).
-    $meta_id = (int)($_POST["plugin_metademands_metademands_id"] ?? 0);
+    $meta_id = (int) ($_POST["plugin_metademands_metademands_id"] ?? 0);
     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $meta_id . "&open_add_field=" . $meta_id);
 } elseif (isset($_POST["add"])) {
     if (isset($_POST["plugin_metademands_metademands_id"])) {
@@ -184,7 +184,6 @@ if (isset($_POST["add_another"])) {
         $_POST['item'] = "other";
     }
 
-
     //    Check update rights for fields
     $field->check(-1, UPDATE, $_POST);
 
@@ -202,14 +201,14 @@ if (isset($_POST["add_another"])) {
     }
 
     Html::back();
-} else if (isset($_POST["fixorders"])) {
+} elseif (isset($_POST["fixorders"])) {
 
     $field->check(-1, UPDATE, $_POST);
 
     $field = new Field();
     if ($field_values = $field->find([
-        "plugin_metademands_metademands_id" => (int)$_POST["plugin_metademands_metademands_id"],
-        'rank' => (int)$_POST["rank"],
+        "plugin_metademands_metademands_id" => (int) $_POST["plugin_metademands_metademands_id"],
+        'rank' => (int) $_POST["rank"],
     ])) {
         $orders = [];
         foreach ($field_values as $k => $field_value) {

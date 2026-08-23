@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -172,8 +172,8 @@ class Condition extends CommonDBChild
                     self::getTypeName(),
                     $dbu->countElementsInTable(
                         $this->getTable(),
-                        ["plugin_metademands_metademands_id" => $item->getID()]
-                    )
+                        ["plugin_metademands_metademands_id" => $item->getID()],
+                    ),
                 );
             }
             return self::getTypeName();
@@ -498,7 +498,7 @@ class Condition extends CommonDBChild
                         Ajax::updateItemJsCode(
                             "viewcondition" . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params
+                            $params,
                         );
                         echo "};";
                         echo "</script>\n";
@@ -516,7 +516,7 @@ class Condition extends CommonDBChild
                         }
                         echo \Dropdown::getDropdownName(
                             Field::getTable(),
-                            $condition['plugin_metademands_fields_id']
+                            $condition['plugin_metademands_fields_id'],
                         ) . " (" . $condition['plugin_metademands_fields_id'] . ") ";
                         if (Session::haveRight('plugin_metademands', UPDATE)) {
                             echo "</a> ";
@@ -972,7 +972,7 @@ class Condition extends CommonDBChild
                                 [
                                     'width' => '100%',
                                     'value' => $condition->fields['check_value'] ?? 0,
-                                ]
+                                ],
                             );
                             break;
                         case 'ITILCategory_Metademands':
@@ -999,7 +999,7 @@ class Condition extends CommonDBChild
                                 0,
                                 0,
                                 $params,
-                                $default_values
+                                $default_values,
                             );
                             break;
                         case 'urgency':
@@ -1042,7 +1042,7 @@ class Condition extends CommonDBChild
                         }
                         echo Html::input(
                             "$name",
-                            $option
+                            $option,
                         );
                         break;
                     case 'number':
@@ -1055,7 +1055,7 @@ class Condition extends CommonDBChild
                         }
                         echo Html::input(
                             "$name",
-                            $option
+                            $option,
                         );
                         break;
                     case 'range':
@@ -1068,7 +1068,7 @@ class Condition extends CommonDBChild
                         }
                         echo Html::input(
                             "$name",
-                            $option
+                            $option,
                         );
                         break;
                     case 'radio':
@@ -1086,7 +1086,7 @@ class Condition extends CommonDBChild
                         \Dropdown::showFromArray(
                             "$name",
                             $choices,
-                            $options
+                            $options,
                         );
                         break;
                     case 'date':
@@ -1099,7 +1099,7 @@ class Condition extends CommonDBChild
                         echo "<span style='width: 50%!important;display: -webkit-box;'>";
                         Html::showDateField(
                             "$name",
-                            $option
+                            $option,
                         );
                         echo "</span>";
                         break;
@@ -1113,7 +1113,7 @@ class Condition extends CommonDBChild
                         echo "<span style='width: 50%!important;display: -webkit-box;'>";
                         Html::showDateTimeField(
                             "$name",
-                            $option
+                            $option,
                         );
                         echo "</span>";
                         break;
@@ -1126,13 +1126,13 @@ class Condition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-//                        $choice[0] = \Dropdown::EMPTY_VALUE;
+                        //                        $choice[0] = \Dropdown::EMPTY_VALUE;
                         $choice[1] = __('No');
                         $choice[2] = __('Yes');
                         \Dropdown::showFromArray(
                             $name,
                             $choice,
-                            $option
+                            $option,
                         );
                         break;
                 }

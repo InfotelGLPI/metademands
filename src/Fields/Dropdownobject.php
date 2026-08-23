@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -108,7 +108,7 @@ class Dropdownobject extends CommonDBTM
                         "tooltip_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
                         $paramstooltip,
-                        "dropdown_" . $namefield . "[" . $data['id'] . "]" . $userrand
+                        "dropdown_" . $namefield . "[" . $data['id'] . "]" . $userrand,
                     );
                 }
                 $fieldparameter = new FieldParameter();
@@ -119,7 +119,7 @@ class Dropdownobject extends CommonDBTM
                     foreach ($fields as $f) {
                         if ($fieldparameter->getFromDBByCrit(
                             ['plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0]]
+                                'link_to_user' => ['>', 0]],
                         )) {
 
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
@@ -142,7 +142,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
                                 $paramsloc,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -159,7 +159,7 @@ class Dropdownobject extends CommonDBTM
                             [
                                 'plugin_metademands_fields_id' => $f['id'],
                                 'link_to_user' => ['>', 0],
-                            ]
+                            ],
                         )) {
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
                             $paramstit
@@ -184,7 +184,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
                                 $paramstit,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -200,7 +200,7 @@ class Dropdownobject extends CommonDBTM
                             [
                                 'plugin_metademands_fields_id' => $f['id'],
                                 'link_to_user' => ['>', 0],
-                            ]
+                            ],
                         )) {
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
                             $paramscat
@@ -225,7 +225,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
                                 $paramscat,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -241,7 +241,7 @@ class Dropdownobject extends CommonDBTM
                             [
                                 'plugin_metademands_fields_id' => $f['id'],
                                 'link_to_user' => ['>', 0],
-                            ]
+                            ],
                         )) {
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
                             $paramsgroup
@@ -266,7 +266,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
                                 $paramsgroup,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -282,7 +282,7 @@ class Dropdownobject extends CommonDBTM
                             [
                                 'plugin_metademands_fields_id' => $f['id'],
                                 'link_to_user' => ['>', 0],
-                            ]
+                            ],
                         )) {
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
                             $paramsentity
@@ -308,7 +308,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/uentityUpdate.php",
                                 $paramsentity,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -325,7 +325,7 @@ class Dropdownobject extends CommonDBTM
                             [
                                 'plugin_metademands_fields_id' => $f['id'],
                                 'link_to_user' => ['>', 0],
-                            ]
+                            ],
                         )) {
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
                             $paramsdev
@@ -350,7 +350,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
                                 $paramsdev,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -367,7 +367,7 @@ class Dropdownobject extends CommonDBTM
                             [
                                 'plugin_metademands_fields_id' => $f['id'],
                                 'link_to_user' => ['>', 0],
-                            ]
+                            ],
                         )) {
                             $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
                             $paramsman
@@ -392,7 +392,7 @@ class Dropdownobject extends CommonDBTM
                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
                                 $paramsman,
                                 $namefield . "[" . $data['id'] . "]",
-                                false
+                                false,
                             );
                             echo "});</script>";
                         }
@@ -419,9 +419,9 @@ class Dropdownobject extends CommonDBTM
                         foreach ($group_user_data as $groups) {
                             $requester_groups[] = $groups['id'];
                         }
-//                        if (count($requester_groups) > 0) {
-                            $right = "groups";
-//                        }
+                        //                        if (count($requester_groups) > 0) {
+                        $right = "groups";
+                        //                        }
                     }
                 }
 
@@ -469,7 +469,7 @@ class Dropdownobject extends CommonDBTM
                         }
                     }
                 }
-//                \Toolbox::logInfo($opt);
+                //                \Toolbox::logInfo($opt);
                 echo User::dropdown($opt);
                 if ($opt['readonly']) {
                     echo Html::hidden($opt['name'], ['value' => $opt['value']]);
@@ -516,7 +516,7 @@ class Dropdownobject extends CommonDBTM
                     foreach ($relatedTextFields as $textField) {
                         if ($fields = $field_parameter->find(
                             ["plugin_metademands_fields_id" => $textField['id'],
-                                'link_to_user' => $data['id']]
+                                'link_to_user' => $data['id']],
                         )) {
                             foreach ($fields as $f) {
                                 if (!empty($f['used_by_ticket'])) {
@@ -644,22 +644,22 @@ class Dropdownobject extends CommonDBTM
                     }
                 }
 
-	            if($data['item'] == 'Ticket'){
-		            $opt = ['value'     => $value,
-			            'entity'    => $_SESSION['glpiactiveentities'],
-			            'name'      => $namefield . "[" . $data['id'] . "]",
-			            //                          'readonly'  => true,
-			            'displaywith' => ['id'],
-			            'condition' => $cond,
-			            'display'   => false];
-	            }else{
-		            $opt = ['value'     => $value,
-			            'entity'    => $_SESSION['glpiactiveentities'],
-			            'name'      => $namefield . "[" . $data['id'] . "]",
-			            //                          'readonly'  => true,
-			            'condition' => $cond,
-			            'display'   => false];
-	            }
+                if ($data['item'] == 'Ticket') {
+                    $opt = ['value'     => $value,
+                        'entity'    => $_SESSION['glpiactiveentities'],
+                        'name'      => $namefield . "[" . $data['id'] . "]",
+                        //                          'readonly'  => true,
+                        'displaywith' => ['id'],
+                        'condition' => $cond,
+                        'display'   => false];
+                } else {
+                    $opt = ['value'     => $value,
+                        'entity'    => $_SESSION['glpiactiveentities'],
+                        'name'      => $namefield . "[" . $data['id'] . "]",
+                        //                          'readonly'  => true,
+                        'condition' => $cond,
+                        'display'   => false];
+                }
 
                 if (isset($data['readonly']) && $data['readonly'] == 1 && $data['item'] == "Entity") {
                     $opt['readonly'] = true;
@@ -889,7 +889,7 @@ class Dropdownobject extends CommonDBTM
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_dropdownobject.html.twig',
-            ['rows' => $rows]
+            ['rows' => $rows],
         );
     }
 
@@ -1030,7 +1030,7 @@ class Dropdownobject extends CommonDBTM
                     \Dropdown::showFromArray(
                         "check_value",
                         $elements,
-                        ['value' => $params['check_value'], 'used' => $already_used]
+                        ['value' => $params['check_value'], 'used' => $already_used],
                     );
                 }
                 break;
@@ -1158,7 +1158,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1206,7 +1206,7 @@ class Dropdownobject extends CommonDBTM
             }
             $onchange .= "});";
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -1268,7 +1268,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                        let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1445,7 +1445,7 @@ class Dropdownobject extends CommonDBTM
                     foreach ($check_value['hidden_link'] as $hidden_link) {
                         if ($check_value['check_type_value'] == 2) {
                             $onchange .= "
-                                let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                                let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                                 let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                                 if(regex$compteur.test(val$compteur)) {
@@ -1513,7 +1513,7 @@ class Dropdownobject extends CommonDBTM
                 $onchange .= "});";
 
                 echo Html::scriptBlock(
-                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
                 );
             }
         }
@@ -1570,7 +1570,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                       let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                       let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(regex$compteur.test(val$compteur)) {
@@ -1595,7 +1595,7 @@ class Dropdownobject extends CommonDBTM
                                 foreach ($childs_blocks as $childs) {
                                     $options = getAllDataFromTable(
                                         'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]
+                                        ['hidden_block' => $childs],
                                     );
                                     if (count($options) == 0) {
                                         $script .= "if (document.getElementById('ablock" . $childs . "'))
@@ -1603,7 +1603,7 @@ class Dropdownobject extends CommonDBTM
                                             $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                      " . FieldOption::setMandatoryBlockFields(
                                             $metaid,
-                                            $childs
+                                            $childs,
                                         );
                                     }
                                 }
@@ -1653,7 +1653,7 @@ class Dropdownobject extends CommonDBTM
 
                     if ($check_value['check_type_value'] == 2) {
                         $script .= "
-                            let regex$compteur = new RegExp(" . json_encode((string)$idc) . ");
+                            let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
                         let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
 
                         if(!regex$compteur.test(val$compteur)) {
@@ -1721,7 +1721,7 @@ class Dropdownobject extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }
@@ -1736,7 +1736,7 @@ class Dropdownobject extends CommonDBTM
             default:
                 return \Dropdown::getDropdownName(
                     $dbu->getTableForItemType($field['item']),
-                    $field['value']
+                    $field['value'],
                 );
         }
     }

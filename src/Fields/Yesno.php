@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -101,7 +101,7 @@ class Yesno extends CommonDBTM
                     'required' => ($data['is_mandatory'] ? "required" : ""),
                     'id' => $data['id'],
                     'display' => false,
-                ]
+                ],
             );
             echo $field;
         } else {
@@ -120,7 +120,7 @@ class Yesno extends CommonDBTM
     {
 
         $name = $namefield . "[" . $data['id'] . "]";
-        $required = ($data['is_mandatory'] && $value == 0)? "required" : "";
+        $required = ($data['is_mandatory'] && $value == 0) ? "required" : "";
         $id = $name . "-toggle";
 
         echo "<label class='ios-switch-sm'>";
@@ -207,7 +207,7 @@ class Yesno extends CommonDBTM
             [
                 'display_type_html'   => $display_type_html,
                 'show_switch_warning' => $params["display_type"] == self::SWITCH_DISPLAY,
-            ]
+            ],
         );
     }
 
@@ -344,7 +344,7 @@ class Yesno extends CommonDBTM
                         } else {
                             if ($custom_values == 1 && $custom_values == $idc) {
                                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', false).trigger('change');";
-                            } else if ($custom_values == 2 && $custom_values == $idc) {
+                            } elseif ($custom_values == 2 && $custom_values == $idc) {
                                 $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
                             }
                         }
@@ -423,7 +423,7 @@ class Yesno extends CommonDBTM
             }
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -454,7 +454,7 @@ class Yesno extends CommonDBTM
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
-                'metademands'
+                'metademands',
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
@@ -624,7 +624,7 @@ class Yesno extends CommonDBTM
                         } else {
                             if ($custom_values == 1 && $custom_values == $idc) {
                                 $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', false).trigger('change');";
-                            } else if ($custom_values == 2 && $custom_values == $idc) {
+                            } elseif ($custom_values == 2 && $custom_values == $idc) {
                                 $post_onchange .= "$('[name=\"field[" . $id . "]\"]').prop('checked', true).trigger('change');";
                             }
                         }
@@ -688,7 +688,7 @@ class Yesno extends CommonDBTM
             }
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -774,7 +774,7 @@ class Yesno extends CommonDBTM
                                         foreach ($childs_blocks as $childs) {
                                             $options = getAllDataFromTable(
                                                 'glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs]
+                                                ['hidden_block' => $childs],
                                             );
                                             if (count($options) == 0) {
                                                 $post_onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
@@ -782,7 +782,7 @@ class Yesno extends CommonDBTM
                                         document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                  " . FieldOption::setMandatoryBlockFields(
                                                     $metaid,
-                                                    $childs
+                                                    $childs,
                                                 );
                                             }
                                         }
@@ -813,7 +813,7 @@ class Yesno extends CommonDBTM
                                 foreach ($childs_blocks as $childs) {
                                     $options = getAllDataFromTable(
                                         'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]
+                                        ['hidden_block' => $childs],
                                     );
                                     if (count($options) == 0) {
                                         $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
@@ -821,7 +821,7 @@ class Yesno extends CommonDBTM
                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                      " . FieldOption::setMandatoryBlockFields(
                                             $metaid,
-                                            $childs
+                                            $childs,
                                         );
                                     }
                                 }
@@ -870,7 +870,7 @@ class Yesno extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -908,7 +908,7 @@ class Yesno extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }

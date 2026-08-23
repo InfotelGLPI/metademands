@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -165,7 +165,7 @@ class Ticket extends CommonDBTM
                 if ($validation) {
                     if (in_array(
                         $validationmeta->fields['validate'],
-                        [MetademandValidation::TO_VALIDATE, MetademandValidation::TO_VALIDATE_WITHOUTTASK]
+                        [MetademandValidation::TO_VALIDATE, MetademandValidation::TO_VALIDATE_WITHOUTTASK],
                     )) {
                         $validation_todo = true;
                     }
@@ -293,7 +293,7 @@ class Ticket extends CommonDBTM
                 $ticket_metademand_data['plugin_metademands_metademands_id'],
                 [],
                 true,
-                true
+                true,
             );
 
             // If son tickets check status
@@ -392,16 +392,16 @@ class Ticket extends CommonDBTM
                     'glpi_plugin_metademands_metademandtasks' => [
                         'ON' => [
                             'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_metademands_id',
-                            'glpi_plugin_metademands_tickets_metademands'          => 'plugin_metademands_metademands_id'
-                        ]
+                            'glpi_plugin_metademands_tickets_metademands'          => 'plugin_metademands_metademands_id',
+                        ],
                     ],
                 ],
                 'LEFT JOIN'       => [
                     'glpi_tickets' => [
                         'ON' => [
                             'glpi_tickets' => 'id',
-                            'glpi_plugin_metademands_tickets_metademands'          => 'parent_tickets_id'
-                        ]
+                            'glpi_plugin_metademands_tickets_metademands'          => 'parent_tickets_id',
+                        ],
                     ],
                 ],
                 'WHERE' => [
@@ -437,7 +437,7 @@ class Ticket extends CommonDBTM
                             $data['metademands_id'],
                             $ticket_task_data,
                             $recursive,
-                            $seesolved
+                            $seesolved,
                         );
                     }
                 }
@@ -454,8 +454,8 @@ class Ticket extends CommonDBTM
                     'glpi_tickets' => [
                         'ON' => [
                             'glpi_tickets' => 'id',
-                            'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id'
-                        ]
+                            'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id',
+                        ],
                     ],
                 ],
                 'WHERE' => [
@@ -537,7 +537,7 @@ class Ticket extends CommonDBTM
                             $son_metademands_id,
                             $ticket_task_data,
                             $recursive,
-                            $seesolved
+                            $seesolved,
                         );
                     }
                 }
@@ -746,75 +746,75 @@ class Ticket extends CommonDBTM
      *
      * @return bool (print the helpdesk)
      */
-//    public static function showFormHelpdesk($ticket_template = false, $values = [])
-//    {
-//        global $CFG_GLPI;
-//
-//        if (!Session::haveRight("ticket", CREATE)) {
-//            return false;
-//        }
-//
-//        $entities_id = $_SESSION['glpiactive_entity'];
-//
-//        $fields = ['itilcategories_id' => 0,
-//            'content'           => '',
-//            'name'              => '',
-//            'type'              => 0,
-//            'urgency'           => 0,
-//            'entities_id'       => $entities_id];
-//
-//        $tt = new TicketTemplate();
-//        if ($ticket_template) {
-//            $tt->getFromDBWithData($ticket_template, true);
-//        } else {
-//            $tt->getEmpty();
-//        }
-//
-//        if (!empty($values)) {
-//            foreach ($values as $key => $value) {
-//                $fields[$key] = $value;
-//            }
-//        }
-//
-//        echo Html::hidden('_from_helpdesk', ['value' => 1]);
-//        echo Html::hidden('requesttypes_id', ['value' => RequestType::getDefault('helpdesk')]);
-//        echo Html::hidden('entities_id', ['value' => $entities_id]);
-//
-//        echo "<div class='center'><table class='tab_cadre_fixe'>";
-//        // URGENCY
-//        if ($CFG_GLPI['urgency_mask'] != (1 << 3)) {
-//            echo "<tr class='tab_bg_1'>";
-//            echo "<td>" . __('Urgency');
-//            echo $tt->getMandatoryMark('urgency') . "</td>";
-//            echo "<td>";
-//            \Ticket::dropdownUrgency();
-//            echo "</td></tr>";
-//        }
-//
-//        // TITLE
-//        echo "<tr class='tab_bg_1'>";
-//        echo "<td>" . __('Title');
-//        echo $tt->getMandatoryMark('name');
-//        echo "</td>";
-//        echo "<td>";
-//        echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
-//        echo "</td></tr>";
-//
-//        // CONTENT
-//        echo "<tr class='tab_bg_1'>";
-//        echo "<td>" . __('Description');
-//        echo $tt->getMandatoryMark('content');
-//        echo "</td>";
-//        echo "<td>";
-//        Html::textarea(['name'            => 'content',
-//            'value'           => $fields['content'],
-//            'cols'       => 80,
-//            'rows'       => 14,
-//            'enable_richtext' => false]);
-//        echo "</td></tr>";
-//
-//        echo "</table></div>";
-//    }
+    //    public static function showFormHelpdesk($ticket_template = false, $values = [])
+    //    {
+    //        global $CFG_GLPI;
+    //
+    //        if (!Session::haveRight("ticket", CREATE)) {
+    //            return false;
+    //        }
+    //
+    //        $entities_id = $_SESSION['glpiactive_entity'];
+    //
+    //        $fields = ['itilcategories_id' => 0,
+    //            'content'           => '',
+    //            'name'              => '',
+    //            'type'              => 0,
+    //            'urgency'           => 0,
+    //            'entities_id'       => $entities_id];
+    //
+    //        $tt = new TicketTemplate();
+    //        if ($ticket_template) {
+    //            $tt->getFromDBWithData($ticket_template, true);
+    //        } else {
+    //            $tt->getEmpty();
+    //        }
+    //
+    //        if (!empty($values)) {
+    //            foreach ($values as $key => $value) {
+    //                $fields[$key] = $value;
+    //            }
+    //        }
+    //
+    //        echo Html::hidden('_from_helpdesk', ['value' => 1]);
+    //        echo Html::hidden('requesttypes_id', ['value' => RequestType::getDefault('helpdesk')]);
+    //        echo Html::hidden('entities_id', ['value' => $entities_id]);
+    //
+    //        echo "<div class='center'><table class='tab_cadre_fixe'>";
+    //        // URGENCY
+    //        if ($CFG_GLPI['urgency_mask'] != (1 << 3)) {
+    //            echo "<tr class='tab_bg_1'>";
+    //            echo "<td>" . __('Urgency');
+    //            echo $tt->getMandatoryMark('urgency') . "</td>";
+    //            echo "<td>";
+    //            \Ticket::dropdownUrgency();
+    //            echo "</td></tr>";
+    //        }
+    //
+    //        // TITLE
+    //        echo "<tr class='tab_bg_1'>";
+    //        echo "<td>" . __('Title');
+    //        echo $tt->getMandatoryMark('name');
+    //        echo "</td>";
+    //        echo "<td>";
+    //        echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
+    //        echo "</td></tr>";
+    //
+    //        // CONTENT
+    //        echo "<tr class='tab_bg_1'>";
+    //        echo "<td>" . __('Description');
+    //        echo $tt->getMandatoryMark('content');
+    //        echo "</td>";
+    //        echo "<td>";
+    //        Html::textarea(['name'            => 'content',
+    //            'value'           => $fields['content'],
+    //            'cols'       => 80,
+    //            'rows'       => 14,
+    //            'enable_richtext' => false]);
+    //        echo "</td></tr>";
+    //
+    //        echo "</table></div>";
+    //    }
 
     /**
      * @param $ID

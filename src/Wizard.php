@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -171,8 +171,8 @@ class Wizard extends CommonDBTM
                     self::getTypeName(),
                     $dbu->countElementsInTable(
                         $this->getTable(),
-                        ["id" => $item->getID()]
-                    )
+                        ["id" => $item->getID()],
+                    ),
                 );
             }
             return self::getTypeName();
@@ -265,7 +265,7 @@ class Wizard extends CommonDBTM
             $_SESSION['glpiactiveentities'],
             $user->getID(),
             $cond,
-            false
+            false,
         );
         $style = '';
         if (!empty($user->fields['picture'])) {
@@ -399,9 +399,9 @@ class Wizard extends CommonDBTM
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
                     echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                            'More informations',
-                            'servicecatalog'
-                        ) . "\"> ";
+                        'More informations',
+                        'servicecatalog',
+                    ) . "\"> ";
                     //                            echo __('More informations of this category ? click here', 'servicecatalog');
                     echo "</i>";
                     //                            echo "</div>";
@@ -413,7 +413,7 @@ class Wizard extends CommonDBTM
                             'display' => false,
                             'width' => 1050,
                             'height' => 500,
-                        ]
+                        ],
                     );
                 }
             }
@@ -423,8 +423,8 @@ class Wizard extends CommonDBTM
             && Session::haveRight('plugin_metademands', UPDATE)
             && !$parameters['seeform']) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                    Metademand::class
-                ) . "?id=" . $meta->getID() . "'>
+                Metademand::class,
+            ) . "?id=" . $meta->getID() . "'>
                             <i class='ti ti-settings'></i></a>";
         }
 
@@ -474,7 +474,7 @@ class Wizard extends CommonDBTM
             echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx(
                 'button',
                 'Your forms',
-                'metademands'
+                'metademands',
             ) . "'
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
             echo "</span>";
@@ -511,7 +511,7 @@ class Wizard extends CommonDBTM
             echo "<div id='divformmodels' class='tab-pane fade show active' role='tabpanel' aria-labelledby='divformmodels-tab'>";
             echo Form::showPrivateFormsForUserMetademand(
                 Session::getLoginUserID(),
-                $parameters['metademands_id']
+                $parameters['metademands_id'],
             );
             echo Form::showPublicFormsForUserMetademand(
                 $parameters['metademands_id'],
@@ -521,7 +521,7 @@ class Wizard extends CommonDBTM
             echo "<div id='divforms' class='tab-pane fade' role='tabpanel' aria-labelledby='divforms-tab'>";
             echo Form::showFormsForUserMetademand(
                 Session::getLoginUserID(),
-                $parameters['metademands_id']
+                $parameters['metademands_id'],
             );
             echo "</div>";
 
@@ -530,7 +530,7 @@ class Wizard extends CommonDBTM
                 echo "<div id='divdrafts' class='tab-pane fade' role='tabpanel' aria-labelledby='divdrafts-tab'>";
                 echo Draft::showDraftsForUserMetademand(
                     Session::getLoginUserID(),
-                    $parameters['metademands_id']
+                    $parameters['metademands_id'],
                 );
                 echo "</div>";
             }
@@ -623,7 +623,7 @@ class Wizard extends CommonDBTM
                     $treename = Category::getTreeCategoryFriendlyName(
                         $meta->fields['type'],
                         $parameters['itilcategories_id'],
-                        6
+                        6,
                     );
                     $name = $treename['name'];
                     $treescript = json_decode($treename['script']);
@@ -670,7 +670,7 @@ class Wizard extends CommonDBTM
                             echo "<div class='alert alert-danger' role='alert'>";
                             echo "<i style='font-size:3em;' class='ti ti-exclamation-circle'></i>";
                             echo "&nbsp;" . nl2br(
-                                Category::displayField($helpdesk_category, 'display_warning')
+                                Category::displayField($helpdesk_category, 'display_warning'),
                             );
                             echo "</div>";
                             echo "</h5>";
@@ -686,7 +686,7 @@ class Wizard extends CommonDBTM
                             echo "&nbsp;";
                             echo __(
                                 'Did you know that there is an FAQ article that may be able to help you?',
-                                'servicecatalog'
+                                'servicecatalog',
                             );
                             echo "&nbsp;";
                             echo "<a href='" . PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1&itilcategories_id=" . $parameters['itilcategories_id'] . "&type=" . $meta->fields['type'] . "&id=" . $know_id . "'>";
@@ -787,7 +787,7 @@ class Wizard extends CommonDBTM
                     $users_id_requester = Ticket::getUsedActors(
                         $parameters['tickets_id'],
                         CommonITILActor::REQUESTER,
-                        'users_id'
+                        'users_id',
                     );
                     if (count($users_id_requester)) {
                         $userid = $users_id_requester[0];
@@ -834,7 +834,7 @@ class Wizard extends CommonDBTM
                 $options,
                 $parameters['seeform'],
                 $parameters['current_ticket_id'],
-                $parameters['meta_validated']
+                $parameters['meta_validated'],
             );
             Html::closeForm();
             echo "</div>";
@@ -871,7 +871,7 @@ class Wizard extends CommonDBTM
             echo Html::scriptBlock(
                 "$(window).load(function() {
              $('#ajax_loader').hide();
-          });"
+          });",
             );
         }
         if ($step === Metademand::STEP_CREATE) {
@@ -903,12 +903,12 @@ class Wizard extends CommonDBTM
                         $meta_validated,
                         $preview,
                         $options,
-                        $seeform
+                        $seeform,
                     );
                     break;
             }
-//            Comment Fix for parameter display_type 0
-//            echo Html::hidden('step', ['value' => $step]);
+            //            Comment Fix for parameter display_type 0
+            //            echo Html::hidden('step', ['value' => $step]);
         }
     }
 
@@ -933,9 +933,9 @@ class Wizard extends CommonDBTM
                 'is_active' => 1,
                 ['OR'          => [
                     'is_order'  => 1,
-                    'NOT'       => ['itilcategories_id' => null]
-                    ]
-                ]
+                    'NOT'       => ['itilcategories_id' => null],
+                ],
+                ],
             ],
             'ORDERBY' => 'name',
         ];
@@ -956,20 +956,20 @@ class Wizard extends CommonDBTM
         }
 
         $criteria['WHERE'] = $criteria['WHERE'] + ['NOT'       => ['id' => new QuerySubQuery(
-                [
-                    'SELECT' => 'plugin_metademands_metademands_id',
-                    'FROM'   => 'glpi_plugin_metademands_metademands_resources',
-                ]
-            )]];
+            [
+                'SELECT' => 'plugin_metademands_metademands_id',
+                'FROM'   => 'glpi_plugin_metademands_metademands_resources',
+            ],
+        )]];
 
         // Honor recursivity: a metademand shared from an ancestor entity (is_recursive = 1)
         // must be listed in child entities, so enable the recursive restriction (4th arg).
         $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_plugin_metademands_metademands',
-                '',
-                '',
-                true
-            );
+            'glpi_plugin_metademands_metademands',
+            '',
+            '',
+            true,
+        );
 
         $metademands = [];
         $iterator = $DB->request($criteria);
@@ -1187,7 +1187,7 @@ class Wizard extends CommonDBTM
         }
 
         $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
-            'glpi_tickets'
+            'glpi_tickets',
         );
 
         $iterator = $DB->request($criteria);
@@ -1268,13 +1268,13 @@ class Wizard extends CommonDBTM
                         $comment_meta = '';
                         if (empty($comm = Metademand::displayField(
                             $meta->getID(),
-                            'comment'
+                            'comment',
                         )) && !empty($meta->fields['comment'])) {
                             $comment_meta = $meta->fields['comment'];
                         } elseif (!empty(
                             $comm = Metademand::displayField(
                                 $meta->getID(),
-                                'comment'
+                                'comment',
                             )
                         )) {
                             $comment_meta = $comm;
@@ -1338,13 +1338,13 @@ class Wizard extends CommonDBTM
                         if ($config['use_draft']) {
                             $count_drafts = Draft::countDraftsForUserMetademand(
                                 Session::getLoginUserID(),
-                                $id
+                                $id,
                             );
                             if ($count_drafts > 0) {
                                 echo "<br><br><span style='$color;'>";
                                 echo sprintf(
                                     _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                    $count_drafts
+                                    $count_drafts,
                                 );
                                 echo "</span>";
                             }
@@ -1385,7 +1385,7 @@ class Wizard extends CommonDBTM
             echo "<br/>";
             echo "<div class=\"bt-row\">";
             echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 right\">";
-//            Comment Fix for parameter display_type 0
+            //            Comment Fix for parameter display_type 0
             echo "<input type='hidden' name='step' value='" . Metademand::STEP_SHOW . "'/>";
             echo "<input type='hidden' name='meta_type' id='meta_type' value='" . $type . "'/>";
             echo Html::submit(__('Next', 'metademands'), ['name' => 'next', 'class' => 'btn btn-primary']);
@@ -1468,36 +1468,36 @@ class Wizard extends CommonDBTM
                             $parameters['itilcategories_id'],
                             $seeform,
                             $current_ticket,
-                            $meta_validated
+                            $meta_validated,
                         );
 
                         if ($seeform == 0) {
                             unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
                         }
 
-//                        if (isset($metademands->fields['is_order'])
-//                            && $metademands->fields['is_order'] == 1) {
-//                            if (!$preview
-//                                && countElementsInTable(
-//                                    "glpi_plugin_metademands_basketlines",
-//                                    [
-//                                        "plugin_metademands_metademands_id" => $metademands->fields['id'],
-//                                        "users_id" => Session::getLoginUserID(),
-//                                    ]
-//                                )
-//                            ) {
-//                                echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-//                                $title = _sx('button', 'Add to basket', 'metademands');
-//                                echo Html::submit($title, [
-//                                    'name' => 'add_to_basket',
-//                                    'icon' => 'ti ti-plus',
-//                                    'id' => 'add_to_basket',
-//                                    'class' => 'btn btn-primary',
-//                                ]);
-//
-//                                echo "</div>";
-//                            }
-//                        }
+                        //                        if (isset($metademands->fields['is_order'])
+                        //                            && $metademands->fields['is_order'] == 1) {
+                        //                            if (!$preview
+                        //                                && countElementsInTable(
+                        //                                    "glpi_plugin_metademands_basketlines",
+                        //                                    [
+                        //                                        "plugin_metademands_metademands_id" => $metademands->fields['id'],
+                        //                                        "users_id" => Session::getLoginUserID(),
+                        //                                    ]
+                        //                                )
+                        //                            ) {
+                        //                                echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
+                        //                                $title = _sx('button', 'Add to basket', 'metademands');
+                        //                                echo Html::submit($title, [
+                        //                                    'name' => 'add_to_basket',
+                        //                                    'icon' => 'ti ti-plus',
+                        //                                    'id' => 'add_to_basket',
+                        //                                    'class' => 'btn btn-primary',
+                        //                                ]);
+                        //
+                        //                                echo "</div>";
+                        //                            }
+                        //                        }
                         echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
                         echo Html::hidden('is_private', ['value' => 1]);
                     }
@@ -1547,54 +1547,54 @@ class Wizard extends CommonDBTM
                     [
                         "plugin_metademands_metademands_id" => $metademands->fields['id'],
                         "users_id" => Session::getLoginUserID(),
-                    ]
+                    ],
                 )) {
-//                    $title = _sx('button', 'Add to basket', 'metademands');
-//                    echo Html::submit($title, [
-//                        'name' => 'add_to_basket',
-//                        'id' => 'add_to_basket',
-//                        'icon' => 'ti ti-plus',
-//                        'class' => 'metademand_next_button btn btn-primary',
-//                    ]);
+                    //                    $title = _sx('button', 'Add to basket', 'metademands');
+                    //                    echo Html::submit($title, [
+                    //                        'name' => 'add_to_basket',
+                    //                        'id' => 'add_to_basket',
+                    //                        'icon' => 'ti ti-plus',
+                    //                        'class' => 'metademand_next_button btn btn-primary',
+                    //                    ]);
                 } else {
-//                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-//                    echo "</div>";
-//                    $title = _sx('button', 'See your basket', 'metademands');
-//                    echo Html::hidden('see_basket_summary', ['value' => 1]);
-//                    echo Html::submit($title, [
-//                        'name' => 'next_button',
-//                        'form' => '',
-//                        'icon' => 'ti ti-device-floppy',
-//                        'id' => 'submitjob',
-//                        'class' => 'metademand_next_button btn btn-success',
-//                    ]);
-//                    $ID = $metademands->fields['id'];
-//                    echo "<script>
-//                          $('#submitjob').click(function() {
-//                             var meta_id = {$ID};
-//                             if(typeof tinyMCE !== 'undefined'){
-//                                tinyMCE.triggerSave();
-//                             }
-//                             jQuery('.resume_builder_input').trigger('change');
-//                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-//                             $('#ajax_loader').show();
-//                             $.ajax({
-//                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
-//                                   type: 'POST',
-//                                   datatype: 'html',
-//                                   data: $('#wizard_form').serializeArray(),
-//                                   success: function (response) {
-//                                      $('#ajax_loader').hide();
-//                                      $('.md-wizard').replaceWith(response);
-//                                   },
-//                                   error: function (xhr, status, error) {
-//                                      console.log(xhr);
-//                                      console.log(status);
-//                                      console.log(error);
-//                                   }
-//                                });
-//                          });
-//                        </script>";
+                    //                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+                    //                    echo "</div>";
+                    //                    $title = _sx('button', 'See your basket', 'metademands');
+                    //                    echo Html::hidden('see_basket_summary', ['value' => 1]);
+                    //                    echo Html::submit($title, [
+                    //                        'name' => 'next_button',
+                    //                        'form' => '',
+                    //                        'icon' => 'ti ti-device-floppy',
+                    //                        'id' => 'submitjob',
+                    //                        'class' => 'metademand_next_button btn btn-success',
+                    //                    ]);
+                    //                    $ID = $metademands->fields['id'];
+                    //                    echo "<script>
+                    //                          $('#submitjob').click(function() {
+                    //                             var meta_id = {$ID};
+                    //                             if(typeof tinyMCE !== 'undefined'){
+                    //                                tinyMCE.triggerSave();
+                    //                             }
+                    //                             jQuery('.resume_builder_input').trigger('change');
+                    //                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                    //                             $('#ajax_loader').show();
+                    //                             $.ajax({
+                    //                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
+                    //                                   type: 'POST',
+                    //                                   datatype: 'html',
+                    //                                   data: $('#wizard_form').serializeArray(),
+                    //                                   success: function (response) {
+                    //                                      $('#ajax_loader').hide();
+                    //                                      $('.md-wizard').replaceWith(response);
+                    //                                   },
+                    //                                   error: function (xhr, status, error) {
+                    //                                      console.log(xhr);
+                    //                                      console.log(status);
+                    //                                      console.log(error);
+                    //                                   }
+                    //                                });
+                    //                          });
+                    //                        </script>";
                 }
             }
             if (!$preview
@@ -1699,7 +1699,7 @@ class Wizard extends CommonDBTM
         } elseif ($block_current_id_stepform != 99999999) {
             $canSeeNextBlock = Step::canSeeBlock(
                 $metademands->fields['id'],
-                $block_current_id_stepform + 1
+                $block_current_id_stepform + 1,
             );
             if (!$canSeeNextBlock) {
                 $havenextuser = true;
@@ -1856,7 +1856,7 @@ class Wizard extends CommonDBTM
 
         $richtext_fields = getAllDataFromTable(
             "glpi_plugin_metademands_fields",
-            ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea']
+            ['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => 'textarea'],
         );
         foreach ($richtext_fields as $f) {
             $fieldparameter = new FieldParameter();
@@ -1989,7 +1989,7 @@ class Wizard extends CommonDBTM
             $stepConfig->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id]);
             $stepConfig->add(['plugin_metademands_metademands_id' => $metademands_id]);
             echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>".__('There was a problem. The step-by-step mode configuration was reset', 'metademands')."</b></div>";
+            echo "<b>" . __('There was a problem. The step-by-step mode configuration was reset', 'metademands') . "</b></div>";
         }
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
 
@@ -2096,7 +2096,7 @@ class Wizard extends CommonDBTM
                                      $("#nextBtn").click();
                                 }
                             }
-                });'
+                });',
             );
 
             $metaparams = self::getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated);
@@ -2225,7 +2225,7 @@ class Wizard extends CommonDBTM
                         sessionStorage.setItem('loadedblock', id);
                         window.location.hash = id;
                     });
-                });"
+                });",
                 );
 
                 foreach ($allfields as $blockid => $blockfields) {
@@ -2270,7 +2270,7 @@ class Wizard extends CommonDBTM
                                 [
                                     "plugin_metademands_fields_id" => $fieldmeta['id'],
                                     "hidden_block" => $idblock,
-                                ]
+                                ],
                             )) {
                                 foreach ($opts as $opt) {
                                     $hiddenblocks[] = $opt['hidden_block'];
@@ -2306,14 +2306,14 @@ class Wizard extends CommonDBTM
                                         });
                                     }
                                 }, 500);
-            '
+            ',
                     );
                 }
             }
             $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
 
             foreach ($allfields as $block => $line) {
-                if ($use_as_step == 1 ) {//&& $metademands->fields['is_order'] == 0
+                if ($use_as_step == 1) {//&& $metademands->fields['is_order'] == 0
                     if (!in_array($block, $all_hidden_blocks)) {
                         echo "<div class='tab-step'>";
                         $cpt++;
@@ -2323,7 +2323,7 @@ class Wizard extends CommonDBTM
                 self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id, $use_model);
 
 
-                if ($use_as_step == 1 ) {//&& $metademands->fields['is_order'] == 0
+                if ($use_as_step == 1) {//&& $metademands->fields['is_order'] == 0
                     if (!in_array($block, $all_hidden_blocks)) {
                         echo "</div>";
                     }
@@ -2355,7 +2355,7 @@ class Wizard extends CommonDBTM
 
                 if ($use_as_step == 1) {
 
-//                    echo "<br>";
+                    //                    echo "<br>";
                     echo "<div id='nextMsg' class='alert alert-info center'>";
                     echo "</div>";
                 }
@@ -2369,7 +2369,7 @@ class Wizard extends CommonDBTM
 
                 if (Session::haveRight("plugin_metademands_cancelform", READ)
                     && isset(
-                        $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id']
+                        $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'],
                     )) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID(
@@ -2422,12 +2422,12 @@ class Wizard extends CommonDBTM
                         $lineForStepByStep,
                         $metademands_id,
                         [$metademands_id => $data_form],
-                        []
+                        [],
                     );
                     $form = new Stepform();
                     if (isset($_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id'])
                         && $form->getFromDBByCrit(
-                            ['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']]
+                            ['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']],
                         )) {
                         $previousUser = new User();
                         if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
@@ -2450,7 +2450,7 @@ class Wizard extends CommonDBTM
                                                          body: {$setting_dialog},
                                                          dialogclass: 'modal-lg',
                                                     });
-                                                });"
+                                                });",
                         );
 
                         if (isset($_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'])) {
@@ -2472,7 +2472,7 @@ class Wizard extends CommonDBTM
                 if (isset($_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id'])) {
                     echo Html::hidden(
                         'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']]
+                        ['value' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']],
                     );
                 }
 
@@ -2707,7 +2707,7 @@ class Wizard extends CommonDBTM
                     $field_custom = new FieldCustomvalue();
                     $fc_tb = $field_custom->find(
                         ["plugin_metademands_fields_id" => $tb_field_id],
-                        "rank"
+                        "rank",
                     ) ?: [];
                 }
                 if (count($fc_tb) > 0) {
@@ -2720,7 +2720,7 @@ class Wizard extends CommonDBTM
                 $metademands_data,
                 $data,
                 $preview,
-                $itilcategories_id
+                $itilcategories_id,
             );
         }
 
@@ -2787,7 +2787,7 @@ class Wizard extends CommonDBTM
                                     $k,
                                     $sub,
                                     $block,
-                                    $itilcategories_id
+                                    $itilcategories_id,
                                 );
                             }
                         }
@@ -2818,7 +2818,7 @@ class Wizard extends CommonDBTM
         $config_link = "";
         if (Session::getCurrentInterface() == 'central' && $preview) {
             $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Field::class
+                Field::class,
             ) . "?id=" . $data['id'] . "'>";
             $config_link .= "<i class='ti ti-settings'></i></a>";
         }
@@ -2921,7 +2921,7 @@ class Wizard extends CommonDBTM
                     }
                     Html::showToolTip(
                         RichText::getSafeHtml($label2),
-                        ['awesome-class' => 'ti ti-info-circle']
+                        ['awesome-class' => 'ti ti-info-circle'],
                     );
                 }
                 echo "<i id='up" . $block . "' class='fa-1x ti ti-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
@@ -2937,7 +2937,7 @@ class Wizard extends CommonDBTM
                                          $('[bloc-hideid =' + bloc$rand + ']').show();
                                          $(myelement$rand).toggleClass('ti ti-chevron-down ti ti-chevron-up');
                                      }
-                                 });"
+                                 });",
                 );
                 echo "</span></h4>";
                 if (!empty($data['comment'])) {
@@ -2998,7 +2998,7 @@ class Wizard extends CommonDBTM
                 $data,
                 $preview,
                 $itilcategories_id,
-                $count
+                $count,
             );
         }
 
@@ -3035,13 +3035,13 @@ class Wizard extends CommonDBTM
 
             if (isset($fieldparameter->fields['default'])) {
                 $data['default_values'] = FieldParameter::_unserialize(
-                    $fieldparameter->fields['default']
+                    $fieldparameter->fields['default'],
                 );
             }
 
             if (isset($fieldparameter->fields['custom'])) {
                 $data['custom_values'] = FieldParameter::_unserialize(
-                    $fieldparameter->fields['custom']
+                    $fieldparameter->fields['custom'],
                 );
             }
         }
@@ -3222,7 +3222,7 @@ class Wizard extends CommonDBTM
                         unset(
                             $values['fields']['_filename'],
                             $values['fields']['_prefix_filename'],
-                            $values['fields']['_tag_filename']
+                            $values['fields']['_tag_filename'],
                         );
                         $filename = [];
                         $prefixname = [];
@@ -3259,7 +3259,7 @@ class Wizard extends CommonDBTM
                     unset(
                         $values['fields']['_filename'],
                         $values['fields']['_prefix_filename'],
-                        $values['fields']['_tag_filename']
+                        $values['fields']['_tag_filename'],
                     );
                     $filename = [];
                     $prefixname = [];
@@ -3315,7 +3315,7 @@ class Wizard extends CommonDBTM
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (method_exists(ServiceCatalogConfig::class, 'getMultiEntityRedirection') && ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
-                } elseif(method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
+                } elseif (method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/ticket.form.php?id=" . $result['id']);
                 } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
@@ -3387,13 +3387,13 @@ class Wizard extends CommonDBTM
             $post[$fieldname][$id] = "";
         }
 
-//        $content[$id]['plugin_metademands_fields_id'] = $id;
-//        $content[$id]['value'] = (isset($post[$fieldname][$id])) ? $post[$fieldname][$id] : "";
-//        $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
-//        $content[$id]['item'] = $value['item'];
-//        $content[$id]['type'] = $value['type'];
-//
-//        return ['result' => $KO, 'content' => $content];
+        //        $content[$id]['plugin_metademands_fields_id'] = $id;
+        //        $content[$id]['value'] = (isset($post[$fieldname][$id])) ? $post[$fieldname][$id] : "";
+        //        $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
+        //        $content[$id]['item'] = $value['item'];
+        //        $content[$id]['type'] = $value['type'];
+        //
+        //        return ['result' => $KO, 'content' => $content];
 
 
         if ($value['is_mandatory'] == 1
@@ -3413,7 +3413,7 @@ class Wizard extends CommonDBTM
                     'id' => $id,
                     'value' => $post[$fieldname][$id],
                 ],
-                $post
+                $post,
             )) {
                 $KO = true;
             } else {
@@ -3433,7 +3433,7 @@ class Wizard extends CommonDBTM
                     'id' => $id,
                     'value' => $post[$fieldname][$id],
                 ],
-                $post
+                $post,
             )) {
                 $KO = true;
             } else {
@@ -3455,7 +3455,7 @@ class Wizard extends CommonDBTM
                 $fieldname,
                 $value,
                 ['id' => $id, 'value' => $post[$fieldname][$id]],
-                $post
+                $post,
             )) {
                 $KO = true;
             } else {
@@ -3467,7 +3467,7 @@ class Wizard extends CommonDBTM
                 $fieldname,
                 $value,
                 ['id' => $id, 'value' => $post[$fieldname][$id]],
-                $post
+                $post,
             )) {
                 $KO = true;
             } else {
@@ -3506,7 +3506,7 @@ class Wizard extends CommonDBTM
                         'id' => $id,
                         'value' => [],
                     ],
-                    $post
+                    $post,
                 )) {
                     $KO = true;
                     $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields'][$id] = [];
@@ -3525,9 +3525,9 @@ class Wizard extends CommonDBTM
             if ($value['type'] != "upload") {
                 if ($value['type'] == "freetable") {
                     $content[$id]['value'] = (is_array(
-                        $post[$fieldname][$id]
+                        $post[$fieldname][$id],
                     )) ? FieldParameter::_serializeArray(
-                        $post[$fieldname][$id]
+                        $post[$fieldname][$id],
                     ) : $post[$fieldname][$id];
                 } else {
                     if (is_array($post[$fieldname][$id])) {
@@ -3656,7 +3656,7 @@ class Wizard extends CommonDBTM
                 && Ticket_Field::isCheckValueOK(
                     $fields['value'],
                     $value['check_value'],
-                    $value['type']
+                    $value['type'],
                 )
                 && (empty($all_fields[$value['fields_link']]) || $all_fields[$value['fields_link']] == 'NULL')
             ) {
@@ -3727,7 +3727,7 @@ class Wizard extends CommonDBTM
             Session::addMessageAfterRedirect(
                 sprintf(__("Mandatory fields are not filled. Please correct: %s"), implode(', ', $msg)),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }
@@ -3736,10 +3736,10 @@ class Wizard extends CommonDBTM
                 sprintf(
                     __("Too much documents are upload, max %s. Please correct: %s", "metademands"),
                     $value["max_upload"],
-                    implode(', ', $msg2)
+                    implode(', ', $msg2),
                 ),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }
@@ -3747,10 +3747,10 @@ class Wizard extends CommonDBTM
             Session::addMessageAfterRedirect(
                 sprintf(
                     __("Field do not correspond to the expected format. Please correct: %s", "metademands"),
-                    implode(', ', $msg3)
+                    implode(', ', $msg3),
                 ),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }

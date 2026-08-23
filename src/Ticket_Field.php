@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -44,10 +44,9 @@ if (!defined('GLPI_ROOT')) {
  */
 class Ticket_Field extends CommonDBTM
 {
-
     public $itemtype = Metademand::class;
 
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory
@@ -57,7 +56,7 @@ class Ticket_Field extends CommonDBTM
      *
      * @return string
      */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Wizard creation', 'metademands');
     }
@@ -65,7 +64,7 @@ class Ticket_Field extends CommonDBTM
     /**
      * @return bool|int
      */
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -73,7 +72,7 @@ class Ticket_Field extends CommonDBTM
     /**
      * @return bool
      */
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -141,7 +140,7 @@ class Ticket_Field extends CommonDBTM
      * @param $values
      * @param $tickets_id
      */
-    function setTicketFieldsValues($parent_fields, $values, $tickets_id, $linked_docs = [])
+    public function setTicketFieldsValues($parent_fields, $values, $tickets_id, $linked_docs = [])
     {
 
         $ticket = new \Ticket();
@@ -188,13 +187,13 @@ class Ticket_Field extends CommonDBTM
                         $field['value'] = $values[$fields_id];
                     }
 
-                } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
+                } elseif (isset($values[$fields_id]) && is_array($values[$fields_id])) {
                     $field['value'] = json_encode($values[$fields_id]);
                 }
                 $field['value2'] = '';
                 if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = $values[$fields_id . "-2"];
-                } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
+                } elseif (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = json_encode($values[$fields_id . "-2"]);
                 }
 
@@ -213,7 +212,7 @@ class Ticket_Field extends CommonDBTM
      * @return bool
      * @throws \GlpitestSQLError
      */
-    static function checkTicketCreation($tasks_id, $parent_tickets_id)
+    public static function checkTicketCreation($tasks_id, $parent_tickets_id)
     {
         global $DB;
 
@@ -232,8 +231,8 @@ class Ticket_Field extends CommonDBTM
                 'glpi_plugin_metademands_fields' => [
                     'ON' => [
                         'glpi_plugin_metademands_fields' => 'id',
-                        'glpi_plugin_metademands_tickets_fields'          => 'plugin_metademands_fields_id'
-                    ]
+                        'glpi_plugin_metademands_tickets_fields'          => 'plugin_metademands_fields_id',
+                    ],
                 ],
                 'glpi_plugin_metademands_fieldoptions' => [
                     'ON' => [
@@ -243,9 +242,9 @@ class Ticket_Field extends CommonDBTM
                                 'glpi_plugin_metademands_tickets_fields.tickets_id' => $parent_tickets_id,
                             ],
                         ],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         if (count($iterator) > 0) {
@@ -260,7 +259,7 @@ class Ticket_Field extends CommonDBTM
                             $check[] = ($test == false) ? 0 : 1;
                         }
                     }
-                } else if ($tasks_id == $plugin_metademands_tasks_id) {
+                } elseif ($tasks_id == $plugin_metademands_tasks_id) {
                     $test = self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
                     $check[] = ($test == false) ? 0 : 1;
                 }
@@ -269,7 +268,7 @@ class Ticket_Field extends CommonDBTM
 
         if (in_array(1, $check)) {
             return true;
-        } else if (in_array(0, $check)) {
+        } elseif (in_array(0, $check)) {
             return false;
         }
 
@@ -283,7 +282,7 @@ class Ticket_Field extends CommonDBTM
      *
      * @return bool
      */
-    static function isCheckValueOK($value, $check_value, $type)
+    public static function isCheckValueOK($value, $check_value, $type)
     {
 
         $class = Field::getClassFromType($type);
@@ -336,7 +335,7 @@ class Ticket_Field extends CommonDBTM
      * @param $type
      * @return bool
      */
-    static function isCheckValueOKFieldsLinks($field_value, $check_value, $type)
+    public static function isCheckValueOKFieldsLinks($field_value, $check_value, $type)
     {
 
 
@@ -349,7 +348,7 @@ class Ticket_Field extends CommonDBTM
                 case 'dropdown_meta':
                     if (($check_value == Field::$not_null || $check_value == 0) && empty($field_value)) {
                         return false;
-                    } else if ($check_value != $field_value
+                    } elseif ($check_value != $field_value
                         && ($check_value != Field::$not_null && $check_value != 0)) {
                         return false;
                     }
@@ -357,7 +356,7 @@ class Ticket_Field extends CommonDBTM
                 case 'radio':
                     if (is_null($field_value)) {
                         return false;
-                    } else if (strval($check_value) !== strval($field_value)) {
+                    } elseif (strval($check_value) !== strval($field_value)) {
                         return false;
                     }
                     break;
@@ -376,7 +375,7 @@ class Ticket_Field extends CommonDBTM
                                 }
                                 //                     }
                             }
-                        } else if (is_array(json_decode($field_value, true))) {
+                        } elseif (is_array(json_decode($field_value, true))) {
                             foreach (json_decode($field_value, true) as $key => $v) {
                                 //                     if ($key != 0) {
                                 if ($check_value == $key) {

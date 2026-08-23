@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -49,7 +49,6 @@ use User;
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-
 
 /**
  * Dropdownmultiple Class
@@ -170,11 +169,10 @@ class Dropdownmultiple extends CommonDBTM
                     $opt['value'] = $default_user;
                 }
 
-
                 $field = \Dropdown::showFromArray(
                     $namefield . "[" . $data['id'] . "]",
                     $list,
-                    $opt
+                    $opt,
                 );
             }
         } elseif ($data['item'] == 'other') {
@@ -201,7 +199,7 @@ class Dropdownmultiple extends CommonDBTM
                         $data['item'],
                         $required,
                         $custom_values,
-                        $value
+                        $value,
                     );
 
                     $field .= self::loadMultiselectScript($namefield, $data['id']);
@@ -223,7 +221,7 @@ class Dropdownmultiple extends CommonDBTM
                             'multiple' => true,
                             'display' => false,
                             'required' => ($data['is_mandatory'] ? "required" : ""),
-                        ]
+                        ],
                     );
                 }
             }
@@ -248,7 +246,7 @@ class Dropdownmultiple extends CommonDBTM
                     getTableForItemType($data['item']),
                     '',
                     '',
-                    $item->maybeRecursive()
+                    $item->maybeRecursive(),
                 );
 
                 $criteria['WHERE'] = $criteria['WHERE'] + $crit;
@@ -258,7 +256,6 @@ class Dropdownmultiple extends CommonDBTM
                 } else {
                     $criteria['ORDER'] = ['name ASC'];
                 }
-
 
                 $iterator = $DB->request($criteria);
 
@@ -315,7 +312,7 @@ class Dropdownmultiple extends CommonDBTM
                             'multiple' => true,
                             'display' => false,
                             'required' => ($data['is_mandatory'] ? "required" : ""),
-                        ]
+                        ],
                     );
                 }
             }
@@ -377,7 +374,7 @@ class Dropdownmultiple extends CommonDBTM
                 } else {
                     $div .= "<option selected value=\"$esc_val\">" . \Dropdown::getDropdownName(
                         getTableForItemType($item),
-                        $val
+                        $val,
                     ) . "</option>";
                 }
             }
@@ -397,11 +394,11 @@ class Dropdownmultiple extends CommonDBTM
                             $("#multiselect' . $id . '").multiselect({
                                       search: {
                                           left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __(
-                                "Search"
-                            ) . '...\" />",
+                "Search",
+            ) . '...\" />",
                                           right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __(
-                                "Search"
-                            ) . '...\" />",
+                "Search",
+            ) . '...\" />",
                                       },
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
@@ -463,7 +460,7 @@ class Dropdownmultiple extends CommonDBTM
 
                                       }
                                   });
-                            });'
+                            });',
         );
         return $script;
     }
@@ -596,7 +593,7 @@ class Dropdownmultiple extends CommonDBTM
                                     'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                                 ],
                                 'ti-circle-x',
-                                "class='btn btn-sm btn-danger'"
+                                "class='btn btn-sm btn-danger'",
                             );
                             $delete_form_html = ob_get_clean();
 
@@ -633,7 +630,7 @@ class Dropdownmultiple extends CommonDBTM
                             'import_html'            => $import_html,
                             'specific_dropdown_html' => '',
                             'reorder_url'            => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-                        ]
+                        ],
                     );
                 }
             }
@@ -697,7 +694,7 @@ class Dropdownmultiple extends CommonDBTM
                 'default_use_id_requester_html'            => $default_use_id_requester_html,
                 'default_use_id_requester_supervisor_html' => $default_use_id_requester_supervisor_html,
                 'informations_to_display_html'             => $informations_to_display_html,
-            ]
+            ],
         );
     }
 
@@ -755,7 +752,6 @@ class Dropdownmultiple extends CommonDBTM
                  });
 
                  ";
-
 
                 echo " </script>";
                 break;
@@ -856,13 +852,12 @@ class Dropdownmultiple extends CommonDBTM
                     \Dropdown::showFromArray(
                         "check_value",
                         $elements,
-                        ['value' => $params['check_value'], 'used' => $already_used]
+                        ['value' => $params['check_value'], 'used' => $already_used],
                     );
                 }
                 break;
         }
     }
-
 
     public static function showParamsValueToCheck($params)
     {
@@ -986,7 +981,6 @@ class Dropdownmultiple extends CommonDBTM
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
 
-
                         if ($check_value['check_type_value'] == 2) {
                             $onchange .= "
                             var answerresponse = false;
@@ -1049,7 +1043,7 @@ class Dropdownmultiple extends CommonDBTM
                 $onchange .= "});";
 
                 echo Html::scriptBlock(
-                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
                 );
             }
         } else {
@@ -1069,7 +1063,6 @@ class Dropdownmultiple extends CommonDBTM
                         $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                     }
                 }
-
 
                 foreach ($check_values as $idc => $check_value) {
                     foreach ($check_value['fields_link'] as $fields_link) {
@@ -1123,7 +1116,7 @@ class Dropdownmultiple extends CommonDBTM
                 }
 
                 echo Html::scriptBlock(
-                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
                 );
             }
         }
@@ -1158,9 +1151,8 @@ class Dropdownmultiple extends CommonDBTM
                     $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                     $nextsteptitle = __(
                         'Next',
-                        'metademands'
+                        'metademands',
                     ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
                     foreach ($check_values as $idc => $check_value) {
                         foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -1225,13 +1217,12 @@ class Dropdownmultiple extends CommonDBTM
                                     }
                                 } else {
                                     $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById(
-                                            $tasks_id
-                                        ) . "') {
+                                        $tasks_id,
+                                    ) . "') {
                                     tohide[" . $tasks_id . "] = false;
                                 }";
                                 }
                             }
-
 
                             $script .= "});";
 
@@ -1331,9 +1322,8 @@ class Dropdownmultiple extends CommonDBTM
                     $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
                     $nextsteptitle = __(
                         'Next',
-                        'metademands'
+                        'metademands',
                     ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
                     foreach ($check_values as $idc => $check_value) {
                         foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -1567,7 +1557,6 @@ class Dropdownmultiple extends CommonDBTM
                             ";
                         }
 
-
                         $onchange .= "
                         if(!iswrittemul) {
                             tohide[$hidden_link] = true;
@@ -1636,7 +1625,7 @@ class Dropdownmultiple extends CommonDBTM
                 $onchange .= "});";
 
                 echo Html::scriptBlock(
-                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
                 );
             }
         } else {
@@ -1731,14 +1720,14 @@ class Dropdownmultiple extends CommonDBTM
                         //                        if (value == true) {
                         //
                         //                            $('[id-field =\"field'+key+'\"]').hide();
-//                                                    $('[id-field =\"field'+key+'-2\"]').hide();
+                        //                                                    $('[id-field =\"field'+key+'-2\"]').hide();
                         //                            sessionStorage.setItem('hiddenlink$name', key);
                         //                            " . FieldOption::resetMandatoryFieldsByFieldForHidden($name) . "
                         //                            $('[name =\"field['+key+']\"]').removeAttr('required');
-//                                                    $('[name =\"field['+key+'-2]\"]').removeAttr('required');
+                        //                                                    $('[name =\"field['+key+'-2]\"]').removeAttr('required');
                         //                        } else {
                         //                            $('[id-field =\"field'+key+'\"]').show();
-//                                                    $('[id-field =\"field'+key+'-2\"]').show();
+                        //                                                    $('[id-field =\"field'+key+'-2\"]').show();
                         //                            $('[name =\"field['+key+']\"]').attr('required', 'required');
                         //                        }
                         //                    });";
@@ -1820,7 +1809,7 @@ class Dropdownmultiple extends CommonDBTM
                 }
 
                 echo Html::scriptBlock(
-                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                    '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
                 );
             }
         }
@@ -1839,7 +1828,6 @@ class Dropdownmultiple extends CommonDBTM
                 $hiddenblocks_by_checkvalue[$idc] = $check_value['hidden_block'];
             }
         }
-
 
         //add childs by idc
         $childs_by_checkvalue = [];
@@ -1971,7 +1959,7 @@ class Dropdownmultiple extends CommonDBTM
                                     foreach ($childs_blocks as $childs) {
                                         $options = getAllDataFromTable(
                                             'glpi_plugin_metademands_fieldoptions',
-                                            ['hidden_block' => $childs]
+                                            ['hidden_block' => $childs],
                                         );
                                         if (count($options) == 0) {
                                             $script .= "if (document.getElementById('ablock" . $childs . "'))
@@ -2296,7 +2284,7 @@ class Dropdownmultiple extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Exception\Http\BadRequestHttpException;
@@ -65,7 +65,7 @@ $itemtype_to_tr_class = [
 
 switch ($action) {
     case 'init_language':
-        $items_id = (int)($_POST['items_id'] ?? 0);
+        $items_id = (int) ($_POST['items_id'] ?? 0);
         $itemtype = $_POST['itemtype'] ?? '';
         $item = getItemForItemtype($itemtype);
         if ($item === false || !$item->can($items_id, UPDATE)) {
@@ -92,12 +92,12 @@ switch ($action) {
         break;
 
     case 'save_translations':
-        $meta_translation_id = (int)($_POST['meta_translation_id'] ?? 0);
+        $meta_translation_id = (int) ($_POST['meta_translation_id'] ?? 0);
         $meta_tr = new $translation_class();
         if (!$meta_tr->getFromDB($meta_translation_id)) {
             throw new BadRequestHttpException();
         }
-        $parent_items_id = (int)$meta_tr->fields['items_id'];
+        $parent_items_id = (int) $meta_tr->fields['items_id'];
         $parent_itemtype = $meta_tr->fields['itemtype'];
         $parent_item = getItemForItemtype($parent_itemtype);
         if ($parent_item === false || !$parent_item->can($parent_items_id, UPDATE)) {
@@ -111,7 +111,7 @@ switch ($action) {
 
         foreach ($translations_input as $entry) {
             $entry_itemtype = $entry['itemtype'] ?? '';
-            $entry_items_id = (int)($entry['items_id'] ?? 0);
+            $entry_items_id = (int) ($entry['items_id'] ?? 0);
             $entry_key      = trim($entry['key'] ?? '');
             $entry_language = $entry['language'] ?? '';
             $entry_value    = $entry['translations']['one'] ?? '';
@@ -133,7 +133,7 @@ switch ($action) {
             } elseif ($entry_itemtype === Field::class && $parent_itemtype === Metademand::class) {
                 $field = new Field();
                 if (!$field->getFromDB($entry_items_id)
-                    || (int)$field->fields['plugin_metademands_metademands_id'] !== $parent_items_id) {
+                    || (int) $field->fields['plugin_metademands_metademands_id'] !== $parent_items_id) {
                     continue;
                 }
             } else {
@@ -151,7 +151,7 @@ switch ($action) {
                 $first = reset($existing);
                 $tr->update([
                     'id'           => $first['id'],
-                    'translations' => ['one' => (string)$entry_value],
+                    'translations' => ['one' => (string) $entry_value],
                 ]);
             } else {
                 $tr->add([
@@ -159,14 +159,14 @@ switch ($action) {
                     'itemtype'     => $entry_itemtype,
                     'key'          => $entry_key,
                     'language'     => $entry_language,
-                    'translations' => ['one' => (string)$entry_value],
+                    'translations' => ['one' => (string) $entry_value],
                 ]);
             }
         }
         break;
 
     case 'delete_language':
-        $items_id = (int)($_POST['items_id'] ?? 0);
+        $items_id = (int) ($_POST['items_id'] ?? 0);
         $itemtype = $_POST['itemtype'] ?? '';
         $item = getItemForItemtype($itemtype);
         if ($item === false || !$item->can($items_id, UPDATE)) {

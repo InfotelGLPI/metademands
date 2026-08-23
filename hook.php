@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\DBAL\QueryExpression;
@@ -193,7 +193,6 @@ function plugin_metademands_install()
 
         }
 
-
         //version 3.3.11
         //creation glpi_plugin_metademands_fieldparameters / glpi_plugin_metademands_fieldcustomvalues
         if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters", false)) {
@@ -239,7 +238,7 @@ function plugin_metademands_install()
     foreach ($classes as $old => $new) {
         $displayusers = $DB->request([
             'SELECT' => [
-                'users_id'
+                'users_id',
             ],
             'DISTINCT' => true,
             'FROM' => 'glpi_displaypreferences',
@@ -253,13 +252,13 @@ function plugin_metademands_install()
                 $iterator = $DB->request([
                     'SELECT' => [
                         'num',
-                        'id'
+                        'id',
                     ],
                     'FROM' => 'glpi_displaypreferences',
                     'WHERE' => [
                         'itemtype' => $old,
                         'users_id' => $displayuser['users_id'],
-                        'interface' => 'central'
+                        'interface' => 'central',
                     ],
                 ]);
 
@@ -267,14 +266,14 @@ function plugin_metademands_install()
                     foreach ($iterator as $data) {
                         $iterator2 = $DB->request([
                             'SELECT' => [
-                                'id'
+                                'id',
                             ],
                             'FROM' => 'glpi_displaypreferences',
                             'WHERE' => [
                                 'itemtype' => $new,
                                 'users_id' => $displayuser['users_id'],
                                 'num' => $data['num'],
-                                'interface' => 'central'
+                                'interface' => 'central',
                             ],
                         ]);
                         if (count($iterator2) > 0) {
@@ -283,7 +282,7 @@ function plugin_metademands_install()
                                     'glpi_displaypreferences',
                                     [
                                         'id' => $dataid['id'],
-                                    ]
+                                    ],
                                 );
                                 $DB->doQuery($query);
                             }
@@ -295,7 +294,7 @@ function plugin_metademands_install()
                                 ],
                                 [
                                     'id' => $data['id'],
-                                ]
+                                ],
                             );
                             $DB->doQuery($query);
                         }
@@ -378,7 +377,7 @@ function plugin_metademands_uninstall()
         "glpi_plugin_metademands_itilenvironments",
         "glpi_plugin_metademands_itilapplications",
         "glpi_plugin_metademands_profiles",
-       ];
+    ];
     foreach ($tables as $table) {
         $DB->dropTable($table, true);
     }
@@ -439,7 +438,7 @@ function plugin_item_transfer_metademands($parm)
                     'WHERE' => [
                         'plugin_metademands_metademands_id' => $parm['id'],
                     ],
-                ]
+                ],
             );
         }
     }
@@ -546,7 +545,6 @@ function plugin_metademands_getDatabaseRelations()
     }
 }
 
-
 // Define search option for types of the plugins
 /**
  * @param $itemtype
@@ -627,7 +625,6 @@ function plugin_metademands_getAddSearchOptions($itemtype)
     return $sopt;
 }
 
-
 /**
  * @param $link
  * @param $nott
@@ -674,7 +671,7 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                     if ($val == 'mygroups') {
                         return " $link (`glpi_groups_metademands`.`id` IN ('" . implode(
                             "','",
-                            $_SESSION['glpigroups']
+                            $_SESSION['glpigroups'],
                         ) . "')) ";
                     } else {
                         // Cast to int: $val is an id coming straight from the search
@@ -686,7 +683,7 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                 case 'notequals':
                     return " $link (`glpi_groups_metademands`.`id` NOT IN ('" . implode(
                         "','",
-                        $_SESSION['glpigroups']
+                        $_SESSION['glpigroups'],
                     ) . "')) ";
                     break;
                 case 'contains':
@@ -747,10 +744,10 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
         case "glpi_plugin_metademands_tickets_tasks":
 
             $out['LEFT JOIN'] = [
-                'glpi_plugin_metademands_tickets_tasks'.$AS => [
+                'glpi_plugin_metademands_tickets_tasks' . $AS => [
                     'ON' => [
                         $ref_table   => 'id',
-                        'glpi_plugin_metademands_tickets_tasks'                  => 'parent_tickets_id'
+                        'glpi_plugin_metademands_tickets_tasks'                  => 'parent_tickets_id',
                     ],
                 ],
                 'glpi_groups_tickets AS glpi_groups_tickets_metademands' => [
@@ -766,7 +763,7 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 'glpi_groups AS glpi_groups_metademands' => [
                     'ON' => [
                         'glpi_groups_tickets_metademands'   => 'groups_id',
-                        'glpi_groups_metademands'                  => 'id'
+                        'glpi_groups_metademands'                  => 'id',
                     ],
                 ],
                 'glpi_tickets AS glpi_tickets_metademands' => [
@@ -792,22 +789,22 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 'glpi_users AS glpi_users_metademands' => [
                     'ON' => [
                         'glpi_users_tickets_metademands'   => 'users_id',
-                        'glpi_users_metademands'                  => 'id'
+                        'glpi_users_metademands'                  => 'id',
                     ],
                 ],
             ];
             return $out;
-//
-//            return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-//          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id`
-//          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
-//          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
-//          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id`
-//          AND `glpi_tickets_metademands`.`is_deleted` = 0)
-//          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id`
-//          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
-//          LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
-//            break;
+            //
+            //            return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
+            //          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id`
+            //          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
+            //          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
+            //          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id`
+            //          AND `glpi_tickets_metademands`.`is_deleted` = 0)
+            //          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id`
+            //          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " )
+            //          LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
+            //            break;
     }
     return "";
 }
@@ -838,9 +835,9 @@ function plugin_metademands_addSelect($type, $ID, $num)
                 separator: Search::LONGSEP,
                 distinct: true,
                 order_by: 'glpi_users_metademands.id',
-                alias: "ITEM_{$num}"
+                alias: "ITEM_{$num}",
             );
-//            return $concat;
+            //            return $concat;
 
             return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_users_metademands`.`id`, '__NULL__')) ORDER BY `glpi_users_metademands`.`id` SEPARATOR '$$##$$') AS `ITEM_$num` ";
 
@@ -853,10 +850,10 @@ function plugin_metademands_addSelect($type, $ID, $num)
             separator: Search::LONGSEP,
             distinct: true,
             order_by: 'glpi_groups_metademands.completename',
-            alias: "ITEM_{$num}"
+            alias: "ITEM_{$num}",
         );
 
-//        return $concat;
+        //        return $concat;
         return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_groups_metademands`.`completename`, '__NULL__')) ORDER BY `glpi_groups_metademands`.`completename` SEPARATOR '$$##$$') AS `ITEM_$num` ";
 
     } else {
@@ -915,52 +912,51 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             $options['criteria'][2]['value']      = 'notold';
             $options['criteria'][2]['link']       = 'AND';
 
-
             $metademands = new Ticket_Metademand();
 
             if ($metademands->getFromDBByCrit(['tickets_id' => $data['id']])) {
                 $DB                               = DBConnection::getReadConnection();
                 $query
                     = [
-                    'SELECT' => ['COUNT' => 'glpi_plugin_metademands_tickets_metademands.id AS total_running'],
-                    'DISTINCT'        => true,
-                    'FROM' => 'glpi_tickets',
-                    'LEFT JOIN'       => [
-                        'glpi_plugin_metademands_tickets_metademands' => [
-                            'ON' => [
-                                'glpi_tickets' => 'id',
-                                'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id'
-                            ]
+                        'SELECT' => ['COUNT' => 'glpi_plugin_metademands_tickets_metademands.id AS total_running'],
+                        'DISTINCT'        => true,
+                        'FROM' => 'glpi_tickets',
+                        'LEFT JOIN'       => [
+                            'glpi_plugin_metademands_tickets_metademands' => [
+                                'ON' => [
+                                    'glpi_tickets' => 'id',
+                                    'glpi_plugin_metademands_tickets_metademands'          => 'tickets_id',
+                                ],
+                            ],
+                            'glpi_plugin_metademands_tickets_tasks' => [
+                                'ON' => [
+                                    'glpi_tickets' => 'id',
+                                    'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id',
+                                ],
+                            ],
+                            'glpi_groups_tickets AS glpi_groups_tickets_metademands' => [
+                                'ON' => [
+                                    'glpi_plugin_metademands_tickets_tasks' => 'tickets_id',
+                                    'glpi_groups_tickets_metademands'          => 'tickets_id',
+                                ],
+                            ],
+                            'glpi_groups AS glpi_groups_metademands' => [
+                                'ON' => [
+                                    'glpi_groups_tickets_metademands' => 'groups_id',
+                                    'glpi_groups_metademands'          => 'id',
+                                ],
+                            ],
                         ],
-                        'glpi_plugin_metademands_tickets_tasks' => [
-                            'ON' => [
-                                'glpi_tickets' => 'id',
-                                'glpi_plugin_metademands_tickets_tasks'          => 'parent_tickets_id'
-                            ]
+                        'WHERE' => [
+                            'glpi_tickets.is_deleted' => 0,
+                            'glpi_plugin_metademands_tickets_metademands.status' => Ticket_Metademand::RUNNING,
+                            'glpi_groups_metademands.id' => $_SESSION['glpigroups'],
+                            'glpi_tickets.id' => $data['id'],
                         ],
-                        'glpi_groups_tickets AS glpi_groups_tickets_metademands' => [
-                            'ON' => [
-                                'glpi_plugin_metademands_tickets_tasks' => 'tickets_id',
-                                'glpi_groups_tickets_metademands'          => 'tickets_id'
-                            ]
-                        ],
-                        'glpi_groups AS glpi_groups_metademands' => [
-                            'ON' => [
-                                'glpi_groups_tickets_metademands' => 'groups_id',
-                                'glpi_groups_metademands'          => 'id'
-                            ]
-                        ]
-                    ],
-                    'WHERE' => [
-                        'glpi_tickets.is_deleted' => 0,
-                        'glpi_plugin_metademands_tickets_metademands.status' => Ticket_Metademand::RUNNING,
-                        'glpi_groups_metademands.id' => $_SESSION['glpigroups'],
-                        'glpi_tickets.id' => $data['id'],
-                    ],
-                ];
+                    ];
                 $query['WHERE'] = $query['WHERE'] + getEntitiesRestrictCriteria(
-                        'glpi_tickets'
-                    );
+                    'glpi_tickets',
+                );
 
                 $total_running_parents_meta = $DB->request($query);
 
@@ -997,13 +993,11 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
     return "";
 }
 
-
 function plugin_metademands_hook_dashboard_cards($cards)
 {
     if ($cards === null) {
         $cards = [];
     }
-
 
     $cards["count_running_metademands"] = [
         'widgettype' => ['bigNumber'],
@@ -1021,7 +1015,6 @@ function plugin_metademands_hook_dashboard_cards($cards)
             'group_tech', 'user_tech', 'requesttype', 'location',
         ],
     ];
-
 
     $cards["count_metademands_to_be_closed"] = [
         'widgettype' => ['bigNumber'],

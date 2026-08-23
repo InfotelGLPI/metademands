@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -44,7 +44,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class MetademandTask extends CommonDBChild
 {
-
     public static $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
@@ -59,7 +58,7 @@ class MetademandTask extends CommonDBChild
      *
      * @return string
      */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Task creation', 'metademands');
     }
@@ -68,7 +67,7 @@ class MetademandTask extends CommonDBChild
     /**
      * @return bool|int
      */
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -76,7 +75,7 @@ class MetademandTask extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -135,19 +134,19 @@ class MetademandTask extends CommonDBChild
                     $table,
                     "destination_entities_id",
                     "destination_entities_id",
-                    "int DEFAULT NULL"
+                    "int DEFAULT NULL",
                 );
                 $migration->migrationOneTable($table);
                 $DB->update(
                     $table,
                     ["destination_entities_id" => null],
-                    ["destination_entities_id" => -1]
+                    ["destination_entities_id" => -1],
                 );
                 $migration->changeField(
                     $table,
                     "destination_entities_id",
                     "destination_entities_id",
-                    "int {$default_key_sign} DEFAULT NULL"
+                    "int {$default_key_sign} DEFAULT NULL",
                 );
                 $migration->migrationOneTable($table);
             }
@@ -173,7 +172,7 @@ class MetademandTask extends CommonDBChild
      *
      * @throws \GlpitestSQLError
      */
-    static function showMetademandTaskForm($ID, $selected_entity = -1)
+    public static function showMetademandTaskForm($ID, $selected_entity = -1)
     {
         $used   = MetademandTask::getAncestorOfMetademandTask($ID);
         $used[] = $ID;
@@ -230,43 +229,43 @@ class MetademandTask extends CommonDBChild
      * @return mixed
      * @throws \GlpitestSQLError
      */
-//    static function getMetademandTaskName($tasks_id)
-//    {
-//        global $DB;
-//
-//        if ($tasks_id > 0) {
-//
-//            $criteria = [
-//                'SELECT' => 'glpi_plugin_metademands_metademands.name',
-//                'FROM' => 'glpi_plugin_metademands_metademands',
-//                'LEFT JOIN'       => [
-//                    'glpi_plugin_metademands_metademandtasks' => [
-//                        'ON' => [
-//                            'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_metademands_id',
-//                            'glpi_plugin_metademands_metademands'          => 'id'
-//                        ]
-//                    ]
-//                ],
-//                'WHERE' => [
-//                    'glpi_plugin_metademands_metademandtasks.plugin_metademands_tasks_id' => $tasks_id,
-//                ],
-//            ];
-//            $iterator = $DB->request($criteria);
-//            if (count($iterator) > 0) {
-//                foreach ($iterator as $data) {
-//                    return $data['name'];
-//                }
-//            }
-//        }
-//        return "";
-//    }
+    //    static function getMetademandTaskName($tasks_id)
+    //    {
+    //        global $DB;
+    //
+    //        if ($tasks_id > 0) {
+    //
+    //            $criteria = [
+    //                'SELECT' => 'glpi_plugin_metademands_metademands.name',
+    //                'FROM' => 'glpi_plugin_metademands_metademands',
+    //                'LEFT JOIN'       => [
+    //                    'glpi_plugin_metademands_metademandtasks' => [
+    //                        'ON' => [
+    //                            'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_metademands_id',
+    //                            'glpi_plugin_metademands_metademands'          => 'id'
+    //                        ]
+    //                    ]
+    //                ],
+    //                'WHERE' => [
+    //                    'glpi_plugin_metademands_metademandtasks.plugin_metademands_tasks_id' => $tasks_id,
+    //                ],
+    //            ];
+    //            $iterator = $DB->request($criteria);
+    //            if (count($iterator) > 0) {
+    //                foreach ($iterator as $data) {
+    //                    return $data['name'];
+    //                }
+    //            }
+    //        }
+    //        return "";
+    //    }
 
 
-    static function getChildMetademandsToCreate($ID)
+    public static function getChildMetademandsToCreate($ID)
     {
         $tasks = new Task();
         $existing_tasks = $tasks->find(
-            ["plugin_metademands_metademands_id" => $ID, "type" => Task::METADEMAND_TYPE]
+            ["plugin_metademands_metademands_id" => $ID, "type" => Task::METADEMAND_TYPE],
         );
 
         $childs = [];
@@ -280,7 +279,7 @@ class MetademandTask extends CommonDBChild
         return $childs;
     }
 
-    static function setUsedTask($tasks_id, $used)
+    public static function setUsedTask($tasks_id, $used)
     {
         $tasks = new Task();
         if ($tasks->getFromDB($tasks_id)) {
@@ -311,7 +310,7 @@ class MetademandTask extends CommonDBChild
      * @return array
      * @throws \GlpitestSQLError
      */
-    static function getAncestorOfMetademandTask($metademands_id, $id_found = [])
+    public static function getAncestorOfMetademandTask($metademands_id, $id_found = [])
     {
         global $DB;
 
@@ -321,16 +320,16 @@ class MetademandTask extends CommonDBChild
         $criteria = [
             'SELECT' => [
                 'glpi_plugin_metademands_tasks.plugin_metademands_metademands_id AS parent_metademands_id',
-                'glpi_plugin_metademands_tasks.id AS tasks_id'
+                'glpi_plugin_metademands_tasks.id AS tasks_id',
             ],
             'FROM' => 'glpi_plugin_metademands_tasks',
             'LEFT JOIN' => [
                 'glpi_plugin_metademands_metademandtasks' => [
                     'ON' => [
                         'glpi_plugin_metademands_metademandtasks' => 'plugin_metademands_tasks_id',
-                        'glpi_plugin_metademands_tasks' => 'id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_tasks' => 'id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_plugin_metademands_metademandtasks.plugin_metademands_metademands_id' => $metademands_id,
@@ -347,7 +346,7 @@ class MetademandTask extends CommonDBChild
         return $id_found;
     }
 
-    function post_deleteFromDB()
+    public function post_deleteFromDB()
     {
         $metademands_id = $this->fields['plugin_metademands_metademands_id'];
 
@@ -357,7 +356,7 @@ class MetademandTask extends CommonDBChild
         $field = new Field();
         $fields = $field->find([
             'type' => 'parent_field',
-            'plugin_metademands_metademands_id' => $metademands_id
+            'plugin_metademands_metademands_id' => $metademands_id,
         ]);
 
         //delete of the metademand fields in the present child requests as father fields

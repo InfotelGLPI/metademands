@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -67,7 +67,8 @@ class Interticketfollowup extends CommonITILObject
         return _n('Inter ticket followup', 'Inter ticket followups', $nb, 'metademands');
     }
 
-    public static function addNotifications() {
+    public static function addNotifications()
+    {
         global $DB;
 
         // Notification
@@ -76,17 +77,17 @@ class Interticketfollowup extends CommonITILObject
 
         if (!countElementsInTable(
             "glpi_notificationtemplates",
-            $options_notif
+            $options_notif,
         )) {
             $DB->insert(
                 "glpi_notificationtemplates",
-                $options_notif
+                $options_notif,
             );
 
             foreach (
                 $DB->request([
                     'FROM' => 'glpi_notificationtemplates',
-                    'WHERE' => $options_notif
+                    'WHERE' => $options_notif,
                 ]) as $data
             ) {
                 $templates_id = $data['id'];
@@ -123,7 +124,7 @@ class Interticketfollowup extends CommonITILObject
     ##document.filename####ENDFOREACHdocuments##
     Ticket ###ticket.id##',
                             'content_html' => '',
-                        ]
+                        ],
                     );
 
                     $DB->insert(
@@ -134,19 +135,19 @@ class Interticketfollowup extends CommonITILObject
                             'itemtype' => self::class,
                             'event' => 'add_interticketfollowup',
                             'is_recursive' => 1,
-                        ]
+                        ],
                     );
 
                     $options_notif = [
                         'itemtype' => self::class,
                         'name' => 'New inter ticket Followup',
-                        'event' => 'add_interticketfollowup'
+                        'event' => 'add_interticketfollowup',
                     ];
 
                     foreach (
                         $DB->request([
                             'FROM' => 'glpi_notifications',
-                            'WHERE' => $options_notif
+                            'WHERE' => $options_notif,
                         ]) as $data_notif
                     ) {
                         $notification = $data_notif['id'];
@@ -157,7 +158,7 @@ class Interticketfollowup extends CommonITILObject
                                     'notifications_id' => $notification,
                                     'mode' => 'mailing',
                                     'notificationtemplates_id' => $templates_id,
-                                ]
+                                ],
                             );
                         }
                     }
@@ -204,8 +205,8 @@ class Interticketfollowup extends CommonITILObject
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsInterticketfollowup'
-            ]
+                'itemtype' => 'PluginMetademandsInterticketfollowup',
+            ],
         );
         $DB->doQuery($query);
 
@@ -215,8 +216,8 @@ class Interticketfollowup extends CommonITILObject
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsInterticketfollowup'
-            ]
+                'itemtype' => 'PluginMetademandsInterticketfollowup',
+            ],
         );
         $DB->doQuery($query);
 
@@ -226,8 +227,8 @@ class Interticketfollowup extends CommonITILObject
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsInterticketfollowup'
-            ]
+                'itemtype' => 'PluginMetademandsInterticketfollowup',
+            ],
         );
         $DB->doQuery($query);
 
@@ -237,8 +238,8 @@ class Interticketfollowup extends CommonITILObject
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsMetademand'
-            ]
+                'itemtype' => 'PluginMetademandsMetademand',
+            ],
         );
         $DB->doQuery($query);
 
@@ -248,8 +249,8 @@ class Interticketfollowup extends CommonITILObject
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsMetademand'
-            ]
+                'itemtype' => 'PluginMetademandsMetademand',
+            ],
         );
         $DB->doQuery($query);
     }
@@ -449,7 +450,7 @@ class Interticketfollowup extends CommonITILObject
                 $ticket_metademand_data = reset($ticket_metademand_data);
                 $tickets_found          = Ticket::getSonTickets(
                     $first_tickets_id,
-                    $ticket_metademand_data['plugin_metademands_metademands_id']
+                    $ticket_metademand_data['plugin_metademands_metademands_id'],
                 );
                 $list_tickets           = [];
                 foreach ($tickets_found as $ticket_found) {
@@ -465,16 +466,16 @@ class Interticketfollowup extends CommonITILObject
                 }
                 $follow  = new self();
                 $crits = [
-//                    'OR'  => [
-//
-//                        'AND' => [
-//                            'tickets_id' => $list_tickets,
-//                            'targets_id' => 0,
-//                        ],
-//                        ['targets_id' => $items_id],
-//                        ['tickets_id' => $items_id],
-//
-//                    ],
+                    //                    'OR'  => [
+                    //
+                    //                        'AND' => [
+                    //                            'tickets_id' => $list_tickets,
+                    //                            'targets_id' => 0,
+                    //                        ],
+                    //                        ['targets_id' => $items_id],
+                    //                        ['tickets_id' => $items_id],
+                    //
+                    //                    ],
                     'AND' => [
                         'OR' => [
 
@@ -573,7 +574,7 @@ class Interticketfollowup extends CommonITILObject
             Session::addMessageAfterRedirect(
                 __("You can't add a followup without description"),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }
@@ -626,7 +627,7 @@ class Interticketfollowup extends CommonITILObject
         $parentitem->updateDateMod(
             $this->input["tickets_id"],
             $no_stat,
-            $this->input["users_id"]
+            $this->input["users_id"],
         );
 
 
@@ -656,7 +657,7 @@ class Interticketfollowup extends CommonITILObject
             get_class($parentitem),
             $changes,
             $this->getType(),
-            Log::HISTORY_ADD_SUBITEM
+            Log::HISTORY_ADD_SUBITEM,
         );
     }
 
@@ -696,7 +697,7 @@ class Interticketfollowup extends CommonITILObject
                         'SELECT' => 'id',
                         'FROM'   => self::getTable(),
                         'WHERE'  => $fup_crits,
-                    ]
+                    ],
                 ),
             ];
         }

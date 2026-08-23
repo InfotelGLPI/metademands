@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -57,13 +57,12 @@ if (!defined('GLPI_ROOT')) {
  */
 class TicketField extends CommonDBChild
 {
-
-    static public $itemtype = Metademand::class;
-    static public $items_id = 'plugin_metademands_metademands_id';
+    public static $itemtype = Metademand::class;
+    public static $items_id = 'plugin_metademands_metademands_id';
 
     //4 => requester
     //71 => requester group
-    static $used_fields = [
+    public static $used_fields = [
         'content',
         'itilcategories_id',
         'type',
@@ -75,10 +74,10 @@ class TicketField extends CommonDBChild
         '_users_id_requester',
         'slas_id',
         4,
-        71
+        71,
     ];
 
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory
@@ -88,7 +87,7 @@ class TicketField extends CommonDBChild
      *
      * @return string
      */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return _n('Ticket field', 'Ticket fields', $nb, 'metademands');
     }
@@ -101,7 +100,7 @@ class TicketField extends CommonDBChild
     /**
      * @return bool|int
      */
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -109,7 +108,7 @@ class TicketField extends CommonDBChild
     /**
      * @return bool
      */
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
@@ -165,7 +164,7 @@ class TicketField extends CommonDBChild
      *
      * @return array|string
      */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if ($item->getType() == Metademand::class) {
             if ($_SESSION['glpishow_count_on_tabs']) {
@@ -174,8 +173,8 @@ class TicketField extends CommonDBChild
                     self::getTypeName(2),
                     $dbu->countElementsInTable(
                         $this->getTable(),
-                        ["plugin_metademands_metademands_id" => $item->getID()]
-                    )
+                        ["plugin_metademands_metademands_id" => $item->getID()],
+                    ),
                 );
             }
             return self::getTypeName(2);
@@ -194,7 +193,7 @@ class TicketField extends CommonDBChild
      *
      * @return bool|true
      */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
         $field = new self();
 
@@ -224,7 +223,6 @@ class TicketField extends CommonDBChild
             'tags' => $rows,
         ]);
     }
-
 
     /** Display fields Tags available for the metademand $id
      *
@@ -264,7 +262,7 @@ class TicketField extends CommonDBChild
      * @return bool (display)
      * @throws \GlpitestSQLError
      */
-    function showFromMetademand($item)
+    public function showFromMetademand($item)
     {
         if (!$this->canview()) {
             return false;
@@ -288,7 +286,6 @@ class TicketField extends CommonDBChild
         } else {
             $tt = new ChangeTemplate();
         }
-
 
         $ticketfield_data = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
         $searchOption = Search::getOptions($object);
@@ -318,7 +315,7 @@ class TicketField extends CommonDBChild
             echo "<td class='tab_bg_2 center'>";
             echo Html::submit(
                 __('Synchronise with ticket template', 'metademands'),
-                ['name' => 'template_sync', 'class' => 'btn btn-primary']
+                ['name' => 'template_sync', 'class' => 'btn btn-primary'],
             );
             foreach ($item->fields as $name => $value) {
                 echo Html::hidden($name, ['value' => $value]);
@@ -328,8 +325,8 @@ class TicketField extends CommonDBChild
             echo "<tr class='tab_bg_1 center'>";
             echo "<td>";
             echo "<a href='#' class='submit btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __(
-                    'Show list of available tags'
-                ) . "' >";
+                'Show list of available tags',
+            ) . "' >";
             echo __('Show list of available tags');
             echo "</a>";
             echo Ajax::createIframeModalWindow(
@@ -337,8 +334,8 @@ class TicketField extends CommonDBChild
                 PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->fields['id'],
                 [
                     'title' => __('Show list of available tags'),
-                    'display' => false
-                ]
+                    'display' => false,
+                ],
             );
             echo "</td>";
             echo "</tr>";
@@ -364,7 +361,7 @@ class TicketField extends CommonDBChild
      * @return bool (display)
      * @throws \GlpitestSQLError
      */
-    function showForm($ID, $options = [])
+    public function showForm($ID, $options = [])
     {
         global $CFG_GLPI;
 
@@ -415,7 +412,7 @@ class TicketField extends CommonDBChild
                 'datatype'       => "text",
                 'itemtype_used'  => $itemtype_used,
                 'relative_dates' => 1,
-            ]
+            ],
         );
         echo "</td>";
         echo "</tr>";
@@ -451,7 +448,7 @@ class TicketField extends CommonDBChild
 
         $display_options = [
             'comments' => true,
-            'html' => true
+            'html' => true,
         ];
 
         if (count($ticketfield_data) && count($fields)) {
@@ -497,7 +494,7 @@ class TicketField extends CommonDBChild
                     Ajax::updateItemJsCode(
                         "viewticketchild" . $meta_id . $rand,
                         $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        $params
+                        $params,
                     );
                     echo ";\n}\n";
                     echo "</script>\n";
@@ -554,7 +551,7 @@ class TicketField extends CommonDBChild
      * @since version 0.83
      *
      */
-    function getPredefinedFields($ID, $withtypeandcategory = false)
+    public function getPredefinedFields($ID, $withtypeandcategory = false)
     {
         global $DB;
 
@@ -575,7 +572,7 @@ class TicketField extends CommonDBChild
             'SELECT'    => '*',
             'FROM'      => $this->getTable(),
             'WHERE'     => [
-                self::$items_id  => $ID
+                self::$items_id  => $ID,
             ],
             'ORDERBY'   => 'id',
         ]);
@@ -598,79 +595,79 @@ class TicketField extends CommonDBChild
      * @param $name
      * @param $value
      */
-//   static function getSpecificTicketFields($field_id, $name, $value) {
-//
-//      $ticket = new \Ticket();
-//
-//      switch ($name) {
-//         case '_users_id_requester':
-//            $params = ['name'  => 'ticketfield[' . $field_id . ']',
-//                       'value' => $value,
-//                       'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)];
-//
-//            User::dropdown($params);
-//            break;
-//         case '_groups_id_requester':
-//            Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
-//                                     'value'     => $value,
-//                                     'entity'    => $_SESSION['glpiactive_entity'],
-//                                     'condition' => ['is_watcher' => 1]]);
-//            break;
-//         case '_users_id_observer':
-//            $params = ['name'  => 'ticketfield[' . $field_id . ']',
-//                       'value' => $value,
-//                       'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)];
-//
-//            User::dropdown($params);
-//            break;
-//         case '_groups_id_observer':
-//            Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
-//                                     'value'     => $value,
-//                                     'entity'    => $_SESSION['glpiactive_entity'],
-//                                     'condition' => ['is_requester' => 1]]);
-//            break;
-//         case '_users_id_assign':
-//            $params = ['name'  => 'ticketfield[' . $field_id . ']',
-//                       'value' => $value,
-//                       'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)];
-//
-//            User::dropdown($params);
-//            break;
-//         case '_groups_id_assign':
-//            Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
-//                                     'value'     => $value,
-//                                     'entity'    => $_SESSION['glpiactive_entity'],
-//                                     'condition' => ['is_assign' => 1]]);
-//            break;
-//         case 'status':
-//            $opt = ['name'  => 'ticketfield[' . $field_id . ']',
-//                    'value' => $value];
-//            Ticket::dropdownStatus($opt);
-//            break;
-//         case 'itemtype':
-//            $dev_user_id  = 0;
-//            $dev_itemtype = 0;
-//            $dev_items_id = $value;
-//            Ticket::dropdownAllDevices('ticketfield[' . $field_id . ']', $dev_itemtype, $dev_items_id,
-//                                       1, $dev_user_id, $_SESSION['glpiactive_entity']);
-//            break;
-//         case 'actiontime':
-//            Dropdown::showTimeStamp('ticketfield[' . $field_id . ']', ['addfirstminutes' => true,
-//                                                                       'value'           => $value]);
-//            break;
-//         case 'requesttypes_id';
-//            Dropdown::show('RequestType', ['name' => 'ticketfield[' . $field_id . ']', 'value' => $value]);
-//            break;
-//      }
-//
-//   }
+    //   static function getSpecificTicketFields($field_id, $name, $value) {
+    //
+    //      $ticket = new \Ticket();
+    //
+    //      switch ($name) {
+    //         case '_users_id_requester':
+    //            $params = ['name'  => 'ticketfield[' . $field_id . ']',
+    //                       'value' => $value,
+    //                       'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)];
+    //
+    //            User::dropdown($params);
+    //            break;
+    //         case '_groups_id_requester':
+    //            Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
+    //                                     'value'     => $value,
+    //                                     'entity'    => $_SESSION['glpiactive_entity'],
+    //                                     'condition' => ['is_watcher' => 1]]);
+    //            break;
+    //         case '_users_id_observer':
+    //            $params = ['name'  => 'ticketfield[' . $field_id . ']',
+    //                       'value' => $value,
+    //                       'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)];
+    //
+    //            User::dropdown($params);
+    //            break;
+    //         case '_groups_id_observer':
+    //            Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
+    //                                     'value'     => $value,
+    //                                     'entity'    => $_SESSION['glpiactive_entity'],
+    //                                     'condition' => ['is_requester' => 1]]);
+    //            break;
+    //         case '_users_id_assign':
+    //            $params = ['name'  => 'ticketfield[' . $field_id . ']',
+    //                       'value' => $value,
+    //                       'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)];
+    //
+    //            User::dropdown($params);
+    //            break;
+    //         case '_groups_id_assign':
+    //            Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
+    //                                     'value'     => $value,
+    //                                     'entity'    => $_SESSION['glpiactive_entity'],
+    //                                     'condition' => ['is_assign' => 1]]);
+    //            break;
+    //         case 'status':
+    //            $opt = ['name'  => 'ticketfield[' . $field_id . ']',
+    //                    'value' => $value];
+    //            Ticket::dropdownStatus($opt);
+    //            break;
+    //         case 'itemtype':
+    //            $dev_user_id  = 0;
+    //            $dev_itemtype = 0;
+    //            $dev_items_id = $value;
+    //            Ticket::dropdownAllDevices('ticketfield[' . $field_id . ']', $dev_itemtype, $dev_items_id,
+    //                                       1, $dev_user_id, $_SESSION['glpiactive_entity']);
+    //            break;
+    //         case 'actiontime':
+    //            Dropdown::showTimeStamp('ticketfield[' . $field_id . ']', ['addfirstminutes' => true,
+    //                                                                       'value'           => $value]);
+    //            break;
+    //         case 'requesttypes_id';
+    //            Dropdown::show('RequestType', ['name' => 'ticketfield[' . $field_id . ']', 'value' => $value]);
+    //            break;
+    //      }
+    //
+    //   }
 
     /**
      * @param $input
      *
      * @return bool
      */
-    static function updateMandatoryTicketFields($input)
+    public static function updateMandatoryTicketFields($input)
     {
         if (isset($input['itilcategories_id']) && isset($input['entities_id']) && isset($input['id'])) {
             $meta = new Metademand();
@@ -684,18 +681,17 @@ class TicketField extends CommonDBChild
                 $input['itilcategories_id'],
                 $type,
                 $input['entities_id'],
-                'predefined'
+                'predefined',
             );
         }
 
         return true;
     }
 
-
     /**
      * @param \ITILCategory $itilcategory
      */
-    static function update_category_mandatoryFields(ITILCategory $itilcategory)
+    public static function update_category_mandatoryFields(ITILCategory $itilcategory)
     {
         $categid = 0;
         if (isset($itilcategory->fields['id'])) {
@@ -705,18 +701,17 @@ class TicketField extends CommonDBChild
         $metademands = new Metademand();
         $metademands_data = $metademands->find([
             'entities_id' => $_SESSION['glpiactive_entity'],
-            'itilcategories_id' => $categid
+            'itilcategories_id' => $categid,
         ]);
         foreach ($metademands_data as $id => $value) {
             self::addTemplateFields($id, $categid, $value['type'], $value['entities_id']);
         }
     }
 
-
     /**
      * @param \ITILCategory $itilcategory
      */
-    static function update_category_predefinedFields(ITILCategory $itilcategory)
+    public static function update_category_predefinedFields(ITILCategory $itilcategory)
     {
         $categid = 0;
         if (isset($itilcategory->fields['id'])) {
@@ -725,7 +720,7 @@ class TicketField extends CommonDBChild
         $metademands = new Metademand();
         $metademands_data = $metademands->find([
             'entities_id' => $_SESSION['glpiactive_entity'],
-            'itilcategories_id' => $categid
+            'itilcategories_id' => $categid,
         ]);
         foreach ($metademands_data as $id => $value) {
             self::addTemplateFields($id, $categid, $value['type'], $value['entities_id'], 'predefined');
@@ -735,7 +730,7 @@ class TicketField extends CommonDBChild
     /**
      * @param \TicketTemplateMandatoryField $ttp
      */
-    static function post_add_mandatoryField(TicketTemplateMandatoryField $ttp)
+    public static function post_add_mandatoryField(TicketTemplateMandatoryField $ttp)
     {
         self::addFieldsFromTemplate($ttp);
     }
@@ -743,7 +738,7 @@ class TicketField extends CommonDBChild
     /**
      * @param \TicketTemplatePredefinedField $ttp
      */
-    static function post_add_predefinedField(TicketTemplatePredefinedField $ttp)
+    public static function post_add_predefinedField(TicketTemplatePredefinedField $ttp)
     {
         self::addFieldsFromTemplate($ttp);
     }
@@ -751,7 +746,7 @@ class TicketField extends CommonDBChild
     /**
      * @param \TicketTemplateMandatoryField $ttp
      */
-    static function post_delete_mandatoryField(TicketTemplateMandatoryField $ttp)
+    public static function post_delete_mandatoryField(TicketTemplateMandatoryField $ttp)
     {
         self::deleteFieldsFromTemplate($ttp);
     }
@@ -759,7 +754,7 @@ class TicketField extends CommonDBChild
     /**
      * @param \TicketTemplatePredefinedField $ttp
      */
-    static function post_delete_predefinedField(TicketTemplatePredefinedField $ttp)
+    public static function post_delete_predefinedField(TicketTemplatePredefinedField $ttp)
     {
         self::deleteFieldsFromTemplate($ttp, 'predefined');
     }
@@ -767,7 +762,7 @@ class TicketField extends CommonDBChild
     /**
      * @param $ttp
      */
-    static function addFieldsFromTemplate($ttp)
+    public static function addFieldsFromTemplate($ttp)
     {
         $ticketField = new TicketField();
         $metademands = new Metademand();
@@ -786,7 +781,7 @@ class TicketField extends CommonDBChild
                     0,
                     $value['type'],
                     $value['itilcategories_id'],
-                    $value['entities_id']
+                    $value['entities_id'],
                 );
                 $fieldsname = $meta_tt->getAllowedFields(true);
 
@@ -834,7 +829,7 @@ class TicketField extends CommonDBChild
                                     'type' => $value['type'],
                                     'is_mandatory' => 1,
                                     'entities_id' => $value['entities_id'],
-                                    'plugin_metademands_metademands_id' => $id
+                                    'plugin_metademands_metademands_id' => $id,
                                 ]);
                             } else {
                                 $ticketField->update(['id' => $used, 'value' => $default_value]);
@@ -847,7 +842,7 @@ class TicketField extends CommonDBChild
                                 'is_mandatory' => 1,
                                 'type' => $value['type'],
                                 'entities_id' => $value['entities_id'],
-                                'plugin_metademands_metademands_id' => $id
+                                'plugin_metademands_metademands_id' => $id,
                             ]);
                         }
                     }
@@ -860,7 +855,7 @@ class TicketField extends CommonDBChild
      * @param        $ttp
      * @param string $templatetype
      */
-    static function deleteFieldsFromTemplate($ttp, $templatetype = 'mandatory')
+    public static function deleteFieldsFromTemplate($ttp, $templatetype = 'mandatory')
     {
         $ticketField = new TicketField();
         $metademands = new Metademand();
@@ -884,7 +879,7 @@ class TicketField extends CommonDBChild
 
                 if (!$used) {
                     $ticketField->deleteByCriteria(
-                        ['num' => $ttp->fields['num'], 'plugin_metademands_metademands_id' => $id]
+                        ['num' => $ttp->fields['num'], 'plugin_metademands_metademands_id' => $id],
                     );
                 }
             }
@@ -898,7 +893,7 @@ class TicketField extends CommonDBChild
      * @param        $entity
      * @param string $templatetype
      */
-    static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory')
+    public static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory')
     {
         $meta = new Metademand();
         $meta->getFromDB($metademands_id);
@@ -963,7 +958,7 @@ class TicketField extends CommonDBChild
                                         'is_deletable' => 0,
                                         'is_mandatory' => 1,
                                         'entities_id' => $entity,
-                                        'plugin_metademands_metademands_id' => $metademands_id
+                                        'plugin_metademands_metademands_id' => $metademands_id,
                                     ]);
                                 } else {
                                     if (!empty($default_value)) {
@@ -972,7 +967,7 @@ class TicketField extends CommonDBChild
                                 }
                             } else {
                                 $ticketField->deleteByCriteria(
-                                    ['num' => $num, 'plugin_metademands_metademands_id' => $metademands_id]
+                                    ['num' => $num, 'plugin_metademands_metademands_id' => $metademands_id],
                                 );
                                 foreach ($tt->predefined[$key] as $key => $val) {
                                     $ticketField->add([
@@ -981,7 +976,7 @@ class TicketField extends CommonDBChild
                                         'is_deletable' => 0,
                                         'is_mandatory' => 1,
                                         'entities_id' => $entity,
-                                        'plugin_metademands_metademands_id' => $metademands_id
+                                        'plugin_metademands_metademands_id' => $metademands_id,
                                     ]);
                                 }
                             }
@@ -995,7 +990,7 @@ class TicketField extends CommonDBChild
     /**
      * @return array
      */
-    function getForbiddenStandardMassiveAction()
+    public function getForbiddenStandardMassiveAction()
     {
         $forbidden = parent::getForbiddenStandardMassiveAction();
 

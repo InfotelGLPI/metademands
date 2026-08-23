@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -252,7 +252,7 @@ class FieldParameter extends CommonDBChild
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             $dbu->getTableForItemType(__CLASS__),
-            ["plugin_metademands_fields_id" => $item->getID()]
+            ["plugin_metademands_fields_id" => $item->getID()],
         );
     }
 
@@ -813,7 +813,7 @@ class FieldParameter extends CommonDBChild
             Session::addMessageAfterRedirect(
                 sprintf(__("Mandatory fields are not filled. Please correct: %s"), implode(', ', $msg)),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }
@@ -980,7 +980,7 @@ class FieldParameter extends CommonDBChild
         }
     }
 
-    static function migrateFieldsParameters($migration)
+    public static function migrateFieldsParameters($migration)
     {
         global $DB;
 
@@ -1093,7 +1093,7 @@ class FieldParameter extends CommonDBChild
 
                         $metademand_options = new FieldOption();
                         $fieldoptions = $metademand_options->find(
-                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']],
                         );
                         if (count($fieldoptions) > 0) {
                             foreach ($fieldoptions as $ko => $fieldoption) {
@@ -1103,7 +1103,7 @@ class FieldParameter extends CommonDBChild
 
                         $metademand_conditions = new Condition();
                         $fieldconditions = $metademand_conditions->find(
-                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']],
                         );
                         if (count($fieldconditions) > 0) {
                             foreach ($fieldconditions as $ko => $fieldcondition) {
@@ -1113,13 +1113,13 @@ class FieldParameter extends CommonDBChild
 
                         $metademand_translations = new FieldTranslation();
                         $fieldtranslations = $metademand_translations->find(
-                            ["items_id" => $field['id'], "key" => $input['old_translation_name']]
+                            ["items_id" => $field['id'], "key" => $input['old_translation_name']],
                         );
                         if (count($fieldtranslations) > 0) {
                             foreach ($fieldtranslations as $k => $fieldtranslation) {
                                 $new_value = "custom" . $input['rank'];
                                 $metademand_translations->update(
-                                    ["id" => $fieldtranslation['id'], "key" => $new_value]
+                                    ["id" => $fieldtranslation['id'], "key" => $new_value],
                                 );
                             }
                         }
@@ -1134,7 +1134,7 @@ class FieldParameter extends CommonDBChild
             foreach ($old_new_custom_values as $fieldid => $oldandnews) {
                 $metademand_formvalues = new Form_Value();
                 $fieldformvalues = $metademand_formvalues->find(
-                    ["plugin_metademands_fields_id" => $fieldid]
+                    ["plugin_metademands_fields_id" => $fieldid],
                 );
 
                 if (count($fieldformvalues) > 0) {
@@ -1150,7 +1150,7 @@ class FieldParameter extends CommonDBChild
                             }
                             $new_values = json_encode($new_values, JSON_UNESCAPED_UNICODE);
                             $metademand_formvalues->update(
-                                ["id" => $fieldformvalue['id'], "value" => $new_values]
+                                ["id" => $fieldformvalue['id'], "value" => $new_values],
                             );
                         } else {
                             $new_value = 0;
@@ -1163,7 +1163,7 @@ class FieldParameter extends CommonDBChild
                             }
                             if ($new_value > 0) {
                                 $metademand_formvalues->update(
-                                    ["id" => $fieldformvalue['id'], "value" => $new_value]
+                                    ["id" => $fieldformvalue['id'], "value" => $new_value],
                                 );
                             }
                         }
@@ -1172,7 +1172,7 @@ class FieldParameter extends CommonDBChild
 
                 $metademand_draftvalues = new Draft_Value();
                 $fielddraftvalues = $metademand_draftvalues->find(
-                    ["plugin_metademands_fields_id" => $fieldid]
+                    ["plugin_metademands_fields_id" => $fieldid],
                 );
                 if (count($fielddraftvalues) > 0) {
                     foreach ($fielddraftvalues as $key => $fielddraftvalue) {
@@ -1187,7 +1187,7 @@ class FieldParameter extends CommonDBChild
                             }
                             $new_values = json_encode($new_values, JSON_UNESCAPED_UNICODE);
                             $metademand_draftvalues->update(
-                                ["id" => $fielddraftvalue['id'], "value" => $new_values]
+                                ["id" => $fielddraftvalue['id'], "value" => $new_values],
                             );
                         } else {
                             $new_value = 0;
@@ -1200,7 +1200,7 @@ class FieldParameter extends CommonDBChild
                             }
                             if ($new_value > 0) {
                                 $metademand_formvalues->update(
-                                    ["id" => $fieldformvalue['id'], "value" => $new_value]
+                                    ["id" => $fieldformvalue['id'], "value" => $new_value],
                                 );
                             }
                         }
@@ -1290,7 +1290,7 @@ class FieldParameter extends CommonDBChild
             'FROM'      => 'glpi_profilerights',
             'WHERE'     => [
                 'name'   => ['LIKE', '%plugin_metademands%'],
-                'rights' => ['>', 10]
+                'rights' => ['>', 10],
             ],
         ]) as $prof) {
             $rights = ['plugin_metademands_validatemeta' => 1];

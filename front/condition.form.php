@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Condition;
@@ -40,7 +40,7 @@ $field = new Field();
 $dbu = new DbUtils();
 
 $criteria = [
-    'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']
+    'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
 ];
 if (isset($_POST['plugin_metademands_fields_id'])) {
     if ($_POST['plugin_metademands_fields_id'] == 0) {
@@ -55,7 +55,7 @@ if (isset($_POST['add'])) {
     if (isset($_POST['check_item'])) {
         $input = [
             '_no_message_link' => '',
-            'add'=> '',
+            'add' => '',
             'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
             'show_logic' => $_POST['show_logic'],
             'show_condition' => $_POST['show_condition'],
@@ -63,9 +63,9 @@ if (isset($_POST['add'])) {
             'items_id' => $_POST['check_value'],
             'item' => $item,
             'type' => $type,
-            'order' => $_POST['order']
+            'order' => $_POST['order'],
         ];
-        if(empty($_POST['check_value'])){
+        if (empty($_POST['check_value'])) {
             Session::addMessageAfterRedirect(__('You have to select an item', 'metademands'), false, ERROR);
             Html::back();
         }
@@ -79,7 +79,7 @@ if (isset($_POST['add'])) {
             'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
             'item' => $item,
             'type' => $type,
-            'order' => $_POST['order']
+            'order' => $_POST['order'],
         ];
         if (isset($_POST['check_value'])) {
             $input['check_value'] = $_POST['check_value'];
@@ -93,7 +93,7 @@ if (isset($_POST['add'])) {
     }
 
     Html::back();
-} else if(isset($_POST['update'])){
+} elseif (isset($_POST['update'])) {
     if (isset($_POST['check_item'])) {
         $input = [
             '_no_message_link' => '',
@@ -106,10 +106,10 @@ if (isset($_POST['add'])) {
             'items_id' => $_POST['check_value'],
             'item' => $item,
             'type' => $type,
-            'order' => $_POST['order']
+            'order' => $_POST['order'],
         ];
 
-        if(empty($_POST['check_value'])){
+        if (empty($_POST['check_value'])) {
             Session::addMessageAfterRedirect(__('You have to select an item', 'metademands'), false, ERROR);
             Html::back();
         }
@@ -124,7 +124,7 @@ if (isset($_POST['add'])) {
             'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
             'item' => $item,
             'type' => $type,
-            'order' => $_POST['order']
+            'order' => $_POST['order'],
         ];
         if (isset($_POST['check_value'])) {
             $input['check_value'] = $_POST['check_value'];
@@ -133,7 +133,7 @@ if (isset($_POST['add'])) {
     $condition->check((int) $_POST['id'], UPDATE);
     $res = $condition->update($input);
     Html::back();
-    } else {
+} else {
     Html::header(__('Condition', 'metademands'), '', "helpdesk", Condition::class);
     $condition->display(['id' => $_GET["id"]]);
     Html::footer();

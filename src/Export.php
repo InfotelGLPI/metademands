@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -160,7 +160,9 @@ class Export extends CommonDBTM
         echo __('Export the form to XML format for use with metademands plugin', 'metademands');
         echo "</td>";
         echo "<td class='center'>";
-        echo Html::submit(__('Export XML', 'metademands'), ['name' => 'exportFormGLPIXML', 'class' => 'btn btn-primary']
+        echo Html::submit(
+            __('Export XML', 'metademands'),
+            ['name' => 'exportFormGLPIXML', 'class' => 'btn btn-primary'],
         );
         echo "</td>";
 
@@ -188,7 +190,7 @@ class Export extends CommonDBTM
         echo "<td class='center'>";
         echo Html::submit(
             __('Export XML', 'metademands'),
-            ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary']
+            ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary'],
         );
         echo "</td>";
         echo "</tr>";
@@ -199,7 +201,7 @@ class Export extends CommonDBTM
         echo "<td class='center'>";
         echo Html::submit(
             __('Export JSON', 'metademands'),
-            ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary']
+            ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary'],
         );
         echo "</td>";
         echo "</tr>";
@@ -241,7 +243,7 @@ class Export extends CommonDBTM
 
         $steps = $step->find(['plugin_metademands_metademands_id' => $metademands->getID()]);
         foreach ($steps as $id => $ste) {
-            $fields['step']['step'.$id] = $ste;
+            $fields['step']['step' . $id] = $ste;
         }
 
         //TODO GroupConfig
@@ -272,7 +274,7 @@ class Export extends CommonDBTM
                 $fields['metafieldcustoms']['fieldcustoms' . $idcustoms] = $metafieldcusto;
             }
             $metafieldfreetablefields = $metafieldfreetablefield->find(
-                ['plugin_metademands_fields_id' => $metafield["id"]]
+                ['plugin_metademands_fields_id' => $metafield["id"]],
             );
             foreach ($metafieldfreetablefields as $idfreetables => $metafieldfreetable) {
                 $fields['metafieldfreetablefields']['freetablefields' . $idfreetables] = $metafieldfreetable;
@@ -319,7 +321,7 @@ class Export extends CommonDBTM
         }
 
         $xml = new SimpleXMLElement(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>" . PLUGIN_METADEMANDS_VERSION . "</version></metademand>"
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>" . PLUGIN_METADEMANDS_VERSION . "</version></metademand>",
         );
 
         self::toXml($xml, $fields);
@@ -343,7 +345,7 @@ class Export extends CommonDBTM
             QuestionTypeRequester::class => 'dropdown_object',
             QuestionTypeItem::class => 'dropdown_object',
             QuestionTypeDropdown::class => 'dropdown_meta',
-//            QuestionTypeDropdown::class => 'dropdown_multiple',
+            //            QuestionTypeDropdown::class => 'dropdown_multiple',
             //            'description' => 'title',
             //            'description' => 'informations',
             QuestionTypeShortText::class => 'text',
@@ -351,12 +353,12 @@ class Export extends CommonDBTM
             QuestionTypeEmail::class => 'email',
             //                'text' => 'url',
             QuestionTypeLongText::class => 'textarea',
-//            QuestionTypeItemDropdown::class => 'yesno',
+            //            QuestionTypeItemDropdown::class => 'yesno',
             QuestionTypeCheckbox::class => 'checkbox',
             QuestionTypeRadio::class => 'radio',
             QuestionTypeNumber::class => 'number',
-//            QuestionTypeDateTime::class => 'date',
-//            QuestionTypeDateTime::class => 'time',
+            //            QuestionTypeDateTime::class => 'date',
+            //            QuestionTypeDateTime::class => 'time',
             QuestionTypeDateTime::class => 'datetime',
             QuestionTypeFile::class => 'upload',
             //                'description' => 'link',
@@ -390,7 +392,7 @@ class Export extends CommonDBTM
 
         $sections = getAllDataFromTable(
             'glpi_forms_sections',
-            ['forms_forms_id' => $forms_forms_id]
+            ['forms_forms_id' => $forms_forms_id],
         );
 
         $fields['metafields'] = [];
@@ -403,7 +405,7 @@ class Export extends CommonDBTM
         foreach ($sections as $ids => $section) {
             $questions = getAllDataFromTable(
                 'glpi_forms_questions',
-                ['forms_sections_id' => $ids]
+                ['forms_sections_id' => $ids],
             );
 
             $secid++;
@@ -486,50 +488,50 @@ class Export extends CommonDBTM
                 }
                 $options = [];
                 //TODO
-//                $conditions = getAllDataFromTable(
-//                    'glpi_forms_conditions',
-//                    ['itemtype' => Question::class, 'items_id' => $idq]
-//                );
-//                if (count($conditions) > 0) {
-//
-//                    $cpt = 0;
-//                    foreach ($conditions as $key => $val) {
-//                        //                        $idcd = $idq + $cpt;
-//                        $options[$idq][$key]['id'] = $val['id'];
-//
-//                        $showValue = -1;
-//                        if ($question['fieldtype'] === 'yesno') {
-//                            if ($val['show_value'] == 'non') {
-//                                $showValue = 1;
-//                            } elseif ($val['show_value'] == 'oui') {
-//                                $showValue = '2';
-//                            }
-//                        } elseif (in_array($metafields['type'], Field::$field_customvalues_types)) {
-//                            $fieldcustomvalues = new FieldCustomvalue();
-//                            $fieldcustomvalues->getFromDBByCrit(["name" => $val['show_value']]);
-//                            $showValue = $fieldcustomvalues->fields['id'] ?? "";
-//                        }
-//
-//                        $options[$idq][$key]['check_value'] = $showValue;
-//                        $options[$idq][$key]['hidden_link'] = $val['items_id'];
-//                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['forms_questions_id'];
-//                        ;
-//                        $cpt++;
-//                    }
-//                    $tempid = 0;
-//
-//                    foreach ($options as $ido => $cnt) {
-//                        foreach ($cnt as $j => $option) {
-//                            $tempid++;
-//                            $fields['metafieldoptions']['fieldoptions' . $ido . $tempid] = $option;
-//                        }
-//                    }
-//                }
+                //                $conditions = getAllDataFromTable(
+                //                    'glpi_forms_conditions',
+                //                    ['itemtype' => Question::class, 'items_id' => $idq]
+                //                );
+                //                if (count($conditions) > 0) {
+                //
+                //                    $cpt = 0;
+                //                    foreach ($conditions as $key => $val) {
+                //                        //                        $idcd = $idq + $cpt;
+                //                        $options[$idq][$key]['id'] = $val['id'];
+                //
+                //                        $showValue = -1;
+                //                        if ($question['fieldtype'] === 'yesno') {
+                //                            if ($val['show_value'] == 'non') {
+                //                                $showValue = 1;
+                //                            } elseif ($val['show_value'] == 'oui') {
+                //                                $showValue = '2';
+                //                            }
+                //                        } elseif (in_array($metafields['type'], Field::$field_customvalues_types)) {
+                //                            $fieldcustomvalues = new FieldCustomvalue();
+                //                            $fieldcustomvalues->getFromDBByCrit(["name" => $val['show_value']]);
+                //                            $showValue = $fieldcustomvalues->fields['id'] ?? "";
+                //                        }
+                //
+                //                        $options[$idq][$key]['check_value'] = $showValue;
+                //                        $options[$idq][$key]['hidden_link'] = $val['items_id'];
+                //                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['forms_questions_id'];
+                //                        ;
+                //                        $cpt++;
+                //                    }
+                //                    $tempid = 0;
+                //
+                //                    foreach ($options as $ido => $cnt) {
+                //                        foreach ($cnt as $j => $option) {
+                //                            $tempid++;
+                //                            $fields['metafieldoptions']['fieldoptions' . $ido . $tempid] = $option;
+                //                        }
+                //                    }
+                //                }
             }
         }
 
         $xml = new SimpleXMLElement(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>" . PLUGIN_METADEMANDS_VERSION . "</version></metademand>"
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>" . PLUGIN_METADEMANDS_VERSION . "</version></metademand>",
         );
 
         self::toXml($xml, $fields);
@@ -552,13 +554,13 @@ class Export extends CommonDBTM
             } else {
                 // if the key is an integer, it needs text with it to actually work.
 
-                if ($key != 0 && $key == (int)$key) {
+                if ($key != 0 && $key == (int) $key) {
                     $key = "key_$key";
                 }
 
                 //            if($key == 'name' || $key == 'completename' || $key == 'comments' || $key == 'label2')
                 if ($value !== null) {
-                    $value = htmlspecialchars((string)$value, ENT_NOQUOTES, 'UTF-8');
+                    $value = htmlspecialchars((string) $value, ENT_NOQUOTES, 'UTF-8');
                     $parent->addChild($key, $value);
                 }
             }
@@ -628,16 +630,16 @@ class Export extends CommonDBTM
     {
         $options = getAllDataFromTable(
             'glpi_plugin_metademands_fieldoptions',
-            ['hidden_link' => $fieldId]
+            ['hidden_link' => $fieldId],
         );
 
         $renamedOptions = [];
-//
-//        $countByQuestionId = [];
-//        foreach ($options as $option) {
-//            $id = $prefix . $option['plugin_metademands_fields_id'];
-//            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
-//        }
+        //
+        //        $countByQuestionId = [];
+        //        foreach ($options as $option) {
+        //            $id = $prefix . $option['plugin_metademands_fields_id'];
+        //            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
+        //        }
 
         foreach ($options as $option) {
             $fieldorigin = new Field();
@@ -648,37 +650,37 @@ class Export extends CommonDBTM
 
             $showCondition = "equals";
             $showValue = "";
-//            $showOrder = 1;
+            //            $showOrder = 1;
 
             if ($fieldorigin->fields['type'] === 'yesno') {
-                if ((int)$option['check_value'] === 1) {
+                if ((int) $option['check_value'] === 1) {
                     $showValue = array_search('Non', $fieldvalues[$option['plugin_metademands_fields_id']]);
                 }
-                if ((int)$option['check_value'] === 2) {
+                if ((int) $option['check_value'] === 2) {
                     $showValue = array_search('Oui', $fieldvalues[$option['plugin_metademands_fields_id']]);
                 }
             } elseif ($fieldorigin->fields['type'] === 'text') {
                 $showCondition = "contains";
-            } elseif ((int)$option['check_value'] === -1) {
+            } elseif ((int) $option['check_value'] === -1) {
                 $showCondition = "not_empty";
             } elseif (in_array($fieldorigin->fields["type"], Field::$field_customvalues_types)) {
                 $fieldcustomvalues->getFromDB($option['check_value']);
                 $showValue = array_search(
                     $fieldcustomvalues->fields['name'],
-                    $fieldvalues[$option['plugin_metademands_fields_id']]
+                    $fieldvalues[$option['plugin_metademands_fields_id']],
                 );
                 $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
             }
-//            $questionId = $prefix . $option['plugin_metademands_fields_id'];
-//            $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
+            //            $questionId = $prefix . $option['plugin_metademands_fields_id'];
+            //            $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
             $renamedOptions[] = [
                 'item_uuid' => $uuid,
                 'item_type' => "question",
-//                    'forms_questions_id' => $questionId,
+                //                    'forms_questions_id' => $questionId,
                 'value_operator' => $showCondition,
                 'logic_operator' => "and",
                 'value' => [$showValue],
-//                    'order' => $showOrder,
+                //                    'order' => $showOrder,
 
             ];
         }
@@ -690,15 +692,15 @@ class Export extends CommonDBTM
     {
         $options = getAllDataFromTable(
             'glpi_plugin_metademands_fieldoptions',
-            ['plugin_metademands_fields_id' => $fieldId]
+            ['plugin_metademands_fields_id' => $fieldId],
         );
 
         $conditions = [];
-//        $countByQuestionId = [];
-//        foreach ($options as $option) {
-//            $id = $prefix . $option['plugin_metademands_fields_id'];
-//            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
-//        }
+        //        $countByQuestionId = [];
+        //        foreach ($options as $option) {
+        //            $id = $prefix . $option['plugin_metademands_fields_id'];
+        //            $countByQuestionId[$id] = ($countByQuestionId[$id] ?? 0) + 1;
+        //        }
 
         foreach ($options as $option) {
             if (isset($option['hidden_block'])
@@ -713,32 +715,32 @@ class Export extends CommonDBTM
                 $showOrder = 1;
 
                 if ($fieldorigin->fields['type'] === 'yesno') {
-                    if ((int)$option['check_value'] === 1) {
+                    if ((int) $option['check_value'] === 1) {
                         $showValue = array_search('oui', $fieldvalues);
                     }
-                    if ((int)$option['check_value'] === 2) {
+                    if ((int) $option['check_value'] === 2) {
                         $showValue = array_search('non', $fieldvalues);
                     }
                 } elseif ($fieldorigin->fields['type'] === 'text') {
                     $showCondition = "contains";
-                } elseif ((int)$option['check_value'] === -1) {
+                } elseif ((int) $option['check_value'] === -1) {
                     $showCondition = "not_empty";
                 } elseif (in_array($fieldorigin->fields["type"], Field::$field_customvalues_types)) {
                     $fieldcustomvalues->getFromDB($option['check_value']);
                     $showValue = array_search($fieldcustomvalues->fields['name'], $fieldvalues);
                     $showOrder = 1; //$fieldcustomvalues->fields['rank'] ?? 0
                 }
-//                $questionId = $prefix . $option['plugin_metademands_fields_id'];
-//                $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
+                //                $questionId = $prefix . $option['plugin_metademands_fields_id'];
+                //                $logic = $countByQuestionId[$questionId] > 1 ? 2 : 1;
 
                 $conditions[$option['hidden_block']][] = [
                     'item_uuid' => $uuid,
                     'item_type' => "question",
-//                    'forms_questions_id' => $questionId,
+                    //                    'forms_questions_id' => $questionId,
                     'value_operator' => $showCondition,
                     'logic_operator' => "and",
                     'value' => [$showValue],
-//                    'order' => $showOrder,
+                    //                    'order' => $showOrder,
 
                 ];
             }
@@ -795,7 +797,7 @@ class Export extends CommonDBTM
         $metademands_id = $metademands->getID();
         $prefix = self::generateCustomCode();
         if (!$metademands_id) {
-            die(json_encode(["error" =>__s('No results found')]));
+            die(json_encode(["error" => __s('No results found')]));
         }
         $entity_name = "";
 
@@ -819,8 +821,8 @@ class Export extends CommonDBTM
             "description" => $metademands->fields['comment'],
             "illustration" => "",
             "entity_name" => $entity_name,
-            "is_recursive" => (int)($metademands->fields['is_recursive']),
-            "is_active" => (int)($metademands->fields['is_active']),
+            "is_recursive" => (int) ($metademands->fields['is_recursive']),
+            "is_active" => (int) ($metademands->fields['is_active']),
             "submit_button_visibility_strategy" => "",
             "submit_button_conditions" => [],
             "sections" => [],
@@ -835,7 +837,7 @@ class Export extends CommonDBTM
 
         $metademands_groups_data = getAllDataFromTable(
             'glpi_plugin_metademands_groups',
-            ['plugin_metademands_metademands_id' => $metademands_id]
+            ['plugin_metademands_metademands_id' => $metademands_id],
         );
 
         $groups_required = [];
@@ -843,7 +845,7 @@ class Export extends CommonDBTM
         if (!empty($metademands_groups_data)) {
             $policies = [
                 "strategy" => "Glpi\\Form\\AccessControl\\ControlType\\AllowList",
-                "is_active" => true
+                "is_active" => true,
             ];
             $policies["config"]["user_ids"] = [];
             $policies["config"]["profile_ids"] = [];
@@ -856,12 +858,12 @@ class Export extends CommonDBTM
 
             $form["policies"] = array_merge(
                 $form["policies"],
-                [$policies]
+                [$policies],
             );
 
             $form["data_requirements"] = array_merge(
                 $form["data_requirements"],
-                $groups_required
+                $groups_required,
             );
         }
 
@@ -873,17 +875,17 @@ class Export extends CommonDBTM
                 "itemtype" => "Glpi\Form\Destination\FormDestinationTicket",
                 "config" => [],
                 "creation_strategy" => "always_created",
-                "conditions" => []
+                "conditions" => [],
             ];
             $config = [];
             $metademands_ticketfields_data = getAllDataFromTable(
                 'glpi_plugin_metademands_ticketfields',
-                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1]
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1],
             );
             if (!empty($metademands_ticketfields_data)) {
                 foreach ($metademands_ticketfields_data as $ticketfields_data) {
                     $config["glpi-form-destination-commonitilfield-titlefield"] = [
-                        "value" => $ticketfields_data['value']
+                        "value" => $ticketfields_data['value'],
                     ];
                 }
             }
@@ -895,24 +897,24 @@ class Export extends CommonDBTM
                     if ($category->getFromDB($itilcategorie_id)) {
                         $config["glpi-form-destination-commonitilfield-itilcategoryfield"] = [
                             "strategy" => "specific_value",
-                            "specific_itilcategory_id" => $category->getRawCompleteName()
+                            "specific_itilcategory_id" => $category->getRawCompleteName(),
                         ];
                         $form["data_requirements"] = array_merge(
                             $form["data_requirements"],
-                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]]
+                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]],
                         );
                     }
                 }
             }
             $config["glpi-form-destination-commonitilfield-requesttypefield"] = [
                 "strategy" => "specific_value",
-                "specific_request_type" => $metademands->fields['type']
+                "specific_request_type" => $metademands->fields['type'],
             ];
 
 
             $metademands_ticketfields_groupdata = getAllDataFromTable(
                 'glpi_plugin_metademands_ticketfields',
-                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8]
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8],
             );
             if (!empty($metademands_ticketfields_groupdata)) {
                 $group = new \Group();
@@ -921,11 +923,11 @@ class Export extends CommonDBTM
                         $config["glpi-form-destination-commonitilfield-assigneefield"] = [
                             "strategies" => ["specific_values"],
                             "specific_question_ids" => null,
-                            "specific_itilactors_ids" => ['Group' => [$group->getName()]]
+                            "specific_itilactors_ids" => ['Group' => [$group->getName()]],
                         ];
                         $form["data_requirements"] = array_merge(
                             $form["data_requirements"],
-                            [["itemtype" => "Group", "name" => $group->getName()]]
+                            [["itemtype" => "Group", "name" => $group->getName()]],
                         );
                     }
                 }
@@ -947,12 +949,12 @@ class Export extends CommonDBTM
             $config = [];
             $metademands_ticketfields_data = getAllDataFromTable(
                 'glpi_plugin_metademands_ticketfields',
-                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1]
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1],
             );
             if (!empty($metademands_ticketfields_data)) {
                 foreach ($metademands_ticketfields_data as $ticketfields_data) {
                     $config["glpi-form-destination-commonitilfield-titlefield"] = [
-                        "value" => $ticketfields_data['value']
+                        "value" => $ticketfields_data['value'],
                     ];
                 }
             }
@@ -964,11 +966,11 @@ class Export extends CommonDBTM
                     if ($category->getFromDB($itilcategorie_id)) {
                         $config["glpi-form-destination-commonitilfield-itilcategoryfield"] = [
                             "strategy" => "specific_value",
-                            "specific_itilcategory_id" => $category->getRawCompleteName()
+                            "specific_itilcategory_id" => $category->getRawCompleteName(),
                         ];
                         $form["data_requirements"] = array_merge(
                             $form["data_requirements"],
-                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]]
+                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]],
                         );
                     }
                 }
@@ -976,7 +978,7 @@ class Export extends CommonDBTM
 
             $metademands_ticketfields_groupdata = getAllDataFromTable(
                 'glpi_plugin_metademands_ticketfields',
-                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8]
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8],
             );
             if (!empty($metademands_ticketfields_groupdata)) {
                 $group = new \Group();
@@ -985,11 +987,11 @@ class Export extends CommonDBTM
                         $config["glpi-form-destination-commonitilfield-assigneefield"] = [
                             "strategies" => ["specific_values"],
                             "specific_question_ids" => null,
-                            "specific_itilactors_ids" => ['Group' => [$group->getName()]]
+                            "specific_itilactors_ids" => ['Group' => [$group->getName()]],
                         ];
                         $form["data_requirements"] = array_merge(
                             $form["data_requirements"],
-                            [["itemtype" => "Group", "name" => $group->getName()]]
+                            [["itemtype" => "Group", "name" => $group->getName()]],
                         );
                     }
                 }
@@ -1011,12 +1013,12 @@ class Export extends CommonDBTM
             $config = [];
             $metademands_ticketfields_data = getAllDataFromTable(
                 'glpi_plugin_metademands_ticketfields',
-                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1]
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 1],
             );
             if (!empty($metademands_ticketfields_data)) {
                 foreach ($metademands_ticketfields_data as $ticketfields_data) {
                     $config["glpi-form-destination-commonitilfield-titlefield"] = [
-                        "value" => $ticketfields_data['value']
+                        "value" => $ticketfields_data['value'],
                     ];
                 }
             }
@@ -1028,11 +1030,11 @@ class Export extends CommonDBTM
                     if ($category->getFromDB($itilcategorie_id)) {
                         $config["glpi-form-destination-commonitilfield-itilcategoryfield"] = [
                             "strategy" => "specific_value",
-                            "specific_itilcategory_id" => $category->getRawCompleteName()
+                            "specific_itilcategory_id" => $category->getRawCompleteName(),
                         ];
                         $form["data_requirements"] = array_merge(
                             $form["data_requirements"],
-                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]]
+                            [["itemtype" => "ITILCategory", "name" => $category->getRawCompleteName()]],
                         );
                     }
                 }
@@ -1040,7 +1042,7 @@ class Export extends CommonDBTM
 
             $metademands_ticketfields_groupdata = getAllDataFromTable(
                 'glpi_plugin_metademands_ticketfields',
-                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8]
+                ['plugin_metademands_metademands_id' => $metademands_id, 'num' => 8],
             );
             if (!empty($metademands_ticketfields_groupdata)) {
                 $group = new \Group();
@@ -1049,11 +1051,11 @@ class Export extends CommonDBTM
                         $config["glpi-form-destination-commonitilfield-assigneefield"] = [
                             "strategies" => ["specific_values"],
                             "specific_question_ids" => null,
-                            "specific_itilactors_ids" => ['Group' => [$group->getName()]]
+                            "specific_itilactors_ids" => ['Group' => [$group->getName()]],
                         ];
                         $form["data_requirements"] = array_merge(
                             $form["data_requirements"],
-                            [["itemtype" => "Group", "name" => $group->getName()]]
+                            [["itemtype" => "Group", "name" => $group->getName()]],
                         );
                     }
                 }
@@ -1069,7 +1071,7 @@ class Export extends CommonDBTM
 
         $fields = getAllDataFromTable(
             'glpi_plugin_metademands_fields',
-            $criteria
+            $criteria,
         );
 
 
@@ -1108,7 +1110,7 @@ class Export extends CommonDBTM
                 if ($titles_block = $fieldmeta->find([
                     'plugin_metademands_metademands_id' => $metademands_id,
                     'rank' => $rank,
-                    'type' => 'title-block'
+                    'type' => 'title-block',
                 ])) {
                     foreach ($titles_block as $title_block) {
                         $sections[$rank]["name"] = $title_block['name'];
@@ -1138,9 +1140,9 @@ class Export extends CommonDBTM
                     "validation_strategy" => "",
                     "conditions" => [],
                     "validation_conditions" => [],
-//                    "width" => 4,
-//                    "show_empty" => 1,
-//                    "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix),
+                    //                    "width" => 4,
+                    //                    "show_empty" => 1,
+                    //                    "_parameters" => self::generateFieldParameters($fieldtype, $fieldId, $prefix),
                 ];
 
                 if ($params['item'] !== null && getItemForItemtype($params['item'])) {
@@ -1153,7 +1155,7 @@ class Export extends CommonDBTM
                                 "request",
                                 "incident",
                                 "change",
-                                "problem"
+                                "problem",
                             ],
                             "root_items_id" => 0,
                             "location_depth" => 0,
@@ -1182,21 +1184,21 @@ class Export extends CommonDBTM
                     $question['extra_data'] = [
                         "is_default_value_current_time" => 0,
                         "is_date_enabled" => 1,
-                        "is_time_enabled" => 0
+                        "is_time_enabled" => 0,
                     ];
                 }
                 if ($params['type'] === 'datetime') {
                     $question['extra_data'] = [
                         "is_default_value_current_time" => 0,
                         "is_date_enabled" => 1,
-                        "is_time_enabled" => 1
+                        "is_time_enabled" => 1,
                     ];
                 }
                 if ($params['type'] === 'time') {
                     $question['extra_data'] = [
                         "is_default_value_current_time" => 0,
                         "is_date_enabled" => 0,
-                        "is_time_enabled" => 1
+                        "is_time_enabled" => 1,
                     ];
                 }
                 if ($params['type'] === 'link') {
@@ -1214,7 +1216,7 @@ class Export extends CommonDBTM
                     $rand2 = mt_rand();
                     $values = [
                         $rand1 => "Oui",
-                        $rand2 => "Non"
+                        $rand2 => "Non",
                     ];
                     $question['extra_data'] = ["options" => $values, "is_multiple_dropdown" => false];
                 }
@@ -1261,7 +1263,7 @@ class Export extends CommonDBTM
             if (isset($sections[$r])) {
                 $sections[$r] = array_merge(
                     $sections[$r],
-                    $cond
+                    $cond,
                 );
             }
         }
@@ -1329,7 +1331,7 @@ class Export extends CommonDBTM
                         Session::addMessageAfterRedirect(
                             __('File too large to be added.'),
                             false,
-                            ERROR
+                            ERROR,
                         );
                         return false;
                         break;
@@ -1352,7 +1354,7 @@ class Export extends CommonDBTM
                     Session::addMessageAfterRedirect(
                         __('The file is not an XML file', 'metademands'),
                         false,
-                        ERROR
+                        ERROR,
                     );
                     return false;
                 }
@@ -1599,7 +1601,8 @@ class Export extends CommonDBTM
         if ($version < "3.3.11") {
             foreach ($fieldoldparams as $new => $old) {
                 $plugin_metademands_fields_id = $old["id"] ?? 0;
-                $empty_values = FieldParameter::_serialize([]);;
+                $empty_values = FieldParameter::_serialize([]);
+                ;
 
                 $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
                 $toUpdate["default_values"] = $old["default_values"] ?? $empty_values;
@@ -1646,7 +1649,8 @@ class Export extends CommonDBTM
         if ($version >= "3.3.11") {
             foreach ($fieldparameters as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
-                $empty_values = FieldParameter::_serialize([]);;
+                $empty_values = FieldParameter::_serialize([]);
+                ;
 
                 $toUpdate["custom"] = $old["custom"] ?? $empty_values;
                 $toUpdate["default"] = $old["default"] ?? $empty_values;
@@ -1673,7 +1677,7 @@ class Export extends CommonDBTM
                 if (isset($old["informations_to_display"]) && $old["informations_to_display"] != null) {
                     if (FieldParameter::_serialize($old["informations_to_display"]) != null) {
                         $toUpdate["informations_to_display"] = FieldParameter::_serialize(
-                            $old["informations_to_display"]
+                            $old["informations_to_display"],
                         );
                     }
                 } else {

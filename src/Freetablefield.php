@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -176,7 +176,7 @@ class Freetablefield extends CommonDBChild
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             $dbu->getTableForItemType(__CLASS__),
-            ["plugin_metademands_fields_id" => $item->getID()]
+            ["plugin_metademands_fields_id" => $item->getID()],
         );
     }
 
@@ -250,13 +250,13 @@ class Freetablefield extends CommonDBChild
             $this->check($ID, UPDATE);
             $metademand_fields->getFromDB($item->getID());
             $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $item->getID()]
+                ["plugin_metademands_fields_id" => $item->getID()],
             );
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
         } else {
             $metademand_fields->getFromDB($item->getID());
             $metademand_params->getFromDBByCrit(
-                ["plugin_metademands_fields_id" => $item->getID()]
+                ["plugin_metademands_fields_id" => $item->getID()],
             );
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
             // Create item
@@ -318,12 +318,12 @@ class Freetablefield extends CommonDBChild
             echo "&nbsp;";
             Html::showToolTip(
                 RichText::getSafeHtml($label),
-                ['awesome-class' => 'ti ti-info-circle']
+                ['awesome-class' => 'ti ti-info-circle'],
             );
             echo "</th>";
             echo "</tr>";
 
-           Freetable::showFreetableFields($params);
+            Freetable::showFreetableFields($params);
 
             echo "</table>";
         }
@@ -393,7 +393,7 @@ class Freetablefield extends CommonDBChild
     {
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
             ['root_doc' => PLUGIN_METADEMANDS_WEBDIR],
-            JSON_HEX_APOS
+            JSON_HEX_APOS,
         ) . ");";
 
         echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => true]);
@@ -425,7 +425,7 @@ class Freetablefield extends CommonDBChild
         $label = __('No spaces, no special characters', 'metademands');
         Html::showToolTip(
             RichText::getSafeHtml($label),
-            ['awesome-class' => 'ti ti-info-circle']
+            ['awesome-class' => 'ti ti-info-circle'],
         );
         $name = "internal_name_values[$rank]";
         echo Html::input($name, ['size' => 20]);
@@ -485,7 +485,7 @@ class Freetablefield extends CommonDBChild
         $label = __('One value by line, separated by comma', 'metademands');
         Html::showToolTip(
             RichText::getSafeHtml($label),
-            ['awesome-class' => 'ti ti-info-circle']
+            ['awesome-class' => 'ti ti-info-circle'],
         );
         $name = "dropdown_values[$rank]";
         Html::textarea([
@@ -543,7 +543,7 @@ class Freetablefield extends CommonDBChild
             Session::addMessageAfterRedirect(
                 __("You can't add a field without name", "metademands"),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }
@@ -552,7 +552,7 @@ class Freetablefield extends CommonDBChild
             Session::addMessageAfterRedirect(
                 __("You can't add a field without type", "metademands"),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         }

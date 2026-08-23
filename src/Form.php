@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -100,7 +100,7 @@ class Form extends CommonDBTM
                 [
                     'is_private' => 1,
                 ],
-                ['1' => '1']
+                ['1' => '1'],
             );
             $DB->doQuery($query);
         }
@@ -365,14 +365,14 @@ class Form extends CommonDBTM
                     "items_id" => $item->fields['id'],
                 ])) {
                 $form_metademand_data = $this->find(
-                    ['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]
+                    ['itemtype' => $item->getType(), 'items_id' => $item->fields['id']],
                 );
                 $total = count($form_metademand_data);
                 $name = _n('Initial form', 'Initial forms', $total, 'metademands');
 
                 return self::createTabEntry(
                     $name,
-                    $total
+                    $total,
                 );
             }
         } elseif ($item->getType() == User::class) {
@@ -385,7 +385,7 @@ class Form extends CommonDBTM
 
                 return self::createTabEntry(
                     $name,
-                    $total
+                    $total,
                 );
             }
         } elseif ($item->getType() == Metademand::class) {
@@ -398,7 +398,7 @@ class Form extends CommonDBTM
 
                 return self::createTabEntry(
                     $name,
-                    $total
+                    $total,
                 );
             }
         }
@@ -496,7 +496,7 @@ class Form extends CommonDBTM
                 echo "<i class='ti ti-cloud-download pointer' style='font-size:2em' title='" . _sx(
                     'button',
                     'Load form',
-                    'metademands'
+                    'metademands',
                 ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 echo "</button>";
@@ -587,7 +587,7 @@ class Form extends CommonDBTM
                 echo "<i class='ti ti-cloud-download pointer' style='font-size:2em' title='" . _sx(
                     'button',
                     'Load form',
-                    'metademands'
+                    'metademands',
                 ) . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
                 echo "</button>";

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -54,11 +54,11 @@ class MetademandValidation extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands_validatemeta';
 
-    const VALIDATE_WITHOUT_TASK = 3; // meta validate without task
-    const TASK_CREATION = 2; // task_created
-    const TICKET_CREATION = 1; // tickets_created
-    const TO_VALIDATE = 0; // waiting
-    const TO_VALIDATE_WITHOUTTASK = -1; // waiting without ticket
+    public const VALIDATE_WITHOUT_TASK = 3; // meta validate without task
+    public const TASK_CREATION = 2; // task_created
+    public const TICKET_CREATION = 1; // tickets_created
+    public const TO_VALIDATE = 0; // waiting
+    public const TO_VALIDATE_WITHOUTTASK = -1; // waiting without ticket
 
     /**
      * functions mandatory
@@ -271,7 +271,7 @@ class MetademandValidation extends CommonDBTM
 
                                             $field_custom = new FieldCustomvalue();
                                             if ($customs = $field_custom->find(
-                                                ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                                ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']],
                                             )) {
                                                 if (count($customs) > 0) {
                                                     foreach ($customs as $custom) {
@@ -288,16 +288,16 @@ class MetademandValidation extends CommonDBTM
                                     }
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
-//                                    if (is_int($val)) {
-//                                        $val = $val - 1;
-//                                    } else {
-//                                        if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
-//                                            || empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
-//                                            $val = 0;
-//                                        } else {
-//                                            $val = $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']];
-//                                        }
-//                                    }
+                                    //                                    if (is_int($val)) {
+                                    //                                        $val = $val - 1;
+                                    //                                    } else {
+                                    //                                        if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
+                                    //                                            || empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
+                                    //                                            $val = 0;
+                                    //                                        } else {
+                                    //                                            $val = $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']];
+                                    //                                        }
+                                    //                                    }
                                     $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $val;
                                 } else {
                                     if (!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']]) ||
@@ -322,7 +322,7 @@ class MetademandValidation extends CommonDBTM
 
                                         $field_custom = new FieldCustomvalue();
                                         if ($customs = $field_custom->find(
-                                            ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']]
+                                            ["plugin_metademands_fields_id" => $plfield['plugin_metademands_fields_id']],
                                         )) {
                                             if (count($customs) > 0) {
                                                 foreach ($customs as $custom) {
@@ -338,9 +338,9 @@ class MetademandValidation extends CommonDBTM
                                     $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $val_f;
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
-//                                    if (is_int($val)) {
-//                                        $val = $val - 1;
-//                                    }
+                                    //                                    if (is_int($val)) {
+                                    //                                        $val = $val - 1;
+                                    //                                    }
                                     $inputFieldMain[$fields_field->fields['name']] = $val;
                                 } else {
                                     $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
@@ -361,7 +361,7 @@ class MetademandValidation extends CommonDBTM
                 $meta_tasks,
                 1,
                 $inputField,
-                $inputFieldMain
+                $inputFieldMain,
             )) {
                 $KO[] = 1;
             }
@@ -389,7 +389,7 @@ class MetademandValidation extends CommonDBTM
 
             $where_keep = [
                 'tickets_id' => $ticket_id,
-                'type' => CommonITILActor::ASSIGN
+                'type' => CommonITILActor::ASSIGN,
             ];
             $ticket_user = new Ticket_User();
             $found = $ticket_user->find($where_keep);
@@ -409,7 +409,7 @@ class MetademandValidation extends CommonDBTM
 
             $where_keep = [
                 'tickets_id' => $ticket_id,
-                'type' => CommonITILActor::ASSIGN
+                'type' => CommonITILActor::ASSIGN,
             ];
             $ticket_user = new Ticket_User();
             $found = $ticket_user->find($where_keep);
@@ -429,17 +429,17 @@ class MetademandValidation extends CommonDBTM
         if ($inputVal['validate'] == self::TASK_CREATION) {
             echo "<div class='alert alert-success d-flex'>" . __(
                 'Tasks are created',
-                'metademands'
+                'metademands',
             ) . "</div>";
         } elseif ($inputVal['validate'] == self::TICKET_CREATION) {
             echo "<div class='alert alert-success d-flex'>" . __(
                 'Sub-tickets are created',
-                'metademands'
+                'metademands',
             ) . "</div>";
         } elseif ($inputVal['validate'] == self::VALIDATE_WITHOUT_TASK) {
             echo "<div class='alert alert-success d-flex'>" . __(
                 'The metademand is validated and affected',
-                'metademands'
+                'metademands',
             ) . "</div>";
         }
     }
@@ -464,7 +464,7 @@ class MetademandValidation extends CommonDBTM
                 $title = __('Metademand validation', 'metademands');
             }
             echo "<li><button class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>".$title."</button></li>";
+                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>" . $title . "</button></li>";
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',
@@ -474,8 +474,8 @@ class MetademandValidation extends CommonDBTM
                     'display' => false,
                     'width' => 200,
                     'height' => 400,
-                    'reloadonclose' => true
-                ]
+                    'reloadonclose' => true,
+                ],
             );
         }
     }
@@ -524,8 +524,8 @@ class MetademandValidation extends CommonDBTM
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/displayGroupField.php",
                 [
                     "create_subticket" => '__VALUE__',
-                    'tickets_id' => $ticket_id
-                ]
+                    'tickets_id' => $ticket_id,
+                ],
             );
             Ajax::updateItemOnEvent(
                 'create_subticket2',
@@ -533,8 +533,8 @@ class MetademandValidation extends CommonDBTM
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/displayGroupField.php",
                 [
                     "create_subticket" => '__VALUE__',
-                    'tickets_id' => $ticket_id
-                ]
+                    'tickets_id' => $ticket_id,
+                ],
             );
         } elseif ($this->fields["users_id"] == 0
             && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
@@ -547,7 +547,7 @@ class MetademandValidation extends CommonDBTM
             \Group::dropdown([
                 'condition' => ['is_assign' => 1],
                 'name' => 'group_to_assign',
-                'value' => $group
+                'value' => $group,
             ]);
             echo "</td>";
         } elseif ($this->fields["users_id"] != 0
@@ -565,7 +565,7 @@ class MetademandValidation extends CommonDBTM
             echo sprintf(
                 __('Validated by %s on %s', 'metademands'),
                 User::getFriendlyNameById($this->fields["users_id"]),
-                Html::convDateTime($this->fields["date"])
+                Html::convDateTime($this->fields["date"]),
             );
             echo "</td>";
             echo "</tr>";
@@ -577,7 +577,7 @@ class MetademandValidation extends CommonDBTM
             echo "<td colspan='2' class='center'>";
             echo Html::submit(
                 __("Validate metademands", 'metademands'),
-                ['name' => 'btnAddAll', 'class' => 'btn btn-primary']
+                ['name' => 'btnAddAll', 'class' => 'btn btn-primary'],
             );
             echo "</td>";
             echo "</tr>";

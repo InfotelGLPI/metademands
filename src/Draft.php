@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -46,7 +46,6 @@ class Draft extends CommonDBTM
     public const BASKET_MODE = 2;
 
     public static $rightname = 'plugin_metademands';
-
 
     public static function getIcon()
     {
@@ -90,7 +89,7 @@ class Draft extends CommonDBTM
                     'num' => $num,
                     'users_id' => 0,
                     'interface' => 'central',
-                ]
+                ],
             )
             ) {
                 $query = $DB->buildUpdate(
@@ -103,7 +102,7 @@ class Draft extends CommonDBTM
                         'users_id' => 0,
                         'num' => $num,
                         'interface' => 'central',
-                    ]
+                    ],
                 );
                 $DB->doQuery($query);
             }
@@ -117,7 +116,7 @@ class Draft extends CommonDBTM
                     'num' => $num,
                     'users_id' => 0,
                     'interface' => 'central',
-                ]
+                ],
             )
             ) {
                 $DB->insert(
@@ -126,7 +125,7 @@ class Draft extends CommonDBTM
                         'num' => $num,
                         'rank' => $rank,
                         'users_id' => 0,
-                        'interface' => 'central']
+                        'interface' => 'central'],
                 );
             }
         }
@@ -137,8 +136,8 @@ class Draft extends CommonDBTM
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsDraft'
-            ]
+                'itemtype' => 'PluginMetademandsDraft',
+            ],
         );
         $DB->doQuery($query);
 
@@ -148,8 +147,8 @@ class Draft extends CommonDBTM
                 'itemtype' => self::class,
             ],
             [
-                'itemtype' => 'PluginMetademandsDraft'
-            ]
+                'itemtype' => 'PluginMetademandsDraft',
+            ],
         );
         $DB->doQuery($query);
     }
@@ -172,7 +171,7 @@ class Draft extends CommonDBTM
             'NotificationTemplate',
             'Notification'];
         foreach ($itemtypes as $itemtype) {
-            $item = new $itemtype;
+            $item = new $itemtype();
             $item->deleteByCriteria(['itemtype' => self::class]);
         }
     }
@@ -249,7 +248,6 @@ class Draft extends CommonDBTM
             'name' => _n('form', 'forms', 1, 'metademands'),
             'massiveaction' => false,
         ];
-
 
         return $tab;
     }
@@ -339,7 +337,6 @@ class Draft extends CommonDBTM
         $draft_id = $datas['plugin_metademands_drafts_id'];
         $draft_name = $datas['plugin_metademands_drafts_name'];
 
-
         $iterator = $DB->request([
             'SELECT'    => [
                 'glpi_itilcategories.name',
@@ -349,20 +346,20 @@ class Draft extends CommonDBTM
                 'glpi_itilcategories' => [
                     'ON' => [
                         'glpi_itilcategories' => 'id',
-                        'glpi_plugin_metademands_drafts_values'          => 'value'
-                    ]
+                        'glpi_plugin_metademands_drafts_values'          => 'value',
+                    ],
                 ],
                 'glpi_plugin_metademands_fields' => [
                     'ON' => [
                         'glpi_plugin_metademands_fields' => 'id',
-                        'glpi_plugin_metademands_drafts_values'          => 'plugin_metademands_fields_id'
-                    ]
-                ]
+                        'glpi_plugin_metademands_drafts_values'          => 'plugin_metademands_fields_id',
+                    ],
+                ],
             ],
             'WHERE'     => [
                 'glpi_plugin_metademands_fields.item'  => 'ITILCategory_Metademands',
-                'glpi_plugin_metademands_drafts_values.plugin_metademands_drafts_id'  => $draft_id
-            ]
+                'glpi_plugin_metademands_drafts_values.plugin_metademands_drafts_id'  => $draft_id,
+            ],
         ]);
         $cat_name = "";
         if (count($iterator) > 0) {
@@ -460,11 +457,11 @@ class Draft extends CommonDBTM
 
         //correct css with condition
         if ($type == 1) {
-//            if ($freetable == 'freetable') {
-                $style = "display:inline-block;margin: 10px;display:none";
-//            } else {
-//                $style = "display:inline-block;margin: 10px;";
-//            }
+            //            if ($freetable == 'freetable') {
+            $style = "display:inline-block;margin: 10px;display:none";
+            //            } else {
+            //                $style = "display:inline-block;margin: 10px;";
+            //            }
         } else {
             $style = "display:inline-block;float:left;margin-right: 10px;";
         }
@@ -581,7 +578,6 @@ HTML;
 
          // move modal to body
          $(myModalEl{$rand}).appendTo($('body'));
-
 
          myModalEl{$rand}.addEventListener('hide.bs.modal', function () {
             if ({$reloadonclose}) {

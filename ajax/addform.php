@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Metademands\Field;
@@ -86,7 +86,6 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
         } else {
             $post['field'] = [];
         }
-
 
         $nblines = 1;
     }
@@ -177,7 +176,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
 
                                 $meta_field_for_block = new Field();
                                 $meta_field_ids_for_block = array_keys(
-                                    $meta_field_for_block->find(['plugin_metademands_metademands_id' => $meta_id_for_block])
+                                    $meta_field_for_block->find(['plugin_metademands_metademands_id' => $meta_id_for_block]),
                                 );
 
                                 if (!empty($meta_field_ids_for_block)) {
@@ -218,7 +217,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                         }
                                         if (!isset($_POST['freetables'][$fm])
                                             || count(
-                                                $_POST['freetables'][$fm]
+                                                $_POST['freetables'][$fm],
                                             ) == 0) {
                                             $translated = Field::displayField($id, 'name');
                                             $name = $translated !== '' ? $translated : $value['name'];
@@ -226,7 +225,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                             Session::addMessageAfterRedirect(
                                                 $msg,
                                                 false,
-                                                ERROR
+                                                ERROR,
                                             );
                                             $KO = true;
                                         }
@@ -252,7 +251,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
             $metademands->getFromDB($_POST['metademands_id']);
             if ($KO === false) {
                 // Save requester user
-//                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+                //                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                 // Case of simple ticket convertion
                 if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
                     $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['items_id'];
@@ -319,7 +318,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                 $_POST['metademands_id'],
                                 $line['form'],
                                 $post,
-                                $form_new_id
+                                $form_new_id,
                             );
                         }
                     }

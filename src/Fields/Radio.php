@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands\Fields;
@@ -45,7 +45,6 @@ use Session;
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-
 
 /**
  * Radio Class
@@ -129,7 +128,7 @@ class Radio extends CommonDBTM
                                 $comment = Field::displayCustomvaluesField(
                                     $data['id'],
                                     $key,
-                                    "comment"
+                                    "comment",
                                 )
                             )) {
                                 $comment = $label['comment'];
@@ -139,7 +138,7 @@ class Radio extends CommonDBTM
                                 [
                                     'awesome-class' => 'ti ti-info-circle',
                                     'display' => false,
-                                ]
+                                ],
                             );
                             $field .= "</span>";
                         }
@@ -149,9 +148,9 @@ class Radio extends CommonDBTM
                         $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
                         $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
 
-//                        $field .= '
-//<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
-//data-capacity-checkbox="1"  data-is-used="0" checked="">';
+                        //                        $field .= '
+                        //<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
+                        //data-capacity-checkbox="1"  data-is-used="0" checked="">';
 
                         $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
 
@@ -170,16 +169,15 @@ class Radio extends CommonDBTM
                             $field .= "</span>";
                         }
 
-
                         $field .= "<div class='text-start'>";
                         $field .= "<div class='d-flex align-items-center'>";
-//                        $field .= "<div class='fw-bold'>";
+                        //                        $field .= "<div class='fw-bold'>";
 
                         if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                             $name = $label['name'];
                         }
                         $field .= $name;
-//                        $field .= "</div>";
+                        //                        $field .= "</div>";
                         $field .= "</div>";
                         $field .= "<small class='form-hint'>";
                         if (isset($label['comment']) && !empty($label['comment'])) {
@@ -187,7 +185,7 @@ class Radio extends CommonDBTM
                                 $comment = Field::displayCustomvaluesField(
                                     $data['id'],
                                     $key,
-                                    "comment"
+                                    "comment",
                                 )
                             )) {
                                 $comment = $label['comment'];
@@ -211,7 +209,7 @@ class Radio extends CommonDBTM
                     $childs_blocks = [];
                     $fieldopt = new FieldOption();
                     if ($opts = $fieldopt->find(
-                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key]
+                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key],
                     )) {
                         foreach ($opts as $opt) {
                             if (!empty($opt['childs_blocks'])) {
@@ -228,13 +226,13 @@ class Radio extends CommonDBTM
                             if ($customvalue != $key) {
                                 // $childs peut être [1,2,3] (plat) ou ['val'=>[1,2]] (associatif)
                                 $block_ids = [];
-                                foreach ((array)$childs as $entry) {
+                                foreach ((array) $childs as $entry) {
                                     if (is_array($entry)) {
                                         foreach ($entry as $bid) {
-                                            $block_ids[] = (int)$bid;
+                                            $block_ids[] = (int) $bid;
                                         }
                                     } else {
-                                        $block_ids[] = (int)$entry;
+                                        $block_ids[] = (int) $entry;
                                     }
                                 }
                                 foreach ($block_ids as $v) {
@@ -277,7 +275,7 @@ class Radio extends CommonDBTM
                 echo Html::select(
                     'icon[' . $key . ']',
                     [$value['icon'] => $value['icon']],
-                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;']
+                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;'],
                 );
                 echo Html::script('js/modules/Form/WebIconSelector.js');
                 echo Html::scriptBlock("$(
@@ -302,7 +300,7 @@ class Radio extends CommonDBTM
                         'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
                     ],
                     'ti-circle-x',
-                    "class='btn btn-sm btn-danger'"
+                    "class='btn btn-sm btn-danger'",
                 );
                 $delete_form_html = ob_get_clean();
 
@@ -339,7 +337,7 @@ class Radio extends CommonDBTM
                 'import_html' => $import_html,
                 'specific_dropdown_html' => '',
                 'reorder_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-            ]
+            ],
         );
     }
 
@@ -355,7 +353,7 @@ class Radio extends CommonDBTM
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_checkbox_radio.html.twig',
-            ['display_type_html' => $display_type_html]
+            ['display_type_html' => $display_type_html],
         );
     }
 
@@ -389,7 +387,6 @@ class Radio extends CommonDBTM
                      reloadviewOption(formOption);
                  });";
 
-
         echo " </script>";
 
         echo FieldOption::showLinkHtml($item->getID(), $params);
@@ -407,7 +404,7 @@ class Radio extends CommonDBTM
         \Dropdown::showFromArray(
             "check_value",
             $elements,
-            ['value' => $params['check_value'], 'used' => $already_used]
+            ['value' => $params['check_value'], 'used' => $already_used],
         );
     }
 
@@ -490,7 +487,6 @@ class Radio extends CommonDBTM
                 }
             }
 
-
             $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $onchange .= "var tohide = {};";
@@ -557,7 +553,7 @@ class Radio extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -605,9 +601,8 @@ class Radio extends CommonDBTM
             $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
             $nextsteptitle = __(
                 'Next',
-                'metademands'
+                'metademands',
             ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
@@ -632,7 +627,6 @@ class Radio extends CommonDBTM
                         if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$tasks_id] = false;
                         }";
-
 
                     $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
@@ -849,7 +843,7 @@ class Radio extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -907,16 +901,16 @@ class Radio extends CommonDBTM
                                         foreach ($childs_blocks as $childs) {
                                             $options = getAllDataFromTable(
                                                 'glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs]
+                                                ['hidden_block' => $childs],
                                             );
                                             if (count($options) == 0) {
                                                 $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
                                                                 document.getElementById('ablock" . $childs . "').style.display = 'block';
                                                                 $('[bloc-id =\"bloc" . $childs . "\"]').show();
                                                              " . FieldOption::setMandatoryBlockFields(
-                                                                    $metaid,
-                                                                    $childs
-                                                                );
+                                                    $metaid,
+                                                    $childs,
+                                                );
                                             }
                                         }
                                     }
@@ -1013,7 +1007,7 @@ class Radio extends CommonDBTM
                                 foreach ($childs_blocks as $childs) {
                                     $options = getAllDataFromTable(
                                         'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs]
+                                        ['hidden_block' => $childs],
                                     );
                                     if (count($options) == 0) {
                                         $onchange .= "if (document.getElementById('ablock" . $childs . "'))
@@ -1069,7 +1063,7 @@ class Radio extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});'
+                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
             );
         }
     }
@@ -1107,7 +1101,7 @@ class Radio extends CommonDBTM
             $onchange .= "});";
 
             echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});'
+                '$(document).ready(function() {' . $onchange . '});',
             );
         }
     }

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -38,8 +38,7 @@ use Migration;
  */
 class Form_Value extends CommonDBTM
 {
-
-    static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
     public static function install(Migration $migration)
     {
@@ -94,7 +93,7 @@ class Form_Value extends CommonDBTM
      * @param $values
      * @param $tickets_id
      */
-    static function setFormValues($metademands_id, $parent_fields, $values, $form_id)
+    public static function setFormValues($metademands_id, $parent_fields, $values, $form_id)
     {
         $form_value = new self();
 
@@ -158,8 +157,8 @@ class Form_Value extends CommonDBTM
                                 [
                                     'force_update' => false,
                                     'content_field' => $fieldname,
-                                    '_add_link' => false
-                                ]
+                                    '_add_link' => false,
+                                ],
                             );
 
                             $field['value'] = $linked_docs[$fieldname];
@@ -167,7 +166,7 @@ class Form_Value extends CommonDBTM
                             if (is_array($values[$fields_id])) {
                                 $table = [];
                                 foreach ($values[$fields_id] as $k => $field) {
-                                    $table[]= $field;
+                                    $table[] = $field;
                                 }
                                 $field['value'] = json_encode($table, JSON_UNESCAPED_UNICODE);
                             } else {
@@ -243,7 +242,7 @@ class Form_Value extends CommonDBTM
      * @param $plugin_metademands_metademands_id
      * @param $plugin_metademands_forms_id
      */
-    static function loadFormValues($plugin_metademands_metademands_id, $plugin_metademands_forms_id)
+    public static function loadFormValues($plugin_metademands_metademands_id, $plugin_metademands_forms_id)
     {
         $form_value = new self();
         $forms_values = $form_value->find(['plugin_metademands_forms_id' => $plugin_metademands_forms_id]);

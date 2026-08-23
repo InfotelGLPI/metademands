@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- metademands plugin for GLPI
- Copyright (C) 2018-2026 by the metademands Development Team.
-
- https://github.com/InfotelGLPI/metademands
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of metademands.
-
- metademands is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- metademands is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with metademands. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * metademands plugin for GLPI
+ * Copyright (C) 2018-2026 by the metademands Development Team.
+ *
+ * https://github.com/InfotelGLPI/metademands
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of metademands.
+ *
+ * metademands is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * metademands is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Metademands;
@@ -51,9 +51,8 @@ if (!defined('GLPI_ROOT')) {
  */
 class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
 {
-
     public $dohistory = true;
-    static $rightname = "plugin_metademands";
+    public static $rightname = "plugin_metademands";
 
     public static function install(Migration $migration)
     {
@@ -91,7 +90,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
      *
      * @return array|bool
      */
-    function prepareInputForAdd($input)
+    public function prepareInputForAdd($input)
     {
         $material = new Basketobject();
         if ($material->getFromDBByCrit(['reference' => $input['reference']])) {
@@ -123,7 +122,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
      *
      * @return string
      */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return __('Reference catalog', 'metademands');
     }
@@ -132,12 +131,12 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
     /**
      * @return array
      */
-    function rawSearchOptions()
+    public function rawSearchOptions()
     {
 
         $tab[] = [
             'id' => 'common',
-            'name' => self::getTypeName(2)
+            'name' => self::getTypeName(2),
         ];
 
         $tab[] = [
@@ -171,7 +170,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             'table' => Basketobjecttype::getTable(),
             'field' => 'name',
             'name' => Basketobjecttype::getTypeName(),
-            'datatype' => 'dropdown'
+            'datatype' => 'dropdown',
         ];
 
         if (Plugin::isPluginActive("ordermaterial")) {
@@ -191,7 +190,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
      **@since version 0.85
      *
      */
-    static function getMenuContent()
+    public static function getMenuContent()
     {
         $menu = [];
 
@@ -208,7 +207,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
     /**
      * @return string
      */
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-shopping-bag";
     }
@@ -219,7 +218,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
      *
      * @return array
      */
-    function defineTabs($options = [])
+    public function defineTabs($options = [])
     {
 
         $ong = parent::defineTabs($options);
@@ -235,7 +234,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
      *
      * @return bool
      */
-    function showForm($ID, $options = [])
+    public function showForm($ID, $options = [])
     {
         $this->initForm($ID, $options);
 
