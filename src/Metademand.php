@@ -2466,6 +2466,24 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $parent_fields['_users_id_requester'] = [];
                     $parent_fields['_users_id_observer'] = [];
 
+                    // Prevent requester spoofing: _users_id_requester ultimately
+                    // originates from client-supplied $_POST in the various load*/add*
+                    // ajax entry points and is stored verbatim in the session before
+                    // reaching this sink. A self-service submitter may only declare
+                    // themselves; only a central-interface user allowed to create
+                    // tickets may declare the demand on behalf of another user
+                    // (mirrors the rule enforced in Wizard::showWizard()). Otherwise
+                    // force the requester back to the connected user so a forged id
+                    // cannot attribute the ticket to a third party.
+                    if (isset($values['fields']['_users_id_requester'])) {
+                        $requested_requester = (int) $values['fields']['_users_id_requester'];
+                        if ($requested_requester !== Session::getLoginUserID()
+                            && !(Session::getCurrentInterface() === 'central'
+                                && Session::haveRight('ticket', CREATE))) {
+                            $values['fields']['_users_id_requester'] = Session::getLoginUserID();
+                        }
+                    }
+
                     //Add all form contributors as ticket requester is using step by step
                     $configstep = new Configstep();
                     if ($configstep->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])) {

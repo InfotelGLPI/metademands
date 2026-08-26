@@ -75,10 +75,14 @@ class Title extends CommonDBTM
             echo "<br><h2 class='card-title'><span style='color:{$safe_color};font-weight: normal;'>";
             $icon = $data['icon'];
             if (!empty($icon)) {
+                // The icon is admin-configured free text stored raw; escape it before
+                // injecting it into the class attribute to close a stored-XSS vector
+                // (aligns with the escaping already done in Field::showField()).
+                $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
                 if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
+                    echo "<i class='fa-2x fas $safe_icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
                 } else {
-                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
+                    echo "<i class='ti $safe_icon' style=\"font-size:2em;\"></i>&nbsp;";
                 }
             }
             if (empty($label = Field::displayField($data['id'], 'name'))) {

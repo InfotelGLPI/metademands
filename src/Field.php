@@ -3446,6 +3446,20 @@ border-style: none !important; border-color: initial !important;border-image: in
             case "change_icon":
                 $input = $ma->getInput();
 
+                // Defense in depth against stored XSS: the icon is later injected
+                // into a class attribute at render time. Reject anything that is not
+                // a plain icon class token (letters, digits, spaces, dashes,
+                // underscores) so a payload can never be persisted in the first place.
+                if (isset($input['icon'])
+                    && $input['icon'] !== ''
+                    && !preg_match('/^[a-zA-Z0-9 _-]+$/', (string) $input['icon'])) {
+                    $ma->addMessage(__('You cannot do this for this field', 'metademands'));
+                    foreach ($ids as $id) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                    }
+                    return;
+                }
+
                 foreach ($ids as $id) {
                     $field = new Field();
                     $param = new FieldParameter();
