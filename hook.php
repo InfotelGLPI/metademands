@@ -1092,7 +1092,11 @@ function plugin_metademands_addDefaultWhere($itemtype)
 
     switch ($itemtype) {
         case Draft::class:
-            $currentUser = Session::getLoginUserID();
-            return "users_id = $currentUser";
+            // A draft is private to its author: scope the listing to the
+            // connected user. Qualify the column so the WHERE stays
+            // unambiguous should the search later join another table that
+            // also exposes a `users_id` column.
+            $currentUser = (int) Session::getLoginUserID();
+            return Draft::getTable() . ".users_id = $currentUser";
     }
 }
