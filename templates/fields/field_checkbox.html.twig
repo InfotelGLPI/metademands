@@ -1,0 +1,71 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+{%- if is_simple -%}
+    <input class='form-check-input' type='checkbox' name='{{ namefield }}[{{ id }}]'
+           value='checkbox' {{ simple_checked|raw }}>
+{%- else -%}
+    {%- if is_block %}<div class='row flex-row'>{% endif -%}
+    {%- for opt in options -%}
+        {%- if is_block -%}
+            <div class='col-12 col-lg-6 col-xxl-4 mb-2'><label class='form-selectgroup-boxes flex-fill w-100 h-100'
+                                                               style='min-height: 70px;'>
+                    <div
+                        class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>{% if opt.has_icon %}
+                        <span class='me-2 mt-1'>{% if opt.icon_is_fa %}<i
+                            class='fas {{ opt.icon }} fa-2x text-secondary'
+                            style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>{% else %}<i
+                            class='ti {{ opt.icon }} text-secondary' style='font-size: 3em'></i>{% endif %}
+                        </span>{% endif %}
+                        <div class='text-start'>
+                            <div class='d-flex align-items-center'>{{ opt.name }}</div>
+                            <small
+                                class='form-hint'>{% if opt.has_comment %}{{ opt.comment_html|raw }}{% endif %}</small>
+                        </div>
+                        <div class='me-2 ms-auto'><input {{ opt.required|raw }} class='form-check-input' type='checkbox'
+                                                                                check='{{ namefield }}[{{ id }}]'
+                                                                                name='{{ namefield }}[{{ id }}][{{ opt.key }}]'
+                                                                                key='{{ opt.key }}'
+                                                                                id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
+                                                                                value='{{ opt.key }}' {{ opt.checked|raw }}>
+                        </div>
+                    </div>
+                </label></div>
+        {%- else -%}
+            <div class='form-check {{ inline }}'><input {{ opt.required|raw }} class='form-check-input' type='checkbox'
+                                                                               check='{{ namefield }}[{{ id }}]'
+                                                                               name='{{ namefield }}[{{ id }}][{{ opt.key }}]'
+                                                                               key='{{ opt.key }}'
+                                                                               id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
+                                                                               value='{{ opt.key }}' {{ opt.checked|raw }}><label
+                    class='form-check-label'
+                    for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span
+                        style='vertical-align: bottom;'>{{ opt.comment_tooltip_html|raw }}</span>{% endif %}</label>
+            </div>
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if is_block %}</div>{% endif -%}
+{%- endif %}

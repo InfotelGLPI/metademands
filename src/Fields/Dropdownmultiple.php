@@ -326,64 +326,56 @@ class Dropdownmultiple extends CommonDBTM
 
         $name = $namefield . "[" . $id . "][]";
 
-        $div = "<div class='row'>";
-        $div .= "<div class='zone'>";
-        $div .= "<select name='from[]' id=\"multiselect" . $id . "\" class='formCol' size='8' multiple='multiple' style='font-size: 1em;'>";
+        // Left column: available options (those not already picked). User-supplied labels are
+        // passed raw and auto-escaped by Twig {{ }}.
+        $left_options = [];
         if (is_array($list) && count($list) > 0) {
             foreach ($list as $k => $val) {
                 if (!in_array($k, $value)) {
-                    $esc_k = htmlspecialchars((string) $k, ENT_QUOTES);
                     if ($item == 'other') {
-                        $esc_name = htmlspecialchars($val['name'], ENT_QUOTES);
-                        $div .= "<option value=\"$esc_k\">$esc_name</option>";
+                        $left_options[] = ['value' => $k, 'text' => $val['name']];
                     } else {
-                        $esc_val = htmlspecialchars((string) $val, ENT_QUOTES);
-                        $div .= "<option value=\"$esc_k\">$esc_val</option>";
+                        $left_options[] = ['value' => $k, 'text' => $val];
                     }
                 }
             }
         }
-        $div .= "</select>";
-        $div .= "</div>";
 
-        $div .= " <div class=\"centralCol\" style='width: 10%;'>
-                       <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_rightAll\" class=\"btn  buttonCol\"><i class=\"ti ti-chevrons-right\"></i></button>
-                       <button type=\"button\" id=\"multiselect" . $id . "_rightSelected\" class=\"btn buttonColTop buttonCol\"><i class=\"ti ti-chevron-right\"></i></button>
-                       <button type=\"button\" id=\"multiselect" . $id . "_leftSelected\" class=\"btn buttonCol\"><i class=\"ti ti-chevron-left\"></i></button>
-                       <button type=\"button\" style='display: none' id=\"multiselect" . $id . "_leftAll\" class=\"btn buttonCol\"><i class=\"ti ti-chevrons-left\"></i></button>
-                   </div>";
-
-        $div .= "<div class='zone'>";
         if (isset($value) && is_array($value) && count($value) > 0) {
             $required = "";
         }
-        $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect" . $id . "_to\" size='8' multiple='multiple' style='font-size: 1em;'>";
+
+        // Right column: selected options. 'other'/custom labels are auto-escaped by Twig;
+        // pre-formatted core strings (getUserName/getDropdownName) are marked raw.
+        $right_options = [];
         if (is_array($value) && count($value) > 0) {
             foreach ($value as $k => $val) {
-                $esc_val = htmlspecialchars((string) $val, ENT_QUOTES);
-                $esc_k   = htmlspecialchars((string) $k, ENT_QUOTES);
                 if ($item == 'other') {
                     if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$id])) {
-                        $esc_name = htmlspecialchars($list[$val]['name'], ENT_QUOTES);
-                        $div .= "<option value=\"$esc_val\">$esc_name</option>";
+                        $right_options[] = ['value' => $val, 'text' => $list[$val]['name'], 'text_raw' => false, 'selected' => false];
                     } else {
-                        $div .= "<option value=\"$esc_k\">" . htmlspecialchars((string) $val, ENT_QUOTES) . "</option>";
+                        $right_options[] = ['value' => $k, 'text' => $val, 'text_raw' => false, 'selected' => false];
                     }
                 } elseif ($item == User::getType()) {
-                    $div .= "<option selected value=\"$esc_val\">" . getUserName($val, 0, true) . "</option>";
+                    $right_options[] = ['value' => $val, 'text' => getUserName($val, 0, true), 'text_raw' => true, 'selected' => true];
                 } else {
-                    $div .= "<option selected value=\"$esc_val\">" . \Dropdown::getDropdownName(
-                        getTableForItemType($item),
-                        $val,
-                    ) . "</option>";
+                    $right_options[] = [
+                        'value'    => $val,
+                        'text'     => \Dropdown::getDropdownName(getTableForItemType($item), $val),
+                        'text_raw' => true,
+                        'selected' => true,
+                    ];
                 }
             }
         }
-        $div .= "</select>";
-        $div .= "</div>";
-        $div .= "</div>";
 
-        return $div;
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_multiselect.html.twig', [
+            'id'            => $id,
+            'name'          => $name,
+            'required'      => $required,
+            'left_options'  => $left_options,
+            'right_options' => $right_options,
+        ]);
     }
 
     public static function loadMultiselectScript($namefield, $id)
@@ -861,24 +853,25 @@ class Dropdownmultiple extends CommonDBTM
 
     public static function showParamsValueToCheck($params)
     {
+        $value = '';
         if ($params['check_value'] == -1 || $params['check_value'] == 0) {
-            echo __('Not null value', 'metademands');
+            $value .= __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
                 case 'User':
-                    echo getUserName($params['check_value'], 0, true);
+                    $value .= getUserName($params['check_value'], 0, true);
                     break;
                 case 'Location':
-                    echo \Dropdown::getDropdownName("glpi_locations", $params['check_value']);
+                    $value .= \Dropdown::getDropdownName("glpi_locations", $params['check_value']);
                     break;
                 case 'Group':
-                    echo \Dropdown::getDropdownName("glpi_groups", $params['check_value']);
+                    $value .= \Dropdown::getDropdownName("glpi_groups", $params['check_value']);
                     break;
                 default:
                     $dbu = new DbUtils();
                     if ($item = $dbu->getItemForItemtype($params["item"])
                         && $params['type'] != "dropdown_multiple") {
-                        echo \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
+                        $value .= \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
                         if ($params["item"] != "other"
                             && $params["item"] != "Location"
@@ -892,18 +885,21 @@ class Dropdownmultiple extends CommonDBTM
                                     $elements[$key] = $params["item"]::getFriendlyNameById($key);
                                 }
                             }
-                            echo $elements[$params['check_value']];
+                            $value .= $elements[$params['check_value']];
                         } else {
                             $elements = [];
                             foreach ($params['custom_values'] as $key => $val) {
                                 $elements[$val['id']] = $val['name'];
                             }
-                            echo $elements[$params['check_value']] ?? "";
+                            $value .= $elements[$params['check_value']] ?? "";
                         }
                     }
                     break;
             }
         }
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $value,
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

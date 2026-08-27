@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use Ajax;
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Orderfollowup\Order;
@@ -153,21 +154,25 @@ class Basket extends CommonDBTM
         $materials = $DB->request($criteria);
         $nb = count($materials);
 
-        $field = "<table class='tab_cadre_fixehov' style='$background_color'>";
-        $field .= "<tr class='tab_bg_1'>";
-
-        $field .= "<th style='$background_color'>" . __('Reference', 'metademands') . "</th>";
-
-        $field .= "<th style='$background_color'>" . __('Designation', 'metademands') . "</th>";
-
-        $field .= "<th style='$background_color'>" . __('Description') . "</th>";
+        // Capture-and-render: the tabular/conditional logic and the ordermaterial /
+        // orderfollowup integration stay in PHP; the widget (showNumber), the inline
+        // total-row script (Ajax::updateItemJsCode), the checkbox input and the
+        // sanitized description (getSafeHtml) are captured as raw strings and injected
+        // via |raw at their exact positions. Reference / Designation are passed as raw
+        // text so the template auto-escapes them (defense-in-depth). background_color is
+        // already htmlspecialchars'd (style attribute), header labels and placeholders
+        // are trusted translation strings: both emitted raw for byte-identity.
+        $headers = [];
+        $headers[] = ['label' => __('Reference', 'metademands'), 'style' => $background_color];
+        $headers[] = ['label' => __('Designation', 'metademands'), 'style' => $background_color];
+        $headers[] = ['label' => __('Description'), 'style' => $background_color];
 
         if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(
                 ['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']],
             )) {
-                $field .= "<th style='$background_color'>" . __('Estimated unit price', 'ordermaterial') . "</th>";
+                $headers[] = ['label' => __('Estimated unit price', 'ordermaterial'), 'style' => $background_color];
             }
         }
 
@@ -176,19 +181,19 @@ class Basket extends CommonDBTM
             if ($ordermaterialmeta->getFromDBByCrit(
                 ['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']],
             )) {
-                $field .= "<th style='$background_color'>" . __('Unit', 'orderfollowup') . "</th>";
+                $headers[] = ['label' => __('Unit', 'orderfollowup'), 'style' => $background_color];
 
                 if (isset($custom_values[1]) && $custom_values[1] == 1) {
-                    $field .= "<th style='$background_color'>" . __('Unit price (HT)', 'orderfollowup') . "</th>";
+                    $headers[] = ['label' => __('Unit price (HT)', 'orderfollowup'), 'style' => $background_color];
                 }
             }
         }
 
         if (isset($custom_values[0]) && $custom_values[0] == 1) {
-            $field .= "<th style='$background_color'>" . __('Quantity', 'metademands') . "</th>";
+            $headers[] = ['label' => __('Quantity', 'metademands'), 'style' => $background_color];
         }
         if (isset($custom_values[0]) && $custom_values[0] == 0) {
-            $field .= "<th style='$background_color'>" . __('Select', 'metademands') . "</th>";
+            $headers[] = ['label' => __('Select', 'metademands'), 'style' => $background_color];
         }
 
         if (Plugin::isPluginActive('orderfollowup')) {
@@ -197,71 +202,39 @@ class Basket extends CommonDBTM
                 ['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']],
             )) {
                 if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                    $field .= "<th style='text-align: right;$background_color'>" . __(
-                        'Total (HT)',
-                        'orderfollowup',
-                    ) . "</th>";
+                    $headers[] = [
+                        'label' => __('Total (HT)', 'orderfollowup'),
+                        'style' => 'text-align: right;' . $background_color,
+                    ];
                 }
             } else {
                 if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                    $field .= "<th style='text-align: right;$background_color'>" . __('Total', 'metademands') . "</th>";
+                    $headers[] = [
+                        'label' => __('Total', 'metademands'),
+                        'style' => 'text-align: right;' . $background_color,
+                    ];
                 }
             }
         } else {
             if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                $field .= "<th style='text-align: right;$background_color'>" . __('Total', 'metademands') . "</th>";
+                $headers[] = [
+                    'label' => __('Total', 'metademands'),
+                    'style' => 'text-align: right;' . $background_color,
+                ];
             }
         }
 
-        $field .= "</tr>";
-
         $search_id = $data['id'];
-        if ($nb > 1) {
 
-            $field .= "<tr class='tab_bg_1'>";
-            $field .= "<th style='$background_color'>";
-            $field .= "<input type='text' id='searchref-$search_id' size='10' placeholder='" . __(
-                'Search..',
-                'metademands',
-            ) . "'>";
-            $field .= "</th>";
-            $field .= "<th style='$background_color'>";
-            $field .= "<input type='text' id='searchname-$search_id' placeholder='" . __(
-                'Search for names..',
-                'metademands',
-            ) . "'>";
-            $field .= "</th>";
-            $field .= "<th style='$background_color'>";
-            $field .= "<input type='text' id='searchdescription-$search_id' placeholder='" . __(
-                'Search for description..',
-                'metademands',
-            ) . "'>";
-            $field .= "</th>";
-            $field .= "<th colspan='4' style='$background_color'>";
-            $field .= "</th>";
-            $field .= "</tr>";
-
-            $field .= "<tbody id='tablesearch-$search_id'>";
-        } else {
-            $field .= "<tbody>";
-        }
-
+        $rows = [];
         if (isset($custom_values[0]) && $custom_values[0] == 1) {
             foreach ($materials as $material) {
                 $key = $material['id'];
-                $field .= "<tr class='tab_bg_1'>";
+                $cells = [];
 
-                $field .= "<td>";
-                $field .= $material['reference'];
-                $field .= "</td>";
-
-                $field .= "<td>";
-                $field .= $material['name'];
-                $field .= "</td>";
-
-                $field .= "<td>";
-                $field .= RichText::getSafeHtml($material['description']);
-                $field .= "</td>";
+                $cells[] = ['t' => (string) $material['reference']];
+                $cells[] = ['t' => (string) $material['name']];
+                $cells[] = ['h' => RichText::getSafeHtml($material['description'])];
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -271,21 +244,18 @@ class Basket extends CommonDBTM
                         $ordermaterial = new PluginOrdermaterialMaterial();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
                             if ($ordermaterial->fields['is_specific'] == 1) {
-                                $field .= "<td>";
-                                $field .= __('On quotation', 'ordermaterial');
-                                $field .= "</td>";
+                                $cells[] = ['h' => __('On quotation', 'ordermaterial')];
                             } else {
-                                $field .= "<td>";
-                                $field .= Html::formatNumber(
-                                    $ordermaterial->fields['estimated_price'],
-                                    false,
-                                    2,
-                                ) . " €";
-                                $field .= "</td>";
+                                $cells[] = [
+                                    'h' => Html::formatNumber(
+                                        $ordermaterial->fields['estimated_price'],
+                                        false,
+                                        2,
+                                    ) . " €",
+                                ];
                             }
                         } else {
-                            $field .= "<td>";
-                            $field .= "</td>";
+                            $cells[] = ['h' => ''];
                         }
                     }
                 }
@@ -297,26 +267,20 @@ class Basket extends CommonDBTM
                     )) {
                         $ordermaterial = new Material();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            $field .= "<td>";
-                            $field .= $ordermaterial->fields['unit'];
-                            $field .= "</td>";
+                            $cells[] = ['h' => (string) $ordermaterial->fields['unit']];
 
                             if (isset($custom_values[1]) && $custom_values[1] == 1) {
-                                $field .= "<td>";
-                                $field .= Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €";
-                                $field .= "</td>";
+                                $cells[] = [
+                                    'h' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
+                                ];
                             }
                         } else {
-                            $field .= "<td>";
-                            $field .= "</td>";
-
-                            $field .= "<td>";
-                            $field .= "</td>";
+                            $cells[] = ['h' => ''];
+                            $cells[] = ['h' => ''];
                         }
                     }
                 }
 
-                $field .= "<td>";
                 $functiontotal = "plugin_metademands_load_totalrow" . $key;
 
                 $rand = mt_rand();
@@ -343,12 +307,12 @@ class Basket extends CommonDBTM
                     $opt['specific_tags'] = ['required' => 'required', 'ismultiplenumber' => 'ismultiplenumber'];
                 }
 
-                $field .= \Dropdown::showNumber("quantity[" . $data['id'] . "][" . $key . "]", $opt);
+                $qty_html = \Dropdown::showNumber("quantity[" . $data['id'] . "][" . $key . "]", $opt);
 
                 $check_hidden = $namefield . "[" . $data['id'] . "]";
                 $name_hidden = $namefield . "[" . $data['id'] . "][" . $key . "]";
-                $field .= "<script type='text/javascript'>";
-                $field .= "function plugin_metademands_load_totalrow$key(){";
+                $qty_html .= "<script type='text/javascript'>";
+                $qty_html .= "function plugin_metademands_load_totalrow$key(){";
                 $params = [
                     'action' => 'loadTotalrow',
                     'quantity' => '__VALUE__',
@@ -380,7 +344,7 @@ class Basket extends CommonDBTM
                     }
                 }
                 $rand_totalrow = mt_rand();
-                $field .= Ajax::updateItemJsCode(
+                $qty_html .= Ajax::updateItemJsCode(
                     'plugin_metademands_totalrow' . $rand_totalrow,
                     PLUGIN_METADEMANDS_WEBDIR . '/ajax/totalrow.php',
                     $params,
@@ -392,32 +356,27 @@ class Basket extends CommonDBTM
                 //                $field .= Ajax::updateItemJsCode('plugin_ordermaterial_grandtotal',
                 //                    PLUGIN_ORDERMATERIAL_WEBDIR . '/ajax/totalrow.php',
                 //                    $params_total, $name_field . $rand, false);
-                $field .= "}";
+                $qty_html .= "}";
 
-                $field .= "</script>";
-                $field .= "</td>";
+                $qty_html .= "</script>";
 
-                $field .= "<td style='text-align: right;' id='plugin_metademands_totalrow$rand_totalrow'>";
-                $field .= "</td>";
+                $cells[] = ['h' => $qty_html];
 
-                $field .= "</tr>";
+                $cells[] = [
+                    'h' => '',
+                    'attrs' => " style='text-align: right;' id='plugin_metademands_totalrow$rand_totalrow'",
+                ];
+
+                $rows[] = $cells;
             }
         } else {
             foreach ($materials as $material) {
                 $key = $material['id'];
+                $cells = [];
 
-                $field .= "<tr class='tab_bg_1'>";
-                $field .= "<td>";
-                $field .= $material['reference'];
-                $field .= "</td>";
-
-                $field .= "<td>";
-                $field .= $material['name'];
-                $field .= "</td>";
-
-                $field .= "<td>";
-                $field .= RichText::getSafeHtml($material['description']);
-                $field .= "</td>";
+                $cells[] = ['t' => (string) $material['reference']];
+                $cells[] = ['t' => (string) $material['name']];
+                $cells[] = ['h' => RichText::getSafeHtml($material['description'])];
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -427,17 +386,15 @@ class Basket extends CommonDBTM
                         $ordermaterial = new PluginOrdermaterialMaterial();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
                             if ($ordermaterial->fields['is_specific'] == 1) {
-                                $field .= "<td>";
-                                $field .= __('On quotation', 'ordermaterial');
-                                $field .= "</td>";
+                                $cells[] = ['h' => __('On quotation', 'ordermaterial')];
                             } else {
-                                $field .= "<td>";
-                                $field .= Html::formatNumber(
-                                    $ordermaterial->fields['estimated_price'],
-                                    false,
-                                    2,
-                                ) . " €";
-                                $field .= "</td>";
+                                $cells[] = [
+                                    'h' => Html::formatNumber(
+                                        $ordermaterial->fields['estimated_price'],
+                                        false,
+                                        2,
+                                    ) . " €",
+                                ];
                             }
                         }
                     }
@@ -450,20 +407,17 @@ class Basket extends CommonDBTM
                     )) {
                         $ordermaterial = new Material();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            $field .= "<td>";
-                            $field .= $ordermaterial->fields['unit'];
-                            $field .= "</td>";
+                            $cells[] = ['h' => (string) $ordermaterial->fields['unit']];
 
                             if (isset($custom_values[1]) && $custom_values[1] == 1) {
-                                $field .= "<td>";
-                                $field .= Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €";
-                                $field .= "</td>";
+                                $cells[] = [
+                                    'h' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
+                                ];
                             }
                         }
                     }
                 }
 
-                $field .= "<td>";
                 $checked = '';
                 $required = "";
                 //                if ($data['is_mandatory'] == 1) {
@@ -477,29 +431,42 @@ class Basket extends CommonDBTM
                         }
                     }
                 }
-                $field .= "<input $required class='form-check-input' type='checkbox'
+                $checkbox_html = "<input $required class='form-check-input' type='checkbox'
                 check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]'
                 key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$value_check' $checked>";
 
-                $field .= "</td>";
-                $field .= "</tr>";
+                $cells[] = ['h' => $checkbox_html];
+
+                $rows[] = $cells;
             }
         }
-        $field .= "</tbody>";
-        $field .= "</table>";
 
+        $search_script = "";
         if ($nb > 1) {
             // basketSearchInit() lives in metademands.js, loaded in the footer via the
             // ADD_JAVASCRIPT hook. This inline script runs at parse time, before the footer
             // script exists, so defer the call until the function is defined.
-            $field .= "<script>";
-            $field .= "(function(){var run=function(){basketSearchInit($search_id);};";
-            $field .= "if(typeof basketSearchInit==='function'){run();}";
-            $field .= "else{document.addEventListener('DOMContentLoaded',run);}})();";
-            $field .= "</script>";
+            $search_script .= "<script>";
+            $search_script .= "(function(){var run=function(){basketSearchInit($search_id);};";
+            $search_script .= "if(typeof basketSearchInit==='function'){run();}";
+            $search_script .= "else{document.addEventListener('DOMContentLoaded',run);}})();";
+            $search_script .= "</script>";
         }
 
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_basket.html.twig',
+            [
+                'background_style' => $background_color,
+                'headers' => $headers,
+                'nb' => $nb,
+                'search_id' => $search_id,
+                'ph_ref' => __('Search..', 'metademands'),
+                'ph_name' => __('Search for names..', 'metademands'),
+                'ph_desc' => __('Search for description..', 'metademands'),
+                'rows' => $rows,
+                'search_script' => $search_script,
+            ],
+        );
     }
 
     public static function showFieldCustomValues($params)
@@ -669,7 +636,9 @@ class Basket extends CommonDBTM
 
     public static function showParamsValueToCheck($params)
     {
-        echo \Dropdown::getDropdownName('glpi_plugin_metademands_basketobjects', $params['check_value']);
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => \Dropdown::getDropdownName('glpi_plugin_metademands_basketobjects', $params['check_value']),
+        ]);
     }
 
     public static function fieldsMandatoryScript($data)

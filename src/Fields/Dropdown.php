@@ -420,65 +420,32 @@ class Dropdown extends CommonDBTM
 
                         $field = "";
                         if (!empty($custom_values)) {
-                            $field .= "<div class='row flex-row'>";
+                            $required = ($data['is_mandatory'] == 1) ? "required=required" : "";
 
-                            $choices = [];
-                            if (count($custom_values) > 0) {
-                                foreach ($custom_values as $key => $label) {
-                                    $name = $label['name'];
-
-                                    $choices[$label['id']] = $name;
-
-                                    $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
-                                    $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
-
-                                    $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
-
-                                    $icon = $data['icon'];
-
-                                    if (!empty($icon)) {
-                                        // Icon comes from user-supplied custom-value data (fieldcustomvalue.form.php)
-                                        // which is not sanitized on save; escape before injecting into the class
-                                        // attribute to prevent stored XSS. Mirrors Fields\Title.php.
-                                        $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
-                                        $field .= "<span class='me-2 mt-1'>";
-                                        $field .= "<i class='ti $safe_icon text-secondary'></i>";
-                                        $field .= "</span>";
-                                    }
-
-
-                                    $field .= "<div class='text-start'>";
-                                    $field .= "<div class='d-flex align-items-center'>";
-                                    $name = $label['name'];
-                                    // Option label/comment are user-supplied and stored raw (GLPI 10+);
-                                    // escape/sanitize before injecting into HTML to prevent stored XSS.
-                                    $field .= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
-                                    $field .= "</div>";
-                                    $field .= "<small class='form-hint'>";
-                                    $field .= RichText::getSafeHtml($label['comment']);
-                                    $field .= "</small>";
-
-                                    $field .= "</div>";
-
-                                    $field .= "<div class='me-2 ms-auto'>";
-                                    $checked = "";
-
-                                    if (isset($value) && $value == $key) {
-                                        $checked = 'checked';
-                                    }
-                                    $required = "";
-                                    if ($data['is_mandatory'] == 1) {
-                                        $required = "required=required";
-                                    }
-                                    $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                                    $field .= "</div>";
-
-                                    $field .= "</div>";
-                                    $field .= "</label>";
-                                    $field .= "</div>";
-                                }
+                            // Option label is escaped by Twig {{ }}; the comment is pre-sanitized
+                            // rich HTML (getSafeHtml) rendered |raw. The field-level icon is shared.
+                            $options = [];
+                            foreach ($custom_values as $key => $label) {
+                                $checked = (isset($value) && $value == $key) ? 'checked' : '';
+                                $options[] = [
+                                    'key'          => $key,
+                                    'name'         => $label['name'],
+                                    'checked'      => $checked,
+                                    'comment_html' => RichText::getSafeHtml($label['comment']),
+                                ];
                             }
-                            $field .= "</div>";
+
+                            $field = TemplateRenderer::getInstance()->render(
+                                '@metademands/fields/field_dropdown_block.html.twig',
+                                [
+                                    'namefield' => $namefield,
+                                    'id'        => $data['id'],
+                                    'required'  => $required,
+                                    'has_icon'  => !empty($data['icon']),
+                                    'icon'      => (string) $data['icon'],
+                                    'options'   => $options,
+                                ],
+                            );
                         }
                     }
                 } else {
@@ -705,15 +672,16 @@ class Dropdown extends CommonDBTM
 
     public static function showParamsValueToCheck($params)
     {
+        $value = '';
         if ($params['check_value'] == -1) {
-            echo __('Not null value', 'metademands');
+            $value .= __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
                 default:
                     $dbu = new DbUtils();
                     if ($item = $dbu->getItemForItemtype($params["item"])
                         && $params['type'] != "dropdown_multiple") {
-                        echo \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
+                        $value .= \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
                         if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
                             $elements = [];
@@ -725,7 +693,7 @@ class Dropdown extends CommonDBTM
                                     $elements[$key] = $params["item"]::getFriendlyNameById($key);
                                 }
                             }
-                            echo $elements[$params['check_value']];
+                            $value .= $elements[$params['check_value']];
                         } else {
                             $elements = [];
                             if (!is_array($params['custom_values'])
@@ -736,12 +704,15 @@ class Dropdown extends CommonDBTM
                             foreach ($elements as $key => $val) {
                                 $elements[$key] = urldecode($val);
                             }
-                            echo $elements[$params['check_value']] ?? "";
+                            $value .= $elements[$params['check_value']] ?? "";
                         }
                     }
                     break;
             }
         }
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $value,
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

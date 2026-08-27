@@ -74,7 +74,10 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
             }
             break;
         case Group::class:
-            $group = new \Group();
+            // Posted ids are plugin group-right rows (glpi_plugin_metademands_groups),
+            // not core groups: instantiate the plugin CommonDBChild, whose can()/delete()
+            // gate on plugin_metademands UPDATE + the parent metademand's entity.
+            $group = new Group();
             switch ($_POST["action"]) {
                 case "delete":
                     foreach ($_POST["item"] as $key => $val) {

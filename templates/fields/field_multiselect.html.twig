@@ -1,0 +1,47 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+<div class='row'>
+    <div class='zone'><select name='from[]' id="multiselect{{ id }}" class='formCol' size='8' multiple='multiple'
+                              style='font-size: 1em;'>{% for opt in left_options %}
+                <option value="{{ opt.value }}">{{ opt.text }}</option>{% endfor %}</select></div>
+    <div class="centralCol" style='width: 10%;'>
+        <button type="button" style='display: none' id="multiselect{{ id }}_rightAll" class="btn  buttonCol"><i
+                class="ti ti-chevrons-right"></i></button>
+        <button type="button" id="multiselect{{ id }}_rightSelected" class="btn buttonColTop buttonCol"><i
+                class="ti ti-chevron-right"></i></button>
+        <button type="button" id="multiselect{{ id }}_leftSelected" class="btn buttonCol"><i
+                class="ti ti-chevron-left"></i></button>
+        <button type="button" style='display: none' id="multiselect{{ id }}_leftAll" class="btn buttonCol"><i
+                class="ti ti-chevrons-left"></i></button>
+    </div>
+    <div class='zone'><select class='form-select formCol' {{ required|raw }} name='{{ name }}'
+                              id="multiselect{{ id }}_to" size='8' multiple='multiple'
+                              style='font-size: 1em;'>{% for opt in right_options %}
+                <option
+                {% if opt.selected %}selected {% endif %}value="{{ opt.value }}">{% if opt.text_raw %}{{ opt.text|raw }}{% else %}{{ opt.text }}{% endif %}</option>{% endfor %}
+        </select></div>
+</div>

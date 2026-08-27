@@ -61,16 +61,15 @@ class Time extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-        $field .= self::showTimeField($namefield . "[" . $data['id'] . "]", [
-            'value' => $value,
-            'display' => false,
-            'required' => (bool) $data['is_mandatory'],
-            'size' => 40,
-        ]);
-        $field .= "</span>";
-
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_span_widget.html.twig',
+            ['widget_html' => self::showTimeField($namefield . "[" . $data['id'] . "]", [
+                'value' => $value,
+                'display' => false,
+                'required' => (bool) $data['is_mandatory'],
+                'size' => 40,
+            ])],
+        );
     }
 
     /**

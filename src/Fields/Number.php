@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
@@ -87,9 +88,10 @@ class Number extends CommonDBTM
                 'display' => false,
             ];
         }
-        $field = \Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
-
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_widget.html.twig',
+            ['widget_html' => \Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt)],
+        );
     }
 
     public static function showFieldCustomValues($params)

@@ -76,106 +76,63 @@ class Upload extends CommonDBTM
 
         $arrayFiles = json_decode($value, true);
 
-        $field = "";
+        $files = [];
         $nb = 0;
         $container = 'fileupload_info_ticket' . $namefield . $data['id'];
+        // Uploader options are identical across branches except for the "multiple" flag.
+        $file_opts = [
+            'filecontainer' => $container,
+            'editor_id' => $namefield . $data['id'],
+            'showtitle' => false,
+            'display' => false,
+            'dropZone' => 'dropdoc' . $randupload,
+            'required' => ($data['is_mandatory'] ? true : false),
+            'uploads' => $self->uploads,
+        ];
+        $multiple_opts = ['multiple' => true] + $file_opts;
+
+        $file_input = "";
         if (is_array($arrayFiles)) {
             if (count($arrayFiles) > 0) {
                 foreach ($arrayFiles as $k => $file) {
-                    $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
                     $wiz = new Wizard();
-                    $field .= "&nbsp;";
                     //own showSimpleForm for return (not echo)
-                    $field .= FieldCustomvalue::showSimpleForm(
-                        $wiz->getFormURL(),
-                        'delete_basket_file',
-                        _x('button', 'Delete permanently'),
-                        [
-                            'id' => $k,
-                            'metademands_id' => $data['plugin_metademands_metademands_id'],
-                            'plugin_metademands_fields_id' => $data['id'],
-                            'idline' => $idline,
-                        ],
-                        'fa-times-circle',
-                    );
-                    $field .= "<br>";
+                    $files[] = [
+                        // The stored filename is user-controlled; auto-escaped in the template.
+                        'name' => str_replace($file['_prefix_filename'], "", $file['_filename']),
+                        'delete_form' => FieldCustomvalue::showSimpleForm(
+                            $wiz->getFormURL(),
+                            'delete_basket_file',
+                            _x('button', 'Delete permanently'),
+                            [
+                                'id' => $k,
+                                'metademands_id' => $data['plugin_metademands_metademands_id'],
+                                'plugin_metademands_fields_id' => $data['id'],
+                                'idline' => $idline,
+                            ],
+                            'fa-times-circle',
+                        ),
+                    ];
                     $nb++;
                 }
                 if ($data["max_upload"] > $nb) {
-                    if ($data["max_upload"] > 1) {
-                        $field .= Html::file([
-                            'filecontainer' => $container,
-                            'editor_id' => $namefield . $data['id'],
-                            'showtitle' => false,
-                            'multiple' => true,
-                            'display' => false,
-                            'dropZone' => 'dropdoc' . $randupload,
-                            'required' => ($data['is_mandatory'] ? true : false),
-                            'uploads' => $self->uploads,
-                        ]);
-                    } else {
-                        $field .= Html::file([
-                            'filecontainer' => $container,
-                            'editor_id' => $namefield . $data['id'],
-                            'showtitle' => false,
-                            'display' => false,
-                            'dropZone' => 'dropdoc' . $randupload,
-                            'required' => ($data['is_mandatory'] ? true : false),
-                            'uploads' => $self->uploads,
-                        ]);
-                    }
+                    $file_input = Html::file($data["max_upload"] > 1 ? $multiple_opts : $file_opts);
                 }
             } else {
-                if ($data["max_upload"] > 1) {
-                    $field .= Html::file([
-                        'filecontainer' => $container,
-                        'editor_id' => $namefield . $data['id'],
-                        'showtitle' => false,
-                        'multiple' => true,
-                        'display' => false,
-                        'dropZone' => 'dropdoc' . $randupload,
-                        'required' => ($data['is_mandatory'] ? true : false),
-                        'uploads' => $self->uploads,
-                    ]);
-                } else {
-                    $field .= Html::file([
-                        'filecontainer' => $container,
-                        'editor_id' => $namefield . $data['id'],
-                        'showtitle' => false,
-                        'display' => false,
-                        'dropZone' => 'dropdoc' . $randupload,
-                        'required' => ($data['is_mandatory'] ? true : false),
-                        'uploads' => $self->uploads,
-                    ]);
-                }
+                $file_input = Html::file($data["max_upload"] > 1 ? $multiple_opts : $file_opts);
             }
         } else {
-            if ($data["max_upload"] > 1) {
-                $field .= Html::file([
-                    'filecontainer' => $container,
-                    'editor_id' => $namefield . $data['id'],
-                    'showtitle' => false,
-                    'multiple' => true,
-                    'display' => false,
-                    'dropZone' => 'dropdoc' . $randupload,
-                    'required' => ($data['is_mandatory'] ? true : false),
-                    'uploads' => $self->uploads,
-                ]);
-            } else {
-                $field .= Html::file([
-                    'filecontainer' => $container,
-                    'editor_id' => $namefield . $data['id'],
-                    'showtitle' => false,
-                    'display' => false,
-                    'dropZone' => 'dropdoc' . $randupload,
-                    'required' => ($data['is_mandatory'] ? true : false),
-                    'uploads' => $self->uploads,
-                ]);
-            }
+            $file_input = Html::file($data["max_upload"] > 1 ? $multiple_opts : $file_opts);
         }
-        //        $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
-        $field .= Html::scriptBlock("$('#$namedrop').show();");
-        echo $field;
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_upload.html.twig',
+            [
+                'files'      => $files,
+                'file_input' => $file_input,
+                'script'     => Html::scriptBlock("$('#$namedrop').show();"),
+            ],
+        );
     }
 
     public static function showFieldCustomValues($params) {}

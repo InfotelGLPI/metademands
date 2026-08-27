@@ -1,0 +1,47 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+
+<div id-field='field{{ id }}' class='card-header'
+     style='background-color: {{ color_rgba }}!important;border-color:{{ color }}!important;border-radius: 0;margin-bottom: 10px;'>
+    <br>
+    <h2 class='card-title'><span style='color:{{ color }};font-weight: normal;'>
+        {%- if has_icon -%}
+            {%- if icon_is_fa -%}
+                <i class='fa-2x fas {{ icon }}'
+                   style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>&nbsp;
+            {%- else -%}
+                <i class='ti {{ icon }}' style="font-size:2em;"></i>&nbsp;
+            {%- endif -%}
+        {%- endif -%}
+            {{- label -}}
+            {%- if debug %} (ID:{{ id }}){% endif -%}
+            {%- if has_label2 %}&nbsp;{{ label2_tooltip_html|raw }}{% endif -%}
+            {%- if preview %}{{ config_link|raw }}{% endif -%}
+    </span></h2>
+</div>
+{%- if has_comment %}
+    <div class='card-body'><i>{{ comment_html|raw }}</i></div>{% endif %}

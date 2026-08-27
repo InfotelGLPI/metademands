@@ -65,7 +65,6 @@ class Information extends CommonDBTM
     public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
 
-        $field = '';
         $display = "alert-info";
         if ($data["display_type"] == self::WARNING) {
             $display = "alert-warning";
@@ -73,51 +72,49 @@ class Information extends CommonDBTM
         if ($data["display_type"] == self::ALERT) {
             $display = "alert-danger";
         }
-        $class = "class='alert $display alert-dismissible fade show informations'";
-        $field .= "<div $class style='display:flex;align-items: center;'>";
 
-        $todisplay = "";
+        // Build the three content fragments separately so the template can auto-escape the
+        // designer-defined name while keeping the already-sanitized rich HTML (comment/label2) raw.
+        $name = "";
+        $name_html = "";
         if ($data['hide_title'] == 0) {
             if (empty($name_title = Field::displayField($data['id'], 'name'))) {
                 $name_title = $data['name'];
             }
-            // Field name is designer-defined plain text prepended to the sanitized rich content
-            // ($comment/$label2 appended below already go through RichText::getSafeHtml()). Escape
-            // only this fragment to close the stored XSS without double-escaping that safe HTML.
-            $todisplay = htmlspecialchars((string) $name_title, ENT_QUOTES, 'UTF-8');
+            $name = (string) $name_title;
+            $name_html = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
         }
 
+        $comment_html = "";
         if (!empty($data['comment'])) {
             $comment = Field::displayField($data['id'], 'comment') ?: $data['comment'];
-            $todisplay .= RichText::getSafeHtml($comment);
+            $comment_html = RichText::getSafeHtml($comment);
         }
 
+        $label2_html = "";
         if (!empty($data['label2'])) {
             $label2 = Field::displayField($data['id'], 'label2') ?: $data['label2'];
-            $todisplay .= RichText::getSafeHtml($label2);
+            $label2_html = RichText::getSafeHtml($label2);
         }
 
-        if ($on_order == false && !empty($todisplay)) {
-            $icon = $data['icon'];
-            $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
-            if ($icon) {
-                // Icon comes from user-supplied field data which is not sanitized on save; escape
-                // before injecting into the class attribute to prevent stored XSS. Mirrors Fields\Title.php.
-                $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
-                if (str_contains($icon, 'fa-')) {
-                    $field .= "<i class='fas fa-2x $safe_icon' style='color:{$safe_color};'></i>&nbsp;";
-                } else {
-                    $field .= "<i class='ti $safe_icon' style='font-size:2em;color:{$safe_color};'></i>&nbsp;";
-                }
-            }
-            $field .= "<div style='color:{$safe_color};'>" . $todisplay . "</div>";
-        }
-        if ($preview) {
-            $field .= $config_link;
-        }
-        $field .= "</div>";
+        // Preserve the exact original visibility gate (!empty on the concatenated payload,
+        // including the "0" edge case) while rendering the fragments separately.
+        $todisplay = $name_html . $comment_html . $label2_html;
+        $icon = (string) ($data['icon'] ?? '');
 
-        echo $field;
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_information.html.twig', [
+            'display_class' => $display,
+            'show_content'  => (bool) ($on_order == false && !empty($todisplay)),
+            'has_icon'      => (bool) $icon,
+            'icon'          => $icon,
+            'icon_is_fa'    => str_contains($icon, 'fa-'),
+            'color'         => $data['color'],
+            'name'          => $name,
+            'comment_html'  => $comment_html,
+            'label2_html'   => $label2_html,
+            'preview'       => (bool) $preview,
+            'config_link'   => $config_link,
+        ]);
     }
 
     public static function showFieldCustomValues($params) {}

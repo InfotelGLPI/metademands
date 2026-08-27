@@ -86,17 +86,15 @@ class Dateinterval extends CommonDBTM
         }
 
         if ($end == true) {
-            $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-            $field .= Html::showDateField($namefield, $opt);
-            $field .= "</span>";
+            $widget = Html::showDateField($namefield, $opt);
         } else {
-            $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-            $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", $opt);
-            $field .= "</span>";
+            $widget = Html::showDateField($namefield . "[" . $data['id'] . "]", $opt);
         }
 
-
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_span_widget.html.twig',
+            ['widget_html' => $widget],
+        );
     }
 
 

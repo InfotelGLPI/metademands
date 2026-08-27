@@ -95,7 +95,7 @@ class Url extends CommonDBTM
                         ";
         }
         $ID = $namefield . "[" . $data['link_to_user'] . "]";
-        echo "<script type='text/javascript'>
+        $script = "<script type='text/javascript'>
                         $(function() {
                             $(\"[name='$ID']\").ready(function() {
                                  $.ajax({
@@ -112,9 +112,13 @@ class Url extends CommonDBTM
                         })
                     </script>";
 
-        $field = Html::input($name, $opt);
-
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_input_widget.html.twig',
+            [
+                'script_html' => $script,
+                'input_html'  => Html::input($name, $opt),
+            ],
+        );
     }
 
     public static function showFieldCustomValues($params) {}
@@ -208,7 +212,9 @@ class Url extends CommonDBTM
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        echo $options[$params['check_value']] ?? "";
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $options[$params['check_value']] ?? "",
+        ]);
     }
 
     public static function fieldsMandatoryScript($data)

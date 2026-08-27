@@ -34,7 +34,6 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use GlpiPlugin\Metademands\Field;
-use GlpiPlugin\Metademands\Wizard;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -65,50 +64,59 @@ class Titleblock extends CommonDBTM
     {
         $debug = isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
-        $color = "#FFF"; //Wizard::hex2rgba($data['color'], "0.03");
         $rank = (int) $data['rank'];
-        $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
-        $style_background = "style='background-color: $color!important;border-color: {$safe_color}!important;border-radius: 0;border-top:none;margin-bottom: 10px;'";
 
-        if ($preview || $debug) {
-            echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
-        } else {
-            echo "<div class='card-header' $style_background>";
-        }
+        $icon = (string) ($data['icon'] ?? '');
 
-        echo "<h2 class=\"card-title\"><span style='color:{$safe_color};font-weight: normal;'>";
-        $icon = $data['icon'];
-        if (!empty($icon)) {
-            // The icon is admin-configured free text stored raw; escape it before
-            // injecting it into the class attribute to close a stored-XSS vector
-            // (aligns with the escaping already done in Field::showField()).
-            $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
-            if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-2x fas $safe_icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
-            } else {
-                echo "<i class='ti $safe_icon' style=\"font-size:2em;\"></i>&nbsp;";
-            }
-        }
         if (empty($label = Field::displayField($data['id'], 'name'))) {
             $label = $data['name'];
         }
 
-        echo htmlspecialchars($label);
-        if ($debug) {
-            echo " (ID:" . $data['id'] . ")";
-        }
-        echo $config_link;
-        if (isset($data['label2']) && !empty($data['label2'])) {
-            echo "&nbsp;";
+        // The label2 tooltip is rendered by Html::showToolTip() which echoes directly:
+        // capture it so it can be injected raw into the template.
+        $has_label2 = isset($data['label2']) && !empty($data['label2']);
+        $label2_tooltip_html = '';
+        if ($has_label2) {
             if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
                 $label2 = $data['label2'];
             }
+            ob_start();
             Html::showToolTip(
                 RichText::getSafeHtml($label2),
                 ['awesome-class' => 'ti ti-info-circle'],
             );
+            $label2_tooltip_html = ob_get_clean();
         }
-        echo "<i id='up{$rank}' class='ti ti-chevron-up pointer' style='right:40px;position: absolute;color:{$safe_color};'></i>";
+
+        $has_comment = !empty($data['comment']);
+        $comment_html = '';
+        if ($has_comment) {
+            if (empty($comment = Field::displayField($data['id'], 'comment'))) {
+                $comment = $data['comment'];
+            }
+            $comment_html = RichText::getSafeHtml($comment);
+        }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_titleblock.html.twig', [
+            'is_preview_or_debug' => (bool) ($preview || $debug),
+            'bg_color'            => "#FFF",
+            'color'               => $data['color'],
+            'rank'                => $rank,
+            'has_icon'            => (bool) $icon,
+            'icon'                => $icon,
+            'icon_is_fa'          => str_contains($icon, 'fa-'),
+            'label'               => $label,
+            'debug'               => $debug,
+            'id'                  => $data['id'],
+            'config_link'         => $config_link,
+            'has_label2'          => $has_label2,
+            'label2_tooltip_html' => $label2_tooltip_html,
+            'has_comment'         => $has_comment,
+            'comment_html'        => $comment_html,
+        ]);
+
+        // The collapse toggle handler stays an inline scriptBlock (emitted after the
+        // template) rather than living in the Twig template.
         $rand = mt_rand();
         echo Html::scriptBlock(
             "
@@ -124,14 +132,6 @@ class Titleblock extends CommonDBTM
                          }
                      });",
         );
-        echo "</span></h2>";
-        echo "</div>";
-        if (!empty($data['comment'])) {
-            if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-                $comment = $data['comment'];
-            }
-            echo "<div class='card-body'><i>" . RichText::getSafeHtml($comment) . "</i></div>";
-        }
     }
 
     public static function showFieldCustomValues($params) {}

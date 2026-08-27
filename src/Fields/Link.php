@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
@@ -95,7 +96,10 @@ class Link extends CommonDBTM
             $field .= Html::hidden($title, ['value' => $custom_values[1]]);
         }
 
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_widget.html.twig',
+            ['widget_html' => $field],
+        );
     }
 
     public static function showFieldCustomValues($params)

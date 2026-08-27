@@ -79,35 +79,21 @@ class Signature extends CommonDBTM
         $msg_failremove = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('There was a problem on delete your signature', 'metademands'));
         $msg_mandatory  = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('This field is mandatory', 'metademands'));
 
-        $field  = "<div class='wrapper'>";
-        $field .= "<canvas id='$canvas_id' class='signature-pad' width=400 height=100></canvas>";
-        $field .= "</div>";
+        $has_value = !empty($value);
+        // Show existing signature as preview when editing a saved value.
+        // picture_url and value are auto-escaped by {{ }} in the template
+        // (byte-identical to the legacy htmlspecialchars(ENT_QUOTES) for valid UTF-8).
+        $picture_url = $has_value ? Toolbox::getPictureUrl($value) : '';
 
-        // Show existing signature as preview when editing a saved value
-        if (!empty($value)) {
-            $picture_url = Toolbox::getPictureUrl($value);
-            $field .= "<div id='existing-sign-$field_id'>";
-            $field .= "<img src='" . htmlspecialchars($picture_url, ENT_QUOTES) . "' style='max-height:100px;border:1px solid #ccc;'>";
-            $field .= "</div>";
-        }
+        // Labels are trusted translations; ids/name are safe per-field strings.
+        $label_add   = __('Add your signature', 'metademands');
+        $label_clear = __('Clear', 'metademands');
 
-        $field .= "<br><div>";
-        // type='button' prevents accidental form submission on click
-        $field .= "<button type='button' id='$save_id' class='btn btn-primary'>" . __('Add your signature', 'metademands') . "</button> ";
-        $field .= "<button type='button' id='$clear_id' class='btn btn-primary'>" . __('Clear', 'metademands') . "</button>";
-        $field .= "</div>";
-
-        $existing_value = htmlspecialchars($value ?? '', ENT_QUOTES);
-
-        // Span et input placés avant le <script> pour garantir leur présence dans le DOM à l'exécution
-        $field .= "<br><span class='result' id='$result_id'></span>";
-        $field .= "<input type='hidden' id='$hidden_id' name='$name' value='$existing_value'>";
-
-        $field .= Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
-        $field .= Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
+        $script_tag = Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
+        $css_tag    = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
 
         // IIFE to scope all variables — supports multiple Signature fields per page
-        $field .= "<script type='text/javascript'>
+        $inline_script = "<script type='text/javascript'>
         (function () {
             var signaturePad = new SignaturePad(document.getElementById('$canvas_id'), {
                 backgroundColor: 'rgba(255, 255, 255, 0)',
@@ -183,7 +169,26 @@ class Signature extends CommonDBTM
         })();
         </script>";
 
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_signature.html.twig',
+            [
+                'canvas_id'     => $canvas_id,
+                'has_value'     => $has_value,
+                'field_id'      => $field_id,
+                'picture_url'   => $picture_url,
+                'save_id'       => $save_id,
+                'clear_id'      => $clear_id,
+                'label_add'     => $label_add,
+                'label_clear'   => $label_clear,
+                'result_id'     => $result_id,
+                'hidden_id'     => $hidden_id,
+                'name'          => $name,
+                'value'         => $value ?? '',
+                'script_tag'    => $script_tag,
+                'css_tag'       => $css_tag,
+                'inline_script' => $inline_script,
+            ],
+        );
     }
 
 

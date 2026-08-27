@@ -110,6 +110,7 @@ class Dropdownmeta extends CommonDBTM
 
                     $default_value = "";
                     $choices = [];
+                    $block_options = [];
                     if (count($custom_values) > 0) {
                         foreach ($custom_values as $key => $label) {
                             if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
@@ -122,46 +123,17 @@ class Dropdownmeta extends CommonDBTM
                             }
 
                             if ($data["display_type"] == self::BLOCK_DISPLAY) {
-                                $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
-                                $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
-
-                                //                        $field .= '
-                                //<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
-                                //data-capacity-checkbox="1"  data-is-used="0" checked="">';
-
-                                $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
-
                                 $icon = $label['icon'];
                                 if (empty($label['icon'])) {
                                     $icon = $data['icon'];
                                 }
-
-                                if (!empty($icon)) {
-                                    // Icon comes from user-supplied custom-value data (fieldcustomvalue.form.php)
-                                    // which is not sanitized on save; escape before injecting into the class
-                                    // attribute to prevent stored XSS. Mirrors Fields\Title.php.
-                                    $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
-                                    $field .= "<span class='me-2 mt-1'>";
-                                    if (str_contains($icon, 'fa-')) {
-                                        $field .= "<i class='fas $safe_icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
-                                    } else {
-                                        $field .= "<i class='ti $safe_icon text-secondary' style='font-size: 3em'></i>";
-                                    }
-                                    $field .= "</span>";
-                                }
-
-                                $field .= "<div class='text-start'>";
-                                $field .= "<div class='d-flex align-items-center'>";
-                                //                        $field .= "<div class='fw-bold'>";
+                                $has_icon = !empty($icon);
 
                                 if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                                     $name = $label['name'];
                                 }
-                                // Escape raw user-supplied option label (stored raw in GLPI 10+) to prevent stored XSS.
-                                $field .= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
-                                //                        $field .= "</div>";
-                                $field .= "</div>";
-                                $field .= "<small class='form-hint'>";
+
+                                $comment_html = "";
                                 if (isset($label['comment']) && !empty($label['comment'])) {
                                     if (empty(
                                         $comment = Field::displayCustomvaluesField(
@@ -173,31 +145,28 @@ class Dropdownmeta extends CommonDBTM
                                         $comment = $label['comment'];
                                     }
                                     // Sanitize raw user-supplied option comment to prevent stored XSS.
-                                    $field .= RichText::getSafeHtml($comment);
+                                    $comment_html = RichText::getSafeHtml($comment);
                                 }
-                                $field .= "</small>";
 
-                                $field .= "</div>";
-
-                                $field .= "<div class='me-2 ms-auto'>";
                                 $checked = "";
-
                                 if (empty($value) && isset($label['is_default']) && $on_order == false) {
                                     $checked = ($label['is_default'] == 1) ? 'checked' : '';
                                 }
                                 if (isset($value) && $value == $key) {
                                     $checked = 'checked';
                                 }
-                                $required = "";
-                                if ($data['is_mandatory'] == 1) {
-                                    $required = "required=required";
-                                }
-                                $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                                $field .= "</div>";
 
-                                $field .= "</div>";
-                                $field .= "</label>";
-                                $field .= "</div>";
+                                // Raw label/icon/comment are auto-escaped by the Twig template
+                                // ({{ }} applies htmlspecialchars ENT_QUOTES|ENT_SUBSTITUTE).
+                                $block_options[] = [
+                                    'key'          => $key,
+                                    'name'         => (string) $name,
+                                    'has_icon'     => $has_icon,
+                                    'icon'         => (string) $icon,
+                                    'icon_is_fa'   => $has_icon && str_contains((string) $icon, 'fa-'),
+                                    'comment_html' => $comment_html,
+                                    'checked'      => $checked,
+                                ];
                             }
                         }
                     }
@@ -205,6 +174,15 @@ class Dropdownmeta extends CommonDBTM
                     $value = !empty($value) ? $value : $default_value;
 
                     if ($data["display_type"] == self::BLOCK_DISPLAY) {
+                        $field .= TemplateRenderer::getInstance()->render(
+                            '@metademands/fields/field_dropdownmeta_block.html.twig',
+                            [
+                                'options'   => $block_options,
+                                'namefield' => $namefield,
+                                'id'        => $data['id'],
+                                'required'  => ($data['is_mandatory'] == 1) ? "required=required" : "",
+                            ],
+                        );
                         $field .= "</div>";
                     }
 
@@ -657,6 +635,7 @@ class Dropdownmeta extends CommonDBTM
             echo "<span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __('My devices') . "</h5>";
         }
         $i = 0;
+        $device_items = [];
         if ($users_id_requester > 0) {
             foreach ($objects as $itemtype) {
                 if (($item = getItemForItemtype($itemtype))
@@ -733,7 +712,7 @@ class Dropdownmeta extends CommonDBTM
                             //                        }
 
                             $varname = "hardwareType_" . $type . "_" . $items_id;
-                            echo Html::scriptBlock("hardwareType.push('$varname');");
+                            $script_html = Html::scriptBlock("hardwareType.push('$varname');");
 
                             $checked = "";
                             $active = "";
@@ -758,13 +737,7 @@ class Dropdownmeta extends CommonDBTM
                                 $active = "active md_buttonelt_color";
                             }
 
-                            echo "<label id='$varname' class='btn md_buttonelt col-md-2 center $active'
-                                            onclick='changeBackgroundColor(\"$varname\",\"md_buttonelt_color\")'>";
-
                             $value = $itemtype . "_" . $items_id;
-                            echo "<input type='radio' class='my_items' name='" . htmlspecialchars((string) $values['name'], ENT_QUOTES, 'UTF-8') . "' value='$value' $checked>";
-
-                            echo "<div class='center'>";
                             $icon = self::getIconForType($itemtype);
 
                             $ok = 0;
@@ -808,34 +781,47 @@ class Dropdownmeta extends CommonDBTM
                                 }
                             }
                             if ($ok == 1) {
-                                echo "$icon&nbsp;";
+                                $icon_html = $icon;
                             } else {
                                 if (str_contains($icon, 'fa-')) {
-                                    echo "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>&nbsp;";
+                                    $icon_html = "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>";
                                 } else {
-                                    echo "<i style='font-size:4em' class='ti $icon mr-3'></i>&nbsp;";
+                                    $icon_html = "<i style='font-size:4em' class='ti $icon mr-3'></i>";
                                 }
                             }
 
-                            echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
-                            echo $data[$item->getNameField()] . "&nbsp;";
                             $comment = "";
                             if (isset($data['serial']) && !empty($data['serial'])) {
                                 $comment = __('Serial number') . " : " . $data['serial'];
                             }
+                            $tooltip_html = "";
                             if (!empty($comment)) {
-                                echo "&nbsp;";
-                                echo Html::showToolTip($comment);
+                                $tooltip_html = Html::showToolTip($comment);
                             }
 
-                            echo "</h5><br>";
-                            echo $typename;
-                            echo "</div>";
-                            echo "</label>";
+                            // name is auto-escaped by the Twig template ({{ item.name }}),
+                            // fixing the previously raw echo of user-supplied device names.
+                            $device_items[] = [
+                                'script_html'  => $script_html,
+                                'varname'      => $varname,
+                                'active'       => $active,
+                                'values_name'  => (string) $values['name'],
+                                'value'        => $value,
+                                'checked'      => $checked,
+                                'icon_html'    => $icon_html,
+                                'name'         => (string) $data[$item->getNameField()],
+                                'has_comment'  => !empty($comment),
+                                'tooltip_html' => $tooltip_html,
+                                'typename'     => (string) $typename,
+                            ];
                         }
                     }
                 }
             }
+            echo TemplateRenderer::getInstance()->render(
+                '@metademands/fields/field_dropdownmeta_device.html.twig',
+                ['items' => $device_items],
+            );
             //        if ($itemtype == "Other") {
             //            echo Html::scriptBlock("hardwareType.push('hardwareType_0');");
             //            $checked = "";
@@ -969,6 +955,7 @@ class Dropdownmeta extends CommonDBTM
                         'metademands',
                     ) . "</h5>";
 
+                    $group_items = [];
                     foreach ($devices as $itemtype_groups => $list_items_id) {
                         if ($item = getItemForItemtype($itemtype_groups)
                             && \Ticket::isPossibleToAssignType($itemtype_groups)
@@ -989,7 +976,7 @@ class Dropdownmeta extends CommonDBTM
                         ) {
                             foreach ($list_items_id as $key => $items_id) {
                                 $varname = "hardwareType_" . $itemtype_groups . "_" . $items_id;
-                                echo Html::scriptBlock("hardwareType.push('$varname');");
+                                $script_html = Html::scriptBlock("hardwareType.push('$varname');");
 
                                 $checked = "";
                                 $active = "";
@@ -1014,13 +1001,8 @@ class Dropdownmeta extends CommonDBTM
                                     $active = "active md_buttonelt_color";
                                 }
 
-                                echo "<label id='$varname' class='btn md_buttonelt col-md-2 center $active'
-                                            onclick='changeBackgroundColor(\"$varname\",\"md_buttonelt_color\")'>";
-
                                 $value = $itemtype_groups . "_" . $items_id;
-                                echo "<input type='radio' class='my_items' name='" . htmlspecialchars((string) $values['name'], ENT_QUOTES, 'UTF-8') . "' value='$value' $checked>";
 
-                                echo "<div class='center'>";
                                 $icon = self::getIconForType($itemtype_groups);
 
                                 $ok = 0;
@@ -1064,33 +1046,44 @@ class Dropdownmeta extends CommonDBTM
                                     }
                                 }
                                 if ($ok == 1) {
-                                    echo "$icon&nbsp;";
+                                    $icon_html = $icon;
                                 } else {
                                     if (str_contains($icon, 'fa-')) {
-                                        echo "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>&nbsp;";
+                                        $icon_html = "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>";
                                     } else {
-                                        echo "<i style='font-size:4em' class='ti $icon mr-3'></i>&nbsp;";
+                                        $icon_html = "<i style='font-size:4em' class='ti $icon mr-3'></i>";
                                     }
                                 }
 
-                                echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
-                                echo $obj->getName() . "&nbsp;";
                                 $comment = "";
                                 if (isset($obj->fields['serial']) && !empty($obj->fields['serial'])) {
                                     $comment = __('Serial number') . " : " . $obj->fields['serial'];
                                 }
+                                $tooltip_html = "";
                                 if (!empty($comment)) {
-                                    echo "&nbsp;";
-                                    echo Html::showToolTip($comment);
+                                    $tooltip_html = Html::showToolTip($comment);
                                 }
 
-                                echo "</h5><br>";
-                                echo $obj->getTypeName();
-                                echo "</div>";
-                                echo "</label>";
+                                $group_items[] = [
+                                    'script_html'  => $script_html,
+                                    'varname'      => $varname,
+                                    'active'       => $active,
+                                    'values_name'  => (string) $values['name'],
+                                    'value'        => $value,
+                                    'checked'      => $checked,
+                                    'icon_html'    => $icon_html,
+                                    'name'         => (string) $obj->getName(),
+                                    'has_comment'  => !empty($comment),
+                                    'tooltip_html' => $tooltip_html,
+                                    'typename'     => (string) $obj->getTypeName(),
+                                ];
                             }
                         }
                     }
+                    echo TemplateRenderer::getInstance()->render(
+                        '@metademands/fields/field_dropdownmeta_device.html.twig',
+                        ['items' => $group_items],
+                    );
                     echo "</span>";
                 }
             }
@@ -1507,12 +1500,13 @@ class Dropdownmeta extends CommonDBTM
     {
         global $PLUGIN_HOOKS;
 
+        $value = '';
         if ($params['check_value'] == -1 || $params['check_value'] == 0) {
-            echo __('Not null value', 'metademands');
+            $value .= __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
                 case 'urgency':
-                    echo CommonITILObject::getUrgencyName($params['check_value']);
+                    $value .= CommonITILObject::getUrgencyName($params['check_value']);
                     break;
                 case 'ITILCategory_Metademands':
                     $pass = false;
@@ -1520,14 +1514,14 @@ class Dropdownmeta extends CommonDBTM
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                             $new_drop = self::getPluginDropdownItilcategoryName($plug, $params['check_value']);
                             if (Plugin::isPluginActive($plug) && $new_drop != false) {
-                                echo $new_drop;
+                                $value .= $new_drop;
                                 $pass = true;
                             }
                         }
                     }
 
                     if (!$pass) {
-                        echo \Dropdown::getDropdownName('glpi_itilcategories', $params['check_value']);
+                        $value .= \Dropdown::getDropdownName('glpi_itilcategories', $params['check_value']);
                     }
 
                     break;
@@ -1535,7 +1529,7 @@ class Dropdownmeta extends CommonDBTM
                     $dbu = new DbUtils();
                     if ($item = $dbu->getItemForItemtype($params["item"])
                         && $params['type'] != "dropdown_multiple") {
-                        echo \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
+                        $value .= \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
                         if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
                             $elements = [];
@@ -1547,18 +1541,21 @@ class Dropdownmeta extends CommonDBTM
                                     $elements[$key] = $params["item"]::getFriendlyNameById($key);
                                 }
                             }
-                            echo $elements[$params['check_value']];
+                            $value .= $elements[$params['check_value']];
                         } else {
                             $elements = [];
                             foreach ($params['custom_values'] as $key => $val) {
                                 $elements[$val['id']] = $val['name'];
                             }
-                            echo $elements[$params['check_value']] ?? "";
+                            $value .= $elements[$params['check_value']] ?? "";
                         }
                     }
                     break;
             }
         }
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $value,
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

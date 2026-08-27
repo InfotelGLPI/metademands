@@ -103,7 +103,10 @@ class Yesno extends CommonDBTM
                     'display' => false,
                 ],
             );
-            echo $field;
+            echo TemplateRenderer::getInstance()->render(
+                '@metademands/fields/field_widget.html.twig',
+                ['widget_html' => $field],
+            );
         } else {
             self::showSwitchField($data, $namefield, $value);
         }
@@ -123,8 +126,6 @@ class Yesno extends CommonDBTM
         $required = ($data['is_mandatory'] && $value == 0) ? "required" : "";
         $id = $name . "-toggle";
 
-        echo "<label class='ios-switch-sm'>";
-
         $checked = "";
         if ($value == 2) {
             $checked = "checked='checked'";
@@ -132,17 +133,10 @@ class Yesno extends CommonDBTM
         if ($value == 0) {
             $value = 1;
         }
-        echo "<input type='checkbox' id='$id' name='$name' $checked isswitch='isswitch' >";
-        echo "<span class='slider'>";
-        echo "<span class='checkmark-on'><i class='ti ti-check'></i></span>";
-        echo "<span class='checkmark-off'></span>";
-        echo "<span class='checkmark-empty'></span>";
-        echo "</span>";
-        echo "</label>";
 
-        echo Html::hidden($name, ['id' => $name, 'value' => $value]);
+        $hidden_html = Html::hidden($name, ['id' => $name, 'value' => $value]);
 
-        echo Html::scriptBlock("(function(){
+        $script_html = Html::scriptBlock("(function(){
         const toggle = document.getElementById('$id');
         const hidden = document.getElementById('$name');
 
@@ -158,6 +152,17 @@ class Yesno extends CommonDBTM
         });
     })();
     ");
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_switch.html.twig',
+            [
+                'id'          => $id,
+                'name'        => $name,
+                'checked'     => $checked,
+                'hidden_html' => $hidden_html,
+                'script_html' => $script_html,
+            ],
+        );
     }
 
     public static function showFieldCustomValues($params)
@@ -268,7 +273,9 @@ class Yesno extends CommonDBTM
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        echo $options[$params['check_value']] ?? "";
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $options[$params['check_value']] ?? "",
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

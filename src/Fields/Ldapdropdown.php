@@ -100,7 +100,11 @@ class Ldapdropdown extends CommonDBTM
         if ($item = getItemForItemtype(self::class)) {
             $field = \Dropdown::show(self::class, $opt);
         }
-        echo $field;
+        // Pure core-widget passthrough (Dropdown::show already returned the markup).
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_widget.html.twig',
+            ['widget_html' => $field],
+        );
     }
 
     public static function getDropdownValue($post, $json = true)
@@ -373,15 +377,16 @@ class Ldapdropdown extends CommonDBTM
 
     public static function showParamsValueToCheck($params)
     {
+        $value = '';
         if ($params['check_value'] == -1) {
-            echo __('Not null value', 'metademands');
+            $value .= __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
                 default:
                     $dbu = new DbUtils();
                     if ($item = $dbu->getItemForItemtype($params["item"])
                         && $params['type'] != "dropdown_multiple") {
-                        echo \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
+                        $value .= \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
                         if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
                             $elements = [];
@@ -393,7 +398,7 @@ class Ldapdropdown extends CommonDBTM
                                     $elements[$key] = $params["item"]::getFriendlyNameById($key);
                                 }
                             }
-                            echo $elements[$params['check_value']];
+                            $value .= $elements[$params['check_value']];
                         } else {
                             $elements = [];
                             if (!is_array($params['custom_values'])
@@ -404,12 +409,15 @@ class Ldapdropdown extends CommonDBTM
                             foreach ($elements as $key => $val) {
                                 $elements[$key] = urldecode($val);
                             }
-                            echo $elements[$params['check_value']] ?? "";
+                            $value .= $elements[$params['check_value']] ?? "";
                         }
                     }
                     break;
             }
         }
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $value,
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

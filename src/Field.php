@@ -2443,7 +2443,6 @@ border-style: none !important; border-color: initial !important;border-image: in
             $data['row_display'] = 1;
             $data['is_mandatory'] = 0;
         }
-        $style = "";
         $class = "";
         if (isset($data['row_display'])
             && $data['row_display'] == 1 && $data['type'] == "link") {
@@ -2469,24 +2468,15 @@ border-style: none !important; border-color: initial !important;border-image: in
                 $bottomclass = "col-md-6 md-bottom";
             }
         }
-        if (isset($data['row_display'])
-            && $data['row_display'] == 1) {
-            if ($data['type'] == 'basket') {
-                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
-            } else {
-                echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
-            }
+
+        $is_basket = ($data['type'] == 'basket');
+        if (isset($data['row_display']) && $data['row_display'] == 1) {
+            $wrapper_class = "$bottomclass $class";
             $count++;
+        } elseif ($data['type'] != 'title-block' && $data['type'] != 'title') {
+            $wrapper_class = "$bottomclass $class";
         } else {
-            if ($data['type'] != 'title-block' && $data['type'] != 'title') {
-                if ($data['type'] == 'basket') {
-                    echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\"><h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>";
-                } else {
-                    echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
-                }
-            } else {
-                echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-12 $bottomclass $class\">";
-            }
+            $wrapper_class = "col-md-12 $bottomclass $class";
         }
 
         $config_link = "";
@@ -2498,11 +2488,6 @@ border-style: none !important; border-color: initial !important;border-image: in
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-
-        $required = "";
-        //        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
-        //            $required = "required=required style='color:red'";
-        //        }
 
         $upload = "";
         if ($data['type'] == "upload") {
@@ -2516,9 +2501,6 @@ border-style: none !important; border-color: initial !important;border-image: in
 
             $upload = "$max (" . Document::getMaxUploadSize() . ")";
         }
-        //        if ($data['is_mandatory'] == 1) {
-        //            $required = "style='color:red'";
-        //        }
 
         if (empty($label = self::displayField($data['id'], 'name'))) {
             $label = "";
@@ -2532,157 +2514,121 @@ border-style: none !important; border-color: initial !important;border-image: in
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $hidden = 0;
         }
-        if ($data['type'] != "title"
+
+        // Label block: rendered only for non-title/title-block/informations types.
+        // render_label is computed on the pre-mutation type; the PLUGIN_HOOKS mutation
+        // below only remaps to plugin field types, never to those display types, so the
+        // same flag stays valid for the closing branch further down.
+        $render_label = ($data['type'] != "title"
             && $data['type'] != "title-block"
-            && $data['type'] != "informations") {
-            if (isset($data['hide_title']) && $data['hide_title'] == 0) {
-                if ($hidden == 0) {
-                    echo "<div $required class='col-form-label metademand-label'>";
+            && $data['type'] != "informations");
+        $hide_title_zero = (isset($data['hide_title']) && $data['hide_title'] == 0);
+        $hidden_zero = ($hidden == 0);
 
-                    if ($data['icon']) {
-                        $icon = htmlspecialchars((string) $data['icon'], ENT_QUOTES, 'UTF-8');
-                        echo "<i class='ti $icon'></i>&nbsp;";
-                    }
+        $has_icon = false;
+        $icon = "";
+        $show_comment_tooltip = false;
+        $comment_tooltip_html = "";
+        $is_mandatory_star = false;
 
-                    echo htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8') . " $upload";
+        if ($render_label && $hide_title_zero && $hidden_zero) {
+            // Icon/label/mandatory + comment tooltip are all evaluated on the pre-mutation
+            // type, exactly as in the original label block.
+            if ($data['icon']) {
+                $has_icon = true;
+                $icon = (string) $data['icon'];
+            }
 
-                    if ($debug) {
-                        echo " (ID:" . $data['id'] . ")";
-                    }
-                    if ($preview) {
-                        echo $config_link;
-                    }
-
-                    if (empty($comment = self::displayField($data['id'], 'comment'))) {
-                        $comment = $data['comment'];
-                    }
-                    if ($data['type'] != "text"
-                        && $data['type'] != "tel"
-                        && $data['type'] != "email"
-                        && $data['type'] != "url"
-                        && !empty($comment)) {
-                        $display = true;
-                        if ($data['use_richtext'] == 0) {
-                            $display = false;
-                        }
-                        if ($display) {
-                            echo "&nbsp;";
-                            echo Html::showToolTip(RichText::getSafeHtml($comment), [
-                                'awesome-class' => 'ti ti-info-circle',
-                                'display' => false,
-                            ]);
-                        }
-                    }
-                    echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-                    if ($data['is_mandatory'] == 1
-                        && $data['type'] != 'parent_field') {
-                        echo "*";
-                    }
-
-
-                    echo "</span>";
-
-                    //use plugin fields types
-                    if (isset($PLUGIN_HOOKS['metademands'])) {
-                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                            $new_fields = self::getPluginFieldItemsType($plug);
-                            if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                                if (in_array($data['type'], array_keys($new_fields))) {
-                                    $data['type'] = $new_fields[$data['type']];
-                                }
-                            }
-                        }
-                    }
-
-                    echo "</div>";
-                }
-            } else {
-                echo "<div style='margin-top: 10px;'>";
-                if ($preview) {
-                    echo $config_link;
+            if (empty($comment = self::displayField($data['id'], 'comment'))) {
+                $comment = $data['comment'];
+            }
+            if ($data['type'] != "text"
+                && $data['type'] != "tel"
+                && $data['type'] != "email"
+                && $data['type'] != "url"
+                && !empty($comment)) {
+                if ($data['use_richtext'] != 0) {
+                    $show_comment_tooltip = true;
+                    // display => false makes showToolTip return the HTML instead of echoing it.
+                    $comment_tooltip_html = Html::showToolTip(RichText::getSafeHtml($comment), [
+                        'awesome-class' => 'ti ti-info-circle',
+                        'display' => false,
+                    ]);
                 }
             }
-            if ($data['type'] == 'basket') {
-                echo "</h4>";
+
+            $is_mandatory_star = ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field');
+
+            //use plugin fields types (mutates $data['type'] before the widget is rendered)
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                    $new_fields = self::getPluginFieldItemsType($plug);
+                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                        if (in_array($data['type'], array_keys($new_fields))) {
+                            $data['type'] = $new_fields[$data['type']];
+                        }
+                    }
+                }
             }
         }
 
-        if (!empty($data['label2'])
+        // Label 2: shared by the alert block and the date-interval block. All type checks
+        // below use the (possibly mutated) type, exactly as in the original.
+        $has_label2 = (!empty($data['label2'])
             && $data['type'] != 'link'
             && $data['type'] != "title-block"
-            && $data['type'] != "title") {
+            && $data['type'] != "title");
+
+        $label2 = '';
+        if ($has_label2) {
             if (empty($label2 = self::displayField($data['id'], 'label2'))) {
                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
             }
-            $style = "";
-            if ($data['type'] != 'informations') {
-                $style = "style='padding: 10px;'";
-            }
-
-            if ($data['type'] != 'informations') {
-                if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                    echo "<div class='alert alert-secondary' $style>";
-                    echo "<div class='remove-last-tinymce-margin'>";
-                    echo RichText::getSafeHtml($label2);
-                    echo "</div>";
-                    echo "</div>";
-                }
-            }
         }
 
-        echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
-
-        if ($data['type'] != "title"
-            && $data['type'] != "title-block"
-            && $data['type'] != "informations") {
-            if (isset($data['hide_title']) && $data['hide_title'] == 1) {
-                echo "</div>";
-            }
+        $show_label2_alert = ($has_label2
+            && $data['type'] != 'informations'
+            && $data['type'] != 'datetime_interval'
+            && $data['type'] != 'date_interval');
+        $label2_alert_html = "";
+        if ($show_label2_alert) {
+            $label2_alert_html = RichText::getSafeHtml($label2);
         }
 
+        // Widget: getFieldInput() echoes the widget internally but the parent_field case
+        // returns a string, so capture both the buffered output and the return value.
+        ob_start();
+        $field_ret = self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
+        $field_html = ob_get_clean();
+        if (is_string($field_ret)) {
+            $field_html .= $field_ret;
+        }
 
-        // Label 2 (date interval)
-        if (!empty($data['label2'])
-            && $data['type'] != 'link'
-            && $data['type'] != "title-block"
-            && $data['type'] != "title") {
-            $required = "";
-            $required_icon = "";
+        $close_hidetitle_div = ($render_label
+            && isset($data['hide_title']) && $data['hide_title'] == 1);
+
+        // Date-interval second widget.
+        $is_interval = false;
+        $interval_label_html = "";
+        $interval_required_class = "";
+        $interval_required_icon = "";
+        $interval_html = "";
+        if ($has_label2) {
             if ($data['is_mandatory']) {
-                $required = "class='metademands_wizard_red'";
-                $required_icon = " * ";
+                $interval_required_class = "class='metademands_wizard_red'";
+                $interval_required_icon = " * ";
             }
-
             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                echo "</div><div id-field='field" . $data['id'] . "-2' class=\"form-group col-md-6 md-bottom\">";
-            }
-            if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
-                $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
-            }
-            $style = "";
-            if ($data['type'] != 'informations') {
-                $style = "style='padding: 10px;margin-top:10px'";
-            }
-
-            if ($data['type'] != 'informations') {
-                if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                    //                    echo "<div class='alert alert-secondary' $style>";
-                    //                    echo RichText::getSafeHtml($label2);
-                    //                    echo "</div>";
-                } else {
-                    echo "<div for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml(
-                        $label2,
-                    ) . "<span $required>" . $required_icon . "</span>";
-                    echo "</div>";
+                $is_interval = true;
+                // Rendered raw to avoid double-encoding the text extracted from HTML.
+                $interval_label_html = RichText::getTextFromHtml($label2);
+                $value2 = '';
+                if (isset($data['value-2'])) {
+                    $value2 = $data['value-2'];
                 }
-            }
-            $value2 = '';
-            if (isset($data['value-2'])) {
-                $value2 = $data['value-2'];
-            }
-            if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
                 $namefield = "field[" . $data['id'] . "-2]";
                 $end = true;
+                ob_start();
                 switch ($data['type']) {
                     case 'date_interval':
                         Dateinterval::showWizardField($data, $namefield, $value2, $end);
@@ -2693,10 +2639,37 @@ border-style: none !important; border-color: initial !important;border-image: in
                         $count++;
                         break;
                 }
-                //                echo "</div>";
+                $interval_html = ob_get_clean();
             }
         }
-        echo "</div>";
+
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_wrapper.html.twig', [
+            'id'                      => $data['id'],
+            'wrapper_class'           => $wrapper_class,
+            'is_basket'               => $is_basket,
+            'render_label'            => $render_label,
+            'hide_title_zero'         => $hide_title_zero,
+            'hidden_zero'             => $hidden_zero,
+            'has_icon'                => $has_icon,
+            'icon'                    => $icon,
+            'label'                   => $label,
+            'upload'                  => $upload,
+            'debug'                   => $debug,
+            'preview'                 => (bool) $preview,
+            'config_link'             => $config_link,
+            'show_comment_tooltip'    => $show_comment_tooltip,
+            'comment_tooltip_html'    => $comment_tooltip_html,
+            'is_mandatory_star'       => $is_mandatory_star,
+            'show_label2_alert'       => $show_label2_alert,
+            'label2_alert_html'       => $label2_alert_html,
+            'field_html'              => $field_html,
+            'close_hidetitle_div'     => $close_hidetitle_div,
+            'is_interval'             => $is_interval,
+            'interval_label_html'     => $interval_label_html,
+            'interval_required_class' => $interval_required_class,
+            'interval_required_icon'  => $interval_required_icon,
+            'interval_html'           => $interval_html,
+        ]);
     }
 
     public static function getClassFromType($type)

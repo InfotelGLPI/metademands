@@ -81,6 +81,10 @@ class Dropdownobject extends CommonDBTM
         $metademand = new Metademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
+        // Capture the full interleaved output (inline scripts, Ajax::* JS, core
+        // widgets, ajax-file includes, user tooltip) and route it once through the
+        // passthrough template — byte-identical, no raw echo leaves the class.
+        ob_start();
         $field    = "";
         $toupdate = [];
         switch ($data['item']) {
@@ -731,6 +735,12 @@ class Dropdownobject extends CommonDBTM
         }
 
         echo $field;
+        $widget_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_widget.html.twig',
+            ['widget_html' => $widget_html],
+        );
     }
 
     public static function showFieldCustomValues($values) {}
@@ -1040,21 +1050,22 @@ class Dropdownobject extends CommonDBTM
 
     public static function showParamsValueToCheck($params)
     {
+        $value = '';
         if ($params['check_value'] == -1 || $params['check_value'] == 0) {
-            echo __('Not null value', 'metademands');
+            $value .= __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
                 case 'User':
-                    echo getUserName($params['check_value'], 0, true);
+                    $value .= getUserName($params['check_value'], 0, true);
                     break;
                 case 'Group':
-                    echo \Dropdown::getDropdownName('glpi_groups', $params['check_value']);
+                    $value .= \Dropdown::getDropdownName('glpi_groups', $params['check_value']);
                     break;
                 default:
                     $dbu = new DbUtils();
                     if ($item = $dbu->getItemForItemtype($params["item"])
                         && $params['type'] != "dropdown_multiple") {
-                        echo \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
+                        $value .= \Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
                         if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
                             $elements[-1] = __('Not null value', 'metademands');
@@ -1066,7 +1077,7 @@ class Dropdownobject extends CommonDBTM
                                     $elements[$key] = $params["item"]::getFriendlyNameById($key);
                                 }
                             }
-                            echo $elements[$params['check_value']] ?? "";
+                            $value .= $elements[$params['check_value']] ?? "";
                         } else {
                             $elements[-1] = __('Not null value', 'metademands');
                             if (is_array(json_decode($params['custom_values'], true))) {
@@ -1075,12 +1086,15 @@ class Dropdownobject extends CommonDBTM
                             foreach ($elements as $key => $val) {
                                 $elements[$key] = urldecode($val);
                             }
-                            echo $elements[$params['check_value']] ?? "";
+                            $value .= $elements[$params['check_value']] ?? "";
                         }
                     }
                     break;
             }
         }
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $value,
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

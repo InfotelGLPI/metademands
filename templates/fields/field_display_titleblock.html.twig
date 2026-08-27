@@ -1,0 +1,54 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+
+{% if is_preview_or_debug %}
+<div class="card-header preview-md preview-md-{{ rank }}"
+     style='background-color: {{ bg_color }}!important;border-color: {{ color }}!important;border-radius: 0;border-top:none;margin-bottom: 10px;'
+     data-title='{{ rank }}'>
+    {% else %}
+    <div class='card-header'
+         style='background-color: {{ bg_color }}!important;border-color: {{ color }}!important;border-radius: 0;border-top:none;margin-bottom: 10px;'>
+        {% endif %}
+        <h2 class="card-title"><span style='color:{{ color }};font-weight: normal;'>
+        {%- if has_icon -%}
+            {%- if icon_is_fa -%}
+                <i class='fa-2x fas {{ icon }}'
+                   style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>&nbsp;
+            {%- else -%}
+                <i class='ti {{ icon }}' style="font-size:2em;"></i>&nbsp;
+            {%- endif -%}
+        {%- endif -%}
+                {{- label -}}
+                {%- if debug %} (ID:{{ id }}){% endif -%}
+                {{- config_link|raw -}}
+                {%- if has_label2 %}&nbsp;{{ label2_tooltip_html|raw }}{% endif -%}
+        <i id='up{{ rank }}' class='ti ti-chevron-up pointer'
+           style='right:40px;position: absolute;color:{{ color }};'></i>
+    </span></h2>
+    </div>
+    {%- if has_comment %}
+        <div class='card-body'><i>{{ comment_html|raw }}</i></div>{% endif %}

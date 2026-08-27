@@ -1,0 +1,58 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+
+<div id-field='field{{ id }}' class="{{ wrapper_class }}">{% if is_basket %}
+    <h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>{% endif %}
+        {%- if render_label %}
+        {%- if hide_title_zero %}
+        {%- if hidden_zero %}
+            <div class='col-form-label metademand-label'>
+                {%- if has_icon %}<i class='ti {{ icon }}'></i>&nbsp;{% endif -%}
+                {{- label }} {{ upload|raw -}}
+                {%- if debug %} (ID:{{ id }}){% endif -%}
+                {%- if preview %}{{ config_link|raw }}{% endif -%}
+                {%- if show_comment_tooltip %}&nbsp;{{ comment_tooltip_html|raw }}{% endif -%}
+                <span class='metademands_wizard_red'
+                      id='metademands_wizard_red{{ id }}'>{% if is_mandatory_star %}*{% endif %}</span>
+            </div>
+        {%- endif %}
+    {%- else %}
+        <div style='margin-top: 10px;'>{% if preview %}{{ config_link|raw }}{% endif %}
+            {%- endif %}
+        {%- if is_basket %}</h4>{% endif %}
+    {%- endif %}
+    {%- if show_label2_alert %}
+        <div class='alert alert-secondary' style='padding: 10px;'>
+        <div class='remove-last-tinymce-margin'>{{ label2_alert_html|raw }}</div></div>{% endif %}
+    {{- field_html|raw -}}
+    {%- if close_hidetitle_div %}</div>{% endif %}
+{%- if is_interval %}</div>
+<div id-field='field{{ id }}-2' class="form-group col-md-6 md-bottom">
+    <div for='field[{{ id }}-2]' class='col-form-label metademand-label'>{{ interval_label_html|raw }}
+        <span {{ interval_required_class|raw }}>{{ interval_required_icon|raw }}</span>
+    </div>{{ interval_html|raw }}{% endif %}
+</div>

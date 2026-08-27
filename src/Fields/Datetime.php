@@ -81,11 +81,10 @@ class Datetime extends CommonDBTM
             }
         }
 
-        $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-        $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", $opt);
-        $field .= "</span>";
-
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_span_widget.html.twig',
+            ['widget_html' => Html::showDateTimeField($namefield . "[" . $data['id'] . "]", $opt)],
+        );
     }
 
     public static function showFieldCustomValues($params) {}

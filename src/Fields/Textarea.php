@@ -87,6 +87,8 @@ class Textarea extends CommonDBTM
                 $comment = RichText::getTextFromHtml($comment);
             }
 
+            // Capture the widget output (self::textarea() echoes by default).
+            ob_start();
             self::textarea([
                 'name' => $name,
                 'placeholder' => $comment,
@@ -101,15 +103,27 @@ class Textarea extends CommonDBTM
                 'rows' => $rows,
                 'uploads' => $self->uploads,
             ]);
+            $textarea_html = ob_get_clean();
 
-            echo Html::scriptBlock("$('#$namedrop').hide();");
+            $script_html = Html::scriptBlock("$('#$namedrop').hide();");
 
-            echo "<style>
+            // Static style block kept verbatim (no user data) and injected raw.
+            $style_html = "<style>
                         .fileupload.only-uploaded-files {
                             display: none;
                         }
 
                      </style>";
+
+            echo TemplateRenderer::getInstance()->render(
+                '@metademands/fields/field_textarea.html.twig',
+                [
+                    'is_richtext'   => true,
+                    'textarea_html' => $textarea_html,
+                    'script_html'   => $script_html,
+                    'style_html'    => $style_html,
+                ],
+            );
         } else {
             if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
                 $required = "required='required'";
@@ -117,10 +131,21 @@ class Textarea extends CommonDBTM
             if (!empty($comment)) {
                 $comment = RichText::getTextFromHtml($comment);
             }
-            $field = "<textarea $required class='form-control' rows='$rows' cols='$cols'
-               placeholder=\"" . $comment . "\"
-               name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . htmlspecialchars($value) . "</textarea>";
-            echo $field;
+            $name_attr = $namefield . "[" . $data['id'] . "]";
+            echo TemplateRenderer::getInstance()->render(
+                '@metademands/fields/field_textarea.html.twig',
+                [
+                    'is_richtext' => false,
+                    'required'    => $required,
+                    'rows'        => $rows,
+                    'cols'        => $cols,
+                    // Auto-escaped: placeholder hardened, value byte-identical to legacy.
+                    'comment'     => $comment,
+                    'value'       => $value,
+                    'name_attr'   => $name_attr,
+                    'id_attr'     => $name_attr,
+                ],
+            );
         }
     }
 
@@ -197,7 +222,9 @@ class Textarea extends CommonDBTM
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        echo $options[$params['check_value']] ?? "";
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $options[$params['check_value']] ?? "",
+        ]);
     }
 
     public static function isCheckValueOK($value, $check_value)

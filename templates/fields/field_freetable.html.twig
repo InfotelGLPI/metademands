@@ -1,0 +1,95 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+{%- apply spaceless -%}
+<table class='tab_cadre' width='100%' id='freetable_table{{ rand }}'
+       style='overflow: auto;width:100%;{{ background_color|raw }}'>
+    <tr class='tab_bg_1'>
+        {%- for col in columns -%}
+            <th style='text-align: left;{{ background_color|raw }}'>{{- col.label -}}
+                {%- if col.mandatory %}<span style='color : red'> *</span>{% endif -%}
+                {{- col.tooltip_html|raw -}}
+            </th>
+        {%- endfor -%}
+        {%- endapply -%}
+        {{- script1_html|raw -}}
+        {%- apply spaceless -%}
+        <th style='text-align: right;{{ background_color|raw }}' colspan='4'
+            onclick='addLine(window.metademandfreelinesparams{{ rand }})'><i class='ti ti-plus btn btn-info'></i></th>
+    </tr>
+    {%- for row in rows -%}
+        <tr name="data" id="line_{{ rand }}_{{ row.idline }}" disabled>
+            {%- for cell in row.cells -%}
+                {%- if cell.kind == 'text' -%}
+                    <td><input id="{{ cell.id }}" name="{{ cell.name }}" type="text" value="{{ cell.value }}"
+                               size="{{ cell.size }}" disabled></td>
+                {%- elseif cell.kind == 'select' -%}
+                    <td><select class='form-select' id="{{ cell.id }}" name="{{ cell.name }}">
+                            {%- for o in cell.options -%}
+                                <option {{ o.selected_attr|raw }} value="{{ o.dv }}">{{ o.dv }}</option>
+                            {%- endfor -%}
+                        </select></td>
+                {%- elseif cell.kind == 'number' -%}
+                    <td><input add=-1 id="{{ cell.id }}" name="{{ cell.name }}" type="number" min="0"
+                               value="{{ cell.value }}" style="width: 7em;" disabled></td>
+                {%- elseif cell.kind == 'date' -%}
+                    <td><input add=-1 id="{{ cell.id }}" name="{{ cell.name }}" type="date" value="{{ cell.value }}"
+                               disabled></td>
+                {%- elseif cell.kind == 'time' -%}
+                    <td><input add=-1 id="{{ cell.id }}" name="{{ cell.name }}" type="time" value="{{ cell.value }}"
+                               disabled></td>
+                {%- endif -%}
+            {%- endfor -%}
+            {%- if row.has_total -%}
+                <td id="linetotal_{{ row.idline }}">{{ row.linetotal }} €</td>
+            {%- endif -%}
+            <td>
+                <button onclick="editLine({{ row.idline }}, {{ rand }}, window.metademandfreelinesparams{{ rand }})"
+                        class="btn btn-info" type="button" name="edit_item"><i class="ti ti-pencil"></i></button>
+            </td>
+            <td>
+                <button onclick="removeLine({{ row.idline }}, {{ rand }}, window.metademandfreelinesparams{{ rand }})"
+                        class="btn btn-danger" type="button" name="delete_item"><i class="ti ti-trash"></i></button>
+            </td>
+        </tr>
+    {%- endfor -%}
+</table>
+{%- endapply -%}
+{%- if has_orderfollowup -%}
+    {{- script2_html|raw -}}
+    {%- apply spaceless -%}
+        <table class='tab_cadre' width='100%' style='overflow: auto;width:100%;{{ background_color|raw }}'>
+            <tr class='tab_bg_1'>
+                <td colspan='8' style='text-align:center;'>
+                    <button onclick='saveInput_{{ rand }}()' type='button' id='add_freeinputs_{{ rand }}'
+                            class='btn btn-primary' style='display: none;'>
+                        <span>{{ validate_label }}</span>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    {%- endapply -%}
+{%- endif -%}

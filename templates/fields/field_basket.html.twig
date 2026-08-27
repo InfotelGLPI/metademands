@@ -1,0 +1,51 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+{#- Cell contract: {t: text} is auto-escaped (Reference/Designation), {h: html} is
+ #  injected raw (pre-sanitized getSafeHtml description, captured widget + inline
+ #  script, formatted price, checkbox input). Optional {attrs} for the total-display
+ #  td. background_style / header labels / placeholders are trusted (admin colour,
+ #  translations) and emitted raw for byte-identity. Rendered on one physical line so
+ #  no inter-element whitespace enters the output; the harness trims edge whitespace. -#}
+<table class='tab_cadre_fixehov' style='{{ background_style|raw }}'>
+    <tr class='tab_bg_1'>{% for header in headers %}
+            <th style='{{ header.style|raw }}'>{{ header.label|raw }}</th>{% endfor %}</tr>{% if nb > 1 %}
+    <tr class='tab_bg_1'>
+        <th style='{{ background_style|raw }}'><input type='text' id='searchref-{{ search_id }}' size='10'
+                                                      placeholder='{{ ph_ref|raw }}'></th>
+        <th style='{{ background_style|raw }}'><input type='text' id='searchname-{{ search_id }}'
+                                                      placeholder='{{ ph_name|raw }}'></th>
+        <th style='{{ background_style|raw }}'><input type='text' id='searchdescription-{{ search_id }}'
+                                                      placeholder='{{ ph_desc|raw }}'></th>
+        <th colspan='4' style='{{ background_style|raw }}'></th>
+    </tr>
+    <tbody id='tablesearch-{{ search_id }}'>{% else %}
+    <tbody>{% endif %}{% for row in rows %}
+        <tr class='tab_bg_1'>{% for cell in row %}{% if cell.t is defined %}
+            <td>{{ cell.t }}</td>{% else %}
+            <td{{ cell.attrs|raw }}>{{ cell.h|raw }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>
+</table>{{ search_script|raw }}
+{#- -#}

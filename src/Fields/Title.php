@@ -66,59 +66,60 @@ class Title extends CommonDBTM
         $debug = isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
 
-        if ($data['hide_title'] == 0) {
-            $color = Wizard::hex2rgba($data['color'], "0.03");
-            $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
-            $style_background = "style='background-color: $color!important;border-color:{$safe_color}!important;border-radius: 0;margin-bottom: 10px;'";
+        if ($data['hide_title'] != 0) {
+            return;
+        }
 
-            echo "<div id-field='field" . (int) $data["id"] . "' class='card-header' $style_background>";
-            echo "<br><h2 class='card-title'><span style='color:{$safe_color};font-weight: normal;'>";
-            $icon = $data['icon'];
-            if (!empty($icon)) {
-                // The icon is admin-configured free text stored raw; escape it before
-                // injecting it into the class attribute to close a stored-XSS vector
-                // (aligns with the escaping already done in Field::showField()).
-                $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
-                if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fa-2x fas $safe_icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>&nbsp;";
-                } else {
-                    echo "<i class='ti $safe_icon' style=\"font-size:2em;\"></i>&nbsp;";
-                }
-            }
-            if (empty($label = Field::displayField($data['id'], 'name'))) {
-                $label = "";
-                if (isset($data['name'])) {
-                    $label = $data['name'];
-                }
-            }
+        $icon = (string) ($data['icon'] ?? '');
 
-            echo htmlspecialchars($label);
-            if ($debug) {
-                echo " (ID:" . (int) $data['id'] . ")";
-            }
-
-            if (isset($data['label2']) && !empty($data['label2'])) {
-                echo "&nbsp;";
-                if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
-                    $label2 = $data['label2'];
-                }
-                Html::showToolTip(
-                    RichText::getSafeHtml($label2),
-                    ['awesome-class' => 'ti ti-info-circle'],
-                );
-            }
-            if ($preview) {
-                echo $config_link;
-            }
-            echo "</span></h2>";
-            echo "</div>";
-            if (!empty($data['comment'])) {
-                if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-                    $comment = $data['comment'];
-                }
-                echo "<div class='card-body'><i>" . RichText::getSafeHtml($comment) . "</i></div>";
+        if (empty($label = Field::displayField($data['id'], 'name'))) {
+            $label = "";
+            if (isset($data['name'])) {
+                $label = $data['name'];
             }
         }
+
+        // The label2 tooltip is rendered by Html::showToolTip() which echoes directly:
+        // capture it so it can be injected raw into the template.
+        $has_label2 = isset($data['label2']) && !empty($data['label2']);
+        $label2_tooltip_html = '';
+        if ($has_label2) {
+            if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
+                $label2 = $data['label2'];
+            }
+            ob_start();
+            Html::showToolTip(
+                RichText::getSafeHtml($label2),
+                ['awesome-class' => 'ti ti-info-circle'],
+            );
+            $label2_tooltip_html = ob_get_clean();
+        }
+
+        $has_comment = !empty($data['comment']);
+        $comment_html = '';
+        if ($has_comment) {
+            if (empty($comment = Field::displayField($data['id'], 'comment'))) {
+                $comment = $data['comment'];
+            }
+            $comment_html = RichText::getSafeHtml($comment);
+        }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_title.html.twig', [
+            'id'                  => (int) $data['id'],
+            'color'               => $data['color'],
+            'color_rgba'          => Wizard::hex2rgba($data['color'], "0.03"),
+            'has_icon'            => (bool) $icon,
+            'icon'                => $icon,
+            'icon_is_fa'          => str_contains($icon, 'fa-'),
+            'label'               => $label,
+            'debug'               => $debug,
+            'has_label2'          => $has_label2,
+            'label2_tooltip_html' => $label2_tooltip_html,
+            'preview'             => (bool) $preview,
+            'config_link'         => $config_link,
+            'has_comment'         => $has_comment,
+            'comment_html'        => $comment_html,
+        ]);
     }
 
     public static function showFieldCustomValues($params) {}

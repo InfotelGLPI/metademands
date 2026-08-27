@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
@@ -60,7 +61,7 @@ class Range extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/range.css");
+        $css_html = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/range.css");
 
         if (empty($comment = Field::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
@@ -94,28 +95,9 @@ class Range extends CommonDBTM
         $required       = (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) ? "required='required'" : "";
         $mandatory_attr = $minimal_mandatory > 0 ? "minimal_mandatory='$minimal_mandatory'" : "";
 
-        $field  = "<div class='range'>";
-        $field .= "<div class='range-slider'>";
-        $field .= "<input type='range' id='$field_id' $required $mandatory_attr isnumber='isnumber'"
-            . " name='$name' value='$value' min='$min' max='$max' step='$step'>";
-        $field .= "<div class='sliderticks'>";
-
         // Cap ticks at 20 to avoid generating thousands of DOM elements
-        $tick_count = $step > 0 ? (int) floor(($max - $min) / $step) + 1 : 0;
-        if ($tick_count <= 20) {
-            for ($i = $min; $i <= $max; $i += $step) {
-                $field .= "<span>$i</span>";
-            }
-        } else {
-            $field .= "<span>$min</span>";
-            $field .= "<span>$max</span>";
-        }
-
-        $field .= "</div>";
-        $field .= "</div>";
-        // Show actual current value, not hardcoded "0"
-        $field .= "<div class='rangevalue' id='rangevalue_{$data['id']}'>$value</div>";
-        $field .= "</div>";
+        $tick_count     = $step > 0 ? (int) floor(($max - $min) / $step) + 1 : 0;
+        $show_all_ticks = $tick_count <= 20;
 
         // IIFE to scope variables, supporting multiple Range fields per page
         $js = "(function() {
@@ -132,8 +114,23 @@ class Range extends CommonDBTM
             sliderEl.addEventListener('input', (event) => updateSlider(event.target.value));
         })();";
 
-        echo Html::scriptBlock('$(document).ready(function() {' . $js . '});');
-        echo $field;
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_range.html.twig',
+            [
+                'css_html'       => $css_html,
+                'script_html'    => Html::scriptBlock('$(document).ready(function() {' . $js . '});'),
+                'field_id'       => $field_id,
+                'name'           => $name,
+                'value'          => $value,
+                'min'            => $min,
+                'max'            => $max,
+                'step'           => $step,
+                'id'             => $data['id'],
+                'required'       => $required,
+                'mandatory_attr' => $mandatory_attr,
+                'show_all_ticks' => $show_all_ticks,
+            ],
+        );
     }
 
     public static function showFieldCustomValues($params)

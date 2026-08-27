@@ -1,0 +1,43 @@
+{#
+# -------------------------------------------------------------------------
+# metademands plugin for GLPI
+# Copyright (C) 2018-2026 by the metademands Development Team.
+#
+# https://github.com/InfotelGLPI/metademands
+# -------------------------------------------------------------------------
+#
+# LICENSE
+#
+# This file is part of metademands.
+#
+# metademands is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# metademands is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with metademands. If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+#}
+{#- Legacy-identical order: Html::css (echoed first), then the scriptBlock, then the
+ #  authored slider HTML — all concatenated with no inter-element whitespace. css_html /
+ #  script_html are core widget output injected raw. required / mandatory_attr / name /
+ #  value are raw-concatenated attribute values kept raw for byte-identity; min / max /
+ #  step / id are integers. Ticks mirror the PHP loop (range with step) or the min/max
+ #  fallback. Everything on one physical line so no stray whitespace enters the output. -#}
+{{- css_html|raw }}{{ script_html|raw }}
+<div class='range'>
+    <div class='range-slider'><input type='range' id='{{ field_id }}' {{ required|raw }} {{ mandatory_attr|raw }}
+                                     isnumber='isnumber' name='{{ name|raw }}' value='{{ value|raw }}' min='{{ min }}'
+                                     max='{{ max }}' step='{{ step }}'>
+        <div class='sliderticks'>{% if show_all_ticks %}{% for i in range(min, max, step) %}
+                <span>{{ i }}</span>{% endfor %}{% else %}<span>{{ min }}</span><span>{{ max }}</span>{% endif %}</div>
+    </div>
+    <div class='rangevalue' id='rangevalue_{{ id }}'>{{ value|raw }}</div>
+</div>
+{#- -#}

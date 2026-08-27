@@ -72,183 +72,134 @@ class Checkbox extends CommonDBTM
             $comment = $data['comment'];
         }
 
-        $field = "";
-        if (!empty($data['custom_values'])) {
-            $custom_values = $data['custom_values'];
-
-            //            foreach ($custom_values as $k => $val) {
-            //                if (!empty($ret = Field::displayField($data["id"], "custom" . $k))) {
-            //                    $data['custom_values'][$k] = $ret;
-            //                }
-            //            }
-            //            $data['comment_values'] = FieldCustomvalue::_unserialize($data['comment_values']);
-            //            $defaults = FieldCustomvalue::_unserialize($data['default_values']);
-            //            if (!empty($value)) {
-            //                $value = FieldCustomvalue::_unserialize($value);
-            //            }
-            $nbr = 0;
-            $inline = "";
-            if ($data['row_display'] == 1) {
-                $inline = 'form-check-inline';
-            }
-
-            if ($data["display_type"] == self::BLOCK_DISPLAY) {
-                $field .= "<div class='row flex-row'>";
-            }
-
-            if (count($custom_values) > 0) {
-                foreach ($custom_values as $key => $label) {
-                    $checked = "";
-                    if (isset($value[$key]) && $value[$key] == $key) {
-                        $checked = 'checked';
-                    } elseif (isset($label['is_default']) && $on_order == false) {
-                        $checked = ($label['is_default'] == 1) ? 'checked' : '';
-                    }
-                    $required = "";
-                    if ($data['is_mandatory'] == 1) {
-                        $required = "required=required";
-                    }
-
-                    if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-                        $field .= "<div class='form-check $inline'>";
-
-                        $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                        $nbr++;
-                        if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
-                            $name = $label['name'];
-                        }
-                        // Option label comes from user-supplied custom-value / translation data which is
-                        // stored raw (GLPI 10+); escape before injecting into HTML to prevent stored XSS.
-                        $field .= "<label class='form-check-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
-                        if (isset($label['comment']) && !empty($label['comment'])) {
-                            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                            if (empty(
-                                $comment = Field::displayCustomvaluesField(
-                                    $data['id'],
-                                    $key,
-                                    "comment",
-                                )
-                            )) {
-                                $comment = $label['comment'];
-                            }
-                            $field .= Html::showToolTip(
-                                RichText::getSafeHtml($comment),
-                                [
-                                    'awesome-class' => 'ti ti-info-circle',
-                                    'display' => false,
-                                ],
-                            );
-                            $field .= "</span>";
-                        }
-                        $field .= "</label>";
-                        $field .= "</div>";
-                    } else {
-                        $field .= "<div class='col-12 col-lg-6 col-xxl-4 mb-2'>";
-                        $field .= "<label class='form-selectgroup-boxes flex-fill w-100 h-100' style='min-height: 70px;'>";
-
-                        //                        $field .= '
-                        //<input type="checkbox" name="capacities[3][is_active]" value="1" class="form-selectgroup-input"
-                        //data-capacity-checkbox="1"  data-is-used="0" checked="">';
-
-                        $field .= "<div class='form-selectgroup-label d-flex align-items-center h-100 shadow-none p-0 px-3'>";
-
-                        $icon = $label['icon'];
-                        if (empty($label['icon'])) {
-                            $icon = $data['icon'];
-                        }
-
-                        if (!empty($icon)) {
-                            // Icon comes from user-supplied custom-value data (fieldcustomvalue.form.php)
-                            // which is not sanitized on save; escape before injecting into the class attribute
-                            // to prevent stored XSS. Mirrors the escaping used in Fields\Title.php.
-                            $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
-                            $field .= "<span class='me-2 mt-1'>";
-                            if (str_contains($icon, 'fa-')) {
-                                $field .= "<i class='fas $safe_icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
-                            } else {
-                                $field .= "<i class='ti $safe_icon text-secondary' style='font-size: 3em'></i>";
-                            }
-                            $field .= "</span>";
-                        }
-
-                        $field .= "<div class='text-start'>";
-                        $field .= "<div class='d-flex align-items-center'>";
-                        //                        $field .= "<div class='fw-bold'>";
-
-                        if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
-                            $name = $label['name'];
-                        }
-                        // Escape raw user-supplied option label (stored raw in GLPI 10+) to prevent stored XSS.
-                        $field .= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
-                        //                        $field .= "</div>";
-                        $field .= "</div>";
-                        $field .= "<small class='form-hint'>";
-                        if (isset($label['comment']) && !empty($label['comment'])) {
-                            if (empty(
-                                $comment = Field::displayCustomvaluesField(
-                                    $data['id'],
-                                    $key,
-                                    "comment",
-                                )
-                            )) {
-                                $comment = $label['comment'];
-                            }
-                            // Sanitize raw user-supplied option comment (mirrors the CLASSIC_DISPLAY tooltip above).
-                            $field .= RichText::getSafeHtml($comment);
-                        }
-                        $field .= "</small>";
-
-                        $field .= "</div>";
-
-                        $field .= "<div class='me-2 ms-auto'>";
-                        $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                        $field .= "</div>";
-
-                        $field .= "</div>";
-                        $field .= "</label>";
-                        $field .= "</div>";
-                    }
-
-                    $childs_blocks = [];
-                    $fieldopt = new FieldOption();
-                    if ($opts = $fieldopt->find(
-                        ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key],
-                    )) {
-                        foreach ($opts as $opt) {
-                            if (!empty($opt['childs_blocks'])) {
-                                $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-                            }
-                        }
-                    }
-
-                    if (isset($childs_blocks[$key])) {
-                        $id = $data['id'];
-                        $script = "<script type='text/javascript'>";
-                        $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
-                        $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
-
-                        foreach ($childs_blocks[$key] as $customvalue => $childs) {
-                            $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
-                            $script .= FieldOption::resetMandatoryBlockFields($childs);
-                            $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
-                        }
-                        $script .= "}";
-                        $script .= "})";
-                        $script .= "</script>";
-
-                        $field .= $script;
-                    }
-                }
-            }
-            if ($data["display_type"] == self::BLOCK_DISPLAY) {
-                $field .= "</div>";
-            }
-        } else {
+        // No custom values: render a single plain checkbox.
+        if (empty($data['custom_values'])) {
             $checked = $value ? 'checked' : '';
-            $field = "<input class='form-check-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "]' value='checkbox' $checked>";
+            echo TemplateRenderer::getInstance()->render('@metademands/fields/field_checkbox.html.twig', [
+                'is_simple'      => true,
+                'simple_checked' => $checked,
+                'namefield'      => $namefield,
+                'id'             => $data['id'],
+                'options'        => [],
+            ]);
+            return;
         }
 
-        echo $field;
+        $custom_values = $data['custom_values'];
+
+        $inline = "";
+        if ($data['row_display'] == 1) {
+            $inline = 'form-check-inline';
+        }
+
+        $is_block = ($data["display_type"] == self::BLOCK_DISPLAY);
+
+        $required = "";
+        if ($data['is_mandatory'] == 1) {
+            $required = "required=required";
+        }
+
+        // Build the option list with raw text (Twig auto-escapes name/icon) and pre-sanitized
+        // rich HTML for comments; per-option toggle scripts are collected and echoed after render.
+        $options = [];
+        $scripts = "";
+        if (count($custom_values) > 0) {
+            foreach ($custom_values as $key => $label) {
+                $checked = "";
+                if (isset($value[$key]) && $value[$key] == $key) {
+                    $checked = 'checked';
+                } elseif (isset($label['is_default']) && $on_order == false) {
+                    $checked = ($label['is_default'] == 1) ? 'checked' : '';
+                }
+
+                if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
+                    $name = $label['name'];
+                }
+
+                $icon = $label['icon'];
+                if (empty($label['icon'])) {
+                    $icon = $data['icon'];
+                }
+
+                $has_comment = isset($label['comment']) && !empty($label['comment']);
+                $comment_html = "";
+                $comment_tooltip_html = "";
+                if ($has_comment) {
+                    if (empty(
+                        $comment = Field::displayCustomvaluesField(
+                            $data['id'],
+                            $key,
+                            "comment",
+                        )
+                    )) {
+                        $comment = $label['comment'];
+                    }
+                    // Sanitize raw user-supplied option comment before injecting as HTML.
+                    $comment_html = RichText::getSafeHtml($comment);
+                    $comment_tooltip_html = Html::showToolTip(
+                        $comment_html,
+                        [
+                            'awesome-class' => 'ti ti-info-circle',
+                            'display' => false,
+                        ],
+                    );
+                }
+
+                $options[] = [
+                    'key'                  => $key,
+                    'name'                 => $name,
+                    'checked'              => $checked,
+                    'required'             => $required,
+                    'has_comment'          => $has_comment,
+                    'comment_html'         => $comment_html,
+                    'comment_tooltip_html' => $comment_tooltip_html,
+                    'has_icon'             => !empty($icon),
+                    'icon'                 => (string) $icon,
+                    'icon_is_fa'           => str_contains((string) $icon, 'fa-'),
+                ];
+
+                $childs_blocks = [];
+                $fieldopt = new FieldOption();
+                if ($opts = $fieldopt->find(
+                    ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key],
+                )) {
+                    foreach ($opts as $opt) {
+                        if (!empty($opt['childs_blocks'])) {
+                            $childs_blocks[] = json_decode($opt['childs_blocks'], true);
+                        }
+                    }
+                }
+
+                if (isset($childs_blocks[$key])) {
+                    $id = $data['id'];
+                    $script = "<script type='text/javascript'>";
+                    $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
+                    $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
+
+                    foreach ($childs_blocks[$key] as $customvalue => $childs) {
+                        $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
+                        $script .= FieldOption::resetMandatoryBlockFields($childs);
+                        $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
+                    }
+                    $script .= "}";
+                    $script .= "})";
+                    $script .= "</script>";
+
+                    $scripts .= $script;
+                }
+            }
+        }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_checkbox.html.twig', [
+            'is_simple'      => false,
+            'simple_checked' => '',
+            'is_block'       => $is_block,
+            'inline'         => $inline,
+            'namefield'      => $namefield,
+            'id'             => $data['id'],
+            'options'        => $options,
+        ]);
+        echo $scripts;
     }
 
     public static function showFieldCustomValues($params)
@@ -406,7 +357,9 @@ class Checkbox extends CommonDBTM
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        echo $elements[$params['check_value']] ?? "";
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+            'value' => $elements[$params['check_value']] ?? "",
+        ]);
     }
 
     /**

@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use Plugin;
@@ -95,9 +96,7 @@ class Freetable extends CommonDBTM
             $values = $data['value'];
         }
         $nb_values = count($values);
-        $colspan = '4';
 
-        $style_th = "style='text-align: left;$background_color'";
         $field .= Html::hidden('is_freetable_mandatory[' . $data['id'] . ']', ['value' => $data['is_mandatory']]);
         $colspanfields = 0;
         $addfields = [];
@@ -150,21 +149,21 @@ class Freetable extends CommonDBTM
 
         $rand = $data['id'];
 
-        $field .= "<table class='tab_cadre' width='100%' id ='freetable_table$rand' style='overflow: auto;width:100%;$background_color'>";//display: block;
-        $field .= "<tr class='tab_bg_1'>";
+        // Build header columns (labels/tooltips) for the Twig template.
+        $columns = [];
         foreach ($addfields as $k => $addfield) {
-            $field .= "<th $style_th>";
-            $field .= $addfield;
-            if (in_array($k, $is_mandatory)) {
-                $field .= "<span style='color : red'> *</span>";
-            }
+            $tooltip_html = '';
             if (isset($commentfields[$addfield]) && !empty($commentfields[$addfield])) {
-                $field .= Html::showToolTip(
+                $tooltip_html = Html::showToolTip(
                     $commentfields[$addfield],
                     ['display' => false, 'awesome-class' => 'ti ti-info-circle'],
                 );
             }
-            $field .= "</th>";
+            $columns[] = [
+                'label'        => $addfield,
+                'mandatory'    => in_array($k, $is_mandatory),
+                'tooltip_html' => $tooltip_html,
+            ];
         }
 
         $encoded_fields = json_encode($addfields);
@@ -194,7 +193,7 @@ class Freetable extends CommonDBTM
         $datetype = MetaFreetablefield::TYPE_DATE;
         $timetype = MetaFreetablefield::TYPE_TIME;
 
-        $field .= "<script>
+        $script1 = "<script>
                     $(document).ready(function (){
                         window.metademandfreelinesparams$rand = {};
                         metademandfreelinesparams$rand.existLine = $existLine;
@@ -222,12 +221,17 @@ class Freetable extends CommonDBTM
 
                </script>";
 
-        $field .= "<th style='text-align: right;$background_color' colspan='4' onclick='addLine(window.metademandfreelinesparams$rand)'><i class='ti ti-plus btn btn-info'></i></th>";
-        $field .= "</tr>";
-
+        // Build data rows for the Twig template.
+        $rows = [];
         if (is_array($values) && count($values) > 0) {
+            $kindmap = [
+                MetaFreetablefield::TYPE_TEXT   => 'text',
+                MetaFreetablefield::TYPE_SELECT => 'select',
+                MetaFreetablefield::TYPE_NUMBER => 'number',
+                MetaFreetablefield::TYPE_DATE   => 'date',
+                MetaFreetablefield::TYPE_TIME   => 'time',
+            ];
             foreach ($values as $value) {
-
                 $idline = $value['id'];
                 $l = [
                     'id' => $idline,
@@ -246,47 +250,49 @@ class Freetable extends CommonDBTM
                     $unit_price = floatval($l['unit_price'] ?? 0);
                 }
 
-                $field .= "<tr name=\"data\" id=\"line_" . $rand . "_$idline\" disabled>";
-
+                $cells = [];
                 foreach ($addfields as $k => $addfield) {
-                    if (isset($l[$k])) {
-                        $escaped_val = htmlspecialchars((string) $l[$k], ENT_QUOTES);
-                        $escaped_k   = htmlspecialchars($k, ENT_QUOTES);
-                        $escaped_id  = htmlspecialchars($k . '_' . $idline, ENT_QUOTES);
-                        if ($types[$k] == MetaFreetablefield::TYPE_TEXT) {
-                            $field .= "<td><input id=\"$escaped_id\" name=\"$escaped_k\" type=\"text\" value=\"$escaped_val\" size=\"$size\" disabled></td>";
-                        } elseif ($types[$k] == MetaFreetablefield::TYPE_SELECT) {
-                            $field .= "<td><select class='form-select' id=\"$escaped_id\" name=\"$escaped_k\">";
+                    if (isset($l[$k]) && isset($kindmap[$types[$k]])) {
+                        $cell = [
+                            'kind'  => $kindmap[$types[$k]],
+                            'id'    => $k . '_' . $idline,
+                            'name'  => $k,
+                            'value' => (string) $l[$k],
+                            'size'  => $size,
+                        ];
+                        if ($types[$k] == MetaFreetablefield::TYPE_SELECT) {
+                            $options = [];
                             foreach ($dropdown_values[$k] as $key => $dropdown_value) {
-                                $selected = ($key == $l[$k]) ? "selected" : "";
-                                $esc_dv   = htmlspecialchars((string) $dropdown_value, ENT_QUOTES);
-                                $field .= "<option $selected value=\"$esc_dv\">$esc_dv</option>";
+                                $options[] = [
+                                    'dv'            => (string) $dropdown_value,
+                                    'selected_attr' => ($key == $l[$k]) ? 'selected' : '',
+                                ];
                             }
-                            $field .= "</select></td>";
-                        } elseif ($types[$k] == MetaFreetablefield::TYPE_NUMBER) {
-                            $field .= "<td><input add=-1 id=\"$escaped_id\" name=\"$escaped_k\" type=\"number\" min=\"0\" value=\"$escaped_val\" style=\"width: 7em;\" disabled></td>";
-                        } elseif ($types[$k] == MetaFreetablefield::TYPE_DATE) {
-                            $field .= "<td><input add=-1 id=\"$escaped_id\" name=\"$escaped_k\" type=\"date\" value=\"$escaped_val\" disabled></td>";
-                        } elseif ($types[$k] == MetaFreetablefield::TYPE_TIME) {
-                            $field .= "<td><input add=-1 id=\"$escaped_id\" name=\"$escaped_k\" type=\"time\" value=\"$escaped_val\" disabled></td>";
+                            $cell['options'] = $options;
                         }
+                        $cells[] = $cell;
                     }
                 }
+
+                $has_total = false;
+                $linetotal = '';
                 if (Plugin::isPluginActive('orderfollowup')) {
+                    $has_total = true;
                     $linetotal = number_format($quantity * $unit_price, 2, '.', ' ');
-                    $field .= "<td id=\"linetotal_$idline\">$linetotal €</td>";
                 }
 
-                $field .= "<td><button onclick =\"editLine($idline, $rand, window.metademandfreelinesparams$rand)\"class =\"btn btn-info\" type = \"button\" name =\"edit_item\"><i class =\"ti ti-pencil\"></i></button></td>";
-                $field .= "<td><button onclick =\"removeLine($idline, $rand, window.metademandfreelinesparams$rand)\"class =\"btn btn-danger\" type = \"button\" name =\"delete_item\"><i class =\"ti ti-trash\"></i></button></td>";
-                $field .= "</tr>";
-
+                $rows[] = [
+                    'idline'    => $idline,
+                    'cells'     => $cells,
+                    'has_total' => $has_total,
+                    'linetotal' => $linetotal,
+                ];
             }
         }
 
-        $field .= "</table>";
-
-        if (Plugin::isPluginActive('orderfollowup')) {
+        $has_orderfollowup = Plugin::isPluginActive('orderfollowup');
+        $script2 = '';
+        if ($has_orderfollowup) {
             $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
             $conf = new Config();
             $conf->getFromDB(1);
@@ -294,7 +300,7 @@ class Freetable extends CommonDBTM
             $tva_calc = $tva / 100;
             $grandtotal = __('Grand total (TTC)', 'orderfollowup');
             $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
-            $field .= "<script>
+            $script2 = "<script>
                     function saveInput_{$rand}() {
                         var grandtotal = 0;
                         var grandtotalht = 0;
@@ -318,19 +324,19 @@ class Freetable extends CommonDBTM
                         $('#nextBtn').show();
                     }
                </script>";
-
-            $field .= "<table class='tab_cadre' width='100%' style='overflow: auto;width:100%;$background_color'>";
-            $field .= "<tr class='tab_bg_1'>";
-            $field .= "<td colspan='8' style ='text-align:center;'>";
-            $field .= "<button onclick='saveInput_{$rand}()' type = 'button' id='add_freeinputs_{$rand}' class='btn btn-primary' style='display: none;'>";
-            $field .= "<span>" . __('Validate the basket', 'metademands') . "</span>";
-            $field .= "</button>";
-            $field .= "</td>";
-            $field .= "</tr>";
-            $field .= "</table>";
         }
 
         echo $field;
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_freetable.html.twig', [
+            'rand'              => $rand,
+            'background_color'  => $background_color,
+            'columns'           => $columns,
+            'script1_html'      => $script1,
+            'rows'              => $rows,
+            'has_orderfollowup' => $has_orderfollowup,
+            'script2_html'      => $script2,
+            'validate_label'    => __('Validate the basket', 'metademands'),
+        ]);
     }
 
     public static function showFreetableFields($params)
