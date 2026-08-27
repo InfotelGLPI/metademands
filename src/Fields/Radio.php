@@ -160,11 +160,15 @@ class Radio extends CommonDBTM
                         }
 
                         if (!empty($icon)) {
+                            // Icon comes from user-supplied custom-value data (fieldcustomvalue.form.php)
+                            // which is not sanitized on save; escape before injecting into the class attribute
+                            // to prevent stored XSS. Mirrors the escaping used in Fields\Title.php.
+                            $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
                             $field .= "<span class='me-2 mt-1'>";
                             if (str_contains($icon, 'fa-')) {
-                                $field .= "<i class='fas $icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
+                                $field .= "<i class='fas $safe_icon fa-2x text-secondary' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";
                             } else {
-                                $field .= "<i class='ti $icon text-secondary' style='font-size: 3em'></i>";
+                                $field .= "<i class='ti $safe_icon text-secondary' style='font-size: 3em'></i>";
                             }
                             $field .= "</span>";
                         }

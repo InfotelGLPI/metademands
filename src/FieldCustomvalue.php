@@ -247,6 +247,14 @@ class FieldCustomvalue extends CommonDBChild
             $input['icon'] = 'NULL';
         }
 
+        // Defense in depth against stored XSS: the icon is echoed into an HTML class attribute by the
+        // field renderers (Checkbox, Radio, Dropdown, Dropdownmeta, Information). Reject anything that is
+        // not a plain icon class token, using the same allow-list as the change_icon massive action.
+        if (isset($input['icon']) && $input['icon'] !== '' && $input['icon'] !== 'NULL'
+            && !preg_match('/^[a-zA-Z0-9 _-]+$/', (string) $input['icon'])) {
+            $input['icon'] = '';
+        }
+
         return $input;
     }
 
@@ -651,6 +659,13 @@ class FieldCustomvalue extends CommonDBChild
             return false;
         }
 
+        // Defense in depth against stored XSS: the icon is echoed into an HTML class attribute by the
+        // field renderers (Checkbox, Radio, Dropdown, Dropdownmeta, Information). Reject anything that is
+        // not a plain icon class token, using the same allow-list as the change_icon massive action.
+        if (isset($input['icon']) && $input['icon'] !== ''
+            && !preg_match('/^[a-zA-Z0-9 _-]+$/', (string) $input['icon'])) {
+            $input['icon'] = '';
+        }
 
         return $input;
     }

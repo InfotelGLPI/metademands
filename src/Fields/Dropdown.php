@@ -436,8 +436,12 @@ class Dropdown extends CommonDBTM
                                     $icon = $data['icon'];
 
                                     if (!empty($icon)) {
+                                        // Icon comes from user-supplied custom-value data (fieldcustomvalue.form.php)
+                                        // which is not sanitized on save; escape before injecting into the class
+                                        // attribute to prevent stored XSS. Mirrors Fields\Title.php.
+                                        $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
                                         $field .= "<span class='me-2 mt-1'>";
-                                        $field .= "<i class='ti $icon text-secondary'></i>";
+                                        $field .= "<i class='ti $safe_icon text-secondary'></i>";
                                         $field .= "</span>";
                                     }
 

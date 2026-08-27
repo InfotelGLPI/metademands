@@ -97,10 +97,13 @@ class Information extends CommonDBTM
             $icon = $data['icon'];
             $safe_color = htmlspecialchars($data['color'], ENT_QUOTES);
             if ($icon) {
+                // Icon comes from user-supplied field data which is not sanitized on save; escape
+                // before injecting into the class attribute to prevent stored XSS. Mirrors Fields\Title.php.
+                $safe_icon = htmlspecialchars((string) $icon, ENT_QUOTES, 'UTF-8');
                 if (str_contains($icon, 'fa-')) {
-                    $field .= "<i class='fas fa-2x $icon' style='color:{$safe_color};'></i>&nbsp;";
+                    $field .= "<i class='fas fa-2x $safe_icon' style='color:{$safe_color};'></i>&nbsp;";
                 } else {
-                    $field .= "<i class='ti $icon' style='font-size:2em;color:{$safe_color};'></i>&nbsp;";
+                    $field .= "<i class='ti $safe_icon' style='font-size:2em;color:{$safe_color};'></i>&nbsp;";
                 }
             }
             $field .= "<div style='color:{$safe_color};'>" . $todisplay . "</div>";
