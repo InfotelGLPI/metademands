@@ -78,9 +78,13 @@ class Information extends CommonDBTM
 
         $todisplay = "";
         if ($data['hide_title'] == 0) {
-            if (empty($todisplay = Field::displayField($data['id'], 'name'))) {
-                $todisplay = $data['name'];
+            if (empty($name_title = Field::displayField($data['id'], 'name'))) {
+                $name_title = $data['name'];
             }
+            // Field name is designer-defined plain text prepended to the sanitized rich content
+            // ($comment/$label2 appended below already go through RichText::getSafeHtml()). Escape
+            // only this fragment to close the stored XSS without double-escaping that safe HTML.
+            $todisplay = htmlspecialchars((string) $name_title, ENT_QUOTES, 'UTF-8');
         }
 
         if (!empty($data['comment'])) {

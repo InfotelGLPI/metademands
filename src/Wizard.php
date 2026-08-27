@@ -434,12 +434,16 @@ class Wizard extends CommonDBTM
             if (empty($comment = Metademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
             }
-            echo nl2br($comment);
+            // 'comment' is rich HTML authored in TinyMCE by the metademand designer. nl2br()
+            // does NOT neutralize markup, so a stored <script>/<img onerror> would run in every
+            // requester's session. Sanitize like the rest of the plugin's rich-content output.
+            echo RichText::getSafeHtml($comment);
         } else {
+            // Designer-defined metademand name rendered as plain text (stored XSS, same class as the comment above).
             if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                echo $meta->getName();
+                echo htmlspecialchars((string) $meta->getName(), ENT_QUOTES, 'UTF-8');
             } else {
-                echo $n;
+                echo htmlspecialchars((string) $n, ENT_QUOTES, 'UTF-8');
             }
         }
         echo "</div>";
@@ -1326,13 +1330,15 @@ class Wizard extends CommonDBTM
                         echo "</div>";
                         echo "<div class='ms-4'>";
                         echo "<h2 class='card-title mb-2 text-break'>";
-                        echo $name_meta;
+                        // Designer-defined metademand name rendered as plain-text card title (stored XSS).
+                        echo htmlspecialchars((string) $name_meta, ENT_QUOTES, 'UTF-8');
                         echo "</h2>";
                         echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
                         if (!empty($comment_meta)) {
-                            echo nl2br($comment_meta);
+                            // Rich HTML comment: sanitize instead of the markup-preserving nl2br() (stored XSS).
+                            echo RichText::getSafeHtml($comment_meta);
                         } else {
-                            echo $name_meta;
+                            echo htmlspecialchars((string) $name_meta, ENT_QUOTES, 'UTF-8');
                         }
 
                         if ($config['use_draft']) {
@@ -2902,13 +2908,18 @@ class Wizard extends CommonDBTM
                 } else {
                     echo "<div>";
                 }
-                echo "<br><h4 class=\"alert alert-light\"><span style='color:" . $data['color'] . ";'>";
+                // $data['color'] and the field name are designer-defined values stored in
+                // glpi_plugin_metademands_fields and injected into an inline style attribute /
+                // element text. Escape both to prevent stored XSS in every requester's wizard
+                // (matches the escaping already done in Fields\Title::showWizardField()).
+                $safe_color = htmlspecialchars((string) ($data['color'] ?? ''), ENT_QUOTES, 'UTF-8');
+                echo "<br><h4 class=\"alert alert-light\"><span style='color:" . $safe_color . ";'>";
 
                 if (empty($label = Field::displayField($data['id'], 'name'))) {
                     $label = $data['name'];
                 }
 
-                echo $label;
+                echo htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
 
                 if ($debug) {
                     echo " (ID:" . $data['id'] . ")";
@@ -2924,7 +2935,7 @@ class Wizard extends CommonDBTM
                         ['awesome-class' => 'ti ti-info-circle'],
                     );
                 }
-                echo "<i id='up" . $block . "' class='fa-1x ti ti-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
+                echo "<i id='up" . $block . "' class='fa-1x ti ti-chevron-up pointer' style='right:40px;position: absolute;color:" . $safe_color . ";'></i>";
                 $rand = mt_rand();
                 echo Html::scriptBlock(
                     "var myelement$rand = '#up" . $block . "';
