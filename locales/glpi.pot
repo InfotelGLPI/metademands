@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-27 10:04+0000\n"
+"POT-Creation-Date: 2026-08-27 10:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -291,7 +291,7 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1332 src/Fields/Checkbox.php:342
+#: src/Fields/Dropdownmeta.php:1333 src/Fields/Checkbox.php:342
 #: src/Fields/Dropdown.php:564 src/Fields/Radio.php:356
 msgid "Block display"
 msgstr ""
@@ -383,7 +383,7 @@ msgstr ""
 msgid "Choose a template"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1284 src/Fields/Dropdownmeta.php:1331
+#: src/Fields/Dropdownmeta.php:1285 src/Fields/Dropdownmeta.php:1332
 #: src/Fields/Checkbox.php:341 src/Fields/Yesno.php:198
 #: src/Fields/Dropdown.php:539 src/Fields/Dropdown.php:563
 #: src/Fields/Dropdownmultiple.php:643 src/Fields/Radio.php:355
@@ -1106,7 +1106,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1285
+#: src/Fields/Dropdownmeta.php:1286
 msgid "Icon display"
 msgstr ""
 
@@ -1493,7 +1493,7 @@ msgstr ""
 msgid "No empty field options founded"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:863
+#: src/Fields/Dropdownmeta.php:864
 msgid "No equipment founded"
 msgstr ""
 
@@ -1547,8 +1547,8 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Basket.php:572 src/Fields/Dropdownmeta.php:1480
-#: src/Fields/Dropdownmeta.php:1490 src/Fields/Dropdownmeta.php:1510
+#: src/Fields/Basket.php:572 src/Fields/Dropdownmeta.php:1481
+#: src/Fields/Dropdownmeta.php:1491 src/Fields/Dropdownmeta.php:1511
 #: src/Fields/Checkbox.php:392 src/Fields/Checkbox.php:405
 #: src/Fields/Dropdown.php:673 src/Fields/Dropdown.php:709
 #: src/Fields/Ldapdropdown.php:342 src/Fields/Ldapdropdown.php:377
@@ -1912,7 +1912,7 @@ msgstr ""
 #: src/Wizard.php:1631 src/Wizard.php:1817 src/FieldOption.php:2251
 #: src/Fields/Email.php:333 src/Fields/Basket.php:838
 #: src/Fields/Basket.php:1846 src/Fields/Text.php:339
-#: src/Fields/Dropdownmeta.php:1724 src/Fields/Checkbox.php:622
+#: src/Fields/Dropdownmeta.php:1725 src/Fields/Checkbox.php:622
 #: src/Fields/Yesno.php:454 src/Fields/Dropdown.php:894 src/Fields/Url.php:301
 #: src/Fields/Dropdownobject.php:1241 src/Fields/Dropdownmultiple.php:1151
 #: src/Fields/Dropdownmultiple.php:1322 src/Fields/Textarea.php:307
@@ -2021,7 +2021,7 @@ msgstr ""
 msgid "Son ticket tag"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:86
+#: src/Fields/Dropdownmeta.php:87
 msgid "Specific dropdown"
 msgstr ""
 
@@ -2284,7 +2284,7 @@ msgstr ""
 msgid "This field is mandatory"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:351
+#: src/Fields/Dropdownmeta.php:352
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
@@ -2534,7 +2534,7 @@ msgid "Value"
 msgstr ""
 
 #: src/FieldOption.php:507 src/Fields/Basket.php:571
-#: src/Fields/Dropdownmeta.php:1361 src/Fields/Checkbox.php:358
+#: src/Fields/Dropdownmeta.php:1362 src/Fields/Checkbox.php:358
 #: src/Fields/Yesno.php:222 src/Fields/Dropdown.php:591
 #: src/Fields/Ldapdropdown.php:292 src/Fields/Dropdownobject.php:900
 #: src/Fields/Dropdownmultiple.php:705 src/Fields/Radio.php:372
