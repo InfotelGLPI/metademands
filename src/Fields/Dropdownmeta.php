@@ -33,6 +33,7 @@ use CommonDBTM;
 use CommonITILObject;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\RichText\RichText;
 use GlpiPlugin\Badges\Badge;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
