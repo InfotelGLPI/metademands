@@ -27,6 +27,8 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\MetademandValidation;
 
 // Require the dedicated business right: this endpoint both discloses (GET) and
@@ -41,12 +43,12 @@ $metavalidation = new MetademandValidation();
 // otherwise a validator could act on a ticket from another entity (IDOR).
 $tickets_id = (int) ($_REQUEST['tickets_id'] ?? 0);
 if ($tickets_id <= 0) {
-    throw new \Glpi\Exception\Http\BadRequestHttpException();
+    throw new BadRequestHttpException();
 }
 
 $ticket = new Ticket();
 if (!$ticket->can($tickets_id, READ)) {
-    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+    throw new AccessDeniedHttpException();
 }
 
 Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
