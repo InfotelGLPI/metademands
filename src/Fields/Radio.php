@@ -121,7 +121,9 @@ class Radio extends CommonDBTM
                         if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                             $name = $label['name'];
                         }
-                        $field .= "<label class='form-check-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name;
+                        // Option label comes from user-supplied custom-value / translation data which is
+                        // stored raw (GLPI 10+); escape before injecting into HTML to prevent stored XSS.
+                        $field .= "<label class='form-check-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
                         if (isset($label['comment']) && !empty($label['comment'])) {
                             $field .= "&nbsp;<span style='vertical-align: bottom;'>";
                             if (empty(
@@ -180,7 +182,8 @@ class Radio extends CommonDBTM
                         if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                             $name = $label['name'];
                         }
-                        $field .= $name;
+                        // Escape raw user-supplied option label (stored raw in GLPI 10+) to prevent stored XSS.
+                        $field .= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
                         //                        $field .= "</div>";
                         $field .= "</div>";
                         $field .= "<small class='form-hint'>";
@@ -194,7 +197,8 @@ class Radio extends CommonDBTM
                             )) {
                                 $comment = $label['comment'];
                             }
-                            $field .= $comment;
+                            // Sanitize raw user-supplied option comment (mirrors the CLASSIC_DISPLAY tooltip above).
+                            $field .= RichText::getSafeHtml($comment);
                         }
                         $field .= "</small>";
 

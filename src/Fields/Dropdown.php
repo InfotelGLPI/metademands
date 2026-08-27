@@ -33,6 +33,7 @@ use CommonDBTM;
 use DbUtils;
 use DropdownTranslation;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Resources\Resource;
 use Html;
@@ -449,10 +450,12 @@ class Dropdown extends CommonDBTM
                                     $field .= "<div class='text-start'>";
                                     $field .= "<div class='d-flex align-items-center'>";
                                     $name = $label['name'];
-                                    $field .= $name;
+                                    // Option label/comment are user-supplied and stored raw (GLPI 10+);
+                                    // escape/sanitize before injecting into HTML to prevent stored XSS.
+                                    $field .= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
                                     $field .= "</div>";
                                     $field .= "<small class='form-hint'>";
-                                    $field .= $label['comment'];
+                                    $field .= RichText::getSafeHtml($label['comment']);
                                     $field .= "</small>";
 
                                     $field .= "</div>";

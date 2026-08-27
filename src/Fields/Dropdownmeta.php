@@ -156,7 +156,8 @@ class Dropdownmeta extends CommonDBTM
                                 if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                                     $name = $label['name'];
                                 }
-                                $field .= $name;
+                                // Escape raw user-supplied option label (stored raw in GLPI 10+) to prevent stored XSS.
+                                $field .= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
                                 //                        $field .= "</div>";
                                 $field .= "</div>";
                                 $field .= "<small class='form-hint'>";
@@ -170,7 +171,8 @@ class Dropdownmeta extends CommonDBTM
                                     )) {
                                         $comment = $label['comment'];
                                     }
-                                    $field .= $comment;
+                                    // Sanitize raw user-supplied option comment to prevent stored XSS.
+                                    $field .= RichText::getSafeHtml($comment);
                                 }
                                 $field .= "</small>";
 

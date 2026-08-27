@@ -255,6 +255,12 @@ class FieldCustomvalue extends CommonDBChild
             $input['icon'] = '';
         }
 
+        // Defense in depth: the option label is plain text echoed by the field renderers; strip any markup
+        // at save so a stored value can never carry an XSS payload (comment stays rich, sanitized at render).
+        if (isset($input['name'])) {
+            $input['name'] = strip_tags((string) $input['name']);
+        }
+
         return $input;
     }
 
@@ -665,6 +671,12 @@ class FieldCustomvalue extends CommonDBChild
         if (isset($input['icon']) && $input['icon'] !== ''
             && !preg_match('/^[a-zA-Z0-9 _-]+$/', (string) $input['icon'])) {
             $input['icon'] = '';
+        }
+
+        // Defense in depth: the option label is plain text echoed by the field renderers; strip any markup
+        // at save so a stored value can never carry an XSS payload (comment stays rich, sanitized at render).
+        if (isset($input['name'])) {
+            $input['name'] = strip_tags((string) $input['name']);
         }
 
         return $input;
