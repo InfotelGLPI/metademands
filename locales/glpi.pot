@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 16:03+0000\n"
+"POT-Creation-Date: 2026-08-27 08:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "%1$s %2$s successfully created"
 msgstr ""
 
-#: src/Fields/Dropdown.php:548
+#: src/Fields/Dropdown.php:552
 #, php-format
 msgid "%d level"
 msgid_plural "%d levels"
@@ -178,7 +178,7 @@ msgstr ""
 msgid "Additional number day to the default date"
 msgstr ""
 
-#: src/Fields/Information.php:127
+#: src/Fields/Information.php:130
 msgid "Alert"
 msgstr ""
 
@@ -215,7 +215,7 @@ msgctxt "button"
 msgid "Apply"
 msgstr ""
 
-#: src/FieldCustomvalue.php:518
+#: src/FieldCustomvalue.php:526
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
@@ -291,8 +291,8 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1326 src/Fields/Checkbox.php:334
-#: src/Fields/Dropdown.php:557 src/Fields/Radio.php:348
+#: src/Fields/Dropdownmeta.php:1330 src/Fields/Checkbox.php:338
+#: src/Fields/Dropdown.php:561 src/Fields/Radio.php:352
 msgid "Block display"
 msgstr ""
 
@@ -383,10 +383,10 @@ msgstr ""
 msgid "Choose a template"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1278 src/Fields/Dropdownmeta.php:1325
-#: src/Fields/Checkbox.php:333 src/Fields/Yesno.php:198
-#: src/Fields/Dropdown.php:532 src/Fields/Dropdown.php:556
-#: src/Fields/Dropdownmultiple.php:643 src/Fields/Radio.php:347
+#: src/Fields/Dropdownmeta.php:1282 src/Fields/Dropdownmeta.php:1329
+#: src/Fields/Checkbox.php:337 src/Fields/Yesno.php:198
+#: src/Fields/Dropdown.php:536 src/Fields/Dropdown.php:560
+#: src/Fields/Dropdownmultiple.php:643 src/Fields/Radio.php:351
 msgid "Classic display"
 msgstr ""
 
@@ -766,7 +766,7 @@ msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr ""
 
-#: src/Tools.php:511 src/FieldCustomvalue.php:367
+#: src/Tools.php:511 src/FieldCustomvalue.php:375
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -1106,7 +1106,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1279
+#: src/Fields/Dropdownmeta.php:1283
 msgid "Icon display"
 msgstr ""
 
@@ -1156,7 +1156,7 @@ msgctxt "status"
 msgid "In progress"
 msgstr ""
 
-#: src/Fields/Information.php:125
+#: src/Fields/Information.php:128
 msgid "Information"
 msgstr ""
 
@@ -1451,7 +1451,7 @@ msgstr ""
 #: src/Wizard.php:1391 src/Wizard.php:1636 src/Wizard.php:1777
 #: src/Wizard.php:1786 src/Wizard.php:1826 src/Wizard.php:1832
 #: src/Wizard.php:2392 src/Wizard.php:2395 src/Fields/Basket.php:839
-#: src/Fields/Dropdown.php:888 src/Fields/Dropdownobject.php:1242
+#: src/Fields/Dropdown.php:892 src/Fields/Dropdownobject.php:1242
 msgid "Next"
 msgstr ""
 
@@ -1493,7 +1493,7 @@ msgstr ""
 msgid "No empty field options founded"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:857
+#: src/Fields/Dropdownmeta.php:861
 msgid "No equipment founded"
 msgstr ""
 
@@ -1510,7 +1510,7 @@ msgstr ""
 msgid "No items on basket"
 msgstr ""
 
-#: src/Fields/Dropdown.php:546
+#: src/Fields/Dropdown.php:550
 msgid "No limit"
 msgstr ""
 
@@ -1547,16 +1547,16 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Basket.php:572 src/Fields/Dropdownmeta.php:1474
-#: src/Fields/Dropdownmeta.php:1484 src/Fields/Dropdownmeta.php:1504
-#: src/Fields/Checkbox.php:384 src/Fields/Checkbox.php:397
-#: src/Fields/Dropdown.php:666 src/Fields/Dropdown.php:702
+#: src/Fields/Basket.php:572 src/Fields/Dropdownmeta.php:1478
+#: src/Fields/Dropdownmeta.php:1488 src/Fields/Dropdownmeta.php:1508
+#: src/Fields/Checkbox.php:388 src/Fields/Checkbox.php:401
+#: src/Fields/Dropdown.php:670 src/Fields/Dropdown.php:706
 #: src/Fields/Ldapdropdown.php:342 src/Fields/Ldapdropdown.php:377
 #: src/Fields/Dropdownobject.php:1009 src/Fields/Dropdownobject.php:1012
 #: src/Fields/Dropdownobject.php:1022 src/Fields/Dropdownobject.php:1044
 #: src/Fields/Dropdownobject.php:1060 src/Fields/Dropdownobject.php:1071
-#: src/Fields/Dropdownmultiple.php:865 src/Fields/Radio.php:400
-#: src/Fields/Radio.php:413
+#: src/Fields/Dropdownmultiple.php:865 src/Fields/Radio.php:404
+#: src/Fields/Radio.php:417
 msgid "Not null value"
 msgstr ""
 
@@ -1697,7 +1697,7 @@ msgstr ""
 msgid "Please come back later"
 msgstr ""
 
-#: src/FieldCustomvalue.php:519
+#: src/FieldCustomvalue.php:527
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1857,7 +1857,7 @@ msgstr ""
 msgid "Requester name"
 msgstr ""
 
-#: src/FieldCustomvalue.php:507
+#: src/FieldCustomvalue.php:515
 msgid "Reset and import custom values"
 msgstr ""
 
@@ -1912,11 +1912,11 @@ msgstr ""
 #: src/Wizard.php:1631 src/Wizard.php:1817 src/FieldOption.php:2251
 #: src/Fields/Email.php:333 src/Fields/Basket.php:838
 #: src/Fields/Basket.php:1846 src/Fields/Text.php:339
-#: src/Fields/Dropdownmeta.php:1718 src/Fields/Checkbox.php:614
-#: src/Fields/Yesno.php:454 src/Fields/Dropdown.php:887 src/Fields/Url.php:301
+#: src/Fields/Dropdownmeta.php:1722 src/Fields/Checkbox.php:618
+#: src/Fields/Yesno.php:454 src/Fields/Dropdown.php:891 src/Fields/Url.php:301
 #: src/Fields/Dropdownobject.php:1241 src/Fields/Dropdownmultiple.php:1151
 #: src/Fields/Dropdownmultiple.php:1322 src/Fields/Textarea.php:307
-#: src/Fields/Radio.php:601 src/Fields/Tel.php:340 src/Basketline.php:191
+#: src/Fields/Radio.php:605 src/Fields/Tel.php:340 src/Basketline.php:191
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
@@ -2043,7 +2043,7 @@ msgstr ""
 msgid "Specific parameters"
 msgstr ""
 
-#: src/Fields/Dropdown.php:533
+#: src/Fields/Dropdown.php:537
 msgid "Splitted display"
 msgstr ""
 
@@ -2284,7 +2284,7 @@ msgstr ""
 msgid "This field is mandatory"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:345
+#: src/Fields/Dropdownmeta.php:349
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
@@ -2534,10 +2534,10 @@ msgid "Value"
 msgstr ""
 
 #: src/FieldOption.php:507 src/Fields/Basket.php:571
-#: src/Fields/Dropdownmeta.php:1355 src/Fields/Checkbox.php:350
-#: src/Fields/Yesno.php:222 src/Fields/Dropdown.php:584
+#: src/Fields/Dropdownmeta.php:1359 src/Fields/Checkbox.php:354
+#: src/Fields/Yesno.php:222 src/Fields/Dropdown.php:588
 #: src/Fields/Ldapdropdown.php:292 src/Fields/Dropdownobject.php:900
-#: src/Fields/Dropdownmultiple.php:705 src/Fields/Radio.php:364
+#: src/Fields/Dropdownmultiple.php:705 src/Fields/Radio.php:368
 #: src/Condition.php:469 src/Condition.php:571 src/Field.php:1311
 #: templates/condition_for_metademand.html.twig:77 templates/condition_form.html.twig:48
 msgid "Value to check"
@@ -2556,7 +2556,7 @@ msgstr ""
 msgid "Visible by all"
 msgstr ""
 
-#: src/Fields/Information.php:126
+#: src/Fields/Information.php:129
 msgid "Warning"
 msgstr ""
 
@@ -2602,7 +2602,7 @@ msgid ""
 "form fields, making your life easier :)"
 msgstr ""
 
-#: src/FieldCustomvalue.php:643
+#: src/FieldCustomvalue.php:651
 msgid "You can't add a custom value without name"
 msgstr ""
 
