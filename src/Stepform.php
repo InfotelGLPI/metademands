@@ -42,6 +42,7 @@ use NotificationTemplateTranslation;
 use Session;
 use CommonGLPI;
 use User;
+use Glpi\Application\View\TemplateRenderer;
 
 /**
  * Class Stepform
@@ -688,54 +689,37 @@ class Stepform extends CommonDBTM
 
         $stepforms = $stepform->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
 
-        if (count($stepforms) > 0) {
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr>";
-            echo "<th>" . __('ID') . "</th>";
-            echo "<th>" . __('Publisher', 'metademands') . "</th>";
-            echo "<th>" . __('Next group in charge of demand', 'metademands') . "</th>";
-            echo "<th>" . __('Next user in charge of demand', 'metademands') . "</th>";
-            echo "<th>" . __('Date') . "</th>";
-            echo "<th></th>";
-            echo "</tr>";
-            foreach ($stepforms as $id => $form) {
-
-                echo "<tr>";
-                echo "<td>";
-                echo $id;
-                echo "</td>";
-                echo "<td>";
-                echo getUserName($form['users_id'], 0, true);
-                echo "</td>";
-                echo "<td>";
-                echo \Dropdown::getDropdownName('glpi_groups', $form['groups_id_dest']);
-                echo "</td>";
-                echo "<td>";
-                echo getUserName($form['users_id_dest'], 0, true);
-                echo "</td>";
-                echo "<td>";
-                echo Html::convDateTime($form['date']);
-                echo "</td>";
-                echo "<td>";
-                if (Session::haveRight("plugin_metademands_cancelform", READ)) {
-                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                    echo "<br><span style='color:darkred'>";
-                    Html::showSimpleForm(
-                        $target,
-                        'delete_form_from_metademands',
-                        _sx('button', 'Delete form', 'metademands'),
-                        ['plugin_metademands_stepforms_id' => $id],
-                        'ti-trash',
-                    );
-                    echo "</span>";
-                }
-                echo "</td>";
-                echo "</tr>";
+        $can_cancel = Session::haveRight("plugin_metademands_cancelform", READ);
+        $rows       = [];
+        foreach ($stepforms as $id => $form) {
+            $delete_html = '';
+            if ($can_cancel) {
+                $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                ob_start();
+                echo "<br><span style='color:darkred'>";
+                Html::showSimpleForm(
+                    $target,
+                    'delete_form_from_metademands',
+                    _sx('button', 'Delete form', 'metademands'),
+                    ['plugin_metademands_stepforms_id' => $id],
+                    'ti-trash',
+                );
+                echo "</span>";
+                $delete_html = ob_get_clean();
             }
-            echo "</table>";
-        } else {
-            echo "<div class='alert alert-info center'>" . __('No results found') . "</div>";
+            $rows[] = [
+                'id'             => $id,
+                'publisher_html' => getUserName($form['users_id'], 0, true),
+                'group_html'     => \Dropdown::getDropdownName('glpi_groups', $form['groups_id_dest']),
+                'user_dest_html' => getUserName($form['users_id_dest'], 0, true),
+                'date'           => Html::convDateTime($form['date']),
+                'delete_html'    => $delete_html,
+            ];
         }
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/stepform_list_from_metademand.html.twig', [
+            'rows' => $rows,
+        ]);
     }
     public function post_addItem()
     {
@@ -830,94 +814,65 @@ class Stepform extends CommonDBTM
 
     private function showWaitingForm()
     {
-        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
-        $rand         = mt_rand();
+        $rand = mt_rand();
 
         $stepforms = self::getWaitingForms();
 
-        echo "<div class='row'>";
-        echo "<div class=\"col-md-12\">";
-        echo "<h4><div class='alert alert-dark' role='alert'>";
+        // $meta is intentionally undefined here (matches legacy behavior): the header icon stays "ti-share".
         $icon = "ti-share";
         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
             $icon = $meta->fields['icon'];
         }
         $cnt = count($stepforms);
-        if (str_contains($icon, 'fa-')) {
-            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-        } else {
-            echo "<i class='ti $icon'></i>&nbsp;";
-        }
-        echo _n('Your form to complete', 'Your forms to complete', $cnt, 'metademands') . '   (' . $cnt . ')';
-        echo "</div></h4></div></div>";
 
-        if (!empty($stepforms)) {
-            echo "<div id='listmeta' class='row' style='padding-left: 20px;'>";
-
-            foreach ($stepforms as $id => $name) {
-                $meta = new Metademand();
-                if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
-                    $metaID = $name['plugin_metademands_metademands_id'];
-                    $block_id = $name['block_id'];
-                    echo '<div class="btnsc-normal" style="min-height: 260px" >';
-                    $fasize = "fa-4x";
-                    echo '<a class="bt-buttons" href="#" onclick="loadForm' . $rand . '(\'' . $id . '\',\'' . $metaID . '\',\'' . $block_id . '\')">';
-                    echo "<div class='center'>";
-                    $icon = "ti-share";
-                    if (!empty($meta->fields['icon'])) {
-                        $icon = $meta->fields['icon'];
-                    }
-                    if (str_contains($icon, 'fa-')) {
-                        echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
-                    } else {
-                        echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:4em;\"></i>";//$style
-                    }
-                    echo "</div>";
-
-                    echo "<br><p>";
-                    if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                        echo $meta->getName();
-                    } else {
-                        echo $n;
-                    }
-                    echo "</a>";
-                    //                    if (empty($comm = Metademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
-                    echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                    echo __('Edit by', 'metademands');
-                    echo "&nbsp;";
-                    echo User::getFriendlyNameById($name['users_id']);
-                    echo "</span></em>";
-
-                    echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-
-                    echo Html::convDateTime($name['date']);
-                    echo "</span></em>";
-                    echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                    echo __('Step', 'metademands');
-                    echo $block_id;
-                    echo "</span></em>";
-                    //TODO Change to new right
-                    if (Session::haveRight("plugin_metademands_cancelform", READ)) {
-                        $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                        echo "<br><span style='color:darkred'>";
-                        Html::showSimpleForm(
-                            $target,
-                            'delete_form_from_list',
-                            _sx('button', 'Delete form', 'metademands'),
-                            ['plugin_metademands_stepforms_id' => $id],
-                            'ti-trash',
-                        );
-                        echo "</span>";
-                    }
-                    echo "</p></div>";
+        $cards = [];
+        foreach ($stepforms as $id => $name) {
+            $meta = new Metademand();
+            if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
+                $metaID   = $name['plugin_metademands_metademands_id'];
+                $block_id = $name['block_id'];
+                $card_icon = "ti-share";
+                if (!empty($meta->fields['icon'])) {
+                    $card_icon = $meta->fields['icon'];
                 }
+                if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
+                    $name_html = $meta->getName();
+                } else {
+                    $name_html = $n;
+                }
+                $delete_html = '';
+                //TODO Change to new right
+                if (Session::haveRight("plugin_metademands_cancelform", READ)) {
+                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                    ob_start();
+                    echo "<br><span style='color:darkred'>";
+                    Html::showSimpleForm(
+                        $target,
+                        'delete_form_from_list',
+                        _sx('button', 'Delete form', 'metademands'),
+                        ['plugin_metademands_stepforms_id' => $id],
+                        'ti-trash',
+                    );
+                    echo "</span>";
+                    $delete_html = ob_get_clean();
+                }
+                $cards[] = [
+                    'id'          => $id,
+                    'metaID'      => $metaID,
+                    'block_id'    => $block_id,
+                    'icon'        => $card_icon,
+                    'is_fa'       => str_contains($card_icon, 'fa-'),
+                    'name_html'   => $name_html,
+                    'editor'      => User::getFriendlyNameById($name['users_id']),
+                    'date'        => Html::convDateTime($name['date']),
+                    'delete_html' => $delete_html,
+                ];
             }
-            echo "</div>";
         }
 
         $users_id = Session::getLoginUserID();
         $step     = 2;
-        echo "<script>
+        $script_html = "<script>
                       var step = {$step};
                       function loadForm$rand(form_id, meta_id, block_id) {
                          $('#ajax_loader').show();
@@ -945,6 +900,16 @@ class Stepform extends CommonDBTM
                              });
                        };
                      </script>";
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/stepform_waiting_form.html.twig', [
+            'css_html'     => Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php"),
+            'rand'         => $rand,
+            'cnt'          => $cnt,
+            'header_icon'  => $icon,
+            'header_is_fa' => str_contains($icon, 'fa-'),
+            'cards'        => $cards,
+            'script_html'  => $script_html,
+        ]);
     }
 
     public static function getWaitingFormsByMaker($forms = [])
@@ -984,96 +949,64 @@ class Stepform extends CommonDBTM
 
         $stepforms = self::getWaitingFormsByMaker();
 
-        echo "<div class='row' style='margin-bottom: 15px; margin-top: 20px;'>";
-        echo "<div class=\"col-md-12\">";
-        echo "<h4><div class='alert alert-dark' role='alert'>";
+        // $meta is intentionally undefined here (matches legacy behavior): the header icon stays "ti-share".
         $icon = "ti-share";
         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
             $icon = $meta->fields['icon'];
         }
         $cnt = count($stepforms);
-        if (str_contains($icon, 'fa-')) {
-            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-        } else {
-            echo "<i class='ti $icon''></i>&nbsp;";
-        }
 
-        echo _n('Form in progress', 'Forms in progress', $cnt, 'metademands') . '   (' . $cnt . ')';
-        echo "</div></h4></div></div>";
-
-        if (!empty($stepforms)) {
-            echo "<div id='listmeta'  class='row' style='padding-left: 20px;'>";
-
-            foreach ($stepforms as $id => $name) {
-                $meta = new Metademand();
-                if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
-                    $metaID = $name['plugin_metademands_metademands_id'];
-                    $block_id = $name['block_id'];
-                    echo '<div class="readonly-btnsc-normal" style="min-height: 300px" >';
-                    $fasize = "fa-4x";
-                    echo "<div class='center'>";
-                    $icon = "fa-share-alt";
-                    if (!empty($meta->fields['icon'])) {
-                        $icon = $meta->fields['icon'];
-                    }
-                    if (str_contains($icon, 'fa-')) {
-                        echo "<i class='sc-colorform bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i>";//$style
-                    } else {
-                        echo "<i class='sc-colorform bt-interface fa-menu-md ti $icon $fasize' style=\"font-size: 3em;\"></i>";//$style
-                    }
-
-                    echo "</div>";
-
-                    echo "<br><p> <span class='sc-colorform'>";
-                    if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                        echo $meta->getName();
-                    } else {
-                        echo $n;
-                    }
-
-                    echo "</span><br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                    printf(__('Created on %s'), Html::convDate($name['date']));
-                    echo "</span></em>";
-
-                    echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                    echo __('Step', 'metademands');
-                    echo $block_id;
-                    echo "</span></em>";
-                    if ($name['groups_id_dest'] > 0) {
-                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo __('Group in charge of the next step', 'metademands');
-                        echo "<br>";
-                        echo \Group::getFriendlyNameById($name['groups_id_dest']);
-                        echo "</span></em>";
-                    }
-                    if ($name['users_id_dest'] > 0) {
-                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo __('User in charge of the next step', 'metademands');
-                        echo "<br>";
-                        echo getUserName($name['users_id_dest']);
-                        echo "</span></em>";
-                    }
-
-                    ;
-                    //TODO Change to new right
-                    if (Session::haveRight("plugin_metademands_cancelform", READ)) {
-                        $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                        echo "<br><span style='color:darkred'>";
-                        Html::showSimpleForm(
-                            $target,
-                            'delete_form_from_list',
-                            _sx('button', 'Delete form', 'metademands'),
-                            ['plugin_metademands_stepforms_id' => $id],
-                            'ti-trash',
-                        );
-                        echo "</span>";
-                    }
-                    echo "</p></div>";
+        $cards = [];
+        foreach ($stepforms as $id => $name) {
+            $meta = new Metademand();
+            if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
+                $block_id  = $name['block_id'];
+                $card_icon = "fa-share-alt";
+                if (!empty($meta->fields['icon'])) {
+                    $card_icon = $meta->fields['icon'];
                 }
+                if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
+                    $name_html = $meta->getName();
+                } else {
+                    $name_html = $n;
+                }
+                $delete_html = '';
+                //TODO Change to new right
+                if (Session::haveRight("plugin_metademands_cancelform", READ)) {
+                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                    ob_start();
+                    echo "<br><span style='color:darkred'>";
+                    Html::showSimpleForm(
+                        $target,
+                        'delete_form_from_list',
+                        _sx('button', 'Delete form', 'metademands'),
+                        ['plugin_metademands_stepforms_id' => $id],
+                        'ti-trash',
+                    );
+                    echo "</span>";
+                    $delete_html = ob_get_clean();
+                }
+                $cards[] = [
+                    'icon'            => $card_icon,
+                    'is_fa'           => str_contains($card_icon, 'fa-'),
+                    'name_html'       => $name_html,
+                    'created'         => sprintf(__('Created on %s'), Html::convDate($name['date'])),
+                    'block_id'        => $block_id,
+                    'has_group_dest'  => $name['groups_id_dest'] > 0,
+                    'group_dest_html' => $name['groups_id_dest'] > 0 ? \Group::getFriendlyNameById($name['groups_id_dest']) : '',
+                    'has_user_dest'   => $name['users_id_dest'] > 0,
+                    'user_dest_html'  => $name['users_id_dest'] > 0 ? getUserName($name['users_id_dest']) : '',
+                    'delete_html'     => $delete_html,
+                ];
             }
-            echo "</div>";
         }
 
+        TemplateRenderer::getInstance()->display('@metademands/forms/stepform_waiting_form_readonly.html.twig', [
+            'cnt'          => $cnt,
+            'header_icon'  => $icon,
+            'header_is_fa' => str_contains($icon, 'fa-'),
+            'cards'        => $cards,
+        ]);
     }
 
     public function deleteAfterCreate($stepformID, $sendmail = false)

@@ -1,0 +1,148 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class="left">
+    <table class="tab_cadre_fixe">
+        <th class="left">{{ __('Metademands global status', 'metademands') }}</th>
+        </tr>
+        <tr class="tab_bg_2">
+            <td class="left">{{ global_status_form|raw }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="left">
+    <table class="tab_cadre_fixe">
+        {% if duplicates_has %}
+            <tr class="tab_bg_2">
+                <th class="left">{{ __('Duplicates fields options', 'metademands') }}</th>
+            </tr>
+            <tr class="tab_bg_2">
+                <td class="left">
+            {% for row in duplicates_rows %}
+                <table class="tab_cadre_fixe">
+                    <tr class="tab_bg_2">
+                        <th class="left" width="50%">{{ __('Field') }}</th>
+                        <th class="left">{{ _n('Meta-Demand', 'Meta-Demands', 1, 'metademands') }}</th>
+                        <th class="left">{{ __('Number of duplicates', 'metademands') }}</th>
+                    </tr>
+                    <tr class="tab_bg_2">
+                        <td class="left">{{ row.field_link|raw }}</td>
+                        <td class="left">{{ row.meta_name }}</td>
+                        <td class="left">{{ row.nbr }}</td>
+                    </tr>
+                </table>
+            {% endfor %}
+        {% else %}
+            <tr class="tab_bg_2">
+                <th class="left">{{ __('No duplicates founded', 'metademands') }}</th>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+
+<br>
+<div class="left">
+    <table class="tab_cadre_fixe">
+        {% if empty_options_has %}
+            <tr class="tab_bg_2">
+                <th class="left">{{ __('Empty fields options', 'metademands') }}</th>
+            </tr>
+            <tr class="tab_bg_2">
+                <td class="left">
+            {% for row in empty_options_rows %}
+                <table class="tab_cadre_fixe">
+                    <tr class="tab_bg_2">
+                        <th class="left" width="50%">{{ __('Field') }}</th>
+                        <th class="left">{{ _n('Meta-Demand', 'Meta-Demands', 1, 'metademands') }}</th>
+                        <th class="center"></th>
+                    </tr>
+                    <tr class="tab_bg_2">
+                        <td class="left">{{ row.field_link|raw }}</td>
+                        <td class="left">{{ row.meta_name }}</td>
+                        <td class="center">{{ row.purge_form|raw }}</td>
+                    </tr>
+                </table>
+            {% endfor %}
+        {% else %}
+            <tr class="tab_bg_2">
+                <th class="left">{{ __('No empty field options founded', 'metademands') }}</th>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+
+<br>
+<div class="left">
+    <table class="tab_cadre_fixe">
+        {% if empty_cv_has %}
+            <tr class="tab_bg_2">
+                <th class="left">{{ __('Empty custom values', 'metademands') }}</th>
+            </tr>
+            <tr class="tab_bg_2">
+                <td class="left">
+                {{ empty_cv_rows_html|raw }}
+        {% else %}
+            <tr class="tab_bg_2">
+                <th class="left">{{ __('No empty custom values founded', 'metademands') }}</th>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+
+<br>
+<div class="left">
+    <table class="tab_cadre_fixe">
+        {% if ranks_fields_found %}
+            {% if ranks_has %}
+                <tr class="tab_bg_2">
+                    <th class="left">{{ __('Ranks problem with fields', 'metademands') }}</th>
+                </tr>
+                <tr class="tab_bg_2">
+                    <td class="left">
+                {% for row in ranks_rows %}
+                    <table class="tab_cadre_fixe">
+                        <tr class="tab_bg_2">
+                            <th class="left" width="50%">{{ __('Field') }}</th>
+                            <th class="left">{{ _n('Meta-Demand', 'Meta-Demands', 1, 'metademands') }}</th>
+                            <th class="center"></th>
+                        </tr>
+                        <tr class="tab_bg_2">
+                            <td class="left">{{ row.field_link|raw }}</td>
+                            <td class="left">{{ row.meta_name }}</td>
+                            <td class="right">{{ row.fix_form|raw }}</td>
+                        </tr>
+                    </table>
+                {% endfor %}
+            {% else %}
+                <tr class="tab_bg_2">
+                    <th class="left">{{ __('No problems with ranks found', 'metademands') }}</th>
+                </tr>
+            {% endif %}
+    </table>
+</div>
+        {% endif %}

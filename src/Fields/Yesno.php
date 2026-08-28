@@ -168,8 +168,7 @@ class Yesno extends CommonDBTM
     public static function showFieldCustomValues($params)
     {
         // Show yes/no default value
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        ob_start();
         echo _n('Default value', 'Default values', 1, 'metademands') . "&nbsp;";
         $p = [];
 
@@ -183,18 +182,23 @@ class Yesno extends CommonDBTM
             $p['display_emptychoice'] = true;
         }
         \Dropdown::showFromArray("custom", $data, $p);
-        echo "</td>";
-        echo "</tr>";
+        $cell_html = ob_get_clean();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        ob_start();
         echo Html::submit("", [
             'name' => 'update',
             'class' => 'btn btn-primary',
             'icon' => 'ti ti-device-floppy',
         ]);
-        echo "</td>";
-        echo "</tr>";
+        $submit_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_customvalue_fixed.html.twig',
+            [
+                'rows'        => [[['html' => $cell_html]]],
+                'submit_html' => $submit_html,
+            ],
+        );
     }
 
     public static function showFieldParameters($params): string
@@ -222,10 +226,7 @@ class Yesno extends CommonDBTM
         $data[2] = __('Yes');
 
         // Value to check
-        echo "<tr>";
-        echo "<td colspan='2'>";
-        echo __('Value to check', 'metademands');
-        echo "</td>";
+        ob_start();
         echo "<td class = 'dropdown-valuetocheck'>";
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
@@ -251,11 +252,27 @@ class Yesno extends CommonDBTM
 
 
         echo " </script>";
+        $valuetocheck_html = ob_get_clean();
+
         if ($params['check_value'] == '') {
             $params['check_value'] = 1;
         }
 
+        ob_start();
         echo FieldOption::showLinkHtml($item->getID(), $params);
+        $link_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_params_value_to_check.html.twig',
+            [
+                'row_class'         => '',
+                'label'             => __('Value to check', 'metademands'),
+                'label_colspan'     => 2,
+                'regex_html'        => '',
+                'valuetocheck_html' => $valuetocheck_html,
+                'link_html'         => $link_html,
+            ],
+        );
     }
 
     public static function showValueToCheck($item, $params)

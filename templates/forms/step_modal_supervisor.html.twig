@@ -1,0 +1,49 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<form name='nextGroup_form' method='post' action='{{ form_action }}'>
+<table class='tab_cadre_fixe'>
+{% if session_set %}
+    {{- common_hidden_html|raw }}
+    {% if has_supervisor %}
+        <div class='alert alert-warning d-flex'>
+        <i class='ti ti-circle-check' style='color: orange'></i>
+        &nbsp;{{ __('Your form will be validated by your supervisor', 'metademands') }}&nbsp;{{ supervisor_name|raw }}
+        {{- next_users_id_hidden|raw }}
+        <tr class='tab_bg_1'>
+        <td colspan='2'>
+        {{- submit_html|raw }}
+        </td>
+        </tr>
+    {% else %}
+        <div class='alert alert-danger alert-danger d-flex'>
+        <b>{{ __("You haven't defined supervisor, you cannot continue this request", 'metademands') }}</b></div>
+    {% endif %}
+    </table>
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    </form>
+{% endif %}

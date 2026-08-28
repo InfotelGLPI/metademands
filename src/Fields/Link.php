@@ -104,8 +104,6 @@ class Link extends CommonDBTM
 
     public static function showFieldCustomValues($params)
     {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
         $linkType = 0;
         $linkVal = '';
         if (isset($params['custom_values'])
@@ -114,11 +112,13 @@ class Link extends CommonDBTM
             $linkType = $custom_values[0] ?? "";
             $linkVal = $custom_values[1] ?? "";
         }
+
+        ob_start();
         echo '<label>' . __("Link") . '</label>';
         echo Html::input('custom[1]', ['value' => $linkVal, 'size' => 30]);
-        echo "</td>";
-        echo "<td>";
+        $link_cell = ob_get_clean();
 
+        ob_start();
         echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
         \Dropdown::showFromArray(
             "custom[0]",
@@ -129,16 +129,22 @@ class Link extends CommonDBTM
             ['value' => $linkType],
         );
         echo "<br /><i>" . __("*use field \"Additional label\" for the button title", "metademands") . "</i>";
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        $type_cell = ob_get_clean();
+
+        ob_start();
         echo Html::submit("", [
             'name'  => 'update',
             'class' => 'btn btn-primary',
             'icon'  => 'ti ti-device-floppy']);
-        echo "</td>";
-        echo "</tr>";
+        $submit_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_customvalue_fixed.html.twig',
+            [
+                'rows'        => [[['html' => $link_cell], ['html' => $type_cell]]],
+                'submit_html' => $submit_html,
+            ],
+        );
     }
 
     public static function isCheckValueOK($value, $check_value)

@@ -33,6 +33,7 @@ use Ajax;
 use CommonDBTM;
 use CommonITILActor;
 use DBConnection;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Migration;
 use Plugin;
@@ -158,6 +159,8 @@ class MetademandValidation extends CommonDBTM
         if ($ID > 0) {
             $this->check($ID, READ);
             $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
+            $this->showFormHeader(['colspan' => 2]);
+            $this->showFormButtons(['colspan' => 2]);
         } else {
             // Create item
             $item = $options['item'];
@@ -165,36 +168,16 @@ class MetademandValidation extends CommonDBTM
             $this->getEmpty();
             $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
             $this->fields['color'] = '#000';
-        }
 
+            $hidden_html = Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
+            $submit_html = Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
 
-        if ($ID > 0) {
-            $this->showFormHeader(['colspan' => 2]);
-        } else {
-            echo "<div class='center first-bloc'>";
-            echo "<form name='field_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='6'>" . __('Add a field', 'metademands') . "</th>";
-            echo "</tr>";
-        }
-
-
-        if ($ID > 0) {
-            $this->showFormButtons(['colspan' => 2]);
-        } else {
-            if ($canedit) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td class='tab_bg_2 center' colspan='6'>";
-                echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-                echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
-                echo "</td>";
-                echo "</tr>";
-            }
-
-            echo "</table>";
-            Html::closeForm();
-            echo "</div>";
+            TemplateRenderer::getInstance()->display('@metademands/forms/metademandvalidation_add.html.twig', [
+                'form_action' => Toolbox::getItemTypeFormURL(__CLASS__),
+                'canedit'     => $canedit,
+                'hidden_html' => $hidden_html,
+                'submit_html' => $submit_html,
+            ]);
         }
         return true;
     }
@@ -486,38 +469,29 @@ class MetademandValidation extends CommonDBTM
         $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
         $ticket = new \Ticket();
         $ticket->getFromDB($ticket_id);
-        echo "<form name='form_raz' id='form_raz' method='post'
-      action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/metademandvalidation.form.php" . "' >";
-        echo Html::hidden('action', ['id' => 'action_validationMeta', 'value' => 'validationMeta']);
-        echo Html::hidden('tickets_id', ['id' => 'action_validationMeta', 'value' => $ticket_id]);
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1 center'>";
-        echo "<th colspan='2'>";
-        echo __("Metademand validation", 'metademands');
-        echo "</th>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1 center'>";
+
+        $action_hidden  = Html::hidden('action', ['id' => 'action_validationMeta', 'value' => 'validationMeta']);
+        $tickets_hidden = Html::hidden('tickets_id', ['id' => 'action_validationMeta', 'value' => $ticket_id]);
+
+        $is_to_validate             = false;
+        $show_both_options          = false;
+        $ajax_scripts_html          = '';
+        $is_to_validate_withouttask = false;
+        $create_subticket_hidden    = '';
+        $group_dropdown_html        = '';
+        $is_tasks_created           = false;
+        $is_validate_without_task   = false;
 
         if ($this->fields["users_id"] == 0
             && $this->fields["validate"] == self::TO_VALIDATE) {
+            $is_to_validate = true;
             $metademands = new Metademand();
             if ($metademands->getFromDB($this->fields["plugin_metademands_metademands_id"])
                 && $metademands->fields['force_create_tasks'] == 0) {
-                echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
-                echo "<input type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
-                echo "</td>";
-                echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
-                echo "<input type='radio' name='create_subticket' id='create_subticket2' value='0'>";
-                echo "</td>";
-            } else {
-                echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
-                echo "<input type='radio' name='create_subticket' id='create_subticket2' value='0'>";
-                echo "</td>";
+                $show_both_options = true;
             }
 
-            echo "</tr>";
-            echo "<tr class='tab_bg_1 center' id='to_update_group'>";
-
+            ob_start();
             Ajax::updateItemOnEvent(
                 'create_subticket',
                 'to_update_group',
@@ -536,53 +510,66 @@ class MetademandValidation extends CommonDBTM
                     'tickets_id' => $ticket_id,
                 ],
             );
+            $ajax_scripts_html = ob_get_clean();
         } elseif ($this->fields["users_id"] == 0
             && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
-            echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
-            echo Html::hidden("create_subticket", ["value" => 2]);
+            $is_to_validate_withouttask = true;
+            $create_subticket_hidden = Html::hidden("create_subticket", ["value" => 2]);
             $group = 0;
             foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
                 $group = $d['groups_id'];
             }
+            ob_start();
             \Group::dropdown([
                 'condition' => ['is_assign' => 1],
                 'name' => 'group_to_assign',
                 'value' => $group,
             ]);
-            echo "</td>";
+            $group_dropdown_html = ob_get_clean();
         } elseif ($this->fields["users_id"] != 0
             && $this->fields["validate"] == self::TASK_CREATION) {
-            echo "<div class='alert alert-success d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
+            $is_tasks_created = true;
         } elseif ($this->fields["users_id"] != 0
             && $this->fields["validate"] == self::VALIDATE_WITHOUT_TASK) {
-        } else {
-            echo "<div class='alert alert-success d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
+            $is_validate_without_task = true;
         }
-        echo "</tr>";
-        if ($this->fields["users_id"] != 0) {
-            echo "<tr class='tab_bg_1 center'>";
-            echo "<td colspan='4'>";
-            echo sprintf(
+
+        $has_validator     = ($this->fields["users_id"] != 0);
+        $validated_by_text = '';
+        if ($has_validator) {
+            $validated_by_text = sprintf(
                 __('Validated by %s on %s', 'metademands'),
                 User::getFriendlyNameById($this->fields["users_id"]),
                 Html::convDateTime($this->fields["date"]),
             );
-            echo "</td>";
-            echo "</tr>";
         }
 
-        if ($this->fields["users_id"] == 0
-        ) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2' class='center'>";
-            echo Html::submit(
+        $show_submit = ($this->fields["users_id"] == 0);
+        $submit_html = '';
+        if ($show_submit) {
+            $submit_html = Html::submit(
                 __("Validate metademands", 'metademands'),
                 ['name' => 'btnAddAll', 'class' => 'btn btn-primary'],
             );
-            echo "</td>";
-            echo "</tr>";
         }
-        Html::closeForm();
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/metademandvalidation_view.html.twig', [
+            'form_action'                => PLUGIN_METADEMANDS_WEBDIR . "/front/metademandvalidation.form.php",
+            'action_hidden'              => $action_hidden,
+            'tickets_hidden'             => $tickets_hidden,
+            'is_to_validate'             => $is_to_validate,
+            'show_both_options'          => $show_both_options,
+            'ajax_scripts_html'          => $ajax_scripts_html,
+            'is_to_validate_withouttask' => $is_to_validate_withouttask,
+            'create_subticket_hidden'    => $create_subticket_hidden,
+            'group_dropdown_html'        => $group_dropdown_html,
+            'is_tasks_created'           => $is_tasks_created,
+            'is_validate_without_task'   => $is_validate_without_task,
+            'has_validator'              => $has_validator,
+            'validated_by_text'          => $validated_by_text,
+            'show_submit'                => $show_submit,
+            'submit_html'                => $submit_html,
+        ]);
     }
 
     /**

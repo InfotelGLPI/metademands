@@ -1,0 +1,84 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if entries is not empty %}
+    <table class="tab_cadre_fixe">
+        <thead>
+            <tr class="center">
+                <th colspan="4">{{ title }}</th>
+            </tr>
+            <tr class="tab_bg_1">
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Creation date') }}</th>
+                <th>{{ __('By') }}</th>
+                <th>{{ __('See form', 'metademands') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+                <tr class="tab_bg_1">
+                    <td>{{ entry.meta_name }}</td>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.by }}</td>
+                    <td>
+                        <button form="" class="submit btn btn-info btn-sm"
+                                onclick="loadForm({{ entry.id }}, {{ entry.meta_id }}, {{ entry.users_id }})">
+                            <i class="ti ti-cloud-download pointer" style="font-size:2em"
+                               title="{{ _x('button', 'Load form', 'metademands') }}"
+                               data-hasqtip="0" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        var step = {{ step }};
+        function loadForm(form_id, meta_id, users_id) {
+            $('#ajax_loader').show();
+            var data_send = {
+                plugin_metademands_forms_id: form_id,
+                metademands_id: meta_id,
+                _users_id_requester: users_id,
+                items_id: {{ items_id }},
+                itemtype: '{{ itemtype }}'
+            };
+            $.ajax({
+                url: '{{ webdir }}/ajax/loadform.php',
+                type: 'POST',
+                data: data_send,
+                success: function(response) {
+                    if (response == 0) {
+                        $('#ajax_loader').hide();
+                        window.location.href = '{{ webdir }}/front/wizard.form.php?current_ticket_id={{ items_id }}&meta_validated={{ is_validate }}&see_form=1&metademands_id=' + meta_id + '&step=' + step;
+                    }
+                }
+            });
+        }
+    </script>
+{% endif %}

@@ -372,43 +372,33 @@ class Draft extends CommonDBTM
         $metademands_data = Metademand::constructMetademands($metademands_id);
         $metademands->getFromDB($metademands_id);
 
-        echo "<div id ='content'>";
-        echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
-
-        echo "<div id='meta-form' class='bt-block'> ";
-
-        echo "<div class='row'>";
-
         $parameters['metademands_id'] = $metademands_id;
         $parameters['from_draft'] = 1;
         $parameters['cat_name'] = $cat_name;
+
+        ob_start();
         Wizard::showMetademandTitle($metademands, $parameters);
-
-        echo "<div class='md-basket-wizard'>";
-        echo "</div>";
-
-        echo "<div class='md-wizard'>";
+        $title_html = ob_get_clean();
 
         $userid = Session::getLoginUserID();
+        $form_action = Toolbox::getItemTypeFormURL(Wizard::class);
 
+        $forms = [];
+        $previous_html = '';
         if (count($metademands_data)) {
-            $see_summary = 0;
             foreach ($metademands_data as $form_step => $data) {
                 foreach ($data as $form_metademands_id => $line) {
-                    echo "<form id='wizard_form' method='post' class='formCustomDraft'
-                        action= '" . Toolbox::getItemTypeFormURL(Wizard::class) . "'
-                        enctype='multipart/form-data' class='metademands_img'>
-                    ";
-                    echo Html::hidden('tickets_id', ['value' => 0]);
-                    echo Html::hidden('resources_id', ['value' => 0]);
-                    echo Html::hidden('resources_step', ['value' => 0]);
-                    echo Html::hidden('block_id', ['value' => 0]);
-                    echo Html::hidden('ancestor_tickets_id', ['value' => 0]);
-                    echo Html::hidden('step', ['value' => 1]);
-                    echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
-                    echo Html::hidden('metademands_id', ['value' => $metademands_id]);
-                    echo Html::hidden('_users_id_requester', ['value' => $userid]);
+                    $hidden_html  = Html::hidden('tickets_id', ['value' => 0]);
+                    $hidden_html .= Html::hidden('resources_id', ['value' => 0]);
+                    $hidden_html .= Html::hidden('resources_step', ['value' => 0]);
+                    $hidden_html .= Html::hidden('block_id', ['value' => 0]);
+                    $hidden_html .= Html::hidden('ancestor_tickets_id', ['value' => 0]);
+                    $hidden_html .= Html::hidden('step', ['value' => 1]);
+                    $hidden_html .= Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
+                    $hidden_html .= Html::hidden('metademands_id', ['value' => $metademands_id]);
+                    $hidden_html .= Html::hidden('_users_id_requester', ['value' => $userid]);
 
+                    ob_start();
                     Wizard::constructForm(
                         $metademands_id,
                         $metademands_data,
@@ -422,38 +412,30 @@ class Draft extends CommonDBTM
                         $draft_id,
                         $draft_name,
                     );
+                    $form_html = ob_get_clean();
+
+                    $forms[] = [
+                        'hidden_html' => $hidden_html,
+                        'form_html'   => $form_html,
+                    ];
                 }
             }
         } else {
-            echo "</div>";
-            echo "<div class='center first-bloc'>";
-            echo "<div class='row'>";
-            echo "<div class=\"bt-feature col-md-12 \">";
-            echo __('No results found');
-            echo "</div>";
-            echo "</div>";
-
-            echo "<div class='row'>";
-            echo "<div class=\"bt-feature col-md-12 \">";
-            echo Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
-            echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
-            echo "</div>";
-            echo "</div>";
+            $previous_html  = Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
+            $previous_html .= Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
         }
-        echo "</div>";
-        echo "</div>";
 
-        echo "</div>";
-        echo "</div>";
-        echo "</div>";
+        echo TemplateRenderer::getInstance()->render('@metademands/forms/draft_show.html.twig', [
+            'title_html'    => $title_html,
+            'form_action'   => $form_action,
+            'forms'         => $forms,
+            'previous_html' => $previous_html,
+        ]);
     }
 
     public static function createDraftInput($type, $freetable = 0)
     {
         echo self::createDraftModalWindow("my_new_draft");
-
-        $input_name = "<i class='fa-1x " . self::getIcon() . "'></i>&nbsp;";
-        $input_name .= _sx('button', 'Save as draft', 'metademands');
 
         //correct css with condition
         if ($type == 1) {
@@ -466,40 +448,15 @@ class Draft extends CommonDBTM
             $style = "display:inline-block;float:left;margin-right: 10px;";
         }
 
-        $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
-
-        // $content = "<br>";
-        $content = "<div id='div_save_draft'  style='{$style}'>
-                        <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>" . $input_name . "
-                        </button>
-                        <script>
-                            function load_draft_modal(){
-
-                                var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
-                                if (tr_input.length > 0) {
-                                    var careful = false;
-
-                                    for(var j = 0; j < tr_input.length; j++) {
-                                       if(tr_input[j].value != '' && tr_input[j].value != '0'){
-                                            careful = true;
-                                       }
-                                    }
-
-                                    if(careful){
-                                        if (!confirm('{$trad}')) {
-                                            return;
-                                        }
-                                    }
-
-                                }
-
-                               document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
-                               document.querySelector('#my_new_draft').classList.remove('fade');
-                            }
-                        </script>
-                      </div>";
-
-        return $content;
+        return TemplateRenderer::getInstance()->render('@metademands/forms/draft_save_button.html.twig', [
+            'style'           => $style,
+            'icon'            => self::getIcon(),
+            'button_label'    => _sx('button', 'Save as draft', 'metademands'),
+            'confirm_message' => __(
+                'Careful all the lines are not confirm, are you sure you want to continue ?',
+                'metademands',
+            ),
+        ]);
     }
 
     public static function createDraftModalWindow($domid, $options = [])
@@ -525,8 +482,6 @@ class Draft extends CommonDBTM
 
         $rand = mt_rand();
 
-        $draft_name = __('Draft name', 'metademands');
-
         $input_name = Html::input('draft_name', [
             'value' => '',
             'maxlength' => 250,
@@ -535,8 +490,7 @@ class Draft extends CommonDBTM
             'placeholder' => __('Draft name', 'metademands'),
         ]);
 
-        $titl_submit_button = _sx('button', 'Save as draft', 'metademands');
-        $submit_button = Html::submit($titl_submit_button, [
+        $submit_button = Html::submit(_sx('button', 'Save as draft', 'metademands'), [
             'name' => 'save_draft',
             'icon' => 'ti ti-cloud-upload pointer',
             'form' => '',
@@ -545,84 +499,18 @@ class Draft extends CommonDBTM
             'onclick' => 'saveMyDraft()',
         ]);
 
-        $html = <<<HTML
-         <div id="$domid" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog {$param['dialog_class']}">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                     <h3>{$draft_name}</h3>
-                  </div>
-                  <div id="divcontainer$domid" class="modal-body">
-                    <div >
-                     <div style="float: left">{$input_name}</div>
-                     <div style="float: right">{$submit_button}</div>
-                    </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <script>
-            function saveMyDraft() {
-                let draft_name = document.querySelector('.modal-dialog .modal-body .draft_name').value;
-                udpateDraft('', draft_name)
-            }
-        </script>
-HTML;
-
-        $reloadonclose = $param['reloadonclose'] ? "true" : "false";
-        $autoopen = $param['autoopen'] ? "true" : "false";
-        $js = "$(function() {
-         myModalEl{$rand} = document.getElementById('{$domid}');
-         myModal{$rand}   = new bootstrap.Modal(myModalEl{$rand});
-
-         // move modal to body
-         $(myModalEl{$rand}).appendTo($('body'));
-
-         myModalEl{$rand}.addEventListener('hide.bs.modal', function () {
-            if ({$reloadonclose}) {
-               window.location.reload()
-            }
-         });
-
-         myModalEl{$rand}.querySelector('.btn-close').addEventListener('click', function () {
-            document.querySelector('#my_new_draft').style = '';
-            document.querySelector('#my_new_draft').classList.add('fade');
-         });
-
-         if ({$autoopen}) {
-            myModal{$rand}.show();
-         }
-
-         document.getElementById('divcontainer$domid').onload = function() {
-            if ({$param['height']} !== 'undefined') {
-               var h =  {$param['height']};
-            } else {
-               var h =  $('#divcontainer{$domid}').contents().height();
-            }
-            if ({$param['width']} !== 'undefined') {
-               var w =  {$param['width']};
-            } else {
-               var w =  $('#divcontainer{$domid}').contents().width();
-            }
-
-            $('#iframe{$domid}')
-               .height(h);
-
-            if (w >= 700) {
-               $('#{$domid} .modal-dialog').addClass('modal-xl');
-            } else if (w >= 500) {
-               $('#{$domid} .modal-dialog').addClass('modal-lg');
-            } else if (w <= 300) {
-               $('#{$domid} .modal-dialog').addClass('modal-sm');
-            }
-
-            // reajust height to content
-            myModal{$rand}.handleUpdate()
-         };
-      });";
-
-        $out = "<script type='text/javascript'>$js</script>" . trim($html);
+        $out = TemplateRenderer::getInstance()->render('@metademands/forms/draft_modal.html.twig', [
+            'domid'         => $domid,
+            'rand'          => $rand,
+            'dialog_class'  => $param['dialog_class'],
+            'draft_name'    => __('Draft name', 'metademands'),
+            'input_name'    => $input_name,
+            'submit_button' => $submit_button,
+            'reloadonclose' => (bool) $param['reloadonclose'],
+            'autoopen'      => (bool) $param['autoopen'],
+            'height'        => (int) $param['height'],
+            'width'         => (int) $param['width'],
+        ]);
 
         if ($param['display']) {
             echo $out;

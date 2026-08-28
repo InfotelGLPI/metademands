@@ -349,17 +349,19 @@ class Step extends CommonDBChild
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
 
+        $add_script_html = '';
+        $viewstep_div_id = "viewstepbybloc" . $item->getID() . $rand;
+        $add_fn_name     = "addstepbybloc" . $item->getID() . $rand;
         if ($canedit) {
-            echo "<br><div id='viewstepbybloc" . $item->getID() . "$rand'></div>\n";
-
-            echo "<script type='text/javascript' >\n";
-            echo "function addstepbybloc" . $item->getID() . "$rand() {\n";
             $params = [
                 'type' => __CLASS__,
                 'parenttype' => get_class($item),
                 $item->getForeignKeyField() => $item->getID(),
                 'id' => -1,
             ];
+            ob_start();
+            echo "<script type='text/javascript' >\n";
+            echo "function addstepbybloc" . $item->getID() . "$rand() {\n";
             Ajax::updateItemJsCode(
                 "viewstepbybloc" . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
@@ -367,10 +369,7 @@ class Step extends CommonDBChild
             );
             echo "};";
             echo "</script>\n";
-            echo "<div class='center'>"
-                . "<a class='submit btn btn-primary' href='javascript:addstepbybloc"
-                 . $item->getID() . "$rand();'>" . __('Define a new visibility', 'metademands')
-                . "</a></div>";
+            $add_script_html = ob_get_clean();
         }
         $iterator = $DB->request([
             'FROM' => getTableForItemType(__CLASS__),
@@ -404,15 +403,7 @@ class Step extends CommonDBChild
             }
         }
         ksort($blocks);
-        if (count($blocks) > 0) {
-            echo "<div class='alert alert-warning d-flex'>";
-            echo "<i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;";
-            echo __(
-                'Be careful if all blocks are not assigned, they will be displayed to the last assigned group',
-                'metademands',
-            );
-            echo "</div>";
-        }
+        $warning_blocks = count($blocks) > 0;
 
         $fields = new Field();
         $cond['plugin_metademands_metademands_id'] = $item->getID();
@@ -462,20 +453,14 @@ class Step extends CommonDBChild
             }
         }
 
-        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/_process-chart.css");
-        echo "<div class='row'>";
-        echo "<div class='col-12 col-lg-12'>";
-        echo "<ul class='process-chart'>";
-        echo "<li class='align-items-center d-flex justify-content-center my-4 pb-6 fs-1 fw-bold'>";
-        echo "<i class='ti ti-brand-databricks me-1'></i>";
-        echo "<span>" . __("List of visibilities", 'metademands') . "</span>";
-        echo "</li>";
+        $css_html = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/_process-chart.css");
 
         $configStep = new Configstep();
         $configStep->getFromDBByCrit([
             'plugin_metademands_metademands_id' => $item->getID(),
         ]);
         $added = [];
+        $cards = [];
         if (count($all_blocks)) {
             $multiple_blocks = [];
             $already_see = [];
@@ -494,12 +479,14 @@ class Step extends CommonDBChild
                         continue;
                     }
                     $added[] = $blockid;
-                    echo "<li class='step'>";
+
+                    $onhover          = '';
+                    $edit_script_html = '';
                     if ($canedit) {
                         $onhover = "style='cursor:pointer'
                        onClick=\"viewEditstepbyblock" . $data['id'] . "$rand();\"";
-                    }
-                    if ($canedit) {
+
+                        ob_start();
                         echo "\n<script type='text/javascript' >\n";
                         echo "function viewEditstepbyblock" . $data['id'] . "$rand() {\n";
                         $params = [
@@ -515,26 +502,22 @@ class Step extends CommonDBChild
                         );
                         echo "};";
                         echo "</script>\n";
+                        $edit_script_html = ob_get_clean();
                     }
-                    echo "<a class='btn flex-column' $onhover href='#'>";
-                    echo "<div class='d-flex align-items-center'>";
-                    echo " <i class='ti ti-align-box-left-middle'></i>";
 
                     if (in_array($blockid, $subblocks)) {
-                        echo "<span>&nbsp;" . __("Sub Block", 'metademands') . "&nbsp;-&nbsp;";
+                        $block_type_label = __("Sub Block", 'metademands');
                     } else {
-                        echo "<span>&nbsp;" . __("Block", 'metademands') . "&nbsp;-&nbsp;";
+                        $block_type_label = __("Block", 'metademands');
                     }
 
                     if (isset($blocks[$data['block_id']])) {
-                        echo $blocks[$data['block_id']];
+                        $block_label_html = $blocks[$data['block_id']];
                     } else {
-                        echo $data['block_id'];
+                        $block_label_html = $data['block_id'];
                     }
 
-                    echo "</span>";
-                    echo "</div>";
-                    echo "<div class='text-muted'>";
+                    ob_start();
                     if ($data['only_by_supervisor'] != 0 || $data['groups_id'] != 0) {
                         if (isset($configStep->fields['supervisor_validation'])
                             && $configStep->fields['supervisor_validation'] == 0) {
@@ -584,11 +567,11 @@ class Step extends CommonDBChild
                             $data['message'],
                         );
                     }
+                    $visibility_html = ob_get_clean();
+
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/step.form.php";
 
-                    echo "</div>";
-                    echo "</a>";
-                    echo "<div class='btn flex-column' style='color:darkred'>";
+                    ob_start();
                     Html::showSimpleForm(
                         $target,
                         'delete',
@@ -596,21 +579,18 @@ class Step extends CommonDBChild
                         ['id' => $data['id']],
                         'ti-trash',
                     );
-                    echo "</div>";
+                    $delete_form_html = ob_get_clean();
 
-                    echo "</li>";
+                    $cards[] = [
+                        'edit_script_html' => $edit_script_html,
+                        'onhover'          => $onhover,
+                        'block_type_label' => $block_type_label,
+                        'block_label_html' => $block_label_html,
+                        'visibility_html'  => $visibility_html,
+                        'delete_form_html' => $delete_form_html,
+                    ];
                 }
             }
-
-            echo "<li class='end'>";
-            echo "<i class='ti ti-circle-check me-1'></i>";
-            echo "<span>" . __('The object is created', 'metademands') . "</span>";
-            echo "</li>";
-            echo "</ul>";
-            echo "</div>";
-
-        } else {
-            echo "<div class='center b'>" . __("No visibility defined", 'metademands') . "</div>";
         }
 
         $ko = 0;
@@ -619,19 +599,19 @@ class Step extends CommonDBChild
                 $ko++;
             }
         }
-        if (count($blocks) > 0 && count($added) > 0 && $ko > 0) {
-            echo "<div class='row'>";
-            echo "<div class='col-12 col-lg-12'>";
-            echo "<div class='center alert alert-danger' style='margin-top:20px'>";
-            echo "<i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;";
-            echo __('There is a problem with the setup', 'metademands') . "<br>" . __(
-                'Your blocks are not all defined',
-                'metademands',
-            ) . "&nbsp;";
-            echo "</div>";
-            echo "</div>";
-            echo "</div>";
-        }
+        $setup_problem = count($blocks) > 0 && count($added) > 0 && $ko > 0;
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/step_by_block.html.twig', [
+            'canedit'         => $canedit,
+            'viewstep_div_id' => $viewstep_div_id,
+            'add_fn_name'     => $add_fn_name,
+            'add_script_html' => $add_script_html,
+            'warning_blocks'  => $warning_blocks,
+            'css_html'        => $css_html,
+            'has_blocks'      => count($all_blocks) > 0,
+            'cards'           => $cards,
+            'setup_problem'   => $setup_problem,
+        ]);
 
         return true;
     }
@@ -987,30 +967,53 @@ class Step extends CommonDBChild
         if (isset($_GET['block_id']) && !empty($_GET['block_id'])) {
             $block_id = $_GET['block_id'];
         }
-        if ($conf->fields['supervisor_validation']) {
-            echo "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
-            echo "<table class='tab_cadre_fixe'>";
-            if (isset($_SESSION['plugin_metademands'][$user_id])) {
-                if (isset($_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'])) {
-                    echo Html::hidden(
-                        'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']],
-                    );
-                }
-                $post = $_SESSION['plugin_metademands'][$user_id];
-                echo Html::hidden('tickets_id', ['value' => $post['tickets_id']]);
-                echo Html::hidden('resources_id', ['value' => $post['resources_id']]);
-                echo Html::hidden('resources_step', ['value' => $post['resources_step']]);
-                echo Html::hidden('block_id', ['value' => $post['block_id']]);
-                echo Html::hidden('form_name', ['value' => $post['form_name']]);
-                echo Html::hidden('_users_id_requester', ['value' => $post['_users_id_requester']]);
-                echo Html::hidden('form_metademands_id', ['value' => $post['form_metademands_id']]);
-                echo Html::hidden('metademands_id', ['value' => $post['metademands_id']]);
-                echo Html::hidden('create_metademands', ['value' => $post['create_metademands']]);
-                echo Html::hidden('step', ['value' => $post['step']]);
-                echo Html::hidden('action', ['value' => $post['action']]);
-                echo Html::hidden('update_stepform', ['value' => $post['update_stepform']]);
 
+        $form_action = PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php";
+        $session_set = isset($_SESSION['plugin_metademands'][$user_id]);
+
+        // Hidden fields shared by both branches, only emitted when a session payload exists
+        $common_hidden_html = '';
+        $post               = [];
+        if ($session_set) {
+            if (isset($_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'])) {
+                $common_hidden_html .= Html::hidden(
+                    'plugin_metademands_stepforms_id',
+                    ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']],
+                );
+            }
+            $post = $_SESSION['plugin_metademands'][$user_id];
+            $common_hidden_html .= Html::hidden('tickets_id', ['value' => $post['tickets_id']]);
+            $common_hidden_html .= Html::hidden('resources_id', ['value' => $post['resources_id']]);
+            $common_hidden_html .= Html::hidden('resources_step', ['value' => $post['resources_step']]);
+            $common_hidden_html .= Html::hidden('block_id', ['value' => $post['block_id']]);
+            $common_hidden_html .= Html::hidden('form_name', ['value' => $post['form_name']]);
+            $common_hidden_html .= Html::hidden('_users_id_requester', ['value' => $post['_users_id_requester']]);
+            $common_hidden_html .= Html::hidden('form_metademands_id', ['value' => $post['form_metademands_id']]);
+            $common_hidden_html .= Html::hidden('metademands_id', ['value' => $post['metademands_id']]);
+            $common_hidden_html .= Html::hidden('create_metademands', ['value' => $post['create_metademands']]);
+            $common_hidden_html .= Html::hidden('step', ['value' => $post['step']]);
+            $common_hidden_html .= Html::hidden('action', ['value' => $post['action']]);
+            $common_hidden_html .= Html::hidden('update_stepform', ['value' => $post['update_stepform']]);
+        }
+
+        $submit_html = Html::submit(
+            _sx(
+                'button',
+                'Validate',
+                'metademands',
+            ),
+            [
+                'name' => 'execute',
+                'id' => 'formsubmit',
+                'class' => 'btn btn-primary',
+            ],
+        );
+
+        if ($conf->fields['supervisor_validation']) {
+            $has_supervisor       = false;
+            $supervisor_name      = '';
+            $next_users_id_hidden = '';
+            if ($session_set) {
                 $users_id_supervisor = 0;
                 $user = new User();
                 if ($user->getFromDB($user_id)) {
@@ -1018,65 +1021,23 @@ class Step extends CommonDBChild
                 }
 
                 if ($users_id_supervisor) {
-                    echo "<div class='alert alert-warning d-flex'>";
-                    echo "<i class='ti ti-circle-check' style='color: orange'></i>";
-                    echo "&nbsp;" . __('Your form will be validated by your supervisor', 'metademands') . "&nbsp;";
-                    echo getUserName($users_id_supervisor);
-                    echo Html::hidden('next_users_id', ['value' => $users_id_supervisor]);
-
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td colspan='2'>";
-
-                    echo Html::submit(
-                        _sx(
-                            'button',
-                            'Validate',
-                            'metademands',
-                        ),
-                        [
-                            'name' => 'execute',
-                            'id' => 'formsubmit',
-                            'class' => 'btn btn-primary',
-                        ],
-                    );
-
-                    echo "</td>";
-                    echo "</tr>";
-                } else {
-                    echo "<div class='alert alert-danger alert-danger d-flex'>";
-                    echo "<b>" . __(
-                        "You haven't defined supervisor, you cannot continue this request",
-                        'metademands',
-                    ) . "</b></div>";
+                    $has_supervisor       = true;
+                    $supervisor_name      = getUserName($users_id_supervisor);
+                    $next_users_id_hidden = Html::hidden('next_users_id', ['value' => $users_id_supervisor]);
                 }
-
-                echo "</table>";
-                Html::closeform();
             }
-        } else {
-            echo "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
-            echo "<table class='tab_cadre_fixe'>";
-            if (isset($_SESSION['plugin_metademands'][$user_id])) {
-                if (isset($_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'])) {
-                    echo Html::hidden(
-                        'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id']],
-                    );
-                }
-                $post = $_SESSION['plugin_metademands'][$user_id];
-                echo Html::hidden('tickets_id', ['value' => $post['tickets_id']]);
-                echo Html::hidden('resources_id', ['value' => $post['resources_id']]);
-                echo Html::hidden('resources_step', ['value' => $post['resources_step']]);
-                echo Html::hidden('block_id', ['value' => $post['block_id']]);
-                echo Html::hidden('form_name', ['value' => $post['form_name']]);
-                echo Html::hidden('_users_id_requester', ['value' => $post['_users_id_requester']]);
-                echo Html::hidden('form_metademands_id', ['value' => $post['form_metademands_id']]);
-                echo Html::hidden('metademands_id', ['value' => $post['metademands_id']]);
-                echo Html::hidden('create_metademands', ['value' => $post['create_metademands']]);
-                echo Html::hidden('step', ['value' => $post['step']]);
-                echo Html::hidden('action', ['value' => $post['action']]);
-                echo Html::hidden('update_stepform', ['value' => $post['update_stepform']]);
 
+            TemplateRenderer::getInstance()->display('@metademands/forms/step_modal_supervisor.html.twig', [
+                'form_action'          => $form_action,
+                'session_set'          => $session_set,
+                'common_hidden_html'   => $common_hidden_html,
+                'has_supervisor'       => $has_supervisor,
+                'supervisor_name'      => $supervisor_name,
+                'next_users_id_hidden' => $next_users_id_hidden,
+                'submit_html'          => $submit_html,
+            ]);
+        } else {
+            if ($session_set) {
                 $block_id = $post['block_id'];
             }
 
@@ -1085,6 +1046,7 @@ class Step extends CommonDBChild
                 'block_id' => $block_id,
             ]);
 
+            $group_dropdown_html = '';
             if (count($steps) > 0) {
                 foreach ($steps as $s) {
                     if ($s['groups_id'] > 0) {
@@ -1098,14 +1060,7 @@ class Step extends CommonDBChild
                         }
                     }
                 }
-                echo "<tr class='tab_bg_1'>";
-                echo "<td colspan='2'>";
-                echo "<label class='control-label center' for='next_groups_id'>" . __(
-                    'Select the next group',
-                    'metademands',
-                ) . "&nbsp;</label>";
-                echo "</td>";
-                echo "<td colspan='2'>";
+                ob_start();
                 $rand = \Dropdown::showFromArray(
                     'next_groups_id',
                     $nextGroups,
@@ -1114,11 +1069,14 @@ class Step extends CommonDBChild
                         'on_change' => 'plugin_md_reloaduser()',
                     ],
                 );
-                echo "</td>";
-                echo "</tr>";
+                $group_dropdown_html = ob_get_clean();
             }
 
-            if (isset($rand)) {
+            $rand_set          = isset($rand);
+            $link_user_block   = $rand_set && $conf->fields['link_user_block'];
+            $group_script_html = '';
+            if ($rand_set) {
+                ob_start();
                 echo "<script type='text/javascript'>";
                 echo "function plugin_md_reloaduser(){";
                 $params = [
@@ -1133,43 +1091,20 @@ class Step extends CommonDBChild
                 );
                 echo "};";
                 echo "</script>";
-
-                if ($conf->fields['link_user_block']) {
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td colspan='2'>";
-                    echo "<div id ='show_users_by_group'>";
-                    echo "</div>";
-                    echo "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<div class='alert alert-danger d-flex'>";
-                echo "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";
+                $group_script_html = ob_get_clean();
             }
 
-            if (isset($rand)) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td colspan='2'>";
-
-                echo Html::submit(
-                    _sx(
-                        'button',
-                        'Validate',
-                        'metademands',
-                    ),
-                    [
-                        'name' => 'execute',
-                        'id' => 'formsubmit',
-                        'class' => 'btn btn-primary',
-                    ],
-                );
-
-                echo "</td>";
-                echo "</tr>";
-
-                echo "</table>";
-                Html::closeform();
-            }
+            TemplateRenderer::getInstance()->display('@metademands/forms/step_modal_nextgroup.html.twig', [
+                'form_action'         => $form_action,
+                'common_hidden_html'  => $common_hidden_html,
+                'has_groups'          => count($steps) > 0,
+                'group_label'         => __('Select the next group', 'metademands'),
+                'group_dropdown_html' => $group_dropdown_html,
+                'rand_set'            => $rand_set,
+                'group_script_html'   => $group_script_html,
+                'link_user_block'     => $link_user_block,
+                'submit_html'         => $submit_html,
+            ]);
         }
     }
 

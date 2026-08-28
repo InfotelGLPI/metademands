@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use DBConnection;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Migration;
 use Session;
@@ -112,35 +113,13 @@ class Basketline extends CommonDBTM
                 $meta = new Metademand();
                 if ($meta->getFromDB($metademands_id)) {
                     if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                        $title_color = htmlspecialchars($meta->fields['title_color'], ENT_QUOTES);
+                        $title_color = $meta->fields['title_color'];
                     }
                 }
 
-                //                $color = Wizard::hex2rgba($title_color, "0.03");
-                //                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
-                //                echo "<div class='card-header' $style_background>";
-                //
-                //                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-                //                echo __('Your basket', 'metademands');
-                //
-
-                //                echo "</h2>";
-                //                echo "</div>";
-
-                echo "<div class='row'>";
-                echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
-                echo "<div class='col-12 align-self-center'>";
-
-                echo "<section class='card-body' style='width: 100%;'>";
-
-                echo "<h2 class='card-title mb-2 text-break' style='color: $title_color;'>";
-                echo __('Your basket', 'metademands');
-                echo "</h2>";
-
-                echo "<div class='mydraft right' style='position: absolute;top: 0;margin-top: 10px;;right: 0;'>";
-
                 $target = Toolbox::getItemTypeFormURL(Wizard::class);
-                Html::showSimpleForm(
+
+                $clear_basket_html = Html::getSimpleForm(
                     $target,
                     'clear_basket',
                     _sx('button', 'Clear the basket', 'metademands'),
@@ -151,30 +130,18 @@ class Basketline extends CommonDBTM
                     "class='btn btn-primary'",
                 );
 
-                echo "</div>";
-                echo Html::hidden('metademands_id', ['value' => $metademands_id]);
-                echo Html::hidden('form_metademands_id', ['value' => $metademands_id]);
-                echo "</section>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-
                 $basketLines = [];
                 foreach ($basketlinesFind as $basketLine) {
                     $basketLines[$basketLine['line']][] = $basketLine;
                 }
 
+                ob_start();
                 foreach ($basketLines as $idline => $fieldlines) {
-                    //                    echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
                     self::retrieveDatasByType($metademands_id, $idline, $fieldlines, $line);
-                    //                    echo "</table>";
                 }
+                $lines_html = ob_get_clean();
 
-                echo "<div class='row'>";
-                echo "<div class=\"bt-feature col-md-12 \">";
-
-                $target = Toolbox::getItemTypeFormURL(Wizard::class);
-                Html::showSimpleForm(
+                $previous_html = Html::getSimpleForm(
                     $target,
                     'clean_form',
                     __('Previous'),
@@ -186,57 +153,36 @@ class Basketline extends CommonDBTM
                     "class='btn btn-primary'",
                 );
 
-                echo "<span style='float:right'>";
                 //                $title = _sx('button', 'Send order', 'metademands');
                 $title = _sx('button', 'Save & Post', 'metademands');
                 $current_ticket = $post["current_ticket_id"] = $post["tickets_id"];
-                echo Html::submit($title, ['name' => 'send_order',
+                $submit_order_html = Html::submit($title, ['name' => 'send_order',
                     'form' => '',
                     'icon' => 'ti ti-shopping-bag',
                     'id' => 'submitOrder',
                     'class' => 'btn btn-success right']);
-                echo "</span>";
-                echo "</div></div>";
+
                 $paramUrl = "";
                 $meta_validated = false;
                 if ($current_ticket > 0 && !$meta_validated) {
                     $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
                 }
                 $meta_id = $post['metademands_id'];
-                $post = json_encode($post);
-                echo "<script>
-                          $('#submitOrder').click(function() {
-                             var meta_id = $meta_id;
-                             $.ajax({
-                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                               type: 'POST',
-                               data: $post,
-                               success: function (response) {
-                                  $.ajax({
-                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-                                            type: 'POST',
-                                            data: $post,
-                                            success: function (response) {
-                                               window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
-                                            },
-                                            error: function (xhr, status, error) {
-                                               console.log(xhr);
-                                               console.log(status);
-                                               console.log(error);
-                                            }
-                                         });
-                               },
-                               error: function (xhr, status, error) {
-                                  console.log(xhr);
-                                  console.log(status);
-                                  console.log(error);
-                               }
-                            });
-                          });
-                          $('#prevBtn').hide();
-                          $('.step_wizard').hide();
+                $post_json = json_encode($post, JSON_HEX_TAG | JSON_HEX_AMP);
 
-                        </script>";
+                echo TemplateRenderer::getInstance()->render('@metademands/forms/basketline_summary.html.twig', [
+                    'title_color'       => $title_color,
+                    'clear_basket_html' => $clear_basket_html,
+                    'hidden_meta'       => Html::hidden('metademands_id', ['value' => $metademands_id]),
+                    'hidden_form_meta'  => Html::hidden('form_metademands_id', ['value' => $metademands_id]),
+                    'lines_html'        => $lines_html,
+                    'previous_html'     => $previous_html,
+                    'submit_order_html' => $submit_order_html,
+                    'meta_id'           => $meta_id,
+                    'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
+                    'post_json'         => $post_json,
+                    'param_url'         => $paramUrl,
+                ]);
             }
         }
     }
@@ -250,11 +196,8 @@ class Basketline extends CommonDBTM
     {
 
         $target = Toolbox::getItemTypeFormURL(Wizard::class);
-        echo "<form method='post' action=\"$target\">";
-        echo "<table class='tab_cadre_fixehov' style='border: 3px #CCC solid;'>";
-        echo Html::hidden('metademands_id', ['value' => $metademands_id]);
-        echo Html::hidden('form_metademands_id', ['value' => $metademands_id]);
 
+        $rows = [];
 
         foreach ($fields as $k => $v) {
 
@@ -275,32 +218,28 @@ class Basketline extends CommonDBTM
                 continue;
             }
 
-            echo "<tr class='tab_bg_1' id-field='field_basket_" . $idline . $v["id"] . "'>";
+            // Row identifiers must be captured before the inner loop mutates $v['id'].
+            $id_field = 'field_basket_' . $idline . $v["id"];
+            $field_id = $v['id'];
 
-            echo "<td>";
-
+            // Faithful behavior: label is only rendered when there is no field translation.
+            $label_text = '';
             if (empty($label = Field::displayField($v['id'], 'name'))) {
                 $label = $v['name'];
-                echo $label;
+                $label_text = $label;
             }
 
+            $label2_text = null;
             if ($v['type'] == "date_interval") {
                 if (empty($label2 = Field::displayField($v['id'], 'label2'))) {
                     $label2 = $v['label2'];
                 }
-                echo "<br><br><br>" . Toolbox::stripTags($label2);
+                $label2_text = Toolbox::stripTags($label2);
             }
 
-            echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $v['id'] . "'>";
-            if ($v['is_mandatory'] && $v['type'] != 'parent_field') {
-                echo "*";
-            }
-            echo "</span>";
+            $mandatory = ($v['is_mandatory'] && $v['type'] != 'parent_field');
 
-            echo "</td>";
-
-            echo "<td>";
-
+            ob_start();
             foreach ($values as $key => $value) {
 
                 if ($v['id'] == $value['plugin_metademands_fields_id']) {
@@ -320,22 +259,19 @@ class Basketline extends CommonDBTM
                     }
                 }
             }
-            echo "</td>";
-            echo "</tr>";
+            $input_html = ob_get_clean();
+
+            $rows[] = [
+                'id_field'    => $id_field,
+                'field_id'    => $field_id,
+                'label_text'  => $label_text,
+                'label2_text' => $label2_text,
+                'mandatory'   => $mandatory,
+                'input_html'  => $input_html,
+            ];
         }
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td class='center'>";
-
-        echo "<button type='submit' class='submit btn btn-primary' name='update_basket_line' value='$idline' title='"
-            . _sx('button', 'Update this line', 'metademands') . "'>";
-        echo "<i class='ti ti-device-floppy' data-hasqtip='0' aria-hidden='true'></i>";
-        echo "</button>";
-
-        echo "</td>";
-        echo "<td class='center'>";
-        $target = Toolbox::getItemTypeFormURL(Wizard::class);
-        Html::showSimpleForm(
+        $delete_html = Html::getSimpleForm(
             $target,
             'delete_basket_line',
             _sx('button', 'Delete this line', 'metademands'),
@@ -347,9 +283,15 @@ class Basketline extends CommonDBTM
             "class='btn btn-danger'",
         );
 
-        echo "</td>";
-        echo "</tr></table>";
-        Html::closeForm();
+        echo TemplateRenderer::getInstance()->render('@metademands/forms/basketline_line.html.twig', [
+            'target'           => $target,
+            'hidden_meta'      => Html::hidden('metademands_id', ['value' => $metademands_id]),
+            'hidden_form_meta' => Html::hidden('form_metademands_id', ['value' => $metademands_id]),
+            'rows'             => $rows,
+            'idline'           => $idline,
+            'delete_html'      => $delete_html,
+            'close_form_html'  => Html::closeForm(false),
+        ]);
     }
 
 

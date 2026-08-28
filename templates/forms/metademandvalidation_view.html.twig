@@ -1,0 +1,75 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<form name="form_raz" id="form_raz" method="post" action="{{ form_action }}">
+    {{ action_hidden|raw }}
+    {{ tickets_hidden|raw }}
+    <table class="tab_cadre_fixe">
+        <tr class="tab_bg_1 center">
+            <th colspan="2">{{ __('Metademand validation', 'metademands') }}</th>
+        </tr>
+        <tr class="tab_bg_1 center">
+            {% if is_to_validate %}
+                {% if show_both_options %}
+                    <td>{{ __('Create sub-tickets', 'metademands') }} &nbsp;
+                        <input type="radio" name="create_subticket" id="create_subticket" value="1" checked>
+                    </td>
+                    <td>{{ __('Create tasks', 'metademands') }}&nbsp;
+                        <input type="radio" name="create_subticket" id="create_subticket2" value="0">
+                    </td>
+                {% else %}
+                    <td>{{ __('Create tasks', 'metademands') }}&nbsp;
+                        <input type="radio" name="create_subticket" id="create_subticket2" value="0">
+                    </td>
+                {% endif %}
+                </tr>
+                <tr class="tab_bg_1 center" id="to_update_group">
+                {{ ajax_scripts_html|raw }}
+            {% elseif is_to_validate_withouttask %}
+                <td colspan="2">{{ __('Attribute ticket to ', 'metademands') }} &nbsp;
+                    {{ create_subticket_hidden|raw }}
+                    {{ group_dropdown_html|raw }}
+                </td>
+            {% elseif is_tasks_created %}
+                <div class="alert alert-success d-flex">{{ __('Tasks are created', 'metademands') }}</div>
+            {% elseif is_validate_without_task %}
+            {% else %}
+                <div class="alert alert-success d-flex">{{ __('Sub-tickets are created', 'metademands') }}</div>
+            {% endif %}
+        </tr>
+        {% if has_validator %}
+            <tr class="tab_bg_1 center">
+                <td colspan="4">{{ validated_by_text }}</td>
+            </tr>
+        {% endif %}
+        {% if show_submit %}
+            <tr class="tab_bg_1">
+                <td colspan="2" class="center">{{ submit_html|raw }}</td>
+            </tr>
+        {% endif %}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    </form>

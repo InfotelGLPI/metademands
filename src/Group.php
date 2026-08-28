@@ -35,7 +35,6 @@ use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
 use Group_User;
-use Html;
 use Migration;
 use Session;
 use CommonGLPI;
@@ -238,35 +237,17 @@ class Group extends CommonDBChild
             $groupconfig->getEmpty();
         }
 
-        echo "<form name='form' method='post' action='" .
-            Toolbox::getItemTypeFormURL(Group::class) . "'>";
+        $visibility = [
+            0 => __('Only these groups', 'metademands'),
+            1 => __('All groups and not these groups', 'metademands'),
+        ];
 
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-        echo "<tr><th>" . __('Define visibility', 'metademands') . "</th></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        // Dropdown group
-        echo "<td class='center'>";
-        echo __('Visibility', 'metademands') . '&nbsp;';
-        $visibility = [0 => __('Only these groups', 'metademands'),
-            1 => __('All groups and not these groups', 'metademands')];
-        \Dropdown::showFromArray(
-            'visibility',
-            $visibility,
-            [
-                'id' => 'visibility',
-                'value' => $groupconfig->fields['visibility'],
-            ],
-        );
-        echo "</td>";
-
-        echo "<td class='tab_bg_2 center'>";
-        echo Html::submit(_sx('button', 'Save'), ['name' => 'define_visibility', 'class' => 'btn btn-primary']);
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table></div>";
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display('@metademands/group_config.html.twig', [
+            'action'           => Toolbox::getItemTypeFormURL(Group::class),
+            'metademand_id'    => $item->fields['id'],
+            'visibility'       => $visibility,
+            'visibility_value' => $groupconfig->fields['visibility'],
+        ]);
     }
 
     /**

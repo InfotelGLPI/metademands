@@ -30,6 +30,8 @@
 namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Html;
 use CommonGLPI;
 
@@ -98,136 +100,167 @@ class Tools extends CommonDBTM
     {
         global $DB;
 
-        echo "<div class='left'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<th class='left'>";
-        echo __('Metademands global status', 'metademands');
-        echo "</th>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td class='left'>";
-        echo Html::getSimpleForm(
+        // Section 1: global status action
+        $global_status_form = Html::getSimpleForm(
             self::getFormURL(),
             'change_global_status',
             _x('button', 'Verify metademands global status', 'metademands'),
         );
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        echo "</div>";
 
-        echo "<div class='left'>";
-        echo "<table class='tab_cadre_fixe'>";
+        // Section 2: duplicate field options
+        $iterator = $DB->request([
+            'SELECT' => [
+                'plugin_metademands_fields_id',
+                new QueryExpression(
+                    'COUNT(' . $DB->quoteName('check_value') . ') AS ' . $DB->quoteName('nbr_doublon'),
+                ),
+            ],
+            'FROM'    => 'glpi_plugin_metademands_fieldoptions',
+            'GROUPBY' => ['plugin_metademands_fields_id', 'check_value'],
+            'HAVING'  => [
+                new QueryExpression('COUNT(' . $DB->quoteName('plugin_metademands_fields_id') . ') > 1'),
+                new QueryExpression('COUNT(' . $DB->quoteName('check_value') . ') > 1'),
+            ],
+        ]);
 
-        $query = "SELECT plugin_metademands_fields_id, COUNT(plugin_metademands_fields_id),
-                        check_value, COUNT(check_value) as nbr_doublon
-                    FROM
-                        `glpi_plugin_metademands_fieldoptions`
-                    GROUP BY
-                        plugin_metademands_fields_id,
-                        check_value
-                    HAVING
-                           (COUNT(plugin_metademands_fields_id) > 1) AND
-                           (COUNT(check_value) > 1)";
-
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result) > 0) {
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left'>";
-            echo __('Duplicates fields options', 'metademands');
-            echo "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_2'>";
-            echo "<td class='left'>";
-
-            while ($array = $DB->fetchAssoc($result)) {
-                $field = new Field();
-                $field->getfromDB($array['plugin_metademands_fields_id']);
-
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr class='tab_bg_2'>";
-                echo "<th class='left' width='50%'>";
-                echo __('Field');
-                echo "</th>";
-                echo "<th class='left'>";
-                echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
-                echo "</th>";
-                echo "<th class='left'>";
-                echo __('Number of duplicates', 'metademands');
-                echo "</th>";
-                echo "</tr>";
-
-                echo "<tr class='tab_bg_2'>";
-                echo "<td class='left'>";
-                echo $field->getLink();
-                echo "</td>";
-                echo "<td class='left'>";
-                echo \Dropdown::getDropdownName(
+        $duplicates_has  = count($iterator) > 0;
+        $duplicates_rows = [];
+        foreach ($iterator as $array) {
+            $field = new Field();
+            $field->getfromDB($array['plugin_metademands_fields_id']);
+            $duplicates_rows[] = [
+                'field_link' => $field->getLink(),
+                'meta_name'  => \Dropdown::getDropdownName(
                     "glpi_plugin_metademands_metademands",
                     $field->fields['plugin_metademands_metademands_id'],
-                );
-                echo "</td>";
-                echo "<td class='left'>";
-                echo $array['nbr_doublon'];
-                echo "</td>";
-                echo "</tr>";
-                echo "</table>";
-            }
-        } else {
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left'>";
-            echo __('No duplicates founded', 'metademands');
-            echo "</th>";
-            echo "</tr>";
+                ),
+                'nbr'        => $array['nbr_doublon'],
+            ];
         }
 
-        echo "</table></div>";
+        // Section 3: empty field options.
+        // SQL "AND" binds tighter than "OR", so the legacy WHERE is two OR branches:
+        //   (big AND group) OR (check_value = 0 AND item != 'other' AND item != 'User').
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_metademands_fieldoptions.id',
+                'glpi_plugin_metademands_fieldoptions.plugin_metademands_fields_id',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_fieldoptions',
+            'LEFT JOIN' => [
+                'glpi_plugin_metademands_fields' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields'       => 'id',
+                        'glpi_plugin_metademands_fieldoptions' => 'plugin_metademands_fields_id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                'OR' => [
+                    [
+                        ['OR' => [
+                            ['plugin_metademands_tasks_id' => 0],
+                            ['plugin_metademands_tasks_id' => null],
+                        ]],
+                        'fields_link'       => 0,
+                        'hidden_link'       => 0,
+                        'hidden_block'      => 0,
+                        'users_id_validate' => 0,
+                        'childs_blocks'     => '[]',
+                        'checkbox_value'    => 0,
+                        'checkbox_id'       => 0,
+                        'parent_field_id'   => 0,
+                    ],
+                    [
+                        'check_value' => 0,
+                        ['glpi_plugin_metademands_fields.item' => ['!=', 'other']],
+                        ['glpi_plugin_metademands_fields.item' => ['!=', 'User']],
+                    ],
+                ],
+            ],
+        ]);
 
-        echo "<br><div class='left'>";
-        echo "<table class='tab_cadre_fixe'>";
+        $empty_options_has  = count($iterator) > 0;
+        $empty_options_rows = [];
+        foreach ($iterator as $array) {
+            $field = new Field();
+            $field->getfromDB($array['plugin_metademands_fields_id']);
+            $empty_options_rows[] = [
+                'field_link' => $field->getLink(),
+                'meta_name'  => \Dropdown::getDropdownName(
+                    "glpi_plugin_metademands_metademands",
+                    $field->fields['plugin_metademands_metademands_id'],
+                ),
+                'purge_form' => Html::getSimpleForm(
+                    Tools::getFormURL(),
+                    'purge_emptyoptions',
+                    _x('button', 'Delete permanently'),
+                    ['id' => $array['id']],
+                    'fa-times-circle',
+                ),
+            ];
+        }
 
-        $query = "SELECT `glpi_plugin_metademands_fieldoptions`.`id`, `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`
-                    FROM
-                        `glpi_plugin_metademands_fieldoptions`
-                    LEFT JOIN `glpi_plugin_metademands_fields`
-                        ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`)
-                    WHERE
-                        ((`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
-                        `fields_link` = 0 AND
-                        `hidden_link` = 0 AND
-                        `hidden_block` = 0 AND
-                        `users_id_validate` = 0 AND
-                        `childs_blocks` = '[]' AND
-                        `checkbox_value` = 0 AND
-                        `checkbox_id` = 0 AND
-                        `parent_field_id` = 0) OR `check_value` = 0
-                                                      AND `glpi_plugin_metademands_fields`.`item` != 'other'
-                    AND `glpi_plugin_metademands_fields`.`item` != 'User'";
+        // Section 4: empty custom values
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_metademands_fieldparameters.id',
+                'glpi_plugin_metademands_fieldparameters.plugin_metademands_fields_id',
+                'glpi_plugin_metademands_fields.type',
+                'glpi_plugin_metademands_fieldcustomvalues.name',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_fieldparameters',
+            'LEFT JOIN' => [
+                'glpi_plugin_metademands_fields' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields'          => 'id',
+                        'glpi_plugin_metademands_fieldparameters' => 'plugin_metademands_fields_id',
+                    ],
+                ],
+                'glpi_plugin_metademands_fieldcustomvalues' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields'            => 'id',
+                        'glpi_plugin_metademands_fieldcustomvalues' => 'plugin_metademands_fields_id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                'glpi_plugin_metademands_fields.type' => [
+                    'radio',
+                    'checkbox',
+                    'dropdown_meta',
+                    'dropdown_multiple',
+                ],
+            ],
+        ]);
 
-        $result = $DB->doQuery($query);
+        // The inner rows depend on a `custom_values` key that this query never selects,
+        // so this loop renders nothing today; captured as-is to preserve behavior.
+        $empty_cv_has = count($iterator) > 0;
+        ob_start();
+        foreach ($iterator as $array) {
+            $field = new Field();
+            $field->getfromDB($array['plugin_metademands_fields_id']);
 
-        if ($DB->numrows($result) > 0) {
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left'>";
-            echo __('Empty fields options', 'metademands');
-            echo "</th>";
-            echo "</tr>";
+            if (isset($array['custom_values'])) {
+                $test = json_decode($array['custom_values'], true);
 
-            echo "<tr class='tab_bg_2'>";
-            echo "<td class='left'>";
-
-            while ($array = $DB->fetchAssoc($result)) {
-                $field = new Field();
-                $field->getfromDB($array['plugin_metademands_fields_id']);
-
+                if ($test == null) {
+                    continue;
+                }
+                if ($test != null && !array_key_exists('0', $test)) {
+                    continue;
+                }
                 echo "<table class='tab_cadre_fixe'>";
-
                 echo "<tr class='tab_bg_2'>";
                 echo "<th class='left' width='50%'>";
                 echo __('Field');
+                echo "</th>";
+                echo "<th class='center'>";
+                echo __('Type');
+                echo "</th>";
+                echo "<th class='center'>";
+                echo __('Value');
                 echo "</th>";
                 echo "<th class='left'>";
                 echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
@@ -241,6 +274,14 @@ class Tools extends CommonDBTM
                 echo $field->getLink();
                 echo "</td>";
                 echo "<td class='left'>";
+                echo $array['type'];
+                echo "</td>";
+                echo "<td class='left'>";
+                var_dump($test);
+                $start_one = array_combine(range(1, count($test)), array_values($test));
+                var_dump($start_one);
+                echo "</td>";
+                echo "<td class='left'>";
                 echo \Dropdown::getDropdownName(
                     "glpi_plugin_metademands_metademands",
                     $field->fields['plugin_metademands_metademands_id'],
@@ -249,143 +290,46 @@ class Tools extends CommonDBTM
                 echo "<td class='center'>";
                 echo Html::getSimpleForm(
                     Tools::getFormURL(),
-                    'purge_emptyoptions',
-                    _x('button', 'Delete permanently'),
+                    'fix_emptycustomvalues',
+                    _x('button', 'Fix empty custom values', 'metademands'),
                     ['id' => $array['id']],
-                    'fa-times-circle',
+                    'ti ti-circle-check',
                 );
                 echo "</td>";
                 echo "</tr>";
                 echo "</table>";
             }
-        } else {
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left'>";
-            echo __('No empty field options founded', 'metademands');
-            echo "</th>";
-            echo "</tr>";
         }
+        $empty_cv_rows_html = ob_get_clean();
 
-        echo "</table></div>";
+        // Side effect: realign child entities on their metademand entity.
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_metademands_groups.id',
+                'glpi_plugin_metademands_groups.plugin_metademands_metademands_id',
+                'glpi_plugin_metademands_groups.entities_id AS field_entity',
+                'glpi_plugin_metademands_metademands.entities_id AS meta_entity',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_groups',
+            'LEFT JOIN' => [
+                'glpi_plugin_metademands_metademands' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_groups'      => 'plugin_metademands_metademands_id',
+                        'glpi_plugin_metademands_metademands' => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                new QueryExpression(
+                    $DB->quoteName('glpi_plugin_metademands_metademands.entities_id')
+                    . ' != '
+                    . $DB->quoteName('glpi_plugin_metademands_groups.entities_id'),
+                ),
+            ],
+        ]);
 
-
-        echo "<br><div class='left'>";
-        echo "<table class='tab_cadre_fixe'>";
-
-        $query = "SELECT `glpi_plugin_metademands_fieldparameters`.`id`,
-                            `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`,
-                           `glpi_plugin_metademands_fields`.`type`,
-                           `glpi_plugin_metademands_fieldcustomvalues`.`name`
-                    FROM
-                        `glpi_plugin_metademands_fieldparameters`
-                    LEFT JOIN `glpi_plugin_metademands_fields`
-                        ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`)
-                    LEFT JOIN `glpi_plugin_metademands_fieldcustomvalues`
-                        ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldcustomvalues`.`plugin_metademands_fields_id`)
-                    WHERE
-                        `glpi_plugin_metademands_fields`.`type` = 'radio'
-                        OR `glpi_plugin_metademands_fields`.`type` = 'checkbox'
-                        OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_meta'
-                        OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_multiple'";
-
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result) > 0) {
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left'>";
-            echo __('Empty custom values', 'metademands');
-            echo "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_2'>";
-            echo "<td class='left'>";
-
-            while ($array = $DB->fetchAssoc($result)) {
-                $field = new Field();
-                $field->getfromDB($array['plugin_metademands_fields_id']);
-
-                if (isset($array['custom_values'])) {
-                    $test = json_decode($array['custom_values'], true);
-
-                    if ($test == null) {
-                        continue;
-                    }
-                    if ($test != null && !array_key_exists('0', $test)) {
-                        continue;
-                    }
-                    echo "<table class='tab_cadre_fixe'>";
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<th class='left' width='50%'>";
-                    echo __('Field');
-                    echo "</th>";
-                    echo "<th class='center'>";
-                    echo __('Type');
-                    echo "</th>";
-                    echo "<th class='center'>";
-                    echo __('Value');
-                    echo "</th>";
-                    echo "<th class='left'>";
-                    echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
-                    echo "</th>";
-                    echo "<th class='center'>";
-                    echo "</th>";
-                    echo "</tr>";
-
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td class='left'>";
-                    echo $field->getLink();
-                    echo "</td>";
-                    echo "<td class='left'>";
-                    echo $array['type'];
-                    echo "</td>";
-                    echo "<td class='left'>";
-                    var_dump($test);
-                    $start_one = array_combine(range(1, count($test)), array_values($test));
-                    var_dump($start_one);
-                    echo "</td>";
-                    echo "<td class='left'>";
-                    echo \Dropdown::getDropdownName(
-                        "glpi_plugin_metademands_metademands",
-                        $field->fields['plugin_metademands_metademands_id'],
-                    );
-                    echo "</td>";
-                    echo "<td class='center'>";
-                    echo Html::getSimpleForm(
-                        Tools::getFormURL(),
-                        'fix_emptycustomvalues',
-                        _x('button', 'Fix empty custom values', 'metademands'),
-                        ['id' => $array['id']],
-                        'ti ti-circle-check',
-                    );
-                    echo "</td>";
-                    echo "</tr>";
-                    echo "</table>";
-                }
-            }
-        } else {
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='left'>";
-            echo __('No empty custom values founded', 'metademands');
-            echo "</th>";
-            echo "</tr>";
-        }
-
-
-        $query = "SELECT `glpi_plugin_metademands_groups`.`id`,
-       `glpi_plugin_metademands_groups`.`plugin_metademands_metademands_id`,
-       `glpi_plugin_metademands_groups`.`entities_id` as field_entity,
-       `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
-                    FROM
-                        `glpi_plugin_metademands_groups`
-                    LEFT JOIN `glpi_plugin_metademands_metademands`
-                        ON (`glpi_plugin_metademands_groups`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
-                    WHERE
-                        `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_groups`.`entities_id`";
-
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result) > 0) {
-            while ($array = $DB->fetchAssoc($result)) {
+        if (count($iterator) > 0) {
+            foreach ($iterator as $array) {
                 $field = new Group();
                 $input['entities_id'] = $array["meta_entity"];
                 $input['id'] = $array["id"];
@@ -393,62 +337,87 @@ class Tools extends CommonDBTM
             }
         }
 
-        $query = "SELECT `glpi_plugin_metademands_ticketfields`.`id`,
-       `glpi_plugin_metademands_ticketfields`.`plugin_metademands_metademands_id`,
-       `glpi_plugin_metademands_ticketfields`.`entities_id` as field_entity,
-       `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
-                    FROM
-                        `glpi_plugin_metademands_ticketfields`
-                    LEFT JOIN `glpi_plugin_metademands_metademands`
-                        ON (`glpi_plugin_metademands_ticketfields`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
-                    WHERE
-                        `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_ticketfields`.`entities_id`";
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_metademands_ticketfields.id',
+                'glpi_plugin_metademands_ticketfields.plugin_metademands_metademands_id',
+                'glpi_plugin_metademands_ticketfields.entities_id AS field_entity',
+                'glpi_plugin_metademands_metademands.entities_id AS meta_entity',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_ticketfields',
+            'LEFT JOIN' => [
+                'glpi_plugin_metademands_metademands' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_ticketfields' => 'plugin_metademands_metademands_id',
+                        'glpi_plugin_metademands_metademands'  => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                new QueryExpression(
+                    $DB->quoteName('glpi_plugin_metademands_metademands.entities_id')
+                    . ' != '
+                    . $DB->quoteName('glpi_plugin_metademands_ticketfields.entities_id'),
+                ),
+            ],
+        ]);
 
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result) > 0) {
+        if (count($iterator) > 0) {
             $field = new TicketField();
-            while ($array = $DB->fetchAssoc($result)) {
+            foreach ($iterator as $array) {
                 $input['entities_id'] = $array["meta_entity"];
                 $input['id'] = $array["id"];
                 $field->update($input, 1);
             }
         }
 
-        $query = "SELECT `glpi_plugin_metademands_fields`.`id`,
-       `glpi_plugin_metademands_fields`.`plugin_metademands_metademands_id`,
-       `glpi_plugin_metademands_fields`.`entities_id` as field_entity,
-       `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
-                    FROM
-                        `glpi_plugin_metademands_fields`
-                    LEFT JOIN `glpi_plugin_metademands_metademands`
-                        ON (`glpi_plugin_metademands_fields`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
-                    WHERE
-                        `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_fields`.`entities_id`";
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_metademands_fields.id',
+                'glpi_plugin_metademands_fields.plugin_metademands_metademands_id',
+                'glpi_plugin_metademands_fields.entities_id AS field_entity',
+                'glpi_plugin_metademands_metademands.entities_id AS meta_entity',
+            ],
+            'FROM'      => 'glpi_plugin_metademands_fields',
+            'LEFT JOIN' => [
+                'glpi_plugin_metademands_metademands' => [
+                    'ON' => [
+                        'glpi_plugin_metademands_fields'      => 'plugin_metademands_metademands_id',
+                        'glpi_plugin_metademands_metademands' => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                new QueryExpression(
+                    $DB->quoteName('glpi_plugin_metademands_metademands.entities_id')
+                    . ' != '
+                    . $DB->quoteName('glpi_plugin_metademands_fields.entities_id'),
+                ),
+            ],
+        ]);
 
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result) > 0) {
+        if (count($iterator) > 0) {
             $field = new Field();
-            while ($array = $DB->fetchAssoc($result)) {
+            foreach ($iterator as $array) {
                 $input['entities_id'] = $array["meta_entity"];
                 $input['id'] = $array["id"];
                 $field->update($input, 1);
             }
         }
 
-        echo "</table></div>";
-
-        echo "<br><div class='left'>";
-        echo "<table class='tab_cadre_fixe'>";
-
+        // Section 5: fields with non-sequential custom value ranks
         $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
         $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
 
         $metafield = new Field();
         $not_ordered_fields = [];
+        $ranks = [];
+        $ranks_fields_found = false;
+        $ranks_has  = false;
+        $ranks_rows = [];
 
         if ($fields = $metafield->find()) {
+            $ranks_fields_found = true;
             foreach ($fields as $field) {
                 if (in_array($field['type'], $allowed_customvalues_types)
                     || in_array($field['item'], $allowed_customvalues_items)) {
@@ -469,61 +438,38 @@ class Tools extends CommonDBTM
                 }
             }
             $not_ordered_fields = array_unique($not_ordered_fields);
-            if (count($not_ordered_fields) > 0) {
-                echo "<tr class='tab_bg_2'>";
-                echo "<th class='left'>";
-                echo __('Ranks problem with fields', 'metademands');
-                echo "</th>";
-                echo "</tr>";
-
-                echo "<tr class='tab_bg_2'>";
-                echo "<td class='left'>";
-
-                foreach ($not_ordered_fields as $not_ordered_field) {
-                    $field_to_order = new Field();
-                    $field_to_order->getfromDB($not_ordered_field);
-                    echo "<table class='tab_cadre_fixe'>";
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<th class='left' width='50%'>";
-                    echo __('Field');
-                    echo "</th>";
-                    echo "<th class='left'>";
-                    echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
-                    echo "</th>";
-                    echo "<th class='center'>";
-                    echo "</th>";
-                    echo "</tr>";
-
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td class='left'>";
-                    echo $field_to_order->getLink();
-                    echo "</td>";
-                    echo "<td class='left'>";
-                    echo \Dropdown::getDropdownName(
+            $ranks_has = count($not_ordered_fields) > 0;
+            foreach ($not_ordered_fields as $not_ordered_field) {
+                $field_to_order = new Field();
+                $field_to_order->getfromDB($not_ordered_field);
+                $ranks_rows[] = [
+                    'field_link' => $field_to_order->getLink(),
+                    'meta_name'  => \Dropdown::getDropdownName(
                         "glpi_plugin_metademands_metademands",
                         $field_to_order->fields['plugin_metademands_metademands_id'],
-                    );
-                    echo "</td>";
-                    echo "<td class='right'>";
-                    echo Html::getSimpleForm(
+                    ),
+                    'fix_form'   => Html::getSimpleForm(
                         FieldCustomvalue::getFormURL(),
                         'fixranks',
                         _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
                         ['plugin_metademands_fields_id' => $not_ordered_field],
                         'ti-settings',
-                    );
-                    echo "</td>";
-                    echo "</tr>";
-                    echo "</table>";
-                }
-            } else {
-                echo "<tr class='tab_bg_2'>";
-                echo "<th class='left'>";
-                echo __('No problems with ranks found', 'metademands');
-                echo "</th>";
-                echo "</tr>";
+                    ),
+                ];
             }
-            echo "</table></div>";
         }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/tools_diagnostic.html.twig', [
+            'global_status_form' => $global_status_form,
+            'duplicates_has'     => $duplicates_has,
+            'duplicates_rows'    => $duplicates_rows,
+            'empty_options_has'  => $empty_options_has,
+            'empty_options_rows' => $empty_options_rows,
+            'empty_cv_has'       => $empty_cv_has,
+            'empty_cv_rows_html' => $empty_cv_rows_html,
+            'ranks_fields_found' => $ranks_fields_found,
+            'ranks_has'          => $ranks_has,
+            'ranks_rows'         => $ranks_rows,
+        ]);
     }
 }

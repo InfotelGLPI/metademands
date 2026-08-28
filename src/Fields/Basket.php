@@ -474,70 +474,74 @@ class Basket extends CommonDBTM
         $quantity = $params['custom_values'][0] ?? 0;
         $price = $params['custom_values'][1] ?? 0;
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('With quantity', 'metademands');
-        echo "</td>";
-        echo "<td>";
+        $rows = [];
+
+        ob_start();
         \Dropdown::showYesNo('custom[0]', $quantity);
-        echo "</td>";
-        echo "<td colspan='2'></td>";
-        echo "</tr>";
+        $quantity_cell = ob_get_clean();
+        $rows[] = [
+            ['html' => __('With quantity', 'metademands')],
+            ['html' => $quantity_cell],
+            ['html' => '', 'colspan' => 2],
+        ];
 
         if (Plugin::isPluginActive('ordermaterial')
             || Plugin::isPluginActive('orderfollowup')) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('With unit price (HT)', 'metademands');
-            echo "</td>";
-            echo "<td>";
+            ob_start();
             \Dropdown::showYesNo('custom[1]', $price);
-            echo "</td>";
-            echo "<td colspan='2'></td>";
-            echo "</tr>";
+            $price_cell = ob_get_clean();
+            $rows[] = [
+                ['html' => __('With unit price (HT)', 'metademands')],
+                ['html' => $price_cell],
+                ['html' => '', 'colspan' => 2],
+            ];
         }
 
         if (Plugin::isPluginActive('ordermaterial')) {
             $is_specific = $params['custom_values'][2] ?? 0;
             $is_accessory = $params['custom_values'][3] ?? 0;
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('On quotation', 'ordermaterial');
-            echo "</td>";
-            echo "<td>";
+            ob_start();
             \Dropdown::showYesNo('custom[2]', $is_specific);
-            echo "</td>";
-            echo "<td colspan='2'></td>";
-            echo "</tr>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Accessory', 'ordermaterial');
-            echo "</td>";
-            echo "<td>";
+            $specific_cell = ob_get_clean();
+            $rows[] = [
+                ['html' => __('On quotation', 'ordermaterial')],
+                ['html' => $specific_cell],
+                ['html' => '', 'colspan' => 2],
+            ];
+
+            ob_start();
             \Dropdown::showYesNo('custom[3]', $is_accessory);
-            echo "</td>";
-            echo "<td colspan='2'></td>";
-            echo "</tr>";
+            $accessory_cell = ob_get_clean();
+            $rows[] = [
+                ['html' => __('Accessory', 'ordermaterial')],
+                ['html' => $accessory_cell],
+                ['html' => '', 'colspan' => 2],
+            ];
         }
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        ob_start();
         echo Html::submit("", [
             'name' => 'update',
             'class' => 'btn btn-primary',
             'icon'  => 'ti ti-device-floppy']);
-        echo "</td>";
-        echo "</tr>";
+        $submit_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_customvalue_fixed.html.twig',
+            [
+                'rows'        => $rows,
+                'submit_html' => $submit_html,
+            ],
+        );
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
     {
-        echo "<tr>";
-        echo "<td colspan='2'>";
-        echo __('Value to check', 'metademands');
-        echo " ( " . \Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
-        echo "</td>";
+        $label = __('Value to check', 'metademands')
+            . " ( " . \Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+
+        ob_start();
         echo "<td class = 'dropdown-valuetocheck'>";
 
         $field = new FieldOption();
@@ -593,8 +597,23 @@ class Basket extends CommonDBTM
                  });";
 
         echo " </script>";
+        $valuetocheck_html = ob_get_clean();
 
+        ob_start();
         echo FieldOption::showLinkHtml($item->getID(), $params);
+        $link_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_params_value_to_check.html.twig',
+            [
+                'row_class'         => '',
+                'label'             => $label,
+                'label_colspan'     => 2,
+                'regex_html'        => '',
+                'valuetocheck_html' => $valuetocheck_html,
+                'link_html'         => $link_html,
+            ],
+        );
     }
 
     public static function showValueToCheck($item, $params)

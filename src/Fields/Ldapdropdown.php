@@ -291,11 +291,7 @@ class Ldapdropdown extends CommonDBTM
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
     {
-        echo "<tr>";
-        echo "<td colspan='2'>";
-        echo __('Value to check', 'metademands');
-        //        echo " ( " . \Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
-        echo "</td>";
+        ob_start();
         echo "<td class = 'dropdown-valuetocheck'>";
         self::showValueToCheck($fieldoption, $params);
         echo "</td>";
@@ -320,8 +316,23 @@ class Ldapdropdown extends CommonDBTM
                  });";
 
         echo " </script>";
+        $valuetocheck_html = ob_get_clean();
 
+        ob_start();
         echo FieldOption::showLinkHtml($item->getID(), $params);
+        $link_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_params_value_to_check.html.twig',
+            [
+                'row_class'         => '',
+                'label'             => __('Value to check', 'metademands'),
+                'label_colspan'     => 2,
+                'regex_html'        => '',
+                'valuetocheck_html' => $valuetocheck_html,
+                'link_html'         => $link_html,
+            ],
+        );
     }
 
     public static function showValueToCheck($item, $params)

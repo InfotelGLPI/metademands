@@ -1,0 +1,82 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if canedit %}
+    <br><div id='{{ viewstep_div_id }}'></div>
+    {{- add_script_html|raw }}
+    <div class='center'><a class='submit btn btn-primary' href='javascript:{{ add_fn_name }}();'>{{ __('Define a new visibility', 'metademands') }}</a></div>
+{% endif %}
+
+{% if warning_blocks %}
+    <div class='alert alert-warning d-flex'>
+        <i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;
+        {{- __('Be careful if all blocks are not assigned, they will be displayed to the last assigned group', 'metademands') }}
+    </div>
+{% endif %}
+
+{{ css_html|raw }}
+<div class='row'>
+    <div class='col-12 col-lg-12'>
+        <ul class='process-chart'>
+            <li class='align-items-center d-flex justify-content-center my-4 pb-6 fs-1 fw-bold'>
+                <i class='ti ti-brand-databricks me-1'></i>
+                <span>{{ __('List of visibilities', 'metademands') }}</span>
+            </li>
+            {% if has_blocks %}
+                {% for card in cards %}
+                    <li class='step'>
+                        {{- card.edit_script_html|raw }}
+                        <a class='btn flex-column' {{ card.onhover|raw }} href='#'>
+                            <div class='d-flex align-items-center'>
+                                 <i class='ti ti-align-box-left-middle'></i>
+                                <span>&nbsp;{{ card.block_type_label }}&nbsp;-&nbsp;{{ card.block_label_html|raw }}</span>
+                            </div>
+                            <div class='text-muted'>{{ card.visibility_html|raw }}</div>
+                        </a>
+                        <div class='btn flex-column' style='color:darkred'>{{ card.delete_form_html|raw }}</div>
+                    </li>
+                {% endfor %}
+                <li class='end'>
+                    <i class='ti ti-circle-check me-1'></i>
+                    <span>{{ __('The object is created', 'metademands') }}</span>
+                </li>
+            </ul>
+        </div>
+    {% else %}
+        <div class='center b'>{{ __('No visibility defined', 'metademands') }}</div>
+    {% endif %}
+
+{% if setup_problem %}
+    <div class='row'>
+        <div class='col-12 col-lg-12'>
+            <div class='center alert alert-danger' style='margin-top:20px'>
+                <i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;
+                {{- __('There is a problem with the setup', 'metademands') }}<br>{{ __('Your blocks are not all defined', 'metademands') }}&nbsp;
+            </div>
+        </div>
+    </div>
+{% endif %}

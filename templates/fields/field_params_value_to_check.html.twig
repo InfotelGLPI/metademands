@@ -1,0 +1,40 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Shared "value to check" editing row of a field's condition configuration.
+ # The label is auto-escaped by {{ }}. Framework-produced markup (the optional
+ # regex cell, the value dropdown cell together with its reload <script>, and
+ # the linked task/field rows) is captured server-side and injected as raw.
+ # The opening <tr> is intentionally left unclosed: it is closed by the first
+ # <tr> emitted inside link_html (FieldOption::showLinkHtml), matching legacy.
+-#}
+<tr{% if row_class %} class="{{ row_class }}"{% endif %}>
+   <td colspan="{{ label_colspan }}">{{ label }}</td>
+   {{- regex_html|raw }}
+   {{- valuetocheck_html|raw }}
+{{ link_html|raw }}

@@ -1,0 +1,59 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class='row' style='margin-bottom: 15px; margin-top: 20px;'>
+    <div class="col-md-12">
+        <h4><div class='alert alert-dark' role='alert'>
+            {%- if header_is_fa %}<i class='fa-2x fas {{ header_icon }}'></i>&nbsp;
+            {%- else %}<i class='ti {{ header_icon }}''></i>&nbsp;
+            {%- endif %}
+            {{- _n('Form in progress', 'Forms in progress', cnt, 'metademands') }}   ({{ cnt }})
+        </div></h4></div></div>
+
+{% if cards %}
+    <div id='listmeta'  class='row' style='padding-left: 20px;'>
+        {% for card in cards %}
+            <div class="readonly-btnsc-normal" style="min-height: 300px" >
+                <div class='center'>
+                    {%- if card.is_fa %}<i class='sc-colorform bt-interface fa-menu-md fas {{ card.icon }} fa-4x' style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
+                    {%- else %}<i class='sc-colorform bt-interface fa-menu-md ti {{ card.icon }} fa-4x' style="font-size: 3em;"></i>
+                    {%- endif %}
+                </div>
+                <br><p> <span class='sc-colorform'>{{ card.name_html|raw }}</span>
+                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ card.created }}</span></em>
+                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('Step', 'metademands') }}{{ card.block_id }}</span></em>
+                {%- if card.has_group_dest %}
+                    <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('Group in charge of the next step', 'metademands') }}<br>{{ card.group_dest_html|raw }}</span></em>
+                {%- endif %}
+                {%- if card.has_user_dest %}
+                    <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('User in charge of the next step', 'metademands') }}<br>{{ card.user_dest_html|raw }}</span></em>
+                {%- endif %}
+                {{ card.delete_html|raw }}
+            </p></div>
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,87 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class="row">
+    <div class="card mx-1 my-2 flex-grow-1">
+        <div class="col-12 align-self-center">
+            <section class="card-body" style="width: 100%;">
+                <h2 class="card-title mb-2 text-break" style="color: {{ title_color }};">
+                    {{ __('Your basket', 'metademands') }}
+                </h2>
+                <div class="mydraft right" style="position: absolute;top: 0;margin-top: 10px;;right: 0;">
+                    {{ clear_basket_html|raw }}
+                </div>
+                {{ hidden_meta|raw }}
+                {{ hidden_form_meta|raw }}
+            </section>
+        </div>
+    </div>
+</div>
+
+{{ lines_html|raw }}
+
+<div class="row">
+    <div class="bt-feature col-md-12 ">
+        {{ previous_html|raw }}
+        <span style="float:right">
+            {{ submit_order_html|raw }}
+        </span>
+    </div>
+</div>
+
+<script>
+    $('#submitOrder').click(function() {
+        var meta_id = {{ meta_id }};
+        $.ajax({
+            url: '{{ webdir }}/ajax/addform.php',
+            type: 'POST',
+            data: {{ post_json|raw }},
+            success: function (response) {
+                $.ajax({
+                    url: '{{ webdir }}/ajax/createmetademands.php',
+                    type: 'POST',
+                    data: {{ post_json|raw }},
+                    success: function (response) {
+                        window.location.href = '{{ webdir }}/front/wizard.form.php?{{ param_url|raw }}metademands_id=' + meta_id + '&step=create_metademands';
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                        console.log(status);
+                        console.log(error);
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+            }
+        });
+    });
+    $('#prevBtn').hide();
+    $('.step_wizard').hide();
+</script>

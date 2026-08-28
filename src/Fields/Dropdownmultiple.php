@@ -461,9 +461,7 @@ class Dropdownmultiple extends CommonDBTM
     {
         $custom_values = $params['custom_values'];
 
-        echo "<tr>";
-        echo "<td>";
-        $maxrank = -1;
+        $data = ['mode' => 'empty'];
 
         $dbu = new DbUtils();
         if ($params["item"] != "User") {
@@ -476,17 +474,18 @@ class Dropdownmultiple extends CommonDBTM
                 $criteria = [];
                 $default_values = $params['default_values'];
 
-                $items = $item->find($criteria, ["name ASC"]);
+                $found_items = $item->find($criteria, ["name ASC"]);
 
                 $target = FieldCustomvalue::getFormURL();
-                // Formulaire wrappant la table (HTML5 valide : <form><table> est autorisé)
-                echo "<form method='post' id='customvalues_form' action=\"$target\">";
+
+                $hidden_html = '';
                 if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                    echo Html::hidden('type', ['value' => $params["type"]]);
-                    echo Html::hidden('item', ['value' => $params["item"]]);
+                    $hidden_html .= Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+                    $hidden_html .= Html::hidden('type', ['value' => $params["type"]]);
+                    $hidden_html .= Html::hidden('item', ['value' => $params["item"]]);
                 }
-                echo Html::scriptBlock("$(function () {
+
+                $script_html = Html::scriptBlock("$(function () {
                     $('#checkall').click(function () {
                             var checkboxes = document.querySelectorAll('input[type=\"checkbox\"]');
                             for (var i = 0; i < checkboxes.length; i++) {
@@ -502,66 +501,47 @@ class Dropdownmultiple extends CommonDBTM
                         }
                     });
                 });");
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr class='tab_bg_1'>";
 
-                echo "<th>";
-                echo FieldCustomvalue::getTypeName(2);
-                echo "</th>";
+                $items = [];
+                foreach ($found_items as $key => $v) {
+                    ob_start();
+                    \Dropdown::showYesNo("default[" . $key . "]", ($default_values[$key] ?? 0));
+                    $default_html = ob_get_clean();
 
-                echo "<th width='20%'>";
-                echo _n('Default value', 'Default values', 1, 'metademands');
-                echo "</th>";
-
-                echo "<th width='20%'>";
-                echo __('Display value in the dropdown', 'metademands');
-                echo "<br><a href='#' id='checkall'>" . __('Select all', 'metademands') . "</a>";
-                echo " / <a href='#' id='uncheckall'>" . __('Unselect all', 'metademands') . "</a>";
-                echo "</th>";
-
-                echo "</tr>";
-                foreach ($items as $key => $v) {
-                    echo "<tr class='tab_bg_1'>";
-
-                    echo "<td>";
-                    echo "<span id='custom_values$key'>";
-                    echo htmlspecialchars((string) $v["name"], ENT_QUOTES, 'UTF-8');
-                    echo "</span>";
-                    echo "</td>";
-
-                    echo "<td width='20%'>";
-                    echo "<span id='default_values$key'>";
-                    $name = "default[" . $key . "]";
-                    $value = ($default_values[$key] ?? 0);
-                    \Dropdown::showYesNo($name, $value);
-                    echo "</span>";
-                    echo "</td>";
-
-                    echo "<td width='20%'>";
-                    echo "<span id='present_values$key'>";
-                    $checked = "";
-                    if (isset($custom_values[$key])
-                        && $custom_values[$key] != 0) {
-                        $checked = "checked";
-                    }
-                    echo "<input type='checkbox' name='custom[" . $key . "]'  value='$key' $checked />";
-                    echo "</span>";
-                    echo "</td>";
-
-                    echo "</tr>";
+                    $items[] = [
+                        'key'          => $key,
+                        'name'         => (string) $v["name"],
+                        'default_html' => $default_html,
+                        'checked'      => (isset($custom_values[$key]) && $custom_values[$key] != 0),
+                    ];
                 }
 
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>";
+                ob_start();
                 echo Html::submit("", [
                     'name' => 'update',
                     'class' => 'btn btn-primary',
                     'icon' => 'ti ti-device-floppy',
                 ]);
-                echo "</td>";
-                echo "</tr>";
-                echo "</table>";
+                $submit_html = ob_get_clean();
+
+                ob_start();
                 Html::closeForm();
+                $close_form_html = ob_get_clean();
+
+                $data = [
+                    'mode'                   => 'objects',
+                    'form_target'            => $target,
+                    'hidden_html'            => $hidden_html,
+                    'script_html'            => $script_html,
+                    'type_name'              => FieldCustomvalue::getTypeName(2),
+                    'default_value_label'    => _n('Default value', 'Default values', 1, 'metademands'),
+                    'display_dropdown_label' => __('Display value in the dropdown', 'metademands'),
+                    'select_all_label'       => __('Select all', 'metademands'),
+                    'unselect_all_label'     => __('Unselect all', 'metademands'),
+                    'items'                  => $items,
+                    'submit_html'            => $submit_html,
+                    'close_form_html'        => $close_form_html,
+                ];
             } else {
                 if ($params['item'] != 'Location') {
                     $target   = FieldCustomvalue::getFormURL();
@@ -610,6 +590,7 @@ class Dropdownmultiple extends CommonDBTM
                     FieldCustomvalue::importCustomValue($params);
                     $import_html = ob_get_clean();
 
+                    ob_start();
                     TemplateRenderer::getInstance()->display(
                         '@metademands/fields/field_customvalue_list.html.twig',
                         [
@@ -624,9 +605,20 @@ class Dropdownmultiple extends CommonDBTM
                             'reorder_url'            => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
                         ],
                     );
+                    $list_html = ob_get_clean();
+
+                    $data = [
+                        'mode'      => 'list',
+                        'list_html' => $list_html,
+                    ];
                 }
             }
         }
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_customvalue_dropdownmultiple.html.twig',
+            $data,
+        );
     }
 
     public static function showFieldParameters($params): string
@@ -692,12 +684,11 @@ class Dropdownmultiple extends CommonDBTM
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
     {
-        echo "<tr>";
-        echo "<td>";
-        echo __('Value to check', 'metademands');
-        //        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
-        echo "</td>";
+        ob_start();
         FieldOption::showRegexDropdown($params['check_type_value'], $params['ID']);
+        $regex_html = ob_get_clean();
+
+        ob_start();
         echo "<td class = 'dropdown-valuetocheck'>";
         switch ($params['check_type_value']) {
             case 1:
@@ -751,8 +742,25 @@ class Dropdownmultiple extends CommonDBTM
                 echo '';
         }
         echo "</td>";
+        $valuetocheck_html = ob_get_clean();
+
         $params['use_richtext'] = 0;
+
+        ob_start();
         echo FieldOption::showLinkHtml($item->getID(), $params);
+        $link_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_params_value_to_check.html.twig',
+            [
+                'row_class'         => '',
+                'label'             => __('Value to check', 'metademands'),
+                'label_colspan'     => 1,
+                'regex_html'        => $regex_html,
+                'valuetocheck_html' => $valuetocheck_html,
+                'link_html'         => $link_html,
+            ],
+        );
     }
 
     public static function showValueToCheck($item, $params)

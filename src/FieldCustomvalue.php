@@ -513,28 +513,18 @@ class FieldCustomvalue extends CommonDBChild
      */
     public static function importCustomValue($params)
     {
-
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td align='right'>";
-        echo "<a href='javascript:void(0);' class='btn btn-success' onclick='formToggle(\"importFrm\");'>";
-        echo __('Reset and import custom values', 'metademands') . "</a>";
-        echo "</td>";
-
-        echo "<td align='left'  colspan='4'>";
-        echo "<div class='col-md-12' id='importFrm' style='display: none;'>";
-        echo "<form name='form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/importcustomvalues.php' method='post' enctype='multipart/form-data'>";
-        echo "<input type='file' name='importFrm' id='importFrm'>&nbsp;";
-        echo Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-        echo Html::submit("", ['name'  => 'importreplacecsv',
+        $hidden_html = Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
+        $submit_html = Html::submit("", ['name'  => 'importreplacecsv',
             'class' => 'btn btn-success',
             'icon'  => 'ti ti-upload',
             'confirm' => __('Are you sure ? Custom values will be deleted !', 'metademands')]);
+
         $warning = __('Please respect this format : name; display by default(0|1); comment; - sorted by display order', 'metademands');
+        ob_start();
         Html::showToolTip($warning);
-        Html::closeForm();
-        echo "</div>";
-        echo Html::scriptBlock("function formToggle(ID) {
+        $tooltip_html = ob_get_clean();
+
+        $script_html = Html::scriptBlock("function formToggle(ID) {
                 var element = document.getElementById(ID);
                 if (element.style.display === 'none') {
                     element.style.display = 'block';
@@ -542,8 +532,17 @@ class FieldCustomvalue extends CommonDBChild
                     element.style.display = 'none';
                 }
             };");
-        echo "</td>";
-        echo "</tr>";
+
+        TemplateRenderer::getInstance()->display(
+            '@metademands/fields/field_customvalue_import.html.twig',
+            [
+                'import_action' => PLUGIN_METADEMANDS_WEBDIR . "/front/importcustomvalues.php",
+                'hidden_html'   => $hidden_html,
+                'submit_html'   => $submit_html,
+                'tooltip_html'  => $tooltip_html,
+                'script_html'   => $script_html,
+            ],
+        );
     }
 
     /**

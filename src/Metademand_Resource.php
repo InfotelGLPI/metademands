@@ -33,6 +33,7 @@ use CommonDBTM;
 use CommonGLPI;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Resources\Config;
 use GlpiPlugin\Resources\ContractType;
 use GlpiPlugin\Resources\Resource;
@@ -207,24 +208,21 @@ class Metademand_Resource extends CommonDBTM
         }
         $canedit = $this->canCreate();
         if ($canedit) {
-            echo "<form name='form' method='post' action='"
-                 . Toolbox::getItemTypeFormURL(Metademand_Resource::class) . "'>";
-
-            echo "<div class='center'><table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'><th>" . self::getTypeName(1) . "</th></tr>";
-            echo "<tr class='tab_bg_1'><td class='center'>";
-            echo Metademand::getTypeName(1) . '&nbsp;';
+            ob_start();
             \Dropdown::show(Metademand::class, ['name'   => 'plugin_metademands_metademands_id',
                 'used'   => $used_data,
                 'entity' => $_SESSION['glpiactive_entity']]);
-            echo "</td></tr>";
-            echo "<tr class='tab_bg_1'><td class='tab_bg_2 center'>";
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            echo Html::hidden('entities_id', ['value' => $_SESSION['glpiactive_entity']]);
-            echo Html::hidden('plugin_resources_contracttypes_id', ['value' => $resourceContractType->fields['id']]);
-            echo "</td></tr>";
-            echo "</table></div>";
-            Html::closeForm();
+            $metademand_dropdown = ob_get_clean();
+
+            TemplateRenderer::getInstance()->display('@metademands/forms/metademand_resource_form.html.twig', [
+                'form_action'          => Toolbox::getItemTypeFormURL(Metademand_Resource::class),
+                'resource_type_name'   => self::getTypeName(1),
+                'metademand_type_name' => Metademand::getTypeName(1),
+                'metademand_dropdown'  => $metademand_dropdown,
+                'submit_html'          => Html::submit(_sx('button', 'Add'), ['name' => 'update', 'class' => 'btn btn-primary']),
+                'hidden_entities_id'   => Html::hidden('entities_id', ['value' => $_SESSION['glpiactive_entity']]),
+                'hidden_contracttype'  => Html::hidden('plugin_resources_contracttypes_id', ['value' => $resourceContractType->fields['id']]),
+            ]);
         }
 
         $this->listItems($data, $canedit);

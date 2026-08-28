@@ -96,8 +96,6 @@ class Number extends CommonDBTM
 
     public static function showFieldCustomValues($params)
     {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
         $min = 0;
         $max = 0;
         $step = 0;
@@ -109,38 +107,50 @@ class Number extends CommonDBTM
             $step = $params['custom_values'][2] ?? "";
             $minimal = $params['custom_values'][3] ?? "";
         }
+
+        ob_start();
         echo '<label>' . __("Minimal count") . '</label>&nbsp;';
         $opt = ['value' => $min];
         \Dropdown::showNumber("custom[0]", $opt);
-        echo "</td>";
+        $min_cell = ob_get_clean();
 
-        echo "<td>";
+        ob_start();
         echo '<label>' . __("Maximal count") . '</label>&nbsp;';
         $opt = ['value' => $max, 'max' => 9999];
         \Dropdown::showNumber("custom[1]", $opt);
-        echo "</td>";
+        $max_cell = ob_get_clean();
 
-        echo "<td>";
+        ob_start();
         echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
         $opt = ['value' => $step, 'min' => 1];
         \Dropdown::showNumber("custom[2]", $opt);
-        echo "</td>";
+        $step_cell = ob_get_clean();
 
-        echo "<td>";
+        ob_start();
         echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
         $opt = ['value' => $minimal];
         \Dropdown::showNumber("custom[3]", $opt);
-        echo "</td>";
-        echo "</tr>";
+        $minimal_cell = ob_get_clean();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        ob_start();
         echo Html::submit("", [
             'name' => 'update',
             'class' => 'btn btn-primary',
             'icon'  => 'ti ti-device-floppy']);
-        echo "</td>";
-        echo "</tr>";
+        $submit_html = ob_get_clean();
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_customvalue_fixed.html.twig',
+            [
+                'rows' => [[
+                    ['html' => $min_cell],
+                    ['html' => $max_cell],
+                    ['html' => $step_cell],
+                    ['html' => $minimal_cell],
+                ]],
+                'submit_html' => $submit_html,
+            ],
+        );
     }
 
     /**

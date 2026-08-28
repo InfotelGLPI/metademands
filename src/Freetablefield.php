@@ -33,6 +33,7 @@ use CommonDBChild;
 use CommonGLPI;
 use DBConnection;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Freetable;
 use Html;
@@ -266,36 +267,33 @@ class Freetablefield extends CommonDBChild
 
         $this->showFormHeader($options);
 
-        echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
-        echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
-        echo Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
+        $hidden_fields_id = Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
+        $hidden_type      = Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
+        $hidden_item      = Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
 
         $params = Field::getAllParamsFromField($metademand_fields);
 
+        ob_start();
         self::showFreetableFields($params);
+        $freetable_html = ob_get_clean();
 
-        if ($ID > 0) {
-            echo "<table class='tab_cadre' width='100%'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='2'>" . __('Field informations', 'metademands') . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Type') . "</td>";
-            echo "<td>";
-            echo Field::getFieldTypesName($params["type"]);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Example', 'metademands') . "</td>";
-            echo "<td>";
-            echo Field::getFieldInput([], $params, false, 0, 0, false, "");
-            echo "</td>";
-            echo "</tr>";
-
-            echo "</table>";
+        $show_info    = ($ID > 0);
+        $type_name    = '';
+        $example_html = '';
+        if ($show_info) {
+            $type_name    = Field::getFieldTypesName($params["type"]);
+            $example_html = Field::getFieldInput([], $params, false, 0, 0, false, "");
         }
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/freetablefield_fields_form.html.twig', [
+            'hidden_fields_id' => $hidden_fields_id,
+            'hidden_type'      => $hidden_type,
+            'hidden_item'      => $hidden_item,
+            'freetable_html'   => $freetable_html,
+            'show_info'        => $show_info,
+            'type_name'        => $type_name,
+            'example_html'     => $example_html,
+        ]);
 
         return true;
     }
@@ -414,32 +412,24 @@ class Freetablefield extends CommonDBChild
     public static function addNewValue($rank, $fields_id)
     {
         $target = self::getFormURL();
-        echo "<form method='post' action=\"" . htmlspecialchars($target, ENT_QUOTES) . "\">";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1'>";
 
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'internal_name_values' . $rank . '\'>';
-        echo __('Rank', 'metademands') . ' ' . $rank . '<br>';
-        echo " " . __('Internal name', 'metademands') . " ";
-        $label = __('No spaces, no special characters', 'metademands');
+        // Cell 1: internal name
+        ob_start();
         Html::showToolTip(
-            RichText::getSafeHtml($label),
+            RichText::getSafeHtml(__('No spaces, no special characters', 'metademands')),
             ['awesome-class' => 'ti ti-info-circle'],
         );
-        $name = "internal_name_values[$rank]";
-        echo Html::input($name, ['size' => 20]);
-        echo "</span>";
-        echo "</td>";
+        $internal_name_tooltip = ob_get_clean();
+        $internal_name_input   = Html::input("internal_name_values[$rank]", ['size' => 20]);
 
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'type_values' . $rank . '\'>';
-        echo "<br>" . __('Type', 'metademands') . "<br>";
-        $name = "type_values[$rank]";
+        // Cell 2: type dropdown + toggle script
         $types = self::getTypeFields(true);
-        \Dropdown::showFromArray($name, $types, ['on_change' => 'hideandshow(this.value)']);
-        echo "<script type='text/javascript'>";
-        echo "function hideandshow (type) {
+        ob_start();
+        \Dropdown::showFromArray("type_values[$rank]", $types, ['on_change' => 'hideandshow(this.value)']);
+        $type_dropdown = ob_get_clean();
+
+        $type_script = "<script type='text/javascript'>";
+        $type_script .= "function hideandshow (type) {
 
         if (type == 1) {
             var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
@@ -466,68 +456,59 @@ class Freetablefield extends CommonDBChild
             }
         }
         ";
-        echo "};";
-        echo "</script>";
-        echo "</span>";
-        echo "</td>";
+        $type_script .= "};";
+        $type_script .= "</script>";
 
-        echo "<td id='show_custom_fields'>";
-        echo "<span id='custom_values$rank'>";
-        echo "<br>" . __('Display name', 'metademands') . " ";
-        $name = "custom_values[$rank]";
-        echo Html::input($name, ['size' => 20]);
-        echo "</span>";
-        echo "</td>";
+        // Cell 3: display name
+        $display_name_input = Html::input("custom_values[$rank]", ['size' => 20]);
 
-        echo "<td id='show_custom_fields'>";
-        echo "<span class='newdropdownvalue$rank' id='dropdown_values$rank'  style='display:none'>";
-        echo "<br>" . __('Dropdown values', 'metademands') . " ";
-        $label = __('One value by line, separated by comma', 'metademands');
+        // Cell 4: dropdown values textarea
+        ob_start();
         Html::showToolTip(
-            RichText::getSafeHtml($label),
+            RichText::getSafeHtml(__('One value by line, separated by comma', 'metademands')),
             ['awesome-class' => 'ti ti-info-circle'],
         );
-        $name = "dropdown_values[$rank]";
+        $dropdown_values_tooltip = ob_get_clean();
+        ob_start();
         Html::textarea([
-            'name' => $name,
+            'name' => "dropdown_values[$rank]",
             'rows' => 3,
             'cols' => 5,
         ]);
-        echo "</span>";
-        echo "</td>";
+        $dropdown_values_textarea = ob_get_clean();
 
-        echo "<td id='show_custom_fields'>";
-        echo "<span class='newcomment$rank' id='comment_values$rank'  style='display:none'>";
-        echo "<br>" . __('Comment') . " ";
-        $name = "comment_values[$rank]";
-        echo Html::input($name, ['size' => 20]);
-        echo "</span>";
-        echo "</td>";
+        // Cell 5: comment
+        $comment_input = Html::input("comment_values[$rank]", ['size' => 20]);
 
-        echo "<td id='show_custom_fields'>";
-        echo "<span id='is_mandatory_values$rank'>";
-        echo "<br>" . __('Mandatory', 'metademands') . "<br>";
-        $name = "is_mandatory_values[$rank]";
-        $value = 0;
-        \Dropdown::showYesNo($name, $value);
-        echo "</span>";
-        echo "</td>";
+        // Cell 6: mandatory
+        ob_start();
+        \Dropdown::showYesNo("is_mandatory_values[$rank]", 0);
+        $mandatory_yesno = ob_get_clean();
 
-        echo Html::hidden('rank', ['value' => $rank]);
-        echo Html::hidden('fields_id', ['value' => $fields_id]);
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo Html::submit("", [
+        $hidden_rank      = Html::hidden('rank', ['value' => $rank]);
+        $hidden_fields_id = Html::hidden('fields_id', ['value' => $fields_id]);
+        $submit_html      = Html::submit("", [
             'name' => 'add',
             'class' => 'btn btn-primary',
             'icon' => 'ti ti-device-floppy',
         ]);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        Html::closeForm();
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/freetablefield_add_value.html.twig', [
+            'form_action'              => $target,
+            'rank'                     => $rank,
+            'internal_name_tooltip'    => $internal_name_tooltip,
+            'internal_name_input'      => $internal_name_input,
+            'type_dropdown'            => $type_dropdown,
+            'type_script'              => $type_script,
+            'display_name_input'       => $display_name_input,
+            'dropdown_values_tooltip'  => $dropdown_values_tooltip,
+            'dropdown_values_textarea' => $dropdown_values_textarea,
+            'comment_input'            => $comment_input,
+            'mandatory_yesno'          => $mandatory_yesno,
+            'hidden_rank'              => $hidden_rank,
+            'hidden_fields_id'         => $hidden_fields_id,
+            'submit_html'              => $submit_html,
+        ]);
     }
 
 
