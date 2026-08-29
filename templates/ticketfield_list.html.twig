@@ -1,0 +1,82 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if not has_rows %}
+    <div class="center first-bloc">
+        <table class="tab_cadre_fixe">
+            <tr class="tab_bg_1">
+                <td class="center">{{ __('No results found') }}</td>
+            </tr>
+        </table>
+    </div>
+{% else %}
+    {# Emitted before the table: the legacy code placed one <script> per row directly
+       inside <table>, where the parser hoists it out anyway. #}
+    {{ scripts_html|raw }}
+
+    <div class="center first-bloc left">
+        {% if canedit %}
+            {{ open_form_html|raw }}
+            {{ ma_top_html|raw }}
+        {% endif %}
+
+        <table class="tab_cadre_fixe">
+            <tr class="tab_bg_2">
+                <th class="center b" colspan="6">{{ title }}</th>
+            </tr>
+            <tr class="tab_bg_2">
+                <th width="10">
+                    {%- if canedit %}{{ check_all_html|raw }}{% endif -%}
+                </th>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Value') }}</th>
+            </tr>
+            {% for row in rows %}
+                <tr class="tab_bg_1">
+                    <td width="10">
+                        {%- if canedit %}{{ row.checkbox_html|raw }}{% endif -%}
+                    </td>
+                    <td>
+                        {% if canedit %}
+                            <a href="javascript:{{ row.edit_function }}();">{{ row.label }}</a>
+                        {% else %}
+                            {{ row.label }}
+                        {% endif %}
+                        {{ row.mandatory_mark|raw }}
+                    </td>
+                    <td>{{ row.value_html|raw }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% if canedit %}
+            {{ ma_bottom_html|raw }}
+            {# closes the massive actions <form> above and carries the CSRF token #}
+            {{ close_form_html|raw }}
+        {% endif %}
+    </div>
+{% endif %}

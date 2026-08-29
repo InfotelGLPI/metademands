@@ -1,0 +1,58 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if canedit %}
+    <div class="center first-bloc">
+        <form name="ticketfield_form" method="post" action="{{ form_action }}">
+            <table class="tab_cadre_fixe">
+                <tr class="tab_bg_1">
+                    <th colspan="6">
+                        {{ __('Synchronise with ticket template', 'metademands') }} {{ template_link|raw }}
+                    </th>
+                </tr>
+                <tr class="tab_bg_1">
+                    <td class="tab_bg_2 center">
+                        {{ submit_html|raw }}
+                        {{ hidden_html|raw }}
+                    </td>
+                </tr>
+                <tr class="tab_bg_1 center">
+                    <td>
+                        <a href="#" class="submit btn btn-primary" data-bs-toggle="modal" data-bs-target="#tags"
+                           title="{{ __('Show list of available tags') }}">
+                            {{ __('Show list of available tags') }}
+                        </a>
+                        {{ tags_modal_html|raw }}
+                    </td>
+                </tr>
+            </table>
+            {# closes the <form> above and carries the CSRF token #}
+            {{ close_form_html|raw }}
+    </div>
+{% endif %}
+
+<div id="{{ viewticketchild_id }}"></div>

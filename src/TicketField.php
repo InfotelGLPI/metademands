@@ -299,37 +299,29 @@ class TicketField extends CommonDBChild
             $cats = reset($cats);
         }
 
+        $rand = mt_rand();
+        $template_link = '';
+        $submit_html = '';
+        $hidden_html = '';
+        $tags_modal_html = '';
+        $close_form_html = '';
+
         if ($canedit) {
-            echo "<div class='center first-bloc'>";
-            echo "<form name='ticketfield_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='6'>";
-            echo __('Synchronise with ticket template', 'metademands') . " ";
             $ticket = new $object();
+            // Beware: $tt is replaced here by the template actually in use, and that is the
+            // instance forwarded to listFields() below. A user without UPDATE therefore gets
+            // the mandatory marks of an empty template, which is the legacy behaviour.
             $tt = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $cats, $item->fields['entities_id']);
-            echo $tt->getLink();
-            echo "</th>";
-            echo "</tr>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td class='tab_bg_2 center'>";
-            echo Html::submit(
+            $template_link = $tt->getLink();
+
+            $submit_html = Html::submit(
                 __('Synchronise with ticket template', 'metademands'),
                 ['name' => 'template_sync', 'class' => 'btn btn-primary'],
             );
             foreach ($item->fields as $name => $value) {
-                echo Html::hidden($name, ['value' => $value]);
+                $hidden_html .= Html::hidden($name, ['value' => $value]);
             }
-            echo "</td>";
-            echo "</tr>";
-            echo "<tr class='tab_bg_1 center'>";
-            echo "<td>";
-            echo "<a href='#' class='submit btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __(
-                'Show list of available tags',
-            ) . "' >";
-            echo __('Show list of available tags');
-            echo "</a>";
-            echo Ajax::createIframeModalWindow(
+            $tags_modal_html = Ajax::createIframeModalWindow(
                 'tags',
                 PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->fields['id'],
                 [
@@ -337,15 +329,19 @@ class TicketField extends CommonDBChild
                     'display' => false,
                 ],
             );
-            echo "</td>";
-            echo "</tr>";
-            echo "</table>";
-            Html::closeForm();
-            echo "</div>";
+            $close_form_html = Html::closeForm(false);
         }
 
-        $rand = mt_rand();
-        echo "<div id='viewticketchild" . $item->fields['id'] . $rand . "'></div>";
+        echo TemplateRenderer::getInstance()->render('@metademands/ticketfield_sync.html.twig', [
+            'canedit' => $canedit,
+            'form_action' => Toolbox::getItemTypeFormURL(__CLASS__),
+            'template_link' => $template_link,
+            'submit_html' => $submit_html,
+            'hidden_html' => $hidden_html,
+            'tags_modal_html' => $tags_modal_html,
+            'close_form_html' => $close_form_html,
+            'viewticketchild_id' => 'viewticketchild' . $item->fields['id'] . $rand,
+        ]);
 
         $this->listFields($object, $ticketfield_data, $fields, $searchOption, $canedit, $tt, $item->fields['id'], $rand);
     }
@@ -451,93 +447,92 @@ class TicketField extends CommonDBChild
             'html' => true,
         ];
 
-        if (count($ticketfield_data) && count($fields)) {
-            echo "<div class='center first-bloc left'>";
+        $has_rows = count($ticketfield_data) && count($fields);
+        $container = 'mass' . __CLASS__ . $rand;
 
+        $open_form_html = '';
+        $ma_top_html = '';
+        $ma_bottom_html = '';
+        $close_form_html = '';
+        $check_all_html = '';
+        $scripts_html = '';
+        $rows = [];
+
+        if ($has_rows) {
+            $massiveactionparams = ['item' => __CLASS__,
+                'container' => $container,
+                'display' => false,
+            ];
             if ($canedit) {
-                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-                $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
-                Html::showMassiveActions($massiveactionparams);
+                $open_form_html = Html::getOpenMassiveActionsForm($container);
+                $ma_top_html = Html::showMassiveActions($massiveactionparams);
+                $check_all_html = Html::getCheckAllAsCheckbox($container);
             }
-
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_2'>";
-            echo "<th class='center b' colspan='6'>" . self::getTypeName(2) . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_2'>";
-            echo "<th width='10'>";
-            if ($canedit) {
-                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            }
-            echo "</th>";
-            echo "<th>" . __('Name') . "</th>";
-            echo "<th>" . __('Value') . "</th>";
-            echo "</tr>";
 
             Session::initNavigateListItems($this->getType(), self::getTypeName(2));
 
             $fieldnames = $tt->getAllowedFields(true);
             foreach ($ticketfield_data as $id => $value) {
-                if (!in_array($searchOption[$value['num']]['linkfield'], self::$used_fields)
-                    && !in_array($value['num'], self::$used_fields)) {
-                    Session::addToNavigateListItems($this->getType(), $id);
+                if (in_array($searchOption[$value['num']]['linkfield'], self::$used_fields)
+                    || in_array($value['num'], self::$used_fields)) {
+                    continue;
+                }
+                Session::addToNavigateListItems($this->getType(), $id);
 
-                    echo "<script type='text/javascript'>\n";
-                    echo "function viewEditTicketField" . $id . $rand . "() {\n";
-                    $params = [
-                        'type'     => __CLASS__,
+                $edit_function = 'viewEditTicketField' . $id . $rand;
+                $update_js = Ajax::updateItemJsCode(
+                    "viewticketchild" . $meta_id . $rand,
+                    $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                    ['type' => __CLASS__,
                         'parenttype' => Metademand::class,
                         Metademand::getForeignKeyField() => $meta_id,
-                        'id'       => $id,
-                    ];
-                    Ajax::updateItemJsCode(
-                        "viewticketchild" . $meta_id . $rand,
-                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        $params,
-                    );
-                    echo ";\n}\n";
-                    echo "</script>\n";
+                        'id' => $id,
+                    ],
+                    "",
+                    false,
+                );
+                $scripts_html .= "<script type='text/javascript'>\n"
+                    . "function " . $edit_function . "() {\n"
+                    . $update_js . ";\n}\n"
+                    . "</script>\n";
 
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td width='10'>";
-                    if ($canedit) {
-                        Html::showMassiveActionCheckBox(__CLASS__, $id);
-                    }
-                    echo "</td>";
-                    echo "<td>";
-                    if ($canedit) {
-                        echo "<a href='javascript:viewEditTicketField" . $id . $rand . "();'>";
-                        echo htmlspecialchars($fields[$value['num']]);
-                        echo "</a> ";
-                    } else {
-                        echo htmlspecialchars($fields[$value['num']]);
-                    }
-                    echo $tt->getMandatoryMark($fieldnames[$value['num']]);
-                    echo "</td>";
-                    echo "<td>";
-                    $display_datas = [];
-                    $display_datas[$searchOption[$value['num']]['field']] = $value['value'];
-                    echo $obj->getValueToDisplay($searchOption[$value['num']], $display_datas, $display_options);
-                    echo "</td>";
-                    echo "</tr>";
-                }
+                $display_datas = [$searchOption[$value['num']]['field'] => $value['value']];
+
+                $rows[] = [
+                    'checkbox_html' => $canedit ? Html::getMassiveActionCheckBox(__CLASS__, $id) : '',
+                    'edit_function' => $edit_function,
+                    'label' => $fields[$value['num']],
+                    'mandatory_mark' => $tt->getMandatoryMark($fieldnames[$value['num']]),
+                    'value_html' => $obj->getValueToDisplay(
+                        $searchOption[$value['num']],
+                        $display_datas,
+                        $display_options,
+                    ),
+                ];
             }
-
-            echo "</table>";
 
             if ($canedit) {
+                // Built after the rows on purpose: showMassiveActions() empties
+                // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
+                // row checkboxes read that selection to restore their checked state.
                 $massiveactionparams['ontop'] = false;
-                Html::showMassiveActions($massiveactionparams);
-                Html::closeForm();
+                $ma_bottom_html = Html::showMassiveActions($massiveactionparams);
+                $close_form_html = Html::closeForm(false);
             }
-            echo "</div>";
-        } else {
-            echo "<div class='center first-bloc'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
-            echo "</table></div>";
         }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/ticketfield_list.html.twig', [
+            'has_rows' => $has_rows,
+            'canedit' => $canedit,
+            'title' => self::getTypeName(2),
+            'open_form_html' => $open_form_html,
+            'ma_top_html' => $ma_top_html,
+            'ma_bottom_html' => $ma_bottom_html,
+            'close_form_html' => $close_form_html,
+            'check_all_html' => $check_all_html,
+            'scripts_html' => $scripts_html,
+            'rows' => $rows,
+        ]);
     }
 
     /**

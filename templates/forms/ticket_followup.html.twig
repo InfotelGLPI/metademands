@@ -1,0 +1,152 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if not has_tickets %}
+    <div class="alert alert-info center">
+        {{ __('There is no childs tickets', 'metademands') }}
+    </div>
+{% else %}
+    {% if followup is not null %}
+        <br>
+        <div class="center alert alert-dismissible fade show informations"
+             style="display:flex;align-items: center;{% if followup.has_status %}background-color: white;border-color:{{ followup.icon_color }}{% endif %}">
+            {% if followup.has_status %}
+                <div style="margin-right: 20px;">
+                    <i class="{{ followup.icon }}" style="vertical-align: top;font-size:2em;color:{{ followup.icon_color }}"></i>
+                </div>
+            {% endif %}
+            {{ __('Demand followup', 'metademands') }}
+            {%- if followup.has_status %} - {{ followup.status_name }}{% endif %}
+        </div>
+    {% endif %}
+
+    {% if list_rows|length %}
+        <div class="center">
+            <table class="tab_cadre_fixe">
+                <tr class="center">
+                    <td colspan="7"><h3>{{ list_title }}</h3></td>
+                </tr>
+                <tr>
+                    <th>{{ __('Ticket') }}</th>
+                    <th>{{ __('Entity') }}</th>
+                    <th>{{ __('Opening date') }}</th>
+                    {% if is_central %}
+                        <th>{{ __('Assigned to') }}</th>
+                    {% endif %}
+                    <th>{{ __('Status') }}</th>
+                    {% if is_central %}
+                        <th>{{ __('Due date', 'metademands') }}</th>
+                        <th>{{ __('Status') }} {{ __('SLA') }}</th>
+                    {% endif %}
+                </tr>
+                {% for row in list_rows %}
+                    <tr class="tab_bg_1 {{ row.is_closed ? 'closedchild' : '' }}">
+                        <td>
+                            {% if row.indent_px %}
+                                <div style="margin-left:{{ row.indent_px }}px" class="metademands_tree"></div>
+                            {% endif %}
+                            {% if row.has_ticket %}
+                                <a href="{{ row.ticket_url }}">{{ row.ticket_name }}</a>
+                            {% else %}
+                                {{ row.task_name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ row.entity }}</td>
+                        <td>{{ row.date }}</td>
+                        {% if is_central %}
+                            <td>
+                                {%- for name in row.assigned -%}
+                                    {{ name }}{% if not loop.last %}<br>{% endif %}
+                                {%- endfor -%}
+                            </td>
+                        {% endif %}
+                        <td class="center">
+                            <i class="{{ row.status_icon }}" style="font-size:2em;color:{{ row.status_icon_color }}"></i>
+                            {{ row.status_name }}
+                        </td>
+                        {% if is_central %}
+                            <td class="{{ row.color_class }}">
+                                {% if row.show_late_icon %}
+                                    <i class="ti ti-alert-triangle" style="font-size:2em;color:darkred"></i>
+                                {% endif %}
+                                {{ row.time_to_resolve }}
+                            </td>
+                            <td>{{ row.sla_state }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+
+    {% if next_rows|length %}
+        {% set grey_class = 'metademand_metademandfollowup_grey' %}
+        <div class="center">
+            <table class="tab_cadre_fixe">
+                <tr class="center">
+                    <td colspan="6"><h3>{{ __('Next tickets', 'metademands') }}</h3></td>
+                </tr>
+                <tr>
+                    <th>{{ __('Ticket') }}</th>
+                    <th>{{ __('Opening date') }}</th>
+                    {% if is_central %}
+                        <th>{{ __('Assigned to') }}</th>
+                    {% endif %}
+                    <th>{{ __('Status') }}</th>
+                    {% if is_central %}
+                        <th>{{ __('Due date', 'metademands') }}</th>
+                        <th>{{ __('Status') }} {{ __('SLA') }}</th>
+                    {% endif %}
+                </tr>
+                {% for row in next_rows %}
+                    <tr class="tab_bg_1">
+                        <td class="{{ grey_class }}">
+                            {% if row.indent_px %}
+                                <div style="margin-left:{{ row.indent_px }}px" class="metademands_tree"></div>
+                            {% endif %}
+                            {{ row.task_name }}
+                        </td>
+                        <td class="{{ grey_class }}">{{ row.date }}</td>
+                        {# The legacy code computed the assigned actors here but never printed
+                           them, and the row is always built from an empty ticket anyway. #}
+                        {% if is_central %}
+                            <td class="{{ grey_class }}"></td>
+                        {% endif %}
+                        <td class="{{ grey_class }} center">
+                            <i class="fas fa-hourglass-half fa-2x"></i>
+                            {{ __('Coming', 'metademands') }}
+                        </td>
+                        {% if is_central %}
+                            <td class="{{ grey_class }}">{{ row.time_to_resolve }}</td>
+                            <td class="{{ grey_class }}">{{ row.sla_state }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+{% endif %}

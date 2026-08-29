@@ -1,0 +1,65 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class="alert center">
+    {{ __('Metademand need a validation', 'metademands') }}
+    <br>
+    {{ __('Do you want to validate her?', 'metademands') }}
+    <a class="btn primary answer-action btn-orange" data-bs-toggle="modal" data-bs-target="#metavalidation">
+        <i class="ti ti-thumb-up" style="margin-left: 10px;"></i>{{ __('Metademand validation', 'metademands') }}
+    </a>
+    {{ modal_html|raw }}
+</div>
+
+{% if has_sons %}
+    <table class="tab_cadre_fixe">
+        <tr class="tab_bg_2">
+            <th class="left b" colspan="4">
+                {{ __('List of tickets / tasks which be created after validation', 'metademands') }}
+            </th>
+        </tr>
+        <tr class="tab_bg_2">
+            <th class="center b">{{ __('Name') }}</th>
+            <th class="center b">{{ __('Type') }}</th>
+            <th class="center b">{{ __('Category') }}</th>
+            <th class="center b">{{ __('Assigned to') }}</th>
+        </tr>
+        {% for son in sons_rows %}
+            {% set cell_class = son.is_metademand_task ? 'metademand_metademandtasks' : '' %}
+            <tr class="tab_bg_1">
+                <td class="{{ cell_class }}">{{ son.name }}</td>
+                <td class="{{ cell_class }}">{{ son.type_name }}</td>
+                <td class="{{ cell_class }}">{{ son.category }}</td>
+                <td class="{{ cell_class }}">
+                    {%- for name in son.assigned -%}
+                        {{ name }}{% if not loop.last %}<br>{% endif %}
+                    {%- endfor -%}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

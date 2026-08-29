@@ -4721,116 +4721,85 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         if (!$this->canView()) {
             return false;
         }
+        $tickets_id = $ticket->fields['id'];
+        $is_central = Session::getCurrentInterface() == 'central';
+
         $tovalidate = 0;
         $metaValidation = new MetademandValidation();
-        if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
+        if ($metaValidation->getFromDBByCrit(['tickets_id' => $tickets_id])
             && ($metaValidation->fields['validate'] == MetademandValidation::TO_VALIDATE
                 || $metaValidation->fields['validate'] == MetademandValidation::TO_VALIDATE_WITHOUTTASK)
             && Session::haveRight('plugin_metademands', READ)
-            && Session::getCurrentInterface() == 'central') {
+            && $is_central) {
             $tovalidate = 1;
 
-            echo "<div class='alert center'>";
-            echo __('Metademand need a validation', 'metademands');
-            echo "<br>";
-            echo __('Do you want to validate her?', 'metademands');
-            $style = "btn-orange";
-            echo "<a class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>" . __(
-                    'Metademand validation',
-                    'metademands',
-                ) . "</a>";
-
-            echo Ajax::createIframeModalWindow(
-                'metavalidation',
-                PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $ticket->fields['id'],
-                [
-                    'title' => __('Metademand validation', 'metademands'),
-                    'display' => false,
-                    'width' => 200,
-                    'height' => 400,
-                    'reloadonclose' => true,
-                ],
-            );
-
-            echo "</div>";
-
             $sons = json_decode($metaValidation->fields['tickets_to_create'], true);
+            $sons_rows = [];
             if (is_array($sons)) {
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr class='tab_bg_2'>";
-                echo "<th class='left b' colspan='4'>" . __(
-                    'List of tickets / tasks which be created after validation',
-                    'metademands',
-                ) . "</th>";
-                echo "</tr>";
-                echo "<tr class='tab_bg_2'>";
-                echo "<th class='center b'>" . __('Name') . "</th>";
-                echo "<th class='center b'>" . __('Type') . "</th>";
-                echo "<th class='center b'>" . __('Category') . "</th>";
-                echo "<th class='center b'>" . __('Assigned to') . "</th>";
-                echo "</tr>";
                 foreach ($sons as $son) {
-                    if (Ticket_Field::checkTicketCreation($son['tasks_id'], $ticket->fields['id'])) {
-                        echo "<tr class='tab_bg_1'>";
-                        if ($son['type'] == Task::TICKET_TYPE
-                            || $son['type'] == Task::TASK_TYPE) {
-                            $color_class = '';
-                        } else {
-                            $color_class = "class='metademand_metademandtasks'";
-                        }
-
-                        echo "<td $color_class>" . urldecode($son['tickettasks_name']) . "</td>";
-
-                        // Type
-                        echo "<td $color_class>" . Task::getTaskTypeName($son['type']) . "</td>";
-
-                        $cat = "";
-                        if ($son['type'] == Task::TICKET_TYPE
-                            && isset($son['itilcategories_id'])
-                            && $son['itilcategories_id'] > 0) {
-                            $cat = Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
-                        }
-                        echo "<td $color_class>";
-                        echo $cat;
-                        echo "</td>";
-
-                        //assign
-                        $techdata = "";
-                        if ($son['type'] == Task::TICKET_TYPE
-                            || $son['type'] == Task::TASK_TYPE) {
-                            if (isset($son['users_id_assign'])
-                                && $son['users_id_assign'] > 0) {
-                                $techdata .= getUserName($son['users_id_assign'], 0, true);
-                                $techdata .= "<br>";
-                            }
-                            if (isset($son['groups_id_assign'])
-                                && $son['groups_id_assign'] > 0) {
-                                $techdata .= Dropdown::getDropdownName("glpi_groups", $son['groups_id_assign']);
-                            }
-                        }
-                        echo "<td $color_class>";
-                        echo $techdata;
-                        echo "</td>";
-
-                        echo "</tr>";
+                    if (!Ticket_Field::checkTicketCreation($son['tasks_id'], $tickets_id)) {
+                        continue;
                     }
+
+                    $is_metademand_task = !in_array($son['type'], [Task::TICKET_TYPE, Task::TASK_TYPE]);
+
+                    $category = '';
+                    if ($son['type'] == Task::TICKET_TYPE
+                        && isset($son['itilcategories_id'])
+                        && $son['itilcategories_id'] > 0) {
+                        $category = Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
+                    }
+
+                    $assigned = [];
+                    if (!$is_metademand_task) {
+                        if (isset($son['users_id_assign'])
+                            && $son['users_id_assign'] > 0) {
+                            $assigned[] = getUserName($son['users_id_assign'], 0, true);
+                        }
+                        if (isset($son['groups_id_assign'])
+                            && $son['groups_id_assign'] > 0) {
+                            $assigned[] = Dropdown::getDropdownName("glpi_groups", $son['groups_id_assign']);
+                        }
+                    }
+
+                    $sons_rows[] = [
+                        'name' => urldecode($son['tickettasks_name']),
+                        'type_name' => Task::getTaskTypeName($son['type']),
+                        'category' => $category,
+                        'assigned' => $assigned,
+                        'is_metademand_task' => $is_metademand_task,
+                    ];
                 }
-                echo "</table>";
             }
+
+            echo TemplateRenderer::getInstance()->render('@metademands/forms/ticket_validation.html.twig', [
+                'modal_html' => Ajax::createIframeModalWindow(
+                    'metavalidation',
+                    PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $tickets_id,
+                    [
+                        'title' => __('Metademand validation', 'metademands'),
+                        'display' => false,
+                        'width' => 200,
+                        'height' => 400,
+                        'reloadonclose' => true,
+                    ],
+                ),
+                'has_sons' => is_array($sons),
+                'sons_rows' => $sons_rows,
+            ]);
         }
 
         Ticket_Metademand::changeMetademandGlobalStatus($ticket);
 
         $ticket_metademand = new Ticket_Metademand();
-        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
+        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $tickets_id]);
         $tickets_founded = [];
 
         // If ticket is Parent : Check if all sons ticket are closed
         if (count($ticket_metademand_data)) {
             $ticket_metademand_data = reset($ticket_metademand_data);
             $tickets_founded = Ticket::getSonTickets(
-                $ticket->fields['id'],
+                $tickets_id,
                 $ticket_metademand_data['plugin_metademands_metademands_id'],
                 [],
                 true,
@@ -4838,335 +4807,199 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             );
         } else {
             $ticket_task = new Ticket_Task();
-            $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);
+            $ticket_task_data = $ticket_task->find(['tickets_id' => $tickets_id]);
 
             if (count($ticket_task_data)) {
-                $tickets_founded = Ticket::getAncestorTickets($ticket->fields['id'], true);
+                $tickets_founded = Ticket::getAncestorTickets($tickets_id, true);
             }
         }
-        $tickets_list = [];
-        $tickets_next = [];
-        $parent_ticket = false;
+
         if ($tovalidate == 0) {
-            if (is_array($tickets_founded)
-                && count($tickets_founded)) {
+            $has_tickets = is_array($tickets_founded) && count($tickets_founded);
 
-                if (isset($tickets_founded[0]['parent_tickets_id']) && $tickets_founded[0]['parent_tickets_id'] > 0) {
-                    $parent_ticket = true;
-                }
-                if ($parent_ticket == true) {
+            $followup = null;
+            $list_title = '';
+            $list_rows = [];
+            $next_rows = [];
+
+            if ($has_tickets) {
+                $parent_ticket = isset($tickets_founded[0]['parent_tickets_id'])
+                    && $tickets_founded[0]['parent_tickets_id'] > 0;
+
+                $list_title = $parent_ticket
+                    ? __('Existing childs tickets', 'metademands')
+                    : __('Parent ticket', 'metademands');
+
+                if ($parent_ticket) {
+                    $followup = ['has_status' => false,
+                        'icon' => '',
+                        'icon_color' => '',
+                        'status_name' => '',
+                    ];
                     $metaStatus = new Ticket_Metademand();
-                    $style = '';
-
-                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
-                        if (in_array($metaStatus->fields['status'], [Ticket_Metademand::TO_CLOSED])) {
-                            $icon = "ti ti-circle-check";
-                            $icon_color = "forestgreen";
+                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $tickets_id])) {
+                        $followup = ['has_status' => true,
+                            'icon' => 'ti ti-clock',
+                            'icon_color' => 'orange',
+                            'status_name' => Ticket_Metademand::getStatusName($metaStatus->fields['status']),
+                        ];
+                        switch ($metaStatus->fields['status']) {
+                            case Ticket_Metademand::TO_CLOSED:
+                                $followup['icon'] = 'ti ti-circle-check';
+                                $followup['icon_color'] = 'forestgreen';
+                                break;
+                            case Ticket_Metademand::CLOSED:
+                                $followup['icon'] = 'ti ti-circle-check';
+                                $followup['icon_color'] = 'black';
+                                break;
                         }
-
-                        if (in_array($metaStatus->fields['status'], [Ticket_Metademand::CLOSED])) {
-                            $icon = "ti ti-circle-check";
-                            $icon_color = "black";
-                        }
-
-                        if (in_array($metaStatus->fields['status'], [Ticket_Metademand::RUNNING])) {
-                            $icon = "ti ti-clock";
-                            $icon_color = "orange";
-                        }
-                        $style = 'background-color: white;border-color:' . $icon_color;
                     }
-                    echo "<br><div style='display:flex;align-items: center;$style' class='center alert alert-dismissible fade show informations'>";
-
-                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
-                        echo "<div style='margin-right: 20px;'>";
-                        echo "<i class='$icon' style='vertical-align: top;font-size:2em;color:$icon_color'></i> ";
-                        echo "</div>";
-                    }
-
-                    echo __('Demand followup', 'metademands');
-
-                    if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
-                        echo " - " . Ticket_Metademand::getStatusName($metaStatus->fields['status']);
-                    }
-                    echo "</div>";
                 }
+
+                $tickets_list = [];
+                $tickets_next = [];
                 foreach ($tickets_founded as $tickets) {
                     if (!empty($tickets['tickets_id'])) {
                         $tickets_list[] = $tickets;
+                    } elseif (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
+                        $tickets_next[] = $tickets;
+                    }
+                }
+
+                $solved_or_closed = [\Ticket::SOLVED, \Ticket::CLOSED];
+
+                foreach ($tickets_list as $values) {
+                    // Get ticket values if it exists
+                    $childticket = new \Ticket();
+                    $childticket->getFromDB($values['tickets_id']);
+
+                    // SLA State
+                    $sla_state = Dropdown::EMPTY_VALUE;
+                    $color_class = '';
+                    $is_late = false;
+                    switch ($this->checkSlaState($values)) {
+                        case self::SLA_FINISHED:
+                            $sla_state = __('Task completed.');
+                            break;
+                        case self::SLA_LATE:
+                            $is_late = true;
+                            $color_class = "metademand_metademandfollowup_red";
+                            $sla_state = __('Late');
+                            break;
+                        case self::SLA_PLANNED:
+                            $sla_state = __('Processing');
+                            break;
+                        case self::SLA_TODO:
+                            $sla_state = __('To do');
+                            $color_class = "metademand_metademandfollowup_yellow";
+                            break;
+                    }
+
+                    if (in_array($childticket->fields['status'], [\Ticket::SOLVED])) {
+                        $status_icon = 'ti ti-circle-check';
+                        $status_icon_color = 'forestgreen';
+                    } elseif (in_array($childticket->fields['status'], [\Ticket::CLOSED])) {
+                        $status_icon = 'ti ti-circle-check';
+                        $status_icon_color = 'black';
                     } else {
-                        if (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
-                            $tickets_next[] = $tickets;
-                        }
+                        $status_icon = 'ti ti-clock';
+                        $status_icon_color = 'orange';
                     }
+
+                    $list_rows[] = [
+                        'is_closed' => in_array($childticket->fields['status'], [\Ticket::CLOSED]),
+                        'indent_px' => self::getFollowupIndent($values),
+                        'has_ticket' => !empty($values['tickets_id']),
+                        'ticket_url' => Toolbox::getItemTypeFormURL('Ticket')
+                            . "?id=" . $childticket->fields['id'] . '&glpi_tab=Ticket$main',
+                        'ticket_name' => $childticket->fields['name'],
+                        'task_name' => self::$SON_PREFIX . ($values['tasks_name'] ?? ''),
+                        'entity' => Dropdown::getDropdownName("glpi_entities", $childticket->fields['entities_id']),
+                        'date' => Html::convDateTime($childticket->fields['date']),
+                        'assigned' => self::getAssignedActorNames($childticket),
+                        'status_icon' => $status_icon,
+                        'status_icon_color' => $status_icon_color,
+                        'status_name' => \Ticket::getStatus($childticket->fields['status']),
+                        'color_class' => $color_class,
+                        'show_late_icon' => $is_late && !in_array($childticket->fields['status'], $solved_or_closed),
+                        'time_to_resolve' => Html::convDateTime($childticket->fields['time_to_resolve']),
+                        'sla_state' => $sla_state,
+                    ];
                 }
 
-                if (count($tickets_list)) {
-                    echo "<div class='center'><table class='tab_cadre_fixe'>";
-                    echo "<tr class='center'>";
-                    $title = __('Parent ticket', 'metademands');
-                    if ($parent_ticket == true) {
-                        $title = __('Existing childs tickets', 'metademands');
-                    }
-                    echo "<td colspan='7'><h3>" . $title . "</h3></td></tr>";
-
-                    echo "<tr>";
-                    echo "<th>" . __('Ticket') . "</th>";
-                    echo "<th>" . __('Entity') . "</th>";
-                    echo "<th>" . __('Opening date') . "</th>";
-                    if (Session::getCurrentInterface() == 'central') {
-                        echo "<th>" . __('Assigned to') . "</th>";
-                    }
-                    echo "<th>" . __('Status') . "</th>";
-                    if (Session::getCurrentInterface() == 'central') {
-                        echo "<th>" . __('Due date', 'metademands') . "</th>";
-                        echo "<th>" . __('Status') . " " . __('SLA') . "</th>";
-                    }
-                    echo "</tr>";
-                    $status = [\Ticket::SOLVED, \Ticket::CLOSED];
-
-                    foreach ($tickets_list as $values) {
-                        $color_class = '';
-                        // Get ticket values if it exists
-                        $childticket = new \Ticket();
-                        $childticket->getFromDB($values['tickets_id']);
-
-                        // SLA State
-                        $sla_state = Dropdown::EMPTY_VALUE;
-                        $is_late = false;
-                        switch ($this->checkSlaState($values)) {
-                            case self::SLA_FINISHED:
-                                $sla_state = __('Task completed.');
-                                break;
-                            case self::SLA_LATE:
-                                $is_late = true;
-                                $color_class = "metademand_metademandfollowup_red";
-                                $sla_state = __('Late');
-                                break;
-                            case self::SLA_PLANNED:
-                                $sla_state = __('Processing');
-                                break;
-                            case self::SLA_TODO:
-                                $sla_state = __('To do');
-                                $color_class = "metademand_metademandfollowup_yellow";
-                                break;
-                        }
-
-                        $closed = '';
-                        if (in_array($childticket->fields['status'], [\Ticket::CLOSED])) {
-                            $closed = 'closedchild';
-                        }
-                        echo "<tr class='tab_bg_1 $closed'>";
-                        echo "<td>";
-                        // Name
-                        if ($values['type'] == Task::TICKET_TYPE) {
-                            if ($values['level'] > 1) {
-                                $width = (20 * $values['level']);
-                                echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
-                            }
-                        }
-
-                        if (!empty($values['tickets_id'])) {
-                            echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket')
-                                . "?id=" . $childticket->fields['id'] . "&glpi_tab=Ticket$" . 'main' . "'>" . $childticket->fields['name'] . "</a>";
-                        } else {
-                            echo self::$SON_PREFIX . $values['tasks_name'];
-                        }
-
-                        echo "</td>";
-
-                        // Entity
-                        echo "<td>";
-                        echo Dropdown::getDropdownName("glpi_entities", $childticket->fields['entities_id']);
-                        echo "</td>";
-
-                        //date
-                        echo "<td>";
-                        echo Html::convDateTime($childticket->fields['date']);
-                        echo "</td>";
-
-                        //group
-                        if (Session::getCurrentInterface() == 'central') {
-                            $techdata = '';
-                            if ($childticket->countUsers(CommonITILActor::ASSIGN)) {
-                                foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $u) {
-                                    $k = $u['users_id'];
-                                    if ($k) {
-                                        $techdata .= getUserName($k);
-                                    }
-
-                                    if ($childticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                                        $techdata .= "<br>";
-                                    }
-                                }
-                                $techdata .= "<br>";
-                            }
-
-                            if ($childticket->countGroups(CommonITILActor::ASSIGN)) {
-                                foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $u) {
-                                    $k = $u['groups_id'];
-                                    if ($k) {
-                                        $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
-                                    }
-
-                                    if ($childticket->countGroups(CommonITILActor::ASSIGN) > 1) {
-                                        $techdata .= "<br>";
-                                    }
-                                }
-                            }
-                            echo "<td>";
-                            echo $techdata;
-                            echo "</td>";
-                        }
-                        //status
-                        echo "<td class='center'>";
-                        if (in_array($childticket->fields['status'], [\Ticket::SOLVED])) {
-                            echo "<i class='ti ti-circle-check' style='font-size:2em;color:forestgreen'></i> ";
-                        }
-
-                        if (in_array($childticket->fields['status'], [\Ticket::CLOSED])) {
-                            echo "<i class='ti ti-circle-check' style='font-size:2em;color:black'></i> ";
-                        }
-
-                        if (!in_array($childticket->fields['status'], $status)) {
-                            echo "<i class='ti ti-clock' style='font-size:2em;color:orange'></i> ";
-                        }
-                        echo \Ticket::getStatus($childticket->fields['status']);
-                        echo "</td>";
-
-                        //due date
-                        if (Session::getCurrentInterface() == 'central') {
-                            echo "<td class='$color_class'>";
-                            if ($is_late && !in_array($childticket->fields['status'], $status)) {
-                                echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:darkred'></i>";
-                            }
-                            echo Html::convDateTime($childticket->fields['time_to_resolve']);
-                            echo "</td>";
-
-                            //sla state
-                            echo "<td>";
-                            echo $sla_state;
-                            echo "</td>";
-                        }
-                        echo "</tr>";
-                    }
-                    echo "</table></div>";
-                }
-
-                if (count($tickets_next) && Session::getCurrentInterface() == 'central') {
-                    $color_class = "metademand_metademandfollowup_grey";
-                    echo "<div class='center'><table class='tab_cadre_fixe'>";
-                    echo "<tr class='center'>";
-                    echo "<td colspan='6'><h3>" . __('Next tickets', 'metademands') . "</h3></td></tr>";
-
-                    echo "<tr>";
-                    echo "<th>" . __('Ticket') . "</th>";
-                    echo "<th>" . __('Opening date') . "</th>";
-                    if (Session::getCurrentInterface() == 'central') {
-                        echo "<th>" . __('Assigned to') . "</th>";
-                    }
-                    echo "<th>" . __('Status') . "</th>";
-                    if (Session::getCurrentInterface() == 'central') {
-                        echo "<th>" . __('Due date', 'metademands') . "</th>";
-                        echo "<th>" . __('Status') . " " . __('SLA') . "</th>";
-                    }
-                    echo "</tr>";
-
+                if ($is_central) {
                     foreach ($tickets_next as $values) {
                         if (isset($values['tickets_id']) && $values['tickets_id'] > 0) {
                             continue;
                         }
 
+                        // Those rows describe tickets that do not exist yet, so every ticket
+                        // value they display comes from an empty ticket.
+                        $childticket = new \Ticket();
                         $childticket->getEmpty();
 
-                        // SLA State
-                        $sla_state = Dropdown::EMPTY_VALUE;
+                        $task = new Task();
+                        $task->getFromDB($values['tasks_id']);
 
-                        echo "<tr class='tab_bg_1'>";
-                        echo "<td class='$color_class'>";
-                        // Name
-                        if ($values['type'] == Task::TICKET_TYPE) {
-                            if ($values['level'] > 1) {
-                                $width = (20 * $values['level']);
-                                echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
-                            }
-                        }
-
-                        if (!empty($values['tickets_id'])) {
-                            echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket')
-                                . "?id=" . $childticket->fields['id'] . "'>" . $childticket->fields['name'] . "</a>";
-                        } else {
-                            $task = new Task();
-                            $task->getFromDB($values['tasks_id']);
-                            echo self::$SON_PREFIX . $task->getName();
-                        }
-
-                        echo "</td>";
-
-                        //date
-                        echo "<td class='$color_class'>";
-                        echo Html::convDateTime($childticket->fields['date']);
-                        echo "</td>";
-
-                        //group
-                        if (Session::getCurrentInterface() == 'central') {
-                            $techdata = '';
-                            if ($childticket->countUsers(CommonITILActor::ASSIGN)) {
-                                foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $u) {
-                                    $k = $u['users_id'];
-                                    if ($k) {
-                                        $techdata .= getUserName($k);
-                                    }
-
-                                    if ($childticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                                        $techdata .= "<br>";
-                                    }
-                                }
-                                $techdata .= "<br>";
-                            }
-
-                            if ($childticket->countGroups(CommonITILActor::ASSIGN)) {
-                                foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $u) {
-                                    $k = $u['groups_id'];
-                                    if ($k) {
-                                        $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
-                                    }
-
-                                    if ($childticket->countGroups(CommonITILActor::ASSIGN) > 1) {
-                                        $techdata .= "<br>";
-                                    }
-                                }
-                            }
-                            echo "<td class='$color_class'>";
-                            echo "</td>";
-                        }
-                        //status
-                        echo "<td class='$color_class center'>";
-                        echo "<i class='fas fa-hourglass-half fa-2x'></i> ";
-                        echo __('Coming', 'metademands');
-
-                        echo "</td>";
-
-                        if (Session::getCurrentInterface() == 'central') {
-                            //due date
-                            echo "<td class='$color_class'>";
-                            echo Html::convDateTime($childticket->fields['time_to_resolve']);
-                            echo "</td>";
-
-                            //sla state
-                            echo "<td class='$color_class'>";
-                            echo $sla_state;
-                            echo "</td>";
-                        }
-                        echo "</tr>";
+                        $next_rows[] = [
+                            'indent_px' => self::getFollowupIndent($values),
+                            'task_name' => self::$SON_PREFIX . $task->getName(),
+                            'date' => Html::convDateTime($childticket->fields['date']),
+                            'time_to_resolve' => Html::convDateTime($childticket->fields['time_to_resolve']),
+                            'sla_state' => Dropdown::EMPTY_VALUE,
+                        ];
                     }
-                    echo "</table></div>";
                 }
-            } else {
-                echo "<div class='alert alert-info center'>";
-                echo __('There is no childs tickets', 'metademands');
-                echo "</div>";
+            }
+
+            echo TemplateRenderer::getInstance()->render('@metademands/forms/ticket_followup.html.twig', [
+                'has_tickets' => $has_tickets,
+                'is_central' => $is_central,
+                'followup' => $followup,
+                'list_title' => $list_title,
+                'list_rows' => $list_rows,
+                'next_rows' => $next_rows,
+            ]);
+        }
+    }
+
+    /**
+     * Left indentation, in pixels, of a followup row nested under its parent ticket.
+     *
+     * @param array $values one entry of Ticket::getSonTickets() / getAncestorTickets()
+     *
+     * @return int
+     */
+    private static function getFollowupIndent($values)
+    {
+        if ($values['type'] == Task::TICKET_TYPE
+            && ($values['level'] ?? 0) > 1) {
+            return 20 * $values['level'];
+        }
+        return 0;
+    }
+
+    /**
+     * Names of the users and groups assigned to a ticket, in display order.
+     *
+     * @param \Ticket $childticket
+     *
+     * @return array
+     */
+    private static function getAssignedActorNames($childticket)
+    {
+        $names = [];
+        foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $user) {
+            if ($user['users_id']) {
+                $names[] = getUserName($user['users_id']);
             }
         }
+        foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $group) {
+            if ($group['groups_id']) {
+                $names[] = Dropdown::getDropdownName("glpi_groups", $group['groups_id']);
+            }
+        }
+        return $names;
     }
 
     /**

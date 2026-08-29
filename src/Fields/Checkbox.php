@@ -331,9 +331,7 @@ class Checkbox extends CommonDBTM
         echo " </script>";
         $valuetocheck_html = ob_get_clean();
 
-        ob_start();
-        echo FieldOption::showLinkHtml($item->getID(), $params);
-        $link_html = ob_get_clean();
+        $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_params_value_to_check.html.twig',
