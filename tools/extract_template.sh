@@ -46,10 +46,9 @@ xgettext --files-from=php_files.list \
   --keyword=_ex:1c,2,3t \
   --keyword=_nx:1c,2,3,5t \
   --keyword=_sx:1c,2,3t \
-  `# php-cs-fixer adds a trailing comma to every multiline call (trailing_comma_in_multiline` \
-  `# with 'arguments' in .php-cs-fixer.php). xgettext counts that comma as one extra` \
-  `# argument, so the specs above stop matching and the strings are silently dropped.` \
-  `# These duplicates accept the same calls with that extra argument. Keep them in sync.` \
+  `# php-cs-fixer adds a trailing comma to every multiline call, and xgettext counts it as` \
+  `# one extra argument, so the specs above stop matching and strings are silently dropped.` \
+  `# These duplicates accept the same calls with that extra argument. Keep both lists in sync.` \
   --keyword=_n:1,2,5t \
   --keyword=__s:1,3t \
   --keyword=__:1,3t \

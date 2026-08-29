@@ -1,0 +1,57 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<form name="form" method="post" action="{{ form_action }}">
+    <div class="center">
+        <table class="tab_cadre_fixe">
+            <tr class="tab_bg_2">
+                <td class="center"><b>{{ __('Filter', 'glpi') }}&nbsp;</b></td>
+                <td class="center">
+                    {{ __('Block', 'metademands') }}&nbsp;{{ block_dropdown_html|raw }}
+                </td>
+                <td class="center">
+                    {{ __('Field type', 'metademands') }}&nbsp;{{ type_dropdown_html|raw }}
+                </td>
+                <td class="center">
+                    <span id="plugin_metademands_item">
+                        {%- if show_item -%}
+                            {{ __('Object', 'metademands') }}&nbsp;{{ item_dropdown_html|raw }}
+                        {%- endif -%}
+                    </span>
+                </td>
+                <td>
+                    {{ hidden_html|raw }}
+                    {{ submit_html|raw }}
+                </td>
+            </tr>
+        </table>
+    </div>
+    {# emitted after the table: the legacy code placed it between two <td>, where the
+       parser hoists it out anyway #}
+    {{ reload_script_html|raw }}
+    {# closes the <form> above and carries the CSRF token #}
+    {{ close_form_html|raw }}

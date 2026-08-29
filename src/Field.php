@@ -878,8 +878,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     }
 
     /**
-     * @param $plugin_metademands_metademands_id
-     * @param $canedit
+     * Show the field list of a metademand, grouped in one tab per block.
+     *
+     * @param $item the Metademand the tab is displayed for (typed CommonGLPI by the tab callback)
      *
      * @throws \GlpitestSQLError
      */
@@ -888,97 +889,69 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         global $CFG_GLPI, $PLUGIN_HOOKS;
 
         $rand = mt_rand();
-        $canedit = $item->can($item->getID(), UPDATE);
+        $meta_id = $item->getID();
+        $canedit = $item->can($meta_id, UPDATE);
+        $webdir = PLUGIN_METADEMANDS_WEBDIR;
 
+        $add = null;
         if ($canedit) {
-            $modal_new_id      = "metaFieldNewModal{$rand}";
+            $modal_new_id = "metaFieldNewModal{$rand}";
             $modal_existing_id = "metaFieldExistingModal{$rand}";
-            $params_new        = json_encode([
-                'type'                          => __CLASS__,
-                'parenttype'                    => get_class($item),
-                $item->getForeignKeyField()     => $item->getID(),
-                'id'                            => -1,
-            ]);
-            $params_existing   = json_encode([
-                'type'                          => __CLASS__,
-                'parenttype'                    => get_class($item),
-                $item->getForeignKeyField()     => $item->getID(),
-                'id'                            => -1,
-            ]);
-            $url_new      = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
-            $url_existing = PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewexistingsubitem.php";
+            $fn_new = "addFieldmeta{$meta_id}{$rand}";
+            $fn_existing = "addExistingFieldmeta{$meta_id}{$rand}";
+            // HEX_TAG/HEX_AMP only: the payload is consumed as a JS object literal, so
+            // escaping quotes would break it (see the plugin inline-JSON convention).
+            $params_json = json_encode([
+                'type' => __CLASS__,
+                'parenttype' => get_class($item),
+                $item->getForeignKeyField() => $meta_id,
+                'id' => -1,
+            ], JSON_HEX_TAG | JSON_HEX_AMP);
+            $url_new = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
+            $url_existing = $webdir . "/ajax/viewexistingsubitem.php";
 
-            // Modals Bootstrap 5
-            echo "
-            <div class='modal fade' id='$modal_new_id' tabindex='-1'>
-                <div class='modal-dialog modal-xl'>
-                    <div class='modal-content'>
-                        <div class='modal-header'>
-                            <h5 class='modal-title'>" . __('Add a new field', 'metademands') . "</h5>
-                            <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
-                        </div>
-                        <div id='{$modal_new_id}_body' class='modal-body'></div>
-                    </div>
-                </div>
-            </div>
-            <div class='modal fade' id='$modal_existing_id' tabindex='-1'>
-                <div class='modal-dialog modal-lg'>
-                    <div class='modal-content'>
-                        <div class='modal-header'>
-                            <h5 class='modal-title'>" . __('Add an existing field', 'metademands') . "</h5>
-                            <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
-                        </div>
-                        <div id='{$modal_existing_id}_body' class='modal-body'></div>
-                    </div>
-                </div>
-            </div>";
-
-            echo "<script>
-            function addFieldmeta{$item->getID()}{$rand}() {
-                $.post('{$url_new}', {$params_new}, function(html) {
+            $add = [
+                'modal_new_id' => $modal_new_id,
+                'modal_existing_id' => $modal_existing_id,
+                'fn_new' => $fn_new,
+                'fn_existing' => $fn_existing,
+                'script_html' => Html::scriptBlock("
+            function {$fn_new}() {
+                $.post('{$url_new}', {$params_json}, function(html) {
                     $('#{$modal_new_id}_body').html(html);
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_new_id}')).show();
                 });
             }
-            function addExistingFieldmeta{$item->getID()}{$rand}() {
-                $.post('{$url_existing}', {$params_existing}, function(html) {
+            function {$fn_existing}() {
+                $.post('{$url_existing}', {$params_json}, function(html) {
                     $('#{$modal_existing_id}_body').html(html);
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_existing_id}')).show();
                 });
             }
             (function () {
                 var p = new URLSearchParams(window.location.search);
-                if (p.get('open_add_field') === '{$item->getID()}') {
+                if (p.get('open_add_field') === '{$meta_id}') {
                     p.delete('open_add_field');
                     var qs = p.toString();
                     history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
-                    addFieldmeta{$item->getID()}{$rand}();
+                    {$fn_new}();
                 }
-            })();
-            </script>";
-
-            echo "<div class='center'>"
-                . "<a class='submit btn btn-primary' href='javascript:addFieldmeta"
-                . $item->getID() . "$rand();'>" . __('Add a new field', 'metademands')
-                . "</a>&nbsp;";
-            echo "<a class='submit btn btn-primary' href='javascript:addExistingFieldmeta"
-                . $item->getID() . "$rand();'>" . __('Add an existing field', 'metademands')
-                . "</a></div><br>";
+            })();"),
+            ];
         }
 
-        $cond['plugin_metademands_metademands_id'] = $item->getID();
+        $cond['plugin_metademands_metademands_id'] = $meta_id;
 
-        if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
-            && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] != 0) {
-            $cond['rank'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'];
-            $block = $cond['rank'];
-            $id = $item->getID();
-            $url = PLUGIN_METADEMANDS_WEBDIR;
-            echo "<script type='text/javascript' >\n";
-            echo "$(document).ready(function() {
-                        var fieldid = $block || sessionStorage.getItem('loadedblock') || '1';
-                        var meta_id = $id;
-                        var urlmeta = '$url';
+        $searched_block = $_SESSION['plugin_metademands_searchresults'][$meta_id]['block'] ?? 0;
+        $block_filter_script_html = '';
+        if ($searched_block != 0) {
+            $cond['rank'] = $searched_block;
+            $block = (int) $searched_block;
+            $block_filter_script_html = Html::scriptBlock("
+            $(document).ready(function() {
+                        var fieldid = {$block} || sessionStorage.getItem('loadedblock') || '1';
+                        var meta_id = {$meta_id};
+                        var urlmeta = '{$webdir}';
 
                         sessionStorage.setItem('loadedblock', fieldid);
                         function updateActiveTab(rank) {
@@ -1009,30 +982,25 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
                         loadPreview(fieldid);
                         window.location.hash = '#block' + fieldid;
-                });";
-            echo "\n</script>";
+                });");
         }
-        if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'])
-            && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'] != 0) {
-            $cond['type'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['type'];
+        if (isset($_SESSION['plugin_metademands_searchresults'][$meta_id]['type'])
+            && $_SESSION['plugin_metademands_searchresults'][$meta_id]['type'] != 0) {
+            $cond['type'] = $_SESSION['plugin_metademands_searchresults'][$meta_id]['type'];
         }
-        if (isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'])
-            && $_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'] != 0) {
-            $cond['item'] = $_SESSION['plugin_metademands_searchresults'][$item->getID()]['item'];
+        if (isset($_SESSION['plugin_metademands_searchresults'][$meta_id]['item'])
+            && $_SESSION['plugin_metademands_searchresults'][$meta_id]['item'] != 0) {
+            $cond['item'] = $_SESSION['plugin_metademands_searchresults'][$meta_id]['item'];
         }
 
         $self = new self();
-        $data = $self->find(
-            $cond,
-            ['rank', 'order'],
-        );
-        //        if (count($data) > 0) {
-        self::searchForm($item, $cond);
-        //        }
+        $data = $self->find($cond, ['rank', 'order']);
 
-        if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
-            || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
-            echo Html::scriptBlock(
+        $search_form_html = self::getSearchForm($item, $cond);
+
+        $tabs_state_script_html = '';
+        if ($searched_block == 0) {
+            $tabs_state_script_html = Html::scriptBlock(
                 '$(document).ready(function () {
                         var hash = window.location.hash;
                         var fieldid = sessionStorage.getItem("loadedblock") || "1";
@@ -1083,16 +1051,18 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                 const containerWidth = container.clientWidth;
                                 const tabWidth = activeTab.offsetWidth;
 
-                                // Centrage de l’onglet actif
+                                // Center the active tab
                                 const scrollTo = offsetLeft - (containerWidth / 2) + (tabWidth / 2);
                                 container.scrollTo({ left: scrollTo, behavior: "smooth" });
                             }
                         }
-                        scrollToActiveTab(); // Appel au chargement
+                        scrollToActiveTab();
                     });',
             );
         }
+
         $fieldparameter = new FieldParameter();
+        $field_custom = new FieldCustomvalue();
 
         // Batch-load all related data for this metademand's fields (avoids N+1 per field)
         $all_ids_for_preload = array_column(is_array($data) ? $data : [], 'id');
@@ -1118,12 +1088,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        $koparams = 0;
-        $kocustom = 0;
-
         $blocks = [];
-        $block_fields = [];
-
         $databyblocks = [];
         foreach ($data as $id => $value) {
             $databyblocks[$value['rank']][] = $data[$id];
@@ -1135,37 +1100,24 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
                     $i++;
                     if ($i > 0) {
-                        $name = $value['name'];
-                        //                        if ($debug) {
-                        $name .= " #$blockid";
-                        //                        }
-                        $blocks[$blockid] = $name;
+                        $blocks[$blockid] = $value['name'] . " #$blockid";
                     }
                 }
                 if ($i == 0) {
-                    $title = __('Block', 'metademands') . " " . $value['rank'];
-                    $blocks[$blockid] = $title;
+                    $blocks[$blockid] = __('Block', 'metademands') . " " . $value['rank'];
                 }
             }
         }
+
+        $tabs = [];
+        $block_fields = [];
+        $tabs_scroll_script_html = '';
         if (count($blocks) > 0) {
-            echo "<div class='tabs-container'>";
-            echo "<button class='scroll-btn scroll-left'><i class='ti ti-chevron-left'></i></button>";
-            echo "<div class='d-flex flex-nowrap border-bottom scrollable-tabs'>";
-            echo "<ul class='nav nav-tabs flex-nowrap' style='border-bottom:unset' role='tablist' id='fieldslist'>";
-
             foreach ($blocks as $idblock => $block) {
-                $nameblock = $block;
-                echo "<li class='nav-item'>";
-                echo "<a class='nav-link tablinks' id='ablock$idblock' href='#block" . $idblock . "' data-toggle='tab'>" . htmlspecialchars((string) $nameblock, ENT_QUOTES, 'UTF-8') . "</a>";
-                echo "</li>";
+                $tabs[] = ['id' => $idblock, 'name' => $block];
             }
-            echo "</ul>";
-            echo "</div>";
-            echo "<button class='scroll-btn scroll-right'><i class='ti ti-chevron-right'></i></button>";
-            echo "</div>";
 
-            echo Html::scriptBlock(
+            $tabs_scroll_script_html = Html::scriptBlock(
                 '
                 setTimeout(() => {
                     const scrollContainer = document.querySelector(".scrollable-tabs");
@@ -1194,48 +1146,41 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        foreach ($block_fields as $idblock => $data) {
-            $rand = mt_rand();
-            $defaultblock = "";
-            if ($idblock == 1) {
-                $defaultblock = "active";
-            }
-            echo "<div id='block$idblock' class='tabfieldcontent $defaultblock'>";
+        // Kept outside the block loop, as in the legacy code: the counters accumulate, so a
+        // block missing a parameter also flags every block rendered after it.
+        $koparams = 0;
+        $kocustom = 0;
+        $searchOption = Search::getOptions('Ticket');
+        $debug = isset($_SESSION['glpi_use_mode']) && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
+        $is_order = $item->fields['is_order'] == 1;
+        $form_url = self::getFormURL();
+
+        $panels = [];
+        foreach ($block_fields as $idblock => $blockdata) {
+            $blockrand = mt_rand();
+            $container = 'massMetaFields' . $blockrand;
 
             $orders = [];
-            foreach ($data as $value) {
+            foreach ($blockdata as $value) {
                 $orders[] = $value['order'];
             }
 
-            if (!isset($_SESSION['plugin_metademands_searchresults'][$value['plugin_metademands_metademands_id']]['block'])
-                && self::isSequentialFromOne($orders) == false) {
-                echo "<div class='alert alert-warning flex'>";
-                echo "<div class='left'>";
-                echo "<i class='ti ti-alert-triangle' style='color: font-size:2em;orange;'></i>&nbsp;" . __(
-                    'The fields are not ordered correctly, you will not be able to order them!',
-                    'metademands',
-                );
-                echo "<br><br>";
-                echo _x('button', 'Do you want to fix them ?', 'metademands');
-                echo "</div>";
-                echo "<div class='right'>";
-                $target = self::getFormURL();
-                Html::showSimpleForm(
-                    $target,
+            $order_warning_html = '';
+            if ($searched_block == 0 && self::isSequentialFromOne($orders) == false) {
+                $order_warning_html = Html::getSimpleForm(
+                    $form_url,
                     'fixorders',
                     _x('button', 'Do you want to fix them ?', 'metademands'),
                     [
-                        'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id'],
-                        'rank' => $value['rank'],
+                        'plugin_metademands_metademands_id' => $meta_id,
+                        'rank' => $idblock,
                     ],
                     'ti-settings',
                     "class='btn btn-warning'",
                 );
-                echo "</div>";
-                echo "</div>";
             }
 
-            foreach ($data as $value) {
+            foreach ($blockdata as $value) {
                 $fp_check = FieldParameter::getFromStaticCache((int) $value['id']);
                 if ($fp_check === false) {
                     $fp_check = $fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]);
@@ -1244,20 +1189,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     $koparams++;
                 }
 
-                if (isset($value['type'])
-                    && (in_array(
-                        $value['type'],
-                        $allowed_customvalues_types,
-                    ) && ($value['item'] != "ITILCategory_Metademands"
-                            && !in_array($value["item"], self::$field_specificobjects))
-                        && !in_array($value['item'], $new_types))
-                    || (in_array(
-                        $value['item'],
-                        $allowed_customvalues_items,
-                    ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')) {
+                if (self::needsCustomValues($value, $allowed_customvalues_types, $allowed_customvalues_items, $new_types)) {
                     $fc_check = FieldCustomvalue::getFromStaticCache((int) $value['id']);
                     if ($fc_check === false) {
-                        $field_custom = new FieldCustomvalue();
                         $fc_check = $field_custom->find(["plugin_metademands_fields_id" => $value['id']]);
                     }
                     if (!$fc_check) {
@@ -1265,100 +1199,22 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     }
                 }
             }
-            if ($koparams > 0) {
-                echo "<div class='alert alert-warning d-flex'>";
-                echo "<b>" . __(
-                    'Warning : there are fields without parameters, please check',
-                    'metademands',
-                ) . "</b></div>";
-            }
-            if ($kocustom > 0) {
-                echo "<div class='alert alert-warning d-flex'>";
-                echo "<b>" . __(
-                    'Warning : there are fields without custom values, please check',
-                    'metademands',
-                ) . "</b></div>";
-            }
 
-            $fieldopt = new FieldOption();
-
-            if (is_array($data) && count($data) > 0) {
-                if ($canedit) {
-                    Html::openMassiveActionsForm('massMetaFields' . $rand);
-                    $massiveactionparams = [
-                        'item' => __CLASS__,
-                        'container' => 'massMetaFields' . $rand,
-                    ];
-                    Html::showMassiveActions($massiveactionparams);
-                }
-                echo "<div id='drag$rand'>";
-                echo "<table class='tab_cadre_fixehov'>";
-                //                echo "<tr class='tab_bg_2'>";
-                //                echo "<th class='center b' colspan='12'>" . __('Form fields', 'metademands') . " ".$blocks[$idblock]."</th>";
-                //                echo "</tr>";
-                echo "<thead>";
-                echo "<tr>";
-                if ($canedit) {
-                    echo "<th width='10'>";
-                    echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-                    echo "</th>";
-                }
-                echo "<th class='center b'></th>";
-                echo "<th class='center b'>" . __('ID') . "</th>";
-                echo "<th class='center b'>" . __('Label') . "</th>";
-                echo "<th class='center b'>" . __('Type') . " / " . __('Object', 'metademands') . "</th>";
-                echo "<th class='center b'>" . __('Mandatory', 'metademands') . "</th>";
-                echo "<th class='center b'>" . __('Value to check', 'metademands') . "</th>";
-                if ($item->fields['is_order'] == 1) {
-                    echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
-                }
-                echo "<th class='center b'>" . __('Use this field as object field', 'metademands') . "</th>";
-                echo "<th class='center b'>" . __('Launch a task with the field', 'metademands') . "</th>";
-                echo "<th class='center b' style='width: 70px;'>" . __('Actions', 'metademands') . "</th>";
-                echo "</tr>";
-                echo "</thead>";
-                $md_reorder_url = PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorderfields.php';
-                $md_params      = htmlspecialchars(json_encode([
-                    'plugin_metademands_metademands_id' => $item->getID(),
-                    'rank'                              => $idblock,
-                ]), ENT_QUOTES);
-                echo "<tbody data-md-sortable data-md-url='$md_reorder_url' data-md-params='$md_params'>";
-
+            $rows = [];
+            if (is_array($blockdata) && count($blockdata) > 0) {
                 // Init navigation list for field items
                 Session::initNavigateListItems($self->getType(), self::getTypeName(1));
 
-                $new_types = [];
-                if (isset($PLUGIN_HOOKS['metademands'])) {
-                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        $new_fields = self::addPluginDropdownFieldItems($plug);
-                        if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                            foreach ($new_fields as $plugin) {
-                                foreach ($plugin as $k => $field) {
-                                    $new_types[] = $k;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                foreach ($data as $value) {
+                foreach ($blockdata as $value) {
                     Session::addToNavigateListItems($self->getType(), $value['id']);
-
-                    echo "<tr class='tab_bg_1' data-md-order='" . $value['order'] . "'>";
-                    if ($canedit) {
-                        echo "<td class='rowhandler control center'>";
-                        //                        echo "<div class=\"drag\">";
-                        Html::showMassiveActionCheckBox(__CLASS__, $value["id"]);
-                        //                        echo "</div>";
-                        echo "</td>";
-                    }
 
                     // N+1 fix: load per-field data from static cache (preloaded before this loop)
                     $fp_cur = FieldParameter::getFromStaticCache((int) $value['id']);
                     if ($fp_cur === false) {
-                        $fp_cur = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']]) ? $fieldparameter->fields : null;
+                        $fp_cur = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])
+                            ? $fieldparameter->fields
+                            : null;
                     }
-                    $fieldparameter->fields = $fp_cur ?? [];
                     $fc_cur = FieldCustomvalue::getFromStaticCache((int) $value['id']);
                     if ($fc_cur === false) {
                         $fc_cur = $field_custom->find(["plugin_metademands_fields_id" => $value['id']]) ?: [];
@@ -1368,256 +1224,177 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         $fo_cur = (new FieldOption())->find(["plugin_metademands_fields_id" => $value['id']]) ?: [];
                     }
 
-                    echo "<td>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if (!$fp_cur || ((
-                        isset($value['type'])
-                                && (in_array(
-                                    $value['type'],
-                                    $allowed_customvalues_types,
-                                ) && ($value['item'] != "ITILCategory_Metademands"
-                                        && !in_array($value["item"], self::$field_specificobjects))
-                                    && !in_array($value['item'], $new_types))
-                                || (in_array(
-                                    $value['item'],
-                                    $allowed_customvalues_items,
-                                ) && $value['item'] != 'Appliance' && $value['item'] != 'Group')
-                    )
-                            && !$fc_cur)) {
-                        echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
-                    }
-                    echo "</div>";
-                    echo "</td>";
+                    $needs_custom = self::needsCustomValues($value, $allowed_customvalues_types, $allowed_customvalues_items, $new_types);
 
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    echo $value['id'];
-                    echo "</div>";
-                    echo "</td>";
+                    // Label
+                    $name = $value['name'] ?? '';
+                    $label = empty(trim($name)) ? __('ID') . " - " . $value['id'] : $name;
 
-                    $name = "";
-                    if (isset($value['name'])) {
-                        $name = $value['name'];
-                    }
-
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    echo " <a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'] . "'>";
-                    if (empty(trim($name))) {
-                        echo __('ID') . " - " . $value['id'];
-                    } else {
-                        echo htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
-                    }
-                    echo "</a>";
-                    echo "</div>";
-                    echo "</td>";
-
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    echo self::getFieldTypesName($value['type']);
-                    //name of parent field
+                    // Type / object
+                    $type_label = self::getFieldTypesName($value['type']);
                     if ($value['type'] == 'parent_field') {
                         $parent_opt = count($fo_cur) > 0 ? reset($fo_cur) : null;
                         if ($parent_opt) {
-                            $field = new self();
-                            if ($field->getFromDB($parent_opt['parent_field_id'])) {
-                                if (empty(trim($field->fields['name']))) {
-                                    echo " ( ID - " . $value['parent_field_id'] . ")";
-                                } else {
-                                    echo " (" . htmlspecialchars((string) $field->fields['name'], ENT_QUOTES, 'UTF-8') . ")";
-                                }
+                            $parent_field = new self();
+                            if ($parent_field->getFromDB($parent_opt['parent_field_id'])) {
+                                $type_label .= empty(trim($parent_field->fields['name']))
+                                    ? " ( ID - " . ($value['parent_field_id'] ?? '') . ")"
+                                    : " (" . $parent_field->fields['name'] . ")";
                             }
                         }
                     }
-
                     $itemtypename = self::getFieldItemsName($value['type'], $value['item']);
                     if ($itemtypename != \Dropdown::EMPTY_VALUE) {
-                        echo " (";
-                        echo $itemtypename;
-                        echo ")";
+                        $type_label .= " (" . $itemtypename . ")";
                     }
-                    echo "</td>";
 
-
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if ($fp_cur) {
-                        if ($fp_cur['is_mandatory'] == 1) {
-                            echo "<span class='red'>";
-                        }
-                        echo \Dropdown::getYesNo($fp_cur['is_mandatory']);
-                        if ($fp_cur['is_mandatory'] == 1) {
-                            echo "</span>";
-                        }
-                    }
-                    echo "</div>";
-                    echo "</td>";
-
-
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if (count($fo_cur) > 0) {
-                        $nbopts = count($fo_cur);
-                        if ($nbopts > 1) {
-                            echo __('Multiples', 'metademands');
-                        } else {
-                            foreach ($fo_cur as $opt) {
-                                $datao['item'] = $value['item'];
-                                $datao['type'] = $value['type'];
-                                $datao['id'] = $value['id'];
-                                $datao['check_value'] = $opt['check_value'];
-                                $datao['parent_field_id'] = $opt['parent_field_id'];
-                                $datao['check_type_value'] = $opt['check_type_value'];
-                                $datao['check_value_regex'] = $opt['check_value_regex'];
-
-                                $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-                                $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-                                if (isset($value['type'])
-                                    && in_array($value['type'], $allowed_customvalues_types)
-                                    || in_array($value['item'], $allowed_customvalues_items)) {
-                                    $datao['custom_values'] = count($fc_cur) > 0 ? $fc_cur : [];
-                                } else {
-                                    $datao['custom_values'] = $value['custom_values'] ?? [];
-                                }
-
-                                echo FieldOption::getValueToCheck($datao);
-                            }
-                        }
+                    // Value to check: a plain label, or the markup produced by getValueToCheck()
+                    $value_to_check_label = null;
+                    $value_to_check_html = '';
+                    if (count($fo_cur) > 1) {
+                        $value_to_check_label = __('Multiples', 'metademands');
+                    } elseif (count($fo_cur) === 0) {
+                        $value_to_check_label = \Dropdown::EMPTY_VALUE;
                     } else {
-                        echo \Dropdown::EMPTY_VALUE;
-                    }
-                    echo "</div>";
-                    echo "</td>";
-                    if ($item->fields['is_order'] == 1) {
-                        echo "<td class='rowhandler control center'>";
-                        echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                        echo \Dropdown::getYesNo($fieldparameter->fields['is_basket']) . "</td>";
-                        echo "</div>";
-                    }
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    $searchOption = Search::getOptions('Ticket');
-                    if ($fp_cur) {
-                        if ($fp_cur['used_by_ticket']
-                            && $value['type'] !== 'text'
-                            && $value['type'] !== 'email'
-                            && $value['type'] !== 'tel'
-                            && $value['type'] !== 'url') {
-                            echo $searchOption[$fp_cur['used_by_ticket']]['name'];
-                        } else {
-                            echo \Dropdown::EMPTY_VALUE;
-                        }
-                    } else {
-                        echo \Dropdown::EMPTY_VALUE;
-                    }
-                    echo "</div>";
-                    echo "</td>";
-
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;
-border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    if (count($fo_cur) > 0) {
                         foreach ($fo_cur as $opt) {
-                            $tasks = [];
-                            if (!empty($opt['plugin_metademands_tasks_id'])) {
-                                $tasks[] = $opt['plugin_metademands_tasks_id'];
+                            $datao = [
+                                'item' => $value['item'],
+                                'type' => $value['type'],
+                                'id' => $value['id'],
+                                'check_value' => $opt['check_value'],
+                                'parent_field_id' => $opt['parent_field_id'],
+                                'check_type_value' => $opt['check_type_value'],
+                                'check_value_regex' => $opt['check_value_regex'],
+                                'custom_values' => $value['custom_values'] ?? [],
+                            ];
+                            if (isset($value['type'])
+                                && in_array($value['type'], $allowed_customvalues_types)
+                                || in_array($value['item'], $allowed_customvalues_items)) {
+                                $datao['custom_values'] = count($fc_cur) > 0 ? $fc_cur : [];
                             }
-                            if (is_array($tasks)) {
-                                if (count($tasks) > 0) {
-                                    foreach ($tasks as $k => $task) {
-                                        $metatask = new Task();
-                                        if ($metatask->getFromDB($task)) {
-                                            if ($metatask->fields['type'] == Task::METADEMAND_TYPE) {
-                                                $metachildtask = new MetademandTask();
-                                                if ($metachildtask->getFromDBByCrit(
-                                                    ["plugin_metademands_tasks_id" => $task],
-                                                )) {
-                                                    echo \Dropdown::getDropdownName(
-                                                        'glpi_plugin_metademands_metademands',
-                                                        $metachildtask->fields['plugin_metademands_metademands_id'],
-                                                    );
-                                                }
-                                            } else {
-                                                echo $metatask->getName();
-                                            }
-                                            echo "<br>";
-                                        }
-                                    }
-                                }
-                            }
+                            // getValueToCheck() writes to the output buffer instead of returning
+                            ob_start();
+                            FieldOption::getValueToCheck($datao);
+                            $value_to_check_html .= ob_get_clean();
                         }
-                    } else {
-                        echo \Dropdown::EMPTY_VALUE;
                     }
-                    echo "</div>";
-                    echo "</td>";
 
-                    $form = self::getFormURL();
-                    echo "<td class='rowhandler control center'>";
-                    echo "<div class=\"drag row md-sort-handle\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                    $debug = (isset($_SESSION['glpi_use_mode'])
-                    && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-                    if ($debug) {
-                        echo $value['order'];
+                    // Object field
+                    $object_field_label = \Dropdown::EMPTY_VALUE;
+                    if ($fp_cur
+                        && $fp_cur['used_by_ticket']
+                        && !in_array($value['type'], ['text', 'email', 'tel', 'url'], true)) {
+                        $object_field_label = $searchOption[$fp_cur['used_by_ticket']]['name'];
                     }
-                    echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
-                    echo "</div>";
-                    echo "&nbsp;";
-                    echo Html::getSimpleForm(
-                        $form,
-                        'purge',
-                        "",
-                        [
-                            "id" => $value['id'],
-                            "plugin_metademands_metademands_id" => $value['plugin_metademands_metademands_id'],
-                        ],
-                        "fa-times-circle fa-1x",
-                        "",
-                        __('Are you sure you want to delete this field ?', 'metademands'),
-                    );
-                    echo "</td>";
-                    echo "</tr>";
-                }
-                echo "</tbody>";
-                echo "</table>";
-                echo "</div>";
 
-                if ($canedit && count($data)) {
-                    $massiveactionparams['ontop'] = false;
-                    Html::showMassiveActions($massiveactionparams);
-                    Html::closeForm();
+                    // Tasks launched by the field
+                    $task_names = [];
+                    foreach ($fo_cur as $opt) {
+                        if (empty($opt['plugin_metademands_tasks_id'])) {
+                            continue;
+                        }
+                        $metatask = new Task();
+                        if (!$metatask->getFromDB($opt['plugin_metademands_tasks_id'])) {
+                            continue;
+                        }
+                        if ($metatask->fields['type'] == Task::METADEMAND_TYPE) {
+                            $metachildtask = new MetademandTask();
+                            if ($metachildtask->getFromDBByCrit(
+                                ["plugin_metademands_tasks_id" => $opt['plugin_metademands_tasks_id']],
+                            )) {
+                                $task_names[] = \Dropdown::getDropdownName(
+                                    'glpi_plugin_metademands_metademands',
+                                    $metachildtask->fields['plugin_metademands_metademands_id'],
+                                );
+                            }
+                        } else {
+                            $task_names[] = $metatask->getName();
+                        }
+                    }
+
+                    $rows[] = [
+                        'order' => $value['order'],
+                        'id' => $value['id'],
+                        'checkbox_html' => $canedit ? Html::getMassiveActionCheckBox(__CLASS__, $value['id']) : '',
+                        'has_warning' => !$fp_cur || ($needs_custom && !$fc_cur),
+                        'label' => $label,
+                        'url' => Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'],
+                        'type_label' => $type_label,
+                        'is_mandatory' => $fp_cur ? $fp_cur['is_mandatory'] == 1 : false,
+                        'mandatory_label' => $fp_cur ? \Dropdown::getYesNo($fp_cur['is_mandatory']) : null,
+                        'value_to_check_label' => $value_to_check_label,
+                        'value_to_check_html' => $value_to_check_html,
+                        'basket_label' => \Dropdown::getYesNo($fp_cur['is_basket'] ?? 0),
+                        'object_field_label' => $object_field_label,
+                        'task_names' => $task_names,
+                        'no_task_label' => \Dropdown::EMPTY_VALUE,
+                        'debug_order' => $debug ? $value['order'] : null,
+                        'purge_form_html' => Html::getSimpleForm(
+                            $form_url,
+                            'purge',
+                            "",
+                            [
+                                "id" => $value['id'],
+                                "plugin_metademands_metademands_id" => $value['plugin_metademands_metademands_id'],
+                            ],
+                            "fa-times-circle fa-1x",
+                            "",
+                            __('Are you sure you want to delete this field ?', 'metademands'),
+                        ),
+                    ];
                 }
-            } else {
-                echo "<div class='center first-bloc'>";
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr  class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
-                echo "</table>";
-                echo "</div>";
             }
 
-            echo "</div>";
-        }
-        echo "<br><h3>";
-        echo __('Block overview', 'metademands');
-        echo "</h3>";
+            $ma_open_html = '';
+            $ma_top_html = '';
+            $ma_bottom_html = '';
+            $close_form_html = '';
+            $check_all_html = '';
+            if ($canedit && count($rows)) {
+                $massiveactionparams = ['item' => __CLASS__,
+                    'container' => $container,
+                    'display' => false,
+                ];
+                $ma_open_html = Html::getOpenMassiveActionsForm($container);
+                $ma_top_html = Html::showMassiveActions($massiveactionparams);
+                // Legacy id, kept as is: it does not match the container above, so the
+                // "check all" box currently drives no checkbox.
+                $check_all_html = Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $blockrand);
+                // Built after the rows on purpose: showMassiveActions() empties
+                // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
+                // row checkboxes read that selection to restore their checked state.
+                $massiveactionparams['ontop'] = false;
+                $ma_bottom_html = Html::showMassiveActions($massiveactionparams);
+                $close_form_html = Html::closeForm(false);
+            }
 
-        if (!isset($_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'])
-            || $_SESSION['plugin_metademands_searchresults'][$item->getID()]['block'] == 0) {
-            $id = $item->getID();
-            $url = PLUGIN_METADEMANDS_WEBDIR;
-            echo "<script type='text/javascript'>";
-            echo "$(document).ready(function () {
-                var meta_id = $id;
-                var urlmeta = '$url';
+            $panels[] = [
+                'id' => $idblock,
+                'is_default' => $idblock == 1,
+                'order_warning_html' => $order_warning_html,
+                'ko_params' => $koparams > 0,
+                'ko_custom' => $kocustom > 0,
+                'drag_id' => 'drag' . $blockrand,
+                'sortable_url' => $webdir . '/ajax/reorderfields.php',
+                'sortable_params' => json_encode([
+                    'plugin_metademands_metademands_id' => $meta_id,
+                    'rank' => $idblock,
+                ]),
+                'ma_open_html' => $ma_open_html,
+                'ma_top_html' => $ma_top_html,
+                'ma_bottom_html' => $ma_bottom_html,
+                'close_form_html' => $close_form_html,
+                'check_all_html' => $check_all_html,
+                'rows' => $rows,
+            ];
+        }
+
+        $preview_script_html = '';
+        if ($searched_block == 0) {
+            $preview_script_html = Html::scriptBlock("
+            $(document).ready(function () {
+                var meta_id = {$meta_id};
+                var urlmeta = '{$webdir}';
                 var fieldid = '1';
 
                 function loadPreview(fieldid) {
@@ -1648,14 +1425,51 @@ border-style: none !important; border-color: initial !important;border-image: in
                     e.preventDefault();
                     var tabId = $(this).attr('href').replace('#', '');
                     if (typeof tabId !== 'undefined' && tabId.length > 0) {
-                        fieldid = parseInt(tabId.substr(5)); // Mise à jour du fieldid
-                        loadPreview(fieldid); // Recharger AJAX avec la nouvelle valeur
+                        fieldid = parseInt(tabId.substr(5));
+                        loadPreview(fieldid);
                     }
                 });
-            });";
-            echo "</script>";
+            });");
         }
-        echo "<span id='see_block_preview'></span>";
+
+        echo TemplateRenderer::getInstance()->render('@metademands/field_list.html.twig', [
+            'canedit' => $canedit,
+            'is_order' => $is_order,
+            'add' => $add,
+            'block_filter_script_html' => $block_filter_script_html,
+            'search_form_html' => $search_form_html,
+            'tabs_state_script_html' => $tabs_state_script_html,
+            'tabs_scroll_script_html' => $tabs_scroll_script_html,
+            'preview_script_html' => $preview_script_html,
+            'tabs' => $tabs,
+            'panels' => $panels,
+            'drag_style' => 'cursor: move;border-width: 0 !important;border-style: none !important;'
+                . ' border-color: initial !important;border-image: initial !important;',
+        ]);
+    }
+
+    /**
+     * Does this field require custom values to be configured?
+     *
+     * Extracted verbatim from the condition the field list used to repeat three times.
+     *
+     * @param array $value  field row
+     * @param array $allowed_types
+     * @param array $allowed_items
+     * @param array $new_types itemtypes contributed by other plugins
+     *
+     * @return bool
+     */
+    private static function needsCustomValues($value, $allowed_types, $allowed_items, $new_types)
+    {
+        return (isset($value['type'])
+                && in_array($value['type'], $allowed_types)
+                && $value['item'] != "ITILCategory_Metademands"
+                && !in_array($value["item"], self::$field_specificobjects)
+                && !in_array($value['item'], $new_types))
+            || (in_array($value['item'], $allowed_items)
+                && $value['item'] != 'Appliance'
+                && $value['item'] != 'Group');
     }
 
     /**
@@ -4517,6 +4331,19 @@ border-style: none !important; border-color: initial !important;border-image: in
 
     public static function searchForm($item, $cond)
     {
+        echo self::getSearchForm($item, $cond);
+    }
+
+    /**
+     * Build the filter form shown above the field list.
+     *
+     * @param       $item the Metademand the tab is displayed for
+     * @param array $cond current filter, as stored in the session
+     *
+     * @return string
+     */
+    private static function getSearchForm($item, $cond)
+    {
         global $DB;
 
         $params = $cond ?? [];
@@ -4528,15 +4355,6 @@ border-style: none !important; border-color: initial !important;border-image: in
             $p[$key] = $val;
         }
 
-        echo "<form name='form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/field.php'>";
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_2'>";
-
-        echo "<td class='center'><b>";
-        echo __('Filter', 'glpi') . "&nbsp;";
-        echo "</b></td>";
-
-        echo "<td class='center'>";
         $iterator = $DB->request([
             'SELECT' => ['MAX' => 'rank AS maxrank'],
             'FROM' => 'glpi_plugin_metademands_fields',
@@ -4552,59 +4370,61 @@ border-style: none !important; border-color: initial !important;border-image: in
             }
         }
 
-        echo __('Block', 'metademands') . "&nbsp;";
-        \Dropdown::showNumber('block', [
-            'value' => $p['rank'],
-            'min' => 1,
-            'max' => $max,
-            'toadd' => [0 => \Dropdown::EMPTY_VALUE],
-        ]);
-        echo "</td>";
+        // The rand has to be generated here: with 'display' => false the dropdown helpers
+        // return their markup instead of the rand, which the AJAX observer below needs.
+        $mrand = mt_rand();
 
-        echo "<td class='center'>";
-        echo __('Field type', 'metademands') . "&nbsp;";
-        $mrand = self::dropdownFieldTypes(
-            self::$field_types,
-            [
-                'value' => $p['type'],
-                'metademands_id' => $item->getID(),
-                'on_change' => 'plugin_metademands_reloaditem();',
-            ],
-        );
-        echo "</td>";
-
-        echo "<td class='center'>";
-        echo "<span id='plugin_metademands_item'>";
-        if (in_array($p['type'], self::$field_withobjects)) {
-            echo __('Object', 'metademands') . "&nbsp;";
-            self::dropdownFieldItems($p['type'], ['value' => $p["item"], 'with_empty_value' => true]);
+        $show_item = in_array($p['type'], self::$field_withobjects);
+        $item_dropdown_html = '';
+        if ($show_item) {
+            // Belt and braces: the plugin branch of dropdownFieldItems() may write to the
+            // output buffer rather than honour 'display'.
+            ob_start();
+            $returned = self::dropdownFieldItems($p['type'], ['value' => $p["item"],
+                'with_empty_value' => true,
+                'display' => false,
+            ]);
+            $item_dropdown_html = ob_get_clean() . (is_string($returned) ? $returned : '');
         }
-        echo "</span>";
-        echo "</td>";
 
-        echo "<script type='text/javascript'>";
-        echo "function plugin_metademands_reloaditem() {";
-        $params = [
-            'action' => 'reloaditem',
-            'type' => '__VALUE__',
-        ];
-        Ajax::updateItemJsCode(
-            'plugin_metademands_item',
-            PLUGIN_METADEMANDS_WEBDIR . '/ajax/reloaditem.php',
-            $params,
-            'dropdown_type' . $mrand,
-        );
-        echo "};";
-        echo "</script>";
-
-        echo "<td>";
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
-        echo Html::submit(_sx('button', 'Search'), ['name' => 'search', 'class' => 'btn btn-primary']);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "</table></div>";
-        Html::closeForm();
+        return TemplateRenderer::getInstance()->render('@metademands/field_search_form.html.twig', [
+            'form_action' => PLUGIN_METADEMANDS_WEBDIR . '/front/field.php',
+            'block_dropdown_html' => \Dropdown::showNumber('block', [
+                'value' => $p['rank'],
+                'min' => 1,
+                'max' => $max,
+                'toadd' => [0 => \Dropdown::EMPTY_VALUE],
+                'display' => false,
+            ]),
+            'type_dropdown_html' => self::dropdownFieldTypes(
+                self::$field_types,
+                [
+                    'value' => $p['type'],
+                    'metademands_id' => $item->getID(),
+                    'on_change' => 'plugin_metademands_reloaditem();',
+                    'rand' => $mrand,
+                    'display' => false,
+                ],
+            ),
+            'show_item' => $show_item,
+            'item_dropdown_html' => $item_dropdown_html,
+            'reload_script_html' => Html::scriptBlock(
+                'function plugin_metademands_reloaditem() {'
+                . Ajax::updateItemJsCode(
+                    'plugin_metademands_item',
+                    PLUGIN_METADEMANDS_WEBDIR . '/ajax/reloaditem.php',
+                    ['action' => 'reloaditem', 'type' => '__VALUE__'],
+                    'dropdown_type' . $mrand,
+                    false,
+                )
+                . '};',
+            ),
+            'hidden_html' => Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]),
+            'submit_html' => Html::submit(_sx('button', 'Search'), ['name' => 'search',
+                'class' => 'btn btn-primary',
+            ]),
+            'close_form_html' => Html::closeForm(false),
+        ]);
     }
 
 

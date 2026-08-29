@@ -1,0 +1,233 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if add is not null %}
+    <div class="modal fade" id="{{ add.modal_new_id }}" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ __('Add a new field', 'metademands') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="{{ add.modal_new_id }}_body" class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="{{ add.modal_existing_id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ __('Add an existing field', 'metademands') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="{{ add.modal_existing_id }}_body" class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+    {{ add.script_html|raw }}
+
+    <div class="center">
+        <a class="submit btn btn-primary" href="javascript:{{ add.fn_new }}();">
+            {{- __('Add a new field', 'metademands') -}}
+        </a>&nbsp;
+        <a class="submit btn btn-primary" href="javascript:{{ add.fn_existing }}();">
+            {{- __('Add an existing field', 'metademands') -}}
+        </a>
+    </div>
+    <br>
+{% endif %}
+
+{{ block_filter_script_html|raw }}
+{{ search_form_html|raw }}
+{{ tabs_state_script_html|raw }}
+
+{% if tabs|length %}
+    <div class="tabs-container">
+        <button class="scroll-btn scroll-left"><i class="ti ti-chevron-left"></i></button>
+        <div class="d-flex flex-nowrap border-bottom scrollable-tabs">
+            <ul class="nav nav-tabs flex-nowrap" style="border-bottom:unset" role="tablist" id="fieldslist">
+                {% for tab in tabs %}
+                    <li class="nav-item">
+                        <a class="nav-link tablinks" id="ablock{{ tab.id }}" href="#block{{ tab.id }}"
+                           data-toggle="tab">{{ tab.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <button class="scroll-btn scroll-right"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    {{ tabs_scroll_script_html|raw }}
+{% endif %}
+
+{% for panel in panels %}
+    <div id="block{{ panel.id }}" class="tabfieldcontent {{ panel.is_default ? 'active' : '' }}">
+        {% if panel.order_warning_html is not empty %}
+            <div class="alert alert-warning flex">
+                <div class="left">
+                    <i class="ti ti-alert-triangle" style="color: font-size:2em;orange;"></i>&nbsp;
+                    {{- __('The fields are not ordered correctly, you will not be able to order them!', 'metademands') }}
+                    <br><br>
+                    {{ _x('button', 'Do you want to fix them ?', 'metademands') }}
+                </div>
+                <div class="right">
+                    {{ panel.order_warning_html|raw }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if panel.ko_params %}
+            <div class="alert alert-warning d-flex">
+                <b>{{ __('Warning : there are fields without parameters, please check', 'metademands') }}</b>
+            </div>
+        {% endif %}
+        {% if panel.ko_custom %}
+            <div class="alert alert-warning d-flex">
+                <b>{{ __('Warning : there are fields without custom values, please check', 'metademands') }}</b>
+            </div>
+        {% endif %}
+
+        {% if not panel.rows|length %}
+            <div class="center first-bloc">
+                <table class="tab_cadre_fixe">
+                    <tr class="tab_bg_1">
+                        <td class="center">{{ __('No results found') }}</td>
+                    </tr>
+                </table>
+            </div>
+        {% else %}
+            {% if canedit %}
+                {{ panel.ma_open_html|raw }}
+                {{ panel.ma_top_html|raw }}
+            {% endif %}
+            <div id="{{ panel.drag_id }}">
+                <table class="tab_cadre_fixehov">
+                    <thead>
+                        <tr>
+                            {% if canedit %}
+                                <th width="10">{{ panel.check_all_html|raw }}</th>
+                            {% endif %}
+                            <th class="center b"></th>
+                            <th class="center b">{{ __('ID') }}</th>
+                            <th class="center b">{{ __('Label') }}</th>
+                            <th class="center b">{{ __('Type') }} / {{ __('Object', 'metademands') }}</th>
+                            <th class="center b">{{ __('Mandatory', 'metademands') }}</th>
+                            <th class="center b">{{ __('Value to check', 'metademands') }}</th>
+                            {% if is_order %}
+                                <th class="center b">{{ __('Display into the basket', 'metademands') }}</th>
+                            {% endif %}
+                            <th class="center b">{{ __('Use this field as object field', 'metademands') }}</th>
+                            <th class="center b">{{ __('Launch a task with the field', 'metademands') }}</th>
+                            <th class="center b" style="width: 70px;">{{ __('Actions', 'metademands') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody data-md-sortable data-md-url="{{ panel.sortable_url }}"
+                           data-md-params="{{ panel.sortable_params }}">
+                        {% for row in panel.rows %}
+                            <tr class="tab_bg_1" data-md-order="{{ row.order }}">
+                                {% if canedit %}
+                                    <td class="rowhandler control center">{{ row.checkbox_html|raw }}</td>
+                                {% endif %}
+                                <td>
+                                    <div class="drag row" style="{{ drag_style }}">
+                                        {%- if row.has_warning -%}
+                                            <i class="fa fa-warning fa-1x" style="color: orange;"></i>
+                                        {%- endif -%}
+                                    </div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">{{ row.id }}</div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">
+                                        <a href="{{ row.url }}">{{ row.label }}</a>
+                                    </div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">{{ row.type_label }}</div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">
+                                        {%- if row.mandatory_label is not null -%}
+                                            {% if row.is_mandatory %}
+                                                <span class="red">{{ row.mandatory_label }}</span>
+                                            {% else %}
+                                                {{ row.mandatory_label }}
+                                            {% endif %}
+                                        {%- endif -%}
+                                    </div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">
+                                        {%- if row.value_to_check_label is not null -%}
+                                            {{ row.value_to_check_label }}
+                                        {%- else -%}
+                                            {{ row.value_to_check_html|raw }}
+                                        {%- endif -%}
+                                    </div>
+                                </td>
+                                {% if is_order %}
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">{{ row.basket_label }}</div>
+                                    </td>
+                                {% endif %}
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">{{ row.object_field_label }}</div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row" style="{{ drag_style }}">
+                                        {%- if row.task_names|length -%}
+                                            {% for task_name in row.task_names %}{{ task_name }}<br>{% endfor %}
+                                        {%- else -%}
+                                            {{ row.no_task_label }}
+                                        {%- endif -%}
+                                    </div>
+                                </td>
+                                <td class="rowhandler control center">
+                                    <div class="drag row md-sort-handle" style="{{ drag_style }}">
+                                        {%- if row.debug_order is not null %}{{ row.debug_order }}{% endif -%}
+                                        <i class="ti ti-grip-horizontal grip-rule"></i>
+                                    </div>
+                                    &nbsp;{{ row.purge_form_html|raw }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if canedit %}
+                {{ panel.ma_bottom_html|raw }}
+                {# closes the massive actions <form> above and carries the CSRF token #}
+                {{ panel.close_form_html|raw }}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endfor %}
+
+<br>
+<h3>{{ __('Block overview', 'metademands') }}</h3>
+{{ preview_script_html|raw }}
+<span id="see_block_preview"></span>
