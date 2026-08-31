@@ -432,126 +432,108 @@ class Condition extends CommonDBChild
     public static function listConditions($item)
     {
         global $CFG_GLPI;
+
         $cond = new Condition();
-        $dbu = new DbUtils();
         $field = new Field();
         $rand = mt_rand();
         $canedit = $item->can($item->fields['id'], UPDATE);
-        echo "<br><br>";
-        if ($canedit) {
-            echo "<div id='viewcondition" . $item->getID() . "$rand'></div>\n";
-        }
+        $container = 'massMetaCondition' . $rand;
+        $view_container_id = "viewcondition" . $item->getID() . $rand;
+        $can_link_field = Session::haveRight('plugin_metademands', UPDATE);
+
         $self = new self();
-        $allConditions = [];
-        $allConditions = $self->find(['plugin_metademands_metademands_id' => $item->fields['id']], ['order', 'id']);
-        if (count($allConditions) > 0) {
-            Html::openMassiveActionsForm('massMetaCondition' . $rand);
-            $params = [
-                'item' => __CLASS__,
-                'container' => 'massMetaCondition' . $rand,
-            ];
-            Html::showMassiveActions($params);
+        $allConditions = $self->find(
+            ['plugin_metademands_metademands_id' => $item->fields['id']],
+            ['order', 'id'],
+        );
 
-
-            echo "<div class ='left'>";
-            echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-            echo "<th colspan='8'>" . __("List of conditions", 'metademands') . "</th></tr><tr>";
-            if ($canedit) {
-                echo "<th width='10'>";
-                echo Html::getCheckAllAsCheckbox('massMetaCondition' . $rand);
-                echo "</th>";
+        $rows = [];
+        $scripts_html = '';
+        foreach ($allConditions as $condition) {
+            $cond->getFromDB($condition['id']);
+            if (!$field->getFromDB($condition['plugin_metademands_fields_id'])) {
+                // The referenced field is gone: drop the orphan condition
+                $cond->delete(['id' => $condition['id']]);
+                continue;
             }
-            echo "<th> " . __('ID') . " </th>";
-            echo "<th> " . __('Logical operator', 'metademands') . " </th>";
-            echo "<th>" . __('Field', 'metademands') . "</th>";
-            echo "<th>" . __('Type') . "</th>";
-            echo "<th>" . __('Equality operator', 'metademands') . "</th>";
-            echo "<th>" . __('Value to check', 'metademands') . "</th>";
-            echo "<th>" . __('Pool', 'metademands') . "</th>";
 
-            foreach ($allConditions as $condition) {
-                $cond->getFromDB($condition['id']);
-                if ($field->getFromDB($condition['plugin_metademands_fields_id'])) {
-                    $onhover = '';
-                    if ($canedit) {
-                        $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditcondition" . $condition['id'] . "$rand();\"";
-                    }
-
-                    echo "<tr class = 'tab_bg_1'>";
-                    if ($canedit) {
-                        echo "<td class='center'>";
-                        Html::showMassiveActionCheckBox(__CLASS__, $condition["id"]);
-                        echo "</td>";
-                    }
-
-                    echo "<td $onhover>";
-                    if ($canedit) {
-                        echo "\n<script type='text/javascript' >\n";
-                        echo "function viewEditcondition" . $condition['id'] . "$rand() {\n";
-                        $params = [
+            $edit_function = null;
+            $checkbox_html = '';
+            if ($canedit) {
+                $edit_function = 'viewEditcondition' . $condition['id'] . $rand;
+                $checkbox_html = Html::getMassiveActionCheckBox(__CLASS__, $condition['id']);
+                $scripts_html .= Html::scriptBlock(
+                    'function ' . $edit_function . '() {'
+                    . Ajax::updateItemJsCode(
+                        $view_container_id,
+                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                        [
                             'type' => __CLASS__,
                             'parenttype' => get_class($item),
                             $item->getForeignKeyField() => $item->getID(),
-                            'id' => $condition["id"],
-                        ];
-                        Ajax::updateItemJsCode(
-                            "viewcondition" . $item->getID() . "$rand",
-                            $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params,
-                        );
-                        echo "};";
-                        echo "</script>\n";
-
-                        echo($condition['id']);
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        echo self::showLogic($condition['show_logic']);
-                        echo "</td>";
-                        echo "<td $onhover>";
-                        if (Session::haveRight('plugin_metademands', UPDATE)) {
-                            $fieldURL = $field->getLinkURL();
-                            echo "<a href='$fieldURL' style='color:royalblue;'>";
-                        }
-                        echo \Dropdown::getDropdownName(
-                            Field::getTable(),
-                            $condition['plugin_metademands_fields_id'],
-                        ) . " (" . $condition['plugin_metademands_fields_id'] . ") ";
-                        if (Session::haveRight('plugin_metademands', UPDATE)) {
-                            echo "</a> ";
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        echo Field::getFieldTypesName($condition['type']);
-                        echo "</td>";
-
-                        echo "<td  $onhover>";
-                        echo self::showCondition($condition['show_condition']);
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        self::displayCheckValue($condition['id']);
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        echo $condition['order'];
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    $input = [
-                        'id' => $condition['id'],
-                    ];
-                    $cond->delete($input);
-                }
+                            'id' => $condition['id'],
+                        ],
+                        "",
+                        false,
+                    )
+                    . '};',
+                );
             }
-        } else {
-            echo "<br><div class='alert alert-info center'>";
-            echo __("No conditions founded", 'metademands');
-            echo "</div>";
+
+            // displayCheckValue() writes to the output buffer instead of returning
+            ob_start();
+            self::displayCheckValue($condition['id']);
+            $check_value_html = ob_get_clean();
+
+            $rows[] = [
+                'id' => $condition['id'],
+                'edit_function' => $edit_function,
+                'checkbox_html' => $checkbox_html,
+                'logic' => self::showLogic($condition['show_logic']),
+                'field_label' => \Dropdown::getDropdownName(
+                    Field::getTable(),
+                    $condition['plugin_metademands_fields_id'],
+                ) . " (" . $condition['plugin_metademands_fields_id'] . ") ",
+                'field_url' => $can_link_field ? $field->getLinkURL() : null,
+                'type_label' => Field::getFieldTypesName($condition['type']),
+                'condition_label' => self::showCondition($condition['show_condition']),
+                'check_value_html' => $check_value_html,
+                'order' => $condition['order'],
+            ];
         }
+
+        $ma_open_html = '';
+        $ma_top_html = '';
+        $ma_bottom_html = '';
+        $close_form_html = '';
+        $check_all_html = '';
+        if ($canedit && count($rows)) {
+            $massiveactionparams = ['item' => __CLASS__,
+                'container' => $container,
+                'display' => false,
+            ];
+            $ma_open_html = Html::getOpenMassiveActionsForm($container);
+            $ma_top_html = Html::showMassiveActions($massiveactionparams);
+            $check_all_html = Html::getCheckAllAsCheckbox($container);
+            // Built after the rows on purpose: showMassiveActions() empties
+            // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
+            // row checkboxes read that selection to restore their checked state.
+            $massiveactionparams['ontop'] = false;
+            $ma_bottom_html = Html::showMassiveActions($massiveactionparams);
+            $close_form_html = Html::closeForm(false);
+        }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/condition_list.html.twig', [
+            'canedit' => $canedit,
+            'view_container_id' => $view_container_id,
+            'rows' => $rows,
+            'scripts_html' => $scripts_html,
+            'ma_open_html' => $ma_open_html,
+            'ma_top_html' => $ma_top_html,
+            'ma_bottom_html' => $ma_bottom_html,
+            'close_form_html' => $close_form_html,
+            'check_all_html' => $check_all_html,
+        ]);
     }
 
 

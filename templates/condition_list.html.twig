@@ -1,0 +1,118 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<br><br>
+
+{% if canedit %}
+    <div id="{{ view_container_id }}"></div>
+{% endif %}
+
+{% if not rows|length %}
+    <br>
+    <div class="alert alert-info center">
+        {{ __('No conditions founded', 'metademands') }}
+    </div>
+{% else %}
+    {# Emitted before the table: the legacy code placed one <script> per row inside a
+       <td>, where the parser hoists it out anyway. #}
+    {{ scripts_html|raw }}
+
+    {% if canedit %}
+        {{ ma_open_html|raw }}
+        {{ ma_top_html|raw }}
+    {% endif %}
+
+    <div class="left">
+        <table class="tab_cadre_fixehov">
+            <thead>
+                <tr class="tab_bg_2">
+                    <th colspan="{{ canedit ? 8 : 7 }}">{{ __('List of conditions', 'metademands') }}</th>
+                </tr>
+                <tr>
+                    {% if canedit %}
+                        <th width="10">{{ check_all_html|raw }}</th>
+                    {% endif %}
+                    <th>{{ __('ID') }}</th>
+                    <th>{{ __('Logical operator', 'metademands') }}</th>
+                    <th>{{ __('Field', 'metademands') }}</th>
+                    <th>{{ __('Type') }}</th>
+                    <th>{{ __('Equality operator', 'metademands') }}</th>
+                    <th>{{ __('Value to check', 'metademands') }}</th>
+                    <th>{{ __('Pool', 'metademands') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    {% set hover_attrs = row.edit_function ? 'cursor:pointer' : '' %}
+                    <tr class="tab_bg_1">
+                        {% if canedit %}
+                            <td class="center">{{ row.checkbox_html|raw }}</td>
+                        {% endif %}
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {{- row.id -}}
+                        </td>
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {{- row.logic -}}
+                        </td>
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {% if row.field_url %}
+                                <a href="{{ row.field_url }}" style="color:royalblue;">{{ row.field_label }}</a>
+                            {% else %}
+                                {{ row.field_label }}
+                            {% endif %}
+                        </td>
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {{- row.type_label -}}
+                        </td>
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {{- row.condition_label -}}
+                        </td>
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {{- row.check_value_html|raw -}}
+                        </td>
+                        <td style="{{ hover_attrs }}"
+                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                            {{- row.order -}}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if canedit %}
+        {{ ma_bottom_html|raw }}
+        {# closes the massive actions <form> above and carries the CSRF token #}
+        {{ close_form_html|raw }}
+    {% endif %}
+{% endif %}
