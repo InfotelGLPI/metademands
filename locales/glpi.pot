@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 11:17+0000\n"
+"POT-Creation-Date: 2026-08-31 14:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -922,8 +922,8 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
-#: src/Condition.php:468 templates/condition_for_metademand.html.twig:74
-#: templates/condition_form.html.twig:45
+#: templates/condition_for_metademand.html.twig:74
+#: templates/condition_list.html.twig:63 templates/condition_form.html.twig:45
 msgid "Equality operator"
 msgstr ""
 
@@ -986,8 +986,9 @@ msgstr ""
 msgid "Father's field"
 msgstr ""
 
-#: src/Condition.php:466 templates/field_existing_form.html.twig:39
+#: templates/field_existing_form.html.twig:39
 #: templates/condition_for_metademand.html.twig:69
+#: templates/condition_list.html.twig:61
 #: templates/tools_diagnostic.html.twig:49
 #: templates/tools_diagnostic.html.twig:80
 #: templates/tools_diagnostic.html.twig:130 templates/condition_form.html.twig:40
@@ -1147,7 +1148,8 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: templates/field_list.html.twig:134 templates/task_list.html.twig:82
+#: templates/field_list.html.twig:134 templates/condition_list.html.twig:59
+#: templates/task_list.html.twig:82
 #: templates/forms/stepform_list_from_metademand.html.twig:31
 msgid "ID"
 msgstr ""
@@ -1369,7 +1371,7 @@ msgstr ""
 msgid "Linked ticket"
 msgstr ""
 
-#: src/Condition.php:458
+#: templates/condition_list.html.twig:53
 msgid "List of conditions"
 msgstr ""
 
@@ -1403,8 +1405,8 @@ msgctxt "button"
 msgid "Load form"
 msgstr ""
 
-#: src/Condition.php:465 src/Condition.php:588
-#: templates/condition_for_metademand.html.twig:67 templates/condition_form.html.twig:38
+#: src/Condition.php:570 templates/condition_for_metademand.html.twig:67
+#: templates/condition_list.html.twig:60 templates/condition_form.html.twig:38
 msgid "Logical operator"
 msgstr ""
 
@@ -1596,7 +1598,7 @@ msgstr ""
 msgid "Next user in charge of demand"
 msgstr ""
 
-#: src/Condition.php:552
+#: templates/condition_list.html.twig:37
 msgid "No conditions founded"
 msgstr ""
 
@@ -1858,8 +1860,8 @@ msgstr ""
 msgid "Plugin setup"
 msgstr ""
 
-#: src/Condition.php:470 src/Condition.php:579
-#: templates/condition_for_metademand.html.twig:79 templates/condition_form.html.twig:50
+#: src/Condition.php:561 templates/condition_for_metademand.html.twig:79
+#: templates/condition_list.html.twig:65 templates/condition_form.html.twig:50
 msgid "Pool"
 msgstr ""
 
@@ -2618,7 +2620,8 @@ msgstr ""
 
 #: src/FieldOption.php:503 src/Fields/Freetable.php:395
 #: templates/fields/field_parameter_color.html.twig:39
-#: templates/field_list.html.twig:136 templates/metademand.html.twig:119
+#: templates/field_list.html.twig:136 templates/condition_list.html.twig:62
+#: templates/metademand.html.twig:119
 #: templates/field_customvalue_form.html.twig:56
 #: templates/field_form.html.twig:83 templates/task_list.html.twig:85
 #: templates/forms/freetablefield_fields_form.html.twig:38
@@ -2776,9 +2779,9 @@ msgstr ""
 #: src/Fields/Yesno.php:267 src/Fields/Dropdown.php:624
 #: src/Fields/Ldapdropdown.php:327 src/Fields/Dropdownobject.php:975
 #: src/Fields/Dropdownmultiple.php:755 src/Fields/Radio.php:367
-#: src/Condition.php:469 src/Condition.php:571
-#: templates/field_list.html.twig:138
-#: templates/condition_for_metademand.html.twig:77 templates/condition_form.html.twig:48
+#: src/Condition.php:553 templates/field_list.html.twig:138
+#: templates/condition_for_metademand.html.twig:77
+#: templates/condition_list.html.twig:64 templates/condition_form.html.twig:48
 msgid "Value to check"
 msgstr ""
 
