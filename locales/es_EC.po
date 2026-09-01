@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-31 14:53+0000\n"
+"POT-Creation-Date: 2026-09-01 13:01+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -36,11 +36,11 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/Freetablefield.php:315
+#: src/Freetablefield.php:317
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/MetademandPdf.php:563 src/Fields/Freetable.php:302
+#: src/MetademandPdf.php:656 src/Fields/Freetable.php:302
 #: src/Fields/Freetable.php:736
 msgid "(if VAT 20%)"
 msgstr ""
@@ -178,7 +178,7 @@ msgstr "Añadir a la cesta"
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:3034 src/Field.php:3119 src/Field.php:4534
+#: src/Field.php:3032 src/Field.php:3117 src/Field.php:4532
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr "Etiqueta adicional"
@@ -215,6 +215,10 @@ msgstr "Permitir la modificación del formulario después de la validación"
 #: src/Metademand.php:1213 templates/metademand.html.twig:73
 msgid "Allow form modification before validation"
 msgstr "Permitir la modificación del formulario antes de la validación"
+
+#: templates/checkschema_result.html.twig:30
+msgid "Altered table"
+msgstr ""
 
 #: src/Condition.php:342 src/Condition.php:360
 msgid "Always displayed"
@@ -301,7 +305,7 @@ msgid "Blank Template"
 msgstr ""
 
 #: src/Step.php:432 src/Step.php:511 src/Wizard.php:2252 src/Field.php:1107
-#: src/Field.php:3101 templates/field_existing_form.html.twig:54
+#: src/Field.php:3099 templates/field_existing_form.html.twig:54
 #: templates/field_form.html.twig:93 templates/field_search_form.html.twig:34
 #: templates/step_form.html.twig:40
 msgid "Block"
@@ -373,7 +377,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/Field.php:1984
+#: src/Field.php:1982
 msgid "Category of the metademand"
 msgstr "Categoría de la metademanda"
 
@@ -560,7 +564,7 @@ msgstr "Crear tareas (no tickets secundarios)"
 msgid "Created by"
 msgstr ""
 
-#: src/MetademandPdf.php:291
+#: src/MetademandPdf.php:335
 msgid "Created on"
 msgstr "Creado el"
 
@@ -585,7 +589,7 @@ msgstr "Valores personalizados"
 msgid "Data imported successfully"
 msgstr ""
 
-#: src/Freetablefield.php:222 src/Fields/Date.php:58
+#: src/Freetablefield.php:225 src/Fields/Date.php:58
 #: templates/forms/user_forms_list.html.twig:35
 #: templates/forms/public_models_list.html.twig:40
 #: templates/forms/stepform_list_from_metademand.html.twig:35
@@ -632,6 +636,11 @@ msgstr "Fecha del próximo recordatorio"
 #: templates/fields/field_parameter_date.html.twig:37
 msgid "Day greater or equal to now"
 msgstr "Día mayor o igual que ahora"
+
+#: templates/item_translation_row.html.twig:105
+#, php-format
+msgid "Default (%s)"
+msgstr ""
 
 #: src/Fields/Yesno.php:172 src/Fields/Dropdownmultiple.php:537
 #: templates/fields/field_customvalue_add.html.twig:50
@@ -750,7 +759,11 @@ msgstr ""
 msgid "Destination entity"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:954 src/Field.php:3728
+#: templates/checkschema_result.html.twig:85
+msgid "Destructive queries"
+msgstr ""
+
+#: src/Fields/Dropdownmeta.php:954 src/Field.php:3726
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -846,7 +859,7 @@ msgstr "Nombre del proyecto"
 msgid "Draft name is required"
 msgstr "El nombre del proyecto es obligatorio"
 
-#: src/Freetablefield.php:219
+#: src/Freetablefield.php:222
 msgid "Dropdown"
 msgstr "Menú desplegable"
 
@@ -993,11 +1006,11 @@ msgstr ""
 msgid "Fail to send email"
 msgstr ""
 
-#: src/CheckSchema.php:145
+#: src/CheckSchema.php:157
 msgid "Failed to check the sanity of the tables!"
 msgstr "¡Falló la comprobación de la sanidad de las tablas!"
 
-#: src/Field.php:1582
+#: src/Field.php:1580
 msgid "Father's field"
 msgstr "Campo del padre"
 
@@ -1007,6 +1020,7 @@ msgstr "Campo del padre"
 #: templates/tools_diagnostic.html.twig:49
 #: templates/tools_diagnostic.html.twig:80
 #: templates/tools_diagnostic.html.twig:130
+#: templates/item_translation_row.html.twig:104
 #: templates/condition_form.html.twig:40
 msgid "Field"
 msgstr "Campo"
@@ -1084,7 +1098,7 @@ msgstr "Formatear la descripción del ticket infantil como una tabla"
 msgid "Free table"
 msgstr ""
 
-#: src/Freetablefield.php:106 src/Freetablefield.php:314
+#: src/Freetablefield.php:102 src/Freetablefield.php:316
 msgid "Free table field"
 msgid_plural "Free table fields"
 msgstr[0] ""
@@ -1103,13 +1117,13 @@ msgstr "Objeto Glpi"
 msgid "Grand total"
 msgstr ""
 
-#: src/MetademandPdf.php:463 src/MetademandPdf.php:563
+#: src/MetademandPdf.php:523 src/MetademandPdf.php:656
 #: src/Fields/Basket.php:1810 src/Fields/Basket.php:2306
 #: src/Fields/Freetable.php:302 src/Fields/Freetable.php:736
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/MetademandPdf.php:554 src/Fields/Freetable.php:301
+#: src/MetademandPdf.php:648 src/Fields/Freetable.php:301
 #: src/Fields/Freetable.php:735
 msgid "Grand total (TTC)"
 msgstr ""
@@ -1337,6 +1351,7 @@ msgstr ""
 msgid "Label"
 msgstr ""
 
+#: templates/item_translations.html.twig:83
 #: templates/item_translations.html.twig:133
 msgid "Language"
 msgstr ""
@@ -1475,7 +1490,7 @@ msgstr ""
 msgid "Maximum depth"
 msgstr ""
 
-#: src/Field.php:2311
+#: src/Field.php:2309
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Número máximo de documentos :%s"
@@ -1551,11 +1566,15 @@ msgstr "Metademandas a validar"
 msgid "Minimal mandatory"
 msgstr "Mínimo obligatorio"
 
-#: src/Field.php:3219
+#: templates/checkschema_result.html.twig:29
+msgid "Missing table"
+msgstr ""
+
+#: src/Field.php:3217
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3218
+#: src/Field.php:3216
 msgid "Modify icon"
 msgstr ""
 
@@ -1571,7 +1590,7 @@ msgstr "Multiples"
 msgid "My metademands"
 msgstr ""
 
-#: src/Field.php:1982
+#: src/Field.php:1980
 msgid "My values"
 msgstr ""
 
@@ -1639,6 +1658,10 @@ msgstr "Siguiente usuario a cargo de la demanda"
 msgid "No conditions founded"
 msgstr "Sin condiciones fundadas"
 
+#: templates/item_translation_row.html.twig:48
+msgid "No default value"
+msgstr ""
+
 #: front/draft.form.php:61 templates/forms/drafts_list.html.twig:112
 #: templates/forms/drafts_rows.html.twig:51
 msgid "No draft available for this form"
@@ -1689,6 +1712,10 @@ msgstr "No se permiten opciones para este tipo de campo"
 msgid "No problems with ranks found"
 msgstr ""
 
+#: templates/checkschema_result.html.twig:90
+msgid "No query could be suggested for this difference."
+msgstr ""
+
 #: templates/ticketfield_list.html.twig:32 templates/field_list.html.twig:117
 #: templates/task_list.html.twig:178 templates/forms/draft_show.html.twig:47
 #: templates/forms/stepform_list_from_metademand.html.twig:50
@@ -1696,7 +1723,7 @@ msgstr ""
 msgid "No results found"
 msgstr ""
 
-#: src/Freetablefield.php:419
+#: src/Freetablefield.php:420
 msgid "No spaces, no special characters"
 msgstr ""
 
@@ -1734,7 +1761,7 @@ msgstr "No sujeto a validación"
 msgid "Not yet completed"
 msgstr "Aún no se ha completado"
 
-#: src/Freetablefield.php:220 src/Fields/Number.php:59
+#: src/Freetablefield.php:223 src/Fields/Number.php:59
 msgid "Number"
 msgstr "Números"
 
@@ -1755,7 +1782,7 @@ msgstr "Número de seguimientos entre tickets"
 msgid "OR"
 msgstr "O"
 
-#: src/Field.php:789 src/Field.php:798 src/Field.php:3036
+#: src/Field.php:789 src/Field.php:798 src/Field.php:3034
 #: ajax/reloaditem.php:39 templates/field_list.html.twig:136
 #: templates/field_search_form.html.twig:42
 msgid "Object"
@@ -1782,6 +1809,10 @@ msgstr[2] ""
 msgid "Observer"
 msgstr ""
 
+#: templates/item_translations.html.twig:86
+msgid "Obsolete translations"
+msgstr ""
+
 #: src/Fields/Basket.php:2163
 msgid "On catalog"
 msgstr ""
@@ -1792,7 +1823,7 @@ msgstr ""
 msgid "On quotation"
 msgstr ""
 
-#: src/Freetablefield.php:468 src/Fields/Freetable.php:423
+#: src/Freetablefield.php:469 src/Fields/Freetable.php:423
 msgid "One value by line, separated by comma"
 msgstr ""
 
@@ -1837,7 +1868,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3110
+#: src/Field.php:3108
 msgid "Order"
 msgstr "Pedido"
 
@@ -1947,6 +1978,10 @@ msgstr "publicador"
 msgid "Quantity"
 msgstr ""
 
+#: templates/checkschema_result.html.twig:51
+msgid "Queries to run"
+msgstr ""
+
 #: src/Fields/Radio.php:68
 msgid "Radio button"
 msgstr "Botón de opción"
@@ -1969,7 +2004,7 @@ msgstr ""
 msgid "Read-Only"
 msgstr "Sólo lectura"
 
-#: src/Freetablefield.php:221
+#: src/Freetablefield.php:224
 msgid "Readonly"
 msgstr ""
 
@@ -2153,7 +2188,7 @@ msgstr "Guardar modelo"
 msgid "Save translation"
 msgstr ""
 
-#: src/CheckSchema.php:52
+#: src/CheckSchema.php:56
 msgid "Schema check"
 msgstr "Comprobación de esquema"
 
@@ -2324,6 +2359,10 @@ msgstr "Se crean sub-tickets"
 msgid "Submit button display"
 msgstr "Visualización del botón Enviar"
 
+#: templates/checkschema_result.html.twig:80
+msgid "Suggested queries"
+msgstr ""
+
 #: src/Fields/Yesno.php:208
 msgid "Switch display"
 msgstr ""
@@ -2390,7 +2429,7 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#: src/Freetablefield.php:218 src/Fields/Text.php:64
+#: src/Freetablefield.php:221 src/Fields/Text.php:64
 msgid "Text"
 msgstr "Texto"
 
@@ -2430,6 +2469,13 @@ msgstr ""
 msgid "The file is not an XML file"
 msgstr "El archivo no es un archivo XML"
 
+#: templates/checkschema_result.html.twig:60
+msgid ""
+"The following queries remove columns or tables that are not part of the "
+"expected schema: data will be lost. Check that they are not used by another "
+"plugin or by a custom development before running them."
+msgstr ""
+
 #: front/nextGroup.form.php:72
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
@@ -2463,9 +2509,16 @@ msgstr ""
 msgid "The object type is mandatory"
 msgstr ""
 
-#: src/CheckSchema.php:163
+#: templates/checkschema_result.html.twig:42
 msgid "The plugin schema is good"
 msgstr "El esquema del plugin es bueno"
+
+#: templates/checkschema_result.html.twig:45
+msgid ""
+"The queries below are only suggestions built from the differences found. "
+"Review them, back up your database, then run them manually: they are never "
+"run by the plugin."
+msgstr ""
 
 #: templates/field_customvalue_values.html.twig:39
 msgid ""
@@ -2664,12 +2717,20 @@ msgstr ""
 msgid "Total (TTC)"
 msgstr ""
 
+#: templates/item_translations.html.twig:84
+msgid "Translated"
+msgstr ""
+
 #: templates/item_translations.html.twig:65
 msgid "Translation"
 msgid_plural "Translations"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+
+#: templates/item_translations.html.twig:85
+msgid "Translations to do"
+msgstr ""
 
 #: templates/item_translation_row.html.twig:95
 #, php-format
@@ -2711,6 +2772,10 @@ msgstr ""
 #: src/Fields/Basket.php:187 src/Fields/Basket.php:1549
 #: src/Fields/Basket.php:2069 src/Fields/Basket.php:2405
 msgid "Unit price (HT)"
+msgstr ""
+
+#: templates/checkschema_result.html.twig:31
+msgid "Unknown table"
 msgstr ""
 
 #: src/Fields/Dropdownmultiple.php:540
@@ -2915,11 +2980,11 @@ msgstr ""
 msgid "You can't add a custom value without name"
 msgstr ""
 
-#: src/Freetablefield.php:525
+#: src/Freetablefield.php:526
 msgid "You can't add a field without name"
 msgstr ""
 
-#: src/Freetablefield.php:534
+#: src/Freetablefield.php:535
 msgid "You can't add a field without type"
 msgstr ""
 
@@ -2933,7 +2998,7 @@ msgstr ""
 "No se pueden añadir nuevas tareas si los tickets vinculados no están "
 "resueltos"
 
-#: src/Field.php:3243 src/Field.php:3260 src/Field.php:3280
+#: src/Field.php:3241 src/Field.php:3258 src/Field.php:3278
 msgid "You cannot do this for this field"
 msgstr ""
 
