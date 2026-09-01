@@ -47,7 +47,20 @@ if (!$draft->getFromDB($draft_id) || (int) $draft->fields['users_id'] !== Sessio
     throw new AccessDeniedHttpException();
 }
 
-$metademands->getFromDB($_POST['metademands_id']);
+// Correlate the requested metademands_id with the loaded draft (it must be the
+// draft's own meta-demand) and require entity access on it, before it keys any
+// $_SESSION state. Same guard as ajax/loadform.php: prevents rehydrating the
+// session of an unrelated meta-demand with the values of another form.
+$metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+if ((int) $draft->fields['plugin_metademands_metademands_id'] !== $metademands_id
+    || !$metademands->getFromDB($metademands_id)
+    || !Session::haveAccessToEntity(
+        $metademands->fields['entities_id'],
+        $metademands->fields['is_recursive'],
+    )) {
+    throw new AccessDeniedHttpException();
+}
+
 Draft_Value::loadDraftValues($_POST['metademands_id'], $_POST['plugin_metademands_drafts_id']);
 $draft_name = $draft->getField('name');
 

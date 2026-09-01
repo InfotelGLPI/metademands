@@ -33,10 +33,21 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+// This endpoint mutates state (a display flag of the caller's own session), so it must
+// not be reachable through GET: reading $_POST restores the core CSRF coverage, which
+// only applies to non-GET requests. All callers are jQuery $.ajax with type: 'POST',
+// to which the core adds the X-Glpi-Csrf-Token header (js/common.js ajaxSend).
+// Gate on the same rights as the wizard entry point (see setup.php).
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+]);
+
 $KO = false;
 
-if (isset($_REQUEST["tasks_id"]) && $_REQUEST["tasks_id"] > 0) {
-    $used = MetademandTask::setUsedTask($_REQUEST["tasks_id"], $_REQUEST["used"]);
+$tasks_id = (int) ($_POST["tasks_id"] ?? 0);
+if ($tasks_id > 0) {
+    $used = MetademandTask::setUsedTask($tasks_id, (int) ($_POST["used"] ?? 0));
 
     if ($used == 0) {
         $KO = true;

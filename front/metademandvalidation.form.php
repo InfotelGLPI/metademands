@@ -54,7 +54,10 @@ if (!$ticket->can($tickets_id, READ)) {
 Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
 
 if (isset($_POST['action'])) {
-    $metavalidation->validateMeta($_REQUEST);
+    // Feed the mutation from $_POST only (the branch is already POST-gated, so this
+    // keeps the core CSRF coverage meaningful) and force the ticket id that was just
+    // validated above, so the record acted upon is always the one that passed can().
+    $metavalidation->validateMeta(array_merge($_POST, ['tickets_id' => $tickets_id]));
 
 } else {
 

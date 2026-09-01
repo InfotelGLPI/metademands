@@ -615,6 +615,7 @@ class Radio extends CommonDBTM
                         if (value == true) {
                            $.ajax({
                                 url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                type: 'POST',
                                     type: 'POST',
                                     data: { tasks_id: $tasks_id,
                                       used: 0 },
@@ -627,6 +628,7 @@ class Radio extends CommonDBTM
                         } else {
                              $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                             type: 'POST',
                                 type: 'POST',
                                 dataType: 'text',
                                 data: { tasks_id: $tasks_id,

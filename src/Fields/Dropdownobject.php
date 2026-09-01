@@ -1325,6 +1325,7 @@ class Dropdownobject extends CommonDBTM
                         if (value == true) {
                             $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     type: 'POST',
                                      data: { tasks_id: $tasks_id,
                                   used: 0 },
                                   success: function(response){
@@ -1337,6 +1338,7 @@ class Dropdownobject extends CommonDBTM
                         } else {
                              $.ajax({
                                      url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     type: 'POST',
                                      data: { tasks_id: $tasks_id,
                                   used: 1 },
                                   success: function(response){
