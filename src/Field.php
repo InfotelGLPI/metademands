@@ -1357,9 +1357,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 ];
                 $ma_open_html = Html::getOpenMassiveActionsForm($container);
                 $ma_top_html = Html::showMassiveActions($massiveactionparams);
-                // Legacy id, kept as is: it does not match the container above, so the
-                // "check all" box currently drives no checkbox.
-                $check_all_html = Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $blockrand);
+                $check_all_html = Html::getCheckAllAsCheckbox($container);
                 // Built after the rows on purpose: showMassiveActions() empties
                 // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
                 // row checkboxes read that selection to restore their checked state.

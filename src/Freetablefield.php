@@ -40,10 +40,6 @@ use Html;
 use Migration;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 /**
  * Class Freetablefield
  */
@@ -156,7 +152,8 @@ class Freetablefield extends CommonDBChild
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if (isset($item->fields['type'])
+        if ($item instanceof Field
+            && isset($item->fields['type'])
             && $item->fields['type'] == "freetable") {
             $nb = self::getNumberOfFieldsForItem($item);
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
@@ -168,7 +165,7 @@ class Freetablefield extends CommonDBChild
     /**
      * Return the number of parameters for an item
      *
-     * @param item
+     * @param Field $item
      *
      * @return int number of parameters for this item
      */
@@ -194,6 +191,12 @@ class Freetablefield extends CommonDBChild
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
+        // The tab is only registered on Field (see getTabNameForItem), but the parent
+        // signature is typed on CommonGLPI, which knows nothing about getID().
+        if (!$item instanceof Field) {
+            return false;
+        }
+
         $field_custom = new self();
         $results = $field_custom->find(["plugin_metademands_fields_id" => $item->getID()]);
         if (!empty($results)) {
@@ -229,7 +232,6 @@ class Freetablefield extends CommonDBChild
      * @param array $options
      *
      * @return bool
-     * @throws \GlpitestSQLError
      */
     public function showFieldsForm($ID = -1, $options = [])
     {
@@ -383,9 +385,8 @@ class Freetablefield extends CommonDBChild
 
 
     /**
-     * @param      $count
-     * @param bool $display_comment
-     * @param bool $display_default
+     * @param int $count
+     * @param int $plugin_metademands_fields_id
      */
     public static function initCustomValue($count, $plugin_metademands_fields_id = 0)
     {

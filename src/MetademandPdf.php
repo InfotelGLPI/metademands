@@ -235,6 +235,50 @@ class MetademandPdf extends \TCPDF
         }
     }
 
+    /**
+     * Vertical position past which nothing is drawn on the visible page.
+     *
+     * $page_height is the A4 *portrait* height, but drawPdf() switches the document to
+     * landscape as soon as orderfollowup is active, and a landscape A4 is only 210 mm
+     * high. Asking TCPDF for the height of the current page keeps this bottom correct
+     * whatever the orientation; $page_height only remains as a fallback for the calls
+     * made before the first AddPage().
+     *
+     * @return float
+     */
+    protected function getContentBottom()
+    {
+        $height = (float) $this->getPageHeight();
+        if ($height <= 0) {
+            $height = (float) $this->page_height;
+        }
+
+        return $height - $this->header_height;
+    }
+
+    /**
+     * Start a new page when the next $height mm would not fit on the current one.
+     *
+     * Automatic page breaks are disabled (see drawPdf()), so anything drawn below the
+     * page bottom is silently dropped instead of overflowing: every table has to break
+     * explicitly. The orientation of the current page is kept, otherwise a landscape
+     * document would continue in portrait.
+     *
+     * @param float $height Height about to be drawn, in mm
+     *
+     * @return bool True when a page has been added
+     */
+    protected function checkPageBreakFor($height)
+    {
+        if (($this->GetY() + $height) < $this->getContentBottom()) {
+            return false;
+        }
+
+        $this->AddPage(!empty($this->CurOrientation) ? $this->CurOrientation : 'P');
+
+        return true;
+    }
+
     public function Header()
     {
 
@@ -412,8 +456,6 @@ class MetademandPdf extends \TCPDF
 
     public function BasicTable($header, $data, $color = '')
     {
-        $this->SetBackgroundColor($this->default_bgcolor);
-
         // Basket column schema: Reference, Designation, Description, Quantity, Unit,
         // [Unit price (HT), Total (HT)]. The last two columns exist only when the basket
         // field has "with unit price (HT)" enabled, so Basket::displayFieldPDF omits them
@@ -424,16 +466,30 @@ class MetademandPdf extends \TCPDF
         $w = array_slice($all_w, 0, $nb);
         $has_price = $nb >= 7;
 
-        for ($i = 0; $i < $nb; $i++) {
-            $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
-        }
-        $this->Ln();
+        $draw_header = function () use ($header, $w, $nb) {
+            $this->SetBackgroundColor($this->default_bgcolor);
+            for ($i = 0; $i < $nb; $i++) {
+                $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
+            }
+            $this->Ln();
+        };
+
+        // Automatic page breaks are disabled, so every row has to be checked: whatever
+        // is drawn below the page bottom is silently dropped. The header (7 mm) and a
+        // first row (6 mm) must fit together, otherwise the table starts on a new page.
+        $this->checkPageBreakFor(13);
+        $draw_header();
+
         // Color and font restoration
         $this->SetBackgroundColor($color);
         // Data
         $fill = false;
         $total = 0;
         foreach ($data as $row) {
+            if ($this->checkPageBreakFor(6)) {
+                $draw_header();
+                $this->SetBackgroundColor($color);
+            }
             for ($i = 0; $i < $nb; $i++) {
                 $val = $row[$i] ?? '';
                 if (($i === 1 || $i === 2) && Toolbox::strlen($val) > 40) {
@@ -459,6 +515,10 @@ class MetademandPdf extends \TCPDF
         $this->Ln();
 
         if ($has_price) {
+            // Last thing drawn, right where the table is most likely to have reached the
+            // bottom of the page: break for it so it is never the part that gets dropped.
+            $this->checkPageBreakFor(6);
+
             $this->Cell(195, 6, "", 0, 0, 'C', true);
             $grandtotal = __('Grand total (HT)', 'orderfollowup');
             $this->SetBackgroundColor($this->default_bgcolor);
@@ -470,8 +530,6 @@ class MetademandPdf extends \TCPDF
 
     public function BasicTableFreeTable($header, $data, $color = "")
     {
-        $this->SetBackgroundColor($this->default_bgcolor);
-
         $nb = count($header);
 
         // Spread the columns evenly across the printable width (190 mm). Falls back to a
@@ -496,17 +554,28 @@ class MetademandPdf extends \TCPDF
             $w = 31.6;
         }
 
+        $draw_header = function () use ($header, $w, $nb) {
+            $this->SetBackgroundColor($this->default_bgcolor);
+            for ($i = 0; $i < $nb; $i++) {
+                $this->Cell($w, 7, $header[$i], 1, 0, 'C', true);
+            }
+            $this->Ln();
+        };
 
-
-        for ($i = 0; $i < count($header); $i++) {
-            $this->Cell($w, 7, $header[$i], 1, 0, 'C', true);
-        }
-        $this->Ln();
+        // Automatic page breaks are disabled, so every row has to be checked: whatever
+        // is drawn below the page bottom is silently dropped. The header (7 mm) and a
+        // first row (6 mm) must fit together, otherwise the table starts on a new page.
+        $this->checkPageBreakFor(13);
+        $draw_header();
 
         // Color and font restoration
         $this->SetBackgroundColor($color);
         // Data
         foreach ($data as $field => $line) {
+            if ($this->checkPageBreakFor(6)) {
+                $draw_header();
+                $this->SetBackgroundColor($color);
+            }
             foreach ($line as $row) {
                 $this->Cell($w, 6, $row, 'LR', 0, 'L', false);
             }
@@ -519,18 +588,38 @@ class MetademandPdf extends \TCPDF
 
     public function BasicTableFreeInputs($header, $data, $color = '')
     {
-        $this->SetBackgroundColor($this->default_bgcolor);
-        $w = [30, 80, 100, 15, 30, 20];//190
-        for ($i = 0; $i < count($header); $i++) {
-            $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
-        }
-        $this->Ln();
+        // Sums to 275 mm: this table only fits the landscape page that drawPdf() adds
+        // when orderfollowup is active, which is the sole case where it is drawn.
+        $w = [30, 80, 100, 15, 30, 20]; //275
+
+        // Data rows only ever use the six widths above, so a longer header is capped
+        // rather than reading past the end of $w.
+        $nb = min(count($header), count($w));
+
+        $draw_header = function () use ($header, $w, $nb) {
+            $this->SetBackgroundColor($this->default_bgcolor);
+            for ($i = 0; $i < $nb; $i++) {
+                $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
+            }
+            $this->Ln();
+        };
+
+        // Automatic page breaks are disabled, so every row has to be checked: whatever
+        // is drawn below the page bottom is silently dropped. The header (7 mm) and a
+        // first row (6 mm) must fit together, otherwise the table starts on a new page.
+        $this->checkPageBreakFor(13);
+        $draw_header();
+
         // Color and font restoration
         $this->SetBackgroundColor($color);
         // Data
         $fill = false;
         $total = 0;
         foreach ($data as $row) {
+            if ($this->checkPageBreakFor(6)) {
+                $draw_header();
+                $this->SetBackgroundColor($color);
+            }
             $row[0] = Toolbox::substr($row[0], 0, 15);
             $this->Cell($w[0], 6, $row[0], 'LR', 0, 'L', $fill);
             $r1 = Toolbox::substr($row[1], 0, 40);
@@ -548,15 +637,19 @@ class MetademandPdf extends \TCPDF
         }
         // Closing line
         $this->Cell(array_sum($w), 0, '', 'T');
-
         $this->Ln();
+
+        // The two grand total rows are the last thing drawn, right where the table is
+        // most likely to have reached the bottom of the page: break for both of them
+        // (6 mm each) so they are never the part that gets dropped.
+        $this->checkPageBreakFor(12);
+
         $this->Cell(195, 6, "", 0, 0, 'C', true);
         $grandtotal = __('Grand total (TTC)', 'orderfollowup');
         $this->SetBackgroundColor($this->default_bgcolor);
         $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
         $this->SetBackgroundColor($color);
         $this->Cell(20, 6, Html::formatNumber($total, false, 2) . " " . EURO, 1, 0, 'L', $fill);
-
 
         $this->Ln();
         $this->Cell(195, 6, "", 0, 0, 'C', true);
@@ -743,14 +836,7 @@ class MetademandPdf extends \TCPDF
                     || $elt['type'] == 'upload'
                     || $elt['type'] == 'linebreak'
                     || $elt['type'] == 'radio') {
-                    $y = $this->GetY();
-                    if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
-                        if (Plugin::isPluginActive('orderfollowup')) {
-                            $this->AddPage("L");
-                        } else {
-                            $this->AddPage("P");
-                        }
-                    }
+                    $this->checkPageBreakFor($this->line_height);
 
                     $label = "";
                     if (!empty($elt['name'])) {
@@ -1279,7 +1365,7 @@ class MetademandPdf extends \TCPDF
      */
     public function Footer()
     {
-        $this->SetY($this->page_height - $this->margin_top - $this->header_height);
+        $this->SetY($this->getContentBottom() - $this->margin_top);
     }
 
     /**
