@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-31 14:53+0000\n"
+"POT-Creation-Date: 2026-09-01 13:01+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -38,11 +38,11 @@ msgstr[0] "%d niveau"
 msgstr[1] "%d niveaux"
 msgstr[2] "%d niveaux"
 
-#: src/Freetablefield.php:315
+#: src/Freetablefield.php:317
 msgid "(6 fields maximum)"
 msgstr "(6 champs maximum)"
 
-#: src/MetademandPdf.php:563 src/Fields/Freetable.php:302
+#: src/MetademandPdf.php:656 src/Fields/Freetable.php:302
 #: src/Fields/Freetable.php:736
 msgid "(if VAT 20%)"
 msgstr "(si TVA 20%)"
@@ -180,7 +180,7 @@ msgstr "Ajouter au panier"
 msgid "Add your signature"
 msgstr "Ajouter votre signature"
 
-#: src/Field.php:3034 src/Field.php:3119 src/Field.php:4534
+#: src/Field.php:3032 src/Field.php:3117 src/Field.php:4532
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr "Label supplémentaire"
@@ -217,6 +217,10 @@ msgstr "Autoriser la modification du formulaire après validation"
 #: src/Metademand.php:1213 templates/metademand.html.twig:73
 msgid "Allow form modification before validation"
 msgstr "Autoriser la modification du formulaire avant validation"
+
+#: templates/checkschema_result.html.twig:30
+msgid "Altered table"
+msgstr ""
 
 #: src/Condition.php:342 src/Condition.php:360
 msgid "Always displayed"
@@ -303,7 +307,7 @@ msgid "Blank Template"
 msgstr "Gabarit vide"
 
 #: src/Step.php:432 src/Step.php:511 src/Wizard.php:2252 src/Field.php:1107
-#: src/Field.php:3101 templates/field_existing_form.html.twig:54
+#: src/Field.php:3099 templates/field_existing_form.html.twig:54
 #: templates/field_form.html.twig:93 templates/field_search_form.html.twig:34
 #: templates/step_form.html.twig:40
 msgid "Block"
@@ -377,7 +381,7 @@ msgstr ""
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/Field.php:1984
+#: src/Field.php:1982
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
@@ -564,7 +568,7 @@ msgstr "Créer des tâches (pas des tickets enfants)"
 msgid "Created by"
 msgstr "Créé par"
 
-#: src/MetademandPdf.php:291
+#: src/MetademandPdf.php:335
 msgid "Created on"
 msgstr "Créé le"
 
@@ -589,7 +593,7 @@ msgstr "Valeurs personnalisées"
 msgid "Data imported successfully"
 msgstr "Données importées avec succès"
 
-#: src/Freetablefield.php:222 src/Fields/Date.php:58
+#: src/Freetablefield.php:225 src/Fields/Date.php:58
 #: templates/forms/user_forms_list.html.twig:35
 #: templates/forms/public_models_list.html.twig:40
 #: templates/forms/stepform_list_from_metademand.html.twig:35
@@ -635,6 +639,11 @@ msgstr "Date du prochain rappel"
 #: templates/fields/field_parameter_date.html.twig:37
 msgid "Day greater or equal to now"
 msgstr "Date supérieure ou égale à maintenant"
+
+#: templates/item_translation_row.html.twig:105
+#, php-format
+msgid "Default (%s)"
+msgstr ""
 
 #: src/Fields/Yesno.php:172 src/Fields/Dropdownmultiple.php:537
 #: templates/fields/field_customvalue_add.html.twig:50
@@ -753,7 +762,11 @@ msgstr "Désignation"
 msgid "Destination entity"
 msgstr "Entité de destination"
 
-#: src/Fields/Dropdownmeta.php:954 src/Field.php:3728
+#: templates/checkschema_result.html.twig:85
+msgid "Destructive queries"
+msgstr ""
+
+#: src/Fields/Dropdownmeta.php:954 src/Field.php:3726
 msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
@@ -851,7 +864,7 @@ msgstr "Nom du brouillon"
 msgid "Draft name is required"
 msgstr "Le nom du brouillon est obligatoire"
 
-#: src/Freetablefield.php:219
+#: src/Freetablefield.php:222
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
@@ -1000,11 +1013,11 @@ msgstr "Exporter la métademande en XML pour l'utiliser sur un autre GLPI"
 msgid "Fail to send email"
 msgstr "Echec de l'envoi du courriel"
 
-#: src/CheckSchema.php:145
+#: src/CheckSchema.php:157
 msgid "Failed to check the sanity of the tables!"
 msgstr "Échec de la vérification de l'intégrité des tables !"
 
-#: src/Field.php:1582
+#: src/Field.php:1580
 msgid "Father's field"
 msgstr "Champ père"
 
@@ -1014,6 +1027,7 @@ msgstr "Champ père"
 #: templates/tools_diagnostic.html.twig:49
 #: templates/tools_diagnostic.html.twig:80
 #: templates/tools_diagnostic.html.twig:130
+#: templates/item_translation_row.html.twig:104
 #: templates/condition_form.html.twig:40
 msgid "Field"
 msgstr "Champ"
@@ -1090,7 +1104,7 @@ msgstr "Formatter la description du ticket enfant sous forme de tableau"
 msgid "Free table"
 msgstr "Table libre"
 
-#: src/Freetablefield.php:106 src/Freetablefield.php:314
+#: src/Freetablefield.php:102 src/Freetablefield.php:316
 msgid "Free table field"
 msgid_plural "Free table fields"
 msgstr[0] "Champ de la table libre"
@@ -1109,13 +1123,13 @@ msgstr "Objet GLPI"
 msgid "Grand total"
 msgstr "Total général"
 
-#: src/MetademandPdf.php:463 src/MetademandPdf.php:563
+#: src/MetademandPdf.php:523 src/MetademandPdf.php:656
 #: src/Fields/Basket.php:1810 src/Fields/Basket.php:2306
 #: src/Fields/Freetable.php:302 src/Fields/Freetable.php:736
 msgid "Grand total (HT)"
 msgstr "Total général (HT)"
 
-#: src/MetademandPdf.php:554 src/Fields/Freetable.php:301
+#: src/MetademandPdf.php:648 src/Fields/Freetable.php:301
 #: src/Fields/Freetable.php:735
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
@@ -1348,6 +1362,7 @@ msgstr "Annuair LDAP"
 msgid "Label"
 msgstr "Label"
 
+#: templates/item_translations.html.twig:83
 #: templates/item_translations.html.twig:133
 msgid "Language"
 msgstr "Langue"
@@ -1486,7 +1501,7 @@ msgstr "Champ obligatoire"
 msgid "Maximum depth"
 msgstr "Profondeur maximum"
 
-#: src/Field.php:2311
+#: src/Field.php:2309
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Nombre maximum de documents : %s "
@@ -1563,11 +1578,15 @@ msgstr "Métademandes à valider"
 msgid "Minimal mandatory"
 msgstr "Minimum obligatoire"
 
-#: src/Field.php:3219
+#: templates/checkschema_result.html.twig:29
+msgid "Missing table"
+msgstr ""
+
+#: src/Field.php:3217
 msgid "Modify color"
 msgstr "Modifier la couleur"
 
-#: src/Field.php:3218
+#: src/Field.php:3216
 msgid "Modify icon"
 msgstr "Modifier l'icone"
 
@@ -1583,7 +1602,7 @@ msgstr "Multiples"
 msgid "My metademands"
 msgstr "Mes métademandes"
 
-#: src/Field.php:1982
+#: src/Field.php:1980
 msgid "My values"
 msgstr "Valeurs personnalisées"
 
@@ -1651,6 +1670,10 @@ msgstr "Prochain utilisateur en charge de la demande"
 msgid "No conditions founded"
 msgstr "Pas de conditions trouvées"
 
+#: templates/item_translation_row.html.twig:48
+msgid "No default value"
+msgstr ""
+
 #: front/draft.form.php:61 templates/forms/drafts_list.html.twig:112
 #: templates/forms/drafts_rows.html.twig:51
 msgid "No draft available for this form"
@@ -1701,6 +1724,10 @@ msgstr "Aucune option n'est disponible pour ce type de champ"
 msgid "No problems with ranks found"
 msgstr "Aucun problème avec les rangs trouvé"
 
+#: templates/checkschema_result.html.twig:90
+msgid "No query could be suggested for this difference."
+msgstr ""
+
 #: templates/ticketfield_list.html.twig:32 templates/field_list.html.twig:117
 #: templates/task_list.html.twig:178 templates/forms/draft_show.html.twig:47
 #: templates/forms/stepform_list_from_metademand.html.twig:50
@@ -1708,7 +1735,7 @@ msgstr "Aucun problème avec les rangs trouvé"
 msgid "No results found"
 msgstr "Pas de résultats trouvés"
 
-#: src/Freetablefield.php:419
+#: src/Freetablefield.php:420
 msgid "No spaces, no special characters"
 msgstr "Pas d'espaces, pas de caractères spéciaux"
 
@@ -1746,7 +1773,7 @@ msgstr "Non soumis à validation"
 msgid "Not yet completed"
 msgstr "Pas encore terminé"
 
-#: src/Freetablefield.php:220 src/Fields/Number.php:59
+#: src/Freetablefield.php:223 src/Fields/Number.php:59
 msgid "Number"
 msgstr "Nombre"
 
@@ -1767,7 +1794,7 @@ msgstr "Nombre de suivis inter tickets"
 msgid "OR"
 msgstr "OU"
 
-#: src/Field.php:789 src/Field.php:798 src/Field.php:3036
+#: src/Field.php:789 src/Field.php:798 src/Field.php:3034
 #: ajax/reloaditem.php:39 templates/field_list.html.twig:136
 #: templates/field_search_form.html.twig:42
 msgid "Object"
@@ -1794,6 +1821,10 @@ msgstr[2] "Types d'objet"
 msgid "Observer"
 msgstr "Observateur"
 
+#: templates/item_translations.html.twig:86
+msgid "Obsolete translations"
+msgstr ""
+
 #: src/Fields/Basket.php:2163
 msgid "On catalog"
 msgstr "Sur catalogue"
@@ -1804,7 +1835,7 @@ msgstr "Sur catalogue"
 msgid "On quotation"
 msgstr "Sur devis"
 
-#: src/Freetablefield.php:468 src/Fields/Freetable.php:423
+#: src/Freetablefield.php:469 src/Fields/Freetable.php:423
 msgid "One value by line, separated by comma"
 msgstr "Une valeur par ligne, séparée par une virgule"
 
@@ -1851,7 +1882,7 @@ msgstr ""
 "Les options ne sont pas disponibles pour un champ dont la valeur est liée à "
 "un champ utilisateur"
 
-#: src/Field.php:3110
+#: src/Field.php:3108
 msgid "Order"
 msgstr "Ordre"
 
@@ -1963,6 +1994,10 @@ msgstr "Éditeur"
 msgid "Quantity"
 msgstr "Quantité"
 
+#: templates/checkschema_result.html.twig:51
+msgid "Queries to run"
+msgstr ""
+
 #: src/Fields/Radio.php:68
 msgid "Radio button"
 msgstr "Bouton radio"
@@ -1985,7 +2020,7 @@ msgstr "Problèmes de rangs des champs"
 msgid "Read-Only"
 msgstr "Lecture seule"
 
-#: src/Freetablefield.php:221
+#: src/Freetablefield.php:224
 msgid "Readonly"
 msgstr "Lecture seule"
 
@@ -2169,7 +2204,7 @@ msgstr "Sauver le modèle"
 msgid "Save translation"
 msgstr "Sauver la traduction"
 
-#: src/CheckSchema.php:52
+#: src/CheckSchema.php:56
 msgid "Schema check"
 msgstr "Vérification du schéma"
 
@@ -2342,6 +2377,10 @@ msgstr "Les tickets enfants sont créés"
 msgid "Submit button display"
 msgstr "Affichage du bouton de validation"
 
+#: templates/checkschema_result.html.twig:80
+msgid "Suggested queries"
+msgstr ""
+
 #: src/Fields/Yesno.php:208
 msgid "Switch display"
 msgstr "Affichage type Switch"
@@ -2408,7 +2447,7 @@ msgstr "Nom du gabarit"
 msgid "Templates"
 msgstr "Gabarits"
 
-#: src/Freetablefield.php:218 src/Fields/Text.php:64
+#: src/Freetablefield.php:221 src/Fields/Text.php:64
 msgid "Text"
 msgstr "Texte"
 
@@ -2450,6 +2489,13 @@ msgstr ""
 msgid "The file is not an XML file"
 msgstr "Ce fichier n'est pas un XML"
 
+#: templates/checkschema_result.html.twig:60
+msgid ""
+"The following queries remove columns or tables that are not part of the "
+"expected schema: data will be lost. Check that they are not used by another "
+"plugin or by a custom development before running them."
+msgstr ""
+
 #: front/nextGroup.form.php:72
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
@@ -2483,9 +2529,16 @@ msgstr "L'objet est créé"
 msgid "The object type is mandatory"
 msgstr "Le type de l'objet est obligatoire"
 
-#: src/CheckSchema.php:163
+#: templates/checkschema_result.html.twig:42
 msgid "The plugin schema is good"
 msgstr "Le schéma du plugin est bon"
+
+#: templates/checkschema_result.html.twig:45
+msgid ""
+"The queries below are only suggestions built from the differences found. "
+"Review them, back up your database, then run them manually: they are never "
+"run by the plugin."
+msgstr ""
 
 #: templates/field_customvalue_values.html.twig:39
 msgid ""
@@ -2695,12 +2748,20 @@ msgstr "Total (HT)"
 msgid "Total (TTC)"
 msgstr "Total (TTC)"
 
+#: templates/item_translations.html.twig:84
+msgid "Translated"
+msgstr ""
+
 #: templates/item_translations.html.twig:65
 msgid "Translation"
 msgid_plural "Translations"
 msgstr[0] "Traduction"
 msgstr[1] "Traductions"
 msgstr[2] "Traductions"
+
+#: templates/item_translations.html.twig:85
+msgid "Translations to do"
+msgstr ""
 
 #: templates/item_translation_row.html.twig:95
 #, php-format
@@ -2743,6 +2804,10 @@ msgstr "Unité"
 #: src/Fields/Basket.php:2069 src/Fields/Basket.php:2405
 msgid "Unit price (HT)"
 msgstr "Prix unitaire (HT)"
+
+#: templates/checkschema_result.html.twig:31
+msgid "Unknown table"
+msgstr ""
 
 #: src/Fields/Dropdownmultiple.php:540
 msgid "Unselect all"
@@ -2954,11 +3019,11 @@ msgstr ""
 msgid "You can't add a custom value without name"
 msgstr "Vous ne pouvez pas ajouter de valeur personnalisée sans nom"
 
-#: src/Freetablefield.php:525
+#: src/Freetablefield.php:526
 msgid "You can't add a field without name"
 msgstr "Vous ne pouvez pas ajouter un champ sans nom"
 
-#: src/Freetablefield.php:534
+#: src/Freetablefield.php:535
 msgid "You can't add a field without type"
 msgstr "Vous ne pouvez pas ajouter un champ sans type"
 
@@ -2972,7 +3037,7 @@ msgstr ""
 "Vous ne pouvez pas ajouter de nouvelles tâches tant que les tickets liés ne "
 "sont pas résolus"
 
-#: src/Field.php:3243 src/Field.php:3260 src/Field.php:3280
+#: src/Field.php:3241 src/Field.php:3258 src/Field.php:3278
 msgid "You cannot do this for this field"
 msgstr "Vous ne pouvez pas faire cela pour ce champ"
 
