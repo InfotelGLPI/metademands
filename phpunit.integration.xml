@@ -6,6 +6,7 @@
          <file>tests/AddObjectsTest.php</file>
          <file>tests/FieldCustomvalueTest.php</file>
          <file>tests/MailTaskTest.php</file>
+         <file>tests/ChildTicketBlocksTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

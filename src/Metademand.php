@@ -3173,19 +3173,26 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $mail = new MailTask();
                                             $mail->getFromDBByCrit(["plugin_metademands_tasks_id" => $l['tasks_id']]);
 
+                                            // Reset on each task : the parent content must only reflect
+                                            // the blocks configured on the current task.
+                                            $parent_fields_content = ['content' => ''];
                                             if ($l['useBlock']) {
                                                 $blocks_use = json_decode($l['block_use']);
                                                 if (!empty($blocks_use)) {
+                                                    // Filter a copy : $line['form'] is shared by every task of the
+                                                    // form, removing entries from it would also strip the blocks
+                                                    // of the tasks processed afterwards.
+                                                    $task_form   = self::filterFormOnBlocks($line['form'], $blocks_use);
+                                                    $task_values = $values_form;
                                                     foreach ($line['form'] as $i => $f) {
-                                                        if (!in_array($f['rank'], $blocks_use)) {
-                                                            unset($line['form'][$i]);
-                                                            unset($values_form[$i]);
+                                                        if (!isset($task_form[$i])) {
+                                                            unset($task_values[$i]);
                                                         }
                                                     }
 
-                                                    $values[$metademand->getID()] = $values_form[0]['fields'];
+                                                    $values[$metademand->getID()] = $task_values[0]['fields'] ?? [];
                                                     $parent_fields_content = self::formatFields(
-                                                        $line['form'],
+                                                        $task_form,
                                                         $metademand->getID(),
                                                         $values,
                                                         ['formatastable' => $l['formatastable']],
@@ -3534,6 +3541,34 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
 
         return $parent_fields;
+    }
+
+    /**
+     * Keep only the fields belonging to the blocks configured on a task.
+     *
+     * The form is passed by value on purpose : it is shared by every task of the
+     * metademand, so filtering it in place would also strip the blocks of the
+     * tasks processed afterwards (each son ticket / mail would then only receive
+     * the intersection of the selections made before it).
+     *
+     * @param array $form   fields of the form, indexed by field id
+     * @param mixed $blocks block ranks to keep (already decoded from block_use)
+     *
+     * @return array a filtered copy of the form ; the whole form when no block is selected
+     */
+    public static function filterFormOnBlocks(array $form, $blocks): array
+    {
+        if (!is_array($blocks) || empty($blocks)) {
+            return $form;
+        }
+
+        foreach ($form as $id => $field) {
+            if (!isset($field['rank']) || !in_array($field['rank'], $blocks)) {
+                unset($form[$id]);
+            }
+        }
+
+        return $form;
     }
 
     /**
@@ -4275,6 +4310,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     }
                     $metademands_data = self::constructMetademands($meta->getID());
 
+                    // Reset on each son ticket : without it a task configured without block
+                    // selection would inherit the content computed for the previous task.
+                    $parent_fields_content = ['content' => ''];
+
                     $son_ticket_data['users_id_recipient'] = $parent_fields['users_id_recipient'] ?? 0;
 
                     if (!$son_ticket_data['_users_id_requester']
@@ -4296,16 +4335,20 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     if (isset($task->fields['useBlock']) && $task->fields['useBlock'] == 1) {
                                         $blocks = json_decode($task->fields["block_use"], true);
                                         if (!empty($blocks)) {
+                                            // Filter a copy : $line['form'] and $values_form are reused for
+                                            // the other tasks, filtering them in place would strip the blocks
+                                            // of the tasks processed afterwards.
+                                            $task_form   = self::filterFormOnBlocks($line['form'], $blocks);
+                                            $task_values = $values_form;
                                             foreach ($line['form'] as $i => $l) {
-                                                if (!in_array($l['rank'], $blocks)) {
-                                                    unset($line['form'][$i]);
-                                                    unset($values_form[$i]);
+                                                if (!isset($task_form[$i])) {
+                                                    unset($task_values[$i]);
                                                 }
                                             }
                                             $parent_fields_content = self::formatFields(
-                                                $line['form'],
+                                                $task_form,
                                                 $meta->getID(),
-                                                [$values_form],
+                                                [$task_values],
                                                 ['formatastable' => $task->fields['formatastable']],
                                             );
                                         } else {
@@ -4441,18 +4484,21 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         }
                     }
 
-                    if ($config->getField('childs_parent_content') == 1
-                        && $task->fields['formatastable'] == true) {
+                    if ($config->getField('childs_parent_content') == 1) {
                         if (!empty($parent_fields_content['content'])) {
-                            //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                            $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
-                            $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
-                                . "</th></tr><tr><td colspan='2'>" . RichText::getSafeHtml(
-                                    $parent_fields_content['content'],
-                                );
-                            //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                            $content .= "</td></tr></table><br>";
-                            //}
+                            // formatastable only drives the presentation : the configured blocks
+                            // must be reported on the son ticket in both cases.
+                            $format_as_table = isset($task->fields['formatastable'])
+                                && $task->fields['formatastable'] == true;
+                            if ($format_as_table) {
+                                $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
+                                $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
+                                    . "</th></tr><tr><td colspan='2'>";
+                            }
+                            $content .= RichText::getSafeHtml($parent_fields_content['content']);
+                            if ($format_as_table) {
+                                $content .= "</td></tr></table><br>";
+                            }
                         }
                     }
 
