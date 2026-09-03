@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 15:05+0000\n"
+"POT-Creation-Date: 2026-09-03 14:11+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -23,7 +23,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: src/Metademand.php:3485
+#: src/Metademand.php:3492
 #, php-format
 msgid "%1$s %2$s successfully created"
 msgstr ""
@@ -385,8 +385,8 @@ msgstr "Categoría de la metademanda"
 msgid "Checkbox"
 msgstr "Casilla de verificación"
 
-#: src/Metademand.php:3204 src/Metademand.php:4433
-#: src/Ticket_Metademand.php:831
+#: src/Metademand.php:3211 src/Metademand.php:4476
+#: src/Ticket_Metademand.php:838
 msgid "Child Ticket"
 msgstr "Ticket Niño"
 
@@ -502,7 +502,7 @@ msgstr "Configuración del plugin Catálogo de servicios"
 msgid "Configuration of the meta-demand plugin"
 msgstr "Configuración del plugin meta-demanda"
 
-#: src/Metademand.php:5563
+#: src/Metademand.php:5609
 msgid "Configure demands"
 msgstr "Configurar demandas"
 
@@ -722,7 +722,7 @@ msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
 
-#: src/Metademand.php:3472
+#: src/Metademand.php:3479
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr "Demanda \"%s\" añadida con éxito"
@@ -731,7 +731,7 @@ msgstr "Demanda \"%s\" añadida con éxito"
 msgid "Demand Progression"
 msgstr "Progresión de la demanda"
 
-#: src/Metademand.php:3467
+#: src/Metademand.php:3474
 msgid "Demand add failed"
 msgstr "Fallo en la adición de demanda"
 
@@ -842,7 +842,7 @@ msgstr "¿Quieres verlos?"
 msgid "Do you want to validate her?"
 msgstr "¿Quieres validarla?"
 
-#: src/Metademand.php:6427
+#: src/Metademand.php:6473
 msgid "Done on"
 msgstr "Hecho en"
 
@@ -974,7 +974,7 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: src/Metademand.php:4830
+#: src/Metademand.php:4876
 msgid "Existing childs tickets"
 msgstr ""
 
@@ -982,11 +982,11 @@ msgstr ""
 msgid "Export"
 msgstr "Exportar"
 
-#: src/Metademand.php:5418 src/Export.php:203
+#: src/Metademand.php:5464 src/Export.php:203
 msgid "Export JSON"
 msgstr ""
 
-#: src/Metademand.php:5416 src/Export.php:164 src/Export.php:192
+#: src/Metademand.php:5462 src/Export.php:164 src/Export.php:192
 msgid "Export XML"
 msgstr ""
 
@@ -1052,7 +1052,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Wizard.php:1250 src/Metademand.php:6470
+#: src/Wizard.php:1250 src/Metademand.php:6516
 msgid "Find a form"
 msgstr "Buscar un formulario"
 
@@ -1296,7 +1296,7 @@ msgstr "Importar metademandas"
 msgid "Impossible to read the CSV file"
 msgstr ""
 
-#: src/Metademand.php:6429
+#: src/Metademand.php:6475
 msgid "In progress"
 msgstr "En curso"
 
@@ -1514,7 +1514,7 @@ msgstr[2] "Meta-Demandas"
 msgid "Meta-demands linked"
 msgstr "Meta-exigencias vinculadas"
 
-#: src/Metademand.php:6980
+#: src/Metademand.php:7026
 msgid "Metademand"
 msgstr ""
 
@@ -1535,7 +1535,7 @@ msgid "Metademand status"
 msgstr "Estado de la metademanda"
 
 #: src/MetademandValidation.php:74 src/MetademandValidation.php:447
-#: src/MetademandValidation.php:456 src/Metademand.php:4780
+#: src/MetademandValidation.php:456 src/Metademand.php:4826
 #: templates/forms/metademandvalidation_view.html.twig:33
 #: templates/forms/ticket_validation.html.twig:33
 msgid "Metademand validation"
@@ -1550,15 +1550,15 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: front/tools.form.php:61 src/Metademand.php:6967
+#: front/tools.form.php:61 src/Metademand.php:7013
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: hook.php:1023 src/Metademand.php:5807
+#: hook.php:1023 src/Metademand.php:5853
 msgid "Metademands to be closed"
 msgstr "Cierre de Metademandas"
 
-#: hook.php:1040 src/Metademand.php:5889
+#: hook.php:1040 src/Metademand.php:5935
 msgid "Metademands to be validated"
 msgstr "Metademandas a validar"
 
@@ -1757,7 +1757,7 @@ msgstr "Valor no nulo"
 msgid "Not subject to validation"
 msgstr "No sujeto a validación"
 
-#: src/Metademand.php:6442
+#: src/Metademand.php:6488
 msgid "Not yet completed"
 msgstr "Aún no se ha completado"
 
@@ -1888,7 +1888,7 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/Metademand.php:4831
+#: src/Metademand.php:4877
 msgid "Parent ticket"
 msgstr ""
 
@@ -1896,8 +1896,8 @@ msgstr ""
 msgid "Parent ticket tag"
 msgstr "Etiqueta de ticket para padres"
 
-#: src/Metademand.php:3221 src/Metademand.php:4449
-#: src/Ticket_Metademand.php:843
+#: src/Metademand.php:3228 src/Metademand.php:4495
+#: src/Ticket_Metademand.php:850
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] "Ticket para padre"
@@ -1951,7 +1951,7 @@ msgstr "Datos anteriores editados"
 msgid "Previous user"
 msgstr "Usuario anterior"
 
-#: src/Metademand.php:6378
+#: src/Metademand.php:6424
 msgid "Progression of your demand"
 msgstr "Progresión de su demanda"
 
@@ -2119,11 +2119,11 @@ msgstr ""
 msgid "Rule"
 msgstr "Regla"
 
-#: hook.php:1006 src/Metademand.php:5646
+#: hook.php:1006 src/Metademand.php:5692
 msgid "Running metademands"
 msgstr "Ejecución de metademandas"
 
-#: hook.php:1057 src/Metademand.php:5714
+#: hook.php:1057 src/Metademand.php:5760
 msgid "Running metademands with tickets of my groups"
 msgstr "Ejecutar metademandas con tickets de mis grupos"
 
@@ -2303,7 +2303,7 @@ msgstr ""
 msgid "Splitted display"
 msgstr ""
 
-#: src/Metademand.php:5452
+#: src/Metademand.php:5498
 msgid "Start the download"
 msgstr ""
 
@@ -2589,13 +2589,13 @@ msgstr ""
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: src/Metademand.php:5456
+#: src/Metademand.php:5502
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: src/Metademand.php:5505
+#: src/Metademand.php:5551
 msgid "This action requires PHP extension zip"
 msgstr ""
 
@@ -2638,7 +2638,7 @@ msgstr ""
 msgid "Ticket"
 msgstr ""
 
-#: src/Metademand.php:3478
+#: src/Metademand.php:3485
 #, php-format
 msgid "Ticket \"%s\" successfully updated"
 msgstr ""
@@ -2909,7 +2909,7 @@ msgstr ""
 msgid "Value to check"
 msgstr "Valor a comprobar"
 
-#: src/Tools.php:107 src/Metademand.php:6935
+#: src/Tools.php:107 src/Metademand.php:6981
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
