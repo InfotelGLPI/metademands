@@ -375,13 +375,21 @@ class TicketField extends CommonDBChild
             $this->getEmpty();
         }
 
+        $metademands_id = (int) ($this->fields["plugin_metademands_metademands_id"] ?? 0);
+        if ($metademands_id === 0
+            && isset($options['parent'])
+            && $options['parent'] instanceof Metademand) {
+            $metademands_id = $options['parent']->getID();
+            $this->fields["plugin_metademands_metademands_id"] = $metademands_id;
+        }
+
         $meta = new Metademand();
-        $meta->getFromDB($this->fields["plugin_metademands_metademands_id"]);
+        $meta->getFromDB($metademands_id);
         $object = $meta->fields['object_to_create'];
         $searchOption = Search::getOptions($object);
         $field_name = $searchOption[$this->fields['num']]['name'] ?? '';
 
-        $used_fields = $this->getPredefinedFields($this->fields["plugin_metademands_metademands_id"], true);
+        $used_fields = $this->getPredefinedFields($metademands_id, true);
         $itemtype_used = $used_fields['itemtype'] ?? '';
 
         ob_start();
@@ -393,6 +401,11 @@ class TicketField extends CommonDBChild
         echo htmlspecialchars($field_name);
         echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
         echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
+        // Required by the CommonDBChild rights check done in front/ticketfield.form.php:
+        // without the parent foreign key, check(-1, UPDATE, $_POST) cannot resolve the
+        // parent metademand and the save is rejected with an access denied error.
+        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $metademands_id]);
+        echo Html::hidden('num', ['value' => $this->fields["num"]]);
         echo "</td>";
         echo "<td>" . __('Value') . "</td>";
         echo "<td>";
