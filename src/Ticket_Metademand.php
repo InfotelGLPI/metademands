@@ -803,25 +803,18 @@ class Ticket_Metademand extends CommonDBTM
                     } else {
                         $mail = new MailTask();
                         $mail->getFromDBByCrit(["plugin_metademands_tasks_id" => $l['tasks_id']]);
-                        // Reset on each task : the parent content must only reflect
-                        // the blocks configured on the current task.
-                        $parent_fields_content = ['content' => ''];
                         if ($l['useBlock']) {
                             $blocks_use = json_decode($l['block_use']);
                             if (!empty($blocks_use)) {
-                                // Filter a copy : $line['form'] is shared by every task of the form,
-                                // removing entries from it would also strip the blocks of the tasks
-                                // processed afterwards.
-                                $task_form   = Metademand::filterFormOnBlocks($line['form'], $blocks_use);
-                                $task_values = $values_form;
                                 foreach ($line['form'] as $i => $f) {
-                                    if (!isset($task_form[$i])) {
-                                        unset($task_values[$i]);
+                                    if (!in_array($f['rank'], $blocks_use)) {
+                                        unset($line['form'][$i]);
+                                        unset($values_form[$i]);
                                     }
                                 }
-                                $values[$metademand->getID()] = $task_values[0]['fields'] ?? [];
+                                $values[$metademand->getID()] = $values_form[0]['fields'];
                                 $parent_fields_content = Metademand::formatFields(
-                                    $task_form,
+                                    $line['form'],
                                     $metademand->getID(),
                                     $values,
                                     ['formatastable' => $l['formatastable']],
