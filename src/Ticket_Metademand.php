@@ -42,8 +42,6 @@ use Session;
 use User;
 use UserEmail;
 
-
-
 /**
  * Class Ticket_Metademand
  */

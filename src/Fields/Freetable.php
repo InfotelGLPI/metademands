@@ -40,8 +40,6 @@ use Toolbox;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Freetablefield as MetaFreetablefield;
 
-
-
 /**
  * Freetable Class
  *

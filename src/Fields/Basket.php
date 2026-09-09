@@ -53,8 +53,6 @@ use PluginOrdermaterialMetademand;
 use Session;
 use Toolbox;
 
-
-
 /**
  * Basket Class
  *

@@ -56,8 +56,6 @@ use Session;
 use SimpleXMLElement;
 use Toolbox;
 
-
-
 /**
  * Class {
  */

@@ -48,8 +48,6 @@ use TicketTemplatePredefinedField;
 use Toolbox;
 use User;
 
-
-
 /**
  * Class TicketField
  */

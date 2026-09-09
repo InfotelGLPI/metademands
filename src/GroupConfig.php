@@ -34,8 +34,6 @@ use DBConnection;
 use Migration;
 use Session;
 
-
-
 /**
  * Class GroupConfig
  */

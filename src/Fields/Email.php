@@ -40,8 +40,6 @@ use Html;
 use Session;
 use User;
 
-
-
 /**
  * Email Class
  *

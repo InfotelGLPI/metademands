@@ -36,9 +36,6 @@ use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use Toolbox;
 
-
-
-
 /**
  * Link Class
  *

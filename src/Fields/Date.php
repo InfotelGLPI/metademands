@@ -34,9 +34,6 @@ use Glpi\Application\View\TemplateRenderer;
 use Html;
 use GlpiPlugin\Metademands\Field;
 
-
-
-
 /**
  * Date Class
  *

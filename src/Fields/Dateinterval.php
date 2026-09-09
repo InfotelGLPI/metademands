@@ -35,9 +35,6 @@ use Glpi\RichText\RichText;
 use Html;
 use GlpiPlugin\Metademands\Field;
 
-
-
-
 /**
  * Dateinterval Class
  *

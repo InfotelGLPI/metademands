@@ -43,9 +43,6 @@ use Session;
 use Toolbox;
 use User;
 
-
-
-
 /**
  * Class TicketTask
  */

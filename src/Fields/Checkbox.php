@@ -40,8 +40,6 @@ use GlpiPlugin\Metademands\MetademandTask;
 use Html;
 use Session;
 
-
-
 /**
  * Checkbox Class
  *

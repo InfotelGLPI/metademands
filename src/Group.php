@@ -40,8 +40,6 @@ use Session;
 use CommonGLPI;
 use Toolbox;
 
-
-
 /**
  * Class Group
  */

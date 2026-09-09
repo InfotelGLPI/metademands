@@ -35,9 +35,6 @@ use Html;
 use Locale;
 use GlpiPlugin\Metademands\Field;
 
-
-
-
 /**
  * Time Class
  *

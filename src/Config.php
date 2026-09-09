@@ -39,8 +39,6 @@ use Migration;
 use Session;
 use Toolbox;
 
-
-
 /**
  * Class Config
  */

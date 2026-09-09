@@ -39,8 +39,6 @@ use Migration;
 use Override;
 use Session;
 
-
-
 abstract class AbstractMetademandTranslation extends ItemTranslation
 {
     public static $rightname = 'plugin_metademands';

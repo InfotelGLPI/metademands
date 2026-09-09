@@ -45,8 +45,6 @@ use Migration;
 use Session;
 use Toolbox;
 
-
-
 /**
  * Class Condition
  */

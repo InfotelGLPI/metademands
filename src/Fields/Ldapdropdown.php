@@ -42,8 +42,6 @@ use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Metademand;
 use RuleRightParameter;
 
-
-
 /**
  * Ldapdropdown Class
  *

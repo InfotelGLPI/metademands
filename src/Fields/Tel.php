@@ -40,8 +40,6 @@ use GlpiPlugin\Metademands\MetademandTask;
 use Session;
 use User;
 
-
-
 /**
  * Tel Class
  *

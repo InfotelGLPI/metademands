@@ -39,8 +39,6 @@ use Html;
 use Migration;
 use Session;
 
-
-
 /**
  * Class FieldCustomvalue
  */

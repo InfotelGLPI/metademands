@@ -36,9 +36,6 @@ use Html;
 use GlpiPlugin\Metademands\Field;
 use Session;
 
-
-
-
 /**
  * Titleblock Class
  *

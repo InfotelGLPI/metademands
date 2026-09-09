@@ -38,9 +38,6 @@ use Session;
 use CommonGLPI;
 use Toolbox;
 
-
-
-
 /**
  * Configstep Class
  *

@@ -33,8 +33,6 @@ use PluginDatainjectionCommonInjectionLib;
 use PluginDatainjectionInjectionInterface;
 use Search;
 
-
-
 class BasketobjectInjection extends Basketobject implements PluginDatainjectionInjectionInterface
 {
     public static function getTable($classname = null)

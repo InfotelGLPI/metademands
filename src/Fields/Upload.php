@@ -35,9 +35,6 @@ use GlpiPlugin\Metademands\FieldCustomvalue;
 use Html;
 use GlpiPlugin\Metademands\Wizard;
 
-
-
-
 /**
  * Upload Class
  *

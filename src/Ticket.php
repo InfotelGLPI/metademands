@@ -38,8 +38,6 @@ use Session;
 use Ticket_User;
 use TicketTemplate;
 
-
-
 /**
  * Class Ticket
  */

@@ -35,9 +35,6 @@ use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 
-
-
-
 /**
  * Range Class
  *

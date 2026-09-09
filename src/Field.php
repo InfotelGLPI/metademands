@@ -104,9 +104,6 @@ use TicketRecurrent;
 use Toolbox;
 use User;
 
-
-
-
 /**
  * Class Field
  */

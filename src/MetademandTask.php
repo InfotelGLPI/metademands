@@ -35,8 +35,6 @@ use Glpi\Application\View\TemplateRenderer;
 use Migration;
 use Session;
 
-
-
 /**
  * Class MetademandTask
  */

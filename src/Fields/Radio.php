@@ -42,8 +42,6 @@ use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\MetademandTask;
 use Session;
 
-
-
 /**
  * Radio Class
  *

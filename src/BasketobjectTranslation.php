@@ -35,8 +35,6 @@ use Migration;
 use Override;
 use Session;
 
-
-
 class BasketobjectTranslation extends AbstractMetademandTranslation
 {
     #[Override]

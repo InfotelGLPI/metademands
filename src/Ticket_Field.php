@@ -35,8 +35,6 @@ use Migration;
 use Session;
 use Toolbox;
 
-
-
 /**
  * Class Ticket_Field
  */

@@ -35,9 +35,6 @@ use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Field;
 use Html;
 
-
-
-
 /**
  * Information Class
  *

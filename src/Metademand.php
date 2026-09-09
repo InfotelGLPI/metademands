@@ -72,8 +72,6 @@ use Toolbox;
 use User;
 use UserEmail;
 
-
-
 /**
  * Class Metademand
  */

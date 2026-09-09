@@ -44,7 +44,6 @@ use Toolbox;
 use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use GlpiPlugin\Orderfollowup\Freeinput;
 
-
 // TCPDF is UTF-8 native: use the real euro codepoint, not the CP1252 byte chr(128).
 if (!defined('EURO')) {
     define('EURO', "\u{20AC}");

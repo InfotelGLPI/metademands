@@ -43,8 +43,6 @@ use Migration;
 use Session;
 use User;
 
-
-
 /**
  * Step Class
  *

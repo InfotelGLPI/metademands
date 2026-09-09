@@ -50,8 +50,6 @@ use Session;
 use Toolbox;
 use User;
 
-
-
 /**
  * Dropdownmeta Class
  *

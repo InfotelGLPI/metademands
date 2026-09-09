@@ -45,8 +45,6 @@ use Search;
 use Session;
 use TicketTemplate;
 
-
-
 /**
  * Class FieldParameter
  */

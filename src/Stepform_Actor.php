@@ -33,8 +33,6 @@ use CommonDBTM;
 use DBConnection;
 use Migration;
 
-
-
 /**
  * Class Stepform_Actor
  */

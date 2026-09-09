@@ -36,8 +36,6 @@ use Html;
 use ProfileRight;
 use Session;
 
-
-
 /**
  * Class Profile
  */

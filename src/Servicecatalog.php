@@ -33,9 +33,6 @@ use CommonGLPI;
 use DbUtils;
 use Session;
 
-
-
-
 /**
  * Class Servicecatalog
  */

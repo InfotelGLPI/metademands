@@ -37,9 +37,6 @@ use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Wizard;
 use Session;
 
-
-
-
 /**
  * Title Class
  *

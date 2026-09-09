@@ -37,8 +37,6 @@ use Migration;
 use Override;
 use Session;
 
-
-
 class MetademandTranslation extends AbstractMetademandTranslation
 {
     #[Override]

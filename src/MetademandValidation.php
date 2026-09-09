@@ -44,8 +44,6 @@ use PluginFieldsContainer;
 use PluginFieldsField;
 use User;
 
-
-
 /**
  * Class MetademandValidation
  */

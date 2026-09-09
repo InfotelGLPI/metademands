@@ -44,8 +44,6 @@ use Session;
 use Toolbox;
 use UserCategory;
 
-
-
 /**
  * Class Metademand_Resource
  */

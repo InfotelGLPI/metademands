@@ -35,8 +35,6 @@ use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
 use Glpi\ItemTranslation\Context\TranslationHandler;
 use Migration;
 
-
-
 /**
  * Class Basketobjecttype
  */

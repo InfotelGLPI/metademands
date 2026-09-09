@@ -40,9 +40,6 @@ use GlpiPlugin\Metademands\MetademandTask;
 use Session;
 use User;
 
-
-
-
 /**
  * Text Class
  *

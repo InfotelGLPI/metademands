@@ -42,8 +42,6 @@ use Session;
 use Toolbox;
 use PluginOrdermaterialMaterial;
 
-
-
 /**
  * Class Basketobject
  */

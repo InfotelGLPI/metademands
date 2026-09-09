@@ -44,9 +44,6 @@ use Plugin;
 use Session;
 use User;
 
-
-
-
 /**
  * FieldOption Class
  *

@@ -48,9 +48,6 @@ use User;
 use UserCategory;
 use UserTitle;
 
-
-
-
 /**
  * Dropdown Class
  *

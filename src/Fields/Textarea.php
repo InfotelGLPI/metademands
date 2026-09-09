@@ -41,9 +41,6 @@ use GlpiPlugin\Metademands\MetademandTask;
 use Html;
 use Session;
 
-
-
-
 /**
  * Textarea Class
  *

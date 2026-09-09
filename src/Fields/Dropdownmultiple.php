@@ -46,8 +46,6 @@ use Session;
 use Toolbox;
 use User;
 
-
-
 /**
  * Dropdownmultiple Class
  *

@@ -43,8 +43,6 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Address;
 use User;
 
-
-
 /**
  * Class MailTask
  */

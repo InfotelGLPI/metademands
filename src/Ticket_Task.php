@@ -37,8 +37,6 @@ use Migration;
 use Session;
 use User;
 
-
-
 /**
  * Class Ticket_Task
  */

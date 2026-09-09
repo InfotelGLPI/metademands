@@ -39,9 +39,6 @@ use GlpiPlugin\Metademands\MetademandTask;
 use Html;
 use Session;
 
-
-
-
 /**
  * Url Class
  *
