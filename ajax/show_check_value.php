@@ -28,9 +28,13 @@
  */
 
 use GlpiPlugin\Metademands\Condition;
+use GlpiPlugin\Metademands\Field;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
+
+// This endpoint had no control at all; it is only used by the condition configuration screens.
+Session::checkRight('plugin_metademands', READ);
 
 $show_check_value = true;
 
@@ -44,6 +48,10 @@ if (isset($_POST['show_condition'])) {
     }
 }
 if (isset($_POST['fields_id']) && $show_check_value) {
-    $fields_id = $_POST['fields_id'];
+    $fields_id = (int) $_POST['fields_id'];
+    // Field is a CommonDBChild: check() resolves the parent metademand and its entity boundary.
+    $field = new Field();
+    $field->check($fields_id, READ);
+
     Condition::showCheckValue($fields_id);
 }

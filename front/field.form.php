@@ -82,7 +82,10 @@ if (isset($_POST["add_another"])) {
         $meta->getFromDB($_POST["plugin_metademands_metademands_id"]);
         $_POST["entities_id"] = $meta->getEntityID();
     }
-    $field->check(-1, UPDATE, $_POST);
+    // CommonDBTM::can() ignores the requested right as soon as the id is a new one, so passing
+    // UPDATE here checked exactly nothing more than CREATE. Now that Field no longer overrides
+    // canCreateItem(), CREATE resolves the parent metademand and applies its entity boundary.
+    $field->check(-1, CREATE, $_POST);
 
     if ($_POST['id'] = $field->add($_POST)) {
         if (isset($_POST['existing_field_id'])
@@ -124,8 +127,8 @@ if (isset($_POST["add_another"])) {
         $meta->getFromDB($_POST["plugin_metademands_metademands_id"]);
         $_POST["entities_id"] = $meta->getEntityID();
     }
-    // Check update rights for fields
-    $field->check(-1, UPDATE, $_POST);
+    // Creation right, resolved against the parent metademand carried by the input.
+    $field->check(-1, CREATE, $_POST);
 
     if ($_POST['id'] = $field->add($_POST)) {
         if (isset($_POST['existing_field_id'])
@@ -184,8 +187,9 @@ if (isset($_POST["add_another"])) {
         $_POST['item'] = "other";
     }
 
-    //    Check update rights for fields
-    $field->check(-1, UPDATE, $_POST);
+    // Bind the control to the row actually written: with -1 the right was never evaluated and the
+    // parent metademand of the posted id was never confronted with the session.
+    $field->check((int) $_POST['id'], UPDATE);
 
     if ($field->update($_POST)) {
         $field->recalculateOrder($_POST);
@@ -203,7 +207,10 @@ if (isset($_POST["add_another"])) {
     Html::back();
 } elseif (isset($_POST["fixorders"])) {
 
-    $field->check(-1, UPDATE, $_POST);
+    // This branch renumbers every field of a metademand at once, so there is no single row to bind
+    // the control to: the parent itself is what must be authorised.
+    $meta = new Metademand();
+    $meta->check((int) $_POST["plugin_metademands_metademands_id"], UPDATE);
 
     $field = new Field();
     if ($field_values = $field->find([
@@ -222,8 +229,9 @@ if (isset($_POST["add_another"])) {
     }
     Html::back();
 } elseif (isset($_POST["purge"])) {
-    // Check update rights for fields
-    $field->check(-1, UPDATE, $_POST);
+    // delete($input, 1) is a purge, and the identifier comes from the client: control the purge
+    // right on that very row so that its parent metademand decides.
+    $field->check((int) $_POST['id'], PURGE);
     $field->delete($_POST, 1);
     Metademand::addLog($_POST, Metademand::LOG_DELETE);
     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $_POST['plugin_metademands_metademands_id']);

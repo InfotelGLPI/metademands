@@ -33,10 +33,17 @@ Session::checkRight('plugin_metademands', UPDATE);
 
 $translation = new MetademandTranslation();
 if (isset($_POST['add'])) {
+    // The global right bit above is not scoped by entity, so it authorised writes on every
+    // metademand of the instance. These translation classes are CommonDBChild: binding the control
+    // to the row - or, for a creation, to the parent carried by the input - resolves the translated
+    // object and applies its entity boundary.
+    $translation->check(-1, CREATE, $_POST);
     $translation->add($_POST);
 } elseif (isset($_POST['update'])) {
+    $translation->check((int) $_POST['id'], UPDATE);
     $translation->update($_POST);
 } elseif (isset($_POST['purge'])) {
+    $translation->check((int) $_POST['id'], PURGE);
     $translation->delete($_POST, 1);
 }
 Html::back();

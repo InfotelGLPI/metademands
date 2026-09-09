@@ -98,7 +98,9 @@ if (isset($_POST["add"])) {
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"] = $fieldparam->getID();
-            $fieldparam->check(-1, UPDATE, $input);
+            // check(-1, ...) falls back to the CREATE branch of CommonDBTM::can() and never
+            // evaluates UPDATE; bind the control to the row that is about to be written.
+            $fieldparam->check((int) $input["id"], UPDATE);
             $fieldparam->update($input);
         }
     } elseif ($_POST['type'] == "yesno") {
@@ -107,7 +109,8 @@ if (isset($_POST["add"])) {
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"] = $fieldparam->getID();
-            $fieldparam->check(-1, UPDATE, $input);
+            // Same as above: bind the control to the row actually written.
+            $fieldparam->check((int) $input["id"], UPDATE);
             $fieldparam->update($input);
         }
     } elseif (isset($_POST["item"]) && in_array($_POST["item"], Field::$field_specificobjects)) {
@@ -115,7 +118,8 @@ if (isset($_POST["add"])) {
         $input["plugin_metademands_fields_id"] = $_POST['plugin_metademands_fields_id'];
         if ($fieldparam->getFromDBByCrit(["plugin_metademands_fields_id" => $_POST['plugin_metademands_fields_id']])) {
             $input["id"] = $fieldparam->getID();
-            $fieldparam->check(-1, UPDATE, $input);
+            // Same as above: bind the control to the row actually written.
+            $fieldparam->check((int) $input["id"], UPDATE);
             $fieldparam->update($input);
         }
     } else {
@@ -148,10 +152,11 @@ if (isset($_POST["add"])) {
             }
         }
 
-        //    Check update rights for fields
+        // The control was made on $_POST with a new id: it authorised nothing and did not even look
+        // at the rows being written. Bind it to each identifier of the batch instead.
         foreach ($inputs as $key => $input) {
             $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
-            $fieldcustom->check(-1, UPDATE, $_POST);
+            $fieldcustom->check((int) $input['id'], UPDATE);
             $fieldcustom->update($input);
         }
     }
@@ -160,6 +165,10 @@ if (isset($_POST["add"])) {
 } elseif (isset($_POST["delete"])) {
     $input['id'] = $_POST['customvalues_id'];
     $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
+    // The neighbouring ranks used to be decremented before any control, so even a correct check
+    // left a partial corruption behind. Authorise the purge first, on the targeted row itself.
+    $fieldcustom->check((int) $input['id'], PURGE);
+
     //TODO update ranks
     $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
     $condition_del['rank'] = ['>', $_POST['rank']];
@@ -172,15 +181,16 @@ if (isset($_POST["add"])) {
             ]);
         }
     }
-    $fieldcustom->check(-1, DELETE, $input);
     $fieldcustom->delete($input, 1);
 
     Html::back();
 } elseif (isset($_POST["fixranks"])) {
 
-    $fieldcustom->check(-1, UPDATE, $_POST);
-
+    // This branch renumbers every custom value of a field at once: there is no single row to bind
+    // the control to, so the parent field is what must be authorised.
     $field = new Field();
+    $field->check((int) $_POST["plugin_metademands_fields_id"], UPDATE);
+
     if ($field->getFromDB((int) $_POST["plugin_metademands_fields_id"])) {
         $params = Field::getAllParamsFromField($field);
         $custom_values = $params['custom_values'];

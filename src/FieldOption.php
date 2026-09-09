@@ -717,11 +717,6 @@ class FieldOption extends CommonDBChild
         return true;
     }
 
-    public function canCreateItem(): bool
-    {
-        return true;
-    }
-
     /**
      * Display field option form
      *

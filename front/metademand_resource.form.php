@@ -27,12 +27,19 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Metademand_Resource;
 
 $metademand_resource = new Metademand_Resource();
 
 if (isset($_POST["update"])) {
-    $metademand_resource->check(-1, UPDATE, $_POST);
+    // This branch inserts a row, and Metademand_Resource is a plain CommonDBTM whose entities_id
+    // comes from a hidden input - so checking the input against the session certified itself.
+    // Authorise the parent metademand instead, and take the entity from it.
+    $metademand = new Metademand();
+    $metademand->check((int) $_POST["plugin_metademands_metademands_id"], UPDATE);
+    $_POST["entities_id"] = $metademand->getEntityID();
+
     $metademand_resource->add($_POST);
 
     Html::back();

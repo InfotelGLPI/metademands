@@ -28,12 +28,21 @@
  */
 
 use GlpiPlugin\Metademands\MailTask;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTask;
 use GlpiPlugin\Metademands\Task;
 use GlpiPlugin\Metademands\TicketTask;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
+
+// This endpoint had no control at all: the rendered form discloses the notification recipients,
+// the assigned groups and the ticket templates of the requested metademand. Require the plugin
+// right, then confront the requested object with the entity perimeter of the session.
+Session::checkRight('plugin_metademands', READ);
+
+$metademand = new Metademand();
+$metademand->check((int) ($_POST["plugin_metademands_metademands_id"] ?? 0), READ);
 
 if (isset($_POST["taskType"])) {
     switch ($_POST["taskType"]) {

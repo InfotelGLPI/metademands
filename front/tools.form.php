@@ -41,7 +41,9 @@ if (empty($_GET["id"])) {
 if (isset($_POST["purge_emptyoptions"])) {
     $itil = $_POST["id"];
     $field = new FieldOption();
-    $field->check(-1, DELETE, $_POST);
+    // Same defect as the controllers listed by the audit: check(-1, ...) never evaluated the
+    // requested right, and delete($input, 1) is a purge.
+    $field->check((int) $_POST["id"], PURGE);
     $field->delete($_POST, 1);
     Session::addMessageAfterRedirect(__('Empty option has been deleted', 'metademands'));
     Html::back();

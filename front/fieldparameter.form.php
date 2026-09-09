@@ -34,6 +34,10 @@ if (empty($_GET["id"])) {
     $_GET["id"] = "";
 }
 
+// The parent field is dereferenced right away, before any branch is entered: keep a page guard
+// here, the branches below then bind their own control to the row they write.
+Session::checkRightsOr('plugin_metademands', [CREATE, UPDATE, DELETE]);
+
 $field = new Field();
 $field->getFromDB($_POST['plugin_metademands_fields_id']);
 
@@ -88,7 +92,7 @@ if (isset($_POST["add"])) {
         $_POST["custom_values"] = 1;
     }
 
-    // Check update rights for fields
+    // Creation right, resolved against the parent field carried by the input.
     $fieldparameter->check(-1, CREATE, $_POST);
     $fieldparameter->add($_POST);
 
@@ -156,8 +160,8 @@ if (isset($_POST["add"])) {
         $_POST["custom"] = FieldParameter::_serialize($custom_values);
     }
 
-    //    Check update rights for fields
-    $fieldparameter->check(-1, UPDATE, $_POST);
+    // With -1 the requested right was never evaluated; bind the control to the posted row.
+    $fieldparameter->check((int) $_POST['id'], UPDATE);
 
     if ($field->fields['type'] == 'yesno') {
         unset($_POST['default_values']);

@@ -80,11 +80,6 @@ class Step extends CommonDBChild
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
-    public function canCreateItem(): bool
-    {
-        return true;
-    }
-
     public static function canUpdate(): bool
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);

@@ -28,17 +28,32 @@
  */
 
 use Glpi\Event;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Ticket_Metademand;
 use GlpiPlugin\Metademands\Ticket;
 
+// This controller had no page guard at all: the only control was carried by check(-1, CREATE),
+// which boils down to the global right bit anyway.
+Session::checkRight('plugin_metademands_followup', CREATE);
+
 $fup = new Interticketfollowup();
 
-if (!isset($_POST['itemtype']) || !class_exists($_POST['itemtype'])) {
+// class_exists() accepts any autoloadable class of the core, of another plugin or of vendor/, and
+// the posted itemtype decides which table is read and written downstream: control the value, not
+// its existence. Only the ITIL objects the timeline of which can carry this form are legitimate.
+if (!isset($_POST['itemtype'])
+    || !in_array($_POST['itemtype'], [\Ticket::class, \Change::class, \Problem::class], true)) {
     throw new BadRequestHttpException();
 }
 $track = new $_POST['itemtype']();
+
+// The followup is attached to this object and notifies its actors, so the posted identifier has to
+// be confronted with the session - neither the entity nor the actor list was checked before.
+if (!$track->can((int) ($_POST["tickets_id"] ?? 0), READ)) {
+    throw new AccessDeniedHttpException();
+}
 
 if (isset($_POST["add"])) {
     if (isset($_POST["targets_id"])) {
@@ -61,6 +76,15 @@ if (isset($_POST["add"])) {
             }
 
             foreach ($tickets_found as $ticket) {
+                // getSonTickets() is scoped by the metademand, not by the perimeter of the session:
+                // a linked ticket may well sit in an entity the author cannot reach, so the control
+                // is replayed here rather than only on the root identifier. A dedicated instance is
+                // used so that $track keeps pointing at the object of the redirection below.
+                $son = new $_POST['itemtype']();
+                if (!$son->can((int) $ticket["tickets_id"], READ)) {
+                    continue;
+                }
+
                 $_POST["targets_id"] = $ticket["tickets_id"];
                 $fup->check(-1, CREATE, $_POST);
                 $fup->add($_POST);
@@ -75,6 +99,15 @@ if (isset($_POST["add"])) {
                 );
             }
         } else {
+            // Replay the criteria of the dropdown builder at the sink: only the tickets getTargets()
+            // offers - the sons of the same metademand, still open - are legitimate targets.
+            if (!array_key_exists(
+                (int) $_POST["targets_id"],
+                Interticketfollowup::getTargets((int) $_POST["tickets_id"]),
+            )) {
+                throw new AccessDeniedHttpException();
+            }
+
             $fup->check(-1, CREATE, $_POST);
             $fup->add($_POST);
 

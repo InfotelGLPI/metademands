@@ -33,10 +33,15 @@ Session::checkRight('plugin_metademands', UPDATE);
 
 $translation = new BasketobjectTranslation();
 if (isset($_POST['add'])) {
+    // Same as metademandtranslation.form.php: the global right bit is not scoped by entity, so the
+    // control has to be carried by the row - or by the parent, for a creation.
+    $translation->check(-1, CREATE, $_POST);
     $translation->add($_POST);
 } elseif (isset($_POST['update'])) {
+    $translation->check((int) $_POST['id'], UPDATE);
     $translation->update($_POST);
 } elseif (isset($_POST['purge'])) {
+    $translation->check((int) $_POST['id'], PURGE);
     $translation->delete($_POST, 1);
 }
 Html::back();

@@ -38,22 +38,22 @@ if (empty($_GET["id"])) {
 $ticketField = new TicketField();
 
 if (isset($_POST["add"])) {
-    // Check update rights for fields
-    $ticketField->check(-1, UPDATE, $_POST);
+    // Creation right, resolved against the parent metademand carried by the input.
+    $ticketField->check(-1, CREATE, $_POST);
     $_POST['value'] = $_POST[$_POST['field']];
     $_POST['id'] = $ticketField->add($_POST);
 
     Html::back();
 } elseif (isset($_POST["update"])) {
-    // Check update rights for fields
     $_POST['value'] = $_POST[$_POST['field']];
-    $ticketField->check(-1, UPDATE, $_POST);
+    // With -1 the requested right was never evaluated; bind the control to the posted row.
+    $ticketField->check((int) $_POST['id'], UPDATE);
     $ticketField->update($_POST);
 
     Html::back();
 } elseif (isset($_POST["purge"])) {
-    // Check update rights for fields
-    $ticketField->check(-1, UPDATE, $_POST);
+    // delete($input, 1) is a purge, bound to the posted row.
+    $ticketField->check((int) $_POST['id'], PURGE);
     $ticketField->delete($_POST, 1);
     $ticketField->redirectToList();
 } elseif (isset($_POST['template_sync'])) {

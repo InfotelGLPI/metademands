@@ -213,11 +213,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     }
 
 
-    public function canCreateItem(): bool
-    {
-        return true;
-    }
-
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()

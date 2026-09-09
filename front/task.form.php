@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Task;
 use GlpiPlugin\Metademands\TicketTask;
 use GlpiPlugin\Metademands\MetademandTask;
@@ -44,8 +45,9 @@ $mailtask = new MailTask();
 if (isset($_POST["add"])) {
 
     if (isset($_POST['taskType'])) {
-        // Check update rights for clients
-        $task->check(-1, UPDATE, $_POST);
+        // Creation right: since Task no longer overrides canCreateItem(), this resolves the parent
+        // metademand carried by the input and applies its entity boundary.
+        $task->check(-1, CREATE, $_POST);
         $_POST['plugin_metademands_tasks_id'] = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
 
         if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
@@ -92,14 +94,23 @@ if (isset($_POST["add"])) {
     Html::back();
 
 } if (isset($_POST["update"])) {
-    // Check update rights for clients
-    $task->check(-1, UPDATE, $_POST);
+    // Bind the control to the row actually written: with -1 the requested right was never
+    // evaluated and the parent metademand was never confronted with the session.
+    $task->check((int) $_POST['id'], UPDATE);
 
     $input = $_POST;
     $input['type'] = $_POST['taskType'] ?? 0;
     $input['content'] = $_POST['content'];
     if ($input['type'] == Task::MAIL_TYPE) {
         $input['id'] = $_POST['mailtask_id'];
+        // The control above is on the Task, the write below on another class whose identifier is
+        // client supplied: authorise the MailTask on its own id, then replay the parent/child
+        // relation at the sink so that a notification task of another metademand cannot be
+        // hijacked through this form.
+        $mailtask->check((int) $input['id'], UPDATE);
+        if ((int) $mailtask->fields['plugin_metademands_tasks_id'] !== (int) $task->getID()) {
+            throw new AccessDeniedHttpException();
+        }
         if ($mailtask->update($input)) {
             if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
                 $input['block_use'] = json_encode([]);
@@ -112,6 +123,11 @@ if (isset($_POST["add"])) {
         }
     } else {
         $input['id'] = $_POST['tickettask_id'];
+        // Same reasoning as the MailTask branch above.
+        $tickettask->check((int) $input['id'], UPDATE);
+        if ((int) $tickettask->fields['plugin_metademands_tasks_id'] !== (int) $task->getID()) {
+            throw new AccessDeniedHttpException();
+        }
         if ($tickettask->isMandatoryField($input) && $tickettask->update($input)) {
 
             $tasks_id = $_POST['id'];
@@ -146,8 +162,8 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["purge"])) {
-    // Check update rights for clients
-    $task->check(-1, UPDATE, $_POST);
+    // Deletion right, bound to the posted row rather than to a new id.
+    $task->check((int) $_POST['id'], DELETE);
     $task->delete($_POST);
     Html::back();
 }

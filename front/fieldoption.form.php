@@ -55,7 +55,8 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
         } else {
             $_POST["assign_tech_group"] = json_encode([]);
         }
-        //   // Check update rights for fields
+        // Creation right: since FieldOption no longer overrides canCreateItem(), this resolves the
+        // parent field carried by the input and applies its entity boundary.
         $field->check(-1, CREATE, $_POST);
         $field->add($_POST);
         Html::back();
@@ -74,8 +75,8 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
             $_POST["assign_tech_group"] = json_encode([]);
         }
 
-        //    Check update rights for fields
-        $field->check(-1, UPDATE, $_POST);
+        // With -1 the requested right was never evaluated; bind the control to the posted row.
+        $field->check((int) $_POST['id'], UPDATE);
 
         if ($field->update($_POST)) {
 
@@ -92,8 +93,8 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
 
     } elseif (isset($_POST["purge"])) {
 
-        // Check update rights for fields
-        $field->check(-1, DELETE, $_POST);
+        // Same defect, and delete($input, 1) is a purge.
+        $field->check((int) $_POST['id'], PURGE);
         $field->delete($_POST, 1);
         Html::back();
 

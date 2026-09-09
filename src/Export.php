@@ -35,6 +35,7 @@ use CommonGLPI;
 use CommonTreeDropdown;
 use Document;
 use Entity;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Form\Form;
 use Glpi\Form\QuestionType\QuestionTypeCheckbox;
 use Glpi\Form\QuestionType\QuestionTypeDateTime;
@@ -208,7 +209,17 @@ class Export extends CommonDBTM
     public static function exportAsXMLForMetademands($id)
     {
         $metademands = new Metademand();
-        $metademands->getFromDB($id);
+        // The control belongs here rather than in each caller: front/export.form.php and
+        // ajax/export_metademand.php both hand a client identifier straight to this method, which
+        // serialises the whole definition - fields, options, conditions and generation tasks, so
+        // notification recipients, assigned groups and ticket templates included.
+        if (!$metademands->getFromDB($id)
+            || !Session::haveAccessToEntity(
+                $metademands->fields['entities_id'],
+                $metademands->fields['is_recursive'],
+            )) {
+            throw new AccessDeniedHttpException();
+        }
         $fields = $metademands->fields;
         $metatranslation = new MetademandTranslation();
         $translations = $metatranslation->find([
@@ -367,7 +378,11 @@ class Export extends CommonDBTM
     {
         //TODO
         $form = new Form();
-        $form->getFromDB($forms_forms_id);
+        // The identifier comes from $_POST["forms_id"] with only a global right bit in front of
+        // it; confront the core form with the session before serialising it.
+        if (!$form->can($forms_forms_id, READ)) {
+            throw new AccessDeniedHttpException();
+        }
 
         $fields = $form->fields;
 
@@ -789,7 +804,15 @@ class Export extends CommonDBTM
         //TODOJSON child tickets ?
 
         $metademands = new Metademand();
-        $metademands->getFromDB($id);
+        // Same reasoning as exportAsXMLForMetademands(): control at the sink so that every caller,
+        // present and future, is covered.
+        if (!$metademands->getFromDB($id)
+            || !Session::haveAccessToEntity(
+                $metademands->fields['entities_id'],
+                $metademands->fields['is_recursive'],
+            )) {
+            throw new AccessDeniedHttpException();
+        }
         $metademands_id = $metademands->getID();
         $prefix = self::generateCustomCode();
         if (!$metademands_id) {

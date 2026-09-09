@@ -57,12 +57,6 @@ class Task extends CommonDBChild
     public const TASK_TYPE       = 2;
     public const MAIL_TYPE = 3;
 
-    public function canCreateItem(): bool
-    {
-
-        return true;
-
-    }
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()

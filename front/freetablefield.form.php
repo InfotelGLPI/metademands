@@ -139,10 +139,10 @@ if (isset($_POST["add"])) {
         }
     }
 
-    //    Check update rights for fields
+    // check(-1, ...) never evaluates UPDATE: bind the control to each identifier of the batch.
     foreach ($inputs as $key => $input) {
         $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
-        $fieldcustom->check(-1, UPDATE, $input);
+        $fieldcustom->check((int) $input['id'], UPDATE);
         $fieldcustom->update($input);
     }
 
@@ -150,6 +150,10 @@ if (isset($_POST["add"])) {
 } elseif (isset($_POST["delete"])) {
     $input['id'] = $_POST['freetablefield_id'];
     $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
+    // Same defect as fieldcustomvalue.form.php: the neighbouring ranks were decremented before any
+    // control. Authorise the purge first, on the targeted row itself.
+    $fieldcustom->check((int) $input['id'], PURGE);
+
     //TODO update ranks
     $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
     $condition_del['rank'] = ['>', $_POST['rank']];
@@ -162,7 +166,6 @@ if (isset($_POST["add"])) {
             ]);
         }
     }
-    $fieldcustom->check(-1, DELETE, $input);
     $fieldcustom->delete($input, 1);
 
     Html::back();
