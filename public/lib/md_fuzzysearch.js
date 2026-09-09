@@ -1,5 +1,3 @@
-<?php
-
 /**
  * -------------------------------------------------------------------------
  * metademands plugin for GLPI
@@ -27,13 +25,11 @@
  * --------------------------------------------------------------------------
  */
 
-header('Content-Type: text/javascript');
-header('Cache-Control: max-age=86400, public');
-
-include('diacritics.js');
-?>
-
-var root_mt_doc = "<?php echo PLUGIN_METADEMANDS_WEBDIR; ?>";
+// Plugin web root, mirroring PLUGIN_METADEMANDS_WEBDIR from setup.php. GLPI exposes
+// both variables in the page <head> (config_js) before any plugin script is
+// loaded, so no server-side interpolation is needed here.
+var root_mt_doc = ((window.CFG_GLPI && CFG_GLPI.root_doc) || '')
+   + ((window.GLPI_PLUGINS_PATH && GLPI_PLUGINS_PATH.metademands) || '/plugins/metademands');
 
 $(function() {
    var list = [];

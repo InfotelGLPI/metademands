@@ -42,9 +42,7 @@ use Session;
 use Toolbox;
 use PluginOrdermaterialMaterial;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Class Basketobject

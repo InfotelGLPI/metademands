@@ -34,9 +34,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Toolbox;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 
 /**

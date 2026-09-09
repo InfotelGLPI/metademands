@@ -33,9 +33,7 @@ use CommonGLPI;
 use DbUtils;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 
 /**

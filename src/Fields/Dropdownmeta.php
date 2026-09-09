@@ -50,9 +50,7 @@ use Session;
 use Toolbox;
 use User;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Dropdownmeta Class

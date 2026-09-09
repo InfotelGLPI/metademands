@@ -53,10 +53,6 @@ use SupplierType;
 use User;
 use UserEmail;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access this file directly");
-}
-
 class NotificationTargetInterticketfollowup extends NotificationTarget
 {
     public $private_profiles = [];

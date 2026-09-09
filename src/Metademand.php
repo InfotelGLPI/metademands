@@ -72,9 +72,7 @@ use Toolbox;
 use User;
 use UserEmail;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Class Metademand
@@ -3642,7 +3640,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $controlled_block_ranks[$hb] = true;
                             $submitted = $values[$fid] ?? null;
                             if (is_object($submitted)) {
-                                $submitted = null;
+                                // A checkbox is stored as a JSON object ({"115":"115"}) : cast it to an
+                                // array so the multi-value branch below can match it. Discarding it
+                                // here silently hid every block it was supposed to reveal.
+                                $submitted = (array) $submitted;
                             }
                             if ($submitted !== null && is_scalar($submitted) && (string) $submitted !== '0'
                                 && ((string) $submitted === (string) $check_val
@@ -4297,12 +4298,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $fields = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
 
                     foreach ($fields as $f) {
-                        $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+                        $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value'], true);
                         if ($values_form[$f['plugin_metademands_fields_id']] === null) {
                             $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
                         }
                         if (!empty($f['value2'])) {
-                            $values_form[$f['plugin_metademands_fields_id'] . '-2'] = json_decode($f['value2']);
+                            $values_form[$f['plugin_metademands_fields_id'] . '-2'] = json_decode($f['value2'], true);
                             if ($values_form[$f['plugin_metademands_fields_id'] . '-2'] === null) {
                                 $values_form[$f['plugin_metademands_fields_id'] . '-2'] = $f['value2'];
                             }
@@ -4666,7 +4667,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 $ticket_id = Ticket_Task::getFirstTicket($tickets_data['id']);
                 $fields = $ticket_field->find(['tickets_id' => $ticket_id]);
                 foreach ($fields as $f) {
-                    $values['fields'][$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+                    $values['fields'][$f['plugin_metademands_fields_id']] = json_decode($f['value'], true);
                     if ($values['fields'][$f['plugin_metademands_fields_id']] === null) {
                         $values['fields'][$f['plugin_metademands_fields_id']] = $f['value'];
                     }

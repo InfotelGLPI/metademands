@@ -35,9 +35,7 @@ use Html;
 use Locale;
 use GlpiPlugin\Metademands\Field;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 
 /**

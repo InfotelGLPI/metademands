@@ -38,9 +38,7 @@ use Session;
 use Ticket_User;
 use TicketTemplate;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Class Ticket

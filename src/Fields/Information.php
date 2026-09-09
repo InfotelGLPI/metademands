@@ -35,9 +35,7 @@ use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Field;
 use Html;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 
 /**

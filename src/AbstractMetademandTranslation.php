@@ -39,9 +39,7 @@ use Migration;
 use Override;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 abstract class AbstractMetademandTranslation extends ItemTranslation
 {

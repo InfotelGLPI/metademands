@@ -35,9 +35,7 @@ use GlpiPlugin\Metademands\FieldCustomvalue;
 use Html;
 use GlpiPlugin\Metademands\Wizard;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 
 /**

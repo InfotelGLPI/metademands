@@ -40,9 +40,7 @@ use Toolbox;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Freetablefield as MetaFreetablefield;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Freetable Class

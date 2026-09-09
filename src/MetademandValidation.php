@@ -44,9 +44,7 @@ use PluginFieldsContainer;
 use PluginFieldsField;
 use User;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Class MetademandValidation
@@ -221,7 +219,7 @@ class MetademandValidation extends CommonDBTM
         $ticket_field = new Ticket_Field();
         $fields = $ticket_field->find(['tickets_id' => $ticket_id]);
         foreach ($fields as $f) {
-            $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+            $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value'], true);
             if ($values_form[$f['plugin_metademands_fields_id']] === null) {
                 $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
             }

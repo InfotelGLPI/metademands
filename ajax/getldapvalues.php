@@ -30,9 +30,6 @@
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Metademands\Fields\Ldapdropdown;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access this file directly");
-}
 
 header('Content-Type: application/json; charset=UTF-8');
 Html::header_nocache();

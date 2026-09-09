@@ -42,9 +42,7 @@ use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Metademand;
 use RuleRightParameter;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
+
 
 /**
  * Ldapdropdown Class
