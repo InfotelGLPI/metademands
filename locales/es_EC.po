@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 09:16+0000\n"
+"POT-Creation-Date: 2026-09-09 09:28+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -23,12 +23,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: src/Metademand.php:3490
+#: src/Metademand.php:3488
 #, php-format
 msgid "%1$s %2$s successfully created"
 msgstr ""
 
-#: src/Fields/Dropdown.php:520
+#: src/Fields/Dropdown.php:517
 #, php-format
 msgid "%d level"
 msgid_plural "%d levels"
@@ -40,16 +40,16 @@ msgstr[2] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/MetademandPdf.php:654 src/Fields/Freetable.php:300
-#: src/Fields/Freetable.php:734
+#: src/MetademandPdf.php:653 src/Fields/Freetable.php:298
+#: src/Fields/Freetable.php:732
 msgid "(if VAT 20%)"
 msgstr ""
 
-#: src/Fields/Basket.php:1798
+#: src/Fields/Basket.php:1796
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
-#: src/Fields/Link.php:129
+#: src/Fields/Link.php:126
 msgid "*use field \"Additional label\" for the button title"
 msgstr "*utilizar el campo \"Etiqueta adicional\" para el título del botón"
 
@@ -69,11 +69,11 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr "Se ha producido un problema, el formulario no se ha enviado"
 
-#: src/Condition.php:305
+#: src/Condition.php:303
 msgid "AND"
 msgstr "Y"
 
-#: src/Fields/Basket.php:515
+#: src/Fields/Basket.php:513
 msgid "Accessory"
 msgstr ""
 
@@ -89,7 +89,7 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: src/MetademandTask.php:196 src/Task.php:637
+#: src/MetademandTask.php:194 src/Task.php:635
 msgid "Active entity"
 msgstr ""
 
@@ -128,7 +128,7 @@ msgstr "Añadir un grupo"
 msgid "Add a new field"
 msgstr "Añadir un nuevo campo"
 
-#: src/FieldOption.php:430 src/FieldOption.php:471
+#: src/FieldOption.php:427 src/FieldOption.php:468
 msgid "Add a new option"
 msgstr "Añadir una nueva opción"
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Add and create another"
 msgstr ""
 
-#: src/Fields/Upload.php:59
+#: src/Fields/Upload.php:56
 msgid "Add attachment"
 msgstr ""
 
@@ -174,11 +174,11 @@ msgctxt "button"
 msgid "Add to basket"
 msgstr "Añadir a la cesta"
 
-#: src/Fields/Signature.php:87
+#: src/Fields/Signature.php:84
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:3030 src/Field.php:3115 src/Field.php:4530
+#: src/Field.php:3027 src/Field.php:3112 src/Field.php:4527
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr "Etiqueta adicional"
@@ -188,7 +188,7 @@ msgstr "Etiqueta adicional"
 msgid "Additional number day to the default date"
 msgstr "Número de día adicional a la fecha por defecto"
 
-#: src/Fields/Information.php:129
+#: src/Fields/Information.php:126
 msgid "Alert"
 msgstr ""
 
@@ -196,7 +196,7 @@ msgstr ""
 msgid "All available categories"
 msgstr ""
 
-#: src/Group.php:240
+#: src/Group.php:238
 msgid "All groups and not these groups"
 msgstr "Todos los grupos y no estos grupos"
 
@@ -208,11 +208,11 @@ msgstr "Todos los tickets"
 msgid "Allow adding groups by regex"
 msgstr ""
 
-#: src/Metademand.php:1219 templates/metademand.html.twig:75
+#: src/Metademand.php:1217 templates/metademand.html.twig:75
 msgid "Allow form modification after validation"
 msgstr "Permitir la modificación del formulario después de la validación"
 
-#: src/Metademand.php:1211 templates/metademand.html.twig:73
+#: src/Metademand.php:1209 templates/metademand.html.twig:73
 msgid "Allow form modification before validation"
 msgstr "Permitir la modificación del formulario antes de la validación"
 
@@ -220,7 +220,7 @@ msgstr "Permitir la modificación del formulario antes de la validación"
 msgid "Altered table"
 msgstr ""
 
-#: src/Condition.php:340 src/Condition.php:358
+#: src/Condition.php:338 src/Condition.php:356
 msgid "Always displayed"
 msgstr "Siempre se muestra"
 
@@ -229,11 +229,11 @@ msgctxt "button"
 msgid "Apply"
 msgstr ""
 
-#: src/FieldCustomvalue.php:518
+#: src/FieldCustomvalue.php:516
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
-#: src/Field.php:1340
+#: src/Field.php:1337
 msgid "Are you sure you want to delete this field ?"
 msgstr ""
 
@@ -242,11 +242,11 @@ msgstr ""
 msgid "Are you sure you want to delete this item?"
 msgstr ""
 
-#: src/Metademand_Resource.php:368
+#: src/Metademand_Resource.php:366
 msgid "Arrival date"
 msgstr "Fecha de llegada"
 
-#: src/FieldOption.php:1342
+#: src/FieldOption.php:1339
 msgid "Assign the ticket to these technicians groups"
 msgstr ""
 
@@ -275,15 +275,15 @@ msgstr ""
 msgid "Attribute ticket to "
 msgstr "Atributo ticket a"
 
-#: src/Metademand.php:1202 templates/metademand.html.twig:210
+#: src/Metademand.php:1200 templates/metademand.html.twig:210
 msgid "Background color"
 msgstr "Color de fondo"
 
-#: src/Fields/Basket.php:74
+#: src/Fields/Basket.php:72
 msgid "Basket"
 msgstr ""
 
-#: src/Fields/Basket.php:1493
+#: src/Fields/Basket.php:1491
 msgid "Basket summary"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgstr ""
 "Cuidado si no se asignan todos los bloques, se mostrarán al último grupo "
 "asignado"
 
-#: src/FieldOption.php:514 src/FieldOption.php:1584
+#: src/FieldOption.php:511 src/FieldOption.php:1581
 msgid "Bind to the value of this checkbox"
 msgstr "Vincular al valor de esta casilla"
 
@@ -303,22 +303,22 @@ msgstr "Vincular al valor de esta casilla"
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:2252 src/Field.php:1105 src/Field.php:3097 src/Step.php:430
-#: src/Step.php:509 templates/field_search_form.html.twig:34
+#: src/Wizard.php:2252 src/Field.php:1102 src/Field.php:3094 src/Step.php:428
+#: src/Step.php:507 templates/field_search_form.html.twig:34
 #: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
 msgid "Block"
 msgstr "Bloquear"
 
-#: src/TicketTask.php:228 src/FieldOption.php:1686 src/MailTask.php:173
-#: src/Step.php:399 src/Step.php:653 src/Step.php:667 src/Task.php:697
-#: src/Task.php:1098
+#: src/TicketTask.php:225 src/FieldOption.php:1683 src/MailTask.php:171
+#: src/Step.php:397 src/Step.php:651 src/Step.php:665 src/Task.php:695
+#: src/Task.php:1096
 #, php-format
 msgid "Block %s"
 msgstr "Bloque%s"
 
-#: src/Fields/Radio.php:318 src/Fields/Checkbox.php:291
-#: src/Fields/Dropdown.php:529 src/Fields/Dropdownmeta.php:1324
+#: src/Fields/Radio.php:316 src/Fields/Checkbox.php:289
+#: src/Fields/Dropdown.php:526 src/Fields/Dropdownmeta.php:1322
 msgid "Block display"
 msgstr ""
 
@@ -331,7 +331,7 @@ msgstr ""
 msgid "Block parent ticket resolution"
 msgstr ""
 
-#: src/Fields/Titleblock.php:58
+#: src/Fields/Titleblock.php:55
 msgid "Block title"
 msgstr "Título del bloque"
 
@@ -340,11 +340,11 @@ msgstr "Título del bloque"
 msgid "Block to use"
 msgstr "Bloque a utilizar"
 
-#: src/Configstep.php:199
+#: src/Configstep.php:196
 msgid "Both"
 msgstr ""
 
-#: src/Fields/Link.php:120
+#: src/Fields/Link.php:117
 msgid "Button Type"
 msgstr "Tipo de botón"
 
@@ -356,7 +356,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/Profile.php:176
+#: src/Profile.php:174
 msgid "Cancel / delete a form"
 msgstr ""
 
@@ -376,35 +376,35 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/Field.php:1980
+#: src/Field.php:1977
 msgid "Category of the metademand"
 msgstr "Categoría de la metademanda"
 
-#: src/Fields/Checkbox.php:64
+#: src/Fields/Checkbox.php:62
 msgid "Checkbox"
 msgstr "Casilla de verificación"
 
-#: src/Metademand.php:3209 src/Metademand.php:4477
-#: src/Ticket_Metademand.php:829
+#: src/Metademand.php:3207 src/Metademand.php:4475
+#: src/Ticket_Metademand.php:827
 msgid "Child Ticket"
 msgstr "Ticket Niño"
 
-#: src/Task.php:78
+#: src/Task.php:76
 msgid "Child creation"
 msgstr ""
 
-#: src/Metademand.php:513
+#: src/Metademand.php:511
 msgid "Child ticket"
 msgid_plural "Child tickets"
 msgstr[0] "ticket infantil"
 msgstr[1] "tickets infantiles"
 msgstr[2] "tickets infantiles"
 
-#: src/MetademandValidation.php:670
+#: src/MetademandValidation.php:668
 msgid "Child tickets created"
 msgstr "tickets infantiles creados"
 
-#: src/FieldOption.php:512 src/FieldOption.php:1471
+#: src/FieldOption.php:509 src/FieldOption.php:1468
 msgid "Childs blocks"
 msgstr "Bloques infantiles"
 
@@ -416,10 +416,10 @@ msgstr "Los tickets para niños obtienen contenido para padres"
 msgid "Choose a template"
 msgstr ""
 
-#: src/Fields/Radio.php:317 src/Fields/Yesno.php:205
-#: src/Fields/Checkbox.php:290 src/Fields/Dropdown.php:504
-#: src/Fields/Dropdown.php:528 src/Fields/Dropdownmeta.php:1276
-#: src/Fields/Dropdownmeta.php:1323 src/Fields/Dropdownmultiple.php:625
+#: src/Fields/Radio.php:315 src/Fields/Yesno.php:202
+#: src/Fields/Checkbox.php:288 src/Fields/Dropdown.php:501
+#: src/Fields/Dropdown.php:525 src/Fields/Dropdownmeta.php:1274
+#: src/Fields/Dropdownmeta.php:1321 src/Fields/Dropdownmultiple.php:623
 msgid "Classic display"
 msgstr "Visualización clásica"
 
@@ -429,7 +429,7 @@ msgctxt "button"
 msgid "Clean form"
 msgstr "formulario limpio"
 
-#: src/Fields/Signature.php:88 templates/metademand.html.twig:171
+#: src/Fields/Signature.php:85 templates/metademand.html.twig:171
 msgid "Clear"
 msgstr ""
 
@@ -450,7 +450,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/Ticket_Metademand.php:452
+#: src/Ticket_Metademand.php:450
 msgctxt "status"
 msgid "Closed"
 msgstr "Cerrado"
@@ -486,7 +486,7 @@ msgstr "Condición"
 msgid "Condition not added"
 msgstr "Condición no añadida"
 
-#: src/Condition.php:106
+#: src/Condition.php:104
 msgid "Conditional display"
 msgid_plural "Conditional displays"
 msgstr[0] "Visualización condicional"
@@ -501,7 +501,7 @@ msgstr "Configuración del plugin Catálogo de servicios"
 msgid "Configuration of the meta-demand plugin"
 msgstr "Configuración del plugin meta-demanda"
 
-#: src/Metademand.php:5610
+#: src/Metademand.php:5608
 msgid "Configure demands"
 msgstr "Configurar demandas"
 
@@ -517,7 +517,7 @@ msgstr ""
 msgid "Continue metademand"
 msgstr "Continuar metademanda"
 
-#: src/Metademand_Resource.php:349
+#: src/Metademand_Resource.php:347
 msgid "ContractType"
 msgstr "Tipo de contrato"
 
@@ -525,11 +525,11 @@ msgstr "Tipo de contrato"
 msgid "Create PDF"
 msgstr "Crear PDF"
 
-#: src/Servicecatalog.php:73
+#: src/Servicecatalog.php:70
 msgid "Create a"
 msgstr "Crear un"
 
-#: src/Profile.php:155
+#: src/Profile.php:153
 msgid "Create a meta-demand"
 msgstr "Crear una meta-demanda"
 
@@ -541,7 +541,7 @@ msgstr "Crear una metademanda"
 msgid "Create after the task"
 msgstr "Crear después de la tarea"
 
-#: src/Metademand.php:1157 templates/metademand.html.twig:187
+#: src/Metademand.php:1155 templates/metademand.html.twig:187
 msgid "Create one ticket for all lines of the basket"
 msgstr "Crear un ticket para todas las líneas de la cesta"
 
@@ -563,7 +563,7 @@ msgstr "Crear tareas (no tickets secundarios)"
 msgid "Created by"
 msgstr ""
 
-#: src/MetademandPdf.php:333
+#: src/MetademandPdf.php:332
 msgid "Created on"
 msgstr "Creado el"
 
@@ -573,7 +573,7 @@ msgstr "Creado el"
 msgid "Creation date"
 msgstr ""
 
-#: src/FieldCustomvalue.php:121
+#: src/FieldCustomvalue.php:119
 msgid "Custom value"
 msgid_plural "Custom values"
 msgstr[0] ""
@@ -588,7 +588,7 @@ msgstr "Valores personalizados"
 msgid "Data imported successfully"
 msgstr ""
 
-#: src/Freetablefield.php:225 src/Fields/Date.php:56
+#: src/Freetablefield.php:225 src/Fields/Date.php:53
 #: templates/forms/stepform_list_from_metademand.html.twig:35
 #: templates/forms/public_models_list.html.twig:40
 #: templates/forms/user_forms_list.html.twig:35
@@ -611,15 +611,15 @@ msgstr ""
 msgid "Date %s cannot be less than today's date"
 msgstr "La fecha%s no puede ser inferior a la fecha de hoy"
 
-#: src/Fields/Datetime.php:56
+#: src/Fields/Datetime.php:53
 msgid "Date & Hour"
 msgstr "Fecha y Hora"
 
-#: src/Fields/Datetimeinterval.php:57
+#: src/Fields/Datetimeinterval.php:54
 msgid "Date & Hour interval"
 msgstr "Intervalo de fecha y hora"
 
-#: src/Fields/Dateinterval.php:57
+#: src/Fields/Dateinterval.php:54
 msgid "Date interval"
 msgstr "Intervalo de fechas"
 
@@ -641,7 +641,7 @@ msgstr "Día mayor o igual que ahora"
 msgid "Default (%s)"
 msgstr ""
 
-#: src/Fields/Yesno.php:170 src/Fields/Dropdownmultiple.php:535
+#: src/Fields/Yesno.php:167 src/Fields/Dropdownmultiple.php:533
 #: templates/fields/field_customvalue_list.html.twig:64
 #: templates/fields/field_customvalue_add.html.twig:50
 msgid "Default value"
@@ -654,7 +654,7 @@ msgstr[2] "Valores predeterminados"
 msgid "Define a new visibility"
 msgstr ""
 
-#: src/Profile.php:183
+#: src/Profile.php:181
 msgid "Define a private / public model"
 msgstr ""
 
@@ -716,21 +716,21 @@ msgstr "Suprima esta línea"
 msgid "Delete translation"
 msgstr ""
 
-#: src/Step.php:576
+#: src/Step.php:574
 msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
 
-#: src/Metademand.php:3477
+#: src/Metademand.php:3475
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr "Demanda \"%s\" añadida con éxito"
 
-#: src/Metademand.php:553
+#: src/Metademand.php:551
 msgid "Demand Progression"
 msgstr "Progresión de la demanda"
 
-#: src/Metademand.php:3472
+#: src/Metademand.php:3470
 msgid "Demand add failed"
 msgstr "Fallo en la adición de demanda"
 
@@ -738,7 +738,7 @@ msgstr "Fallo en la adición de demanda"
 msgid "Demand followup"
 msgstr "Demanda de seguimiento"
 
-#: src/Metademand_Resource.php:372
+#: src/Metademand_Resource.php:370
 msgid "Departure date"
 msgstr "Fecha de salida"
 
@@ -748,13 +748,13 @@ msgstr "Fecha de salida"
 msgid "Description"
 msgstr ""
 
-#: src/Basketobject.php:144 src/Basketobject.php:268 src/Fields/Basket.php:165
-#: src/Fields/Basket.php:1505 src/Fields/Basket.php:2031
-#: src/Fields/Basket.php:2395 templates/basketobject_form.html.twig:39
+#: src/Basketobject.php:142 src/Basketobject.php:266 src/Fields/Basket.php:163
+#: src/Fields/Basket.php:1503 src/Fields/Basket.php:2029
+#: src/Fields/Basket.php:2393 templates/basketobject_form.html.twig:39
 msgid "Designation"
 msgstr ""
 
-#: src/MetademandTask.php:218
+#: src/MetademandTask.php:216
 msgid "Destination entity"
 msgstr ""
 
@@ -762,7 +762,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:952 src/Field.php:3724
+#: src/Fields/Dropdownmeta.php:950 src/Field.php:3721
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -784,20 +784,20 @@ msgstr "Mostrar en la cesta"
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr "Mostrar lista de metademandos en el plugin ServiceCatalog"
 
-#: src/Fields/Freetable.php:404
+#: src/Fields/Freetable.php:402
 #: templates/forms/freetablefield_add_value.html.twig:47
 msgid "Display name"
 msgstr ""
 
-#: src/FieldOption.php:510 src/FieldOption.php:1416
+#: src/FieldOption.php:507 src/FieldOption.php:1413
 msgid "Display this hidden block"
 msgstr ""
 
-#: src/FieldOption.php:511 src/FieldOption.php:1434
+#: src/FieldOption.php:508 src/FieldOption.php:1431
 msgid "Display this hidden block in the same block"
 msgstr ""
 
-#: src/FieldOption.php:257 src/FieldOption.php:509 src/FieldOption.php:1369
+#: src/FieldOption.php:254 src/FieldOption.php:506 src/FieldOption.php:1366
 msgid "Display this hidden field"
 msgstr ""
 
@@ -811,20 +811,20 @@ msgstr ""
 msgid "Display type of the field"
 msgstr "Tipo de visualización del campo"
 
-#: src/Fields/Dropdownmultiple.php:536
+#: src/Fields/Dropdownmultiple.php:534
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: src/Condition.php:342 src/Condition.php:364
+#: src/Condition.php:340 src/Condition.php:362
 msgid "Displayed unless"
 msgstr "Se muestra a menos que"
 
-#: src/Field.php:1171 templates/field_list.html.twig:94
+#: src/Field.php:1168 templates/field_list.html.twig:94
 msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr ""
 
-#: src/Tools.php:454 src/FieldCustomvalue.php:379
+#: src/Tools.php:454 src/FieldCustomvalue.php:377
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -841,11 +841,11 @@ msgstr "¿Quieres verlos?"
 msgid "Do you want to validate her?"
 msgstr "¿Quieres validarla?"
 
-#: src/Metademand.php:6474
+#: src/Metademand.php:6472
 msgid "Done on"
 msgstr "Hecho en"
 
-#: src/Fields/Dropdownmultiple.php:626
+#: src/Fields/Dropdownmultiple.php:624
 msgid "Double column display"
 msgstr "Visualización en doble columna"
 
@@ -862,11 +862,11 @@ msgstr "El nombre del proyecto es obligatorio"
 msgid "Dropdown"
 msgstr "Menú desplegable"
 
-#: src/Fields/Dropdownmultiple.php:73
+#: src/Fields/Dropdownmultiple.php:71
 msgid "Dropdown multiple"
 msgstr "Desplegable múltiple"
 
-#: src/Fields/Freetable.php:420
+#: src/Fields/Freetable.php:418
 #: templates/forms/freetablefield_add_value.html.twig:52
 msgid "Dropdown values"
 msgstr ""
@@ -888,7 +888,7 @@ msgstr "Editado por"
 msgid "Edit child object"
 msgstr ""
 
-#: src/FieldOption.php:567
+#: src/FieldOption.php:564
 msgid "Edit option"
 msgstr ""
 
@@ -900,12 +900,12 @@ msgstr ""
 msgid "Edit translation"
 msgstr ""
 
-#: tests/MailTaskTest.php:371 src/MailTask.php:263
+#: tests/MailTaskTest.php:371 src/MailTask.php:261
 msgid "Email sent"
 msgstr ""
 
-#: ajax/show_check_value.php:39 src/Condition.php:215 src/Condition.php:223
-#: src/Condition.php:234 src/Condition.php:246 src/Condition.php:287
+#: ajax/show_check_value.php:39 src/Condition.php:213 src/Condition.php:221
+#: src/Condition.php:232 src/Condition.php:244 src/Condition.php:285
 msgid "Empty"
 msgstr ""
 
@@ -954,7 +954,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr "Operador de igualdad"
 
-#: src/Step.php:1299
+#: src/Step.php:1297
 msgid "Error assigning to next group"
 msgstr "Error al asignar al siguiente grupo"
 
@@ -962,8 +962,8 @@ msgstr "Error al asignar al siguiente grupo"
 msgid "Error when creating export archive"
 msgstr ""
 
-#: src/Fields/Basket.php:173 src/Fields/Basket.php:1537
-#: src/Fields/Basket.php:2058
+#: src/Fields/Basket.php:171 src/Fields/Basket.php:1535
+#: src/Fields/Basket.php:2056
 msgid "Estimated unit price"
 msgstr ""
 
@@ -973,35 +973,35 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: src/Metademand.php:4877
+#: src/Metademand.php:4875
 msgid "Existing childs tickets"
 msgstr ""
 
-#: src/Export.php:83
+#: src/Export.php:81
 msgid "Export"
 msgstr "Exportar"
 
-#: src/Metademand.php:5465 src/Export.php:201
+#: src/Metademand.php:5463 src/Export.php:199
 msgid "Export JSON"
 msgstr ""
 
-#: src/Metademand.php:5463 src/Export.php:162 src/Export.php:190
+#: src/Metademand.php:5461 src/Export.php:160 src/Export.php:188
 msgid "Export XML"
 msgstr ""
 
-#: src/Export.php:158
+#: src/Export.php:156
 msgid "Export the form to XML format for use with metademands plugin"
 msgstr ""
 
-#: src/Export.php:197
+#: src/Export.php:195
 msgid "Export the metademand to JSON format for use with forms from GLPI"
 msgstr ""
 
-#: src/Export.php:186
+#: src/Export.php:184
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: tests/MailTaskTest.php:247 tests/MailTaskTest.php:372 src/MailTask.php:257
+#: tests/MailTaskTest.php:247 tests/MailTaskTest.php:372 src/MailTask.php:255
 msgid "Fail to send email"
 msgstr ""
 
@@ -1009,7 +1009,7 @@ msgstr ""
 msgid "Failed to check the sanity of the tables!"
 msgstr "¡Falló la comprobación de la sanidad de las tablas!"
 
-#: src/Field.php:1578
+#: src/Field.php:1575
 msgid "Father's field"
 msgstr "Campo del padre"
 
@@ -1041,7 +1041,7 @@ msgstr ""
 msgid "Field type"
 msgstr "Tipo de campo"
 
-#: src/Profile.php:169
+#: src/Profile.php:167
 msgid "Fill out a form"
 msgstr ""
 
@@ -1050,11 +1050,11 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Wizard.php:1250 src/Metademand.php:6517
+#: src/Wizard.php:1250 src/Metademand.php:6515
 msgid "Find a form"
 msgstr "Buscar un formulario"
 
-#: src/Metademand_Resource.php:341
+#: src/Metademand_Resource.php:339
 msgid "Firstname"
 msgstr "Primer  nombre"
 
@@ -1092,7 +1092,7 @@ msgstr ""
 msgid "Format the description of the childs ticket as a table"
 msgstr "Formatear la descripción del ticket infantil como una tabla"
 
-#: src/Fields/Freetable.php:63
+#: src/Fields/Freetable.php:61
 msgid "Free table"
 msgstr ""
 
@@ -1107,22 +1107,22 @@ msgstr[2] ""
 msgid "Global parameters"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:73
+#: src/Fields/Dropdownobject.php:70
 msgid "Glpi Object"
 msgstr "Objeto Glpi"
 
-#: src/Fields/Basket.php:1786
+#: src/Fields/Basket.php:1784
 msgid "Grand total"
 msgstr ""
 
-#: src/MetademandPdf.php:521 src/MetademandPdf.php:654
-#: src/Fields/Freetable.php:300 src/Fields/Freetable.php:734
-#: src/Fields/Basket.php:1811 src/Fields/Basket.php:2307
+#: src/MetademandPdf.php:520 src/MetademandPdf.php:653
+#: src/Fields/Freetable.php:298 src/Fields/Freetable.php:732
+#: src/Fields/Basket.php:1809 src/Fields/Basket.php:2305
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/MetademandPdf.php:646 src/Fields/Freetable.php:299
-#: src/Fields/Freetable.php:733
+#: src/MetademandPdf.php:645 src/Fields/Freetable.php:297
+#: src/Fields/Freetable.php:731
 msgid "Grand total (TTC)"
 msgstr ""
 
@@ -1147,11 +1147,11 @@ msgstr "Grupo encargado del siguiente paso"
 msgid "Groups allowed to enter a demand"
 msgstr "Grupos autorizados a presentar una demanda"
 
-#: src/Group.php:65
+#: src/Group.php:63
 msgid "Groups rights"
 msgstr "Derechos de los grupos"
 
-#: src/GroupConfig.php:59
+#: src/GroupConfig.php:57
 msgid "Groups visibility"
 msgstr "Visibilidad de los grupos"
 
@@ -1163,15 +1163,15 @@ msgstr ""
 msgid "Hidden field"
 msgstr ""
 
-#: src/Condition.php:341 src/Condition.php:361
+#: src/Condition.php:339 src/Condition.php:359
 msgid "Hidden unless"
 msgstr "Oculto a menos que"
 
-#: src/Profile.php:204
+#: src/Profile.php:202
 msgid "Hide button in menu"
 msgstr ""
 
-#: src/Metademand.php:1141 templates/metademand.html.twig:203
+#: src/Metademand.php:1139 templates/metademand.html.twig:203
 msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr "Ocultar los valores \"No\" y vacíos de los campos en los tickets"
 
@@ -1191,7 +1191,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:1277
+#: src/Fields/Dropdownmeta.php:1275
 msgid "Icon display"
 msgstr ""
 
@@ -1215,7 +1215,7 @@ msgstr ""
 msgid "Icon for requests"
 msgstr ""
 
-#: src/FieldOption.php:1473
+#: src/FieldOption.php:1470
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
@@ -1223,12 +1223,12 @@ msgstr ""
 "Si existen bloques hijos, éstos se ocultan al anular la selección de la "
 "opción configurada"
 
-#: src/Fields/Text.php:208 src/Fields/Textarea.php:210 src/Fields/Url.php:169
-#: src/Fields/Tel.php:209 src/Fields/Email.php:202
+#: src/Fields/Text.php:205 src/Fields/Textarea.php:207 src/Fields/Url.php:166
+#: src/Fields/Tel.php:207 src/Fields/Email.php:200
 msgid "If field empty"
 msgstr "Si el campo está vacío"
 
-#: src/FieldOption.php:1585
+#: src/FieldOption.php:1582
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
@@ -1236,45 +1236,45 @@ msgstr ""
 "Si el valor seleccionado es igual al valor a marcar, se establece el valor "
 "de la casilla de verificación"
 
-#: src/FieldOption.php:1344
+#: src/FieldOption.php:1341
 msgid ""
 "If the selected value matches the value to be checked, a technical group "
 "will be automatically assigned"
 msgstr ""
 
-#: src/FieldOption.php:1417
+#: src/FieldOption.php:1414
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 "Si el valor seleccionado es igual al valor a comprobar, el bloque se hace "
 "visible"
 
-#: src/FieldOption.php:1436
+#: src/FieldOption.php:1433
 msgid ""
 "If the value selected equals the value to check, the block becomes visible "
 "on the same block"
 msgstr ""
 
-#: src/FieldOption.php:1322
+#: src/FieldOption.php:1319
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 "Si el valor seleccionado es igual al valor a comprobar, el campo se "
 "convierte en obligatorio"
 
-#: src/FieldOption.php:1370
+#: src/FieldOption.php:1367
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 "Si el valor seleccionado es igual al valor a comprobar, el campo se hace "
 "visible"
 
-#: src/FieldOption.php:1294
+#: src/FieldOption.php:1291
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 "Si el valor seleccionado es igual al valor a comprobar, se crea la tarea"
 
-#: src/FieldOption.php:1517
+#: src/FieldOption.php:1514
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
@@ -1282,7 +1282,7 @@ msgstr ""
 "Si el valor seleccionado es igual al valor a comprobar, se envía la "
 "validación al usuario"
 
-#: src/Export.php:1310
+#: src/Export.php:1308
 msgid "Import"
 msgstr "Importar"
 
@@ -1294,24 +1294,24 @@ msgstr "Importar metademandas"
 msgid "Impossible to read the CSV file"
 msgstr ""
 
-#: src/Metademand.php:6476
+#: src/Metademand.php:6474
 msgid "In progress"
 msgstr "En curso"
 
-#: src/Ticket_Metademand.php:446
+#: src/Ticket_Metademand.php:444
 msgctxt "status"
 msgid "In progress"
 msgstr "En curso"
 
-#: src/Fields/Information.php:127
+#: src/Fields/Information.php:124
 msgid "Information"
 msgstr ""
 
-#: src/Fields/Information.php:60
+#: src/Fields/Information.php:57
 msgid "Informations"
 msgstr "Información"
 
-#: src/Fields/Dropdownobject.php:833 src/FieldParameter.php:802
+#: src/Fields/Dropdownobject.php:830 src/FieldParameter.php:800
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:51
 msgid "Informations to display in ticket and PDF"
 msgstr "Información para mostrar en ticket y PDF"
@@ -1324,7 +1324,7 @@ msgstr[1] "Formularios iniciales"
 msgstr[2] "Formularios iniciales"
 
 #: src/Interticketfollowup.php:67 src/Interticketfollowup.php:343
-#: src/Profile.php:149
+#: src/Profile.php:147
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] "Seguimiento del ticket"
@@ -1335,7 +1335,7 @@ msgstr[2] "Seguimiento de los tickets"
 msgid "Interface"
 msgstr ""
 
-#: src/Fields/Freetable.php:386
+#: src/Fields/Freetable.php:384
 #: templates/forms/freetablefield_add_value.html.twig:34
 msgid "Internal name"
 msgstr ""
@@ -1358,20 +1358,20 @@ msgstr ""
 msgid "Language Tech"
 msgstr "Tecnología lingüística"
 
-#: src/Metademand_Resource.php:345
+#: src/Metademand_Resource.php:343
 msgid "Lastname"
 msgstr "Apellido"
 
-#: src/FieldOption.php:506 src/FieldOption.php:1293
+#: src/FieldOption.php:503 src/FieldOption.php:1290
 #: templates/field_list.html.twig:143
 msgid "Launch a task with the field"
 msgstr ""
 
-#: src/FieldOption.php:513 src/FieldOption.php:1516
+#: src/FieldOption.php:510 src/FieldOption.php:1513
 msgid "Launch a validation"
 msgstr ""
 
-#: src/Fields/Ldapdropdown.php:63
+#: src/Fields/Ldapdropdown.php:61
 msgid "Ldap Dropdown"
 msgstr ""
 
@@ -1391,8 +1391,8 @@ msgstr "Vincular varios grupos a un bloque"
 msgid "Link this to a plugin \"fields\" field"
 msgstr "a un campo \"fields\" del plugin"
 
-#: ajax/viewtypefields.php:56 src/Fields/Dropdownobject.php:773
-#: src/Fields/Dropdownobject.php:861 src/Fields/Dropdownobject.php:866
+#: ajax/viewtypefields.php:56 src/Fields/Dropdownobject.php:770
+#: src/Fields/Dropdownobject.php:858 src/Fields/Dropdownobject.php:863
 #: templates/fields/field_parameter_dropdownmeta.html.twig:45
 #: templates/fields/field_parameter_text.html.twig:34
 #: templates/fields/field_parameter_dropdown.html.twig:41
@@ -1405,18 +1405,18 @@ msgstr "Vincularlo a un campo de usuario"
 msgid "Link to metademands"
 msgstr "Enlace a metademandas"
 
-#: src/Metademand_Resource.php:66
+#: src/Metademand_Resource.php:64
 msgid "Link with a metademand"
 msgid_plural "Link with metademands"
 msgstr[0] "Enlace con metademanda"
 msgstr[1] "Enlace con metademandas"
 msgstr[2] "Enlace con metademandas"
 
-#: src/Ticket_Metademand.php:237 src/Ticket_Metademand.php:241
+#: src/Ticket_Metademand.php:235 src/Ticket_Metademand.php:239
 msgid "Linked opened tickets"
 msgstr "Tickets abiertos vinculados"
 
-#: src/Ticket.php:60
+#: src/Ticket.php:58
 msgid "Linked ticket"
 msgstr "Ticket vinculado"
 
@@ -1424,7 +1424,7 @@ msgstr "Ticket vinculado"
 msgid "List of conditions"
 msgstr "Lista de condiciones"
 
-#: src/FieldOption.php:493
+#: src/FieldOption.php:490
 msgid "List of options"
 msgstr "Lista de opciones"
 
@@ -1454,7 +1454,7 @@ msgctxt "button"
 msgid "Load form"
 msgstr "Formulario de carga"
 
-#: src/Condition.php:568 templates/condition_list.html.twig:60
+#: src/Condition.php:566 templates/condition_list.html.twig:60
 #: templates/condition_form.html.twig:38
 #: templates/condition_for_metademand.html.twig:67
 msgid "Logical operator"
@@ -1472,11 +1472,11 @@ msgstr "Realizar una solicitud de cambio"
 msgid "Make a request"
 msgstr "Hacer una solicitud"
 
-#: src/FieldOption.php:248 src/FieldOption.php:508 src/FieldOption.php:1321
+#: src/FieldOption.php:245 src/FieldOption.php:505 src/FieldOption.php:1318
 msgid "Make this field mandatory"
 msgstr ""
 
-#: src/Fields/Freetable.php:446
+#: src/Fields/Freetable.php:444
 #: templates/forms/freetablefield_add_value.html.twig:63
 #: templates/field_list.html.twig:137
 msgid "Mandatory"
@@ -1490,7 +1490,7 @@ msgstr ""
 msgid "Maximum depth"
 msgstr ""
 
-#: src/Field.php:2307
+#: src/Field.php:2304
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Número máximo de documentos :%s"
@@ -1499,8 +1499,8 @@ msgstr "Número máximo de documentos :%s"
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: setup.php:291 src/Menu.php:47 src/Metademand.php:126 src/Tools.php:266
-#: src/Profile.php:143 src/Config.php:74
+#: setup.php:291 src/Menu.php:47 src/Metademand.php:124 src/Tools.php:266
+#: src/Profile.php:141 src/Config.php:72
 #: templates/tools_diagnostic.html.twig:50
 #: templates/tools_diagnostic.html.twig:81
 #: templates/tools_diagnostic.html.twig:131
@@ -1510,11 +1510,11 @@ msgstr[0] "Meta-Demanda"
 msgstr[1] "Meta-Demandas"
 msgstr[2] "Meta-Demandas"
 
-#: src/Metademand_Resource.php:245
+#: src/Metademand_Resource.php:243
 msgid "Meta-demands linked"
 msgstr "Meta-exigencias vinculadas"
 
-#: src/Metademand.php:7027
+#: src/Metademand.php:7025
 msgid "Metademand"
 msgstr ""
 
@@ -1522,7 +1522,7 @@ msgstr ""
 msgid "Metademand approver"
 msgstr "Aprobador de metademanda"
 
-#: src/Export.php:1301
+#: src/Export.php:1299
 msgid "Metademand file to import"
 msgstr "Archivo Metademanda a importar"
 
@@ -1534,8 +1534,8 @@ msgstr "Metademanda necesita una validación"
 msgid "Metademand status"
 msgstr "Estado de la metademanda"
 
-#: src/Metademand.php:4827 src/MetademandValidation.php:72
-#: src/MetademandValidation.php:445 src/MetademandValidation.php:454
+#: src/Metademand.php:4825 src/MetademandValidation.php:70
+#: src/MetademandValidation.php:443 src/MetademandValidation.php:452
 #: templates/forms/metademandvalidation_view.html.twig:33
 #: templates/forms/ticket_validation.html.twig:33
 msgid "Metademand validation"
@@ -1550,19 +1550,19 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: front/tools.form.php:61 src/Metademand.php:7014
+#: front/tools.form.php:61 src/Metademand.php:7012
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: hook.php:1023 src/Metademand.php:5854
+#: hook.php:1023 src/Metademand.php:5852
 msgid "Metademands to be closed"
 msgstr "Cierre de Metademandas"
 
-#: hook.php:1040 src/Metademand.php:5936
+#: hook.php:1040 src/Metademand.php:5934
 msgid "Metademands to be validated"
 msgstr "Metademandas a validar"
 
-#: src/Fields/Number.php:128 src/Fields/Range.php:167
+#: src/Fields/Number.php:125 src/Fields/Range.php:164
 msgid "Minimal mandatory"
 msgstr "Mínimo obligatorio"
 
@@ -1570,11 +1570,11 @@ msgstr "Mínimo obligatorio"
 msgid "Missing table"
 msgstr ""
 
-#: src/Field.php:3215
+#: src/Field.php:3212
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3214
+#: src/Field.php:3211
 msgid "Modify icon"
 msgstr ""
 
@@ -1582,7 +1582,7 @@ msgstr ""
 msgid "More informations"
 msgstr "Más información"
 
-#: src/Field.php:1253
+#: src/Field.php:1250
 msgid "Multiples"
 msgstr "Multiples"
 
@@ -1590,7 +1590,7 @@ msgstr "Multiples"
 msgid "My metademands"
 msgstr ""
 
-#: src/Field.php:1978
+#: src/Field.php:1975
 msgid "My values"
 msgstr ""
 
@@ -1624,16 +1624,16 @@ msgstr "Nuevo seguimiento entre tickets"
 msgid "New model"
 msgstr "Nuevo modelo"
 
-#: src/Fields/Dropdownobject.php:1266 src/Fields/Text.php:355
-#: src/Fields/Radio.php:584 src/Fields/Yesno.php:476
-#: src/Fields/Textarea.php:345 src/Fields/Url.php:317
-#: src/Fields/Checkbox.php:584 src/Fields/Dropdown.php:876
-#: src/Fields/Dropdownmeta.php:1735 src/Fields/Basket.php:823
-#: src/Fields/Tel.php:356 src/Fields/Email.php:350
-#: src/Fields/Dropdownmultiple.php:1153 src/Fields/Dropdownmultiple.php:1326
+#: src/Fields/Dropdownobject.php:1263 src/Fields/Text.php:352
+#: src/Fields/Radio.php:582 src/Fields/Yesno.php:473
+#: src/Fields/Textarea.php:342 src/Fields/Url.php:314
+#: src/Fields/Checkbox.php:582 src/Fields/Dropdown.php:873
+#: src/Fields/Dropdownmeta.php:1733 src/Fields/Basket.php:821
+#: src/Fields/Tel.php:354 src/Fields/Email.php:348
+#: src/Fields/Dropdownmultiple.php:1151 src/Fields/Dropdownmultiple.php:1324
 #: src/Wizard.php:1397 src/Wizard.php:1642 src/Wizard.php:1783
 #: src/Wizard.php:1792 src/Wizard.php:1832 src/Wizard.php:1838
-#: src/Wizard.php:2398 src/Wizard.php:2401 src/FieldOption.php:2254
+#: src/Wizard.php:2398 src/Wizard.php:2401 src/FieldOption.php:2251
 msgid "Next"
 msgstr "Siguiente"
 
@@ -1643,7 +1643,7 @@ msgid "Next group in charge of demand"
 msgstr "Próximo grupo encargado de la demanda"
 
 #: front/nextGroup.form.php:82 front/nextGroup.form.php:89
-#: front/nextGroup.form.php:99 src/Step.php:929
+#: front/nextGroup.form.php:99 src/Step.php:927
 msgid "Next recipient"
 msgstr "Siguiente destinatario"
 
@@ -1681,7 +1681,7 @@ msgstr ""
 msgid "No empty field options founded"
 msgstr "Sin opciones de campo vacío fundado"
 
-#: src/Fields/Dropdownmeta.php:848
+#: src/Fields/Dropdownmeta.php:846
 msgid "No equipment founded"
 msgstr ""
 
@@ -1690,19 +1690,19 @@ msgstr ""
 msgid "No existing forms founded"
 msgstr "No se han fundado formularios"
 
-#: src/Export.php:1338
+#: src/Export.php:1336
 msgid "No file specified"
 msgstr "No se ha especificado ningún archivo"
 
-#: src/Fields/Basket.php:1906
+#: src/Fields/Basket.php:1904
 msgid "No items on basket"
 msgstr ""
 
-#: src/Fields/Dropdown.php:518
+#: src/Fields/Dropdown.php:515
 msgid "No limit"
 msgstr ""
 
-#: src/Export.php:1207
+#: src/Export.php:1205
 msgid "No link"
 msgstr ""
 
@@ -1734,37 +1734,37 @@ msgstr ""
 msgid "No visibility defined"
 msgstr ""
 
-#: src/Fields/Textarea.php:172
+#: src/Fields/Textarea.php:169
 msgid "Not available with Rich text option"
 msgstr ""
 
-#: ajax/show_check_value.php:42 src/Condition.php:216 src/Condition.php:224
-#: src/Condition.php:235 src/Condition.php:247 src/Condition.php:290
+#: ajax/show_check_value.php:42 src/Condition.php:214 src/Condition.php:222
+#: src/Condition.php:233 src/Condition.php:245 src/Condition.php:288
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:1029 src/Fields/Dropdownobject.php:1032
-#: src/Fields/Dropdownobject.php:1042 src/Fields/Dropdownobject.php:1065
-#: src/Fields/Dropdownobject.php:1081 src/Fields/Dropdownobject.php:1092
-#: src/Fields/Ldapdropdown.php:353 src/Fields/Ldapdropdown.php:389
-#: src/Fields/Radio.php:379 src/Fields/Radio.php:392
-#: src/Fields/Checkbox.php:350 src/Fields/Checkbox.php:363
-#: src/Fields/Dropdown.php:650 src/Fields/Dropdown.php:687
-#: src/Fields/Dropdownmeta.php:1485 src/Fields/Dropdownmeta.php:1495
-#: src/Fields/Dropdownmeta.php:1516 src/Fields/Basket.php:540
-#: src/Fields/Dropdownmultiple.php:862
+#: src/Fields/Dropdownobject.php:1026 src/Fields/Dropdownobject.php:1029
+#: src/Fields/Dropdownobject.php:1039 src/Fields/Dropdownobject.php:1062
+#: src/Fields/Dropdownobject.php:1078 src/Fields/Dropdownobject.php:1089
+#: src/Fields/Ldapdropdown.php:351 src/Fields/Ldapdropdown.php:387
+#: src/Fields/Radio.php:377 src/Fields/Radio.php:390
+#: src/Fields/Checkbox.php:348 src/Fields/Checkbox.php:361
+#: src/Fields/Dropdown.php:647 src/Fields/Dropdown.php:684
+#: src/Fields/Dropdownmeta.php:1483 src/Fields/Dropdownmeta.php:1493
+#: src/Fields/Dropdownmeta.php:1514 src/Fields/Basket.php:538
+#: src/Fields/Dropdownmultiple.php:860
 msgid "Not null value"
 msgstr "Valor no nulo"
 
-#: src/MetademandValidation.php:679
+#: src/MetademandValidation.php:677
 msgid "Not subject to validation"
 msgstr "No sujeto a validación"
 
-#: src/Metademand.php:6489
+#: src/Metademand.php:6487
 msgid "Not yet completed"
 msgstr "Aún no se ha completado"
 
-#: src/Freetablefield.php:223 src/Fields/Number.php:57
+#: src/Freetablefield.php:223 src/Fields/Number.php:54
 msgid "Number"
 msgstr "Números"
 
@@ -1781,26 +1781,26 @@ msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr "Número de seguimientos entre tickets"
 
-#: src/Condition.php:306
+#: src/Condition.php:304
 msgid "OR"
 msgstr "O"
 
-#: ajax/reloaditem.php:39 src/Field.php:787 src/Field.php:796
-#: src/Field.php:3032 templates/field_search_form.html.twig:42
+#: ajax/reloaditem.php:39 src/Field.php:784 src/Field.php:793
+#: src/Field.php:3029 templates/field_search_form.html.twig:42
 #: templates/field_list.html.twig:136
 msgid "Object"
 msgstr "Objeto"
 
-#: src/Metademand.php:1175 templates/metademand.html.twig:93
+#: src/Metademand.php:1173 templates/metademand.html.twig:93
 #: templates/metademand.html.twig:105
 msgid "Object to create"
 msgstr "Objeto a crear"
 
-#: src/Metademand.php:789 src/Metademand.php:912
+#: src/Metademand.php:787 src/Metademand.php:910
 msgid "Object to create is mandatory"
 msgstr "El objeto a crear es obligatorio"
 
-#: src/Basketobjecttype.php:55
+#: src/Basketobjecttype.php:53
 msgid "Object type"
 msgid_plural "Object types"
 msgstr[0] ""
@@ -1816,17 +1816,17 @@ msgstr ""
 msgid "Obsolete translations"
 msgstr ""
 
-#: src/Fields/Basket.php:2164
+#: src/Fields/Basket.php:2162
 msgid "On catalog"
 msgstr ""
 
-#: src/Fields/Basket.php:245 src/Fields/Basket.php:387
-#: src/Fields/Basket.php:506 src/Fields/Basket.php:1654
-#: src/Fields/Basket.php:1747 src/Fields/Basket.php:2156
+#: src/Fields/Basket.php:243 src/Fields/Basket.php:385
+#: src/Fields/Basket.php:504 src/Fields/Basket.php:1652
+#: src/Fields/Basket.php:1745 src/Fields/Basket.php:2154
 msgid "On quotation"
 msgstr ""
 
-#: src/Freetablefield.php:469 src/Fields/Freetable.php:421
+#: src/Freetablefield.php:469 src/Fields/Freetable.php:419
 msgid "One value by line, separated by comma"
 msgstr ""
 
@@ -1834,20 +1834,20 @@ msgstr ""
 msgid "Only by supervisor"
 msgstr ""
 
-#: src/Group.php:239
+#: src/Group.php:237
 msgid "Only these groups"
 msgstr "Sólo estos grupos"
 
-#: src/Fields/Dropdownobject.php:786 src/Fields/Dropdownobject.php:791
+#: src/Fields/Dropdownobject.php:783 src/Fields/Dropdownobject.php:788
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:39
 msgid "Only users of my groups"
 msgstr "Sólo usuarios de mis grupos"
 
-#: src/Step.php:556
+#: src/Step.php:554
 msgid "Only visible by supervisor"
 msgstr ""
 
-#: src/Step.php:526 src/Step.php:545
+#: src/Step.php:524 src/Step.php:543
 msgid "Only visible for this group"
 msgid_plural "Only visible for these groups"
 msgstr[0] ""
@@ -1859,7 +1859,7 @@ msgstr[2] ""
 msgid "Opening date"
 msgstr ""
 
-#: src/FieldOption.php:128
+#: src/FieldOption.php:125
 msgid "Option"
 msgid_plural "Options"
 msgstr[0] "Opción"
@@ -1871,7 +1871,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3106
+#: src/Field.php:3103
 msgid "Order"
 msgstr "Pedido"
 
@@ -1880,18 +1880,18 @@ msgstr "Pedido"
 msgid "Order of execution and grouping of conditions"
 msgstr "Orden de ejecución y agrupación de condiciones"
 
-#: src/Fields/Basket.php:2039
+#: src/Fields/Basket.php:2037
 msgid "Order type"
 msgstr ""
 
-#: src/FieldParameter.php:135
+#: src/FieldParameter.php:133
 msgid "Parameter"
 msgid_plural "Parameters"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/Metademand.php:4878
+#: src/Metademand.php:4876
 msgid "Parent ticket"
 msgstr ""
 
@@ -1899,15 +1899,15 @@ msgstr ""
 msgid "Parent ticket tag"
 msgstr "Etiqueta de ticket para padres"
 
-#: src/Metademand.php:3226 src/Metademand.php:4496
-#: src/Ticket_Metademand.php:841
+#: src/Metademand.php:3224 src/Metademand.php:4494
+#: src/Ticket_Metademand.php:839
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] "Ticket para padre"
 msgstr[1] "Tickets para padres"
 msgstr[2] "Tickets para padres"
 
-#: src/Metademand.php:1149 templates/metademand.html.twig:177
+#: src/Metademand.php:1147 templates/metademand.html.twig:177
 msgid "Permit multiple form"
 msgstr ""
 
@@ -1923,7 +1923,7 @@ msgstr "Agregue un campo de categoría de tipo"
 msgid "Please come back later"
 msgstr "Por favor, vuelva más tarde"
 
-#: src/FieldCustomvalue.php:520
+#: src/FieldCustomvalue.php:518
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1933,11 +1933,11 @@ msgstr ""
 msgid "Please upload a valid CSV file"
 msgstr ""
 
-#: src/Config.php:69
+#: src/Config.php:67
 msgid "Plugin setup"
 msgstr "Configuración del plugin"
 
-#: src/Condition.php:559 templates/condition_list.html.twig:65
+#: src/Condition.php:557 templates/condition_list.html.twig:65
 #: templates/condition_form.html.twig:50
 #: templates/condition_for_metademand.html.twig:79
 msgid "Pool"
@@ -1955,7 +1955,7 @@ msgstr "Datos anteriores editados"
 msgid "Previous user"
 msgstr "Usuario anterior"
 
-#: src/Metademand.php:6425
+#: src/Metademand.php:6423
 msgid "Progression of your demand"
 msgstr "Progresión de su demanda"
 
@@ -1976,9 +1976,9 @@ msgstr ""
 msgid "Publisher"
 msgstr "publicador"
 
-#: src/Fields/Basket.php:191 src/Fields/Basket.php:1557
-#: src/Fields/Basket.php:2052 src/Fields/Basket.php:2397
-#: src/Fields/Basket.php:2437
+#: src/Fields/Basket.php:189 src/Fields/Basket.php:1555
+#: src/Fields/Basket.php:2050 src/Fields/Basket.php:2395
+#: src/Fields/Basket.php:2435
 msgid "Quantity"
 msgstr ""
 
@@ -1986,15 +1986,15 @@ msgstr ""
 msgid "Queries to run"
 msgstr ""
 
-#: src/Fields/Radio.php:66
+#: src/Fields/Radio.php:64
 msgid "Radio button"
 msgstr "Botón de opción"
 
-#: src/Fields/Range.php:57
+#: src/Fields/Range.php:54
 msgid "Range"
 msgstr ""
 
-#: src/Fields/Freetable.php:374
+#: src/Fields/Freetable.php:372
 #: templates/forms/freetablefield_add_value.html.twig:33
 msgid "Rank"
 msgstr ""
@@ -2003,7 +2003,7 @@ msgstr ""
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:832
+#: src/Fields/Dropdownobject.php:829
 #: templates/fields/field_parameter_dropdownmeta.html.twig:52
 msgid "Read-Only"
 msgstr "Sólo lectura"
@@ -2016,26 +2016,26 @@ msgstr ""
 msgid "Recipient"
 msgstr ""
 
-#: src/Task.php:673
+#: src/Task.php:671
 msgid "Recipients"
 msgstr ""
 
-#: src/Basketobject.php:161 src/Fields/Basket.php:164
-#: src/Fields/Basket.php:1504 src/Fields/Basket.php:2029
-#: src/Fields/Basket.php:2394 templates/basketobject_form.html.twig:57
+#: src/Basketobject.php:159 src/Fields/Basket.php:162
+#: src/Fields/Basket.php:1502 src/Fields/Basket.php:2027
+#: src/Fields/Basket.php:2392 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr ""
 
-#: front/basketobject.form.php:72 src/Basketobject.php:125
+#: front/basketobject.form.php:72 src/Basketobject.php:123
 msgid "Reference catalog"
 msgstr ""
 
-#: src/Basketobject.php:105
+#: src/Basketobject.php:103
 msgid "Reference is mandatory"
 msgstr ""
 
-#: src/FieldOption.php:1165 src/FieldOption.php:1177 src/Condition.php:222
-#: src/Condition.php:245 src/Condition.php:284
+#: src/FieldOption.php:1162 src/FieldOption.php:1174 src/Condition.php:220
+#: src/Condition.php:243 src/Condition.php:282
 msgid "Regex"
 msgstr "Regex"
 
@@ -2096,22 +2096,22 @@ msgstr "Nombre del solicitante"
 msgid "Reset and import custom values"
 msgstr ""
 
-#: src/Metademand_Resource.php:376
+#: src/Metademand_Resource.php:374
 msgid "Resource manager"
 msgstr "Gestor de recursos"
 
-#: src/Profile.php:54
+#: src/Profile.php:52
 msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] "Gestión de derechos"
 msgstr[1] "Gestión de derechos"
 msgstr[2] "Gestión de derechos"
 
-#: src/Profile.php:190
+#: src/Profile.php:188
 msgid "Right to update a meta-demand form from the ticket"
 msgstr "Derecho a actualizar un formulario de meta-demanda desde el ticket"
 
-#: src/Task.php:685 src/Task.php:689
+#: src/Task.php:683 src/Task.php:687
 msgid "Root"
 msgstr "Raíz"
 
@@ -2123,11 +2123,11 @@ msgstr ""
 msgid "Rule"
 msgstr "Regla"
 
-#: hook.php:1006 src/Metademand.php:5693
+#: hook.php:1006 src/Metademand.php:5691
 msgid "Running metademands"
 msgstr "Ejecución de metademandas"
 
-#: hook.php:1057 src/Metademand.php:5761
+#: hook.php:1057 src/Metademand.php:5759
 msgid "Running metademands with tickets of my groups"
 msgstr "Ejecutar metademandas con tickets de mis grupos"
 
@@ -2151,14 +2151,14 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:1265 src/Fields/Text.php:353
-#: src/Fields/Radio.php:582 src/Fields/Yesno.php:474
-#: src/Fields/Textarea.php:343 src/Fields/Url.php:315
-#: src/Fields/Checkbox.php:582 src/Fields/Dropdown.php:875
-#: src/Fields/Dropdownmeta.php:1733 src/Fields/Basket.php:822
-#: src/Fields/Basket.php:1833 src/Fields/Tel.php:354 src/Fields/Email.php:348
-#: src/Fields/Dropdownmultiple.php:1151 src/Fields/Dropdownmultiple.php:1324
-#: src/Wizard.php:1637 src/Wizard.php:1823 src/FieldOption.php:2252
+#: src/Fields/Dropdownobject.php:1262 src/Fields/Text.php:350
+#: src/Fields/Radio.php:580 src/Fields/Yesno.php:471
+#: src/Fields/Textarea.php:340 src/Fields/Url.php:312
+#: src/Fields/Checkbox.php:580 src/Fields/Dropdown.php:872
+#: src/Fields/Dropdownmeta.php:1731 src/Fields/Basket.php:820
+#: src/Fields/Basket.php:1831 src/Fields/Tel.php:352 src/Fields/Email.php:346
+#: src/Fields/Dropdownmultiple.php:1149 src/Fields/Dropdownmultiple.php:1322
+#: src/Wizard.php:1637 src/Wizard.php:1823 src/FieldOption.php:2249
 #: src/Basketline.php:157
 msgctxt "button"
 msgid "Save & Post"
@@ -2197,23 +2197,23 @@ msgstr ""
 msgid "Schema check"
 msgstr "Comprobación de esquema"
 
-#: src/Fields/Dropdownmultiple.php:387 src/Fields/Dropdownmultiple.php:390
+#: src/Fields/Dropdownmultiple.php:385 src/Fields/Dropdownmultiple.php:388
 msgid "Search"
 msgstr ""
 
-#: src/Fields/Basket.php:463
+#: src/Fields/Basket.php:461
 msgid "Search for description.."
 msgstr ""
 
-#: src/Fields/Basket.php:462
+#: src/Fields/Basket.php:460
 msgid "Search for names.."
 msgstr ""
 
-#: src/Fields/Basket.php:461
+#: src/Fields/Basket.php:459
 msgid "Search.."
 msgstr ""
 
-#: src/Metademand_Resource.php:358
+#: src/Metademand_Resource.php:356
 msgid "Secondaries services"
 msgstr "Servicios secundarios"
 
@@ -2240,11 +2240,11 @@ msgctxt "button"
 msgid "See your basket"
 msgstr ""
 
-#: src/Fields/Basket.php:194
+#: src/Fields/Basket.php:192
 msgid "Select"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:537
+#: src/Fields/Dropdownmultiple.php:535
 msgid "Select all"
 msgstr ""
 
@@ -2252,19 +2252,19 @@ msgstr ""
 msgid "Select language to translate"
 msgstr ""
 
-#: src/Step.php:1099
+#: src/Step.php:1097
 msgid "Select the next group"
 msgstr "Seleccionar el siguiente grupo"
 
-#: src/Metademand_Resource.php:353
+#: src/Metademand_Resource.php:351
 msgid "Service"
 msgstr "Servicio"
 
-#: src/Fields/Dropdownobject.php:774
+#: src/Fields/Dropdownobject.php:771
 msgid "Show a identity card of user"
 msgstr ""
 
-#: src/Profile.php:197
+#: src/Profile.php:195
 msgid "Show form selection on connection and replace the create form"
 msgstr ""
 
@@ -2274,7 +2274,7 @@ msgstr ""
 msgid "Show list of available tags"
 msgstr ""
 
-#: src/Fields/Signature.php:56
+#: src/Fields/Signature.php:53
 msgid "Signature"
 msgstr ""
 
@@ -2282,7 +2282,7 @@ msgstr ""
 msgid "Son ticket tag"
 msgstr "Etiqueta de ticket de hijo"
 
-#: src/Fields/Dropdownmeta.php:85
+#: src/Fields/Dropdownmeta.php:83
 msgid "Specific dropdown"
 msgstr ""
 
@@ -2304,11 +2304,11 @@ msgstr ""
 msgid "Specific parameters"
 msgstr ""
 
-#: src/Fields/Dropdown.php:505
+#: src/Fields/Dropdown.php:502
 msgid "Splitted display"
 msgstr ""
 
-#: src/Metademand.php:5499
+#: src/Metademand.php:5497
 msgid "Start the download"
 msgstr ""
 
@@ -2332,30 +2332,30 @@ msgstr[0] "Pasos de un formulario de metademanda"
 msgstr[1] "Pasos de un formulario de metademandas"
 msgstr[2] "Pasos de un formulario de metademandas"
 
-#: src/Configstep.php:68 templates/configstep.html.twig:36
+#: src/Configstep.php:65 templates/configstep.html.twig:36
 msgid "Step by step settings"
 msgstr "Ajustes paso a paso"
 
-#: src/Fields/Number.php:122 src/Fields/Range.php:161
+#: src/Fields/Number.php:119 src/Fields/Range.php:158
 msgid "Step for number"
 msgstr "Paso para el número"
 
-#: src/Step.php:69
+#: src/Step.php:67
 msgid "Step-by-Step block"
 msgid_plural "Step-by-Step blocks"
 msgstr[0] "Bloque paso a paso"
 msgstr[1] "Bloques paso a paso"
 msgstr[2] "Bloques paso a paso"
 
-#: src/Metademand.php:1262 templates/metademand.html.twig:79
+#: src/Metademand.php:1260 templates/metademand.html.twig:79
 msgid "Step-by-step mode"
 msgstr "Modo paso a paso"
 
-#: src/Step.php:507
+#: src/Step.php:505
 msgid "Sub Block"
 msgstr ""
 
-#: src/MetademandValidation.php:417
+#: src/MetademandValidation.php:415
 #: templates/forms/metademandvalidation_view.html.twig:61
 msgid "Sub-tickets are created"
 msgstr "Se crean sub-tickets"
@@ -2368,11 +2368,11 @@ msgstr "Visualización del botón Enviar"
 msgid "Suggested queries"
 msgstr ""
 
-#: src/Fields/Yesno.php:206
+#: src/Fields/Yesno.php:203
 msgid "Switch display"
 msgstr ""
 
-#: src/TicketField.php:316 templates/ticketfield_sync.html.twig:34
+#: src/TicketField.php:314 templates/ticketfield_sync.html.twig:34
 msgid "Synchronise with ticket template"
 msgstr "Sincronizar con la plantilla de tickets"
 
@@ -2392,12 +2392,12 @@ msgstr "Seguimiento de objetivos"
 msgid "Target ticket(s)"
 msgstr "Ticket(s) objetivo"
 
-#: src/TicketTask.php:69 src/Ticket_Metademand.php:71 src/MetademandTask.php:61
-#: src/MailTask.php:68 src/Ticket_Task.php:62
+#: src/TicketTask.php:66 src/Ticket_Metademand.php:69 src/MetademandTask.php:59
+#: src/MailTask.php:66 src/Ticket_Task.php:60
 msgid "Task creation"
 msgstr "Task creation"
 
-#: src/Task.php:341
+#: src/Task.php:339
 msgid "Task type"
 msgstr "Tipo de tarea"
 
@@ -2405,16 +2405,16 @@ msgstr "Tipo de tarea"
 msgid "Tasks"
 msgstr "Tareas"
 
-#: src/MetademandValidation.php:412
+#: src/MetademandValidation.php:410
 #: templates/forms/metademandvalidation_view.html.twig:58
 msgid "Tasks are created"
 msgstr "Creación de tareas"
 
-#: src/MetademandValidation.php:672
+#: src/MetademandValidation.php:670
 msgid "Tasks created"
 msgstr "Tareas creadas"
 
-#: src/Metademand.php:1508
+#: src/Metademand.php:1506
 msgid ""
 "Tasks tree cannot be changed as unresolved related tickets exist or activate "
 "maintenance mode"
@@ -2434,11 +2434,11 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#: src/Freetablefield.php:221 src/Fields/Text.php:62
+#: src/Freetablefield.php:221 src/Fields/Text.php:59
 msgid "Text"
 msgstr "Texto"
 
-#: src/Fields/Textarea.php:65
+#: src/Fields/Textarea.php:62
 msgid "Textarea"
 msgstr "Área de texto"
 
@@ -2446,8 +2446,8 @@ msgstr "Área de texto"
 msgid "Thanks to fill mandatory fields"
 msgstr "Gracias por rellenar los campos obligatorios"
 
-#: src/TicketTask.php:734 src/Metademand.php:768 src/Metademand.php:874
-#: src/Task.php:940
+#: src/TicketTask.php:731 src/Metademand.php:766 src/Metademand.php:872
+#: src/Task.php:938
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 "La categoría está relacionada con una demanda. Gracias por seleccionar otra"
@@ -2457,11 +2457,11 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: src/Fields/Textarea.php:924
+#: src/Fields/Textarea.php:921
 msgid "The description field is mandatory"
 msgstr ""
 
-#: src/Basketobject.php:100
+#: src/Basketobject.php:98
 msgid "The designation is mandatory"
 msgstr ""
 
@@ -2470,7 +2470,7 @@ msgid ""
 "The fields are not ordered correctly, you will not be able to order them!"
 msgstr ""
 
-#: src/Export.php:1353
+#: src/Export.php:1351
 msgid "The file is not an XML file"
 msgstr "El archivo no es un archivo XML"
 
@@ -2502,7 +2502,7 @@ msgstr "Se ha eliminado la línea"
 msgid "The line has been updated"
 msgstr "Se ha actualizado la línea"
 
-#: src/MetademandValidation.php:422
+#: src/MetademandValidation.php:420
 msgid "The metademand is validated and affected"
 msgstr "La metademanda se valida y afecta"
 
@@ -2510,7 +2510,7 @@ msgstr "La metademanda se valida y afecta"
 msgid "The object is created"
 msgstr ""
 
-#: src/Basketobject.php:111
+#: src/Basketobject.php:109
 msgid "The object type is mandatory"
 msgstr ""
 
@@ -2530,11 +2530,11 @@ msgid ""
 "The ranks are not ordered correctly, you will not be able to order them!"
 msgstr ""
 
-#: src/FieldOption.php:1332
+#: src/FieldOption.php:1329
 msgid "The rules of the escalade plugin will not be taken into account."
 msgstr ""
 
-#: src/Ticket.php:319
+#: src/Ticket.php:317
 msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -2544,7 +2544,7 @@ msgstr ""
 msgid "The user must select a defined user of the selected groups"
 msgstr ""
 
-#: src/Metademand.php:903
+#: src/Metademand.php:901
 msgid ""
 "There are sub-metademands or this is a sub-metademand. This metademand "
 "cannot be in basket mode"
@@ -2552,7 +2552,7 @@ msgstr ""
 "Hay sub-metademandas o ésta es una sub-metademanda. Esta meta-demanda no "
 "puede estar en modo cesta"
 
-#: src/Metademand.php:2833
+#: src/Metademand.php:2831
 msgid "There is a problem on object creation"
 msgstr ""
 
@@ -2560,7 +2560,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr "Hay un problema con la cesta"
 
-#: src/Step.php:939 templates/forms/step_modal_nextgroup.html.twig:53
+#: src/Step.php:937 templates/forms/step_modal_nextgroup.html.twig:53
 #: templates/forms/step_by_block.html.twig:78
 msgid "There is a problem with the setup"
 msgstr "Hay un problema con la configuración"
@@ -2578,11 +2578,11 @@ msgstr "No hay línea en la cesta"
 msgid "There is no line on the mandatory table %s"
 msgstr ""
 
-#: src/Fields/Signature.php:77
+#: src/Fields/Signature.php:74
 msgid "There was a problem on delete your signature"
 msgstr ""
 
-#: src/Fields/Signature.php:76
+#: src/Fields/Signature.php:73
 msgid "There was a problem on upload your signature"
 msgstr ""
 
@@ -2594,17 +2594,17 @@ msgstr ""
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
-#: src/Metademand.php:5503
+#: src/Metademand.php:5501
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: src/Metademand.php:5552
+#: src/Metademand.php:5550
 msgid "This action requires PHP extension zip"
 msgstr ""
 
-#: src/FieldOption.php:1407
+#: src/FieldOption.php:1404
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
@@ -2614,11 +2614,11 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr "Esta demanda ya se utiliza en"
 
-#: src/Fields/Signature.php:78
+#: src/Fields/Signature.php:75
 msgid "This field is mandatory"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:328
+#: src/Fields/Dropdownmeta.php:326
 msgid "This field is mandatory, please select your equipment"
 msgstr ""
 
@@ -2626,15 +2626,15 @@ msgstr ""
 msgid "This form is in maintenance mode"
 msgstr "Este formulario está en modo de mantenimiento"
 
-#: src/Step.php:902
+#: src/Step.php:900
 msgid "This group is already assigned to this block"
 msgstr "Este grupo ya está asignado a este bloque"
 
-#: front/wizard.form.php:132 src/Metademand.php:2442
+#: front/wizard.form.php:132 src/Metademand.php:2440
 msgid "This metademand cannot be used with this entity"
 msgstr ""
 
-#: src/Basketobject.php:95
+#: src/Basketobject.php:93
 msgid "This reference already exists"
 msgstr ""
 
@@ -2643,12 +2643,12 @@ msgstr ""
 msgid "Ticket"
 msgstr ""
 
-#: src/Metademand.php:3483
+#: src/Metademand.php:3481
 #, php-format
 msgid "Ticket \"%s\" successfully updated"
 msgstr ""
 
-#: src/TicketField.php:90 templates/ticketfield_form.html.twig:33
+#: src/TicketField.php:88 templates/ticketfield_form.html.twig:33
 msgid "Ticket field"
 msgid_plural "Ticket fields"
 msgstr[0] "Campo de ticket"
@@ -2663,7 +2663,7 @@ msgstr "Técnico del grupo de tickets de destino"
 msgid "Ticket technician of target tickets"
 msgstr "Técnico de tickets de destino"
 
-#: src/Fields/Time.php:57
+#: src/Fields/Time.php:54
 msgid "Time"
 msgstr ""
 
@@ -2672,7 +2672,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/Metademand.php:1193 templates/metademand.html.twig:214
+#: src/Metademand.php:1191 templates/metademand.html.twig:214
 msgid "Title color"
 msgstr "Color del título"
 
@@ -2680,16 +2680,16 @@ msgstr "Color del título"
 msgid "Title for Service Catalog widget"
 msgstr "Título del widget Catálogo de servicios"
 
-#: src/Ticket_Metademand.php:449
+#: src/Ticket_Metademand.php:447
 msgctxt "status"
 msgid "To close"
 msgstr "Para cerrar"
 
-#: src/MetademandValidation.php:668
+#: src/MetademandValidation.php:666
 msgid "To validate"
 msgstr "<div></div>"
 
-#: src/MetademandValidation.php:674
+#: src/MetademandValidation.php:672
 msgid "To validate without child"
 msgstr "Para validar sin niño"
 
@@ -2706,19 +2706,19 @@ msgstr "Se han cargado demasiados documentos%s. Por favor, corrija:%s"
 msgid "Tools"
 msgstr "Herramientas"
 
-#: src/Fields/Basket.php:211 src/Fields/Basket.php:219
-#: src/Fields/Basket.php:1571 src/Fields/Basket.php:1577
-#: src/Fields/Basket.php:1583 src/Fields/Basket.php:2312
-#: src/Fields/Basket.php:2319
+#: src/Fields/Basket.php:209 src/Fields/Basket.php:217
+#: src/Fields/Basket.php:1569 src/Fields/Basket.php:1575
+#: src/Fields/Basket.php:1581 src/Fields/Basket.php:2310
+#: src/Fields/Basket.php:2317
 msgid "Total"
 msgstr ""
 
-#: src/Fields/Basket.php:204 src/Fields/Basket.php:1566
-#: src/Fields/Basket.php:2081 src/Fields/Basket.php:2410
+#: src/Fields/Basket.php:202 src/Fields/Basket.php:1564
+#: src/Fields/Basket.php:2079 src/Fields/Basket.php:2408
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:142 src/Fields/Freetable.php:685
+#: src/Fields/Freetable.php:140 src/Fields/Freetable.php:683
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2742,7 +2742,7 @@ msgstr ""
 msgid "Translations: %s"
 msgstr ""
 
-#: src/Fields/Freetable.php:393 src/FieldOption.php:501
+#: src/Fields/Freetable.php:391 src/FieldOption.php:498
 #: templates/field_customvalue_form.html.twig:56
 #: templates/condition_list.html.twig:62
 #: templates/forms/freetablefield_fields_form.html.twig:38
@@ -2759,7 +2759,7 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/FieldOption.php:504
+#: src/FieldOption.php:501
 msgid "Type of value to check"
 msgstr ""
 
@@ -2770,13 +2770,13 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: src/Fields/Basket.php:182 src/Fields/Basket.php:1547
-#: src/Fields/Basket.php:2048 src/Fields/Basket.php:2403
+#: src/Fields/Basket.php:180 src/Fields/Basket.php:1545
+#: src/Fields/Basket.php:2046 src/Fields/Basket.php:2401
 msgid "Unit"
 msgstr ""
 
-#: src/Fields/Basket.php:185 src/Fields/Basket.php:1550
-#: src/Fields/Basket.php:2070 src/Fields/Basket.php:2406
+#: src/Fields/Basket.php:183 src/Fields/Basket.php:1548
+#: src/Fields/Basket.php:2068 src/Fields/Basket.php:2404
 msgid "Unit price (HT)"
 msgstr ""
 
@@ -2784,7 +2784,7 @@ msgstr ""
 msgid "Unknown table"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:538
+#: src/Fields/Dropdownmultiple.php:536
 msgid "Unselect all"
 msgstr ""
 
@@ -2793,7 +2793,7 @@ msgctxt "button"
 msgid "Update"
 msgstr ""
 
-#: src/Task.php:1075
+#: src/Task.php:1073
 msgctxt "button"
 msgid "Update block to use"
 msgstr "Bloque de actualización para utilizar"
@@ -2811,7 +2811,7 @@ msgstr "Actualice esta línea"
 msgid "Use a confirm popup check for empty values"
 msgstr ""
 
-#: src/Metademand.php:1227 templates/metademand.html.twig:194
+#: src/Metademand.php:1225 templates/metademand.html.twig:194
 msgid "Use as basket"
 msgstr "Utilizar como cesta"
 
@@ -2824,12 +2824,12 @@ msgstr "Utilizar bloque"
 msgid "Use drafts"
 msgstr "Usar borradores"
 
-#: src/Fields/Dropdownobject.php:805
+#: src/Fields/Dropdownobject.php:802
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:43
 msgid "Use id of requester by default"
 msgstr "Utilizar el id del solicitante predeterminado "
 
-#: src/Fields/Dropdownobject.php:806
+#: src/Fields/Dropdownobject.php:803
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:46
 msgid "Use id of supervisor requester by default"
 msgstr ""
@@ -2843,7 +2843,7 @@ msgstr "Utilizar texto enriquecido"
 msgid "Use this field as object field"
 msgstr "Utilizar este campo como campo objeto"
 
-#: src/Fields/Dropdownobject.php:787 src/Fields/Dropdownobject.php:862
+#: src/Fields/Dropdownobject.php:784 src/Fields/Dropdownobject.php:859
 #: templates/fields/field_parameter_dropdownmeta.html.twig:37
 #: templates/fields/field_parameter_date.html.twig:35
 #: templates/fields/field_parameter_dropdown.html.twig:37
@@ -2872,50 +2872,50 @@ msgstr "Usuario encargado del siguiente paso"
 msgid "User information to get"
 msgstr ""
 
-#: src/Step.php:1000
+#: src/Step.php:998
 msgctxt "button"
 msgid "Validate"
 msgstr "Validar"
 
-#: src/Profile.php:162
+#: src/Profile.php:160
 msgid "Validate a meta-demand"
 msgstr ""
 
-#: src/MetademandValidation.php:549
+#: src/MetademandValidation.php:547
 msgid "Validate metademands"
 msgstr "Validar metademandas"
 
-#: src/Fields/Freetable.php:336
+#: src/Fields/Freetable.php:334
 msgid "Validate the basket"
 msgstr ""
 
-#: src/MetademandValidation.php:676
+#: src/MetademandValidation.php:674
 msgid "Validate without child"
 msgstr "Validar sin niño"
 
-#: src/MetademandValidation.php:539
+#: src/MetademandValidation.php:537
 #, php-format
 msgid "Validated by %s on %s"
 msgstr "Validado por %sel%s"
 
-#: src/FieldOption.php:1168 src/FieldOption.php:1177
+#: src/FieldOption.php:1165 src/FieldOption.php:1174
 #: templates/ticketfield_list.html.twig:56
 #: templates/fields/field_customvalue_add.html.twig:39
 msgid "Value"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:973 src/Fields/Ldapdropdown.php:325
-#: src/Fields/Radio.php:365 src/Fields/Yesno.php:265
-#: src/Fields/Checkbox.php:338 src/Fields/Dropdown.php:622
-#: src/Fields/Dropdownmeta.php:1417 src/Fields/Basket.php:539
-#: src/Fields/Dropdownmultiple.php:753 src/FieldOption.php:505
-#: src/Condition.php:551 templates/condition_list.html.twig:64
+#: src/Fields/Dropdownobject.php:970 src/Fields/Ldapdropdown.php:323
+#: src/Fields/Radio.php:363 src/Fields/Yesno.php:262
+#: src/Fields/Checkbox.php:336 src/Fields/Dropdown.php:619
+#: src/Fields/Dropdownmeta.php:1415 src/Fields/Basket.php:537
+#: src/Fields/Dropdownmultiple.php:751 src/FieldOption.php:502
+#: src/Condition.php:549 templates/condition_list.html.twig:64
 #: templates/condition_form.html.twig:48 templates/field_list.html.twig:138
 #: templates/condition_for_metademand.html.twig:77
 msgid "Value to check"
 msgstr "Valor a comprobar"
 
-#: src/Metademand.php:6982 src/Tools.php:107
+#: src/Metademand.php:6980 src/Tools.php:107
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
@@ -2924,11 +2924,11 @@ msgstr ""
 msgid "Visibility"
 msgstr "Visibilidad"
 
-#: src/Step.php:560
+#: src/Step.php:558
 msgid "Visible by all"
 msgstr ""
 
-#: src/Fields/Information.php:128
+#: src/Fields/Information.php:125
 msgid "Warning"
 msgstr ""
 
@@ -2952,19 +2952,19 @@ msgstr ""
 msgid "What you want to do ?"
 msgstr "¿Qué quieres hacer?"
 
-#: src/Fields/Basket.php:481
+#: src/Fields/Basket.php:479
 msgid "With quantity"
 msgstr ""
 
-#: src/FieldOption.php:1330
+#: src/FieldOption.php:1327
 msgid "With this option, some assignment rules will not be respected."
 msgstr ""
 
-#: src/Fields/Basket.php:492
+#: src/Fields/Basket.php:490
 msgid "With unit price (HT)"
 msgstr ""
 
-#: src/Ticket_Field.php:59 src/Field.php:234
+#: src/Ticket_Field.php:57 src/Field.php:231
 msgid "Wizard creation"
 msgstr "Creación del asistente"
 
@@ -2972,7 +2972,7 @@ msgstr "Creación del asistente"
 msgid "Wizard overview"
 msgstr "Visión general del asistente"
 
-#: src/Fields/Yesno.php:63
+#: src/Fields/Yesno.php:60
 msgid "Yes / No"
 msgstr "Si/No"
 
@@ -2982,7 +2982,7 @@ msgid ""
 "form fields, making your life easier :)"
 msgstr ""
 
-#: src/FieldCustomvalue.php:654
+#: src/FieldCustomvalue.php:652
 msgid "You can't add a custom value without name"
 msgstr ""
 
@@ -2994,7 +2994,7 @@ msgstr ""
 msgid "You can't add a field without type"
 msgstr ""
 
-#: src/Fields/Freetable.php:179
+#: src/Fields/Freetable.php:177
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
@@ -3004,7 +3004,7 @@ msgstr ""
 "No se pueden añadir nuevas tareas si los tickets vinculados no están "
 "resueltos"
 
-#: src/Field.php:3239 src/Field.php:3256 src/Field.php:3276
+#: src/Field.php:3236 src/Field.php:3253 src/Field.php:3273
 msgid "You cannot do this for this field"
 msgstr ""
 
@@ -3030,7 +3030,7 @@ msgstr ""
 msgid "You don't have the right to update tickets"
 msgstr "No tiene derecho a actualizar los tickets"
 
-#: src/Task.php:444
+#: src/Task.php:442
 msgid "You don't have the ticket creation right"
 msgstr "Usted no tiene el derecho de creación de entradas"
 
@@ -3067,7 +3067,7 @@ msgstr "Debe seleccionar un campo"
 msgid "You have to select an item"
 msgstr "Debe seleccionar un elemento"
 
-#: src/Step.php:881 templates/forms/step_modal_supervisor.html.twig:44
+#: src/Step.php:879 templates/forms/step_modal_supervisor.html.twig:44
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 
@@ -3103,7 +3103,7 @@ msgstr ""
 "Su formulario será redirigido a otro grupo de personas que completarán la "
 "siguiente información."
 
-#: src/Step.php:872 templates/forms/step_modal_supervisor.html.twig:35
+#: src/Step.php:870 templates/forms/step_modal_supervisor.html.twig:35
 msgid "Your form will be validated by your supervisor"
 msgstr ""
 
@@ -3120,31 +3120,31 @@ msgstr "Sus modelos"
 msgid "Your private models"
 msgstr ""
 
-#: src/Fields/Signature.php:75
+#: src/Fields/Signature.php:72
 msgid "Your signature has been deleted"
 msgstr ""
 
-#: src/Fields/Signature.php:74
+#: src/Fields/Signature.php:71
 msgid "Your signature has been uploaded"
 msgstr ""
 
-#: src/Servicecatalog.php:73
+#: src/Servicecatalog.php:70
 msgid "advanced request"
 msgstr "solicitud avanzada"
 
-#: src/Fields/Link.php:124
+#: src/Fields/Link.php:121
 msgid "button"
 msgstr "botón"
 
-#: src/Metademand.php:1662
+#: src/Metademand.php:1660
 msgid "field add on demand"
 msgstr "Añadir campo a petición"
 
-#: src/Metademand.php:1666
+#: src/Metademand.php:1664
 msgid "field delete on demand"
 msgstr "supresión de campos a petición"
 
-#: src/Metademand.php:1664
+#: src/Metademand.php:1662
 msgid "field update on demand"
 msgstr "actualización de campo a petición"
 
