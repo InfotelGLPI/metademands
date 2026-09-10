@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 12:42+0000\n"
+"POT-Creation-Date: 2026-09-10 13:24+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -303,7 +303,7 @@ msgstr "Vincular al valor de esta casilla"
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:2023 src/Field.php:1097 src/Field.php:3089 src/Step.php:423
+#: src/Wizard.php:1901 src/Field.php:1097 src/Field.php:3089 src/Step.php:423
 #: src/Step.php:502 templates/field_search_form.html.twig:34
 #: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
@@ -360,12 +360,12 @@ msgstr ""
 msgid "Cancel / delete a form"
 msgstr ""
 
-#: src/Wizard.php:2163
+#: src/Wizard.php:1995
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
 
-#: src/Wizard.php:2320 src/Draft.php:456
+#: src/Draft.php:486 templates/wizard/form_draft_buttons.html.twig:52
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
@@ -442,6 +442,7 @@ msgstr "Vaciar la cesta"
 msgid "Click here for more informations"
 msgstr ""
 
+#: templates/wizard/form_confirm_modal.html.twig:39
 #: templates/task_form.html.twig:36 templates/ticketfield_form.html.twig:36
 #: templates/item_translations.html.twig:125
 #: templates/item_translation_row.html.twig:97
@@ -510,7 +511,7 @@ msgstr "Configurar demandas"
 msgid "Confirm the final deletion?"
 msgstr ""
 
-#: src/Wizard.php:2288
+#: templates/wizard/form_confirm_modal.html.twig:38
 msgid "Confirmation"
 msgstr ""
 
@@ -602,12 +603,12 @@ msgstr[0] "Fecha"
 msgstr[1] "Fecha"
 msgstr[2] "Fecha"
 
-#: src/Wizard.php:3511
+#: src/Wizard.php:3191
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3501
+#: src/Wizard.php:3181
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La fecha%s no puede ser inferior a la fecha de hoy"
@@ -704,7 +705,7 @@ msgctxt "button"
 msgid "Delete permanently"
 msgstr ""
 
-#: src/Wizard.php:2315
+#: templates/wizard/form_draft_buttons.html.twig:57
 msgid "Delete the draft"
 msgstr ""
 
@@ -851,7 +852,7 @@ msgstr "Hecho en"
 msgid "Double column display"
 msgstr "Visualización en doble columna"
 
-#: front/draftcreation.php:53 src/Draft.php:490 src/Draft.php:506
+#: front/draftcreation.php:53 src/Draft.php:520 src/Draft.php:536
 #: templates/forms/drafts_list.html.twig:55
 msgid "Draft name"
 msgstr "Nombre del proyecto"
@@ -954,7 +955,7 @@ msgstr "Operador de igualdad"
 msgid "Error assigning to next group"
 msgstr "Error al asignar al siguiente grupo"
 
-#: ajax/export_metademand.php:99
+#: ajax/export_metademand.php:110
 msgid "Error when creating export archive"
 msgstr ""
 
@@ -1017,7 +1018,7 @@ msgstr "Campo del padre"
 msgid "Field"
 msgstr "Campo"
 
-#: src/Wizard.php:3562
+#: src/Wizard.php:3242
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -1606,7 +1607,7 @@ msgstr ""
 msgid "Need validation to create subticket"
 msgstr "Necesita validación para crear subticket"
 
-#: front/draft.php:38 front/draftcreation.php:52
+#: front/draft.php:42 front/draftcreation.php:52
 #: templates/forms/drafts_list.html.twig:45
 msgid "New draft"
 msgstr "Nuevo proyecto"
@@ -1628,7 +1629,8 @@ msgstr "Nuevo modelo"
 #: src/Fields/Dropdownmultiple.php:1120 src/Fields/Dropdownmultiple.php:1293
 #: src/Wizard.php:1155 src/Wizard.php:1413 src/Wizard.php:1554
 #: src/Wizard.php:1563 src/Wizard.php:1603 src/Wizard.php:1609
-#: src/Wizard.php:2174 src/Wizard.php:2177 src/FieldOption.php:2139
+#: src/FieldOption.php:2139 templates/wizard/form_nav_buttons.html.twig:52
+#: templates/wizard/form_nav_buttons.html.twig:55
 msgid "Next"
 msgstr "Siguiente"
 
@@ -1650,6 +1652,10 @@ msgstr "Próximas tickets"
 #: templates/forms/stepform_list_from_metademand.html.twig:34
 msgid "Next user in charge of demand"
 msgstr "Siguiente usuario a cargo de la demanda"
+
+#: templates/wizard/form_confirm_modal.html.twig:45
+msgid "No"
+msgstr ""
 
 #: templates/condition_list.html.twig:37
 msgid "No conditions founded"
@@ -1939,15 +1945,16 @@ msgstr "Configuración del plugin"
 msgid "Pool"
 msgstr "Pool"
 
-#: src/Wizard.php:2171 templates/wizard_metademands.html.twig:65
+#: templates/wizard/form_nav_buttons.html.twig:49
+#: templates/wizard_metademands.html.twig:65
 msgid "Previous"
 msgstr "Anterior"
 
-#: src/Wizard.php:2245
+#: src/Wizard.php:2037
 msgid "Previous data edited"
 msgstr "Datos anteriores editados"
 
-#: src/Wizard.php:2216
+#: src/Wizard.php:2030
 msgid "Previous user"
 msgstr "Usuario anterior"
 
@@ -2165,7 +2172,7 @@ msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Guardar y enviar a otro usuario / grupo"
 
-#: src/Draft.php:454 src/Draft.php:493 templates/forms/drafts_list.html.twig:58
+#: src/Draft.php:484 src/Draft.php:523 templates/forms/drafts_list.html.twig:58
 msgctxt "button"
 msgid "Save as draft"
 msgstr "Guardar como proyecto"
@@ -2231,7 +2238,7 @@ msgstr "Ver formulario"
 msgid "See top metademands"
 msgstr ""
 
-#: src/Wizard.php:1820
+#: src/Wizard.php:1822
 msgctxt "button"
 msgid "See your basket"
 msgstr ""
@@ -2697,7 +2704,7 @@ msgstr "Para validar sin niño"
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3550
+#: src/Wizard.php:3230
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Se han cargado demasiados documentos%s. Por favor, corrija:%s"
@@ -2804,7 +2811,7 @@ msgctxt "button"
 msgid "Update block to use"
 msgstr "Bloque de actualización para utilizar"
 
-#: src/Wizard.php:2311
+#: templates/wizard/form_draft_buttons.html.twig:54
 msgid "Update the draft"
 msgstr ""
 
@@ -2979,11 +2986,15 @@ msgstr "Creación del asistente"
 msgid "Wizard overview"
 msgstr "Visión general del asistente"
 
+#: templates/wizard/form_confirm_modal.html.twig:46
+msgid "Yes"
+msgstr ""
+
 #: src/Fields/Yesno.php:60
 msgid "Yes / No"
 msgstr "Si/No"
 
-#: src/Wizard.php:2543
+#: src/Wizard.php:2223
 msgid ""
 "You are using a public template. This allows you to automatically pre-fill "
 "form fields, making your life easier :)"
@@ -3027,7 +3038,7 @@ msgstr "No tiene acceso al formulario"
 msgid "You don't have the right to create meta-demand"
 msgstr "No tienes derecho a crear meta-demanda"
 
-#: src/Wizard.php:2130
+#: src/Wizard.php:1976
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -3058,11 +3069,11 @@ msgstr "Usted tiene%s"
 msgid "You have duplicates rank!"
 msgstr ""
 
-#: src/Wizard.php:1816
+#: templates/wizard/form_basket_alert.html.twig:37
 msgid "You have items on your basket"
 msgstr "Tienes artículos en tu cesta"
 
-#: src/Wizard.php:1542 src/Wizard.php:2292
+#: src/Wizard.php:1542 templates/wizard/form_confirm_modal.html.twig:42
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
@@ -3090,7 +3101,7 @@ msgstr ""
 msgid "Your created forms"
 msgstr "Sus formularios creados"
 
-#: front/draft.form.php:37 front/draft.php:35 front/draftcreation.php:50
+#: front/draft.form.php:37 front/draft.php:39 front/draftcreation.php:50
 #: src/Wizard.php:463 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr "Sus proyectos"
@@ -3155,7 +3166,7 @@ msgstr "supresión de campos a petición"
 msgid "field update on demand"
 msgstr "actualización de campo a petición"
 
-#: front/draftcreation.php:54 src/Stepform.php:793 src/Draft.php:248
+#: front/draftcreation.php:54 src/Stepform.php:793 src/Draft.php:278
 msgid "form"
 msgid_plural "forms"
 msgstr[0] "formulario"
