@@ -339,11 +339,7 @@ class Freetable extends CommonDBTM
     {
         $custom_values = $params['custom_values'];
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        $maxrank = 0;
-
-        $nbfields = 0;
+        $nbfields     = 0;
         $field_custom = new MetaFreetablefield();
         if ($customs = $field_custom->find(
             ["plugin_metademands_fields_id" => $params['plugin_metademands_fields_id']],
@@ -354,162 +350,115 @@ class Freetable extends CommonDBTM
             }
         }
 
+        $fields_id = $params['plugin_metademands_fields_id'] ?? 0;
+        $maxrank   = 0;
+        $entries   = [];
+
+        // Only the input widgets are still built here: they come from framework helpers
+        // (Html::input(), Dropdown::*, Html::getSimpleForm()) which escape their own output.
+        // Every other value is handed to the template atomically and Twig escapes it.
         if (is_array($custom_values) && !empty($custom_values)) {
-            echo "<div id='drag'>";
-            $target = MetaFreetablefield::getFormURL();
-            echo "<form method='post' action=\"$target\">";
-            echo "<table class='tab_cadre_fixe'>";
-            $reorder_url = PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php';
-            $md_params   = htmlspecialchars(json_encode([
-                'field_id' => $params['plugin_metademands_fields_id'] ?? '',
-                'type'     => $params['type'] ?? 'freetable',
-            ]), ENT_QUOTES);
-            echo "<tbody data-md-sortable data-md-url='$reorder_url' data-md-params='$md_params'>";
             foreach ($custom_values as $key => $value) {
-                echo "<tr class='tab_bg_1' data-md-order='" . $value['rank'] . "'>";
-
-                echo "<td class='rowhandler control center'>";
-                echo __('Rank', 'metademands') . " " . $value['rank'] . " ";
-                if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden(
-                        'fields_id',
-                        ['value' => $params["plugin_metademands_fields_id"], 'id' => 'fields_id'],
+                $dropdown_values_tooltip  = '';
+                $dropdown_values_textarea = '';
+                if ($value['type'] == MetaFreetablefield::TYPE_SELECT) {
+                    $dropdown_values_tooltip = Html::showToolTip(
+                        RichText::getSafeHtml(__('One value by line, separated by comma', 'metademands')),
+                        ['awesome-class' => 'ti ti-info-circle', 'display' => false],
                     );
-                    echo Html::hidden('type_object', ['value' => $params["type"], 'id' => 'type_object']);
-                }
-                echo "</td>";
-
-                echo "<td class='rowhandler control left'>";
-                echo "<span id='internal_name_values$key'>";
-                echo " " . __('Internal name', 'metademands') . " ";
-                echo Html::input('internal_name[' . $key . ']', ['value' => $value['internal_name'], 'size' => 20]);
-                echo "</span>";
-                echo "</td>";
-
-                echo "<td class='rowhandler control left'>";
-                echo "<span id='type_values$key'>";
-                echo " " . __('Type', 'metademands') . "<br>";
-                \Dropdown::showFromArray(
-                    'type[' . $key . ']',
-                    MetaFreetablefield::getTypeFields(),
-                    ['value' => $value['type'], 'size' => 20],
-                );
-                echo "</span>";
-                echo "</td>";
-
-                echo "<td class='rowhandler control left'>";
-                echo "<span id='custom_values$key'>";
-                echo " " . __('Display name', 'metademands') . " ";
-                echo Html::input('name[' . $key . ']', ['value' => $value['name'], 'size' => 20]);
-                echo "</span>";
-                echo "</td>";
-
-                if ($value['type'] == MetaFreetablefield::TYPE_TEXT) {
-                    echo "<td class='rowhandler control left'>";
-                    echo "<span id='comment_values$key'>";
-                    echo __('Comment') . " ";
-                    echo Html::input('comment[' . $key . ']', ['value' => $value['comment'], 'size' => 20]);
-                    echo "</span>";
-                    echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
-                    echo "</td>";
-                } elseif ($value['type'] == MetaFreetablefield::TYPE_SELECT) {
-                    echo "<td class='rowhandler control left'>";
-                    echo "<span id='dropdown_values$key'>";
-                    echo " " . __('Dropdown values', 'metademands') . " ";
-                    $label = __('One value by line, separated by comma', 'metademands');
-                    Html::showToolTip(
-                        RichText::getSafeHtml($label),
-                        ['awesome-class' => 'ti ti-info-circle'],
-                    );
-                    Html::textarea([
-                        'name' => 'dropdown_values[' . $key . ']',
-                        'value' => $value['dropdown_values'],
-                        'rows' => 3,
-                        'cols' => 5,
+                    $dropdown_values_textarea = Html::textarea([
+                        'name'    => 'dropdown_values[' . $key . ']',
+                        'value'   => $value['dropdown_values'],
+                        'rows'    => 3,
+                        'cols'    => 5,
+                        'display' => false,
                     ]);
-                    echo "</span>";
-                    echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
-                    echo "</td>";
-                } elseif ($value['type'] == MetaFreetablefield::TYPE_NUMBER
-                    || $value['type'] == MetaFreetablefield::TYPE_DATE
-                    || $value['type'] == MetaFreetablefield::TYPE_TIME) {
-                    echo "<td class='rowhandler control left'>";
-                    echo Html::hidden('comment[' . $key . ']', ['value' => ""]);
-                    echo Html::hidden('dropdown_values[' . $key . ']', ['value' => []]);
-                    echo "</td>";
                 }
 
-                echo "<td class='rowhandler control left'>";
-                echo "<span id='is_mandatory_values$key'>";
-                echo __('Mandatory', 'metademands') . "<br>";
-                \Dropdown::showYesNo('is_mandatory[' . $key . ']', $value['is_mandatory']);
-                echo "</span>";
-                echo "</td>";
-
-                echo "<td class='rowhandler control center'>";
-                echo "<div class=\"drag row md-sort-handle\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                echo "<i class=\"ti ti-grip-horizontal grip-rule\"></i>";
-                echo "</div>";
-                echo "</td>";
-
-                echo "<td class='rowhandler control center'>";
-                echo Html::hidden('id[' . $key . ']', ['value' => $key]);
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
-                ]);
-                echo "</td>";
-
-                echo "<td class='rowhandler control center'>";
-                Html::showSimpleForm(
-                    $target,
-                    'delete',
-                    _x('button', 'Delete permanently'),
-                    [
-                        'freetablefield_id' => $key,
-                        'rank' => $value['rank'],
-                        'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
-                    ],
-                    'ti-circle-x',
-                    "class='btn btn-primary'",
-                );
-                echo "</td>";
-
-                echo "</tr>";
+                $entries[] = [
+                    'key'                      => $key,
+                    'rank'                     => $value['rank'],
+                    'type'                     => $value['type'],
+                    'internal_name_input'      => Html::input(
+                        'internal_name[' . $key . ']',
+                        ['value' => $value['internal_name'], 'size' => 20],
+                    ),
+                    'type_dropdown'            => \Dropdown::showFromArray(
+                        'type[' . $key . ']',
+                        MetaFreetablefield::getTypeFields(),
+                        ['value' => $value['type'], 'size' => 20, 'display' => false],
+                    ),
+                    'name_input'               => Html::input(
+                        'name[' . $key . ']',
+                        ['value' => $value['name'], 'size' => 20],
+                    ),
+                    'comment_input'            => Html::input(
+                        'comment[' . $key . ']',
+                        ['value' => $value['comment'], 'size' => 20],
+                    ),
+                    'dropdown_values_tooltip'  => $dropdown_values_tooltip,
+                    'dropdown_values_textarea' => $dropdown_values_textarea,
+                    'hidden_comment'           => Html::hidden('comment[' . $key . ']', ['value' => ""]),
+                    'hidden_dropdown_values'   => Html::hidden('dropdown_values[' . $key . ']', ['value' => []]),
+                    'is_mandatory_dropdown'    => \Dropdown::showYesNo(
+                        'is_mandatory[' . $key . ']',
+                        $value['is_mandatory'],
+                        -1,
+                        ['display' => false],
+                    ),
+                    'hidden_id'                => Html::hidden('id[' . $key . ']', ['value' => $key]),
+                    'submit'                   => Html::submit("", [
+                        'name'  => 'update',
+                        'class' => 'btn btn-primary',
+                        'icon'  => 'ti ti-device-floppy',
+                    ]),
+                    'delete_form'              => Html::getSimpleForm(
+                        MetaFreetablefield::getFormURL(),
+                        'delete',
+                        _x('button', 'Delete permanently'),
+                        [
+                            'freetablefield_id'            => $key,
+                            'rank'                         => $value['rank'],
+                            'plugin_metademands_fields_id' => $fields_id,
+                        ],
+                        'ti-circle-x',
+                        "class='btn btn-primary'",
+                    ),
+                ];
 
                 $maxrank = $value['rank'];
             }
-            echo "</tbody>";
-            echo Html::hidden('plugin_metademands_fields_id', ['value' => $params['plugin_metademands_fields_id']]);
-            echo "</table>";
-            Html::closeForm();
-            echo "</div>";
-
-            if ($nbfields < 6) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td colspan='4' align='left' id='show_custom_fields'>";
-                MetaFreetablefield::initCustomValue(
-                    $maxrank,
-                    $params["plugin_metademands_fields_id"],
-                );
-                echo "</td>";
-                echo "</tr>";
-            }
-        } else {
-            if ($nbfields < 6) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td align='right'  id='show_custom_fields'>";
-                if (isset($params['plugin_metademands_fields_id'])) {
-                    echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                }
-                MetaFreetablefield::initCustomValue(-1, $params["plugin_metademands_fields_id"]);
-                echo "</td>";
-                echo "</tr>";
-            }
         }
-        echo "</td>";
-        echo "</tr>";
+
+        $init_custom_value = '';
+        if ($nbfields < 6) {
+            ob_start();
+            MetaFreetablefield::initCustomValue(
+                count($entries) > 0 ? $maxrank : -1,
+                $fields_id,
+            );
+            $init_custom_value = ob_get_clean();
+        }
+
+        echo TemplateRenderer::getInstance()->render('@metademands/fields/freetable_fields.html.twig', [
+            'entries'           => $entries,
+            'fields_id'         => $fields_id,
+            'has_fields_id'     => isset($params['plugin_metademands_fields_id']),
+            'type_object'       => $params['type'] ?? 'freetable',
+            'target'            => MetaFreetablefield::getFormURL(),
+            'reorder_url'       => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
+            'reorder_params'    => json_encode([
+                'field_id' => $params['plugin_metademands_fields_id'] ?? '',
+                'type'     => $params['type'] ?? 'freetable',
+            ]),
+            'init_custom_value' => $init_custom_value,
+            'show_init'         => $nbfields < 6,
+            'type_text'         => MetaFreetablefield::TYPE_TEXT,
+            'type_select'       => MetaFreetablefield::TYPE_SELECT,
+            'type_number'       => MetaFreetablefield::TYPE_NUMBER,
+            'type_date'         => MetaFreetablefield::TYPE_DATE,
+            'type_time'         => MetaFreetablefield::TYPE_TIME,
+        ]);
     }
 
     /**

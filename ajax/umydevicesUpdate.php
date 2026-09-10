@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
@@ -92,15 +93,14 @@ $rand = mt_rand();
 // user's hardware inventory by iterating users_id.
 $requested_users_id = (int) ($_POST['users_id'] ?? 0);
 if ($requested_users_id <= 0
-    || !\GlpiPlugin\Metademands\Config::canCurrentUserViewRequester($requested_users_id)) {
+    || !Config::canCurrentUserViewRequester($requested_users_id)) {
     $requested_users_id = (int) Session::getLoginUserID();
 }
 $_POST['users_id'] = $requested_users_id;
 
-// [S3] Constrain the reflected form field name to the charset a name attribute
-// may safely contain (letters, digits, underscore, brackets), so a crafted
-// $_POST['field'] cannot break out of the attribute (reflected XSS).
-$_POST['field'] = preg_replace('/[^A-Za-z0-9_\[\]]/', '', (string) ($_POST['field'] ?? ''));
+// [S3] Normalize the reflected form field name: it is echoed back as the name attribute
+// of the dropdown rendered below (shared rule for the whole u*Update.php family).
+$_POST['field'] = Config::normalizePostedFieldName($_POST['field'] ?? '');
 
 $p = [
     'rand' => "",

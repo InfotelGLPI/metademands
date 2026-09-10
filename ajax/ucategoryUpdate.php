@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Fields\Dropdown;
@@ -86,10 +87,9 @@ if (isset($_POST['fields_id'])
     $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
-// [S3] Constrain the reflected form field name to the charset a name attribute
-// may safely contain (letters, digits, underscore, brackets), so a crafted
-// $_POST['field'] cannot break out of the attribute (reflected XSS).
-$_POST['field'] = preg_replace('/[^A-Za-z0-9_\[\]]/', '', (string) ($_POST['field'] ?? ''));
+// [S3] Normalize the reflected form field name: it is echoed back as the name attribute
+// of the dropdown rendered below (shared rule for the whole u*Update.php family).
+$_POST['field'] = Config::normalizePostedFieldName($_POST['field'] ?? '');
 
 $opt = ['name' => $_POST['field'],
     'value' => $val,

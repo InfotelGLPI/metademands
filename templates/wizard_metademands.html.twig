@@ -1,0 +1,70 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class="md-basket-wizard"></div>
+
+<div class="md-wizard">
+    {% if has_data %}
+        {# Form fragment built by the legacy constructForm() chain #}
+        {{ forms|raw }}
+
+        {% if show_actions %}
+            <div class="row" style="width: 100%;">
+                <div class="bt-feature col-md-12"{% if actions_margin %} style="margin-top: 20px"{% endif %}>
+                    {{ call('Html::hidden', ['metademands_id', {'value': metademands_id}])|raw }}
+                </div>
+            </div>
+        {% endif %}
+
+        {{ call('Html::hidden', ['create_metademands', {'value': 1}])|raw }}
+
+        {% if ancestor_tickets_id is not null %}
+            {{ call('Html::hidden', ['ancestor_tickets_id', {'value': ancestor_tickets_id}])|raw }}
+        {% endif %}
+
+        {% if show_print %}
+            <br>
+            <a href="#" class="metademand_middle_button" onclick="window.print();return false;">
+                <i style="font-size:2em;color:#e3e0e0;" class="ti fa-printer"></i>
+            </a>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% if not has_data %}
+    <div class="center first-bloc">
+        <div class="row">
+            <div class="bt-feature col-md-12">{{ __('No results found') }}</div>
+        </div>
+        <div class="row">
+            <div class="bt-feature col-md-12">
+                {{ call('Html::submit', [__('Previous'), {'name': 'previous', 'class': 'btn btn-primary'}])|raw }}
+                {{ call('Html::hidden', ['previous_metademands_id', {'value': metademands_id}])|raw }}
+            </div>
+        </div>
+    </div>
+{% endif %}

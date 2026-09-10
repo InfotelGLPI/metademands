@@ -283,8 +283,16 @@ class Freetablefield extends CommonDBChild
         $type_name    = '';
         $example_html = '';
         if ($show_info) {
-            $type_name    = Field::getFieldTypesName($params["type"]);
-            $example_html = Field::getFieldInput([], $params, false, 0, 0, false, "");
+            $type_name = Field::getFieldTypesName($params["type"]);
+            // getFieldInput() echoes the widget internally but the parent_field case returns
+            // a string: capture both, otherwise the example is printed at the top of the page
+            // instead of landing in the "Field informations" table.
+            ob_start();
+            $example_ret  = Field::getFieldInput([], $params, false, 0, 0, false, "");
+            $example_html = ob_get_clean();
+            if (is_string($example_ret)) {
+                $example_html .= $example_ret;
+            }
         }
 
         TemplateRenderer::getInstance()->display('@metademands/forms/freetablefield_fields_form.html.twig', [

@@ -35,8 +35,135 @@
     </div>
 {% else %}
 
-    {{ ajax_html|raw }}
+    {% set colspan = is_parent_field ? 3 : 13 %}
 
-    {{ options_list_html|raw }}
+    {% if canedit %}
+        <div class="modal fade" id="{{ modal_id }}" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="{{ modal_title_id }}"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="{{ viewoption_id }}" style="overflow-y:auto;max-height:120vh;"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if scripts is not empty %}
+        <script type="text/javascript">{{ scripts|raw }}</script>
+    {% endif %}
+
+    {% if canedit %}
+        <div class="center">
+            <a class="submit btn btn-primary" href="javascript:{{ add_fn }}();">
+                {{ __('Add a new option', 'metademands') }}
+            </a>
+        </div>
+        <br>
+    {% endif %}
+
+    {% if entries|length > 0 %}
+        <div class="left">
+            {% if canedit %}
+                {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+                {{ call('Html::showMassiveActions', [{
+                    'item': itemtype,
+                    'container': mass_container,
+                    'display': false
+                }])|raw }}
+            {% endif %}
+
+            <table class="tab_cadre_fixehov">
+                <tr class="tab_bg_2">
+                    <th colspan="{{ colspan }}">{{ __("List of options", 'metademands') }}</th>
+                </tr>
+                <tr>
+                    {% if canedit %}
+                        <th width="{{ colspan }}">
+                            {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
+                        </th>
+                    {% endif %}
+                    <th>{{ __('ID') }}</th>
+                    {% if is_parent_field %}
+                        <th>{{ __('Type', 'metademands') }}</th>
+                        <th>{{ __('Field name', 'metademands') }}</th>
+                    {% else %}
+                        <th>{{ __('Type of value to check', 'metademands') }}</th>
+                        <th>{{ __('Value to check', 'metademands') }}</th>
+                        <th>{{ __('Launch a task with the field', 'metademands') }}</th>
+                        <th>{{ __('Assign the ticket to these technicians groups', 'metademands') }}</th>
+                        <th>{{ __('Make this field mandatory', 'metademands') }}</th>
+                        <th>{{ __('Display this hidden field', 'metademands') }}</th>
+                        <th>{{ __('Display this hidden block', 'metademands') }}</th>
+                        <th>{{ __('Display this hidden block in the same block', 'metademands') }}</th>
+                        <th>{{ __('Childs blocks', 'metademands') }}</th>
+                        <th>{{ __('Launch a validation', 'metademands') }}</th>
+                        <th>{{ __('Bind to the value of this checkbox', 'metademands') }}</th>
+                    {% endif %}
+                </tr>
+
+                {% for entry in entries %}
+                    {% set cell_attrs %}{% if entry.edit_fn is not empty %}style="cursor:pointer" onclick="{{ entry.edit_fn }}();"{% endif %}{% endset %}
+                    <tr class="tab_bg_1">
+                        {% if canedit %}
+                            <td class="center">
+                                {{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}
+                            </td>
+                        {% endif %}
+
+                        <td {{ cell_attrs|raw }}>{{ entry.id }}</td>
+
+                        <td {{ cell_attrs|raw }}>{{ entry.type_of_value }}</td>
+
+                        {# Fragment assembled by the shared value-to-check templates #}
+                        <td {{ cell_attrs|raw }}>{{ entry.value_to_check|raw }}</td>
+
+                        {% if not is_parent_field %}
+                            <td {{ cell_attrs|raw }}>{{ entry.task_name }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.assign_tech_groups|join(', ') }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.fields_link }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.hidden_link }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.hidden_block }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.hidden_block_same_block }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.childs_blocks|join(', ') }}</td>
+
+                            <td {{ cell_attrs|raw }}>{{ entry.users_id_validate }}</td>
+
+                            <td {{ cell_attrs|raw }}>
+                                {{ entry.checkbox_name }}
+                                {% if entry.checkbox_value is not empty %}
+                                    <br>{{ entry.checkbox_value }}
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+
+            {% if canedit %}
+                {{ call('Html::showMassiveActions', [{
+                    'item': itemtype,
+                    'container': mass_container,
+                    'ontop': false,
+                    'display': false
+                }])|raw }}
+                {{ call('Html::closeForm', [false])|raw }}
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="center first-bloc">
+            <table class="tab_cadre_fixe">
+                <tr class="tab_bg_1"><td class="center">{{ __('No results found') }}</td></tr>
+            </table>
+        </div>
+    {% endif %}
 
 {% endif %}

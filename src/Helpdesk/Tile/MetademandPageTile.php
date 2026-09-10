@@ -204,7 +204,9 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
         // Dropping the table does not clean up the core rows that point at it: the helpdesk
         // scenes would keep dangling Item_Tile entries (and their translations) referencing a
         // class that no longer exists. Purge them before the table goes away.
-        (new Item_Tile())->deleteByCriteria(['itemtype' => self::class], true);
+        // Item_Tile is a CommonDBRelation: its tile side is itemtype_tile/items_id_tile
+        // (Item_Tile::$itemtype_2), the table carries no plain itemtype column.
+        (new Item_Tile())->deleteByCriteria(['itemtype_tile' => self::class], true);
         (new HelpdeskTranslation())->deleteByCriteria(['itemtype' => self::class], true);
 
         $DB->dropTable($table, true);

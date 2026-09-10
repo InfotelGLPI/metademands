@@ -858,55 +858,6 @@ class Ticket extends CommonDBTM
     }
 
     /**
-     * @param $params
-     *
-     * @return true
-     */
-    public static function uploadTicketDocument($params)
-    {
-        $document_name = addslashes($params['name']);
-
-        $filename = tempnam(GLPI_DOC_DIR . '/_tmp', 'PWS');
-        $toupload = self::uploadDocument($params, $filename, $document_name);
-
-        return $toupload;
-    }
-
-    /**
-     * This method manage upload of files into GLPI
-     *
-     * @param $params parameters
-     * @param $filename name of the file on the filesystem
-     * @param $document_name name of the document into glpi
-     *
-     * @return array or an Error
-     */
-    public static function uploadDocument($params, $filename, $document_name)
-    {
-        $files   = [];
-        $content = null;
-
-        if (isset($params['base64'])) {
-            $content = base64_decode($params['base64']);
-            if (!$content) {
-                Session::addMessageAfterRedirect(__('Failed to send the file (probably too large)'), false, ERROR);
-            }
-            $files['name'] = basename($document_name);
-        }
-
-        $splitter  = explode(".", $filename);
-        $splitter2 = explode(".", basename($files['name']));
-
-        $filename = $splitter[0] . "." . $splitter2[1];
-
-        @file_put_contents($filename, $content);
-
-        $files['tmp_name'] = "/" . basename($filename);
-
-        return $files;
-    }
-
-    /**
      * @param        $tickets_id
      * @param        $itilActorType
      * @param string $type

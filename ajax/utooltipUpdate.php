@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -71,7 +72,7 @@ if (isset($_POST['users_id']) && (int) $_POST["users_id"] > 0) {
     $user_tooltip = new User();
     if (
         ($user_id === $my_supervisor
-            || \GlpiPlugin\Metademands\Config::canCurrentUserViewRequester($user_id))
+            || Config::canCurrentUserViewRequester($user_id))
         && $user_tooltip->getFromDB($user_id)
     ) {
         $display = "alert-info";

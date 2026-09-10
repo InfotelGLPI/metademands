@@ -398,323 +398,232 @@ class FieldOption extends CommonDBChild
             }
         }
 
-        $ajax_html = '';
-        $options_list_html = '';
+        $modal_id        = "modal_fieldoption_" . $item->getID() . $rand;
+        $modal_title_id  = "modal_title_" . $item->getID() . $rand;
+        $viewoption_id   = "viewoption" . $item->getID() . $rand;
+        $mass_container  = 'massfieldoption' . $rand;
+        $show_modal_fn   = "showFieldOptionModal" . $item->getID() . $rand;
+        $add_fn          = "addOption" . $item->getID() . $rand;
+        $is_parent_field = ($item->fields['type'] == "parent_field");
+        $viewsubitem_url = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
+
+        // The JS bodies wrap Ajax::updateItemJsCode(), a framework helper, so they are built
+        // here and merely printed by the template: every value displayed in the table below
+        // is handed over atomically and stays autoescaped by Twig.
+        $scripts = [];
+        $entries = [];
 
         if ($allowed && !$link_to_user) {
             if ($canedit) {
-                $modal_id = "modal_fieldoption_" . $item->getID() . $rand;
+                $scripts[] = "function " . $show_modal_fn . "() {"
+                    . "bootstrap.Modal.getOrCreateInstance(document.getElementById('" . $modal_id . "')).show();"
+                    . "}";
 
-                ob_start();
-                echo "<div class='modal fade' id='" . $modal_id . "' tabindex='-1'>";
-                echo "<div class='modal-dialog modal-xl'>";
-                echo "<div class='modal-content'>";
-                $modal_title_id = "modal_title_" . $item->getID() . $rand;
-                echo "<div class='modal-header'>";
-                echo "<h5 class='modal-title' id='" . $modal_title_id . "'></h5>";
-                echo "<button type='button' class='btn-close' data-bs-dismiss='modal'></button>";
-                echo "</div>";
-                echo "<div class='modal-body' id='viewoption" . $item->getID() . "$rand' style='overflow-y:auto;max-height:120vh;'></div>";
-                echo "</div></div></div>";
+                $scripts[] = "function " . $add_fn . "() {"
+                    . "document.getElementById('" . $modal_title_id . "').textContent = "
+                    . json_encode(__('Add a new option', 'metademands'), JSON_HEX_TAG | JSON_HEX_AMP) . ";"
+                    . $show_modal_fn . "();"
+                    . Ajax::updateItemJsCode(
+                        $viewoption_id,
+                        $viewsubitem_url,
+                        [
+                            'type'                      => self::class,
+                            'parenttype'                => get_class($item),
+                            $item->getForeignKeyField() => $item->getID(),
+                            'id'                        => -1,
+                        ],
+                        "",
+                        false,
+                    )
+                    . ";}";
 
-                echo "<script type='text/javascript'>\n";
-
-                echo "function showFieldOptionModal" . $item->getID() . "$rand() {\n";
-                echo "  bootstrap.Modal.getOrCreateInstance(document.getElementById('" . $modal_id . "')).show();\n";
-                echo "}\n";
-
-                echo "function addOption" . $item->getID() . "$rand() {\n";
-                echo "  document.getElementById('" . $modal_title_id . "').textContent = '" . addslashes(__('Add a new option', 'metademands')) . "';\n";
-                echo "  showFieldOptionModal" . $item->getID() . "$rand();\n";
-                $params = [
-                    'type' => FieldOption::class,
-                    'parenttype' => get_class($item),
+                // Itemtypes go through json_encode so their namespace separators reach the
+                // browser correctly instead of being hand-escaped in a JS string literal.
+                $reload_params = json_encode([
+                    'type'                      => self::class,
+                    'parenttype'                => Field::class,
                     $item->getForeignKeyField() => $item->getID(),
-                    'id' => -1,
-                ];
-                Ajax::updateItemJsCode(
-                    "viewoption" . $item->getID() . "$rand",
-                    $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                    $params,
-                );
-                echo ";\n}\n";
+                ], JSON_HEX_TAG | JSON_HEX_AMP);
 
-                echo "function reloadviewOption(value) {\n";
-                echo "  showFieldOptionModal" . $item->getID() . "$rand();\n";
-                echo "  $('#viewoption" . $item->getID() . $rand . "')
-                        .load('" . $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php',{
-                        'type':'GlpiPlugin\\\Metademands\\\FieldOption',
-                        'parenttype':'GlpiPlugin\\\Metademands\\\Field',"
-                        . $item->getForeignKeyField() . ":" . $item->getID() . ",
-                        id:value[0],
-                        check_value : value[1],
-                        plugin_metademands_tasks_id : value[2],
-                        fields_link : value[3],
-                        hidden_link : value[4],
-                        hidden_block : value[5],
-                        childs_blocks : value[6],
-                        users_id_validate : value[7],
-                        checkbox_id : value[8],
-                        check_type_value : value[9],
-                        assign_tech_group : value[10],
-                        }
-                    );\n";
-                echo "}\n";
-
-                echo "</script>\n";
-
-                echo "<div class='center'>"
-                    . "<a class='submit btn btn-primary' href='javascript:addOption"
-                     . $item->getID() . "$rand();'>" . __('Add a new option', 'metademands')
-                    . "</a></div><br>";
-                $ajax_html = ob_get_clean();
+                $scripts[] = "function reloadviewOption(value) {"
+                    . $show_modal_fn . "();"
+                    . "$('#" . $viewoption_id . "').load("
+                    . json_encode($viewsubitem_url, JSON_HEX_TAG | JSON_HEX_AMP) . ", "
+                    . "Object.assign(" . $reload_params . ", {"
+                    . "id: value[0],"
+                    . "check_value: value[1],"
+                    . "plugin_metademands_tasks_id: value[2],"
+                    . "fields_link: value[3],"
+                    . "hidden_link: value[4],"
+                    . "hidden_block: value[5],"
+                    . "childs_blocks: value[6],"
+                    . "users_id_validate: value[7],"
+                    . "checkbox_id: value[8],"
+                    . "check_type_value: value[9],"
+                    . "assign_tech_group: value[10]"
+                    . "}));"
+                    . "}";
             }
 
-            $self = new self();
+            $self    = new self();
             $options = $self->find(['plugin_metademands_fields_id' => $item->getID()]);
 
-            ob_start();
-            if (is_array($options) && count($options) > 0) {
-                if ($canedit) {
-                    Html::openMassiveActionsForm('massfieldoption' . $rand);
-                    $massiveactionparams = ['container' => 'massfieldoption' . $rand];
-                    Html::showMassiveActions($massiveactionparams);
-                }
+            foreach ($options as $data) {
+                $data['item'] = $item->fields['item'];
+                $data['type'] = $item->fields['type'];
 
-                $colspan = 13;
-                if ($item->fields['type'] == "parent_field") {
-                    $colspan = 3;
-                }
-                echo "<div class='left'>";
-                echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-                echo "<th colspan='$colspan'>" . __("List of options", 'metademands') . "</th></tr><tr>";
-                if ($canedit) {
-                    echo "<th width='$colspan'>";
-                    echo Html::getCheckAllAsCheckbox('massfieldoption' . $rand);
-                    echo "</th>";
-                }
-                echo "<th>" . __("ID") . "</th>";
-                if ($item->fields['type'] == "parent_field") {
-                    echo "<th>" . __('Type', 'metademands') . "</th>";
-                    echo "<th>" . __('Field name') . "</th>";
+                $metademand_custom          = new FieldCustomvalue();
+                $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
+                $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+
+                if (isset($item->fields['type'])
+                    && (in_array($item->fields['type'], $allowed_customvalues_types)
+                        || in_array($item->fields['item'], $allowed_customvalues_items))
+                    && $item->fields['item'] != "urgency"
+                    && $item->fields['item'] != "priority"
+                    && $item->fields['item'] != "impact") {
+                    $custom_values = [];
+                    if ($customs = $metademand_custom->find(
+                        ["plugin_metademands_fields_id" => $item->getID()],
+                        "rank",
+                    )) {
+                        if (count($customs) > 0) {
+                            $custom_values = $customs;
+                        }
+                    }
                 } else {
-                    echo "<th>" . __('Type of value to check', 'metademands') . "</th>";
-                    echo "<th>" . __('Value to check', 'metademands') . "</th>";
-                    echo "<th>" . __('Launch a task with the field', 'metademands') . "</th>";
-                    echo "<th>" . __('Assign the ticket to these technicians groups') . "</th>";
-                    echo "<th>" . __('Make this field mandatory', 'metademands') . "</th>";
-                    echo "<th>" . __('Display this hidden field', 'metademands') . "</th>";
-                    echo "<th>" . __('Display this hidden block', 'metademands') . "</th>";
-                    echo "<th>" . __('Display this hidden block in the same block', 'metademands') . "</th>";
-                    echo "<th>" . __('Childs blocks', 'metademands') . "</th>";
-                    echo "<th>" . __('Launch a validation', 'metademands') . "</th>";
-                    echo "<th>" . __('Bind to the value of this checkbox', 'metademands') . "</th>";
+                    $metademand_params = new FieldParameter();
+                    $metademand_params->getFromDBByCrit(
+                        ["plugin_metademands_fields_id" => $item->getID()],
+                    );
+                    $custom_values = $metademand_params->fields['custom'];
+                }
+                $data['custom_values'] = $custom_values;
+
+                $edit_fn = "";
+                if ($canedit) {
+                    $edit_fn   = "viewEditOption" . $data['id'] . $rand;
+                    $scripts[] = "function " . $edit_fn . "() {"
+                        . "document.getElementById('" . $modal_title_id . "').textContent = "
+                        . json_encode(__('Edit option', 'metademands'), JSON_HEX_TAG | JSON_HEX_AMP) . ";"
+                        . $show_modal_fn . "();"
+                        . Ajax::updateItemJsCode(
+                            $viewoption_id,
+                            $viewsubitem_url,
+                            [
+                                'type'                      => self::class,
+                                'parenttype'                => get_class($item),
+                                $item->getForeignKeyField() => $item->getID(),
+                                'id'                        => $data["id"],
+                            ],
+                            "",
+                            false,
+                        )
+                        . ";}";
                 }
 
-                echo "</tr>";
+                // getValueToCheck() echoes a fragment already assembled (and escaped) by the
+                // shared value-to-check templates, so it is captured and printed as raw HTML.
+                ob_start();
+                self::getValueToCheck($data);
+                $value_to_check = ob_get_clean();
 
-                foreach ($options as $data) {
-                    $data['item'] = $item->fields['item'];
-                    $data['type'] = $item->fields['type'];
-
-                    $metademand_custom = new FieldCustomvalue();
-                    $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-                    $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-                    if (isset($item->fields['type'])
-                        && (in_array($item->fields['type'], $allowed_customvalues_types)
-                            || in_array($item->fields['item'], $allowed_customvalues_items))
-                        && $item->fields['item'] != "urgency"
-                        && $item->fields['item'] != "priority"
-                        && $item->fields['item'] != "impact") {
-                        $custom_values = [];
-                        if ($customs = $metademand_custom->find(
-                            ["plugin_metademands_fields_id" => $item->getID()],
-                            "rank",
+                $task_name = "";
+                $tasks     = new Task();
+                if ($tasks->getFromDB($data['plugin_metademands_tasks_id'])) {
+                    if ($tasks->fields['type'] == Task::METADEMAND_TYPE) {
+                        $metatask = new MetademandTask();
+                        if ($metatask->getFromDBByCrit(
+                            ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']],
                         )) {
-                            if (count($customs) > 0) {
-                                $custom_values = $customs;
-                            }
+                            $task_name = Dropdown::getDropdownName(
+                                'glpi_plugin_metademands_metademands',
+                                $metatask->fields['plugin_metademands_metademands_id'],
+                            );
                         }
                     } else {
-                        $metademand_params = new FieldParameter();
-                        $metademand_params->getFromDBByCrit(
-                            ["plugin_metademands_fields_id" => $item->getID()],
-                        );
-                        $custom_values = $metademand_params->fields['custom'];
+                        $task_name = $tasks->getName();
                     }
-                    $data['custom_values'] = $custom_values;
-
-                    $onhover = '';
-                    if ($canedit) {
-                        $onhover = "style='cursor:pointer'
-                               onClick=\"viewEditOption" . $data['id'] . "$rand();\"";
-                    }
-                    echo "<tr class='tab_bg_1'>";
-                    if ($canedit) {
-                        echo "<td class='center'>";
-                        Html::showMassiveActionCheckBox(FieldOption::class, $data["id"]);
-                        echo "</td>";
-                    }
-
-                    echo "<td $onhover>";
-                    if ($canedit) {
-                        echo "\n<script type='text/javascript' >\n";
-                        echo "function viewEditOption" . $data['id'] . "$rand() {\n";
-                        echo "  document.getElementById('" . $modal_title_id . "').textContent = '" . addslashes(__('Edit option', 'metademands')) . "';\n";
-                        echo "  showFieldOptionModal" . $item->getID() . "$rand();\n";
-                        $params = [
-                            'type' => FieldOption::class,
-                            'parenttype' => get_class($item),
-                            $item->getForeignKeyField() => $item->getID(),
-                            'id' => $data["id"],
-                        ];
-                        Ajax::updateItemJsCode(
-                            "viewoption" . $item->getID() . "$rand",
-                            $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params,
-                        );
-                        echo ";\n};";
-                        echo "</script>\n";
-                    }
-                    echo $data['id'];
-                    echo "</td>";
-                    echo "<td $onhover>";
-                    echo self::getTypeOValueToCheck($data);
-                    echo "</td>";
-                    echo "<td $onhover>";
-                    echo self::getValueToCheck($data);
-                    echo "</td>";
-
-                    if ($item->fields['type'] != "parent_field") {
-                        echo "<td $onhover>";
-                        $tasks = new Task();
-                        if ($tasks->getFromDB($data['plugin_metademands_tasks_id'])) {
-                            if ($tasks->fields['type'] == Task::METADEMAND_TYPE) {
-                                $metatask = new MetademandTask();
-                                if ($metatask->getFromDBByCrit(
-                                    ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']],
-                                )) {
-                                    echo htmlspecialchars(Dropdown::getDropdownName(
-                                        'glpi_plugin_metademands_metademands',
-                                        $metatask->fields['plugin_metademands_metademands_id'],
-                                    ), ENT_QUOTES, 'UTF-8');
-                                }
-                            } else {
-                                echo htmlspecialchars($tasks->getName(), ENT_QUOTES, 'UTF-8');
-                            }
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        $assigntechgroups = json_decode($data["assign_tech_group"], true);
-                        $i = 0;
-                        if (is_array($assigntechgroups)) {
-                            $nb = count($assigntechgroups);
-                            if ($nb > 0) {
-                                foreach ($assigntechgroups as $assigntechgroup) {
-                                    $i++;
-                                    echo Dropdown::getDropdownName('glpi_groups', $assigntechgroup);
-                                    if ($i < $nb) {
-                                        echo ", ";
-                                    }
-                                }
-                            }
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        $fields = new Field();
-                        $fields_data = $fields->find(['id' => $data['fields_link']]);
-                        foreach ($fields_data as $id => $value) {
-                            echo $value['rank'] . " - " . htmlspecialchars((string) $value['name'], ENT_QUOTES, 'UTF-8');
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        $fields = new Field();
-                        $fields_data = $fields->find(['id' => $data['hidden_link']]);
-                        foreach ($fields_data as $id => $value) {
-                            $name = $id;
-                            if (isset($value['name'])) {
-                                $name = $value['name'];
-                            }
-                            echo $value['rank'] . " - " . htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        if ($data['hidden_block'] > 0) {
-                            echo $data['hidden_block'];
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        echo Dropdown::getYesNo($data['hidden_block_same_block']);
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        $blocks = json_decode($data["childs_blocks"], true);
-                        $i = 0;
-                        if (is_array($blocks)) {
-                            $nb = count($blocks);
-                            if ($nb > 0) {
-                                foreach ($blocks as $block) {
-                                    if (is_array($block)) {
-                                        foreach ($block as $block_number) {
-                                            $i++;
-                                            echo $block_number;
-                                            if ($i < $nb) {
-                                                echo ", ";
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        echo htmlspecialchars(getUserName((int) $data["users_id_validate"]), ENT_QUOTES, 'UTF-8');
-                        echo "</td>";
-
-                        echo "<td $onhover>";
-                        $fields = new Field();
-                        if ($fields->getFromDB($data['checkbox_id'])) {
-                            // getName() is unescaped by contract (the presentation layer owns it):
-                            // this table is built with echo, so escape here as the columns above do.
-                            echo htmlspecialchars($fields->getName(), ENT_QUOTES, 'UTF-8');
-                            $field_custom = new FieldCustomvalue();
-                            if ($field_custom->getFromDB($data['checkbox_value'])) {
-                                echo "<br>";
-                                echo htmlspecialchars($field_custom->getName(), ENT_QUOTES, 'UTF-8');
-                            }
-                        }
-                        echo "</td>";
-                    }
-                    echo "</tr>";
                 }
-                echo "</table>";
-                if ($canedit) {
-                    $massiveactionparams['ontop'] = false;
-                    Html::showMassiveActions($massiveactionparams);
-                    Html::closeForm();
+
+                $assign_tech_groups = [];
+                $assigntechgroups   = json_decode($data["assign_tech_group"], true);
+                if (is_array($assigntechgroups)) {
+                    foreach ($assigntechgroups as $assigntechgroup) {
+                        $assign_tech_groups[] = Dropdown::getDropdownName('glpi_groups', $assigntechgroup);
+                    }
                 }
-            } else {
-                echo "<div class='center first-bloc'>";
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr class='tab_bg_1'><td class='center'>" . __('No results found') . "</td></tr>";
-                echo "</table>";
-                echo "</div>";
+
+                $fields      = new Field();
+                $fields_link = "";
+                foreach ($fields->find(['id' => $data['fields_link']]) as $value) {
+                    $fields_link = $value['rank'] . " - " . $value['name'];
+                }
+
+                $hidden_link = "";
+                foreach ($fields->find(['id' => $data['hidden_link']]) as $id => $value) {
+                    $name = $id;
+                    if (isset($value['name'])) {
+                        $name = $value['name'];
+                    }
+                    $hidden_link = $value['rank'] . " - " . $name;
+                }
+
+                $childs_blocks = [];
+                $blocks        = json_decode($data["childs_blocks"], true);
+                if (is_array($blocks)) {
+                    foreach ($blocks as $block) {
+                        if (is_array($block)) {
+                            foreach ($block as $block_number) {
+                                $childs_blocks[] = $block_number;
+                            }
+                        }
+                    }
+                }
+
+                $checkbox_name  = "";
+                $checkbox_value = "";
+                $checkbox_field = new Field();
+                if ($checkbox_field->getFromDB($data['checkbox_id'])) {
+                    $checkbox_name = $checkbox_field->getName();
+                    $field_custom  = new FieldCustomvalue();
+                    if ($field_custom->getFromDB($data['checkbox_value'])) {
+                        $checkbox_value = $field_custom->getName();
+                    }
+                }
+
+                $entries[] = [
+                    'id'                      => $data['id'],
+                    'edit_fn'                 => $edit_fn,
+                    'type_of_value'           => self::getTypeOValueToCheck($data),
+                    'value_to_check'          => $value_to_check,
+                    'task_name'               => $task_name,
+                    'assign_tech_groups'      => $assign_tech_groups,
+                    'fields_link'             => $fields_link,
+                    'hidden_link'             => $hidden_link,
+                    'hidden_block'            => ($data['hidden_block'] > 0) ? $data['hidden_block'] : "",
+                    'hidden_block_same_block' => Dropdown::getYesNo($data['hidden_block_same_block']),
+                    'childs_blocks'           => $childs_blocks,
+                    'users_id_validate'       => getUserName((int) $data["users_id_validate"]),
+                    'checkbox_name'           => $checkbox_name,
+                    'checkbox_value'          => $checkbox_value,
+                ];
             }
-            $options_list_html = ob_get_clean();
         }
 
         TemplateRenderer::getInstance()->display('@metademands/field_option_options.html.twig', [
-            'allowed'          => $allowed,
-            'link_to_user'     => $link_to_user,
-            'ajax_html'        => $ajax_html,
-            'options_list_html' => $options_list_html,
+            'allowed'         => $allowed,
+            'link_to_user'    => $link_to_user,
+            'canedit'         => $canedit,
+            'itemtype'        => self::class,
+            'mass_container'  => $mass_container,
+            'modal_id'        => $modal_id,
+            'modal_title_id'  => $modal_title_id,
+            'viewoption_id'   => $viewoption_id,
+            'add_fn'          => $add_fn,
+            'scripts'         => implode("\n", $scripts),
+            'is_parent_field' => $is_parent_field,
+            'entries'         => $entries,
         ]);
         return true;
     }

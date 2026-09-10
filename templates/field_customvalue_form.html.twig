@@ -47,19 +47,8 @@
 {% endif %}
 
 {% if not is_new %}
-    <div class="card mt-2">
-        <div class="card-header">
-            <h5 class="card-title">{{ __('Field informations', 'metademands') }}</h5>
-        </div>
-        <div class="card-body">
-            <div class="row mb-2">
-                <div class="col-3 fw-bold">{{ __('Type') }}</div>
-                <div class="col-9">{{ field_type_name }}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-3 fw-bold">{{ __('Example', 'metademands') }}</div>
-                <div class="col-9">{{ field_example_html|raw }}</div>
-            </div>
-        </div>
-    </div>
+    {% include '@metademands/forms/field_informations.html.twig' with {
+        'type_name': field_type_name,
+        'example_html': field_example_html
+    } only %}
 {% endif %}

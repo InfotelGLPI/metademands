@@ -110,6 +110,24 @@ class Config extends CommonDBTM
         return count(array_intersect((array) $my_entities, $target_entities)) > 0;
     }
 
+    /**
+     * [S3] Constrain a reflected form field name to the charset a name attribute may safely
+     * contain (letters, digits, underscore, brackets), so a crafted $_POST['field'] cannot
+     * break out of the attribute (reflected XSS).
+     *
+     * Shared by the whole u*Update.php family, which all echo the posted field name back as
+     * the name of the dropdown they render: keeping the rule in one place stops a new
+     * endpoint of the family from silently shipping without it.
+     *
+     * @param mixed $field_name
+     *
+     * @return string
+     */
+    public static function normalizePostedFieldName($field_name): string
+    {
+        return (string) preg_replace('/[^A-Za-z0-9_\[\]]/', '', (string) ($field_name ?? ''));
+    }
+
     public static function canView(): bool
     {
         return Session::haveRight(self::$rightname, UPDATE);

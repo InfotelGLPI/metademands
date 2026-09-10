@@ -25,13 +25,27 @@
  # --------------------------------------------------------------------------
  #}
 
-{{ hidden_fields_id|raw }}
-{{ hidden_type|raw }}
-{{ hidden_item|raw }}
-{{ freetable_html|raw }}
-{% if show_info %}
-    {% include '@metademands/forms/field_informations.html.twig' with {
-        'type_name': type_name,
-        'example_html': example_html
-    } only %}
-{% endif %}
+{#
+ # Shared "Field informations" card, used by every field option form
+ # (parameter, custom values, free table).
+ #
+ # Expected context (include it with `only`):
+ #  - type_name:    plain label of the field type, escaped by Twig
+ #  - example_html: rendered widget fragment, already escaped by its own builders
+ #}
+
+<div class="card mt-2">
+    <div class="card-header">
+        <h5 class="card-title">{{ __('Field informations', 'metademands') }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-3 fw-bold">{{ __('Type') }}</div>
+            <div class="col-9">{{ type_name }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-3 fw-bold">{{ __('Example', 'metademands') }}</div>
+            <div class="col-9">{{ example_html|raw }}</div>
+        </div>
+    </div>
+</div>

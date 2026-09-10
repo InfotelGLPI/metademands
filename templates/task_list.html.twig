@@ -111,7 +111,11 @@
 
                     {# Name #}
                     <td {{ cell_attrs|raw }} {% if not onhover and entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
-                        {{ entry.name|raw }}
+                        {% if entry.name_url is not empty %}
+                            <a href="{{ entry.name_url }}">{{ entry.name }}</a>
+                        {% else %}
+                            {{ entry.name }}
+                        {% endif %}
                     </td>
 
                     {# Entity #}
@@ -131,7 +135,9 @@
 
                     {# Assigned to #}
                     <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
-                        {{ entry.assign|raw }}
+                        {% for line in entry.assign %}
+                            {{ line }}{% if not loop.last %}<br>{% endif %}
+                        {% endfor %}
                     </td>
 
                     {# Level #}
@@ -141,7 +147,9 @@
 
                     {# Block to use #}
                     <td {{ cell_attrs|raw }} {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %}>
-                        {{ entry.block|raw }}
+                        {% for label in entry.block %}
+                            {{ label }}{% if not loop.last %}<br>{% endif %}
+                        {% endfor %}
                     </td>
 
                     {# Use block #}

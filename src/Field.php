@@ -3236,6 +3236,16 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 }
 
                 foreach ($ids as $id) {
+                    // The core forwards the posted ids verbatim to a plugin handler
+                    // (MassiveAction::processForSeveralItemtypes filters no right), so the
+                    // per-item check is what ties each field back to its parent metademand
+                    // and applies its entity boundary.
+                    if (!$item->can($id, UPDATE)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                        continue;
+                    }
+
                     $field = new Field();
                     $param = new FieldParameter();
                     $msg = MassiveAction::ACTION_OK;
@@ -3255,7 +3265,26 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 return;
             case "change_color":
                 $input = $ma->getInput();
+
+                // Same allow-list reflex as change_icon: the color ends up in a style
+                // attribute, so only a plain hexadecimal color may be persisted.
+                if (isset($input['color'])
+                    && $input['color'] !== ''
+                    && !preg_match('/^#[0-9A-Fa-f]{3,8}$/', (string) $input['color'])) {
+                    $ma->addMessage(__('You cannot do this for this field', 'metademands'));
+                    foreach ($ids as $id) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                    }
+                    return;
+                }
+
                 foreach ($ids as $id) {
+                    if (!$item->can($id, UPDATE)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                        continue;
+                    }
+
                     $field = new Field();
                     $param = new FieldParameter();
                     $msg = MassiveAction::ACTION_OK;

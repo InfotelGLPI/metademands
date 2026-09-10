@@ -40,9 +40,35 @@ $group = new Group();
 if (isset($_POST["add_groups"])) {
     if (isset($_POST['groups_id'])) {
         $group->check(-1, UPDATE, $_POST);
+
+        // check() authorises the parent meta-demand, not the posted values. Replay the very
+        // criteria the regex_value branch below uses to build its own candidate list, so a
+        // forged groups_id[] cannot attach a group living outside the caller's entity scope.
+        $dbu = new DbUtils();
+        $posted_groups_id = array_unique(array_map('intval', (array) $_POST['groups_id']));
+
+        $allowed_groups = [];
+        if (count($posted_groups_id) > 0) {
+            $core_group = new \Group();
+            $allowed_groups = $core_group->find(
+                array_merge(
+                    [\Group::getTable() . '.id' => $posted_groups_id],
+                    $dbu->getEntitiesRestrictCriteria(\Group::getTable(), '', '', true),
+                ),
+            );
+        }
+
+        if (count($allowed_groups) < count($posted_groups_id)) {
+            Session::addMessageAfterRedirect(
+                $group->getErrorMessage(ERROR_RIGHT),
+                false,
+                ERROR,
+            );
+        }
+
         //add groups
-        foreach ($_POST['groups_id'] as $groups_id) {
-            $group->add(['groups_id' => $groups_id,
+        foreach ($allowed_groups as $allowed_group) {
+            $group->add(['groups_id' => $allowed_group['id'],
                 'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
         }
     }

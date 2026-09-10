@@ -93,7 +93,7 @@ if (isset($_POST["add"])) {
 
     Html::back();
 
-} if (isset($_POST["update"])) {
+} else if (isset($_POST["update"])) {
     // Bind the control to the row actually written: with -1 the requested right was never
     // evaluated and the parent metademand was never confronted with the session.
     $task->check((int) $_POST['id'], UPDATE);

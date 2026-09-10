@@ -1288,19 +1288,23 @@ class Wizard extends CommonDBTM
         $metademands_data = Metademand::constructMetademands($metademands_id);
         $metademands->getFromDB($metademands_id);
 
-        echo "<div class='md-basket-wizard'>";
-        echo "</div>";
-
         $_SESSION['metademands_hide'] = [];
 
-        echo "<div class='md-wizard'>";
+        $has_data = count($metademands_data) > 0;
+        $see_summary = 0;
+        $forms = "";
+        $show_actions = false;
+        $actions_margin = false;
+        $show_print = false;
 
-        if (count($metademands_data)) {
-            $see_summary = 0;
+        if ($has_data) {
             if (isset($metademands->fields['is_basket']) && $metademands->fields['is_basket'] == 1) {
                 $see_summary = 1;
             }
 
+            // The form itself is still assembled by the legacy constructForm() echo chain:
+            // capture it so the template only has to place the resulting fragment.
+            ob_start();
             foreach ($metademands_data as $form_step => $data) {
                 if ($form_step == $step) {
                     foreach ($data as $form_metademands_id => $line) {
@@ -1364,11 +1368,9 @@ class Wizard extends CommonDBTM
                     }
                 }
             }
-            $use_as_step = 0;
-            if ($preview) {
-                $use_as_step = 0;
-            }
-            if (!$preview && (!$seeform
+            $forms = ob_get_clean();
+
+            $show_actions = !$preview && (!$seeform
                     || (isset($options['resources_id'])
                         && $options['resources_id'] > 0)
                     || ($current_ticket > 0
@@ -1376,110 +1378,24 @@ class Wizard extends CommonDBTM
                                 && $metademands->fields['can_update'] == true)
                             || ($meta_validated
                                 && $metademands->fields['can_clone'] == true))
-                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
+                        && Session::haveRight('plugin_metademands_updatemeta', READ)));
+            $actions_margin = ($see_summary == 0);
 
-            ) {
-                $style = "";
-                if ($see_summary == 0) {
-                    $style = "style='margin-top: 20px'";
-                }
-                echo "<div class=\"row\" style='width: 100%;'>";
-
-                echo "<div class=\"bt-feature col-md-12\" $style >";
-                if ($current_ticket > 0 && !$meta_validated) {
-                    Html::hidden('current_ticket_id', ['value' => $current_ticket]);
-                }
-                echo Html::hidden('metademands_id', ['value' => $metademands_id]);
-
-                echo "</div>";
-                echo "</div>";
-            }
-
-            echo Html::hidden('create_metademands', ['value' => 1]);
-
-            if (isset($options['ancestor_tickets_id'])) {
-                echo Html::hidden('ancestor_tickets_id', ['value' => $options['ancestor_tickets_id']]);
-            }
-
-            if (isset($metademands->fields['is_order'])
-                && $metademands->fields['is_order'] == 1) {
-                if (!countElementsInTable(
-                    "glpi_plugin_metademands_basketlines",
-                    [
-                        "plugin_metademands_metademands_id" => $metademands->fields['id'],
-                        "users_id" => Session::getLoginUserID(),
-                    ],
-                )) {
-                    //                    $title = _sx('button', 'Add to basket', 'metademands');
-                    //                    echo Html::submit($title, [
-                    //                        'name' => 'add_to_basket',
-                    //                        'id' => 'add_to_basket',
-                    //                        'icon' => 'ti ti-plus',
-                    //                        'class' => 'metademand_next_button btn btn-primary',
-                    //                    ]);
-                } else {
-                    //                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-                    //                    echo "</div>";
-                    //                    $title = _sx('button', 'See your basket', 'metademands');
-                    //                    echo Html::hidden('see_basket_summary', ['value' => 1]);
-                    //                    echo Html::submit($title, [
-                    //                        'name' => 'next_button',
-                    //                        'form' => '',
-                    //                        'icon' => 'ti ti-device-floppy',
-                    //                        'id' => 'submitjob',
-                    //                        'class' => 'metademand_next_button btn btn-success',
-                    //                    ]);
-                    //                    $ID = $metademands->fields['id'];
-                    //                    echo "<script>
-                    //                          $('#submitjob').click(function() {
-                    //                             var meta_id = {$ID};
-                    //                             if(typeof tinyMCE !== 'undefined'){
-                    //                                tinyMCE.triggerSave();
-                    //                             }
-                    //                             jQuery('.resume_builder_input').trigger('change');
-                    //                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                    //                             $('#ajax_loader').show();
-                    //                             $.ajax({
-                    //                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
-                    //                                   type: 'POST',
-                    //                                   datatype: 'html',
-                    //                                   data: $('#wizard_form').serializeArray(),
-                    //                                   success: function (response) {
-                    //                                      $('#ajax_loader').hide();
-                    //                                      $('.md-wizard').replaceWith(response);
-                    //                                   },
-                    //                                   error: function (xhr, status, error) {
-                    //                                      console.log(xhr);
-                    //                                      console.log(status);
-                    //                                      console.log(error);
-                    //                                   }
-                    //                                });
-                    //                          });
-                    //                        </script>";
-                }
-            }
-            if (!$preview
+            $show_print = !$preview
                 && isset($metademands->fields['step_by_step_mode'])
-                && $metademands->fields['step_by_step_mode']  == 0
-                && $see_summary == 0) {
-                echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
-                echo "<i style='font-size:2em;color:#e3e0e0;' class='ti fa-printer' ></i>";
-                echo "</a>";
-            }
-        } else {
-            echo "</div>";
-            echo "<div class='center first-bloc'>";
-            echo "<div class='row'>";
-            echo "<div class=\"bt-feature col-md-12 \">";
-            echo __('No results found');
-            echo "</div></div>";
-            echo "<div class='row'>";
-            echo "<div class=\"bt-feature col-md-12 \">";
-            echo Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
-            echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
-            echo "</div></div>";
+                && $metademands->fields['step_by_step_mode'] == 0
+                && $see_summary == 0;
         }
-        echo "</div>";
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard_metademands.html.twig', [
+            'has_data'            => $has_data,
+            'forms'               => $forms,
+            'metademands_id'      => $metademands_id,
+            'show_actions'        => $show_actions,
+            'actions_margin'      => $actions_margin,
+            'ancestor_tickets_id' => $options['ancestor_tickets_id'] ?? null,
+            'show_print'          => $show_print,
+        ]);
     }
 
 

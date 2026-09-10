@@ -1,0 +1,138 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<tr class="tab_bg_1">
+    <td>
+        {% if entries|length > 0 %}
+            <div id="drag">
+                <form method="post" action="{{ target }}">
+                    <table class="tab_cadre_fixe">
+                        <tbody data-md-sortable data-md-url="{{ reorder_url }}" data-md-params="{{ reorder_params }}">
+                            {% for entry in entries %}
+                                <tr class="tab_bg_1" data-md-order="{{ entry.rank }}">
+                                    <td class="rowhandler control center">
+                                        {{ __('Rank', 'metademands') }} {{ entry.rank }}
+                                        {% if has_fields_id %}
+                                            {{ call('Html::hidden', ['fields_id', {'value': fields_id, 'id': 'fields_id'}])|raw }}
+                                            {{ call('Html::hidden', ['type_object', {'value': type_object, 'id': 'type_object'}])|raw }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="rowhandler control left">
+                                        <span id="internal_name_values{{ entry.key }}">
+                                            {{ __('Internal name', 'metademands') }}
+                                            {{ entry.internal_name_input|raw }}
+                                        </span>
+                                    </td>
+
+                                    <td class="rowhandler control left">
+                                        <span id="type_values{{ entry.key }}">
+                                            {{ __('Type', 'metademands') }}<br>
+                                            {{ entry.type_dropdown|raw }}
+                                        </span>
+                                    </td>
+
+                                    <td class="rowhandler control left">
+                                        <span id="custom_values{{ entry.key }}">
+                                            {{ __('Display name', 'metademands') }}
+                                            {{ entry.name_input|raw }}
+                                        </span>
+                                    </td>
+
+                                    {% if entry.type == type_text %}
+                                        <td class="rowhandler control left">
+                                            <span id="comment_values{{ entry.key }}">
+                                                {{ __('Comment') }}
+                                                {{ entry.comment_input|raw }}
+                                            </span>
+                                            {{ entry.hidden_dropdown_values|raw }}
+                                        </td>
+                                    {% elseif entry.type == type_select %}
+                                        <td class="rowhandler control left">
+                                            <span id="dropdown_values{{ entry.key }}">
+                                                {{ __('Dropdown values', 'metademands') }}
+                                                {{ entry.dropdown_values_tooltip|raw }}
+                                                {{ entry.dropdown_values_textarea|raw }}
+                                            </span>
+                                            {{ entry.hidden_comment|raw }}
+                                        </td>
+                                    {% elseif entry.type == type_number or entry.type == type_date or entry.type == type_time %}
+                                        <td class="rowhandler control left">
+                                            {{ entry.hidden_comment|raw }}
+                                            {{ entry.hidden_dropdown_values|raw }}
+                                        </td>
+                                    {% endif %}
+
+                                    <td class="rowhandler control left">
+                                        <span id="is_mandatory_values{{ entry.key }}">
+                                            {{ __('Mandatory', 'metademands') }}<br>
+                                            {{ entry.is_mandatory_dropdown|raw }}
+                                        </span>
+                                    </td>
+
+                                    <td class="rowhandler control center">
+                                        <div class="drag row md-sort-handle" style="cursor: move;border-width: 0 !important;border-style: none !important;border-color: initial !important;border-image: initial !important;">
+                                            <i class="ti ti-grip-horizontal grip-rule"></i>
+                                        </div>
+                                    </td>
+
+                                    <td class="rowhandler control center">
+                                        {{ entry.hidden_id|raw }}
+                                        {{ entry.submit|raw }}
+                                    </td>
+
+                                    <td class="rowhandler control center">
+                                        {{ entry.delete_form|raw }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        {{ call('Html::hidden', ['plugin_metademands_fields_id', {'value': fields_id}])|raw }}
+                    </table>
+                    {# closeForm() emits the CSRF token and the closing </form> tag #}
+                    {{ call('Html::closeForm', [false])|raw }}
+            </div>
+
+            {% if show_init %}
+                <tr class="tab_bg_1">
+                    <td colspan="4" align="left" id="show_custom_fields">
+                        {{ init_custom_value|raw }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% elseif show_init %}
+            <tr class="tab_bg_1">
+                <td align="right" id="show_custom_fields">
+                    {% if has_fields_id %}
+                        {{ call('Html::hidden', ['fields_id', {'value': fields_id}])|raw }}
+                    {% endif %}
+                    {{ init_custom_value|raw }}
+                </td>
+            </tr>
+        {% endif %}
+    </td>
+</tr>

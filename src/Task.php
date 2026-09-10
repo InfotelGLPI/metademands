@@ -609,14 +609,18 @@ class Task extends CommonDBChild
                     . "};";
             }
 
-            // Name
+            // Name: atomic label and, for a metademand row, the URL of its form. The
+            // template builds the anchor itself so the label stays autoescaped.
+            $name_url = "";
             if ($is_basic) {
-                $name_html = $value['tickettasks_name'];
+                $name_label = $value['tickettasks_name'];
             } else {
-                $name_html = "<a href='" . Toolbox::getItemTypeFormURL(Metademand::class)
-                    . "?id=" . $value['link_metademands_id'] . "'>"
-                    . \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id'])
-                    . "</a>";
+                $name_label = \Dropdown::getDropdownName(
+                    'glpi_plugin_metademands_metademands',
+                    $value['link_metademands_id'],
+                );
+                $name_url = Toolbox::getItemTypeFormURL(Metademand::class)
+                    . "?id=" . (int) $value['link_metademands_id'];
             }
 
             // Entity: for a metademand sub-request, show the configured destination
@@ -646,28 +650,28 @@ class Task extends CommonDBChild
                 $cat = "---";
             }
 
-            // Assigned to / recipients
-            $techdata = "";
+            // Assigned to / recipients: one plain label per line, the template inserts
+            // the line breaks so every actor name stays autoescaped.
+            $techdata = [];
             if ($is_basic) {
                 if ($value['type'] != self::MAIL_TYPE) {
                     if (isset($value['users_id_assign']) && $value['users_id_assign'] > 0) {
-                        $techdata .= getUserName($value['users_id_assign'], 0, true);
-                        $techdata .= "<br>";
+                        $techdata[] = getUserName($value['users_id_assign'], 0, true);
                     }
                     if (isset($value['groups_id_assign']) && $value['groups_id_assign'] > 0) {
-                        $techdata .= \Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
+                        $techdata[] = \Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
                     }
                 }
 
                 if ($value['type'] == self::MAIL_TYPE
                     && (isset($mailtask->fields['users_id_recipient']) || isset($mailtask->fields['groups_id_recipient']))
                     && ($mailtask->fields['users_id_recipient'] > 0 || $mailtask->fields['groups_id_recipient'] > 0)) {
-                    $techdata .= __('Recipients', 'metademands') . " : <br>";
+                    $techdata[] = __('Recipients', 'metademands') . " :";
                     if (isset($mailtask->fields['users_id_recipient']) && $mailtask->fields['users_id_recipient'] > 0) {
-                        $techdata .= getUserName($mailtask->fields['users_id_recipient'], 0, true);
+                        $techdata[] = getUserName($mailtask->fields['users_id_recipient'], 0, true);
                     }
                     if (isset($mailtask->fields['groups_id_recipient']) && $mailtask->fields['groups_id_recipient'] > 0) {
-                        $techdata .= \Dropdown::getDropdownName("glpi_groups", $mailtask->fields['groups_id_recipient']);
+                        $techdata[] = \Dropdown::getDropdownName("glpi_groups", $mailtask->fields['groups_id_recipient']);
                     }
                 }
             }
@@ -681,19 +685,18 @@ class Task extends CommonDBChild
                 $level_html = __('Root', 'metademands');
             }
 
-            // Blocks to use
+            // Blocks to use: one plain label per line, the template inserts the breaks.
             $blocks = json_decode($value['block_use']);
+            $block_labels = [];
             if (!empty($blocks)) {
-                $block_parts = [];
                 foreach ($blocks as $block) {
-                    $block_parts[] = sprintf(__("Block %s", 'metademands'), $block);
+                    $block_labels[] = sprintf(__("Block %s", 'metademands'), $block);
                 }
-                $block_html = implode(" <br>", $block_parts);
             } else {
-                $block_html = __('All');
+                $block_labels[] = __('All');
             }
             if ($value['type'] == self::TASK_TYPE) {
-                $block_html = "---";
+                $block_labels = ["---"];
             }
 
             $entries[] = [
@@ -704,13 +707,14 @@ class Task extends CommonDBChild
                 'row_style' => $row_style,
                 'td_class' => $td_class,
                 'edit_fn' => $edit_fn,
-                'name' => $name_html,
+                'name' => $name_label,
+                'name_url' => $name_url,
                 'entity' => $entity_name,
                 'type' => self::getTaskTypeName($value['type']),
                 'category' => $cat,
                 'assign' => $techdata,
                 'level_label' => $level_html,
-                'block' => $block_html,
+                'block' => $block_labels,
                 'useblock' => ($value['type'] == self::TASK_TYPE) ? "---" : \Dropdown::getYesNo($value['useBlock']),
                 'formatastable' => ($value['type'] == self::TASK_TYPE) ? "---" : \Dropdown::getYesNo($value['formatastable']),
                 'block_parent' => ($value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE)
@@ -1130,9 +1134,27 @@ class Task extends CommonDBChild
         switch ($ma->getAction()) {
             case "updateBlock":
                 $input = $ma->getInput();
+
+                // The core hands the posted ids over verbatim (MassiveAction::processForSeveralItemtypes
+                // does not filter rights for a plugin handler), so validate the posted value once and
+                // then re-check the right on every single item, exactly like Metademand::duplicate does.
+                $blocks = $input['block_use'] ?? [];
+                if (!is_array($blocks)) {
+                    $blocks = [];
+                }
+                $blocks = array_values(array_map('intval', $blocks));
+
                 foreach ($ids as $key) {
-                    $myvalue['block_use'] = json_encode($input['block_use']);
-                    $myvalue['id']        = $key;
+                    if (!$item->can($key, UPDATE)) {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                        continue;
+                    }
+
+                    $myvalue = [
+                        'id'        => $key,
+                        'block_use' => json_encode($blocks),
+                    ];
                     if ($task->update($myvalue)) {
                         $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                     } else {
