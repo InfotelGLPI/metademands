@@ -35,6 +35,7 @@ use CommonGLPI;
 use CommonTreeDropdown;
 use Document;
 use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Form\Form;
 use Glpi\Form\QuestionType\QuestionTypeCheckbox;
@@ -150,25 +151,18 @@ class Export extends CommonDBTM
      */
     public static function showExportFromGLPIForm($ID)
     {
-        echo "<form name='form' method='post' action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
-        echo "<div class='center'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo Html::hidden('forms_id', ['value' => $ID]);
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td class='left'>";
-        echo __('Export the form to XML format for use with metademands plugin', 'metademands');
-        echo "</td>";
-        echo "<td class='center'>";
-        echo Html::submit(
-            __('Export XML', 'metademands'),
-            ['name' => 'exportFormGLPIXML', 'class' => 'btn btn-primary'],
-        );
-        echo "</td>";
-
-        echo "</tr>";
-        echo "</table></div>";
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display('@metademands/export_form.html.twig', [
+            'target'       => self::getFormURL(),
+            'hidden_name'  => 'forms_id',
+            'hidden_value' => $ID,
+            'rows'         => [
+                [
+                    'label'        => __('Export the form to XML format for use with metademands plugin', 'metademands'),
+                    'button_name'  => 'exportFormGLPIXML',
+                    'button_label' => __('Export XML', 'metademands'),
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -178,35 +172,23 @@ class Export extends CommonDBTM
      */
     public static function showExportFromMetademands($ID)
     {
-        echo "<form name='form' method='post' action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
-        echo "<div class='center'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $ID]);
-        echo "<tr class='tab_bg_1'>";
-
-        echo "<td class='left'>";
-        echo __('Export the metademand to XML format for use on another GLPI', 'metademands');
-        echo "</td>";
-        echo "<td class='center'>";
-        echo Html::submit(
-            __('Export XML', 'metademands'),
-            ['name' => 'exportMetademandsXML', 'class' => 'btn btn-primary'],
-        );
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td class='left'>";
-        echo __('Export the metademand to JSON format for use with forms from GLPI', 'metademands');
-        echo "</td>";
-        echo "<td class='center'>";
-        echo Html::submit(
-            __('Export JSON', 'metademands'),
-            ['name' => 'exportMetademandsJSON', 'class' => 'btn btn-primary'],
-        );
-        echo "</td>";
-        echo "</tr>";
-        echo "</table></div>";
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display('@metademands/export_form.html.twig', [
+            'target'       => self::getFormURL(),
+            'hidden_name'  => 'plugin_metademands_metademands_id',
+            'hidden_value' => $ID,
+            'rows'         => [
+                [
+                    'label'        => __('Export the metademand to XML format for use on another GLPI', 'metademands'),
+                    'button_name'  => 'exportMetademandsXML',
+                    'button_label' => __('Export XML', 'metademands'),
+                ],
+                [
+                    'label'        => __('Export the metademand to JSON format for use with forms from GLPI', 'metademands'),
+                    'button_name'  => 'exportMetademandsJSON',
+                    'button_label' => __('Export JSON', 'metademands'),
+                ],
+            ],
+        ]);
     }
 
     public static function exportAsXMLForMetademands($id)
@@ -1322,27 +1304,9 @@ class Export extends CommonDBTM
 
     public static function showImportForm()
     {
-        echo "<div class='center'>";
-        echo "<form name='import_file_form' id='import_file_form' method='post'
-            action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
-        echo "<table class='tab_cadre' width='30%' cellpadding='5'>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __("Metademand file to import", 'metademands');
-        echo "</td>";
-        echo "<td>";
-        //      echo Html::file(['name'=>'meta_file', 'accept' => 'text/*']);
-        echo "<input class='form-control' type='file' name='meta_file' accept='text/*'>";
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "<td  class='center' colspan='2'>";
-        echo Html::submit(__('Import', 'metademands'), ['name' => 'import_file', 'class' => 'btn btn-primary']);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        Html::closeForm();
-        echo "</div>";
+        TemplateRenderer::getInstance()->display('@metademands/export_import_form.html.twig', [
+            'target' => self::getFormURL(),
+        ]);
     }
 
 

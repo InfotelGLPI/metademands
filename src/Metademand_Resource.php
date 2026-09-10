@@ -33,6 +33,7 @@ use CommonDBTM;
 use CommonGLPI;
 use DBConnection;
 use DbUtils;
+use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Resources\Config;
 use GlpiPlugin\Resources\ContractType;
@@ -205,7 +206,7 @@ class Metademand_Resource extends CommonDBTM
         $canedit = $this->canCreate();
         if ($canedit) {
             ob_start();
-            \Dropdown::show(Metademand::class, ['name'   => 'plugin_metademands_metademands_id',
+            Dropdown::show(Metademand::class, ['name'   => 'plugin_metademands_metademands_id',
                 'used'   => $used_data,
                 'entity' => $_SESSION['glpiactive_entity']]);
             $metademand_dropdown = ob_get_clean();
@@ -230,44 +231,28 @@ class Metademand_Resource extends CommonDBTM
      */
     private function listItems($fields, $canedit)
     {
-        if (!empty($fields)) {
-            $rand = mt_rand();
-            echo "<div class='left'>";
-            if ($canedit) {
-                Html::openMassiveActionsForm('massResources' . $rand);
-                $massiveactionparams = ['item' => __CLASS__, 'container' => 'massResources' . $rand];
-                Html::showMassiveActions($massiveactionparams);
-            }
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr>";
-            echo "<th colspan='3'>" . __('Meta-demands linked', 'metademands') . "</th>";
-            echo "</tr>";
-            echo "<tr>";
-            if ($canedit) {
-                echo "<th width='10'>" . Html::getCheckAllAsCheckbox('massResources' . $rand) . "</th>";
-            }
-            echo "<th>" . __('Name') . "</th>";
-            echo "<th>" . __('Entity') . "</th>";
-            foreach ($fields as $field) {
-                echo "<tr class='tab_bg_1'>";
-                if ($canedit) {
-                    echo "<td width='10'>";
-                    Html::showMassiveActionCheckBox(__CLASS__, $field['id']);
-                    echo "</td>";
-                }
-                //DATA LINE
-                echo "<td>" . \Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $field['plugin_metademands_metademands_id']) . "</td>";
-                echo "<td>" . \Dropdown::getDropdownName('glpi_entities', $field['entities_id']) . "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-            if ($canedit) {
-                $massiveactionparams['ontop'] = false;
-                Html::showMassiveActions($massiveactionparams);
-                Html::closeForm();
-            }
-            echo "</div>";
+        if (empty($fields)) {
+            return;
         }
+
+        $entries = [];
+        foreach ($fields as $field) {
+            $entries[] = [
+                'id'              => $field['id'],
+                'metademand_name' => Dropdown::getDropdownName(
+                    'glpi_plugin_metademands_metademands',
+                    $field['plugin_metademands_metademands_id'],
+                ),
+                'entity_name'     => Dropdown::getDropdownName('glpi_entities', $field['entities_id']),
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/metademand_resource_list.html.twig', [
+            'itemtype'       => self::class,
+            'mass_container' => 'massResources' . mt_rand(),
+            'canedit'        => $canedit,
+            'entries'        => $entries,
+        ]);
     }
 
     /**

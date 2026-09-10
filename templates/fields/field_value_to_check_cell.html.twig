@@ -1,0 +1,45 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # "Value to check" cell of an option row. The data-* attributes replace the inline
+ # <script> that used to be emitted next to every cell; they are read by
+ # public/scripts/fieldoption_valuetocheck.js.
+ #
+ # Expected context (include it with `only`):
+ #  - option_id:          id of the option being edited
+ #  - with_check_type:    the field type also exposes a check_type_value dropdown
+ #  - with_tech_group:    the field type also exposes an assign_tech_group selector
+ #  - content:            widget fragment, already built by showValueToCheck()/showRegexInput()
+ #}
+
+<td class="dropdown-valuetocheck"
+    data-md-option-id="{{ option_id }}"
+    data-md-check-type="{{ with_check_type ? '1' : '0' }}"
+    data-md-tech-group="{{ with_tech_group ? '1' : '0' }}">
+    {{ content|raw }}
+</td>

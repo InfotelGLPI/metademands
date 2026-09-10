@@ -1,0 +1,59 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Metademand XML/JSON import form.
+ #
+ # Expected context:
+ #  - target: form action URL
+ #}
+
+<form name="import_file_form" id="import_file_form" method="post"
+      action="{{ target }}" enctype="multipart/form-data">
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5 class="card-title">{{ __('Import', 'metademands') }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <label class="col-form-label col-sm-4" for="meta_file">
+                    {{ __('Metademand file to import', 'metademands') }}
+                </label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="file" id="meta_file" name="meta_file" accept="text/*">
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            {{ call('Html::submit', [__('Import', 'metademands'), {
+                'name': 'import_file',
+                'class': 'btn btn-primary'
+            }])|raw }}
+        </div>
+    </div>
+    {# closeForm() emits the CSRF token and the closing </form> tag #}
+    {{ call('Html::closeForm', [false])|raw }}

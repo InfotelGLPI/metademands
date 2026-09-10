@@ -905,61 +905,29 @@ class Dropdownobject extends CommonDBTM
         $regex_html = ob_get_clean();
 
         ob_start();
-        echo "<td class = 'dropdown-valuetocheck'>";
         switch ($params['check_type_value']) {
             case 1:
                 self::showValueToCheck($fieldoption, $params);
-                echo "<script type = \"text/javascript\">
-                 $('td.dropdown-valuetocheck select').on('change', function() {
-                 let formOption = [
-                     " . $params['ID'] . ",
-                         $(this).val(),
-                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
-                         $('select[name=\"fields_link\"]').val(),
-                         $('select[name=\"hidden_link\"]').val(),
-                         $('select[name=\"hidden_block\"]').val(),
-                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
-                         $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val(),
-                         $('select[name=\"check_type_value\"]').val(),
-                         JSON.stringify($('select[name=\"assign_tech_group[]\"]').val())
-                  ];
-
-                     reloadviewOption(formOption);
-                 });";
-                echo " </script>";
                 break;
             case 2:
                 FieldOption::showRegexInput($params['check_value_regex']);
-                echo "<script type = \"text/javascript\">
-                 $('td.dropdown-valuetocheck button.btn-success').on('click', function() {
-                 let formOption = [
-                     " . $params['ID'] . ",
-                         $('td.dropdown-valuetocheck input[name=check_value]').val(),
-                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
-                         $('select[name=\"fields_link\"]').val(),
-                         $('select[name=\"hidden_link\"]').val(),
-                         $('select[name=\"hidden_block\"]').val(),
-                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
-                         $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val(),
-                         $('select[name=\"check_type_value\"]').val(),
-                         JSON.stringify($('select[name=\"assign_tech_group[]\"]').val())
-                  ];
-
-                     reloadviewOption(formOption);
-                 });
-
-                 ";
-
-
-                echo " </script>";
                 break;
             default:
                 echo '';
         }
-        echo "</td>";
-        $valuetocheck_html = ob_get_clean();
+        $cell_content = ob_get_clean();
+
+        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
+        // the wrapping cell now carries its parameters as data-* attributes.
+        $valuetocheck_html = TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_value_to_check_cell.html.twig',
+            [
+                'option_id'       => $params['ID'],
+                'with_check_type' => true,
+                'with_tech_group' => true,
+                'content'         => $cell_content,
+            ],
+        );
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 

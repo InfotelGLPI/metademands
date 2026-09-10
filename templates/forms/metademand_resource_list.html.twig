@@ -1,0 +1,79 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Expected context:
+ #  - itemtype       string  class handling the massive actions
+ #  - mass_container string  unique container name shared by the form and the checkboxes
+ #  - canedit        bool    whether the massive action controls are shown
+ #  - entries        list    [{id, metademand_name, entity_name}, ...]
+ #}
+
+<div class="left">
+    {% if canedit %}
+        {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': mass_container,
+            'display': false
+        }])|raw }}
+    {% endif %}
+
+    <table class="tab_cadre_fixe">
+        <tr>
+            <th colspan="3">{{ __('Meta-demands linked', 'metademands') }}</th>
+        </tr>
+        <tr>
+            {% if canedit %}
+                <th width="10">{{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}</th>
+            {% endif %}
+            <th>{{ __('Name') }}</th>
+            <th>{{ __('Entity') }}</th>
+        </tr>
+
+        {% for entry in entries %}
+            <tr class="tab_bg_1">
+                {% if canedit %}
+                    <td width="10">{{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}</td>
+                {% endif %}
+                <td>{{ entry.metademand_name }}</td>
+                <td>{{ entry.entity_name }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% if canedit %}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': mass_container,
+            'ontop': false,
+            'display': false
+        }])|raw }}
+        {# closeForm() emits the CSRF token and the closing </form> tag #}
+        {{ call('Html::closeForm', [false])|raw }}
+    {% endif %}
+</div>

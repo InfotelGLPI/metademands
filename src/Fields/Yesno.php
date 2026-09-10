@@ -222,32 +222,20 @@ class Yesno extends CommonDBTM
 
         // Value to check
         ob_start();
-        echo "<td class = 'dropdown-valuetocheck'>";
         self::showValueToCheck($fieldoption, $params);
-        echo "</td>";
+        $cell_content = ob_get_clean();
 
-        echo "<script type = \"text/javascript\">
-                 $('td.dropdown-valuetocheck select').on('change', function() {
-                 let formOption = [
-                     " . $params['ID'] . ",
-                         $(this).val(),
-                         $('select[name=\"plugin_metademands_tasks_id\"]').val(),
-                         $('select[name=\"fields_link\"]').val(),
-                         $('select[name=\"hidden_link\"]').val(),
-                         $('select[name=\"hidden_block\"]').val(),
-                         JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
-                         $('select[name=\"users_id_validate\"]').val(),
-                         $('select[name=\"checkbox_id\"]').val(),
-                         0,
-                         0
-                  ];
-
-                     reloadviewOption(formOption);
-                 });";
-
-
-        echo " </script>";
-        $valuetocheck_html = ob_get_clean();
+        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
+        // the wrapping cell now carries its parameters as data-* attributes.
+        $valuetocheck_html = TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_value_to_check_cell.html.twig',
+            [
+                'option_id'       => $params['ID'],
+                'with_check_type' => false,
+                'with_tech_group' => false,
+                'content'         => $cell_content,
+            ],
+        );
 
         if ($params['check_value'] == '') {
             $params['check_value'] = 1;

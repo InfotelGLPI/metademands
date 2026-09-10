@@ -1074,41 +1074,23 @@ class FieldOption extends CommonDBChild
 
     public static function showRegexDropdown($value, $paramID)
     {
-        echo "<td style='text-align: right'>";
+        ob_start();
         Dropdown::showFromArray(
             "check_type_value",
             [Dropdown::EMPTY_VALUE, __('Value', 'metademands'), __('Regex', 'metademands')],
             ['value' => $value],
         );
-        echo "<script type = \"text/javascript\">
-                 $('td select[name=check_type_value]').on('change', function() {
-                 let formOption = [
-                     " . $paramID . ",";
-        switch ($value) {
-            case 1:
-                echo "$('td.dropdown-valuetocheck select[name=check_value]').val(),";
-                break;
-            case 2:
-                echo " $('td.dropdown-valuetocheck input[name=check_value]').val(),";
-                break;
-            case 0:
-            default:
-                echo "0,";
-        }
-        echo" $('select[name=\"plugin_metademands_tasks_id\"]').val(),
-                     $('select[name=\"fields_link\"]').val(),
-                     $('select[name=\"hidden_link\"]').val(),
-                     $('select[name=\"hidden_block\"]').val(),
-                     JSON.stringify($('select[name=\"childs_blocks[][]\"]').val()),
-                     $('select[name=\"users_id_validate\"]').val(),
-                     $('select[name=\"checkbox_id\"]').val(),
-                     $('select[name=\"check_type_value\"]').val(),
-                     JSON.stringify($('select[name=\"assign_tech_group\"]').val())
-              ];
-                 reloadviewOption(formOption);
-             });";
-        echo " </script>";
-        echo "</td>";
+        $cell_content = ob_get_clean();
+
+        // The inline <script> moved to public/scripts/fieldoption_valuetocheck.js, which
+        // reads the value from whichever widget the sibling cell currently shows.
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_check_type_value_cell.html.twig',
+            [
+                'option_id' => $paramID,
+                'content'   => $cell_content,
+            ],
+        );
     }
 
     public static function showRegexInput($value)

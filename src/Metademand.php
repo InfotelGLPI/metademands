@@ -6682,7 +6682,6 @@ HTML;
         $templates = $dbu->getAllDataFromTable($this->getTable(), $restrict);
 
         $multi_entities = Session::isMultiEntitiesMode();
-        $colsup         = $multi_entities ? 1 : 0;
 
         // Render through Twig so the template name ($templname, from the raw
         // `template_name` column) is auto-escaped instead of concatenated into
@@ -6707,7 +6706,6 @@ HTML;
         TemplateRenderer::getInstance()->display('@metademands/list_of_templates.html.twig', [
             'add'                => (bool) $add,
             'target'             => $target,
-            'colsup'             => $colsup,
             'multi_entities'     => $multi_entities,
             'metademand_typename' => self::getTypeName(2),
             'templates'          => $rows,

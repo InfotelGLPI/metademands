@@ -1,0 +1,59 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Shared export form: one row per available export format.
+ #
+ # Expected context:
+ #  - target:       form action URL
+ #  - hidden_name:  name of the hidden input carrying the exported item id
+ #  - hidden_value: the exported item id
+ #  - rows:         list of {label, button_name, button_label}
+ #}
+
+<form name="form" method="post" action="{{ target }}" enctype="multipart/form-data">
+    {{ call('Html::hidden', [hidden_name, {'value': hidden_value}])|raw }}
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5 class="card-title">{{ __('Export') }}</h5>
+        </div>
+        <div class="card-body">
+            {% for row in rows %}
+                <div class="row align-items-center{{ loop.last ? '' : ' mb-3' }}">
+                    <div class="col-sm-8">{{ row.label }}</div>
+                    <div class="col-sm-4 text-end">
+                        {{ call('Html::submit', [row.button_label, {
+                            'name': row.button_name,
+                            'class': 'btn btn-primary'
+                        }])|raw }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {# closeForm() emits the CSRF token and the closing </form> tag #}
+    {{ call('Html::closeForm', [false])|raw }}

@@ -25,61 +25,85 @@
  # --------------------------------------------------------------------------
  #}
 
-{% set colspan = 2 + colsup %}
+{#
+ # Expected context:
+ #  - add                 bool   template picker (creation) vs template manager
+ #  - target              string form / link target URL
+ #  - multi_entities      bool   whether the entity column is shown
+ #  - metademand_typename string
+ #  - templates           list   [{id, name, entity_name}, ...]
+ #}
 
-<div class="center">
-    <table class="tab_cadre">
-        <tr>
-            <th colspan="{{ colspan }}">
-                {% if add %}
-                    {{ __('Choose a template', 'metademands') }} - {{ metademand_typename }}
-                {% else %}
-                    {{ __('Templates') }} - {{ metademand_typename }}
-                {% endif %}
-            </th>
-        </tr>
+<div class="card mt-2">
+    <div class="card-header">
+        <h5 class="card-title">
+            {% if add %}
+                {{ __('Choose a template', 'metademands') }} - {{ metademand_typename }}
+            {% else %}
+                {{ __('Templates') }} - {{ metademand_typename }}
+            {% endif %}
+        </h5>
+    </div>
 
-        {% if add %}
-            <tr>
-                <td colspan="{{ colspan }}" class="center tab_bg_1">
-                    <a href="{{ target }}?id=-1&amp;withtemplate=2">&nbsp;&nbsp;&nbsp;{{ __('Blank Template') }}&nbsp;&nbsp;&nbsp;</a>
-                </td>
-            </tr>
-        {% endif %}
+    {% if add %}
+        <div class="card-body text-center">
+            <a class="btn btn-outline-secondary" href="{{ target }}?id=-1&amp;withtemplate=2">
+                {{ __('Blank Template') }}
+            </a>
+        </div>
+    {% endif %}
 
-        {% for template in templates %}
-            <tr>
-                <td class="center tab_bg_1">
-                    {% if not add %}
-                        <a href="{{ target }}?id={{ template.id }}&amp;withtemplate=1">&nbsp;&nbsp;&nbsp;{{ template.name }}&nbsp;&nbsp;&nbsp;</a>
-                    {% else %}
-                        <a href="{{ target }}?id={{ template.id }}&amp;withtemplate=2">&nbsp;&nbsp;&nbsp;{{ template.name }}&nbsp;&nbsp;&nbsp;</a>
+    <div class="table-responsive">
+        <table class="table card-table">
+            <thead>
+                <tr>
+                    <th>{{ __('Name') }}</th>
+                    {% if multi_entities %}
+                        <th>{{ __('Entity') }}</th>
                     {% endif %}
-                </td>
-                {% if multi_entities %}
-                    <td class="center tab_bg_2">{{ template.entity_name }}</td>
-                {% endif %}
-                {% if not add %}
-                    <td class="center tab_bg_2">
-                        <form method="post" action="{{ target }}" style="display:inline">
-                            <input type="hidden" name="id" value="{{ template.id }}">
-                            <input type="hidden" name="withtemplate" value="1">
-                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" name="purge" value="1" class="btn btn-sm btn-outline-danger">
-                                {{ _x('button', 'Delete permanently') }}
-                            </button>
-                        </form>
-                    </td>
-                {% endif %}
-            </tr>
-        {% endfor %}
+                    {% if not add %}
+                        <th class="text-end"></th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for template in templates %}
+                    <tr>
+                        <td>
+                            <a href="{{ target }}?id={{ template.id }}&amp;withtemplate={{ add ? 2 : 1 }}">
+                                {{ template.name }}
+                            </a>
+                        </td>
+                        {% if multi_entities %}
+                            <td>{{ template.entity_name }}</td>
+                        {% endif %}
+                        {% if not add %}
+                            <td class="text-end">
+                                <form method="post" action="{{ target }}" style="display:inline">
+                                    <input type="hidden" name="id" value="{{ template.id }}">
+                                    <input type="hidden" name="withtemplate" value="1">
+                                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" name="purge" value="1" class="btn btn-sm btn-outline-danger">
+                                        {{ _x('button', 'Delete permanently') }}
+                                    </button>
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="{{ 1 + (multi_entities ? 1 : 0) + (add ? 0 : 1) }}" class="text-center">
+                            {{ __('No results found') }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        {% if not add %}
-            <tr>
-                <td colspan="{{ colspan }}" class="tab_bg_2 center">
-                    <b><a href="{{ target }}?withtemplate=1">{{ __('Add a template') }}</a></b>
-                </td>
-            </tr>
-        {% endif %}
-    </table>
+    {% if not add %}
+        <div class="card-footer text-center">
+            <a class="btn btn-primary" href="{{ target }}?withtemplate=1">{{ __('Add a template') }}</a>
+        </div>
+    {% endif %}
 </div>

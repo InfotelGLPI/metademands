@@ -317,24 +317,24 @@ class Freetablefield extends CommonDBChild
      */
     public static function showFreetableFields($params = [])
     {
-        if ($params['type'] == "freetable") {
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='5'>";
-            echo _n('Free table field', 'Free table fields', 2, 'metademands');
-            $label = __('(6 fields maximum)', 'metademands');
-            echo "&nbsp;";
-            Html::showToolTip(
-                RichText::getSafeHtml($label),
-                ['awesome-class' => 'ti ti-info-circle'],
-            );
-            echo "</th>";
-            echo "</tr>";
-
-            Freetable::showFreetableFields($params);
-
-            echo "</table>";
+        if ($params['type'] != "freetable") {
+            return;
         }
+
+        // The rows are rendered by the already migrated Freetable::showFreetableFields(),
+        // which echoes its own template: capture it and hand it to the wrapper.
+        ob_start();
+        Freetable::showFreetableFields($params);
+        $rows_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@metademands/forms/freetable_fields_wrapper.html.twig', [
+            'title'        => _n('Free table field', 'Free table fields', 2, 'metademands'),
+            'tooltip_html' => Html::showToolTip(
+                RichText::getSafeHtml(__('(6 fields maximum)', 'metademands')),
+                ['awesome-class' => 'ti ti-info-circle', 'display' => false],
+            ),
+            'rows_html'    => $rows_html,
+        ]);
     }
 
 
