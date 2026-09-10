@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 11:44+0000\n"
+"POT-Creation-Date: 2026-09-10 11:54+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -868,7 +868,7 @@ msgstr "Due date"
 msgid "Duplicates fields options"
 msgstr ""
 
-#: templates/forms/stepform_waiting_form.html.twig:51
+#: templates/forms/stepform_waiting_form.html.twig:74
 msgid "Edit by"
 msgstr ""
 
@@ -1044,7 +1044,7 @@ msgid "Form choice"
 msgstr ""
 
 #: src/Stepform.php:647
-#: templates/forms/stepform_waiting_form_readonly.html.twig:34
+#: templates/forms/stepform_waiting_form_readonly.html.twig:48
 msgid "Form in progress"
 msgid_plural "Forms in progress"
 msgstr[0] ""
@@ -1113,7 +1113,7 @@ msgid "Group child ticket"
 msgstr ""
 
 #: src/NotificationTargetStepform.php:168
-#: templates/forms/stepform_waiting_form_readonly.html.twig:50
+#: templates/forms/stepform_waiting_form_readonly.html.twig:74
 msgid "Group in charge of the next step"
 msgstr ""
 
@@ -1682,8 +1682,11 @@ msgstr ""
 #: templates/ticketfield_list.html.twig:32
 #: templates/forms/stepform_list_from_metademand.html.twig:50
 #: templates/forms/user_forms_tab.html.twig:83
-#: templates/forms/draft_show.html.twig:47 templates/field_list.html.twig:117
-#: templates/wizard_metademands.html.twig:61 templates/task_list.html.twig:186
+#: templates/forms/draft_show.html.twig:47
+#: templates/forms/stepform_waiting_form_readonly.html.twig:91
+#: templates/forms/stepform_waiting_form.html.twig:84
+#: templates/field_list.html.twig:117 templates/wizard_metademands.html.twig:61
+#: templates/task_list.html.twig:186
 msgid "No results found"
 msgstr ""
 
@@ -2274,8 +2277,8 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: templates/forms/stepform_waiting_form_readonly.html.twig:48
-#: templates/forms/stepform_waiting_form.html.twig:53
+#: templates/forms/stepform_waiting_form_readonly.html.twig:71
+#: templates/forms/stepform_waiting_form.html.twig:76
 msgid "Step"
 msgstr ""
 
@@ -2816,7 +2819,7 @@ msgid "User"
 msgstr ""
 
 #: src/NotificationTargetStepform.php:169
-#: templates/forms/stepform_waiting_form_readonly.html.twig:53
+#: templates/forms/stepform_waiting_form_readonly.html.twig:80
 msgid "User in charge of the next step"
 msgstr ""
 
@@ -3040,7 +3043,7 @@ msgstr ""
 msgid "Your drafts"
 msgstr ""
 
-#: templates/forms/stepform_waiting_form.html.twig:35
+#: templates/forms/stepform_waiting_form.html.twig:51
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] ""
