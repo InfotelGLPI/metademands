@@ -1026,8 +1026,17 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                             }
                         });
 
-                        $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
-                            var id = $(e.target).attr("href").substr(1);
+                        // Anchored on the block tab bar: "ul.nav-tabs > li > a" also matches
+                        // the tab bar of the core form this list is rendered in, whose href is
+                        // a whole URL.
+                        $("ul#fieldslist > li > a").on("shown.bs.tab", function (e) {
+                            var href = $(e.target).attr("href") || "";
+
+                            if (href.indexOf("#block") !== 0) {
+                                return;
+                            }
+
+                            var id = href.substr(1);
                             sessionStorage.setItem("loadedblock", id);
                             window.location.hash = "#" + id;
                         });

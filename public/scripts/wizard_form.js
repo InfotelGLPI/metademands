@@ -110,9 +110,19 @@
         }
     });
 
-    // Keep the current tab in the hash and in the session storage.
-    $(document).on('shown.bs.tab', 'ul.nav-tabs > li > a', function (e) {
-        const id = $(e.target).attr('href').substr(1);
+    // Keep the current tab in the hash and in the session storage. The selector has to stay
+    // anchored on the block tab bar: this file is loaded on every page of GLPI, and
+    // `ul.nav-tabs > li > a` also matches the tab bar of the core forms, whose href is a
+    // whole URL — writing that into the hash made jQuery parse it as a selector on the next
+    // page load ("unrecognized expression: #front/ticket.form.php?id=…").
+    $(document).on('shown.bs.tab', 'ul#fieldslist > li > a', function (e) {
+        const href = $(e.target).attr('href') || '';
+
+        if (href.indexOf('#block') !== 0) {
+            return;
+        }
+
+        const id = href.substr(1);
 
         sessionStorage.setItem('loadedblock', id);
         window.location.hash = id;

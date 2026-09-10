@@ -25,37 +25,50 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # Forms already filled for the ITIL object, listed in its "metademands" tab.
+ #
+ # Expected context:
+ #  - title:       heading of the card
+ #  - entries:     rows {meta_name, date, by, id, meta_id, users_id}
+ #  - step, items_id, itemtype, webdir, is_validate: parameters of loadForm()
+ #}
+
 {% if entries is not empty %}
-    <table class="tab_cadre_fixe">
-        <thead>
-            <tr class="center">
-                <th colspan="4">{{ title }}</th>
-            </tr>
-            <tr class="tab_bg_1">
-                <th>{{ __('Name') }}</th>
-                <th>{{ __('Creation date') }}</th>
-                <th>{{ __('By') }}</th>
-                <th>{{ __('See form', 'metademands') }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in entries %}
-                <tr class="tab_bg_1">
-                    <td>{{ entry.meta_name }}</td>
-                    <td>{{ entry.date }}</td>
-                    <td>{{ entry.by }}</td>
-                    <td>
-                        <button form="" class="submit btn btn-info btn-sm"
-                                onclick="loadForm({{ entry.id }}, {{ entry.meta_id }}, {{ entry.users_id }})">
-                            <i class="ti ti-cloud-download pointer" style="font-size:2em"
-                               title="{{ _x('button', 'Load form', 'metademands') }}"
-                               data-hasqtip="0" aria-hidden="true"></i>
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5 class="card-title">{{ title }}</h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table card-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('Name') }}</th>
+                        <th>{{ __('Creation date') }}</th>
+                        <th>{{ __('By') }}</th>
+                        <th class="text-end">{{ __('See form', 'metademands') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                        <tr>
+                            <td>{{ entry.meta_name }}</td>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.by }}</td>
+                            <td class="text-end">
+                                <button form="" class="btn btn-sm btn-outline-secondary"
+                                        title="{{ _x('button', 'Load form', 'metademands') }}"
+                                        onclick="loadForm({{ entry.id }}, {{ entry.meta_id }}, {{ entry.users_id }})">
+                                    <i class="ti ti-cloud-download" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
         var step = {{ step }};

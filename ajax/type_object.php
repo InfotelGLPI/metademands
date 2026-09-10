@@ -35,7 +35,7 @@ Html::header_nocache();
 
 Session::checkCentralAccess();
 
-Session::checkRight("plugin_metademands", READ);
+Session::checkRight("plugin_metademands", UPDATE);
 
 global $PLUGIN_HOOKS;
 
