@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Field;
 
 header("Content-Type: text/html; charset=UTF-8");
@@ -51,21 +52,16 @@ switch ($_POST['step']) {
     case 'object':
         global $CFG_GLPI;
         if ($_POST['type'] === 'text') {
-            echo "
-                <div class='custom-control custom-checkbox custom-control-inline'>
-                    <label>" . __('Link this to a user field', 'metademands') . "</label>
-                    <input class='form-check-input' type='checkbox' name='item' value='User'>
-                </div>
-            ";
+            TemplateRenderer::getInstance()->display('@metademands/ajax/link_to_user_field.html.twig');
         } else {
-            $type = $_POST['type'];
-            echo Html::scriptBlock("
-                if ('$type' == 'datetime_interval' || '$type' === 'date_interval') {
-                    document.getElementById('show_label2').style.display = 'inline';
-                } else {
-                    document.getElementById('show_label2').style.display = 'none';
-                }
-        ");
+            // The second label only makes sense for the two interval types. The legacy
+            // script interpolated the posted type into the JS source to decide that.
+            $show_label2 = in_array($_POST['type'], ['datetime_interval', 'date_interval'], true)
+                ? 'inline'
+                : 'none';
+            echo Html::scriptBlock(
+                "document.getElementById('show_label2').style.display = '$show_label2';",
+            );
 
             $randItem = Field::dropdownFieldItems(
                 $_POST["type"],

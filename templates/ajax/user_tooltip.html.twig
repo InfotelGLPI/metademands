@@ -25,9 +25,15 @@
  # --------------------------------------------------------------------------
  #}
 
-<input class="form-check-input" type="hidden"
-       check="{{ check }}"
-       name="{{ name }}"
-       key="{{ key }}"
-       id="{{ name }}"
-       value="{{ key }}">
+{#
+ # Response of ajax/utooltipUpdate.php: the information card of the user picked in a
+ # requester / manager field of the wizard.
+ #
+ # Expected context:
+ #  - user_informations_html: card body, written by Wizard::showUserInformations()
+ #}
+
+<br><br>
+<div class="alert alert-info alert-dismissible fade show informations d-flex align-items-center">
+    <div>{{ user_informations_html|raw }}</div>
+</div>

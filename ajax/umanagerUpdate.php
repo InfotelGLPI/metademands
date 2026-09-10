@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
@@ -143,6 +144,9 @@ if ($display_type == 1 && $id !== null) {
 }
 
 if ($readonly == 1) {
+    // User::dropdown() writes the widget itself and returns its rand: the legacy `echo`
+    // printed that integer right after the read-only dropdown.
+    $opt['display'] = false;
     echo User::dropdown($opt);
     echo Html::hidden($_POST["field"], ['value' => $val]);
 } else {

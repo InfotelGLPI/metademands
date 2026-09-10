@@ -1,0 +1,60 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Toggle opening the panel that lists the models, the created forms and the drafts
+ #  of the current user. Every tab body is a Twig rendering built by Form or Draft,
+ #  hence the |raw. The legacy markup announced aria-selected="true" on every tab and
+ #  closed a </span> it never opened.
+ -#}
+<div class="{{ toggle_class }}" style="margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;">
+    &nbsp;<i class="fas fa-2x mydraft-fa fa-align-justify pointer" title="{{ toggle_title }}"
+             data-hasqtip="0" aria-hidden="true" data-metademands-toggle="divnavforms"></i>
+</div>
+
+<div id="divnavforms" class="input-draft card bg-light mb-3"
+     style="display:none;color: #000!important;position:absolute;right:0;z-index: 1000;margin-top: 50px;">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for tab in tabs %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link{% if loop.first %} active{% endif %}" id="{{ tab.id }}-tab"
+                        data-bs-toggle="tab" data-bs-target="#{{ tab.id }}" type="button" role="tab"
+                        aria-controls="{{ tab.id }}" aria-selected="{{ loop.first ? 'true' : 'false' }}">
+                    {{ tab.label }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        {% for tab in tabs %}
+            <div id="{{ tab.id }}" class="tab-pane fade{% if loop.first %} show active{% endif %}"
+                 role="tabpanel" aria-labelledby="{{ tab.id }}-tab">
+                {{ tab.content|raw }}
+            </div>
+        {% endfor %}
+    </div>
+</div>

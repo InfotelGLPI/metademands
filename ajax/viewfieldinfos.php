@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Field;
 
 header("Content-Type: text/html; charset=UTF-8");
@@ -34,32 +35,25 @@ Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-//var_dump($_POST);
-
 $field = new Field();
-if ($field->getFromDB($_POST["fields_id"])) {
 
-    echo "<br><table class='tab_cadre' width='100%'>";
-    echo "<tr class='tab_bg_1'>";
-    echo "<th colspan='2'>" . __('Field informations', 'metademands') . "</th>";
-    echo "</tr>";
-
-    echo "<tr class='tab_bg_1'>";
-    echo "<td>" . __('Type') . "</td>";
-    echo "<td>";
-    echo Field::getFieldTypesName($field->fields["type"]);
-    echo "</td>";
-    echo "</tr>";
-
-    echo "<tr class='tab_bg_1'>";
-    echo "<td>" . __('Example', 'metademands') . "</td>";
-    echo "<td>";
-
-    $params = Field::getAllParamsFromField($field);
-    $params['is_mandatory'] = 0;
-    echo Field::getFieldInput([], $params, false, 0, 0, false, "");
-    echo "</td>";
-    echo "</tr>";
-
-    echo "</table>";
+if (!isset($_POST["fields_id"]) || !$field->getFromDB($_POST["fields_id"])) {
+    return;
 }
+
+$params                 = Field::getAllParamsFromField($field);
+$params['is_mandatory'] = 0;
+
+// getFieldInput() echoes the widget internally but the parent_field case returns a
+// string: capture both, otherwise the example is printed ahead of the card.
+ob_start();
+$example_ret  = Field::getFieldInput([], $params, false, 0, 0, false, "");
+$example_html = ob_get_clean();
+if (is_string($example_ret)) {
+    $example_html .= $example_ret;
+}
+
+TemplateRenderer::getInstance()->display('@metademands/forms/field_informations.html.twig', [
+    'type_name'    => Field::getFieldTypesName($field->fields["type"]),
+    'example_html' => $example_html,
+]);

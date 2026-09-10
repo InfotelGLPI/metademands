@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
@@ -38,82 +39,73 @@ Session::checkRight("plugin_metademands", READ);
 
 global $PLUGIN_HOOKS;
 
-if ($_POST['object_to_create'] != null) {
-    $object = $_POST['object_to_create'];
+$object = $_POST['object_to_create'] ?? null;
 
-    if ($object == 'Ticket') {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . _n('Type', 'Types', 1) . "</td>";
-        echo "<td>";
-        $opt  = [
-            'display_emptychoice' => true,
-        ];
-        $rand = \Ticket::dropdownType('type', $opt);
+if ($object === null) {
+    return;
+}
 
-        $params = ['type'             => '__VALUE__',
+$mode                   = '';
+$type_dropdown_html     = '';
+$category_dropdown_html = '';
+$plugin_html            = '';
+
+if ($object == 'Ticket') {
+    $mode = 'ticket';
+
+    // Both helpers write to the standard output: capture them so the widget lands in
+    // the field column of the template instead of ahead of the whole response.
+    ob_start();
+    $rand = \Ticket::dropdownType('type', ['display_emptychoice' => true]);
+    Ajax::updateItemOnSelectEvent(
+        "dropdown_type$rand",
+        "show_category_by_type",
+        PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownITILCategories.php",
+        ['type'             => '__VALUE__',
             'value'            => 0,
             'object_to_create' => $object,
-            'entity_restrict'  => $_SESSION['glpiactiveentities']];
+            'entity_restrict'  => $_SESSION['glpiactiveentities']],
+    );
+    $type_dropdown_html = ob_get_clean();
+} elseif ($object == 'Problem' || $object == 'Change') {
+    $mode = 'category';
 
-        Ajax::updateItemOnSelectEvent(
-            "dropdown_type$rand",
-            "show_category_by_type",
-            PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownITILCategories.php",
-            $params,
-        );
-        echo "</td>";
+    $criteria = $object == 'Problem' ? ['is_problem' => 1] : ['is_change' => 1];
+    $criteria += getEntitiesRestrictCriteria(
+        \ITILCategory::getTable(),
+        'entities_id',
+        $_SESSION['glpiactiveentities'],
+        true,
+    );
 
-        echo "<td>" . __('Category') . "</td>";
-        echo "<td>";
+    $dbu        = new DbUtils();
+    $categories = [];
+    foreach ($dbu->getAllDataFromTable(\ITILCategory::getTable(), $criteria) as $category) {
+        $categories[$category['id']] = $category['completename'];
+    }
 
-        echo "<span id='show_category_by_type'>";
-        echo "</span>";
-        echo "</td>";
-        echo "</tr>";
-    } elseif ($object == 'Problem' || $object == 'Change') {
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2'></td>";
-        echo "</td>";
+    ob_start();
+    \Dropdown::showFromArray(
+        'itilcategories_id',
+        $categories,
+        ['width'    => '100%',
+            'multiple' => true,
+            'entity'   => $_SESSION['glpiactiveentities']],
+    );
+    $category_dropdown_html = ob_get_clean();
+} elseif (isset($PLUGIN_HOOKS['metademands'])) {
+    $mode = 'plugin';
 
-        echo "<td>" . __('Category') . "</td>";
-        echo "<td>";
-
-        if ($object == 'Problem') {
-            $criteria = ['is_problem' => 1];
-        } elseif ($object == 'Change') {
-            $criteria = ['is_change' => 1];
-        }
-
-
-        $criteria += getEntitiesRestrictCriteria(
-            \ITILCategory::getTable(),
-            'entities_id',
-            $_SESSION['glpiactiveentities'],
-            true,
-        );
-
-        $dbu    = new DbUtils();
-        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-        $temp   = [];
-        foreach ($result as $item) {
-            $temp[$item['id']] = $item['completename'];
-        }
-        \Dropdown::showFromArray(
-            'itilcategories_id',
-            $temp,
-            ['width'    => '100%',
-                'multiple' => true,
-                'entity'   => $_SESSION['glpiactiveentities']],
-        );
-        echo "</td>";
-        echo "</tr>";
-    } else {
-        if (isset($PLUGIN_HOOKS['metademands'])) {
-            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                if (Plugin::isPluginActive($plug)) {
-                    echo Metademand::getPluginUniqueDropdown($plug);
-                }
-            }
+    foreach (array_keys($PLUGIN_HOOKS['metademands']) as $plug) {
+        if (Plugin::isPluginActive($plug)) {
+            $plugin_html .= (string) Metademand::getPluginUniqueDropdown($plug);
         }
     }
 }
+
+TemplateRenderer::getInstance()->display('@metademands/ajax/type_object.html.twig', [
+    'mode'                   => $mode,
+    'type_dropdown_html'     => $type_dropdown_html,
+    'category_dropdown_html' => $category_dropdown_html,
+    'plugin_html'            => $plugin_html,
+]);

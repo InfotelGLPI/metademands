@@ -1,0 +1,52 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Fragment returned by ajax/type_object.php when the "object to create" of a
+ # metademand changes. It lands in a full-width column of the metademand form, so it
+ # follows the same `fields.*` formalism instead of the `<tr><td>` the legacy
+ # endpoint emitted into a Bootstrap grid.
+ #
+ # Expected context:
+ #  - mode:                    'ticket', 'category' or 'plugin'
+ #  - type_dropdown_html:      ticket type dropdown, with its onchange script
+ #  - category_dropdown_html:  ITIL category dropdown (problem / change)
+ #  - plugin_html:             dropdown contributed by another plugin
+ #}
+
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+<div class="row flex-row align-items-start flex-grow-1">
+    {% if mode == 'ticket' %}
+        {{ fields.htmlField('type', type_dropdown_html, _n('Type', 'Types', 1)) }}
+        {{ fields.ajaxField('show_category_by_type', '', __('Category')) }}
+    {% elseif mode == 'category' %}
+        {{ fields.htmlField('itilcategories_id', category_dropdown_html, __('Category')) }}
+    {% elseif mode == 'plugin' %}
+        {{ plugin_html|raw }}
+    {% endif %}
+</div>

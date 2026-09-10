@@ -1,0 +1,39 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Response of ajax/displayGroupField.php: it fills the `to_update_group` row of the
+ # metademand validation form, so it owns the cell. The legacy endpoint opened the
+ # `<td>` and never closed it.
+ #
+ # Expected context:
+ #  - group_dropdown_html: assignable-group dropdown, written by Group::dropdown()
+ #}
+
+<td colspan="2">
+    {{ __('Attribute ticket to ', 'metademands') }}&nbsp;{{ group_dropdown_html|raw }}
+</td>

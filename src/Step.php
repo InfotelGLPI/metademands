@@ -508,57 +508,42 @@ class Step extends CommonDBChild
                         $block_label_html = $data['block_id'];
                     }
 
-                    ob_start();
+                    // Visibility of the block: the groups it is restricted to, its
+                    // supervisor, or everybody. The legacy code built this fragment with
+                    // echo, and gated the multiple-groups branch on count($multiple_blocks)
+                    // instead of on the block being in it: a block restricted to a single
+                    // group showed no visibility at all as soon as another block of the
+                    // same metademand was restricted to several.
+                    $visibility = ['mode' => 'all', 'groups' => [], 'message' => ''];
                     if ($data['only_by_supervisor'] != 0 || $data['groups_id'] != 0) {
+                        $visibility['mode'] = 'none';
                         if (isset($configStep->fields['supervisor_validation'])
                             && $configStep->fields['supervisor_validation'] == 0) {
-
-                            if (count($multiple_blocks) > 0) {
-                                if (isset($multiple_blocks[$data['block_id']])) {
-                                    echo _n(
-                                        'Only visible for this group',
-                                        'Only visible for these groups',
-                                        2,
-                                        'metademands',
+                            if (isset($multiple_blocks[$data['block_id']])) {
+                                foreach ($multiple_blocks[$data['block_id']] as $gdata) {
+                                    $visibility['groups'][] = \Dropdown::getDropdownName(
+                                        \Group::getTable(),
+                                        $gdata,
                                     );
-                                    echo "&nbsp;:<br>";
-                                    foreach ($multiple_blocks[$data['block_id']] as $gid => $gdata) {
-                                        echo \Dropdown::getDropdownName(\Group::getTable(), $gdata);
-                                        echo "<br>";
-                                    }
-                                    foreach ($multiple_blocks[$data['block_id']] as $gid => $gdata) {
-                                        $already_see[] = $data['block_id'];
-                                    }
+                                    $already_see[] = $data['block_id'];
                                 }
-
                             } elseif ($data['groups_id'] != 0) {
-
-                                echo "<i class='ti ti-user-check'></i>&nbsp;";
-                                echo _n(
-                                    'Only visible for this group',
-                                    'Only visible for these groups',
-                                    1,
-                                    'metademands',
+                                $visibility['groups'][] = \Dropdown::getDropdownName(
+                                    \Group::getTable(),
+                                    $data['groups_id'],
                                 );
-                                echo "&nbsp;:<br>";
-                                echo \Dropdown::getDropdownName(\Group::getTable(), $data['groups_id']);
                             }
-                        } else {
-                            if ($data['only_by_supervisor'] != 0) {
-                                echo "<i class='ti ti-user-check'></i>&nbsp;";
-                                echo __("Only visible by supervisor", 'metademands');
+                            if (count($visibility['groups']) > 0) {
+                                $visibility['mode'] = 'groups';
                             }
+                        } elseif ($data['only_by_supervisor'] != 0) {
+                            $visibility['mode'] = 'supervisor';
                         }
-                    } else {
-                        echo __("Visible by all", 'metademands');
                     }
 
                     if (!empty($data['message'])) {
-                        echo "<br><br><i class='ti ti-message-plus'></i>&nbsp;" . RichText::getTextFromHtml(
-                            $data['message'],
-                        );
+                        $visibility['message'] = RichText::getTextFromHtml($data['message']);
                     }
-                    $visibility_html = ob_get_clean();
 
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/step.form.php";
 
@@ -577,7 +562,7 @@ class Step extends CommonDBChild
                         'onhover'          => $onhover,
                         'block_type_label' => $block_type_label,
                         'block_label_html' => $block_label_html,
-                        'visibility_html'  => $visibility_html,
+                        'visibility'       => $visibility,
                         'delete_form_html' => $delete_form_html,
                     ];
                 }

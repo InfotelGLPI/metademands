@@ -29,67 +29,44 @@
 
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Orderfollowup\Metademand;
-use PluginOrdermaterialMetademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-if (isset($_POST['action'])) {
-
-    switch ($_POST['action']) {
-        case "loadTotalrow":
-
-            if (isset($_POST['quantity'])
-                && $_POST['quantity'] > 0) {
-                $totalrow = $_POST['quantity'];
-                if (Plugin::isPluginActive('ordermaterial')) {
-                    $ordermaterialmeta = new PluginOrdermaterialMetademand();
-                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
-                        && isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
-                        $totalrow = $_POST['quantity'] * $_POST['estimated_price'];
-
-                    }
-                    if (isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
-                        echo Html::formatNumber($totalrow, false, 2);
-                        echo " €";
-                    } else {
-                        echo htmlspecialchars((string) $totalrow);
-                    }
-                }
-                if (Plugin::isPluginActive('orderfollowup')) {
-                    $ordermaterialmeta = new Metademand();
-                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
-                        && isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
-                        $totalrow = $_POST['quantity'] * $_POST['unit_price'];
-
-                    }
-                    if (isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
-                        echo Html::formatNumber($totalrow, false, 2);
-                        echo " €";
-                    } else {
-                        echo htmlspecialchars((string) $totalrow);
-                    }
-                }
-
-                TemplateRenderer::getInstance()->display('@metademands/forms/totalrow_hidden.html.twig', [
-                    'check' => $_POST['check'] ?? '',
-                    'name'  => $_POST['name'] ?? '',
-                    'key'   => $_POST['key'] ?? '',
-                ]);
-                //                if (!isset($_SESSION['plugin_metademands']['total_order'])) {
-                //                    $_SESSION['plugin_metademands']['total_order'] = $totalrow;
-                //                } else {
-                //                    $_SESSION['plugin_metademands']['total_order'] += $totalrow;
-                //                }
-            }
-
-            break;
-        case "loadGrandTotal":
-            //            if (isset($_SESSION['plugin_metademands']['total_order'])) {
-            //                echo $_SESSION['plugin_metademands']['total_order']." €";
-            //            } else {
-            //                echo "0 €";
-            //            }
-            break;
-    }
+if (($_POST['action'] ?? null) !== 'loadTotalrow'
+    || !isset($_POST['quantity'])
+    || $_POST['quantity'] <= 0) {
+    return;
 }
+
+// The two order plugins price a basket line the same way, each with its own column
+// name for the unit price. The legacy code tested them in two independent `if`, so a
+// site running both printed the total twice.
+$totalrow    = $_POST['quantity'];
+$unit_price  = null;
+$has_pricing = false;
+
+if (Plugin::isPluginActive('ordermaterial')) {
+    $has_pricing = true;
+    $unit_price  = $_POST['estimated_price'] ?? null;
+    $order_meta  = new PluginOrdermaterialMetademand();
+} elseif (Plugin::isPluginActive('orderfollowup')) {
+    $has_pricing = true;
+    $unit_price  = $_POST['unit_price'] ?? null;
+    $order_meta  = new Metademand();
+}
+
+if ($has_pricing
+    && $unit_price > 0
+    && $order_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])) {
+    $totalrow = $_POST['quantity'] * $unit_price;
+}
+
+TemplateRenderer::getInstance()->display('@metademands/forms/totalrow.html.twig', [
+    'show_total' => $has_pricing,
+    'is_price'   => $unit_price > 0,
+    'total'      => $unit_price > 0 ? Html::formatNumber($totalrow, false, 2) : (string) $totalrow,
+    'check'      => $_POST['check'] ?? '',
+    'name'       => $_POST['name'] ?? '',
+    'key'        => $_POST['key'] ?? '',
+]);

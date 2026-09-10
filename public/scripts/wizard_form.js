@@ -357,6 +357,22 @@
         chevron.classList.toggle('ti-chevron-down', shown);
     });
 
+    // Toggle of the models / forms / drafts panel. The trigger used to carry an inline
+    // onclick attribute calling jQuery's toggle().
+    document.addEventListener('click', function (e) {
+        const trigger = e.target.closest('[data-metademands-toggle]');
+
+        if (!trigger) {
+            return;
+        }
+
+        const panel = document.getElementById(trigger.dataset.metademandsToggle);
+
+        if (panel) {
+            panel.style.display = isVisible(panel) ? 'none' : '';
+        }
+    });
+
     /**
      * Post the basket order, then create the meta-demand it belongs to.
      *

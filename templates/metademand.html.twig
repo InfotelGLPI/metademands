@@ -90,8 +90,7 @@
                                 }]) %}
                             {% endset %}
                             {{ fields.htmlField('object_to_create', obj_dropdown,
-                                __('Object to create', 'metademands') ~ ' *',
-                                {'add_field_html': '<span id="define_object"></span>'}) }}
+                                __('Object to create', 'metademands') ~ ' *') }}
                             {% do call('Ajax::updateItemOnEvent', [
                                 'dropdown_object_to_create' ~ obj_rand,
                                 'define_object',
@@ -99,6 +98,9 @@
                                 {'object_to_create': '__VALUE__'}
                             ]) %}
                             {{ fields.nullField() }}
+                            {# Filled by ajax/type_object.php: a full-width column so the
+                               fields it returns line up with the rest of the form. #}
+                            <div id="define_object" class="col-12"></div>
                         {% else %}
                             {{ fields.htmlField('object_to_create',
                                 object_type_name ~ '<input type="hidden" name="object_to_create" value="' ~ item.fields['object_to_create']|e ~ '">',

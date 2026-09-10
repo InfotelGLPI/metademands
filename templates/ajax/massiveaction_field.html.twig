@@ -1,0 +1,48 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Response of ajax/dropdownMassiveActionField.php: the widget matching the search
+ # option picked in the massive-action form, plus the hidden input carrying its name.
+ #
+ # Expected context:
+ #  - use_table:   whether the widget needs the legacy two-cell table layout
+ #  - widget_html: the widget, written by the core helpers of the endpoint
+ #  - hidden_html: the `field` hidden input, built by Html::hidden()
+ #}
+
+{% if use_table %}
+    <table>
+        <tr>
+            <td>{{ widget_html|raw }}</td>
+            <td>{{ hidden_html|raw }}</td>
+        </tr>
+    </table>
+{% else %}
+    {{ widget_html|raw }}
+    {{ hidden_html|raw }}
+{% endif %}

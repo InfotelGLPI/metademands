@@ -6454,11 +6454,17 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return "";
     }
 
+    /**
+     * Show the progression chart of a demand: one step per son ticket, framed by the
+     * creation date of the parent and by its completion date.
+     *
+     * @param $item the parent Ticket the tab is displayed for (typed CommonGLPI by the tab callback)
+     *
+     * @return void
+     */
     public function showProgressionForm($item)
     {
-
         $tickets_found = [];
-        $tickets_next = [];
 
         $ticket_metademand = new Ticket_Metademand();
         $ticket_metademand_datas = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
@@ -6475,95 +6481,47 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             );
         }
 
-        $tickets_existant = [];
-
-        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/_process-chart.css");
-        echo "<div class='row'>";
-        echo "<div class='col-12 col-lg-12'>";
-        echo "<ul class='process-chart'>";
-        echo "<li class='entry-title align-items-center d-flex justify-content-center my-4 pb-6 fs-2 fw-bold'>";
-        echo "<i class='ti ti-brand-databricks me-1'></i>";
-        echo "<span>" . __('Progression of your demand', 'metademands') . "</span>";
-        echo "</li>";
-
-        echo "<li class='entry-point fs-3'>";
-        echo "<span class='icon-stack fa-2x'>";
-        echo "<i class='ti ti-circle-dashed'></i>";
-        echo "<i class='ti ti-calendar' style='font-size: 0.5em;'></i>";
-        echo "</span>";
-        echo "<span>" . __("Creation date") . " &nbsp;:&nbsp;" . Html::convDateTime($item->fields["date"]) . "</span>";
-        echo "</li>";
-
-        if (count($tickets_found)) {
-            foreach ($tickets_found as $tickets) {
-                if (!empty($tickets['tickets_id'])) {
-                    $tickets_existant[] = $tickets;
-                } else {
-                    $tickets_next[] = $tickets;
-                }
+        $steps = [];
+        $ticket = new \Ticket();
+        foreach ($tickets_found as $values) {
+            // A step that carries no ticket yet is a demand still to come: the legacy
+            // code gathered those in a $tickets_next array it never read afterwards.
+            if (empty($values['tickets_id']) || !$ticket->getFromDB($values['tickets_id'])) {
+                continue;
             }
-            if (count($tickets_existant)) {
-                $ticket = new \Ticket();
-                foreach ($tickets_existant as $values) {
-                    // Get ticket values if it exists
-                    $ticket->getFromDB($values['tickets_id']);
-                    $fa = "fa-tasks";
 
-                    if (Plugin::isPluginActive("servicecatalog")) {
-                        $fa = ServicecatalogCategory::getUsedConfig(
-                            "inherit_config",
-                            $ticket->fields['itilcategories_id'],
-                            'icon',
-                        );
-                    }
-
-                    $class = '';
-                    if (in_array($ticket->fields['status'], [\Ticket::SOLVED, \Ticket::CLOSED])) {
-                        $class = 'closedchild';
-                    }
-                    echo "<li class='step'>";
-                    echo "<a class='btn flex-column fs-3 $class' href='" . $ticket->getLinkURL() . "'>";
-                    echo "<div class='d-flex align-items-center'>";
-                    echo "<i class='fas $fa' style='float: right;'></i>";
-                    // getName() returns the raw database value: the ticket title is set by any
-                    // requester, so it must be escaped on this echo-built path.
-                    echo "<span>&nbsp;" . htmlspecialchars($ticket->getName(), ENT_QUOTES, 'UTF-8');
-                    echo "</span>";
-                    echo "</div>";
-                    echo "<div class='text-muted'>";
-                    $statusicon = CommonITILObject::getStatusClass($ticket->fields['status']);
-
-                    $dateEnd = (!empty($ticket->fields["solvedate"])) ? __(
-                        'Done on',
-                        'metademands',
-                    ) . " " . Html::convDateTime($ticket->fields["solvedate"]) : __("In progress", 'metademands');
-                    echo "<br>";
-                    echo "<i class='" . $statusicon . "'></i>&nbsp;";
-                    echo $dateEnd;
-                    echo "</div>";
-                    echo "</a>";
-                    echo "</li>";
-                }
+            $icon = 'ti ti-list';
+            if (Plugin::isPluginActive('servicecatalog')) {
+                $icon = 'fas ti ' . ServicecatalogCategory::getUsedConfig(
+                    'inherit_config',
+                    $ticket->fields['itilcategories_id'],
+                    'icon',
+                );
             }
+
+            $steps[] = [
+                'url' => $ticket->getLinkURL(),
+                // getName() returns the raw database value: the ticket title is set by
+                // any requester, Twig escapes it on the way out.
+                'name' => $ticket->getName(),
+                'icon' => $icon,
+                'is_closed' => in_array($ticket->fields['status'], [\Ticket::SOLVED, \Ticket::CLOSED]),
+                'status_icon' => CommonITILObject::getStatusClass($ticket->fields['status']),
+                'date' => !empty($ticket->fields['solvedate'])
+                    ? __('Done on', 'metademands') . ' ' . Html::convDateTime($ticket->fields['solvedate'])
+                    : __('In progress', 'metademands'),
+            ];
         }
 
-        //end ticket
-        $dateEnd = (!empty($item->fields["solvedate"])) ? Html::convDateTime($item->fields["solvedate"]) : __(
-            "Not yet completed",
-            'metademands',
-        );
-        $fa_end = (!empty($item->fields["solvedate"])) ? "ti-check" : "ti-hourglass";
-
-        echo "<li class='end fs-3 '>";
-        echo "<span class='icon-stack fa-2x'>";
-        echo "<i class='ti ti-circle-dashed'></i>";
-        echo "<i class='ti $fa_end' style='font-size: 0.5em;'></i>";
-        echo "</span>";
-        echo "<span>" . $dateEnd . "</span>";
-        echo "</li>";
-
-        echo "</ul><br><br>";
-        echo "</div>";
+        TemplateRenderer::getInstance()->display('@metademands/forms/metademand_progression.html.twig', [
+            'css_html' => Html::css(PLUGIN_METADEMANDS_WEBDIR . '/css/_process-chart.css'),
+            'creation_date' => Html::convDateTime($item->fields['date']),
+            'steps' => $steps,
+            'end_icon' => !empty($item->fields['solvedate']) ? 'ti-check' : 'ti-hourglass',
+            'end_date' => !empty($item->fields['solvedate'])
+                ? Html::convDateTime($item->fields['solvedate'])
+                : __('Not yet completed', 'metademands'),
+        ]);
     }
 
     /**

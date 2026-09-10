@@ -55,7 +55,21 @@
                                  <i class='ti ti-align-box-left-middle'></i>
                                 <span>&nbsp;{{ card.block_type_label }}&nbsp;-&nbsp;{{ card.block_label_html|raw }}</span>
                             </div>
-                            <div class='text-muted'>{{ card.visibility_html|raw }}</div>
+                            <div class='text-muted'>
+                                {%- if card.visibility.mode == 'groups' %}
+                                    <i class="ti ti-user-check"></i>&nbsp;
+                                    {{- _n('Only visible for this group', 'Only visible for these groups', card.visibility.groups|length, 'metademands') -}}
+                                    &nbsp;:<br>
+                                    {% for group in card.visibility.groups %}{{ group }}<br>{% endfor %}
+                                {%- elseif card.visibility.mode == 'supervisor' %}
+                                    <i class="ti ti-user-check"></i>&nbsp;{{ __('Only visible by supervisor', 'metademands') }}
+                                {%- elseif card.visibility.mode == 'all' %}
+                                    {{- __('Visible by all', 'metademands') -}}
+                                {%- endif %}
+                                {%- if card.visibility.message is not empty %}
+                                    <br><br><i class="ti ti-message-plus"></i>&nbsp;{{ card.visibility.message }}
+                                {%- endif %}
+                            </div>
                         </a>
                         <div class='btn flex-column' style='color:darkred'>{{ card.delete_form_html|raw }}</div>
                     </li>

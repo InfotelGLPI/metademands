@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Metademands\Fields\Time;
@@ -53,9 +54,14 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
     if (!isset($search[$_POST["id_field"]])) {
         throw new NotFoundHttpException();
     }
-    $search            = $search[$_POST["id_field"]];
-    $FIELDNAME_PRINTED = false;
-    $USE_TABLE         = false;
+    $search    = $search[$_POST["id_field"]];
+    $USE_TABLE = false;
+
+    // Every branch below writes its widget straight to the standard output. Capture it:
+    // the branches used to open a `<table><tr><td>` each and leave the tail of the file
+    // to close it, and the template now owns that wrapper.
+    ob_start();
+
 
     if ($search["table"] == $dbu->getTableForItemType($_POST["itemtype"])) { // field type
         switch ($search["table"] . "." . $search["linkfield"]) {
@@ -115,24 +121,18 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                 if (isset($search['datatype'])) {
                     switch ($search['datatype']) {
                         case "date":
-                            echo "<table><tr><td>";
                             Html::showDateField($search["linkfield"], ['value' => $_POST['value']]);
-                            echo "</td>";
                             $USE_TABLE       = true;
                             $already_display = true;
                             break;
                         case "time":
-                            echo "<table><tr><td>";
                             Time::showTimeField($search["linkfield"], ['value' => $_POST['value']]);
-                            echo "</td>";
                             $USE_TABLE       = true;
                             $already_display = true;
                             break;
                         case "datetime":
                             if (!isset($_POST['relative_dates']) || !$_POST['relative_dates']) {
-                                echo "<table><tr><td>";
                                 Html::showDateTimeField($search["linkfield"], ['value' => $_POST['value']]);
-                                echo "</td>";
                                 $already_display = true;
                                 $USE_TABLE       = true;
                             } else { // For ticket template
@@ -247,23 +247,17 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                 if (isset($search['datatype'])) {
                     switch ($search['datatype']) {
                         case "date":
-                            echo "<table><tr><td>";
                             Html::showDateField($search["linkfield"], $_POST["value"]);
-                            echo "</td>";
                             $USE_TABLE       = true;
                             $already_display = true;
                             break;
                         case "time":
-                            echo "<table><tr><td>";
                             Time::showTimeField($search["linkfield"], $_POST["value"]);
-                            echo "</td>";
                             $USE_TABLE       = true;
                             $already_display = true;
                             break;
                         case "datetime":
-                            echo "<table><tr><td>";
                             Html::showDateTimeField($search["linkfield"], ['value' => $_POST["value"]]);
-                            echo "</td>";
                             $already_display = true;
                             $USE_TABLE       = true;
                             break;
@@ -297,19 +291,18 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
         }
     }
 
-    if ($USE_TABLE) {
-        echo "<td>";
-    }
+    $widget_html = ob_get_clean();
 
-    if (!$FIELDNAME_PRINTED) {
-        if (empty($search["linkfield"])) {
-            echo Html::hidden('field', ['value' => $search["field"]]);
-        } else {
-            echo Html::hidden('field', ['value' => $search["linkfield"]]);
-        }
-    }
+    // $FIELDNAME_PRINTED was declared next to $USE_TABLE and never set: no branch of the
+    // switch printed the field name, so the hidden input was always emitted.
+    $hidden_html = Html::hidden(
+        'field',
+        ['value' => empty($search["linkfield"]) ? $search["field"] : $search["linkfield"]],
+    );
 
-    if ($USE_TABLE) {
-        echo "</td></tr></table>";
-    }
+    TemplateRenderer::getInstance()->display('@metademands/ajax/massiveaction_field.html.twig', [
+        'use_table'   => $USE_TABLE,
+        'widget_html' => $widget_html,
+        'hidden_html' => $hidden_html,
+    ]);
 }

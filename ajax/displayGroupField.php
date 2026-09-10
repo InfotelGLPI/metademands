@@ -27,23 +27,31 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-switch ($_POST['create_subticket']) {
-    case '1':
-        echo "";
-        break;
-    case '0':
-        $ticket = new \Ticket();
-        $ticket->getFromDB($_POST['tickets_id']);
-        echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
-        $group = 0;
-        foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
-            $group = $d['groups_id'];
-        }
-        \Group::dropdown(['condition' => ['is_assign' => 1], 'name' => 'group_to_assign', 'value' => $group]);
-        break;
+// The "create sub-tickets" branch has nothing to add to the row: only the "create
+// tasks" one asks for the group the parent ticket is handed over to.
+if (($_POST['create_subticket'] ?? null) !== '0') {
+    return;
 }
+
+$ticket = new \Ticket();
+$ticket->getFromDB($_POST['tickets_id']);
+
+$group = 0;
+foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
+    $group = $d['groups_id'];
+}
+
+ob_start();
+\Group::dropdown(['condition' => ['is_assign' => 1], 'name' => 'group_to_assign', 'value' => $group]);
+$group_dropdown_html = ob_get_clean();
+
+TemplateRenderer::getInstance()->display('@metademands/ajax/group_to_assign.html.twig', [
+    'group_dropdown_html' => $group_dropdown_html,
+]);

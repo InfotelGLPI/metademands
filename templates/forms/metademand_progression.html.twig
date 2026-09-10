@@ -1,0 +1,75 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Progression chart of a demand: one step per son ticket, framed by the creation
+ #  date of the parent demand and by its completion date. The step icon comes from
+ #  the servicecatalog category configuration, the ticket title from its requester;
+ #  both are escaped here.
+ -#}
+{{ css_html|raw }}
+<div class="row">
+    <div class="col-12 col-lg-12">
+        <ul class="process-chart">
+            <li class="entry-title align-items-center d-flex justify-content-center my-4 pb-6 fs-2 fw-bold">
+                <i class="ti ti-brand-databricks me-1"></i>
+                <span>{{ __('Progression of your demand', 'metademands') }}</span>
+            </li>
+
+            <li class="entry-point fs-3">
+                <span class="icon-stack fa-2x">
+                    <i class="ti ti-circle-dashed"></i>
+                    <i class="ti ti-calendar" style="font-size: 0.5em;"></i>
+                </span>
+                <span>{{ __('Creation date') }}&nbsp;:&nbsp;{{ creation_date }}</span>
+            </li>
+
+            {% for step in steps %}
+                <li class="step">
+                    <a class="btn flex-column fs-3{% if step.is_closed %} closedchild{% endif %}" href="{{ step.url }}">
+                        <div class="d-flex align-items-center">
+                            <i class="{{ step.icon }}" style="float: right;"></i>
+                            <span>&nbsp;{{ step.name }}</span>
+                        </div>
+                        <div class="text-muted">
+                            <br>
+                            <i class="{{ step.status_icon }}"></i>&nbsp;{{ step.date }}
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li class="end fs-3 ">
+                <span class="icon-stack fa-2x">
+                    <i class="ti ti-circle-dashed"></i>
+                    <i class="ti {{ end_icon }}" style="font-size: 0.5em;"></i>
+                </span>
+                <span>{{ end_date }}</span>
+            </li>
+        </ul>
+        <br><br>
+    </div>
+</div>

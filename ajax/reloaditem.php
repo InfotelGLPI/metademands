@@ -27,17 +27,27 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Field;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-if (isset($_POST['action'])
-    && $_POST['action'] == 'reloaditem') {
-    if (isset($_POST["type"])) {
-        if (in_array($_POST['type'], Field::$field_withobjects)) {
-            echo __('Object', 'metademands') . "&nbsp;";
-            Field::dropdownFieldItems($_POST['type'], ['with_empty_value' => true]);
-        }
-    }
+if (($_POST['action'] ?? null) !== 'reloaditem'
+    || !isset($_POST["type"])
+    || !in_array($_POST['type'], Field::$field_withobjects)) {
+    return;
 }
+
+// Belt and braces: the plugin branch of dropdownFieldItems() may write to the output
+// buffer rather than honour 'display'.
+ob_start();
+$returned = Field::dropdownFieldItems($_POST['type'], [
+    'with_empty_value' => true,
+    'display'          => false,
+]);
+$item_dropdown_html = ob_get_clean() . (is_string($returned) ? $returned : '');
+
+TemplateRenderer::getInstance()->display('@metademands/ajax/reload_item.html.twig', [
+    'item_dropdown_html' => $item_dropdown_html,
+]);

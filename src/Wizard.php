@@ -397,9 +397,7 @@ class Wizard extends CommonDBTM
         }
         $models_and_drafts = "";
         if ($parameters['from_draft'] == 0) {
-            ob_start();
-            self::showmodelsAndDrafts($parameters, true);
-            $models_and_drafts = (string) ob_get_clean();
+            $models_and_drafts = self::showmodelsAndDrafts($parameters, true);
         }
 
         TemplateRenderer::getInstance()->display('@metademands/wizard/metademand_title.html.twig', [
@@ -421,83 +419,54 @@ class Wizard extends CommonDBTM
         ]);
     }
 
+    /**
+     * Render the drop-down holding the models, the created forms and the drafts of the
+     * current user for a metademand.
+     *
+     * @param array    $parameters
+     * @param bool|int $with_title whether the metademand title is shown above the toggle
+     *
+     * @return string
+     */
     public static function showmodelsAndDrafts($parameters, $with_title = 1)
     {
+        if ($parameters['preview'] || $parameters['seeform']) {
+            return '';
+        }
+
         $config = Config::getInstance();
+        $user_id = Session::getLoginUserID();
+        $meta_id = $parameters['metademands_id'];
 
-        $class = "mydraft-withtitle";
-        if ($with_title == false) {
-            $class = "mydraft-withouttitle";
+        $tabs = [
+            [
+                'id' => 'divformmodels',
+                'label' => __('Your models', 'metademands'),
+                'content' => Form::showPrivateFormsForUserMetademand($user_id, $meta_id)
+                    . Form::showPublicFormsForUserMetademand($meta_id),
+            ],
+            [
+                'id' => 'divforms',
+                'label' => __('Your created forms', 'metademands'),
+                'content' => Form::showFormsForUserMetademand($user_id, $meta_id),
+            ],
+        ];
+
+        if ($config['use_draft']) {
+            $tabs[] = [
+                'id' => 'divdrafts',
+                'label' => __('Your drafts', 'metademands'),
+                'content' => Draft::showDraftsForUserMetademand($user_id, $meta_id),
+            ];
         }
-        if (!$parameters['preview'] && !$parameters['seeform']) {
-            echo "<div class='$class' style='margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;'>";
-            echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx(
-                'button',
-                'Your forms',
-                'metademands',
-            ) . "'
-                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
-            echo "</span>";
-            echo "</div>";
 
-            $margin = "margin-top: 50px;";
-            echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;position:absolute;right:0;z-index: 1000;$margin'>";
-            echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
-            echo "<li class='nav-item' role='presentation'>";
-            echo "<button class='nav-link active' id='divformmodels-tab' data-bs-toggle='tab'
-    data-bs-target='#divformmodels' type='button' role='tab' aria-controls='divformmodels' aria-selected='true'>";
-            echo __("Your models", 'metademands');
-            echo "</button>";
-            echo "</li>";
-            echo "<li class='nav-item' role='presentation'>";
-            echo "<button class='nav-link' id='divforms-tab' data-bs-toggle='tab'
-    data-bs-target='#divforms' type='button' role='tab' aria-controls='divforms' aria-selected='true'>";
-            echo __("Your created forms", 'metademands');
-            echo "</button>";
-            echo "</li>";
-
-            if ($config['use_draft']) {
-                echo "<li class='nav-item' role='presentation'>";
-                echo "<button class='nav-link' id='divdrafts-tab' data-bs-toggle='tab'
-    data-bs-target='#divdrafts' type='button' role='tab' aria-controls='divdrafts' aria-selected='true'>";
-                echo __("Your drafts", 'metademands');
-                echo "</button>";
-                echo "</li>";
-            }
-            echo "</ul>";
-
-            echo "<div class='tab-content' id='myTabContent'>";
-
-            echo "<div id='divformmodels' class='tab-pane fade show active' role='tabpanel' aria-labelledby='divformmodels-tab'>";
-            echo Form::showPrivateFormsForUserMetademand(
-                Session::getLoginUserID(),
-                $parameters['metademands_id'],
-            );
-            echo Form::showPublicFormsForUserMetademand(
-                $parameters['metademands_id'],
-            );
-            echo "</div>";
-
-            echo "<div id='divforms' class='tab-pane fade' role='tabpanel' aria-labelledby='divforms-tab'>";
-            echo Form::showFormsForUserMetademand(
-                Session::getLoginUserID(),
-                $parameters['metademands_id'],
-            );
-            echo "</div>";
-
-            if ($config['use_draft']) {
-                //
-                echo "<div id='divdrafts' class='tab-pane fade' role='tabpanel' aria-labelledby='divdrafts-tab'>";
-                echo Draft::showDraftsForUserMetademand(
-                    Session::getLoginUserID(),
-                    $parameters['metademands_id'],
-                );
-                echo "</div>";
-            }
-            echo "</div>";
-            echo "</div>";
-        }
+        return TemplateRenderer::getInstance()->render('@metademands/wizard/models_and_drafts.html.twig', [
+            'toggle_class' => $with_title ? 'mydraft-withtitle' : 'mydraft-withouttitle',
+            'toggle_title' => _x('button', 'Your forms', 'metademands'),
+            'tabs' => $tabs,
+        ]);
     }
+
     /**
      * @param $options
      *
@@ -552,9 +521,7 @@ class Wizard extends CommonDBTM
 
         $models_and_drafts = "";
         if ($parameters['step'] > Metademand::STEP_LIST && $title == 0) {
-            ob_start();
-            self::showmodelsAndDrafts($parameters, false);
-            $models_and_drafts = (string) ob_get_clean();
+            $models_and_drafts = self::showmodelsAndDrafts($parameters, false);
         }
 
         $template_vars = [
