@@ -693,9 +693,15 @@ class TicketField extends CommonDBChild
     }
 
     /**
+     * Replay the ticket template fields of every meta-demand attached to a category.
+     *
+     * The mandatory and the predefined fields used to be registered as two separate
+     * callbacks on the same 'ITILCategory' key of $PLUGIN_HOOKS, so the second
+     * assignment silently dropped the first one and only one of the two ever ran.
+     *
      * @param \ITILCategory $itilcategory
      */
-    public static function update_category_mandatoryFields(ITILCategory $itilcategory)
+    public static function update_category_fields(ITILCategory $itilcategory)
     {
         $categid = 0;
         if (isset($itilcategory->fields['id'])) {
@@ -709,24 +715,6 @@ class TicketField extends CommonDBChild
         ]);
         foreach ($metademands_data as $id => $value) {
             self::addTemplateFields($id, $categid, $value['type'], $value['entities_id']);
-        }
-    }
-
-    /**
-     * @param \ITILCategory $itilcategory
-     */
-    public static function update_category_predefinedFields(ITILCategory $itilcategory)
-    {
-        $categid = 0;
-        if (isset($itilcategory->fields['id'])) {
-            $categid = $itilcategory->fields['id'];
-        }
-        $metademands = new Metademand();
-        $metademands_data = $metademands->find([
-            'entities_id' => $_SESSION['glpiactive_entity'],
-            'itilcategories_id' => $categid,
-        ]);
-        foreach ($metademands_data as $id => $value) {
             self::addTemplateFields($id, $categid, $value['type'], $value['entities_id'], 'predefined');
         }
     }

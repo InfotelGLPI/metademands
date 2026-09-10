@@ -1,0 +1,54 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Break towards another block, opened in the middle of the field loop of the block
+ #  being rendered: this template deliberately closes wrappers it has not opened
+ #  (those of block_content.html.twig) and opens wrappers block_content closes.
+ #
+ #  The frame colour used to be printed as a <style> block emitted twice per break;
+ #  it now travels as the --md-preview-color variable read by .md-preview-tag in
+ #  public/css/metademands.css.
+ -#}
+{%- set frame = 'padding-top:5px;padding-bottom:10px;border-top:3px solid #' ~ preview_color ~ ';border-left:3px solid #' ~ preview_color ~ ';border-right:3px solid #' ~ preview_color -%}
+{%- set preview_style = '--md-preview-color:#' ~ preview_color ~ ';' ~ frame -%}
+</div></div></div>
+<div bloc-id="bloc{{ block }}">
+{%- if title is not null -%}
+    {% if is_preview %}<div class="row preview-md md-preview-tag" data-title="{{ block }}" style="{{ preview_style }}">{% else %}<div>{% endif %}
+    <br><h4 class="alert alert-light"><span style="color:{{ title.color }};">
+        {{- title.label -}}
+        {%- if debug %} (ID:{{ title.id }}){% endif -%}
+        {{- config_link|raw -}}
+        {%- if title.label2_tooltip_html is not empty %}&nbsp;{{ title.label2_tooltip_html|raw }}{% endif -%}
+        <i id="up{{ block }}" class="fa-1x ti ti-chevron-up pointer" data-metademands-collapse="{{ block }}"
+           style="right:40px;position:absolute;color:{{ title.color }};"></i>
+    </span></h4>
+    {%- if title.comment_html is not empty %}<label><i>{{ title.comment_html|raw }}</i></label>{% endif %}
+    </div>
+{%- endif %}
+<div bloc-hideid="bloc{{ block }}">
+{% if is_preview %}<div class="row preview-md md-preview-tag" data-title="{{ block }}" style="{{ preview_style }}">{% else %}<div class="row class1" style="background-color: {{ background_color }};padding: 0.5rem 0.5rem;">{% endif %}

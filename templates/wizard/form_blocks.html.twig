@@ -25,28 +25,21 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Selection tiles of one device list.
+{#- Blocks of the wizard form, in the order the designer arranged them.
  #
  #  Expected context:
- #    items : rows built by Dropdownmeta::buildDeviceRow(), each holding
- #            varname, values_name, value, selected, icon_html, name,
- #            tooltip_html and typename
+ #    blocks : list of {in_step, html} built by Wizard::constructForm(); in_step tells
+ #             whether the block belongs to the step-by-step flow, which hides it
+ #             through .tab-step until its step opens
  #
- #  The highlight of the picked tile is handled by public/scripts/dropdownmeta_device.js,
- #  which finds the tiles through the data-metademands-device marker.
+ #  html is still produced by Wizard::displayBlockContent(), which prints its markup.
+ #
+ #  Whitespace control is load-bearing: plugin_metademands_wizard_displayStepButton()
+ #  in scripts/metademands.js reads .tab-step.firstChild, which has to be the card of
+ #  the block and not an indentation text node.
 -#}
-{%- for item in items -%}
-    <label id="{{ item.varname }}"
-           class="btn md_buttonelt col-md-2 center {{ item.selected ? 'active md_buttonelt_color' : '' }}"
-           data-metademands-device>
-        <input type="radio" class="my_items" name="{{ item.values_name }}" value="{{ item.value }}"
-               {{ item.selected ? 'checked' : '' }}>
-        <div class="center">
-            {{ item.icon_html|raw }}&nbsp;
-            <h5 class="mt-0 mb-1 buttonelt-title">
-                {{ item.name }}&nbsp;{% if item.tooltip_html is not empty %}&nbsp;{{ item.tooltip_html|raw }}{% endif %}
-            </h5>
-            <br>{{ item.typename }}
-        </div>
-    </label>
+{%- for block in blocks -%}
+    {%- if block.in_step %}<div class="tab-step">{% endif -%}
+    {{- block.html|raw -}}
+    {%- if block.in_step %}</div>{% endif -%}
 {%- endfor -%}

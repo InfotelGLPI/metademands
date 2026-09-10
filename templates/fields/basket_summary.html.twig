@@ -1,0 +1,103 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Summary of a basket: the fields the requester filled in, then the objects they
+ #  picked. The reference, the designation and the description of an object are
+ #  designer-defined values that the legacy code concatenated raw into the table;
+ #  they are escaped here.
+ -#}
+{% set cell_border = 'border: 1px solid black;' %}
+
+{% if field_rows is not empty %}
+    <table class="tab_cadre_fixe">
+        {% for row in field_rows %}
+            <tr class="tab_bg_1">
+                {% for cells in row %}{{ cells|raw }}{% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if has_meta %}
+    <div class="row">
+        <div class="card mx-1 my-2 flex-grow-1">
+            <div class="col-12 align-self-center">
+                <section class="card-body" style="width: 100%;">
+                    <h2 class="card-title mb-2 text-break" style="color: {{ title_color }};">
+                        {{ __('Basket summary', 'metademands') }}
+                    </h2>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if has_materials %}
+    <table class="tab_cadre_fixe">
+        <tr class="tab_bg_1">
+            {% for header in headers %}
+                <th style="{{ cell_border }}{% if header.align is defined %}text-align: {{ header.align }};{% endif %}">
+                    {{- header.label -}}
+                </th>
+            {% endfor %}
+        </tr>
+        {% for row in rows %}
+            <tr class="tab_bg_1">
+                {% for cell in row %}
+                    <td style="{{ cell_border }}{% if cell.align is defined %}text-align: {{ cell.align }};{% endif %}">
+                        {{- cell.value -}}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        {% for footer in footers %}
+            <tr class="tab_bg_1">
+                <th style="{{ cell_border }}" colspan="{{ footer.colspan }}">{{ footer.label }}</th>
+                <th style="{{ cell_border }}text-align: right;">{{ footer.value }}</th>
+            </tr>
+            {% if footer.note is not empty %}
+                <tr class="tab_bg_1">
+                    <td colspan="{{ footer.colspan }}" style="{{ cell_border }}"></td>
+                    <td>{{ footer.note }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+    <br>
+    {#- Html::submit() and Draft::createDraftInput() return core-built markup. -#}
+    <div{% if order is not empty %} data-metademands-basket-order="{{ order|json_encode }}"{% endif %}>
+        {{ draft_input|raw }}
+        <span style="float:right">{{ submit_button|raw }}</span>
+    </div>
+{% else %}
+    <table>
+        <tr class="tab_bg_1">
+            <th colspan="4">{{ __('No items on basket', 'metademands') }}</th>
+        </tr>
+    </table>
+{% endif %}

@@ -25,28 +25,23 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Selection tiles of one device list.
+{#- Whole "my devices" picker of a metademand field: the requester's own devices,
+ #  then the ones their groups hold.
  #
  #  Expected context:
- #    items : rows built by Dropdownmeta::buildDeviceRow(), each holding
- #            varname, values_name, value, selected, icon_html, name,
- #            tooltip_html and typename
- #
- #  The highlight of the picked tile is handled by public/scripts/dropdownmeta_device.js,
- #  which finds the tiles through the data-metademands-device marker.
+ #    sections : list of {title, separator, items, empty_message} kept in display order
+ #    alert    : 'on' to light the mandatory-field warning up, 'off' to switch it off,
+ #               '' to leave it as the caller rendered it
 -#}
-{%- for item in items -%}
-    <label id="{{ item.varname }}"
-           class="btn md_buttonelt col-md-2 center {{ item.selected ? 'active md_buttonelt_color' : '' }}"
-           data-metademands-device>
-        <input type="radio" class="my_items" name="{{ item.values_name }}" value="{{ item.value }}"
-               {{ item.selected ? 'checked' : '' }}>
-        <div class="center">
-            {{ item.icon_html|raw }}&nbsp;
-            <h5 class="mt-0 mb-1 buttonelt-title">
-                {{ item.name }}&nbsp;{% if item.tooltip_html is not empty %}&nbsp;{{ item.tooltip_html|raw }}{% endif %}
-            </h5>
-            <br>{{ item.typename }}
-        </div>
-    </label>
-{%- endfor -%}
+<div class="container" style="display:contents;" data-metademands-devices data-metademands-alert="{{ alert }}">
+    <div class="row" data-toggle="buttons" style="margin-left: 1px;">
+        {% for section in sections %}
+            {% if section.separator %}<br>{% endif %}
+            <span data-toggle="buttons" style="margin-bottom: 15px;">
+                <h5>{{ section.title }}</h5>
+                {% include '@metademands/fields/field_dropdownmeta_device.html.twig' with {'items': section.items} only %}
+                {%- if section.empty_message is not empty %}{{ section.empty_message }}{% endif -%}
+            </span>
+        {% endfor %}
+    </div>
+</div>

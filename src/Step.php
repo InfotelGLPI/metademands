@@ -867,7 +867,8 @@ class Step extends CommonDBChild
                     'Your form will be validated by your supervisor',
                     'metademands',
                 ) . "&nbsp;";
-                echo getUserName($users_id_supervisor);
+                // getUserName() returns the raw realname/firstname columns in GLPI 11.
+                echo htmlescape(getUserName($users_id_supervisor));
                 echo "</div>";
             } else {
                 echo "<div class='alert alert-danger d-flex'>";

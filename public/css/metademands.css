@@ -351,6 +351,19 @@ button.clear-basket {
     position: relative;
 }
 
+/* Floating block number of the designer preview. The colour used to be printed as a
+   <style> block for each block; it now travels as a variable set on the block card. */
+.md-preview-tag::before {
+    content: attr(data-title);
+    background: var(--md-preview-color, #6c757d);
+    position: absolute;
+    padding: 0 20px;
+    color: #fff;
+    right: 0;
+    top: 0;
+    z-index: 1000;
+}
+
 /*.select2-selection.select2-selection--single, .select2-container .select2-selection.select2-selection--single, .select2-container .select2-selection.select2-selection--single {*/
 /*    width: 100% !important;*/
 /*    max-width:100%!important*/

@@ -588,6 +588,14 @@ class Dropdownmeta extends CommonDBTM
         echo $field;
     }
 
+    /**
+     * Tiles of the devices a requester may pick: the ones they hold themselves,
+     * then the ones their groups hold.
+     *
+     * @param array $values
+     *
+     * @return false|void
+     */
     public static function getItemsForUser(
         $values
     ) {
@@ -596,529 +604,391 @@ class Dropdownmeta extends CommonDBTM
         if (!isset($values['users_id'])) {
             return false;
         }
-        //        $config = new PluginServicecatalogConfig();
-        $users_id_requester = $values['users_id'];
 
-        //        if ($config->useItemtypesDisplay() == 1) {
-        //
-        //        } else {
-        //            $ticket = new ticket();
-        //            $params['_users_id_requester'] = $users_id_requester;
-        //            $params['itemtype'] = 'Ticket';
-        //            $params['_canupdate'] = true;
-        //
-        //            Item_Ticket::itemAddForm($ticket, $params);
-        //
-        //            echo "<span style='color: red;text-align: left;padding-top: 5px;'>";
-        //            echo __('If your equipment is not listed, thanks to add its name on ticket description', 'servicecatalog');
-        //            echo "</span>";
-        //        }
+        $users_id_requester = (int) $values['users_id'];
 
-        echo "<div class='container' style='display:contents;'>";
-        echo "<div class='row' data-toggle='buttons' style='margin-left: 1px;'>";
-
-        $objects_items_id = [];
-
-        $objects = $CFG_GLPI["assignable_types"];
+        $objects = $CFG_GLPI['assignable_types'];
         if (count($values['limit']) > 0) {
             $objects = $values['limit'];
         }
-        $objects[] = "Other";
-        echo Html::scriptBlock("var hardwareType = [];");
+        $objects[] = 'Other';
 
-        if (is_array($objects)
-            && count($objects) > 0) {
-            echo "<span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __('My devices') . "</h5>";
-        }
-        $i = 0;
         $device_items = [];
+        $found = false;
+
         if ($users_id_requester > 0) {
+            // The requester was reloaded once per item type by the legacy loop.
+            $user = new User();
+            $locations_id = 0;
+            if ($user->getFromDB($users_id_requester)) {
+                $locations_id = (int) $user->fields['locations_id'];
+            }
+
             foreach ($objects as $itemtype) {
-                if (($item = getItemForItemtype($itemtype))
-                    && \Ticket::isPossibleToAssignType($itemtype)
-                    && $itemtype != "Other"
-                    && $itemtype != "Certificate"
-                    && $itemtype != "Rack"
-                    && $itemtype != "DatabaseInstance"
-                    && $itemtype != "Simcard"
-                    && $itemtype != "PluginSimcardSimcard"
-                    && $itemtype != "PluginOrderOrder"
-                    && $itemtype != "Other"
-                    && $itemtype != "Domain"
-                    && $itemtype != "Line"
-                    && $itemtype != "PDU"
-                    && $itemtype != Badge::class
-                    && $itemtype != Resource::class
-                ) {
-                    $where = [];
-                    $itemtable = getTableForItemType($itemtype);
+                if (!self::isSelectableDeviceType($itemtype)
+                    || !($item = getItemForItemtype($itemtype))) {
+                    continue;
+                }
 
-                    if ($itemtype != "Appliance"
-                    ) {
-                        $where['users_id'] = $users_id_requester;
-                    }
-
-                    if (is_array($objects_items_id)
-                        && count($objects_items_id) > 0) {
-                        $where = [];
-                        $where['id'] = $objects_items_id;
-                    }
-                    $criteria = [
-                        'FROM' => $itemtable,
-                        'WHERE' => $where + getEntitiesRestrictCriteria(
-                            $itemtable,
-                            '',
-                            $_SESSION["glpiactive_entity"],
-                            $item->maybeRecursive(),
-                        ),
-                        'ORDER' => $item->getNameField(),
-                    ];
-
-                    if ($item->maybeDeleted()) {
-                        $criteria['WHERE']['is_deleted'] = 0;
-                    }
-                    if ($item->maybeTemplate()) {
-                        $criteria['WHERE']['is_template'] = 0;
-                    }
-
-                    $user = new User();
-                    $locations_id = 0;
-                    if ($user->getFromDB($users_id_requester)) {
-                        $locations_id = $user->fields['locations_id'];
-                    }
-                    if ($itemtype == "Printer" && $locations_id > 0) {
-                        $criteria['WHERE']['locations_id'] = $locations_id;
-                    }
-
-                    if (in_array($itemtype, $CFG_GLPI["helpdesk_visible_types"]) && $itemtype != "Database") {
-                        $criteria['WHERE']['is_helpdesk_visible'] = 1;
-                    }
-
-                    $iterator = $DB->request($criteria);
-                    $nb = count($iterator);
-                    if ($nb > 0) {
-                        $i = 1;
-                        foreach ($iterator as $data) {
-                            $items_id = $data["id"];
-                            $typename = $item->getTypeName(1);
-                            $type = $item->getType();
-                            //                        if ($type == "Appliance"
-                            //                            && !PluginServicecatalogApplianceLink::isApplianceAllowed($items_id)) {
-                            //                            continue;
-                            //                        }
-
-                            $varname = "hardwareType_" . $type . "_" . $items_id;
-                            $script_html = Html::scriptBlock("hardwareType.push('$varname');");
-
-                            $checked = "";
-                            $active = "";
-                            if (isset($values["items_id"]) && is_array($values["items_id"])) {
-                                $arr = $values["items_id"];
-                                foreach ($arr as $elttype => $arr2) {
-                                    if (in_array($items_id, $arr2) && $elttype == $itemtype) {
-                                        $checked = "checked";
-                                        $active = "active md_buttonelt_color";
-                                    }
-                                }
-                            }
-                            if (is_array($objects_items_id)
-                                && count($objects_items_id) == 1 && in_array($items_id, $objects_items_id)) {
-                                $checked = "checked";
-                                $active = "active md_buttonelt_color";
-                            }
-
-                            if ($values['selected_items_id'] == $items_id
-                                && $values['selected_itemtype'] == $itemtype) {
-                                $checked = "checked";
-                                $active = "active md_buttonelt_color";
-                            }
-
-                            $value = $itemtype . "_" . $items_id;
-                            $icon = self::getIconForType($itemtype);
-
-                            $ok = 0;
-                            $obj = new $itemtype();
-                            if ($obj->getFromDB($items_id)) {
-                                $className = strtolower(get_class($obj));
-                                $model = $className . "models";
-                                if (isset($obj->fields[$model . "_id"]) && !empty($obj->fields[$model . "_id"])) {
-                                    if ($itemModel = getItemForItemtype($type . 'Model')) {
-                                        $itemModel->getFromDB($obj->fields[$model . "_id"]);
-                                        $pictures = [];
-                                        if ($itemModel->fields['pictures'] != null) {
-                                            $pictures = json_decode($itemModel->fields['pictures'], true);
-
-                                            if (isset($pictures) && is_array($pictures)) {
-                                                foreach ($pictures as $picture) {
-                                                    $picture_url = Toolbox::getPictureUrl($picture);
-                                                    $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
-                                                        . $picture_url . "'>";
-                                                    $ok = 1;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if ($itemtype == "Appliance") {
-                                    if ($obj->fields['pictures'] != null) {
-                                        $pictures = json_decode($obj->fields['pictures'], true);
-
-                                        if (isset($pictures) && is_array($pictures)) {
-                                            foreach ($pictures as $picture) {
-                                                $picture_url = Toolbox::getPictureUrl($picture);
-                                                $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
-                                                    . $picture_url . "'>";
-                                                $ok = 1;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if ($ok == 1) {
-                                $icon_html = $icon;
-                            } else {
-                                if (str_contains($icon, 'fa-')) {
-                                    $icon_html = "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>";
-                                } else {
-                                    $icon_html = "<i style='font-size:4em' class='ti $icon mr-3'></i>";
-                                }
-                            }
-
-                            $comment = "";
-                            if (isset($data['serial']) && !empty($data['serial'])) {
-                                $comment = __('Serial number') . " : " . $data['serial'];
-                            }
-                            $tooltip_html = "";
-                            if (!empty($comment)) {
-                                $tooltip_html = Html::showToolTip($comment);
-                            }
-
-                            // name is auto-escaped by the Twig template ({{ item.name }}),
-                            // fixing the previously raw echo of user-supplied device names.
-                            $device_items[] = [
-                                'script_html'  => $script_html,
-                                'varname'      => $varname,
-                                'active'       => $active,
-                                'values_name'  => (string) $values['name'],
-                                'value'        => $value,
-                                'checked'      => $checked,
-                                'icon_html'    => $icon_html,
-                                'name'         => (string) $data[$item->getNameField()],
-                                'has_comment'  => !empty($comment),
-                                'tooltip_html' => $tooltip_html,
-                                'typename'     => (string) $typename,
-                            ];
-                        }
-                    }
+                $criteria = self::getOwnedDevicesCriteria($item, $itemtype, $users_id_requester, $locations_id);
+                foreach ($DB->request($criteria) as $data) {
+                    $found = true;
+                    $device_items[] = self::buildDeviceRow(
+                        $itemtype,
+                        (int) $data['id'],
+                        $values,
+                        (string) $data[$item->getNameField()],
+                        (string) $item->getTypeName(1),
+                        (string) ($data['serial'] ?? ''),
+                    );
                 }
             }
-            echo TemplateRenderer::getInstance()->render(
-                '@metademands/fields/field_dropdownmeta_device.html.twig',
-                ['items' => $device_items],
-            );
-            //        if ($itemtype == "Other") {
-            //            echo Html::scriptBlock("hardwareType.push('hardwareType_0');");
-            //            $checked = "";
-            //            $active = "";
-            //            if (isset($elttype) && $elttype == $itemtype) {
-            //                $checked = "checked";
-            //                $active = "active md_buttonelt_color";
-            //            }
-            //
-            //            echo "<label id='hardwareType_0' class='btn md_buttonelt col-md-2 center $active'
-            //                            onclick='changeBackgroundColor(\"hardwareType_0\",\"md_buttonelt_color\")'>";
-            //            $value = $itemtype . "_0";
-            //            echo "<input type='radio' class='my_items' name='my_items' value='$value' $checked>";
-            //            $icon = "fas fa-question";
-            //            echo "<div class='center' style=''>";
-            //            echo "<i style='font-size:4em' class='$icon fa-3x'></i>";
-            //            echo "<h5 class='mt-0 mb-1 buttonelt-title'>";
-            //            echo __('My equipment does not appear', 'metademands');
-            //            echo "</h5><br>";
-            //            echo "</div>";
-            //
-            //            echo "</label>";
-            //        }
         }
-        if ($i == 0) {
-            echo __('No equipment founded', 'metademands');
-            echo Html::scriptBlock(
-                "var tooltip = document.querySelector('.alertelt');
-                         if (tooltip != null) {
-                            tooltip.classList.remove('active');
-                         }",
-            );
+
+        $sections = [[
+            'title' => __('My devices'),
+            'separator' => false,
+            'items' => $device_items,
+            'empty_message' => $found ? '' : __('No equipment founded', 'metademands'),
+        ]];
+
+        if (Session::haveRight('show_group_hardware', '1')) {
+            $entity_restrict = (int) $_SESSION['glpiactive_entity'];
+            $groups = self::getRequesterGroups($users_id_requester, $entity_restrict);
+
+            if (count($groups) > 0) {
+                $group_objects = $CFG_GLPI['linkgroup_types'];
+                if (count($values['limit']) > 0) {
+                    $group_objects = $values['limit'];
+                }
+
+                $group_items = [];
+                foreach (self::getGroupDevices($group_objects, $groups, $entity_restrict) as $itemtype => $items_ids) {
+                    if (!self::isSelectableDeviceType($itemtype)
+                        || !in_array($itemtype, $group_objects)) {
+                        continue;
+                    }
+
+                    foreach ($items_ids as $items_id) {
+                        $group_items[] = self::buildDeviceRow($itemtype, (int) $items_id, $values);
+                    }
+                }
+
+                // The legacy code opened the section as soon as a device had been
+                // collected, even when the exclusion list emptied it right after.
+                if (count($group_items) > 0) {
+                    $sections[] = [
+                        'title' => __('Devices own by my groups', 'metademands'),
+                        'separator' => true,
+                        'items' => $group_items,
+                        'empty_message' => '',
+                    ];
+                }
+            }
         }
-        if (is_array($objects)
-            && count($objects) > 0) {
-            echo "</span>";
+
+        $alert = '';
+        if (!$found) {
+            $alert = 'off';
+        } elseif (!empty($values['is_mandatory'])) {
+            $alert = 'on';
         }
-        if (Session::haveRight("show_group_hardware", "1")
-            && (!is_array($objects_items_id) || count($objects_items_id) == 0)) {
-            $entity_restrict = $_SESSION["glpiactive_entity"];
-            $iterator = $DB->request([
-                'SELECT' => [
-                    'glpi_groups_users.groups_id',
-                    'glpi_groups.name',
+
+        TemplateRenderer::getInstance()->display('@metademands/fields/field_dropdownmeta_devices.html.twig', [
+            'sections' => $sections,
+            'alert' => $alert,
+        ]);
+    }
+
+    /**
+     * Item types the device picker refuses: the ones a ticket cannot be assigned to,
+     * and the ones the tiles were never meant to list.
+     *
+     * @param string $itemtype
+     *
+     * @return bool
+     */
+    private static function isSelectableDeviceType($itemtype): bool
+    {
+        $excluded = [
+            'Other',
+            'Certificate',
+            'Rack',
+            'DatabaseInstance',
+            'Simcard',
+            'PluginSimcardSimcard',
+            'PluginOrderOrder',
+            'Domain',
+            'Line',
+            'PDU',
+            Badge::class,
+            Resource::class,
+        ];
+
+        return !in_array($itemtype, $excluded) && \Ticket::isPossibleToAssignType($itemtype);
+    }
+
+    /**
+     * Criteria listing the devices the requester holds for one item type.
+     *
+     * @param \CommonDBTM $item
+     * @param string      $itemtype
+     * @param int         $users_id_requester
+     * @param int         $locations_id       location of the requester, printers only
+     *
+     * @return array
+     */
+    private static function getOwnedDevicesCriteria($item, $itemtype, $users_id_requester, $locations_id): array
+    {
+        global $CFG_GLPI;
+
+        $itemtable = getTableForItemType($itemtype);
+        $where = [];
+
+        // An appliance carries no holder: it is listed for the whole entity.
+        if ($itemtype != 'Appliance') {
+            $where['users_id'] = $users_id_requester;
+        }
+
+        $criteria = [
+            'FROM' => $itemtable,
+            'WHERE' => $where + getEntitiesRestrictCriteria(
+                $itemtable,
+                '',
+                $_SESSION['glpiactive_entity'],
+                $item->maybeRecursive(),
+            ),
+            'ORDER' => $item->getNameField(),
+        ];
+
+        if ($item->maybeDeleted()) {
+            $criteria['WHERE']['is_deleted'] = 0;
+        }
+        if ($item->maybeTemplate()) {
+            $criteria['WHERE']['is_template'] = 0;
+        }
+        if ($itemtype == 'Printer' && $locations_id > 0) {
+            $criteria['WHERE']['locations_id'] = $locations_id;
+        }
+        if (in_array($itemtype, $CFG_GLPI['helpdesk_visible_types']) && $itemtype != 'Database') {
+            $criteria['WHERE']['is_helpdesk_visible'] = 1;
+        }
+
+        return $criteria;
+    }
+
+    /**
+     * Groups the requester belongs to, ancestors included.
+     *
+     * @param int $users_id_requester
+     * @param int $entity_restrict
+     *
+     * @return array
+     */
+    private static function getRequesterGroups($users_id_requester, $entity_restrict): array
+    {
+        global $DB;
+
+        $iterator = $DB->request([
+            'SELECT' => ['glpi_groups_users.groups_id'],
+            'FROM' => 'glpi_groups_users',
+            'LEFT JOIN' => [
+                'glpi_groups' => [
+                    'ON' => [
+                        'glpi_groups_users' => 'groups_id',
+                        'glpi_groups' => 'id',
+                    ],
                 ],
-                'FROM' => 'glpi_groups_users',
+            ],
+            'WHERE' => [
+                'glpi_groups_users.users_id' => $users_id_requester,
+            ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
+        ]);
+
+        $groups = [];
+        foreach ($iterator as $data) {
+            $ancestors = getAncestorsOf('glpi_groups', $data['groups_id']);
+            $ancestors[$data['groups_id']] = $data['groups_id'];
+            $groups = array_merge($groups, $ancestors);
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Devices held by the groups of the requester, indexed by item type.
+     *
+     * @param array $itemtypes
+     * @param array $groups
+     * @param int   $entity_restrict
+     *
+     * @return array
+     */
+    private static function getGroupDevices($itemtypes, $groups, $entity_restrict): array
+    {
+        global $DB;
+
+        $devices = [];
+        foreach ($itemtypes as $itemtype) {
+            if (!($item = getItemForItemtype($itemtype))
+                || !\Ticket::isPossibleToAssignType($itemtype)) {
+                continue;
+            }
+
+            $itemtable = getTableForItemType($itemtype);
+            $criteria = [
+                'SELECT' => $itemtable . '.id',
+                'FROM' => $itemtable,
                 'LEFT JOIN' => [
-                    'glpi_groups' => [
+                    'glpi_groups_items' => [
                         'ON' => [
-                            'glpi_groups_users' => 'groups_id',
-                            'glpi_groups' => 'id',
+                            'glpi_groups_items' => 'items_id',
+                            $itemtable => 'id', [
+                                'AND' => [
+                                    'glpi_groups_items.itemtype' => $itemtype,
+                                    'glpi_groups_items.type' => Group_Item::GROUP_TYPE_NORMAL,
+                                ],
+                            ],
                         ],
                     ],
                 ],
                 'WHERE' => [
-                    'glpi_groups_users.users_id' => $users_id_requester,
-                ] + getEntitiesRestrictCriteria('glpi_groups', '', $entity_restrict, true),
-            ]);
+                    'glpi_groups_items.groups_id' => $groups,
+                ] + getEntitiesRestrictCriteria($itemtable, '', $entity_restrict, $item->maybeRecursive()),
+                'ORDER' => $item->getNameField(),
+            ];
 
-            $devices = [];
-            $groups = [];
-            if (count($iterator)) {
-                foreach ($iterator as $data) {
-                    $a_groups = getAncestorsOf("glpi_groups", $data["groups_id"]);
-                    $a_groups[$data["groups_id"]] = $data["groups_id"];
-                    $groups = array_merge($groups, $a_groups);
-                }
+            if ($item->maybeDeleted()) {
+                $criteria['WHERE']['is_deleted'] = 0;
+            }
+            if ($item->maybeTemplate()) {
+                $criteria['WHERE']['is_template'] = 0;
+            }
 
-                $objects = $CFG_GLPI["linkgroup_types"];
-                if (count($values['limit']) > 0) {
-                    $objects = $values['limit'];
-                }
-                foreach ($objects as $itemtype_groups) {
-                    if (($item = getItemForItemtype($itemtype_groups))
-                        && \Ticket::isPossibleToAssignType($itemtype_groups)
-                    ) {
-                        $itemtable = getTableForItemType($itemtype_groups);
-                        $criteria = [
-                            'SELECT' => $itemtable . '.id',
-                            'FROM' => $itemtable,
-                            'LEFT JOIN'       => [
-                                'glpi_groups_items' => [
-                                    'ON' => [
-                                        'glpi_groups_items' => 'items_id',
-                                        $itemtable          => 'id', [
-                                            'AND' => [
-                                                'glpi_groups_items.itemtype' => $itemtype_groups,
-                                                'glpi_groups_items.type' => Group_Item::GROUP_TYPE_NORMAL,
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            'WHERE' => [
-                                'glpi_groups_items.groups_id' => $groups,
-                            ] + getEntitiesRestrictCriteria(
-                                $itemtable,
-                                '',
-                                $entity_restrict,
-                                $item->maybeRecursive(),
-                            ),
-                            'ORDER' => $item->getNameField(),
-                        ];
+            foreach ($DB->request($criteria) as $data) {
+                // The join repeats a device once per group it is linked to.
+                $devices[$itemtype][$data['id']] = $data['id'];
+            }
+        }
 
-                        if ($item->maybeDeleted()) {
-                            $criteria['WHERE']['is_deleted'] = 0;
-                        }
-                        if ($item->maybeTemplate()) {
-                            $criteria['WHERE']['is_template'] = 0;
-                        }
+        return $devices;
+    }
 
-                        $iterator = $DB->request($criteria);
-                        if (count($iterator)) {
-                            $type_name = $item->getTypeName();
-                            if (!isset($already_add[$itemtype_groups])) {
-                                $already_add[$itemtype_groups] = [];
-                            }
-                            foreach ($iterator as $data) {
-                                if (!in_array($data["id"], $already_add[$itemtype_groups])) {
-                                    $devices[$itemtype_groups][] = $data["id"];
+    /**
+     * One selection tile of the device picker.
+     *
+     * The two lists feed the same template: the personal one already read its row,
+     * the group one only knows an id, so the name, the type name and the serial
+     * number are taken from the loaded object when the caller passes nothing.
+     *
+     * @param string      $itemtype
+     * @param int         $items_id
+     * @param array       $values
+     * @param string|null $name
+     * @param string|null $typename
+     * @param string|null $serial
+     *
+     * @return array
+     */
+    private static function buildDeviceRow(
+        $itemtype,
+        $items_id,
+        $values,
+        $name = null,
+        $typename = null,
+        $serial = null,
+    ): array {
+        $obj = getItemForItemtype($itemtype);
+        $loaded = $obj !== false && $obj->getFromDB($items_id);
 
-                                    $already_add[$itemtype_groups][] = $data["id"];
-                                }
-                            }
-                        }
-                    }
-                }
-                if (count($devices)) {
-                    echo "<br><span data-toggle='buttons' style='margin-bottom: 15px;'><h5>" . __(
-                        'Devices own by my groups',
-                        'metademands',
-                    ) . "</h5>";
+        if ($serial === null) {
+            $serial = $loaded ? (string) ($obj->fields['serial'] ?? '') : '';
+        }
 
-                    $group_items = [];
-                    foreach ($devices as $itemtype_groups => $list_items_id) {
-                        if ($item = getItemForItemtype($itemtype_groups)
-                            && \Ticket::isPossibleToAssignType($itemtype_groups)
-                            && $itemtype_groups != "Other"
-                            && $itemtype_groups != "Certificate"
-                            && $itemtype_groups != "Rack"
-                            && $itemtype_groups != "DatabaseInstance"
-                            && $itemtype_groups != "Simcard"
-                            && $itemtype_groups != "PluginSimcardSimcard"
-                            && $itemtype_groups != "PluginOrderOrder"
-                            && $itemtype_groups != "Other"
-                            && $itemtype_groups != "Domain"
-                            && $itemtype_groups != "Line"
-                            && $itemtype_groups != "PDU"
-                            && $itemtype_groups != Badge::class
-                            && $itemtype_groups != Resource::class
-                            && in_array($itemtype_groups, $objects)
-                        ) {
-                            foreach ($list_items_id as $key => $items_id) {
-                                $varname = "hardwareType_" . $itemtype_groups . "_" . $items_id;
-                                $script_html = Html::scriptBlock("hardwareType.push('$varname');");
+        $comment = '';
+        if ($serial !== '') {
+            $comment = __('Serial number') . ' : ' . $serial;
+        }
 
-                                $checked = "";
-                                $active = "";
-                                if (isset($values["items_id"]) && is_array($values["items_id"])) {
-                                    $arr = $values["items_id"];
-                                    foreach ($arr as $elttype => $arr2) {
-                                        if (in_array($items_id, $arr2) && $elttype == $itemtype_groups) {
-                                            $checked = "checked";
-                                            $active = "active md_buttonelt_color";
-                                        }
-                                    }
-                                }
-                                if (is_array($objects_items_id)
-                                    && count($objects_items_id) == 1 && in_array($items_id, $objects_items_id)) {
-                                    $checked = "checked";
-                                    $active = "active md_buttonelt_color";
-                                }
+        return [
+            'varname' => 'hardwareType_' . $itemtype . '_' . $items_id,
+            'values_name' => (string) $values['name'],
+            'value' => $itemtype . '_' . $items_id,
+            'selected' => self::isDeviceSelected($itemtype, $items_id, $values),
+            'icon_html' => self::getDeviceIcon($itemtype, $loaded ? $obj : null),
+            'name' => (string) ($name ?? ($loaded ? $obj->getName() : '')),
+            'typename' => (string) ($typename ?? ($loaded ? $obj->getTypeName() : '')),
+            // showToolTip() prints by default, so the markup used to be flushed
+            // before the tiles while the row itself carried nothing.
+            'tooltip_html' => $comment === '' ? '' : Html::showToolTip($comment, ['display' => false]),
+        ];
+    }
 
-                                if ($values['selected_items_id'] == $items_id
-                                    && $values['selected_itemtype'] == $itemtype_groups) {
-                                    $checked = "checked";
-                                    $active = "active md_buttonelt_color";
-                                }
-
-                                $value = $itemtype_groups . "_" . $items_id;
-
-                                $icon = self::getIconForType($itemtype_groups);
-
-                                $ok = 0;
-                                $obj = new $itemtype_groups();
-                                if ($obj->getFromDB($items_id)) {
-                                    $className = strtolower(get_class($obj));
-                                    $model = $className . "models";
-                                    if (isset($obj->fields[$model . "_id"]) && !empty($obj->fields[$model . "_id"])) {
-                                        if ($itemModel = getItemForItemtype($itemtype_groups . 'Model')) {
-                                            $itemModel->getFromDB($obj->fields[$model . "_id"]);
-                                            $pictures = [];
-                                            if ($itemModel->fields['pictures'] != null) {
-                                                $pictures = json_decode($itemModel->fields['pictures'], true);
-
-                                                if (isset($pictures) && is_array($pictures)) {
-                                                    foreach ($pictures as $picture) {
-                                                        $picture_url = Toolbox::getPictureUrl($picture);
-                                                        $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
-                                                            . $picture_url . "'>";
-                                                        $ok = 1;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if ($itemtype_groups == "Appliance") {
-                                        if ($obj->fields['pictures'] != null) {
-                                            $pictures = json_decode($obj->fields['pictures'], true);
-
-                                            if (isset($pictures) && is_array($pictures)) {
-                                                foreach ($pictures as $picture) {
-                                                    $picture_url = Toolbox::getPictureUrl($picture);
-                                                    $icon = "<img class='user_picture' style='width: 30%;height: 30%;'
-                                        alt=\"" . _sn('Picture', 'Pictures', 1) . "\" src='"
-                                                        . $picture_url . "'>";
-                                                    $ok = 1;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if ($ok == 1) {
-                                    $icon_html = $icon;
-                                } else {
-                                    if (str_contains($icon, 'fa-')) {
-                                        $icon_html = "<i style='font-size:4em' class='fas $icon fa-3x mr-3'></i>";
-                                    } else {
-                                        $icon_html = "<i style='font-size:4em' class='ti $icon mr-3'></i>";
-                                    }
-                                }
-
-                                $comment = "";
-                                if (isset($obj->fields['serial']) && !empty($obj->fields['serial'])) {
-                                    $comment = __('Serial number') . " : " . $obj->fields['serial'];
-                                }
-                                $tooltip_html = "";
-                                if (!empty($comment)) {
-                                    $tooltip_html = Html::showToolTip($comment);
-                                }
-
-                                $group_items[] = [
-                                    'script_html'  => $script_html,
-                                    'varname'      => $varname,
-                                    'active'       => $active,
-                                    'values_name'  => (string) $values['name'],
-                                    'value'        => $value,
-                                    'checked'      => $checked,
-                                    'icon_html'    => $icon_html,
-                                    'name'         => (string) $obj->getName(),
-                                    'has_comment'  => !empty($comment),
-                                    'tooltip_html' => $tooltip_html,
-                                    'typename'     => (string) $obj->getTypeName(),
-                                ];
-                            }
-                        }
-                    }
-                    echo TemplateRenderer::getInstance()->render(
-                        '@metademands/fields/field_dropdownmeta_device.html.twig',
-                        ['items' => $group_items],
-                    );
-                    echo "</span>";
+    /**
+     * Whether the requester already picked that device.
+     *
+     * @param string $itemtype
+     * @param int    $items_id
+     * @param array  $values
+     *
+     * @return bool
+     */
+    private static function isDeviceSelected($itemtype, $items_id, $values): bool
+    {
+        if (isset($values['items_id']) && is_array($values['items_id'])) {
+            foreach ($values['items_id'] as $selected_itemtype => $selected_items_id) {
+                if ($selected_itemtype == $itemtype && in_array($items_id, $selected_items_id)) {
+                    return true;
                 }
             }
         }
 
-        echo "</div></div>";
+        return ($values['selected_items_id'] ?? 0) == $items_id
+            && ($values['selected_itemtype'] ?? '') == $itemtype;
+    }
 
-        if ($values['is_mandatory'] && $i > 0) {
-            echo Html::scriptBlock(
-                "var tooltip = document.querySelector('.alertelt');
-                         if (tooltip != null) {
-                            tooltip.classList.add('active');
-                         }",
-            );
+    /**
+     * Illustration of a device: the picture of its model when it carries one, the
+     * icon of its item type otherwise.
+     *
+     * @param string           $itemtype
+     * @param \CommonDBTM|null $obj      the loaded device, null when it could not be read
+     *
+     * @return string
+     */
+    private static function getDeviceIcon($itemtype, $obj): string
+    {
+        $pictures = [];
+
+        if ($obj !== null) {
+            $model_field = strtolower(get_class($obj)) . 'models_id';
+            if (!empty($obj->fields[$model_field])
+                && ($item_model = getItemForItemtype($itemtype . 'Model'))
+                && $item_model->getFromDB($obj->fields[$model_field])
+                && $item_model->fields['pictures'] !== null) {
+                $pictures = json_decode($item_model->fields['pictures'], true);
+            }
+
+            if ($itemtype == 'Appliance' && ($obj->fields['pictures'] ?? null) !== null) {
+                $pictures = json_decode($obj->fields['pictures'], true);
+            }
         }
 
-        echo Html::scriptBlock(
-            "
-                        function changeBackgroundColor(idLabel,newCss) {
+        if (is_array($pictures) && count($pictures) > 0) {
+            // The legacy loop rebuilt the tag on every picture: the last one won.
+            $picture_url = Toolbox::getPictureUrl(end($pictures));
 
-                           hardwareType.forEach(function(item, index, array) {
-                                 document.getElementById(item).className='btn md_buttonelt col-md-2 center';
-                              });
-                           document.getElementById(idLabel).className='btn md_buttonelt col-md-2 center '+newCss;
+            return '<img class="user_picture" style="width: 30%;height: 30%;" alt="'
+                . _sn('Picture', 'Pictures', 1) . '" src="' . $picture_url . '">';
+        }
 
-                           var md_buttonelt = document.getElementById('hardwareType_0');
-                           var tooltip = document.querySelector('.tooltipelt');
-                           if (typeof md_buttonelt !== 'undefined' && md_buttonelt !== null && md_buttonelt.innerHTML.length > 0) {
-                               tooltip.classList.remove('active');
-                               $('.tooltipelt').hide();
-                               md_buttonelt.addEventListener('click', function() {
-                                 tooltip.classList.add('active');
-                                 $('.tooltipelt').show();
-                               });
-                            } else {
-                                $('.tooltipelt').hide();
-                            }
-                        }",
-        );
+        $icon = self::getIconForType($itemtype);
+
+        if (str_contains($icon, 'fa-')) {
+            return "<i style='font-size:4em' class='fas " . $icon . " fa-3x mr-3'></i>";
+        }
+
+        return "<i style='font-size:4em' class='ti " . $icon . " mr-3'></i>";
     }
 
     public static function getIconForType($type)

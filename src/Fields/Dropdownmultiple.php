@@ -341,24 +341,23 @@ class Dropdownmultiple extends CommonDBTM
             $required = "";
         }
 
-        // Right column: selected options. 'other'/custom labels are auto-escaped by Twig;
-        // pre-formatted core strings (getUserName/getDropdownName) are marked raw.
+        // Right column: selected options. getUserName() and Dropdown::getDropdownName()
+        // return raw database columns in GLPI 11, so every label is escaped by Twig.
         $right_options = [];
         if (is_array($value) && count($value) > 0) {
             foreach ($value as $k => $val) {
                 if ($item == 'other') {
                     if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$id])) {
-                        $right_options[] = ['value' => $val, 'text' => $list[$val]['name'], 'text_raw' => false, 'selected' => false];
+                        $right_options[] = ['value' => $val, 'text' => $list[$val]['name'], 'selected' => false];
                     } else {
-                        $right_options[] = ['value' => $k, 'text' => $val, 'text_raw' => false, 'selected' => false];
+                        $right_options[] = ['value' => $k, 'text' => $val, 'selected' => false];
                     }
                 } elseif ($item == User::getType()) {
-                    $right_options[] = ['value' => $val, 'text' => getUserName($val, 0, true), 'text_raw' => true, 'selected' => true];
+                    $right_options[] = ['value' => $val, 'text' => getUserName($val, 0, true), 'selected' => true];
                 } else {
                     $right_options[] = [
                         'value'    => $val,
                         'text'     => \Dropdown::getDropdownName(getTableForItemType($item), $val),
-                        'text_raw' => true,
                         'selected' => true,
                     ];
                 }

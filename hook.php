@@ -876,7 +876,8 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
     global $CFG_GLPI;
     switch ($field) {
         case 9499:
-            $out = getUserName($data['raw']["ITEM_" . $num], 0, true);
+            // The core takes the string a plugin hook returns as trusted HTML.
+            $out = htmlescape(getUserName($data['raw']["ITEM_" . $num], 0, true));
             return $out;
         case 9500:
             $out = Ticket_Metademand::getStatusName($data['raw']["ITEM_" . $num]);
@@ -983,7 +984,8 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                         if ($i != 0) {
                             $result .= "\n";
                         }
-                        $result .= getUserName($data["Ticket_9504"][$i]["name"], 0, true);
+                        // The core takes the string a plugin hook returns as trusted HTML.
+                        $result .= htmlescape(getUserName($data["Ticket_9504"][$i]["name"], 0, true));
                     }
                 }
             }

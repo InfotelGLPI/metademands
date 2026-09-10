@@ -188,7 +188,23 @@
         });
     }
 
+    /**
+     * The basket summary replaces the step flow: its own button posts the order.
+     *
+     * @param {HTMLElement} container the holder emitted by fields/basket_summary.html.twig
+     */
+    function initBasketOrder(container) {
+        if (container.dataset.metademandsOrderInit) {
+            return;
+        }
+        container.dataset.metademandsOrderInit = '1';
+
+        $('#prevBtn').hide();
+        $('.step_wizard').hide();
+    }
+
     const WIDGETS = [
+        {selector: '[data-metademands-basket-order]', init: initBasketOrder},
         {selector: '.tabs-container[data-metademands-block-id]', init: initTabs},
         {selector: '[data-metademands-previous-dialog]', init: initPreviousDialog},
         {selector: '[data-metademands-hidden-blocks]', init: initHiddenBlocks},
@@ -304,6 +320,98 @@
                 console.log(xhr, status, error);
             },
         });
+    });
+
+    /**
+     * Tell whether an element takes room on the page, the way jQuery ':visible' does.
+     *
+     * @param {HTMLElement} element
+     *
+     * @return {boolean}
+     */
+    function isVisible(element) {
+        return element.offsetWidth > 0
+            || element.offsetHeight > 0
+            || element.getClientRects().length > 0;
+    }
+
+    // Collapse toggle of a block title. The same handler used to be emitted twice as an
+    // inline scriptBlock, by Fields\Titleblock::showWizardField() and by the block break
+    // of Wizard::displayBlockFields(), each time with its own random variable names.
+    document.addEventListener('click', function (e) {
+        const chevron = e.target.closest('[data-metademands-collapse]');
+
+        if (!chevron) {
+            return;
+        }
+
+        const bodies = document.querySelectorAll(
+            '[bloc-hideid="bloc' + chevron.dataset.metademandsCollapse + '"]'
+        );
+        const shown = Array.prototype.some.call(bodies, isVisible);
+
+        bodies.forEach(function (body) {
+            body.style.display = shown ? 'none' : '';
+        });
+        chevron.classList.toggle('ti-chevron-up', !shown);
+        chevron.classList.toggle('ti-chevron-down', shown);
+    });
+
+    /**
+     * Post the basket order, then create the meta-demand it belongs to.
+     *
+     * The whole handler used to be an inline <script> emitted by
+     * Fields\Basket::displayBasketSummary(), with the meta-demand name interpolated
+     * into a JS string literal.
+     *
+     * @param {Object} config
+     */
+    function sendBasketOrder(config) {
+        const posted = $('#wizard_form').serializeArray();
+
+        posted.push({name: 'save_form', value: true});
+        posted.push({name: 'step', value: 2});
+        posted.push({name: 'form_name', value: config.form_name});
+
+        $.ajax({
+            url: config.add_url,
+            type: 'POST',
+            dataType: 'html',
+            data: posted,
+            success: function (response) {
+                if (response == 1) {
+                    location.reload();
+                    return;
+                }
+
+                $.ajax({
+                    url: config.create_url,
+                    type: 'POST',
+                    data: posted,
+                    success: function (created) {
+                        if (created == 1) {
+                            location.reload();
+                        } else {
+                            window.location.href = config.wizard_url;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    },
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
+
+    $(document).on('click', '#submitOrder', function () {
+        const holder = this.closest('[data-metademands-basket-order]');
+
+        if (holder) {
+            sendBasketOrder(JSON.parse(holder.dataset.metademandsBasketOrder));
+        }
     });
 
     // A free table drives its own save button, the draft one would bypass it.

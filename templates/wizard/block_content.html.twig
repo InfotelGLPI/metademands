@@ -1,0 +1,74 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- One block of the wizard form.
+ #
+ #  Expected context:
+ #    block            : rank of the block, used by the step flow to show or hide it
+ #    preview_color    : hex colour (no #) of the designer frame, empty outside the preview
+ #    background_color : colour the designer picked for the whole meta-demand
+ #    is_preview       : true in the designer preview and in debug mode
+ #    show_model_alert : true on the first block of a form filled from a public template
+ #    title_html       : title field of the block, rendered by Field::displayFieldByType()
+ #    fields_html      : fields of the block, rendered by Wizard::displayBlockFields()
+ #    subblocks        : list of {id, html}, the sub-blocks opened inside this block
+ #
+ #  title_html, fields_html and the sub-blocks are still built by legacy renderers that
+ #  print their markup; they will lose their |raw as those renderers reach Twig.
+-#}
+{#- The frame colour is declared on the card so that both the title field and the row
+ #  of fields, which carry the .md-preview-tag badge, read it back. -#}
+{%- set frame = preview_color is not empty
+    ? '--md-preview-color:#' ~ preview_color ~ ';padding-top:5px;padding-bottom:10px;border:3px solid #' ~ preview_color ~ ';'
+    : '' -%}
+{%- set background = background_color is not empty ? 'background-color:' ~ background_color ~ ';' : '' -%}
+{%- if is_preview -%}
+    {%- set row_class = 'row preview-md md-preview-tag' -%}
+    {%- set row_style = '' -%}
+{%- else -%}
+    {%- set row_class = 'row' -%}
+    {%- set row_style = background ~ 'padding: 0.5rem 0.5rem;padding-top: initial;' -%}
+{%- endif -%}
+
+<div bloc-id="bloc{{ block }}" class="card tab-sc-child-{{ block }}" style="{{ frame }}{{ background }}">
+    {{ title_html|raw }}
+    <div class="card-body" bloc-hideid="bloc{{ block }}">
+        <div class="{{ row_class }}" style="{{ row_style }}"{% if is_preview %} data-title="{{ block }}"{% endif %}>
+            {% if show_model_alert %}
+                <div class="alert alert-warning">
+                    {{ __('You are using a public template. This allows you to automatically pre-fill form fields, making your life easier :)', 'metademands') }}
+                </div>
+            {% endif %}
+            {{ fields_html|raw }}
+            {% for subblock in subblocks %}
+                <div class="col-md-12 md-bottom form-group row" bloc-id="subbloc{{ subblock.id }}">
+                    {{ subblock.html|raw }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

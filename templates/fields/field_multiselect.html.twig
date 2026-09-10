@@ -43,6 +43,6 @@
                               id="multiselect{{ id }}_to" size='8' multiple='multiple'
                               style='font-size: 1em;'>{% for opt in right_options %}
                 <option
-                {% if opt.selected %}selected {% endif %}value="{{ opt.value }}">{% if opt.text_raw %}{{ opt.text|raw }}{% else %}{{ opt.text }}{% endif %}</option>{% endfor %}
+                {% if opt.selected %}selected {% endif %}value="{{ opt.value }}">{{ opt.text }}</option>{% endfor %}
         </select></div>
 </div>

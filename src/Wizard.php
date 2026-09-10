@@ -1940,23 +1940,23 @@ class Wizard extends CommonDBTM
             }
             $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
 
+            $blocks_html = [];
             foreach ($allfields as $block => $line) {
-                if ($use_as_step == 1) {//&& $metademands->fields['is_order'] == 0
-                    if (!in_array($block, $all_hidden_blocks)) {
-                        echo "<div class='tab-step'>";
-                        $cpt++;
-                    }
+                // A block hidden by a field option stays out of the step wrapper, the way the
+                // legacy loop did: .tab-step hides its content until the step flow opens it.
+                $in_step = ($use_as_step == 1 && !in_array($block, $all_hidden_blocks));
+                if ($in_step) {
+                    $cpt++;
                 }
 
+                ob_start();
                 self::displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id, $use_model);
-
-
-                if ($use_as_step == 1) {//&& $metademands->fields['is_order'] == 0
-                    if (!in_array($block, $all_hidden_blocks)) {
-                        echo "</div>";
-                    }
-                }
+                $blocks_html[] = ['in_step' => $in_step, 'html' => trim((string) ob_get_clean())];
             }
+
+            TemplateRenderer::getInstance()->display('@metademands/wizard/form_blocks.html.twig', [
+                'blocks' => $blocks_html,
+            ]);
             if ($use_as_step == 0) {
                 echo "</div>";
             }
@@ -2091,49 +2091,34 @@ class Wizard extends CommonDBTM
     }
 
 
+    /**
+     * Render one block of the wizard: its title field, the fields it holds and the
+     * sub-blocks a field option opens inside this very same block.
+     *
+     * @param Metademand $metademands
+     * @param array      $metademands_data
+     * @param bool       $preview
+     * @param int        $block
+     * @param array      $line
+     * @param array      $subblocks_data
+     * @param int        $itilcategories_id
+     * @param int        $use_model
+     */
     public static function displayBlockContent($metademands, $metademands_data, $preview, $block, $line, $subblocks_data, $itilcategories_id, $use_model)
     {
-
-
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        $debug = isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
 
         $keys = array_keys($line);
 
-        $style = "";
-        // Color
-        if ($preview || $debug) {
-            $color = Field::setColor($block);
-            $style .= "padding-top:5px;
-                      padding-bottom:10px;
-                      border-top :3px solid #" . $color . ";
-                      border-left :3px solid #" . $color . ";
-                      border-bottom :3px solid #" . $color . ";
-                      border-right :3px solid #" . $color . ";";
-            echo '<style type="text/css">
-                       .preview-md-';
-            echo $block;
-            echo ':before {
-                         content: attr(data-title);
-                         background: #';
-            echo $color . ";";
-            echo 'position: absolute;
-                               padding: 0 20px;
-                               color: #fff;
-                               right: 0;
-                               top: 0;
-                               z-index:1000;
-                           }
-                          </style>';
-        }
-        if (isset($metademands->fields['background_color'])
-            && !empty($metademands->fields['background_color'])) {
-            $background_color = htmlspecialchars($metademands->fields['background_color'], ENT_QUOTES);
-            $style .= "background-color:" . $background_color . ";";
-        }
-        $styleasTab = "";
+        // The frame and the floating block number only show up to a designer. The colour
+        // used to be printed as a <style> block once per block; it now travels as the
+        // --md-preview-color variable read by .md-preview-tag in css/metademands.css.
+        $preview_color = ($preview || $debug) ? Field::setColor($block) : '';
 
-        $displayBlocksAsTab = 0;
+        // Blocks shown as tabs already carry their title in the tab itself, except in
+        // the preview where the designer needs to tell them apart.
+        $display_blocks_as_tab = 0;
         static $sc_cache = [];
         $meta_id_for_sc = $metademands->getID();
         if (!isset($sc_cache[$meta_id_for_sc])) {
@@ -2141,105 +2126,146 @@ class Wizard extends CommonDBTM
             $sc_obj->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id_for_sc]);
             $sc_cache[$meta_id_for_sc] = $sc_obj->fields ?? [];
         }
-        $stepConfig = new Configstep();
-        $stepConfig->fields = $sc_cache[$meta_id_for_sc];
         if ($metademands->fields['step_by_step_mode'] == 1
-            && isset($stepConfig->fields['see_blocks_as_tab'])
-            && $stepConfig->fields['see_blocks_as_tab'] == 1) {
-            $displayBlocksAsTab = 1;
+            && isset($sc_cache[$meta_id_for_sc]['see_blocks_as_tab'])
+            && $sc_cache[$meta_id_for_sc]['see_blocks_as_tab'] == 1) {
+            $display_blocks_as_tab = 1;
         }
-        //        if ($displayBlocksAsTab == 1) {
-        //            if ($metademands->fields['hide_title'] == 0) {
-        //                $styleasTab = "overflow: hidden;height: 550px;max-height: 550px;overflow-y: scroll;";
-        //            } else {
-        //                $styleasTab = "overflow: hidden;height: 650px;max-height: 650px;overflow-y: scroll;";
-        //            }
-        //        }
 
-        echo "<div bloc-id='bloc" . $block . "' style='$styleasTab $style' class='card tab-sc-child-" . $block . "'>";
-
-        if (($displayBlocksAsTab == 0 || $preview)
+        // getBlockTitleHtml() enriches $line with the parameters and the custom values of
+        // the title field, which the fields loop below reads back.
+        $title_html = '';
+        if (($display_blocks_as_tab == 0 || $preview)
             && $line[$keys[0]]['type'] == 'title-block') {
-            $data = $line[$keys[0]];
-            $tb_field_id = (int) $line[$keys[0]]['id'];
-            $fp_tb = FieldParameter::getFromStaticCache($tb_field_id);
-            if ($fp_tb === false) {
-                $fieldparameter = new FieldParameter();
-                $fp_tb = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $tb_field_id])
-                    ? $fieldparameter->fields
-                    : null;
-            }
-            if ($fp_tb !== null) {
-                $params = $fp_tb;
-                unset($params['plugin_metademands_fields_id'], $params['id']);
-                $data = array_merge($line[$keys[0]], $params);
-                if (isset($fp_tb['default'])) {
-                    $line[$keys[0]]['default_values'] = FieldParameter::_unserialize($fp_tb['default']);
-                }
-                if (isset($fp_tb['custom'])) {
-                    $line[$keys[0]]['custom_values'] = FieldParameter::_unserialize($fp_tb['custom']);
-                }
-            }
-
-            $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-            $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-            //Block Title
-            if (isset($line[$keys[0]]['type'])
-                && in_array($line[$keys[0]]['type'], $allowed_customvalues_types)
-                || in_array($line[$keys[0]]['item'], $allowed_customvalues_items)) {
-                $fc_tb = FieldCustomvalue::getFromStaticCache($tb_field_id);
-                if ($fc_tb === false) {
-                    $field_custom = new FieldCustomvalue();
-                    $fc_tb = $field_custom->find(
-                        ["plugin_metademands_fields_id" => $tb_field_id],
-                        "rank",
-                    ) ?: [];
-                }
-                if (count($fc_tb) > 0) {
-                    $line[$keys[0]]['custom_values'] = $fc_tb;
-                }
-            }
-
-            Field::displayFieldByType(
-                $metademands,
-                $metademands_data,
-                $data,
-                $preview,
-                $itilcategories_id,
-            );
+            $title_html = self::getBlockTitleHtml($metademands, $metademands_data, $line, $preview, $itilcategories_id);
         }
 
-        echo "<div class='card-body' bloc-hideid='bloc" . $block . "'>";
-
-        if ($preview || $debug) {
-            echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "'>";
-        } else {
-            echo "<div class=\"row\" style='$style;padding: 0.5rem 0.5rem;padding-top: initial;'>";
-        }
-
-        if ($block == 1 && $use_model == 1) {
-            echo "<div class='alert alert-warning'>";
-            echo __('You are using a public template. This allows you to automatically pre-fill form fields, making your life easier :)', 'metademands');
-            echo "</div>";
-
-        }
-
+        ob_start();
         foreach ($line as $key => $data) {
             self::displayBlockFields($metademands, $metademands_data, $preview, $keys, $line, $key, $data, $block, $itilcategories_id);
         }
+        $fields_html = (string) ob_get_clean();
 
+        $subblocks_html = [];
+        foreach (self::getSameBlockSubblocks($line, $block) as $subfield) {
+            $subs = $subblocks_data[$subfield] ?? [];
+            if (count($subs) === 0) {
+                // The legacy code closed a wrapper it had not opened when the sub-block held
+                // no field, so the row of the whole block was cut short right there.
+                continue;
+            }
+
+            ob_start();
+            foreach ($subs as $k => $sub) {
+                self::displayBlockFields(
+                    $metademands,
+                    $metademands_data,
+                    $preview,
+                    $keys,
+                    $subs,
+                    $k,
+                    $sub,
+                    $block,
+                    $itilcategories_id,
+                );
+            }
+            $subblocks_html[] = ['id' => $subfield, 'html' => (string) ob_get_clean()];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/block_content.html.twig', [
+            'block' => (int) $block,
+            'preview_color' => $preview_color,
+            'background_color' => $metademands->fields['background_color'] ?? '',
+            'is_preview' => $preview || $debug,
+            'show_model_alert' => ($block == 1 && $use_model == 1),
+            'title_html' => $title_html,
+            'fields_html' => $fields_html,
+            'subblocks' => $subblocks_html,
+        ]);
+    }
+
+
+    /**
+     * Build the title field of a block and enrich its line with the parameters and the
+     * custom values the designer attached to it.
+     *
+     * @param Metademand $metademands
+     * @param array      $metademands_data
+     * @param array      $line              enriched in place, the fields loop reads it back
+     * @param bool       $preview
+     * @param int        $itilcategories_id
+     *
+     * @return string
+     */
+    private static function getBlockTitleHtml($metademands, $metademands_data, array &$line, $preview, $itilcategories_id): string
+    {
+        $keys = array_keys($line);
+        $data = $line[$keys[0]];
+        $tb_field_id = (int) $line[$keys[0]]['id'];
+
+        $fp_tb = FieldParameter::getFromStaticCache($tb_field_id);
+        if ($fp_tb === false) {
+            $fieldparameter = new FieldParameter();
+            $fp_tb = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $tb_field_id])
+                ? $fieldparameter->fields
+                : null;
+        }
+
+        if ($fp_tb !== null) {
+            $params = $fp_tb;
+            unset($params['plugin_metademands_fields_id'], $params['id']);
+            $data = array_merge($line[$keys[0]], $params);
+            if (isset($fp_tb['default'])) {
+                $line[$keys[0]]['default_values'] = FieldParameter::_unserialize($fp_tb['default']);
+            }
+            if (isset($fp_tb['custom'])) {
+                $line[$keys[0]]['custom_values'] = FieldParameter::_unserialize($fp_tb['custom']);
+            }
+        }
+
+        if (in_array($line[$keys[0]]['type'], FieldCustomvalue::$allowed_customvalues_types)
+            || in_array($line[$keys[0]]['item'], FieldCustomvalue::$allowed_customvalues_items)) {
+            $fc_tb = FieldCustomvalue::getFromStaticCache($tb_field_id);
+            if ($fc_tb === false) {
+                $field_custom = new FieldCustomvalue();
+                $fc_tb = $field_custom->find(['plugin_metademands_fields_id' => $tb_field_id], 'rank') ?: [];
+            }
+            if (count($fc_tb) > 0) {
+                $line[$keys[0]]['custom_values'] = $fc_tb;
+            }
+        }
+
+        ob_start();
+        Field::displayFieldByType($metademands, $metademands_data, $data, $preview, $itilcategories_id);
+
+        return (string) ob_get_clean();
+    }
+
+
+    /**
+     * List the sub-blocks the fields of a block open inside that same block, in the
+     * order of the value that triggers them.
+     *
+     * @param array $line
+     * @param int   $block
+     *
+     * @return array list of sub-block ranks
+     */
+    private static function getSameBlockSubblocks(array $line, $block): array
+    {
         $subblocks = [];
-        $check_values  = [];
-        foreach ($line as $key => $data) {
+        $check_values = [];
+
+        foreach ($line as $data) {
             $fo_cached = FieldOption::getFromStaticCache((int) $data['id']);
             if ($fo_cached === false) {
                 $fieldopt = new FieldOption();
                 $fo_cached = $fieldopt->find([
-                    "plugin_metademands_fields_id" => $data['id'],
-                    "hidden_block_same_block"      => 1,
+                    'plugin_metademands_fields_id' => $data['id'],
+                    'hidden_block_same_block'      => 1,
                 ]) ?: [];
             }
+
             $has_subblock = false;
             foreach ($fo_cached as $opt) {
                 if (($opt['hidden_block_same_block'] ?? 0) != 1) {
@@ -2248,243 +2274,58 @@ class Wizard extends CommonDBTM
                 $check_values[$opt['check_value']] = $opt['hidden_block'];
                 $has_subblock = true;
             }
+
             if ($has_subblock) {
                 asort($check_values);
                 $subblocks[$data['rank']] = $check_values;
             }
         }
 
-        foreach ($subblocks as $subblock => $subfields) {
-            // Display subblocks
-            if ($block == $subblock) {
-                if (count($subfields) > 0) {
-                    foreach ($subfields as $checkvalue => $subfield) {
-                        $subs = $subblocks_data[$subfield] ?? [];
-                        if (count($subs) > 0) {
-                            echo "<div class='col-md-12 md-bottom form-group row' bloc-id='subbloc" . $subfield . "'>";
-
-                            foreach ($subs as $k => $sub) {
-                                self::displayBlockFields(
-                                    $metademands,
-                                    $metademands_data,
-                                    $preview,
-                                    $keys,
-                                    $subs,
-                                    $k,
-                                    $sub,
-                                    $block,
-                                    $itilcategories_id,
-                                );
-                            }
-                        }
-                        echo "</div>";
-                    }
-                }
-            }
-        }
-
-
-        echo "</div>";
-        echo "</div>";
-        echo "</div>";
+        return array_values($subblocks[$block] ?? []);
     }
 
 
+    /**
+     * Render one field of a block: the break it may open towards another block, the
+     * field itself, then the scripts its options carry.
+     *
+     * @param Metademand $metademands
+     * @param array      $metademands_data
+     * @param bool       $preview
+     * @param array      $keys
+     * @param array      $line
+     * @param int|string $key
+     * @param array      $data
+     * @param int        $block
+     * @param int        $itilcategories_id
+     */
     public static function displayBlockFields($metademands, $metademands_data, $preview, $keys, $line, $key, $data, $block, $itilcategories_id)
     {
+        $debug = isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
 
-        $count = 0;
-        $columns = 2;
-        $style_left_right = 'padding: 0.5rem 0.5rem;';
-        $keyIndexes = array_flip($keys);
-
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-
-        $config_link = "";
+        $config_link = '';
         if (Session::getCurrentInterface() == 'central' && $preview) {
-            $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Field::class,
-            ) . "?id=" . $data['id'] . "'>";
-            $config_link .= "<i class='ti ti-settings'></i></a>";
+            $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(Field::class) . "?id=" . $data['id'] . "'>"
+                . "<i class='ti ti-settings'></i></a>";
         }
 
-        $fieldparameter = new FieldParameter();
-        $fp_cached = FieldParameter::getFromStaticCache((int) $data['id']);
-        if ($fp_cached === false) {
-            // cache not warmed — fall back to single DB query
-            $fp_cached = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])
-                ? $fieldparameter->fields
-                : null;
-        }
-        if ($fp_cached !== null) {
-            $fieldparameter->fields = $fp_cached;
-            $params = $fp_cached;
-            unset($params['plugin_metademands_fields_id'], $params['id']);
-            $data = array_merge($data, $params);
+        $data = self::mergeFieldParameters($data);
+        $data = self::mergeFieldCustomValues($data, true);
 
-            if (isset($fp_cached['default'])) {
-                $data['default_values'] = FieldParameter::_unserialize($fp_cached['default']);
-            }
-            if (isset($fp_cached['custom'])) {
-                $data['custom_values'] = FieldParameter::_unserialize($fp_cached['custom']);
-            }
+        // The field belongs to another block than the one being rendered: close the
+        // wrappers of the current block and open the ones of the new block.
+        $key_indexes = array_flip($keys);
+        if (isset($key_indexes[$key])
+            && isset($keys[$key_indexes[$key] - 1])
+            && $data['rank'] != $line[$keys[$key_indexes[$key] - 1]]['rank']) {
+            self::displayBlockBreak($metademands, $data, $preview || $debug, $debug, $block, $config_link);
         }
 
-        $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-        $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-        if (isset($data['type'])
-            && (in_array($data['type'], $allowed_customvalues_types)
-                || in_array($data['item'], $allowed_customvalues_items))
-            && $data['item'] != "urgency"
-            && $data['item'] != "priority"
-            && $data['item'] != "impact") {
-            $fc_cached = FieldCustomvalue::getFromStaticCache((int) $data['id']);
-            if ($fc_cached === false) {
-                $field_custom = new FieldCustomvalue();
-                $fc_cached = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank") ?: [];
-            }
-            if (count($fc_cached) > 0) {
-                $data['custom_values'] = $fc_cached;
-            }
-        }
-
-        // Manage ranks ???
-        if (isset($keyIndexes[$key])
-            && isset($keys[$keyIndexes[$key] - 1])
-            && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
-            //End bloc-hideid
-            echo "</div>";
-
-            echo "</div>";
-            echo "</div>";
-            echo "<div bloc-id='bloc" . $block . "'>";
-
-            // Title block field
-            if ($data['type'] == 'title-block') {
-                if ($preview || $debug) {
-                    $color = Field::setColor($block);
-                    $style = 'padding-top:5px;
-                                          padding-bottom:10px;
-                                          border-top :3px solid #' . $color . ';
-                                          border-left :3px solid #' . $color . ';
-                                          border-right :3px solid #' . $color;
-                    echo '<style type="text/css">
-                                        .preview-md-';
-                    echo $block;
-                    echo ':before {
-                                                 content: attr(data-title);
-                                                 background: #';
-                    echo $color . ";";
-                    echo 'position: absolute;
-                                       padding: 0 20px;
-                                       color: #fff;
-                                       right: 0;
-                                       top: 0;
-                                   }
-                                  </style>';
-                    echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "' style='$style'>";
-                } else {
-                    echo "<div>";
-                }
-                // $data['color'] and the field name are designer-defined values stored in
-                // glpi_plugin_metademands_fields and injected into an inline style attribute /
-                // element text. Escape both to prevent stored XSS in every requester's wizard
-                // (matches the escaping already done in Fields\Title::showWizardField()).
-                $safe_color = htmlspecialchars((string) ($data['color'] ?? ''), ENT_QUOTES, 'UTF-8');
-                echo "<br><h4 class=\"alert alert-light\"><span style='color:" . $safe_color . ";'>";
-
-                if (empty($label = Field::displayField($data['id'], 'name'))) {
-                    $label = $data['name'];
-                }
-
-                echo htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-
-                if ($debug) {
-                    echo " (ID:" . $data['id'] . ")";
-                }
-                echo $config_link;
-                if (isset($data['label2']) && !empty($data['label2'])) {
-                    echo "&nbsp;";
-                    if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
-                        $label2 = $data['label2'];
-                    }
-                    Html::showToolTip(
-                        RichText::getSafeHtml($label2),
-                        ['awesome-class' => 'ti ti-info-circle'],
-                    );
-                }
-                echo "<i id='up" . $block . "' class='fa-1x ti ti-chevron-up pointer' style='right:40px;position: absolute;color:" . $safe_color . ";'></i>";
-                $rand = mt_rand();
-                echo Html::scriptBlock(
-                    "var myelement$rand = '#up" . $block . "';
-                                 var bloc$rand = 'bloc" . $block . "';
-                                 $(myelement$rand).click(function() {
-                                     if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
-                                         $('[bloc-hideid =' + bloc$rand + ']').hide();
-                                         $(myelement$rand).toggleClass('ti ti-chevron-up ti ti-chevron-down');
-                                     } else {
-                                         $('[bloc-hideid =' + bloc$rand + ']').show();
-                                         $(myelement$rand).toggleClass('ti ti-chevron-down ti ti-chevron-up');
-                                     }
-                                 });",
-                );
-                echo "</span></h4>";
-                if (!empty($data['comment'])) {
-                    if (empty($comment = Field::displayField($data['id'], 'comment'))) {
-                        $comment = $data['comment'];
-                    }
-                    // Designer-defined rich comment displayed to every requester: sanitize it like the
-                    // secondary label above. htmlspecialchars_decode()/stripslashes() used to undo any
-                    // escaping and turned it into a stored XSS sink.
-                    echo "<label><i>" . RichText::getSafeHtml($comment) . "</i></label>";
-                }
-
-                echo "</div>";
-                // Other fields
-            }
-
-            echo "<div bloc-hideid='bloc" . $block . "'>";
-
-            if ($preview || $debug) {
-                $color = Field::setColor($block);
-                echo '<style type="text/css">
-                           .preview-md-';
-                echo $block;
-                echo ':before {
-                             content: attr(data-title);
-                             background: #';
-                echo $color . ";";
-                echo 'position: absolute;
-                                   padding: 0 20px;
-                                   color: #fff;
-                                   right: 0;
-                                   top: 0;
-                               }
-                              </style>';
-                $style = 'padding-top:5px;
-                            padding-bottom:10px;
-                            border-top :3px solid #' . $color . ';
-                            border-left :3px solid #' . $color . ';
-                            border-right :3px solid #' . $color;
-                echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "' style='$style'>";
-            } else {
-                $background_color = "";
-                if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                    $background_color = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
-                }
-                echo "<div class=\"row class1\" style='background-color: " . $background_color . ";$style_left_right'>";
-            }
-
-            $count = 0;
-        }
-
-        // Title field
         if ($data['type'] != 'title-block') {
-
-            // end wrapper div classes
-            //see fields
+            // The counter used to drive a column layout whose style was computed after
+            // the row had already been printed, so it never reached the markup.
+            $count = 0;
             Field::displayFieldByType(
                 $metademands,
                 $metademands_data,
@@ -2493,18 +2334,6 @@ class Wizard extends CommonDBTM
                 $itilcategories_id,
                 $count,
             );
-        }
-
-        // Next row
-        if ($count > $columns) {
-            if ($preview || $debug) {
-                $color = Field::setColor($data['rank']);
-                $style_left_right = 'padding-bottom:10px;
-                                       border-left :3px solid #' . $color . ';
-                                       border-right :3px solid #' . $color;
-            }
-
-            $count = 0;
         }
 
         // If values are saved in session we retrieve it
@@ -2519,39 +2348,13 @@ class Wizard extends CommonDBTM
             }
         }
 
-        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
-            unset($fieldparameter->fields['plugin_metademands_fields_id']);
-            unset($fieldparameter->fields['id']);
+        // The urgency, priority and impact fields are kept out of the merge feeding the
+        // renderer above, but the option scripts below still read their custom values.
+        // The second FieldParameter merge that stood here queried the very same row as
+        // mergeFieldParameters() and merged the very same keys, none of which can reach
+        // the session values set right above: the table holds no 'value' column.
+        $data = self::mergeFieldCustomValues($data, false);
 
-            $params = $fieldparameter->fields;
-            $data = array_merge($data, $params);
-
-            if (isset($fieldparameter->fields['default'])) {
-                $data['default_values'] = FieldParameter::_unserialize(
-                    $fieldparameter->fields['default'],
-                );
-            }
-
-            if (isset($fieldparameter->fields['custom'])) {
-                $data['custom_values'] = FieldParameter::_unserialize(
-                    $fieldparameter->fields['custom'],
-                );
-            }
-        }
-
-        $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-        $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
-
-        if (isset($data['type'])
-            && in_array($data['type'], $allowed_customvalues_types)
-            || in_array($data['item'], $allowed_customvalues_items)) {
-            $field_custom = new FieldCustomvalue();
-            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
-                if (count($customs) > 0) {
-                    $data['custom_values'] = $customs;
-                }
-            }
-        }
         //verifie si une sous metademande doit etre lancé
         FieldOption::taskScript($data, $itilcategories_id);
 
@@ -2567,6 +2370,145 @@ class Wizard extends CommonDBTM
         FieldOption::checkboxScript($data);
 
         FieldOption::checkConditions($data);
+    }
+
+
+    /**
+     * Merge the parameters a designer set on a field into its data.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    private static function mergeFieldParameters(array $data): array
+    {
+        $cached = FieldParameter::getFromStaticCache((int) $data['id']);
+        if ($cached === false) {
+            // cache not warmed — fall back to single DB query
+            $fieldparameter = new FieldParameter();
+            $cached = $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])
+                ? $fieldparameter->fields
+                : null;
+        }
+
+        if ($cached === null) {
+            return $data;
+        }
+
+        $params = $cached;
+        unset($params['plugin_metademands_fields_id'], $params['id']);
+        $data = array_merge($data, $params);
+
+        if (isset($cached['default'])) {
+            $data['default_values'] = FieldParameter::_unserialize($cached['default']);
+        }
+        if (isset($cached['custom'])) {
+            $data['custom_values'] = FieldParameter::_unserialize($cached['custom']);
+        }
+
+        return $data;
+    }
+
+
+    /**
+     * Merge the values a designer listed for a field into its data.
+     *
+     * @param array $data
+     * @param bool  $skip_itil_levels urgency, priority and impact carry the core value
+     *                                lists, the renderer must not see a custom one
+     *
+     * @return array
+     */
+    private static function mergeFieldCustomValues(array $data, bool $skip_itil_levels): array
+    {
+        if (!isset($data['type'])
+            || (!in_array($data['type'], FieldCustomvalue::$allowed_customvalues_types)
+                && !in_array($data['item'], FieldCustomvalue::$allowed_customvalues_items))) {
+            return $data;
+        }
+
+        if ($skip_itil_levels
+            && in_array($data['item'], ['urgency', 'priority', 'impact'])) {
+            return $data;
+        }
+
+        $cached = FieldCustomvalue::getFromStaticCache((int) $data['id']);
+        if ($cached === false) {
+            $field_custom = new FieldCustomvalue();
+            $cached = $field_custom->find(['plugin_metademands_fields_id' => $data['id']], 'rank') ?: [];
+        }
+
+        if (count($cached) > 0) {
+            $data['custom_values'] = $cached;
+        }
+
+        return $data;
+    }
+
+
+    /**
+     * Close the wrappers of the block being rendered and open the ones of the block the
+     * current field belongs to.
+     *
+     * @param Metademand $metademands
+     * @param array      $data
+     * @param bool       $is_preview
+     * @param bool       $debug
+     * @param int        $block
+     * @param string     $config_link
+     */
+    private static function displayBlockBreak($metademands, array $data, bool $is_preview, bool $debug, $block, string $config_link): void
+    {
+        $title = null;
+
+        if ($data['type'] == 'title-block') {
+            if (empty($label = Field::displayField($data['id'], 'name'))) {
+                $label = $data['name'];
+            }
+
+            $label2_tooltip_html = '';
+            if (!empty($data['label2'])) {
+                if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
+                    $label2 = $data['label2'];
+                }
+                // showToolTip() prints by default, which used to flush the tooltip before
+                // the title it belongs to.
+                $label2_tooltip_html = Html::showToolTip(
+                    RichText::getSafeHtml($label2),
+                    ['awesome-class' => 'ti ti-info-circle', 'display' => false],
+                );
+            }
+
+            $comment_html = '';
+            if (!empty($data['comment'])) {
+                if (empty($comment = Field::displayField($data['id'], 'comment'))) {
+                    $comment = $data['comment'];
+                }
+                // Designer-defined rich comment displayed to every requester: sanitize it
+                // like the secondary label above.
+                $comment_html = RichText::getSafeHtml($comment);
+            }
+
+            $title = [
+                'color' => $data['color'] ?? '',
+                'label' => $label,
+                'id' => $data['id'],
+                'label2_tooltip_html' => $label2_tooltip_html,
+                'comment_html' => $comment_html,
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/block_break.html.twig', [
+            'block' => (int) $block,
+            'is_preview' => $is_preview,
+            'debug' => $debug,
+            'preview_color' => $is_preview ? Field::setColor($block) : '',
+            // The legacy code read this colour from an undefined $meta variable, so the
+            // row never got the background the designer had picked.
+            'background_color' => $metademands->fields['background_color'] ?? '',
+            'config_link' => $config_link,
+            'title' => $title,
+        ]);
     }
 
 

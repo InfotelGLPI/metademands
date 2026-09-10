@@ -110,23 +110,8 @@ class Titleblock extends CommonDBTM
             'comment_html'        => $comment_html,
         ]);
 
-        // The collapse toggle handler stays an inline scriptBlock (emitted after the
-        // template) rather than living in the Twig template.
-        $rand = mt_rand();
-        echo Html::scriptBlock(
-            "
-                     var myelement$rand = '#up" . $rank . "';
-                     var bloc$rand = 'bloc" . $rank . "';
-                     $(myelement$rand).click(function() {
-                         if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
-                             $('[bloc-hideid =' + bloc$rand + ']').hide();
-                             $(myelement$rand).toggleClass('ti ti-chevron-up ti ti-chevron-down');
-                         } else {
-                             $('[bloc-hideid =' + bloc$rand + ']').show();
-                             $(myelement$rand).toggleClass('ti ti-chevron-down ti ti-chevron-up');
-                         }
-                     });",
-        );
+        // The collapse toggle is a delegated handler in public/scripts/wizard_form.js,
+        // keyed on the data-metademands-collapse marker the template above carries.
     }
 
     public static function showFieldCustomValues($params) {}
