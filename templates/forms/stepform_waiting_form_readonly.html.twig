@@ -25,35 +25,70 @@
  # --------------------------------------------------------------------------
  #}
 
-<div class='row' style='margin-bottom: 15px; margin-top: 20px;'>
-    <div class="col-md-12">
-        <h4><div class='alert alert-dark' role='alert'>
-            {%- if header_is_fa %}<i class='fa-2x fas {{ header_icon }}'></i>&nbsp;
-            {%- else %}<i class='ti {{ header_icon }}''></i>&nbsp;
-            {%- endif %}
-            {{- _n('Form in progress', 'Forms in progress', cnt, 'metademands') }}   ({{ cnt }})
-        </div></h4></div></div>
+{#
+ # Forms the current user has submitted and that are still in progress, one card each.
+ # Read-only counterpart of stepform_waiting_form.html.twig: no link, no loadForm().
+ #
+ # Expected context:
+ #  - cnt          int   number of forms in progress
+ #  - header_icon  string  icon class, header_is_fa tells which family it belongs to
+ #  - header_is_fa bool
+ #  - cards        list  [{icon, is_fa, name_html, created, block_id,
+ #                         has_group_dest, group_dest, has_user_dest, user_dest, delete_html}, ...]
+ #}
 
-{% if cards %}
-    <div id='listmeta'  class='row' style='padding-left: 20px;'>
-        {% for card in cards %}
-            <div class="readonly-btnsc-normal" style="min-height: 300px" >
-                <div class='center'>
-                    {%- if card.is_fa %}<i class='sc-colorform bt-interface fa-menu-md fas {{ card.icon }} fa-4x' style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
-                    {%- else %}<i class='sc-colorform bt-interface fa-menu-md ti {{ card.icon }} fa-4x' style="font-size: 3em;"></i>
-                    {%- endif %}
-                </div>
-                <br><p> <span class='sc-colorform'>{{ card.name_html|raw }}</span>
-                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ card.created }}</span></em>
-                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('Step', 'metademands') }}{{ card.block_id }}</span></em>
-                {%- if card.has_group_dest %}
-                    <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('Group in charge of the next step', 'metademands') }}<br>{{ card.group_dest_html|raw }}</span></em>
-                {%- endif %}
-                {%- if card.has_user_dest %}
-                    <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('User in charge of the next step', 'metademands') }}<br>{{ card.user_dest_html|raw }}</span></em>
-                {%- endif %}
-                {{ card.delete_html|raw }}
-            </p></div>
-        {% endfor %}
+<div class="card mt-2 mb-4">
+    <div class="card-header">
+        <h5 class="card-title">
+            {% if header_is_fa %}
+                <i class="fas {{ header_icon }} me-2"></i>
+            {% else %}
+                <i class="ti {{ header_icon }} me-2"></i>
+            {% endif %}
+            {{ _n('Form in progress', 'Forms in progress', cnt, 'metademands') }}
+        </h5>
+        <div class="card-actions">
+            <span class="badge bg-outline-secondary">{{ cnt }}</span>
+        </div>
     </div>
-{% endif %}
+    <div class="card-body">
+        {% if cards %}
+            <div id="listmeta" class="row row-cards">
+                {% for card in cards %}
+                    <div class="col-sm-6 col-md-4 col-xl-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                {% if card.is_fa %}
+                                    <i class="fas {{ card.icon }} fa-4x"
+                                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
+                                {% else %}
+                                    <i class="ti {{ card.icon }}" style="font-size: 4em;"></i>
+                                {% endif %}
+                                <div class="mt-3 fw-bold">{{ card.name_html|raw }}</div>
+                            </div>
+                            <div class="card-footer small text-muted">
+                                <div>{{ card.created }}</div>
+                                <div>{{ __('Step', 'metademands') }}{{ card.block_id }}</div>
+                                {% if card.has_group_dest %}
+                                    <div>
+                                        {{ __('Group in charge of the next step', 'metademands') }}<br>
+                                        {{ card.group_dest }}
+                                    </div>
+                                {% endif %}
+                                {% if card.has_user_dest %}
+                                    <div>
+                                        {{ __('User in charge of the next step', 'metademands') }}<br>
+                                        {{ card.user_dest }}
+                                    </div>
+                                {% endif %}
+                                {{ card.delete_html|raw }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted text-center mb-0">{{ __('No results found') }}</p>
+        {% endif %}
+    </div>
+</div>

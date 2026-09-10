@@ -25,35 +25,65 @@
  # --------------------------------------------------------------------------
  #}
 
-{{ css_html|raw }}
-<div class='row'>
-    <div class="col-md-12">
-        <h4><div class='alert alert-dark' role='alert'>
-            {%- if header_is_fa %}<i class='fa-2x fas {{ header_icon }}'></i>&nbsp;
-            {%- else %}<i class='ti {{ header_icon }}'></i>&nbsp;
-            {%- endif %}
-            {{- _n('Your form to complete', 'Your forms to complete', 2, 'metademands') }}   ({{ cnt }})
-        </div></h4></div></div>
+{#
+ # Forms the current user still has to complete, one card per form.
+ #
+ # Expected context:
+ #  - css_html     string  wizard stylesheet tag
+ #  - rand         int     suffix of the generated loadForm<rand>() function
+ #  - cnt          int     number of pending forms
+ #  - header_icon  string  icon class, header_is_fa tells which family it belongs to
+ #  - header_is_fa bool
+ #  - cards        list    [{id, metaID, block_id, icon, is_fa, name_html, editor, date, delete_html}, ...]
+ #  - script_html  string  inline loadForm<rand>() definition, built from PHP values
+ #}
 
-{% if cards %}
-    <div id='listmeta' class='row' style='padding-left: 20px;'>
-        {% for card in cards %}
-            <div class="btnsc-normal" style="min-height: 260px" >
-                <a class="bt-buttons" href="#" onclick="loadForm{{ rand }}('{{ card.id }}','{{ card.metaID }}','{{ card.block_id }}')">
-                    <div class='center'>
-                        {%- if card.is_fa %}<i class='bt-interface fa-menu-md fas {{ card.icon }} fa-4x' style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
-                        {%- else %}<i class='bt-interface fa-menu-md ti {{ card.icon }}' style="font-size:4em;"></i>
-                        {%- endif %}
-                    </div>
-                    <br><p>
-                    {{- card.name_html|raw }}
-                </a>
-                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('Edit by', 'metademands') }}&nbsp;{{ card.editor|raw }}</span></em>
-                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ card.date }}</span></em>
-                <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px">{{ __('Step', 'metademands') }}{{ card.block_id }}</span></em>
-                {{ card.delete_html|raw }}
-            </p></div>
-        {% endfor %}
+{{ css_html|raw }}
+
+<div class="card mt-2 mb-4">
+    <div class="card-header">
+        <h5 class="card-title">
+            {% if header_is_fa %}
+                <i class="fas {{ header_icon }} me-2"></i>
+            {% else %}
+                <i class="ti {{ header_icon }} me-2"></i>
+            {% endif %}
+            {{ _n('Your form to complete', 'Your forms to complete', 2, 'metademands') }}
+        </h5>
+        <div class="card-actions">
+            <span class="badge bg-outline-secondary">{{ cnt }}</span>
+        </div>
     </div>
-{% endif %}
+    <div class="card-body">
+        {% if cards %}
+            <div id="listmeta" class="row row-cards">
+                {% for card in cards %}
+                    <div class="col-sm-6 col-md-4 col-xl-3 mb-3">
+                        <div class="card h-100">
+                            <a href="#" class="card-body text-center text-reset text-decoration-none"
+                               onclick="loadForm{{ rand }}('{{ card.id }}', '{{ card.metaID }}', '{{ card.block_id }}'); return false;">
+                                {% if card.is_fa %}
+                                    <i class="fas {{ card.icon }} fa-4x"
+                                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
+                                {% else %}
+                                    <i class="ti {{ card.icon }}" style="font-size: 4em;"></i>
+                                {% endif %}
+                                <div class="mt-3 fw-bold">{{ card.name_html|raw }}</div>
+                            </a>
+                            <div class="card-footer small text-muted">
+                                <div>{{ __('Edit by', 'metademands') }}&nbsp;{{ card.editor }}</div>
+                                <div>{{ card.date }}</div>
+                                <div>{{ __('Step', 'metademands') }}{{ card.block_id }}</div>
+                                {{ card.delete_html|raw }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted text-center mb-0">{{ __('No results found') }}</p>
+        {% endif %}
+    </div>
+</div>
+
 {{ script_html|raw }}

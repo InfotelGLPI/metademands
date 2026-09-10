@@ -709,9 +709,9 @@ class Stepform extends CommonDBTM
             }
             $rows[] = [
                 'id'             => $id,
-                'publisher_html' => getUserName($form['users_id'], 0, true),
-                'group_html'     => \Dropdown::getDropdownName('glpi_groups', $form['groups_id_dest']),
-                'user_dest_html' => getUserName($form['users_id_dest'], 0, true),
+                'publisher'      => getUserName($form['users_id'], 0, true),
+                'group'          => \Dropdown::getDropdownName('glpi_groups', $form['groups_id_dest']),
+                'user_dest'      => getUserName($form['users_id_dest'], 0, true),
                 'date'           => Html::convDateTime($form['date']),
                 'delete_html'    => $delete_html,
             ];
@@ -845,7 +845,7 @@ class Stepform extends CommonDBTM
                 if (Session::haveRight("plugin_metademands_cancelform", READ)) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     ob_start();
-                    echo "<br><span style='color:darkred'>";
+                    echo "<span style='color:darkred'>";
                     Html::showSimpleForm(
                         $target,
                         'delete_form_from_list',
@@ -975,7 +975,7 @@ class Stepform extends CommonDBTM
                 if (Session::haveRight("plugin_metademands_cancelform", READ)) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     ob_start();
-                    echo "<br><span style='color:darkred'>";
+                    echo "<span style='color:darkred'>";
                     Html::showSimpleForm(
                         $target,
                         'delete_form_from_list',
@@ -993,9 +993,9 @@ class Stepform extends CommonDBTM
                     'created'         => sprintf(__('Created on %s'), Html::convDate($name['date'])),
                     'block_id'        => $block_id,
                     'has_group_dest'  => $name['groups_id_dest'] > 0,
-                    'group_dest_html' => $name['groups_id_dest'] > 0 ? \Group::getFriendlyNameById($name['groups_id_dest']) : '',
+                    'group_dest'      => $name['groups_id_dest'] > 0 ? \Group::getFriendlyNameById($name['groups_id_dest']) : '',
                     'has_user_dest'   => $name['users_id_dest'] > 0,
-                    'user_dest_html'  => $name['users_id_dest'] > 0 ? getUserName($name['users_id_dest']) : '',
+                    'user_dest'       => $name['users_id_dest'] > 0 ? getUserName($name['users_id_dest']) : '',
                     'delete_html'     => $delete_html,
                 ];
             }
