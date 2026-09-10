@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 11:44+0000\n"
+"POT-Creation-Date: 2026-09-10 11:54+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -882,7 +882,7 @@ msgstr "Fecha de vencimiento"
 msgid "Duplicates fields options"
 msgstr "Duplica las opciones de los campos"
 
-#: templates/forms/stepform_waiting_form.html.twig:51
+#: templates/forms/stepform_waiting_form.html.twig:74
 msgid "Edit by"
 msgstr "Editado por"
 
@@ -1059,7 +1059,7 @@ msgid "Form choice"
 msgstr "Elección del formulario"
 
 #: src/Stepform.php:647
-#: templates/forms/stepform_waiting_form_readonly.html.twig:34
+#: templates/forms/stepform_waiting_form_readonly.html.twig:48
 msgid "Form in progress"
 msgid_plural "Forms in progress"
 msgstr[0] "Formulario en curso"
@@ -1130,7 +1130,7 @@ msgid "Group child ticket"
 msgstr "ticket infantil grupal"
 
 #: src/NotificationTargetStepform.php:168
-#: templates/forms/stepform_waiting_form_readonly.html.twig:50
+#: templates/forms/stepform_waiting_form_readonly.html.twig:74
 msgid "Group in charge of the next step"
 msgstr "Grupo encargado del siguiente paso"
 
@@ -1714,8 +1714,11 @@ msgstr ""
 #: templates/ticketfield_list.html.twig:32
 #: templates/forms/stepform_list_from_metademand.html.twig:50
 #: templates/forms/user_forms_tab.html.twig:83
-#: templates/forms/draft_show.html.twig:47 templates/field_list.html.twig:117
-#: templates/wizard_metademands.html.twig:61 templates/task_list.html.twig:186
+#: templates/forms/draft_show.html.twig:47
+#: templates/forms/stepform_waiting_form_readonly.html.twig:91
+#: templates/forms/stepform_waiting_form.html.twig:84
+#: templates/field_list.html.twig:117 templates/wizard_metademands.html.twig:61
+#: templates/task_list.html.twig:186
 msgid "No results found"
 msgstr ""
 
@@ -2313,8 +2316,8 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: templates/forms/stepform_waiting_form_readonly.html.twig:48
-#: templates/forms/stepform_waiting_form.html.twig:53
+#: templates/forms/stepform_waiting_form_readonly.html.twig:71
+#: templates/forms/stepform_waiting_form.html.twig:76
 msgid "Step"
 msgstr "Paso"
 
@@ -2865,7 +2868,7 @@ msgid "User"
 msgstr ""
 
 #: src/NotificationTargetStepform.php:169
-#: templates/forms/stepform_waiting_form_readonly.html.twig:53
+#: templates/forms/stepform_waiting_form_readonly.html.twig:80
 msgid "User in charge of the next step"
 msgstr "Usuario encargado del siguiente paso"
 
@@ -3092,7 +3095,7 @@ msgstr "Sus formularios creados"
 msgid "Your drafts"
 msgstr "Sus proyectos"
 
-#: templates/forms/stepform_waiting_form.html.twig:35
+#: templates/forms/stepform_waiting_form.html.twig:51
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] "Formulario para rellenar"
