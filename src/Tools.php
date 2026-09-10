@@ -107,20 +107,38 @@ class Tools extends CommonDBTM
             _x('button', 'Verify metademands global status', 'metademands'),
         );
 
-        // Section 2: duplicate field options
+        // Section 2: duplicate field options.
+        // Several rows sharing the same (field, check_value) pair are NOT duplicates: the storage
+        // model is one row per linked target, so a single value driving two fields, a task and a
+        // hidden block legitimately owns several rows (see FieldOption::showFieldOptions()). Only
+        // rows that are identical on every behaviour column are real duplicates, hence the full
+        // tuple in the GROUP BY instead of the two columns the check used to group on.
+        $duplicate_columns = [
+            'plugin_metademands_fields_id',
+            'check_value',
+            'plugin_metademands_tasks_id',
+            'fields_link',
+            'hidden_link',
+            'hidden_block',
+            'users_id_validate',
+            'childs_blocks',
+            'checkbox_value',
+            'checkbox_id',
+            'parent_field_id',
+            'hidden_block_same_block',
+            'check_type_value',
+            'check_value_regex',
+            'assign_tech_group',
+        ];
+
         $iterator = $DB->request([
-            'SELECT' => [
-                'plugin_metademands_fields_id',
-                new QueryExpression(
-                    'COUNT(' . $DB->quoteName('check_value') . ') AS ' . $DB->quoteName('nbr_doublon'),
-                ),
-            ],
+            'SELECT' => array_merge(
+                ['plugin_metademands_fields_id'],
+                [new QueryExpression('COUNT(*) AS ' . $DB->quoteName('nbr_doublon'))],
+            ),
             'FROM'    => 'glpi_plugin_metademands_fieldoptions',
-            'GROUPBY' => ['plugin_metademands_fields_id', 'check_value'],
-            'HAVING'  => [
-                new QueryExpression('COUNT(' . $DB->quoteName('plugin_metademands_fields_id') . ') > 1'),
-                new QueryExpression('COUNT(' . $DB->quoteName('check_value') . ') > 1'),
-            ],
+            'GROUPBY' => $duplicate_columns,
+            'HAVING'  => [new QueryExpression('COUNT(*) > 1')],
         ]);
 
         $duplicates_has  = count($iterator) > 0;
@@ -140,7 +158,16 @@ class Tools extends CommonDBTM
 
         // Section 3: empty field options.
         // SQL "AND" binds tighter than "OR", so the legacy WHERE is two OR branches:
-        //   (big AND group) OR (check_value = 0 AND item != 'other' AND item != 'User').
+        //   (row links nothing) OR (check_value = 0 AND item != 'other' AND item != 'User').
+        // Both branches are widened here because the rows they offer to delete permanently are
+        // gone for good:
+        //  - branch A predates hidden_block_same_block, check_type_value, check_value_regex and
+        //    assign_tech_group, so a row whose only payload sits in one of those columns used to
+        //    look empty;
+        //  - branch B assumes check_value = 0 means "no value to check", but a regex option
+        //    (check_type_value = 2) keeps its value in check_value_regex and a 'parent_field'
+        //    writes a literal 0 (FieldOption::showValueToCheck()) - both legitimately store 0,
+        //    exactly like the 'other' and 'User' items the original carve-out already spared.
         $iterator = $DB->request([
             'SELECT'    => [
                 'glpi_plugin_metademands_fieldoptions.id',
@@ -162,19 +189,31 @@ class Tools extends CommonDBTM
                             ['plugin_metademands_tasks_id' => 0],
                             ['plugin_metademands_tasks_id' => null],
                         ]],
-                        'fields_link'       => 0,
-                        'hidden_link'       => 0,
-                        'hidden_block'      => 0,
-                        'users_id_validate' => 0,
-                        'childs_blocks'     => '[]',
-                        'checkbox_value'    => 0,
-                        'checkbox_id'       => 0,
-                        'parent_field_id'   => 0,
+                        'fields_link'             => 0,
+                        'hidden_link'             => 0,
+                        'hidden_block'            => 0,
+                        'users_id_validate'       => 0,
+                        'childs_blocks'           => '[]',
+                        'checkbox_value'          => 0,
+                        'checkbox_id'             => 0,
+                        'parent_field_id'         => 0,
+                        'hidden_block_same_block' => 0,
+                        ['OR' => [
+                            ['assign_tech_group' => '[]'],
+                            ['assign_tech_group' => ''],
+                            ['assign_tech_group' => null],
+                        ]],
+                        ['OR' => [
+                            ['check_value_regex' => ''],
+                            ['check_value_regex' => null],
+                        ]],
                     ],
                     [
                         'check_value' => 0,
+                        ['NOT' => ['check_type_value' => 2]],
                         ['glpi_plugin_metademands_fields.item' => ['!=', 'other']],
                         ['glpi_plugin_metademands_fields.item' => ['!=', 'User']],
+                        ['glpi_plugin_metademands_fields.type' => ['!=', 'parent_field']],
                     ],
                 ],
             ],
@@ -201,106 +240,12 @@ class Tools extends CommonDBTM
             ];
         }
 
-        // Section 4: empty custom values
-        $iterator = $DB->request([
-            'SELECT'    => [
-                'glpi_plugin_metademands_fieldparameters.id',
-                'glpi_plugin_metademands_fieldparameters.plugin_metademands_fields_id',
-                'glpi_plugin_metademands_fields.type',
-                'glpi_plugin_metademands_fieldcustomvalues.name',
-            ],
-            'FROM'      => 'glpi_plugin_metademands_fieldparameters',
-            'LEFT JOIN' => [
-                'glpi_plugin_metademands_fields' => [
-                    'ON' => [
-                        'glpi_plugin_metademands_fields'          => 'id',
-                        'glpi_plugin_metademands_fieldparameters' => 'plugin_metademands_fields_id',
-                    ],
-                ],
-                'glpi_plugin_metademands_fieldcustomvalues' => [
-                    'ON' => [
-                        'glpi_plugin_metademands_fields'            => 'id',
-                        'glpi_plugin_metademands_fieldcustomvalues' => 'plugin_metademands_fields_id',
-                    ],
-                ],
-            ],
-            'WHERE'     => [
-                'glpi_plugin_metademands_fields.type' => [
-                    'radio',
-                    'checkbox',
-                    'dropdown_meta',
-                    'dropdown_multiple',
-                ],
-            ],
-        ]);
-
-        // The inner rows depend on a `custom_values` key that this query never selects,
-        // so this loop renders nothing today; captured as-is to preserve behavior.
-        $empty_cv_has = count($iterator) > 0;
-        ob_start();
-        foreach ($iterator as $array) {
-            $field = new Field();
-            $field->getfromDB($array['plugin_metademands_fields_id']);
-
-            if (isset($array['custom_values'])) {
-                $test = json_decode($array['custom_values'], true);
-
-                if ($test == null) {
-                    continue;
-                }
-                if ($test != null && !array_key_exists('0', $test)) {
-                    continue;
-                }
-                echo "<table class='tab_cadre_fixe'>";
-                echo "<tr class='tab_bg_2'>";
-                echo "<th class='left' width='50%'>";
-                echo __('Field');
-                echo "</th>";
-                echo "<th class='center'>";
-                echo __('Type');
-                echo "</th>";
-                echo "<th class='center'>";
-                echo __('Value');
-                echo "</th>";
-                echo "<th class='left'>";
-                echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
-                echo "</th>";
-                echo "<th class='center'>";
-                echo "</th>";
-                echo "</tr>";
-
-                echo "<tr class='tab_bg_2'>";
-                echo "<td class='left'>";
-                echo $field->getLink();
-                echo "</td>";
-                echo "<td class='left'>";
-                echo $array['type'];
-                echo "</td>";
-                echo "<td class='left'>";
-                var_dump($test);
-                $start_one = array_combine(range(1, count($test)), array_values($test));
-                var_dump($start_one);
-                echo "</td>";
-                echo "<td class='left'>";
-                echo \Dropdown::getDropdownName(
-                    "glpi_plugin_metademands_metademands",
-                    $field->fields['plugin_metademands_metademands_id'],
-                );
-                echo "</td>";
-                echo "<td class='center'>";
-                echo Html::getSimpleForm(
-                    Tools::getFormURL(),
-                    'fix_emptycustomvalues',
-                    _x('button', 'Fix empty custom values', 'metademands'),
-                    ['id' => $array['id']],
-                    'ti ti-circle-check',
-                );
-                echo "</td>";
-                echo "</tr>";
-                echo "</table>";
-            }
-        }
-        $empty_cv_rows_html = ob_get_clean();
+        // The "empty custom values" diagnostic that used to sit here has been removed: it read a
+        // `custom_values` JSON column that no longer exists anywhere. FieldParameter renamed it to
+        // `custom` and dropped it from the fields table when the options moved to their own
+        // glpi_plugin_metademands_fieldcustomvalues rows, so the query selected no such key, the
+        // render loop was unreachable and only the panel header ever showed. What it looked for -
+        // option keys starting at 0 instead of 1 - is now covered by the rank check below.
 
         // Side effect: realign child entities on their metademand entity.
         $iterator = $DB->request([
@@ -422,17 +367,21 @@ class Tools extends CommonDBTM
                 if (in_array($field['type'], $allowed_customvalues_types)
                     || in_array($field['item'], $allowed_customvalues_items)) {
                     $field_custom = new FieldCustomvalue();
-                    if ($fields_custom = $field_custom->find(['plugin_metademands_fields_id' => $field['id']])) {
-                        foreach ($fields_custom as $key => $value) {
+                    // Order by rank, like every other reader of this table does: find() otherwise
+                    // returns the rows in id order, and a single drag & drop reorder is enough to
+                    // make a perfectly sequential set of ranks look scrambled to
+                    // isSequentialFromZero(), which compares the values position by position.
+                    $fields_custom = $field_custom->find(
+                        ['plugin_metademands_fields_id' => $field['id']],
+                        ['rank'],
+                    );
+                    if (count($fields_custom) > 0) {
+                        foreach ($fields_custom as $value) {
                             $ranks[$field['id']][] = $value['rank'];
                         }
 
-                        foreach ($fields_custom as $fields_customs) {
-                            if (FieldCustomvalue::isSequentialFromZero(
-                                $ranks[$field['id']],
-                            ) == false) {
-                                $not_ordered_fields[] = $field['id'];
-                            }
+                        if (FieldCustomvalue::isSequentialFromZero($ranks[$field['id']]) == false) {
+                            $not_ordered_fields[] = $field['id'];
                         }
                     }
                 }
@@ -459,14 +408,12 @@ class Tools extends CommonDBTM
             }
         }
 
-        echo TemplateRenderer::getInstance()->render('@metademands/tools_diagnostic.html.twig', [
+        TemplateRenderer::getInstance()->display('@metademands/tools_diagnostic.html.twig', [
             'global_status_form' => $global_status_form,
             'duplicates_has'     => $duplicates_has,
             'duplicates_rows'    => $duplicates_rows,
             'empty_options_has'  => $empty_options_has,
             'empty_options_rows' => $empty_options_rows,
-            'empty_cv_has'       => $empty_cv_has,
-            'empty_cv_rows_html' => $empty_cv_rows_html,
             'ranks_fields_found' => $ranks_fields_found,
             'ranks_has'          => $ranks_has,
             'ranks_rows'         => $ranks_rows,

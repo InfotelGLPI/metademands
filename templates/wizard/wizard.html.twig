@@ -1,0 +1,104 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # The closing tags are emitted conditionally at the very end of this template: the wizard is
+ # rendered inside several host layouts (helpdesk page, service catalog, preview modal) which each
+ # close a different number of wrappers themselves. Keeping the historical asymmetry avoids
+ # breaking those layouts.
+ #}
+<div id="content">
+<div id="meta-form" class="bt-block">
+<form novalidate name="wizard_form" id="wizard_form"
+      method="post"
+      action="{{ form_action }}"
+      enctype="multipart/form-data"
+      class="metademands_img">
+
+    {{ models_and_drafts|raw }}
+
+    {% if maintenance %}
+        <div class="alert alert-warning center">
+            <i class="ti ti-alert-triangle" style="font-size:2em;color:orange"></i>&nbsp;
+            {{ __('This form is in maintenance mode', 'metademands') }}<br>
+            {{ __('Please come back later', 'metademands') }}
+        </div>
+    {% else %}
+        <div class="bt-container-fluid asset metademands_wizard_rank">
+
+            {{ breadcrumb|raw }}
+
+            {% for name, value in hidden_fields %}
+                <input type="hidden" name="{{ name }}" value="{{ value }}">
+            {% endfor %}
+
+            {% if header == 'init' or header == 'list' %}
+                <div class="row">
+                    <div class="card mx-1 my-2 flex-grow-1">
+                        <div class="col-12 align-self-center">
+                            <section class="card-body" style="width: 100%;">
+                                {% if is_fa_icon %}
+                                    <i class="fa-2x fas {{ icon }}"
+                                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;"></i>
+                                {% else %}
+                                    <i class="ti {{ icon }}" style="font-size:2em;"></i>
+                                {% endif %}
+                                {% if header == 'list' %}&nbsp;{% endif %}
+                                {% if header == 'init' %}
+                                    {{ __('What you want to do ?', 'metademands') }}
+                                {% else %}
+                                    {{ __('Form choice', 'metademands') }}
+                                {% endif %}
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            {% elseif header == 'form' %}
+                {{ metademand_title|raw }}
+            {% endif %}
+
+            {% if abort == 'message' %}
+                {{ abort_message|raw }}
+            {% elseif abort == '' %}
+                {% if requester_id is not null %}
+                    <input type="hidden" name="_users_id_requester" value="{{ requester_id }}">
+                {% endif %}
+                {{ steps|raw }}
+                {{ close_form|raw }}
+            {% endif %}
+
+            {# 'silent' aborts stop right after the title and leave every wrapper open. #}
+            {% if abort != 'silent' %}</div>{% endif %}
+    {% endif %}
+
+{% if abort == 'message' %}
+    </div>
+    </div>
+{% elseif abort == '' %}
+    {% if not maintenance and not preview %}</div>{% endif %}
+    </div>
+{% endif %}

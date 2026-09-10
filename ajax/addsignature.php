@@ -27,26 +27,65 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\Metademand;
+
 header("Content-Type: text/html; charset=UTF-8");
 
 Html::header_nocache();
 
+// Uploading a picture into the GLPI document tree must not be reachable anonymously.
+Session::checkLoginUser();
+
 $dest = false;
 
-if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {
+// Refuse a payload larger than what a signature pad can legitimately produce, before decoding it.
+$signature_max_bytes = 2 * 1024 * 1024;
 
-    $encoded_image = explode(",", $_POST['datasign'])[1];
-    $decoded_image = base64_decode($encoded_image);
+if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {
+    $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+
+    // Bind the write to a meta-demand the caller may actually fill in, with the same
+    // access check as ajax/createmetademands.php (rights + entity boundary).
+    $metademands = new Metademand();
+    if (
+        !$metademands->getFromDB($metademands_id)
+        || !($metademands->canCreate() || Group::isUserHaveRight($metademands_id))
+        || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])
+    ) {
+        throw new AccessDeniedHttpException();
+    }
+
+    // Only accept the exact data URL the signature pad produces: a strict base64 PNG payload.
+    $datasign = (string) $_POST['datasign'];
+    if (strlen($datasign) > $signature_max_bytes || !str_starts_with($datasign, 'data:image/png;base64,')) {
+        throw new BadRequestHttpException();
+    }
+    $encoded_image = substr($datasign, strlen('data:image/png;base64,'));
+    $decoded_image = base64_decode($encoded_image, true);
+    if ($decoded_image === false || $decoded_image === '') {
+        throw new BadRequestHttpException();
+    }
 
     $login = Session::getLoginUserID();
-    $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
     $filename = "sign-" . $metademands_id . "-" . $login . ".png";
     $filepath = GLPI_TMP_DIR . '/' . $filename;
-    if (file_put_contents($filepath, $decoded_image)) {
-        $ok = true;
+    if (file_put_contents($filepath, $decoded_image) === false) {
+        throw new BadRequestHttpException();
     }
+
     $prefix   = '';
-    $dest = Toolbox::savePicture($filepath, $prefix);
+    try {
+        // Toolbox::savePicture() validates the real mime type and moves the file when it succeeds;
+        // the temporary copy must not survive a rejection either.
+        $dest = Toolbox::savePicture($filepath, $prefix);
+    } finally {
+        if (file_exists($filepath)) {
+            @unlink($filepath);
+        }
+    }
 
     if ($dest !== false) {
         // Remember signatures created by this user so that only they may delete

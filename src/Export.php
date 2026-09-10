@@ -64,6 +64,9 @@ class Export extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands';
 
+    /** Upper bound accepted for an imported meta-demand XML document, in bytes. */
+    private const MAX_IMPORT_XML_BYTES = 5 * 1024 * 1024;
+
     public static function getTable($classname = null)
     {
         return Metademand::getTable();
@@ -1304,7 +1307,13 @@ class Export extends CommonDBTM
         $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
         $name = "/metademands/" . $safeName . ".json";
 
-        $file = fopen(GLPI_PLUGIN_DOC_DIR . $name, 'w+') or die("File not found");
+        // die() would abort the request in the middle of the page: report the failure the
+        // way the other export paths do and let the caller handle it.
+        $file = fopen(GLPI_PLUGIN_DOC_DIR . $name, 'w+');
+        if ($file === false) {
+            Session::addMessageAfterRedirect(__('Unable to create the export file', 'metademands'), false, ERROR);
+            return '';
+        }
         fwrite($file, $jsonOutput);
         fclose($file);
 
@@ -1339,50 +1348,109 @@ class Export extends CommonDBTM
 
     public static function importXml()
     {
-        if (isset($_FILES['meta_file'])) {
-            if (!count($_FILES['meta_file'])
-                || empty($_FILES['meta_file']['name'])
-                || !is_file($_FILES['meta_file']['tmp_name'])
-            ) {
-                switch ($_FILES['meta_file']['error']) {
-                    case UPLOAD_ERR_INI_SIZE:
-                    case UPLOAD_ERR_FORM_SIZE:
-                        Session::addMessageAfterRedirect(
-                            __('File too large to be added.'),
-                            false,
-                            ERROR,
-                        );
-                        return false;
-                        break;
+        $file = self::moveImportedXmlFile();
+        if ($file === false) {
+            return false;
+        }
 
-                    case UPLOAD_ERR_NO_FILE:
-                        Session::addMessageAfterRedirect(__('No file specified', 'metademands'), false, ERROR);
-                        return false;
-                        break;
-                }
-            } else {
-                $tmp = explode(".", $_FILES['meta_file']['name']);
-                $extension = array_pop($tmp);
-                if (Toolbox::getMime($_FILES['meta_file']['tmp_name'], 'text') && $extension == "xml") {
-                    // Unlink old picture (clean on changing format)
-                    $filename = "tmpfileMeta";
-                    $picture_path = GLPI_PLUGIN_DOC_DIR . "/metademands/{$filename}.$extension";
-                    Document::renameForce($_FILES['meta_file']['tmp_name'], $picture_path);
-                    $file = $picture_path;
-                } else {
+        try {
+            return self::importXmlFile($file);
+        } finally {
+            // The uploaded copy lives in the plugin document directory: drop it whatever the
+            // import did, including when it threw, so no readable XML is left behind.
+            if (file_exists($file)) {
+                @unlink($file);
+            }
+        }
+    }
+
+    /**
+     * Validate the uploaded meta-demand file and move it to a private working copy.
+     *
+     * @return string|false the path of the working copy, or false when the upload is refused
+     */
+    private static function moveImportedXmlFile()
+    {
+        if (
+            !isset($_FILES['meta_file'])
+            || !is_array($_FILES['meta_file'])
+            || !isset($_FILES['meta_file']['error'])
+        ) {
+            Session::addMessageAfterRedirect(__('No file specified', 'metademands'), false, ERROR);
+            return false;
+        }
+
+        if (
+            empty($_FILES['meta_file']['name'])
+            || !is_uploaded_file($_FILES['meta_file']['tmp_name'])
+            || $_FILES['meta_file']['error'] !== UPLOAD_ERR_OK
+        ) {
+            // Fail closed: any upload error, known or not, refuses the import instead of
+            // falling through to an unset working file.
+            switch ($_FILES['meta_file']['error']) {
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
                     Session::addMessageAfterRedirect(
-                        __('The file is not an XML file', 'metademands'),
+                        __('File too large to be added.'),
                         false,
                         ERROR,
                     );
                     return false;
-                }
+
+                case UPLOAD_ERR_NO_FILE:
+                    Session::addMessageAfterRedirect(__('No file specified', 'metademands'), false, ERROR);
+                    return false;
+
+                default:
+                    Session::addMessageAfterRedirect(__('Unable to upload the file', 'metademands'), false, ERROR);
+                    return false;
             }
         }
 
+        // Entity expansion happens inside the parser, before any business logic runs: bound the
+        // document the same way ajax/addsignature.php bounds an uploaded signature.
+        if (($_FILES['meta_file']['size'] ?? 0) > self::MAX_IMPORT_XML_BYTES) {
+            Session::addMessageAfterRedirect(__('File too large to be added.'), false, ERROR);
+            return false;
+        }
 
-        // $xml = simplexml_load_file(GLPI_PLUGIN_DOC_DIR . '/test.xml');
-        $xml = simplexml_load_file($file);
+        $tmp = explode(".", $_FILES['meta_file']['name']);
+        $extension = array_pop($tmp);
+        if (!Toolbox::getMime($_FILES['meta_file']['tmp_name'], 'text') || $extension != "xml") {
+            Session::addMessageAfterRedirect(
+                __('The file is not an XML file', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        // Unique working name: a fixed one would let two concurrent imports read each other's file.
+        $filename     = uniqid('import_', true);
+        $picture_path = GLPI_PLUGIN_DOC_DIR . "/metademands/{$filename}.$extension";
+        Document::renameForce($_FILES['meta_file']['tmp_name'], $picture_path);
+
+        return $picture_path;
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return int|false
+     */
+    private static function importXmlFile($file)
+    {
+        // LIBXML_NONET keeps the parser off the network whatever the document declares, and a
+        // rejected document must stop the import instead of flowing into json_encode(false).
+        $xml = simplexml_load_file($file, \SimpleXMLElement::class, LIBXML_NONET);
+        if ($xml === false) {
+            Session::addMessageAfterRedirect(
+                __('The file is not an XML file', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
         $json = json_encode($xml);
         $datas = json_decode($json, true);
         $datas = self::normalizeXmlData($datas) ?? [];
@@ -1989,7 +2057,6 @@ class Export extends CommonDBTM
                 $meta_translation->add($trans);
             }
         }
-        unlink($file);
 
         return $newIDMeta;
     }

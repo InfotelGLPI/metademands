@@ -29,7 +29,6 @@
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\FieldOption;
-use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Ticket_Metademand;
 
 Session::checkRight("plugin_metademands", UPDATE);
@@ -62,17 +61,10 @@ if (isset($_POST["purge_emptyoptions"])) {
     }
     Session::addMessageAfterRedirect(__('Metademands statuses updated', 'metademands'));
     Html::back();
-} elseif (isset($_POST["fix_emptycustomvalues"])) {
-    $itil = $_POST["id"];
-    $field = new FieldParameter();
-    $field->getfromDB($itil);
-    $test = json_decode($field->fields['custom_values'], true);
-    $start_one = array_combine(range(1, count($test)), array_values($test));
-    $input['custom_values'] = json_encode($start_one);
-    $input['id'] = $itil;
-    $field->update($input, 1);
-    Session::addMessageAfterRedirect(__('Empty custom value has been cleaned', 'metademands'));
-    Html::back();
+    // The "fix_emptycustomvalues" action used to sit here. It rewrote a `custom_values` column
+    // that no longer exists on glpi_plugin_metademands_fieldparameters (renamed to `custom`, and
+    // the options themselves moved to their own table), so it could only ever have produced a
+    // failing UPDATE. The Tools diagnostic that triggered it has been removed along with it.
 } else {
     throw new AccessDeniedHttpException();
 }

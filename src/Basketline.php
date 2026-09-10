@@ -444,7 +444,11 @@ class Basketline extends CommonDBTM
     public function deleteFromBasket($input)
     {
 
-        $this->deleteByCriteria(['line' => $input['delete_basket_line'],
+        // Line numbers are small integers reused across baskets: without the meta-demand
+        // criterion, deleting line N would also drop line N of the user's other baskets.
+        // Same scoping as deleteFileFromBasket() below.
+        $this->deleteByCriteria(['line' => (int) $input['delete_basket_line'],
+            'plugin_metademands_metademands_id' => (int) $input['metademands_id'],
             'users_id' => Session::getLoginUserID()]);
         Session::addMessageAfterRedirect(__("The line has been deleted", "metademands"), false, INFO);
     }

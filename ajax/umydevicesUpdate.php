@@ -97,6 +97,11 @@ if ($requested_users_id <= 0
 }
 $_POST['users_id'] = $requested_users_id;
 
+// [S3] Constrain the reflected form field name to the charset a name attribute
+// may safely contain (letters, digits, underscore, brackets), so a crafted
+// $_POST['field'] cannot break out of the attribute (reflected XSS).
+$_POST['field'] = preg_replace('/[^A-Za-z0-9_\[\]]/', '', (string) ($_POST['field'] ?? ''));
+
 $p = [
     'rand' => "",
     'name' => $_POST['field'],

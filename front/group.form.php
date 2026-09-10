@@ -29,6 +29,11 @@
 
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\GroupConfig;
+use GlpiPlugin\Metademands\Metademand;
+
+// Longest client-supplied pattern accepted by the group matching below, mirroring the cap
+// ajax/validregex.php already applies to the very same kind of input.
+$regex_value_max_length = 500;
 
 $group = new Group();
 
@@ -42,30 +47,82 @@ if (isset($_POST["add_groups"])) {
         }
     }
     if (isset($_POST['regex_value']) && !empty($_POST['regex_value'])) {
-        $grp = new Group();
-        $groups = $grp->find();
+        // This branch writes just like the one above, so it needs the same guard: check()
+        // resolves the parent meta-demand and applies the UPDATE right and its entity boundary.
+        $group->check(-1, UPDATE, $_POST);
+
+        $regex = (string) $_POST['regex_value'];
+        if (strlen($regex) > $regex_value_max_length) {
+            Session::addMessageAfterRedirect(
+                __('The regular expression is invalid', 'metademands'),
+                false,
+                ERROR,
+            );
+            Html::back();
+        }
+
+        // Tighten the PCRE limits around the loop so a catastrophically backtracking pattern
+        // aborts instead of burning the worker's CPU over every group, and treat a false
+        // return as an invalid pattern rather than as a silent non-match. Same mechanics as
+        // ajax/validregex.php.
+        $saved_backtrack_limit = ini_set('pcre.backtrack_limit', 10000);
+        $saved_recursion_limit = ini_set('pcre.recursion_limit', 1000);
+
+        // The core Group is the one that owns a `name`: the plugin Group imported above is the
+        // meta-demand/group association table, whose rows carry no name at all, so matching
+        // against it compared the pattern to an undefined key.
+        $dbu = new DbUtils();
+        $core_group = new \Group();
+        $groups = $core_group->find(
+            $dbu->getEntitiesRestrictCriteria(\Group::getTable(), '', '', true),
+        );
+
+        $invalid_regex = false;
         foreach ($groups as $g) {
-            $res = preg_match($_POST['regex_value'], $g['name']) == 1;
-            if ($res) {
-                $group->add(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'], 'groups_id' => $g['id']]);
+            $res = @preg_match($regex, (string) $g['name']);
+            if ($res === false) {
+                $invalid_regex = true;
+                break;
             }
+            if ($res === 1) {
+                $group->add([
+                    'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
+                    'groups_id'                         => $g['id'],
+                ]);
+            }
+        }
+
+        ini_set('pcre.backtrack_limit', $saved_backtrack_limit);
+        ini_set('pcre.recursion_limit', $saved_recursion_limit);
+
+        if ($invalid_regex) {
+            Session::addMessageAfterRedirect(
+                __('The regular expression is invalid', 'metademands'),
+                false,
+                ERROR,
+            );
         }
     }
     Html::back();
 } elseif (isset($_POST["define_visibility"])) {
-    // Editing a meta-demand's group visibility is a configuration change:
-    // require the plugin UPDATE right (add()/update() do not check rights).
-    Session::checkRight('plugin_metademands', UPDATE);
+    // Editing a meta-demand's group visibility is a configuration change on that meta-demand.
+    // Session::checkRight() only tested a global right bit with no notion of entity, so a
+    // manager holding UPDATE on entity A could rewrite the visibility of a form owned by
+    // entity B. check() loads the posted meta-demand and enforces both the right and the
+    // entity boundary, exactly like the add_groups branch above does through its child.
+    $metademands_id = (int) ($_POST['plugin_metademands_metademands_id'] ?? 0);
+    $metademand = new Metademand();
+    $metademand->check($metademands_id, UPDATE);
 
     $groupconfig = new GroupConfig();
-    if (!$groupconfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])) {
+    if (!$groupconfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
         $groupconfig->add(['visibility' => $_POST['visibility'],
-            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+            'plugin_metademands_metademands_id' => $metademands_id]);
     } else {
         $id = $groupconfig->getID();
         $groupconfig->update(['id' => $id,
             'visibility' => $_POST['visibility'],
-            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+            'plugin_metademands_metademands_id' => $metademands_id]);
     }
     Html::back();
 }

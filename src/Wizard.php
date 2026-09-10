@@ -35,6 +35,7 @@ use CommonGLPI;
 use CommonITILActor;
 use DbUtils;
 use Glpi\Application\View\Extension\IllustrationExtension;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Servicecatalog\Category;
@@ -279,27 +280,21 @@ class Wizard extends CommonDBTM
      */
     public static function showMetademandTitle($meta, $parameters)
     {
-        echo "<div class='row'>";
-
-        $background_color = $title_color = "#000";
-        $style_title_color = "";
-        if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-            $title_color = htmlspecialchars($meta->fields['title_color'], ENT_QUOTES);
-            $style_title_color = "style='color: $title_color;'";
-        }
-        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-            $background_color = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
-        }
-
-        $style_background = "style='background-color: $background_color!important;'";
-
-        echo "<div class='col-md-12 md-title'>";
-        echo "<div class='card mx-1 my-2 flex-grow-1'  $style_background>";
-        echo "<section class='card-body' style='width: 100%;padding: 12px!important;'>";//height: 80px;
-        echo "<div class='d-flex'>";
-
         $config = Config::getInstance();
 
+        $title_color       = "#000";
+        $background_color  = "#000";
+        $style_title_color = "";
+        if (!empty($meta->fields['title_color'])) {
+            $title_color       = $meta->fields['title_color'];
+            $style_title_color = $title_color;
+        }
+        if (!empty($meta->fields['background_color'])) {
+            $background_color = $meta->fields['background_color'];
+        }
+        $icon_color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
+
+        $icon = "";
         if (!empty($config['icon_incident']) && $meta->fields['type'] == \Ticket::INCIDENT_TYPE) {
             $icon = $config['icon_incident'];
         }
@@ -312,82 +307,49 @@ class Wizard extends CommonDBTM
         if (!empty($config['icon_change']) && $meta->fields['type'] == "Change") {
             $icon = $config['icon_change'];
         }
-
-        if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+        if (!empty($meta->fields['icon'])) {
             $icon = $meta->fields['icon'];
         }
-        if (isset($meta->fields['illustration']) && !empty($meta->fields['illustration'])) {
-            $illustration = $meta->fields['illustration'];
-        }
-        $margintop = "margin-top: -45px";
-        if (empty($illustration)) {
-            $margintop = "margin-top: 5px";
+
+        $illustration = "";
+        if (!empty($meta->fields['illustration'])) {
+            $illustration = (new IllustrationExtension())->renderIllustration($meta->fields['illustration']);
         }
 
-        echo "<div class='aspect-ratio-1' style='$margintop;margin-left: 10px;width: 70px;height: 70px;'>";
-
-        if (!empty($icon) && empty($illustration)) {
-
-            $stylespan = "md-cat-icon-stack";
-            $sizespan = "1em";
-            if (!empty($title_color)) {
-                $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
-            } else {
-                $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
-            }
-
-            echo "<span class='$stylespan' style='font-size:1.5em'><i class='ti ti-circle' style='$color;'></i>";
-
-            if (str_contains($icon, 'fa-')) {
-                echo "<i class='fa-1x fas $icon' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: $sizespan;\"></i>&nbsp;";
-            } else {
-                echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>&nbsp;";
-            }
-
-            echo "</span>";
-
-        } elseif (!empty($illustration)) {
-            $ill = new IllustrationExtension();
-            echo $ill->renderIllustration($illustration);
+        if (empty($title = Metademand::displayField($meta->getID(), 'name'))) {
+            $title = $meta->getName();
         }
 
-        echo "</div>";
-        echo "<div class='ms-4' style='width: 90%;'>";
-        echo "<h2 class='card-title mb-2 text-break' $style_title_color>";
-
-        if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-            echo htmlspecialchars((string) $meta->getName(), ENT_QUOTES, 'UTF-8');
-        } else {
-            echo htmlspecialchars((string) $n, ENT_QUOTES, 'UTF-8');
-        }
-        if (isset($parameters['cat_name'])) {
-            echo htmlspecialchars((string) $parameters['cat_name'], ENT_QUOTES, 'UTF-8');
-        }
+        $category_completename = "";
         if (isset($parameters['itilcategories_id'])
             && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
             $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
             if (is_array($cats) && count($cats) > 1) {
-                $itilCategory = new ITILCategory();
-                if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
-                    echo " - " . htmlspecialchars((string) $itilCategory->fields['completename'], ENT_QUOTES, 'UTF-8');
+                $itil_category = new ITILCategory();
+                if ($itil_category->getFromDB($parameters['itilcategories_id'])) {
+                    $category_completename = $itil_category->fields['completename'];
                 }
             }
         }
+
+        $category_details_id    = 0;
+        $category_details_modal = "";
         if (Plugin::isPluginActive('servicecatalog')) {
             $configsc = new ServiceCatalogConfig();
             $seedetail = 1;
+            // Kept as a string literal on purpose: servicecatalog is an optional plugin and the
+            // class may simply not exist here.
             if (method_exists("GlpiPlugin\\Servicecatalog\\Config", "getDetailBeforeFormRedirect")) {
                 $seedetail = $configsc->getDetailBeforeFormRedirect();
             }
             if ($configsc->seeCategoryDetails() && $seedetail == 0) {
                 $itilcategories_id = 0;
-                $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'] ?? '', true);
                 if (is_array($cats) && count($cats) == 1) {
                     foreach ($cats as $cat) {
                         $itilcategories_id = $cat;
                     }
                 }
-                $type = $meta->fields['type'];
                 $helpdesk_category = new Category();
                 if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
                     && ($helpdesk_category->fields['comment_incident'] != null
@@ -398,16 +360,10 @@ class Wizard extends CommonDBTM
                         || $helpdesk_category->fields['service_use'] != null
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
-                    echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __(
-                        'More informations',
-                        'servicecatalog',
-                    ) . "\"> ";
-                    //                            echo __('More informations of this category ? click here', 'servicecatalog');
-                    echo "</i>";
-                    //                            echo "</div>";
-                    echo Ajax::createIframeModalWindow(
+                    $category_details_id    = $itilcategories_id;
+                    $category_details_modal = Ajax::createIframeModalWindow(
                         'categorydetails' . $itilcategories_id,
-                        PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
+                        PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $meta->fields['type'] . "&category_id=" . $itilcategories_id,
                         [
                             'title' => __('More informations', 'servicecatalog'),
                             'display' => false,
@@ -419,50 +375,50 @@ class Wizard extends CommonDBTM
             }
         }
 
+        $settings_url = "";
         if (Session::getCurrentInterface() == 'central'
             && Session::haveRight('plugin_metademands', UPDATE)
             && !$parameters['seeform']) {
-            echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Metademand::class,
-            ) . "?id=" . $meta->getID() . "'>
-                            <i class='ti ti-settings'></i></a>";
+            $settings_url = Toolbox::getItemTypeFormURL(Metademand::class) . "?id=" . $meta->getID();
         }
 
-        echo "</h2>";
-        echo "<div class='text-secondary remove-last-tinymce-margin' style='color:#7B7B7B;font-size:0.8rem;'>";
+        // 'comment' is rich HTML authored in TinyMCE by the metademand designer: it is the only
+        // value handed to the template unescaped, so it must be sanitized here.
+        $comment = "";
         if (!empty($meta->fields['comment'])) {
             if (empty($comment = Metademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
             }
-            // 'comment' is rich HTML authored in TinyMCE by the metademand designer. nl2br()
-            // does NOT neutralize markup, so a stored <script>/<img onerror> would run in every
-            // requester's session. Sanitize like the rest of the plugin's rich-content output.
-            echo RichText::getSafeHtml($comment);
-        } else {
-            // Designer-defined metademand name rendered as plain text (stored XSS, same class as the comment above).
-            if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                echo htmlspecialchars((string) $meta->getName(), ENT_QUOTES, 'UTF-8');
-            } else {
-                echo htmlspecialchars((string) $n, ENT_QUOTES, 'UTF-8');
-            }
+            $comment = RichText::getSafeHtml($comment);
         }
-        echo "</div>";
-        echo "</div>";
 
         if (!isset($parameters['from_draft'])) {
             $parameters['from_draft'] = 0;
         }
+        $models_and_drafts = "";
         if ($parameters['from_draft'] == 0) {
+            ob_start();
             self::showmodelsAndDrafts($parameters, true);
+            $models_and_drafts = (string) ob_get_clean();
         }
 
-        echo "</div>";
-        echo "</section>";
-        echo "</div>";
-        echo "</div>";
-
-
-        echo "</div><br>";
+        TemplateRenderer::getInstance()->display('@metademands/wizard/metademand_title.html.twig', [
+            'background_color'       => $background_color,
+            'style_title_color'      => $style_title_color,
+            'icon_color'             => $icon_color,
+            'margin_top'             => empty($illustration) ? "margin-top: 5px" : "margin-top: -45px",
+            'illustration'           => $illustration,
+            'icon'                   => $icon,
+            'is_fa_icon'             => str_contains($icon, 'fa-'),
+            'title'                  => $title,
+            'cat_name'               => $parameters['cat_name'] ?? "",
+            'category_completename'  => $category_completename,
+            'category_details_id'    => $category_details_id,
+            'category_details_modal' => $category_details_modal,
+            'settings_url'           => $settings_url,
+            'comment'                => $comment,
+            'models_and_drafts'      => $models_and_drafts,
+        ]);
     }
 
     public static function showmodelsAndDrafts($parameters, $with_title = 1)
@@ -575,9 +531,6 @@ class Wizard extends CommonDBTM
         }
         $_SESSION['servicecatalog']['sc_itilcategories_id'] = $parameters['itilcategories_id'];
         // Retrieve session values
-        //        if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'])) {
-        //            $parameters['tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'];
-        //        }
         if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_id'])) {
             $parameters['resources_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_id'];
         }
@@ -597,256 +550,221 @@ class Wizard extends CommonDBTM
             $title = $meta->fields['hide_title'] ? 0 : 1;
         }
 
-        echo "<div id ='content'>";
-
-        echo "<div id='meta-form' class='bt-block'> ";
-
-        echo "<form novalidate name='wizard_form' id ='wizard_form'
-                        method='post'
-                        action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
-                        enctype='multipart/form-data'
-                        class='metademands_img'> ";
-
+        $models_and_drafts = "";
         if ($parameters['step'] > Metademand::STEP_LIST && $title == 0) {
+            ob_start();
             self::showmodelsAndDrafts($parameters, false);
+            $models_and_drafts = (string) ob_get_clean();
         }
 
-        if ($maintenance_mode == 1 && !$parameters['preview']) {
-            echo "<div class='alert alert-warning center'>";
-            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
-            echo __('This form is in maintenance mode', 'metademands') . "<br>";
-            echo __('Please come back later', 'metademands') . "</div>";
-        } else {
-            echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
-            if ($parameters['step'] > Metademand::STEP_LIST) {
-                // fil d'ariane
-                if ($meta->getFromDB($parameters['metademands_id'])
-                    && Plugin::isPluginActive('servicecatalog')
-                    && Session::getCurrentInterface() != 'central'
-                    && $parameters['itilcategories_id'] > 0) {
-                    $treename = Category::getTreeCategoryFriendlyName(
-                        $meta->fields['type'],
-                        $parameters['itilcategories_id'],
-                        6,
-                    );
-                    $name = $treename['name'];
-                    $treescript = json_decode($treename['script']);
+        $template_vars = [
+            'form_action'       => Toolbox::getItemTypeFormURL(__CLASS__),
+            'models_and_drafts' => $models_and_drafts,
+            'maintenance'       => ($maintenance_mode == 1 && !$parameters['preview']),
+            'preview'           => (bool) $parameters['preview'],
+            'breadcrumb'        => "",
+            'hidden_fields'     => [],
+            'header'            => "",
+            'icon'              => "",
+            'is_fa_icon'        => false,
+            'metademand_title'  => "",
+            'requester_id'      => null,
+            'abort'             => "",
+            'abort_message'     => "",
+            'steps'             => "",
+            'close_form'        => "",
+        ];
 
-                    echo "<script>$(document).ready(function() {
-                          $('#title_cat').show();
-                             $('#categories_title').show();
-                             document.getElementById('title_cat').innerHTML = \"$name\";
-                             let newScript = document.createElement('script');
-                             newScript.type = 'text/javascript';
-                             let scriptContent = document.createTextNode( $treescript );
-                             newScript.appendChild( scriptContent ); //add the text node to the newly created div.
-                             document.body.appendChild( newScript ); //add the text node to the newly created div.
-                        });</script>";
+        if ($template_vars['maintenance']) {
+            TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
+            return true;
+        }
 
-                    echo "<span id='categories_title' style='display: none'>";
-                    $style = "";
-                    $important = "";
-                    $plugin = new Plugin();
-                    if (Plugin::isPluginActive('servicecatalog')
-                        && ($plugin->getInfo('servicecatalog')["version"] > "2.0.8")) {
-                        $config = new ServiceCatalogConfig();
-                        if ($config->getLayout() == ServiceCatalogConfig::BOOTSTRAPPED
-                            || $config->getLayout() == ServiceCatalogConfig::BOOTSTRAPPED_COLOR) {
-                            $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
-                        }
-                        $force = $config->getforceBackgroundColor();
-                        if ($force == 1) {
-                            $important = "alert-important";
-                        }
-                    }
-                    echo "<div class='alert alert-secondary $important' role='alert' $style>";
-                    echo "<span id='title_cat'>";
-                    echo "</span>";
-                    echo "</div>";
-                    echo "</span>";
-                    echo "</h5>";
+        // Breadcrumb: only the service catalog interface exposes a category path to walk back up.
+        if ($parameters['step'] > Metademand::STEP_LIST
+            && $meta->getFromDB($parameters['metademands_id'])
+            && Plugin::isPluginActive('servicecatalog')
+            && Session::getCurrentInterface() != 'central'
+            && $parameters['itilcategories_id'] > 0) {
+            $template_vars['breadcrumb'] = self::getWizardBreadcrumb($meta, (int) $parameters['itilcategories_id']);
+        }
 
-                    if (Plugin::isPluginActive('servicecatalog')) {
-                        $helpdesk_category = new Category();
-                        if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
-                            && !empty($helpdesk_category->fields['display_warning'])) {
-                            echo "<h5>";
-                            echo "<div class='alert alert-danger' role='alert'>";
-                            echo "<i style='font-size:3em;' class='ti ti-exclamation-circle'></i>";
-                            echo "&nbsp;" . nl2br(
-                                Category::displayField($helpdesk_category, 'display_warning'),
-                            );
-                            echo "</div>";
-                            echo "</h5>";
-                        }
+        // Case of simple ticket convertion
+        $template_vars['hidden_fields'] = [
+            'tickets_id'          => $parameters['tickets_id'],
+            'resources_id'        => $parameters['resources_id'],
+            'resources_step'      => $parameters['resources_step'],
+            'block_id'            => $parameters['block_id'],
+            'ancestor_tickets_id' => $parameters['ancestor_tickets_id'],
+        ];
 
-                        if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
-                            && !empty($helpdesk_category->fields['knowbaseitems_id'])
-                            && Session::haveRight('knowbase', KnowbaseItem::READFAQ)) {
-                            $know_id = $helpdesk_category->fields['knowbaseitems_id'];
-                            echo "<h5>";
-                            echo "<div class='alert alert-warning' role='alert'>";
-                            echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>";
-                            echo "&nbsp;";
-                            echo __(
-                                'Did you know that there is an FAQ article that may be able to help you?',
-                                'servicecatalog',
-                            );
-                            echo "&nbsp;";
-                            echo "<a href='" . PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1&itilcategories_id=" . $parameters['itilcategories_id'] . "&type=" . $meta->fields['type'] . "&id=" . $know_id . "'>";
-                            echo "<button form='' class='submit btn btn-info btn-sm'>
-<i class='ti ti-link' data-hasqtip='0' aria-hidden='true'></i>";
-                            echo "&nbsp;";
-                            echo __('Click here for more informations', 'servicecatalog');
-                            echo "</button>";
-                            echo "</a>";
-                            echo "</div>";
-                            echo "</h5>";
-                        }
-                    }
+        if ($parameters['step'] == Metademand::STEP_INIT) {
+            // Wizard title
+            $template_vars['header'] = 'init';
+            $icon = "ti-share";
+            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+                $icon = $meta->fields['icon'];
+            }
+            $template_vars['icon'] = $icon;
+            $template_vars['is_fa_icon'] = str_contains($icon, 'fa-');
+        } elseif ($parameters['step'] == Metademand::STEP_LIST) {
+            // Wizard title
+            $template_vars['header'] = 'list';
+            $icon = "ti-share";
+
+            $config = Config::getInstance();
+            if (!empty($config['icon_incident']) && $parameters['meta_type'] == \Ticket::INCIDENT_TYPE) {
+                $icon = $config['icon_incident'];
+            }
+            if (!empty($config['icon_request']) && $parameters['meta_type'] == \Ticket::DEMAND_TYPE) {
+                $icon = $config['icon_request'];
+            }
+            if (!empty($config['icon_problem']) && $parameters['meta_type'] == "Problem") {
+                $icon = $config['icon_problem'];
+            }
+            if (!empty($config['icon_change']) && $parameters['meta_type'] == "Change") {
+                $icon = $config['icon_change'];
+            }
+            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+                $icon = $meta->fields['icon'];
+            }
+
+            $template_vars['icon'] = $icon;
+            $template_vars['is_fa_icon'] = str_contains($icon, 'fa-');
+        } elseif ($parameters['step'] > Metademand::STEP_LIST) {
+            $template_vars['header'] = 'form';
+            if ($title == 1) {
+                ob_start();
+                self::showMetademandTitle($meta, $parameters);
+                $template_vars['metademand_title'] = (string) ob_get_clean();
+            }
+
+            if ($parameters['preview'] == 0) {
+                if (Step::checkSupervisorForUser($meta->getID()) == false) {
+                    $template_vars['abort'] = 'silent';
+                    TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
+                    return false;
                 }
             }
 
-            // Case of simple ticket convertion
-            echo Html::hidden('tickets_id', ['value' => $parameters['tickets_id']]);
-            echo Html::hidden('resources_id', ['value' => $parameters['resources_id']]);
-            echo Html::hidden('resources_step', ['value' => $parameters['resources_step']]);
-            echo Html::hidden('block_id', ['value' => $parameters['block_id']]);
-            echo Html::hidden('ancestor_tickets_id', ['value' => $parameters['ancestor_tickets_id']]);
-
-            $icon = '';
-
-            if ($parameters['step'] == Metademand::STEP_INIT) {
-                // Wizard title
-                echo "<div class='row'>";
-                echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
-                echo "<div class='col-12 align-self-center'>";
-
-                echo "<section class='card-body' style='width: 100%;'>";
-                $icon = "ti-share";
-                if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                    $icon = $meta->fields['icon'];
+            // Display user informations
+            $userid = Session::getLoginUserID();
+            // If ticket exists we get its first requester
+            if ($parameters['tickets_id']) {
+                $users_id_requester = Ticket::getUsedActors(
+                    $parameters['tickets_id'],
+                    CommonITILActor::REQUESTER,
+                    'users_id',
+                );
+                if (count($users_id_requester)) {
+                    $userid = $users_id_requester[0];
                 }
-                if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;\"></i>";//$style
-                } else {
-                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>";//$style
-                }
-                echo __('What you want to do ?', 'metademands');
-                echo "</section>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-            } elseif ($parameters['step'] == Metademand::STEP_LIST) {
-                // Wizard title
-                echo "<div class='row'>";
-                echo "<div class=\"card mx-1 my-2 flex-grow-1\">";
-                echo "<div class='col-12 align-self-center'>";
-
-                echo "<section class='card-body' style='width: 100%;'>";
-                $icon = "ti-share";
-
-                $config = Config::getInstance();
-                if (!empty($config['icon_incident']) && $parameters['meta_type'] == \Ticket::INCIDENT_TYPE) {
-                    $icon = $config['icon_incident'];
-                }
-                if (!empty($config['icon_request']) && $parameters['meta_type'] == \Ticket::DEMAND_TYPE) {
-                    $icon = $config['icon_request'];
-                }
-                if (!empty($config['icon_problem']) && $parameters['meta_type'] == "Problem") {
-                    $icon = $config['icon_problem'];
-                }
-                if (!empty($config['icon_change']) && $parameters['meta_type'] == "Change") {
-                    $icon = $config['icon_change'];
-                }
-                if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                    $icon = $meta->fields['icon'];
-                }
-
-                if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;\"></i>&nbsp;";
-                } else {
-                    echo "<i class='ti $icon' style=\"font-size:2em;\"></i>&nbsp;";
-                }
-                echo __('Form choice', 'metademands');
-                echo "</section>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-            } elseif ($parameters['step'] > Metademand::STEP_LIST) {
-                if ($title == 1) {
-                    self::showMetademandTitle($meta, $parameters);
-                }
-
-                if ($parameters['preview'] == 0) {
-                    if (Step::checkSupervisorForUser($meta->getID()) == false) {
-                        return false;
-                    }
-                }
-
-                // Display user informations
-                $userid = Session::getLoginUserID();
-                // If ticket exists we get its first requester
-                if ($parameters['tickets_id']) {
-                    $users_id_requester = Ticket::getUsedActors(
-                        $parameters['tickets_id'],
-                        CommonITILActor::REQUESTER,
-                        'users_id',
-                    );
-                    if (count($users_id_requester)) {
-                        $userid = $users_id_requester[0];
-                    }
-                }
-
-                // Retrieve session values
-                if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['_users_id_requester'])) {
-                    $userid = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['_users_id_requester'];
-                }
-
-                $user = new User();
-                $user->getFromDB($userid);
-
-                $canuse = Group::isUserHaveRight($parameters['metademands_id']);
-                if ($parameters['preview'] == 1) {
-                    $canuse = 1;
-                }
-                // Rights management
-                if (Session::getCurrentInterface() == 'central'
-                    && !empty($parameters['tickets_id'])
-                    && !Session::haveRight('ticket', UPDATE)) {
-                    self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                    return false;
-                } elseif (!$canuse) {
-                    self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                    return false;
-                }
-                echo Html::hidden('_users_id_requester', ['value' => $userid]);
             }
-            $options['resources_id'] = $parameters['resources_id'];
-            $options['itilcategories_id'] = $parameters['itilcategories_id'];
 
-            self::showWizardSteps(
-                $parameters['step'],
-                $parameters['metademands_id'],
-                $parameters['preview'],
-                $options,
-                $parameters['seeform'],
-                $parameters['current_ticket_id'],
-                $parameters['meta_validated'],
-            );
-            Html::closeForm();
-            echo "</div>";
-            if (!$parameters['preview']) {
-                echo "</div>";
+            // Retrieve session values
+            if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['_users_id_requester'])) {
+                $userid = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['_users_id_requester'];
+            }
+
+            $canuse = Group::isUserHaveRight($parameters['metademands_id']);
+            if ($parameters['preview'] == 1) {
+                $canuse = 1;
+            }
+            // Rights management
+            $denied_message = "";
+            if (Session::getCurrentInterface() == 'central'
+                && !empty($parameters['tickets_id'])
+                && !Session::haveRight('ticket', UPDATE)) {
+                $denied_message = __("You don't have the right to update tickets", 'metademands');
+            } elseif (!$canuse) {
+                $denied_message = __("You don't have the right to create meta-demand", 'metademands');
+            }
+            if ($denied_message !== "") {
+                ob_start();
+                self::showMessage($denied_message, true);
+                $template_vars['abort'] = 'message';
+                $template_vars['abort_message'] = (string) ob_get_clean();
+                TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
+                return false;
+            }
+            $template_vars['requester_id'] = $userid;
+        }
+
+        $options['resources_id'] = $parameters['resources_id'];
+        $options['itilcategories_id'] = $parameters['itilcategories_id'];
+
+        ob_start();
+        self::showWizardSteps(
+            $parameters['step'],
+            $parameters['metademands_id'],
+            $parameters['preview'],
+            $options,
+            $parameters['seeform'],
+            $parameters['current_ticket_id'],
+            $parameters['meta_validated'],
+        );
+        $template_vars['steps'] = (string) ob_get_clean();
+        $template_vars['close_form'] = (string) Html::closeForm(false);
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
+    }
+
+    /**
+     * Build the service catalog breadcrumb displayed above the wizard.
+     *
+     * @param Metademand $meta
+     * @param int        $itilcategories_id
+     *
+     * @return string
+     */
+    private static function getWizardBreadcrumb(Metademand $meta, int $itilcategories_id): string
+    {
+        $treename = Category::getTreeCategoryFriendlyName(
+            $meta->fields['type'],
+            $itilcategories_id,
+            6,
+        );
+
+        $alert_style = "";
+        $alert_class = "";
+        $plugin = new Plugin();
+        if ($plugin->getInfo('servicecatalog')["version"] > "2.0.8") {
+            $config = new ServiceCatalogConfig();
+            if ($config->getLayout() == ServiceCatalogConfig::BOOTSTRAPPED
+                || $config->getLayout() == ServiceCatalogConfig::BOOTSTRAPPED_COLOR) {
+                $alert_style = "border: 1px solid transparent;border-radius: 1px;margin: 0px;";
+            }
+            if ($config->getforceBackgroundColor() == 1) {
+                $alert_class = "alert-important";
             }
         }
-        echo "</div>";
+
+        $display_warning  = "";
+        $faq_url          = "";
+        $helpdesk_category = new Category();
+        if ($helpdesk_category->getFromDBByCategory($itilcategories_id)) {
+            if (!empty($helpdesk_category->fields['display_warning'])) {
+                $display_warning = Category::displayField($helpdesk_category, 'display_warning');
+            }
+            if (!empty($helpdesk_category->fields['knowbaseitems_id'])
+                && Session::haveRight('knowbase', KnowbaseItem::READFAQ)) {
+                $faq_url = PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1"
+                    . "&itilcategories_id=" . $itilcategories_id
+                    . "&type=" . $meta->fields['type']
+                    . "&id=" . (int) $helpdesk_category->fields['knowbaseitems_id'];
+            }
+        }
+
+        return TemplateRenderer::getInstance()->render('@metademands/wizard/wizard_breadcrumb.html.twig', [
+            'tree_name'       => $treename['name'],
+            // getTreeCategoryFriendlyName() json_encode()s its script: decoding it gives back the
+            // JavaScript string literal (quotes included) the inline script turns into a text node.
+            'tree_script'     => json_decode($treename['script']),
+            'alert_class'     => $alert_class,
+            'alert_style'     => $alert_style,
+            'display_warning' => $display_warning,
+            'faq_url'         => $faq_url,
+        ]);
     }
 
     /**
@@ -1069,54 +987,44 @@ class Wizard extends CommonDBTM
      */
     public static function listMetademandTypes()
     {
-
         echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
-        $data = self::countMetademandTypes();
+        $data   = self::countMetademandTypes();
+        $config = Config::getInstance();
 
-        if (count($data) > 0) {
-            if (count($data) == 1) {
-                foreach ($data as $type => $typename) {
-                    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=1&meta_type=$type");
-                }
-            }
-
+        if (count($data) == 1) {
             foreach ($data as $type => $typename) {
-                echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . Metademand::STEP_LIST . "&meta_type=$type'>";
-                echo '<div class="btnsc-normal-type" style="min-height: 190px;">';
-                $fasize = "fa-5x";
-                echo "<div class='center'>";
-                $config = Config::getInstance();
-                $icon = "ti-share";
-                if (!empty($config['icon_incident']) && $type == \Ticket::INCIDENT_TYPE) {
-                    $icon = $config['icon_incident'];
-                }
-                if (!empty($config['icon_request']) && $type == \Ticket::DEMAND_TYPE) {
-                    $icon = $config['icon_request'];
-                }
-                if (!empty($config['icon_problem']) && $type == "Problem") {
-                    $icon = $config['icon_problem'];
-                }
-                if (!empty($config['icon_change']) && $type == "Change") {
-                    $icon = $config['icon_change'];
-                }
-                if (str_contains($icon, 'fa-')) {
-                    echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;\"></i>";//$style
-                } else {
-                    echo "<i class='bt-interface fa-menu-md ti $icon' style=\"font-size:6em;\"></i>";//$style
-                }
-                echo "</div>";
-                echo "<br><p style='font-weight: normal;font-size: 13px;'>";
-                echo $typename;
-                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                echo "</span></em>";
-                echo "</p></div></a>";
+                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=1&meta_type=$type");
             }
-        } else {
-            echo "<div class='alert alert-info center'>";
-            echo __("No existing forms founded", 'metademands');
-            echo "</div>";
         }
+
+        $entries = [];
+        foreach ($data as $type => $typename) {
+            $icon = "ti-share";
+            if (!empty($config['icon_incident']) && $type == \Ticket::INCIDENT_TYPE) {
+                $icon = $config['icon_incident'];
+            }
+            if (!empty($config['icon_request']) && $type == \Ticket::DEMAND_TYPE) {
+                $icon = $config['icon_request'];
+            }
+            if (!empty($config['icon_problem']) && $type == "Problem") {
+                $icon = $config['icon_problem'];
+            }
+            if (!empty($config['icon_change']) && $type == "Change") {
+                $icon = $config['icon_change'];
+            }
+
+            $entries[] = [
+                'url'        => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . Metademand::STEP_LIST . "&meta_type=" . $type,
+                'icon'       => $icon,
+                'is_fa_icon' => str_contains($icon, 'fa-'),
+                'name'       => $typename,
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/metademand_types.html.twig', [
+            'entries' => $entries,
+        ]);
     }
 
 
@@ -1196,37 +1104,26 @@ class Wizard extends CommonDBTM
 
         $iterator = $DB->request($criteria);
 
-        if (count($iterator) > 0) {
-            echo "<div style='display:flex;'>";
-            foreach ($iterator as $row) {
-                $meta = new Metademand();
-                $meta->getFromDB($row['plugin_metademands_metademands_id']);
-                $icon = "ti-share";
-                if (!empty($meta->fields['icon'])) {
-                    $icon = $meta->fields['icon'];
-                }
-
-                echo "<a href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $row['plugin_metademands_metademands_id'] . "&step=" . Metademand::STEP_SHOW . "'>";
-                echo "<div style='margin-right: 5px;'>";
-                echo "<h6>";
-                echo "<div class='alert alert-secondary' style='border-radius: 0;margin-right: 5px;background-color: white;'>";
-                $stylespan = "md-fav-icon-stack fa-1x";
-                $sizespan = "0.5em";
-                echo "<span class='$stylespan'><i class='ti ti-circle'></i>";
-                if (str_contains($icon, 'fa-')) {
-                    echo "<i class='fas $icon fa-1x' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size:$sizespan;\"></i>";//$style
-                } else {
-                    echo "<i class='ti $icon' style=\"font-size:$sizespan;\"></i>";//$style
-                }
-                echo "</span>&nbsp;";
-                echo  $row['name'];
-                echo "</div>";
-                echo "</h6>";
-                echo "</div>";
-                echo "</a>";
+        $entries = [];
+        foreach ($iterator as $row) {
+            $meta = new Metademand();
+            $meta->getFromDB($row['plugin_metademands_metademands_id']);
+            $icon = "ti-share";
+            if (!empty($meta->fields['icon'])) {
+                $icon = $meta->fields['icon'];
             }
-            echo "</div>";
+
+            $entries[] = [
+                'url'        => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $row['plugin_metademands_metademands_id'] . "&step=" . Metademand::STEP_SHOW,
+                'icon'       => $icon,
+                'is_fa_icon' => str_contains($icon, 'fa-'),
+                'name'       => $row['name'],
+            ];
         }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/most_used_metademands.html.twig', [
+            'entries' => $entries,
+        ]);
     }
 
     /**
@@ -1237,168 +1134,126 @@ class Wizard extends CommonDBTM
         echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
         $config = Config::getInstance();
+        $meta   = new Metademand();
 
-        $meta = new Metademand();
-        if ($config['display_type'] == 1) {
-            $metademands = self::selectMetademands(false, "", $type);
-            if (count($metademands) > 1) {
-                echo "<div id='listmeta'>";
-
-                if ($config['see_top'] && ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE)) {
-                    self::showMostUsedMetademands($type);
-                }
-                $title = __("Find a form", "metademands");
-                echo "<div tabindex='-1' id='mt-fuzzysearch'>";
-                echo "<div class='modal-content'>";
-                echo "<div class='modal-body' style='padding: 10px;'>";
-                echo "<input type='text' class='mt-home-trigger-fuzzy form-control' placeholder='" . $title . "'>";
-                echo "<input type='hidden' name='meta_type' id='meta_type' value='" . $type . "'/>";
-                echo "<ul class='results list-group mt-2' style='background: #FFF;'></ul>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-
-                echo "<div class='row'>";
-                foreach ($metademands as $id => $name) {
-                    $meta = new Metademand();
-                    if ($meta->getFromDB($id)) {
-                        $icon = "ti-share";
-                        $name_meta = '';
-                        if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                            $name_meta = $meta->getName();
-                        } else {
-                            $name_meta = $n;
-                        }
-                        $comment_meta = '';
-                        if (empty($comm = Metademand::displayField(
-                            $meta->getID(),
-                            'comment',
-                        )) && !empty($meta->fields['comment'])) {
-                            $comment_meta = $meta->fields['comment'];
-                        } elseif (!empty(
-                            $comm = Metademand::displayField(
-                                $meta->getID(),
-                                'comment',
-                            )
-                        )) {
-                            $comment_meta = $comm;
-                        }
-
-                        if (!empty($config['icon_incident']) && $type == \Ticket::INCIDENT_TYPE) {
-                            $icon = $config['icon_incident'];
-                        }
-                        if (!empty($config['icon_request']) && $type == \Ticket::DEMAND_TYPE) {
-                            $icon = $config['icon_request'];
-                        }
-                        if (!empty($config['icon_problem']) && $type == "Problem") {
-                            $icon = $config['icon_problem'];
-                        }
-                        if (!empty($config['icon_change']) && $type == "Change") {
-                            $icon = $config['icon_change'];
-                        }
-                        if (!empty($meta->fields['icon'])) {
-                            $icon = $meta->fields['icon'];
-                        }
-
-                        $fasize = "fa-1x";
-
-                        echo "<div class='col-12 col-sm-6 col-md-4 d-flex'>";
-                        echo "<a class='card mx-1 my-2 flex-grow-1' title=\"" . RichText::getTextFromHtml($comment_meta) . "\" href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW . "'>";
-                        echo "<section class='card-body'>";
-                        echo "<div class='d-flex'>";
-
-                        echo "<div class='aspect-ratio-1' style='margin-left: 10px;width: 70px;height: 70px;'>";
-                        $stylespan = "md-cat-icon-stack fa-2x";
-                        $sizespan = "1em";
-                        $title_color = "";
-                        if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                            $title_color = htmlspecialchars($meta->fields['title_color'], ENT_QUOTES);
-                        }
-                        if (!empty($title_color)) {
-                            $color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
-                        } else {
-                            $color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
-                        }
-                        echo "<span class='$stylespan'><i class='ti ti-circle' style='$color;'></i>";
-
-                        if (str_contains($icon, 'fa-')) {
-                            echo "<i class='fas $icon $fasize' style=\"$color;font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: $sizespan;\"></i>";//$style
-                        } else {
-                            echo "<i class='ti $icon' style=\"$color;font-size: $sizespan;\"></i>";//$style
-                        }
-                        echo "</span>";
-                        echo "</div>";
-                        echo "<div class='ms-4'>";
-                        echo "<h2 class='card-title mb-2 text-break'>";
-                        // Designer-defined metademand name rendered as plain-text card title (stored XSS).
-                        echo htmlspecialchars((string) $name_meta, ENT_QUOTES, 'UTF-8');
-                        echo "</h2>";
-                        echo "<div class='text-secondary remove-last-tinymce-margin' style='font-size:0.8rem;'>";
-                        if (!empty($comment_meta)) {
-                            // Rich HTML comment: sanitize instead of the markup-preserving nl2br() (stored XSS).
-                            echo RichText::getSafeHtml($comment_meta);
-                        } else {
-                            echo htmlspecialchars((string) $name_meta, ENT_QUOTES, 'UTF-8');
-                        }
-
-                        if ($config['use_draft']) {
-                            $count_drafts = Draft::countDraftsForUserMetademand(
-                                Session::getLoginUserID(),
-                                $id,
-                            );
-                            if ($count_drafts > 0) {
-                                echo "<br><br><span style='$color;'>";
-                                echo sprintf(
-                                    _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                    $count_drafts,
-                                );
-                                echo "</span>";
-                            }
-                        }
-
-                        echo "</div>";
-
-                        echo "</div>";
-                        echo "</section>";
-                        echo "</a>";
-                        echo "</div>";
-                    }
-                }
-                echo "</div>";
-
-                echo "</div>";
-            } elseif (count($metademands) == 1) {
-                foreach ($metademands as $id => $name) {
-                    $meta = new Metademand();
-                    if ($meta->getFromDB($id)) {
-                        $url = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW;
-                        Html::redirect($url);
-                    }
-                }
-            }
-        } else {
-            echo "<div id='listmeta' class=\"bt-row\">";
-            echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
+        if ($config['display_type'] != 1) {
             // METADEMAND list
             $options['display_emptychoice'] = true;
             $options['type'] = $type;
             $data = $meta->listMetademands(false, $options);
 
+            ob_start();
             \Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
-            echo "</div>";
-            echo "</div>";
+            $dropdown = (string) ob_get_clean();
 
-            echo "<br/>";
-            echo "<div class=\"bt-row\">";
-            echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 right\">";
-            //            Comment Fix for parameter display_type 0
-            echo "<input type='hidden' name='step' value='" . Metademand::STEP_SHOW . "'/>";
-            echo "<input type='hidden' name='meta_type' id='meta_type' value='" . $type . "'/>";
-            echo Html::submit(__('Next', 'metademands'), ['name' => 'next', 'class' => 'btn btn-primary']);
-            echo "</div>";
-
-            echo "</div>";
+            TemplateRenderer::getInstance()->display('@metademands/wizard/metademands_list.html.twig', [
+                'display_cards' => false,
+                'meta_type'     => $type,
+                'step_show'     => Metademand::STEP_SHOW,
+                'dropdown'      => $dropdown,
+                'submit'        => Html::submit(
+                    __('Next', 'metademands'),
+                    ['name' => 'next', 'class' => 'btn btn-primary'],
+                ),
+            ]);
+            return;
         }
+
+        $metademands = self::selectMetademands(false, "", $type);
+
+        if (count($metademands) == 1) {
+            foreach ($metademands as $id => $name) {
+                if ($meta->getFromDB($id)) {
+                    Html::redirect(
+                        PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW,
+                    );
+                }
+            }
+            return;
+        }
+        if (count($metademands) < 1) {
+            return;
+        }
+
+        $most_used = "";
+        if ($config['see_top'] && ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE)) {
+            ob_start();
+            self::showMostUsedMetademands($type);
+            $most_used = (string) ob_get_clean();
+        }
+
+        $entries = [];
+        foreach ($metademands as $id => $name) {
+            $current = new Metademand();
+            if (!$current->getFromDB($id)) {
+                continue;
+            }
+
+            if (empty($name_meta = Metademand::displayField($current->getID(), 'name'))) {
+                $name_meta = $current->getName();
+            }
+
+            $comment_meta = Metademand::displayField($current->getID(), 'comment');
+            if (empty($comment_meta) && !empty($current->fields['comment'])) {
+                $comment_meta = $current->fields['comment'];
+            }
+
+            $icon = "ti-share";
+            if (!empty($config['icon_incident']) && $type == \Ticket::INCIDENT_TYPE) {
+                $icon = $config['icon_incident'];
+            }
+            if (!empty($config['icon_request']) && $type == \Ticket::DEMAND_TYPE) {
+                $icon = $config['icon_request'];
+            }
+            if (!empty($config['icon_problem']) && $type == "Problem") {
+                $icon = $config['icon_problem'];
+            }
+            if (!empty($config['icon_change']) && $type == "Change") {
+                $icon = $config['icon_change'];
+            }
+            if (!empty($current->fields['icon'])) {
+                $icon = $current->fields['icon'];
+            }
+
+            if (!empty($current->fields['title_color'])) {
+                $icon_color = "color:color-mix(in srgb, transparent, " . $current->fields['title_color'] . " var(--tblr-link-opacity, 100%))";
+            } else {
+                $icon_color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+            }
+
+            $drafts_label = "";
+            if ($config['use_draft']) {
+                $count_drafts = Draft::countDraftsForUserMetademand(
+                    Session::getLoginUserID(),
+                    $id,
+                );
+                if ($count_drafts > 0) {
+                    $drafts_label = sprintf(
+                        _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                        $count_drafts,
+                    );
+                }
+            }
+
+            $entries[] = [
+                'url'          => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW,
+                'tooltip'      => RichText::getTextFromHtml($comment_meta),
+                'icon'         => $icon,
+                'is_fa_icon'   => str_contains($icon, 'fa-'),
+                'icon_color'   => $icon_color,
+                'name'         => $name_meta,
+                // Rich HTML comment: the only value handed to the template unescaped, sanitize it here.
+                'comment'      => !empty($comment_meta) ? RichText::getSafeHtml($comment_meta) : "",
+                'drafts_label' => $drafts_label,
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/metademands_list.html.twig', [
+            'display_cards' => true,
+            'meta_type'     => $type,
+            'most_used'     => $most_used,
+            'entries'       => $entries,
+        ]);
     }
 
     /**
@@ -2288,7 +2143,12 @@ class Wizard extends CommonDBTM
                         }
 
                         echo "<li class='nav-item'>";
-                        echo "<a class='nav-link tablinks' style='$display' id='ablock$idblock' href='#block" . $idblock . "' data-toggle='tab'>" . $nameblock . "</a>";
+                        // The block name comes from the designer-defined title-block field: escape it
+                        // as element text (stored XSS). The block identifier is a rank, cast it so it
+                        // cannot break out of the id/href attributes either.
+                        $safe_idblock = (int) $idblock;
+                        echo "<a class='nav-link tablinks' style='$display' id='ablock" . $safe_idblock . "' href='#block" . $safe_idblock . "' data-toggle='tab'>"
+                             . htmlspecialchars((string) $nameblock, ENT_QUOTES, 'UTF-8') . "</a>";
                         echo "</li>";
                     }
                     echo "</ul>";
@@ -2438,21 +2298,41 @@ class Wizard extends CommonDBTM
                         $previousUser = new User();
                         if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
                             $lbl = __('Previous user', 'metademands');
+                            // realname/firstname are stored raw since GLPI 10 and this fragment
+                            // ends up inside a Html::scriptBlock(), which escapes nothing: a name
+                            // holding </script> would break out of the block. Escape at the point
+                            // of concatenation, like src/Wizard.php does for the draft name.
+                            $previous_user_name = htmlspecialchars(
+                                trim(
+                                    $previousUser->fields['realname'] . ' ' . $previousUser->fields['firstname'],
+                                ),
+                                ENT_QUOTES,
+                                'UTF-8',
+                            );
                             $modal_html .= "
                     <table class='tab_cadre_fixe' style='width: 100%;'>
                         <tr class='even'>
-                            <td class='title'> $lbl : " . $previousUser->fields['realname'] . " " . $previousUser->fields['firstname'] . "</td>
+                            <td class='title'> $lbl : " . $previous_user_name . "</td>
                         </tr>
                     </table>";
                         }
 
                         $modal_html .= RichText::getSafeHtml($parent_fields['content']);
-                        $title = __('Previous data edited', 'metademands');
-                        $setting_dialog = json_encode(stripslashes($modal_html));
+                        // HEX_TAG|HEX_AMP keeps any surviving </script> out of the JavaScript
+                        // literal. Do not add HEX_QUOT/HEX_APOS: they would break the object
+                        // literal handed to glpi_html_dialog().
+                        $setting_dialog = json_encode(
+                            stripslashes($modal_html),
+                            JSON_HEX_TAG | JSON_HEX_AMP,
+                        );
+                        $title = json_encode(
+                            __('Previous data edited', 'metademands'),
+                            JSON_HEX_TAG | JSON_HEX_AMP,
+                        );
                         echo Html::scriptBlock(
                             "$(function() {
                                                     glpi_html_dialog({
-                                                         title: '$title',
+                                                         title: {$title},
                                                          body: {$setting_dialog},
                                                          dialogclass: 'modal-lg',
                                                     });
@@ -2507,11 +2387,15 @@ class Wizard extends CommonDBTM
 
             if ($draft_id != 0) {
                 echo "<div class='boutons_draft' >";
-                echo "<button form='' id='button_save_mydraft' class='submit btn btn-success update_draft' onclick=\"updateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
+                // The draft name is user supplied: concatenating it between JavaScript quotes breaks
+                // the handler on a plain apostrophe. json_encode() produces a valid string literal and
+                // htmlspecialchars() keeps it inside the double-quoted onclick attribute.
+                $js_draft_name = htmlspecialchars((string) json_encode((string) $draft_name), ENT_QUOTES, 'UTF-8');
+                echo "<button form='' id='button_save_mydraft' class='submit btn btn-success update_draft' onclick=\"updateThisDraft(" . (int) $draft_id . ", " . $js_draft_name . ")\">";
                 echo __('Update the draft', 'metademands');
                 echo "</button>";
 
-                echo "<button form='' class='submit btn btn-danger delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
+                echo "<button form='' class='submit btn btn-danger delete_draft' onclick=\"deleteThisDraft(" . (int) $draft_id . ")\">";
                 echo __('Delete the draft', 'metademands');
                 echo "</button>";
                 echo "</div>";
@@ -2955,8 +2839,10 @@ class Wizard extends CommonDBTM
                     if (empty($comment = Field::displayField($data['id'], 'comment'))) {
                         $comment = $data['comment'];
                     }
-                    $comment = htmlspecialchars_decode(stripslashes($comment));
-                    echo "<label><i>" . $comment . "</i></label>";
+                    // Designer-defined rich comment displayed to every requester: sanitize it like the
+                    // secondary label above. htmlspecialchars_decode()/stripslashes() used to undo any
+                    // escaping and turned it into a stored XSS sink.
+                    echo "<label><i>" . RichText::getSafeHtml($comment) . "</i></label>";
                 }
 
                 echo "</div>";

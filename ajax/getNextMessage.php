@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Step;
 
@@ -35,8 +36,21 @@ if (strpos($_SERVER['PHP_SELF'], "getNextMessage.php")) {
     Html::header_nocache();
 }
 
+// Reading a step message is a wizard operation: gate it like ajax/set_session.php, and bind it
+// to a meta-demand the caller may actually reach, so the identifier cannot be enumerated to
+// harvest the step messages of other entities.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+]);
+
 $metademands = new Metademand();
-$metademands->getFromDB((int) $_POST['plugin_metademands_metademands_id']);
+if (
+    !$metademands->getFromDB((int) $_POST['plugin_metademands_metademands_id'])
+    || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])
+) {
+    throw new AccessDeniedHttpException();
+}
 $block_id = (int) $_POST['block_id'];
 
 if ($metademands->fields['step_by_step_mode'] == 1

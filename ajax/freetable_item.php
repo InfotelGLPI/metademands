@@ -27,40 +27,96 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\Metademand;
+
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+// Mutating the wizard session state must not be reachable anonymously; the right to fill the
+// targeted meta-demand is enforced right below, as ajax/addsignature.php already does.
+Session::checkLoginUser();
+
 $data_by_free = [];
 
-$fields_id = $_POST['datas']['fields_id'];
-$metademands_id = $_POST['datas']['metademands_id'];
+$datas = $_POST['datas'] ?? null;
+if (!is_array($datas)) {
+    throw new BadRequestHttpException();
+}
 
-if (isset($_POST['datas']['add'])) {
-    $datas[$_POST['datas']['add']['id']] = $_POST['datas']['add'];
-    foreach ($datas as $key => $data) {
-        $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key] = $data;
-    }
-} elseif (isset($_POST['datas']['update'])) {
-    $datas[$_POST['datas']['update']['id']] = $_POST['datas']['update'];
-    foreach ($datas as $key => $data) {
-        $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key] = $data;
-    }
+$fields_id      = (int) ($datas['fields_id'] ?? 0);
+$metademands_id = (int) ($datas['metademands_id'] ?? 0);
 
-} elseif (isset($_POST['type']) && $_POST['type'] == 'remove') {
-    if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$_POST['datas']['remove']])) {
-        unset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$_POST['datas']['remove']]);
+// Both identifiers come from the client and are used as raw session keys: bind the write to a
+// meta-demand the caller may actually fill in (rights + entity boundary), then make sure the
+// targeted field really belongs to it.
+$metademand = new Metademand();
+if (
+    !$metademand->getFromDB($metademands_id)
+    || !($metademand->canCreate() || Group::isUserHaveRight($metademands_id))
+    || !Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])
+) {
+    throw new AccessDeniedHttpException();
+}
+
+$field = new Field();
+if (
+    !$field->getFromDB($fields_id)
+    || (int) $field->fields['plugin_metademands_metademands_id'] !== $metademands_id
+) {
+    throw new AccessDeniedHttpException();
+}
+
+// A free table line is the flat map of scalar cells built by public/scripts/metademands_freelines.js.
+// Refuse anything nested and bound both the cell count and the cell length, so the session storage
+// cannot be inflated from the client.
+$max_cells_per_line = 100;
+$max_cell_length    = 255;
+$max_lines_per_field = 200;
+
+$normalize_free_line = static function ($line) use ($max_cells_per_line, $max_cell_length) {
+    if (!is_array($line) || count($line) > $max_cells_per_line || !isset($line['id'])) {
+        throw new BadRequestHttpException();
+    }
+    $normalized = [];
+    foreach ($line as $key => $value) {
+        if (!is_scalar($value) && $value !== null) {
+            throw new BadRequestHttpException();
+        }
+        $normalized[$key] = mb_substr((string) $value, 0, $max_cell_length);
+    }
+    $normalized['id'] = (int) $normalized['id'];
+
+    return $normalized;
+};
+
+if (isset($datas['add']) || isset($datas['update'])) {
+    $line   = $normalize_free_line($datas['add'] ?? $datas['update']);
+    $stored = $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id] ?? [];
+    if (!isset($stored[$line['id']]) && count($stored) >= $max_lines_per_field) {
+        throw new BadRequestHttpException();
+    }
+    $_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$line['id']] = $line;
+} elseif (isset($_POST['type']) && $_POST['type'] == 'remove' && isset($datas['remove'])) {
+    $remove = (int) $datas['remove'];
+
+    if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$remove])) {
+        unset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$remove]);
     }
     if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id])) {
         foreach (($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id]) as $key => $value) {
-            if ($value['id'] == $_POST['datas']['remove']) {
+            if (is_array($value) && isset($value['id']) && (int) $value['id'] === $remove) {
                 unset($_SESSION['plugin_metademands'][$metademands_id]['freetables'][$fields_id][$key]);
             }
         }
     }
     if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id])) {
         foreach (($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id]) as $key => $value) {
-            if ($value['id'] == $_POST['datas']['remove']) {
+            if (is_array($value) && isset($value['id']) && (int) $value['id'] === $remove) {
                 unset($_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id][$key]);
             }
         }

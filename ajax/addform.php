@@ -27,9 +27,11 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Form;
+use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Form_Value;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
@@ -71,6 +73,16 @@ if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
 }
 
 if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
+    // Saving a form binds it to the posted meta-demand: enforce the same access check as
+    // ajax/createmetademands.php (prevents cross-entity/rights enumeration and writes by id).
+    if (
+        !$metademands->getFromDB($_POST['metademands_id'])
+        || !($metademands->canCreate() || Group::isUserHaveRight($_POST['metademands_id']))
+        || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])
+    ) {
+        throw new AccessDeniedHttpException();
+    }
+
     $nblines = 0;
     $KO = false;
 
@@ -280,8 +292,11 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
             $inputs['date'] = date('Y-m-d H:i:s');
             if (isset($_POST['is_model'])) {
-                $inputs['is_model'] = $_POST['is_model'];
-                $inputs['is_private'] = $_POST['is_private'];
+                // Both flags come from the client: normalize them to a strict boolean and default a
+                // new model to private. Publishing it to every user of the meta-demand stays an
+                // explicit action of the owner through ajax/visibility.php.
+                $inputs['is_model'] = (int) ((bool) $_POST['is_model']);
+                $inputs['is_private'] = isset($_POST['is_private']) ? (int) ((bool) $_POST['is_private']) : 1;
             }
 
             if (isset($_POST['resources_id']) && $_POST['resources_id'] > 0) {

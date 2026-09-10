@@ -595,13 +595,13 @@ class FieldOption extends CommonDBChild
                                 if ($metatask->getFromDBByCrit(
                                     ["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']],
                                 )) {
-                                    echo Dropdown::getDropdownName(
+                                    echo htmlspecialchars(Dropdown::getDropdownName(
                                         'glpi_plugin_metademands_metademands',
                                         $metatask->fields['plugin_metademands_metademands_id'],
-                                    );
+                                    ), ENT_QUOTES, 'UTF-8');
                                 }
                             } else {
-                                echo $tasks->getName();
+                                echo htmlspecialchars($tasks->getName(), ENT_QUOTES, 'UTF-8');
                             }
                         }
                         echo "</td>";
@@ -675,17 +675,19 @@ class FieldOption extends CommonDBChild
                         echo "</td>";
 
                         echo "<td $onhover>";
-                        echo getUserName($data["users_id_validate"], 0, true);
+                        echo htmlspecialchars(getUserName((int) $data["users_id_validate"]), ENT_QUOTES, 'UTF-8');
                         echo "</td>";
 
                         echo "<td $onhover>";
                         $fields = new Field();
                         if ($fields->getFromDB($data['checkbox_id'])) {
-                            echo $fields->getName();
+                            // getName() is unescaped by contract (the presentation layer owns it):
+                            // this table is built with echo, so escape here as the columns above do.
+                            echo htmlspecialchars($fields->getName(), ENT_QUOTES, 'UTF-8');
                             $field_custom = new FieldCustomvalue();
                             if ($field_custom->getFromDB($data['checkbox_value'])) {
                                 echo "<br>";
-                                echo $field_custom->getName();
+                                echo htmlspecialchars($field_custom->getName(), ENT_QUOTES, 'UTF-8');
                             }
                         }
                         echo "</td>";
@@ -2846,28 +2848,29 @@ class FieldOption extends CommonDBChild
             $migration->migrationOneTable($table_fields);
         }
 
-        $sql    = "SHOW COLUMNS FROM `$table_fields`";
-        $result = $DB->doQuery($sql);
-        while ($data = $DB->fetchArray($result)) {
-            if ($data['Field'] == 'fields_link') {
-                $fieldsclass           = new Field();
-                $fields                = $fieldsclass->find();
-                $transient_metademands = [];
+        // Schema inspection through the connection helper rather than a concatenated
+        // SHOW COLUMNS, and the row rewrite through the query builder: fields_link may
+        // hold any value the JSON import wrote, so building the UPDATE by string
+        // concatenation let a single quote break the statement or widen its WHERE.
+        if ($DB->fieldExists($table_fields, 'fields_link')) {
+            $fieldsclass           = new Field();
+            $fields                = $fieldsclass->find();
+            $transient_metademands = [];
 
-                foreach ($fields as $field) {
-                    $fields_link                                        = [$field['fields_link']];
-                    $transient_metademands[$field['id']]['fields_link'] = json_encode($fields_link);
-                    $transient_metademands[$field['id']]['fields_id']   = $field['id'];
-                }
-                $migration->changeField($table_fields, 'fields_link', 'fields_link', "VARCHAR(255) NOT NULL DEFAULT '[]'");
-                $migration->migrationOneTable($table_fields);
+            foreach ($fields as $field) {
+                $fields_link                                        = [$field['fields_link']];
+                $transient_metademands[$field['id']]['fields_link'] = json_encode($fields_link);
+                $transient_metademands[$field['id']]['fields_id']   = $field['id'];
+            }
+            $migration->changeField($table_fields, 'fields_link', 'fields_link', "VARCHAR(255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table_fields);
 
-                foreach ($transient_metademands as $transient_metademand) {
-                    $query_update = "UPDATE `glpi_plugin_metademands_fields`
-                                       SET `glpi_plugin_metademands_fields`.`fields_link` = '" . $transient_metademand['fields_link'] . "'
-                                                   WHERE `id` = '" . $transient_metademand['fields_id'] . "';";
-                    $DB->doQuery($query_update);
-                }
+            foreach ($transient_metademands as $transient_metademand) {
+                $DB->update(
+                    $table_fields,
+                    ['fields_link' => $transient_metademand['fields_link']],
+                    ['id' => (int) $transient_metademand['fields_id']],
+                );
             }
         }
         //Migrate existing metademands status for mini-dashboards

@@ -31,8 +31,13 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
+use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\Metademand;
+
+Session::checkLoginUser();
 
 $predicate = '';
 
@@ -40,7 +45,21 @@ if (isset($_POST['metademands_id'])
     && isset($_POST['field'])) {
     $fields = $_POST['field'];
 
-    $tab = Condition::conditionsTab($_POST['metademands_id']);
+    // conditionsTab() returns the whole conditional logic of the meta-demand (hidden blocks,
+    // trigger values, conditioned fields) for an identifier the caller fully controls. Bind it
+    // to a form the caller may actually fill in, with the same check as the neighbouring
+    // endpoints: rights or group visibility, plus the entity boundary.
+    $metademands_id = (int) $_POST['metademands_id'];
+    $metademand = new Metademand();
+    if (
+        !$metademand->getFromDB($metademands_id)
+        || !($metademand->canView() || Group::isUserHaveRight($metademands_id))
+        || !Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])
+    ) {
+        throw new AccessDeniedHttpException();
+    }
+
+    $tab = Condition::conditionsTab($metademands_id);
 
     foreach ($tab as $key => $value) {
         if (array_key_exists($value['fields_id'], $fields)) {

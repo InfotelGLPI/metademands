@@ -123,6 +123,91 @@ class Config extends CommonDBTM
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+    /**
+     * Restrict the icon columns to a plain icon class token: they are echoed into HTML class
+     * attributes by the service catalog and the wizard, so a crafted value would break out of
+     * the attribute (stored XSS). Same allow-list as Metademand and FieldCustomvalue.
+     * An invalid value is dropped so the column keeps its previous value.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    public static function sanitizeIconInput($input)
+    {
+        foreach (['icon_request', 'icon_incident', 'icon_problem', 'icon_change'] as $icon_field) {
+            if (
+                isset($input[$icon_field])
+                && $input[$icon_field] !== ''
+                && !preg_match('/^[a-zA-Z0-9 _-]+$/', (string) $input[$icon_field])
+            ) {
+                unset($input[$icon_field]);
+            }
+        }
+        return $input;
+    }
+
+    /**
+     * Columns the configuration form is allowed to write.
+     *
+     * The controller hands the whole POST array over: without this list every column of the
+     * table would be addressable from the form, including one a future migration adds.
+     */
+    private const EDITABLE_FIELDS = [
+        'id',
+        'simpleticket_to_metademand',
+        'display_type',
+        'parent_ticket_tag',
+        'son_ticket_tag',
+        'childs_parent_content',
+        'create_pdf',
+        'use_draft',
+        'languageTech',
+        'display_buttonlist_servicecatalog',
+        'add_groups_with_regex',
+        'see_top',
+        'show_form_changes',
+        'icon_incident',
+        'icon_request',
+        'icon_problem',
+        'icon_change',
+        'title_servicecatalog',
+        'comment_servicecatalog',
+        'fa_servicecatalog',
+    ];
+
+    /**
+     * @param array $input
+     *
+     * @return array
+     */
+    public function prepareInputForAdd($input)
+    {
+        return self::sanitizeIconInput(self::keepEditableFields($input));
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return array
+     */
+    public function prepareInputForUpdate($input)
+    {
+        return self::sanitizeIconInput(self::keepEditableFields($input));
+    }
+
+    /**
+     * Drop every key the configuration form does not own.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    private static function keepEditableFields($input)
+    {
+        return array_intersect_key($input, array_flip(self::EDITABLE_FIELDS));
+    }
+
 
     public static function install(Migration $migration)
     {

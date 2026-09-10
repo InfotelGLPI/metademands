@@ -1,0 +1,85 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Rows only: the caller opens and closes the surrounding <table> itself (see
+ # Metademand::formatFields()). Every value below comes straight from the resources plugin
+ # tables and is stored raw since GLPI 10, so it is rendered through Twig's autoescaping
+ # instead of being concatenated into a string.
+ #}
+{% if show_table %}
+    <tr>
+        <th colspan="2">{{ title }}</th>
+    </tr>
+{% else %}
+    {{ title }}
+{% endif %}
+
+<tr>
+    <td>{{ __('Firstname', 'resources') }}</td>
+    <td>{{ firstname }}</td>
+</tr>
+<tr>
+    <td>{{ __('Lastname', 'resources') }}</td>
+    <td>{{ name }}</td>
+</tr>
+<tr>
+    <td>{{ __('ContractType', 'resources') }}</td>
+    <td>{{ contract_type }}</td>
+</tr>
+<tr>
+    <td>{{ __('Service', 'resources') }}</td>
+    <td>{{ service }}</td>
+</tr>
+{% if secondary_services is not empty %}
+    <tr>
+        <td>{{ __('Secondaries services', 'resources') }}</td>
+        <td>
+            {% for secondary_service in secondary_services %}
+                {{ secondary_service }}<br />
+            {% endfor %}
+        </td>
+    </tr>
+{% endif %}
+<tr>
+    <td>{{ __('Arrival date', 'resources') }}</td>
+    <td>{{ date_begin }}</td>
+</tr>
+<tr>
+    <td>{{ __('Departure date', 'resources') }}</td>
+    <td>{{ date_end }}</td>
+</tr>
+<tr>
+    <td>{{ __('Resource manager', 'resources') }}</td>
+    <td>{{ manager_name }}</td>
+</tr>
+{% if comment is not empty %}
+    <tr>
+        <td>{{ __('Description') }}</td>
+        <td>{{ comment }}</td>
+    </tr>
+{% endif %}

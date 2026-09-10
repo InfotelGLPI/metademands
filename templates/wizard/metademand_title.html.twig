@@ -1,0 +1,80 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class="row">
+    <div class="col-md-12 md-title">
+        <div class="card mx-1 my-2 flex-grow-1" style="background-color: {{ background_color }}!important;">
+            <section class="card-body" style="width: 100%;padding: 12px!important;">
+                <div class="d-flex">
+                    <div class="aspect-ratio-1"
+                         style="{{ margin_top }};margin-left: 10px;width: 70px;height: 70px;">
+                        {% if illustration is not empty %}
+                            {{ illustration|raw }}
+                        {% elseif icon is not empty %}
+                            <span class="md-cat-icon-stack" style="font-size:1.5em">
+                                <i class="ti ti-circle" style="{{ icon_color }};"></i>
+                                {% if is_fa_icon %}
+                                    <i class="fa-1x fas {{ icon }}"
+                                       style="{{ icon_color }};font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: 1em;"></i>&nbsp;
+                                {% else %}
+                                    <i class="ti {{ icon }}" style="{{ icon_color }};font-size: 1em;"></i>&nbsp;
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="ms-4" style="width: 90%;">
+                        <h2 class="card-title mb-2 text-break"
+                            {% if style_title_color is not empty %}style="color: {{ style_title_color }};"{% endif %}>
+                            {{- title }}{{ cat_name -}}
+                            {%- if category_completename is not empty %} - {{ category_completename }}{% endif -%}
+                            {%- if category_details_id %}
+                                &nbsp;<i class="fas fa-question-circle pointer"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#categorydetails{{ category_details_id }}"
+                                         title="{{ __('More informations', 'servicecatalog') }}"></i>
+                                {{ category_details_modal|raw }}
+                            {% endif %}
+                            {% if settings_url is not empty %}
+                                &nbsp;<a href="{{ settings_url }}"><i class="ti ti-settings"></i></a>
+                            {% endif %}
+                        </h2>
+                        <div class="text-secondary remove-last-tinymce-margin"
+                             style="color:#7B7B7B;font-size:0.8rem;">
+                            {% if comment is not empty %}
+                                {{ comment|raw }}
+                            {% else %}
+                                {{ title }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {{ models_and_drafts|raw }}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<br>

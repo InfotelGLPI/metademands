@@ -1,0 +1,51 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if entries|length > 0 %}
+    <div style="display:flex;">
+        {% for entry in entries %}
+            <a href="{{ entry.url }}">
+                <div style="margin-right: 5px;">
+                    <h6>
+                        <div class="alert alert-secondary"
+                             style="border-radius: 0;margin-right: 5px;background-color: white;">
+                            <span class="md-fav-icon-stack fa-1x">
+                                <i class="ti ti-circle"></i>
+                                {% if entry.is_fa_icon %}
+                                    <i class="fas {{ entry.icon }} fa-1x"
+                                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size:0.5em;"></i>
+                                {% else %}
+                                    <i class="ti {{ entry.icon }}" style="font-size:0.5em;"></i>
+                                {% endif %}
+                            </span>&nbsp;{{ entry.name }}
+                        </div>
+                    </h6>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}

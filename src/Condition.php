@@ -601,7 +601,13 @@ class Condition extends CommonDBChild
                 if (empty($condition->fields['check_value'])) {
                     echo "";
                 } else {
-                    echo RichText::getTextFromHtml($condition->fields['check_value']);
+                    // getTextFromHtml() strips tags but decodes entities by default, so an
+                    // entity-encoded payload comes back as live markup: escape the result.
+                    echo htmlspecialchars(
+                        RichText::getTextFromHtml($condition->fields['check_value']),
+                        ENT_QUOTES,
+                        'UTF-8',
+                    );
                 }
                 break;
 
@@ -627,7 +633,12 @@ class Condition extends CommonDBChild
                 foreach ($params['custom_values'] as $key => $val) {
                     $choices[$val['id']] = $val['name'];
                 }
-                echo $choices[$condition->fields['check_value']];
+                // Custom value names are stored raw: escape them as the dropdown branch above does.
+                echo htmlspecialchars(
+                    (string) ($choices[$condition->fields['check_value']] ?? ''),
+                    ENT_QUOTES,
+                    'UTF-8',
+                );
                 break;
 
             case 'yesno':
@@ -644,13 +655,25 @@ class Condition extends CommonDBChild
                         foreach ($params['custom_values'] as $key => $val) {
                             $choices[$val['id']] = $val['name'];
                         }
-                        echo $choices[$condition->fields['check_value']];
+                        echo htmlspecialchars(
+                            (string) ($choices[$condition->fields['check_value']] ?? ''),
+                            ENT_QUOTES,
+                            'UTF-8',
+                        );
                         break;
                     case 'ITILCategory_Metademands':
-                        echo ITILCategory::getFriendlyNameById($condition->fields['check_value']);
+                        echo htmlspecialchars(
+                            (string) ITILCategory::getFriendlyNameById($condition->fields['check_value']),
+                            ENT_QUOTES,
+                            'UTF-8',
+                        );
                         break;
                     case 'mydevices':
-                        echo Field::getDeviceName($condition->fields['check_value']);
+                        echo htmlspecialchars(
+                            (string) Field::getDeviceName($condition->fields['check_value']),
+                            ENT_QUOTES,
+                            'UTF-8',
+                        );
                         break;
                     case 'urgency':
                         echo CommonITILObject::getUrgencyName($condition->fields['check_value']);

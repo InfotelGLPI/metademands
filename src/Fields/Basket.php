@@ -263,7 +263,13 @@ class Basket extends CommonDBTM
                     )) {
                         $ordermaterial = new Material();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            $cells[] = ['h' => (string) $ordermaterial->fields['unit']];
+                            // 'unit' belongs to the ordermaterial plugin and goes through no filter of ours,
+                            // while the cell is rendered with |raw: escape it at the point of construction.
+                            $cells[] = ['h' => htmlspecialchars(
+                                (string) $ordermaterial->fields['unit'],
+                                ENT_QUOTES,
+                                'UTF-8',
+                            )];
 
                             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                                 $cells[] = [
@@ -403,7 +409,13 @@ class Basket extends CommonDBTM
                     )) {
                         $ordermaterial = new Material();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            $cells[] = ['h' => (string) $ordermaterial->fields['unit']];
+                            // 'unit' belongs to the ordermaterial plugin and goes through no filter of ours,
+                            // while the cell is rendered with |raw: escape it at the point of construction.
+                            $cells[] = ['h' => htmlspecialchars(
+                                (string) $ordermaterial->fields['unit'],
+                                ENT_QUOTES,
+                                'UTF-8',
+                            )];
 
                             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                                 $cells[] = [

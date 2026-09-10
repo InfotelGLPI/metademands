@@ -311,15 +311,17 @@ class Metademand_Resource extends CommonDBTM
     public static function getTableResource($options)
     {
         $resource = new Resource();
-        $resource->getFromDB($options['resources_id']);
-        $content = "";
-
-        if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
-            $content .= "<tr><th colspan='2'>";
+        // The identifier reaches us straight from the caller's options, so refuse a resource the
+        // session may not read instead of recomposing its data into the fragment. An unknown or
+        // out-of-scope identifier simply contributes nothing.
+        if (!$resource->getFromDB($options['resources_id'] ?? 0)) {
+            return '';
         }
-        $content .= $resource->fields['name'] . " " . $resource->fields['firstname'];
-        if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
-            $content .= "</th></tr>";
+        if (!Session::haveAccessToEntity(
+            $resource->fields['entities_id'] ?? 0,
+            $resource->fields['is_recursive'] ?? 0,
+        )) {
+            return '';
         }
 
         $contractype = new ContractType();
@@ -335,54 +337,31 @@ class Metademand_Resource extends CommonDBTM
             $service = $service->getField('name');
         }
 
-        $content .= "<tr>";
-        $content .= "<td>" . __("Firstname", "resources") . "</td>";
-        $content .= "<td>" . $resource->fields['firstname'] . "</td>";
-        $content .= "</tr>";
-        $content .= "<tr>";
-        $content .= "<td>" . __("Lastname", "resources") . "</td>";
-        $content .= "<td>" . $resource->fields['name'] . "</td>";
-        $content .= "</tr>";
-        $content .= "<tr>";
-        $content .= "<td>" . __("ContractType", "resources") . "</td>";
-        $content .= "<td>" . $contractype->getField('name') . "</td>";
-        $content .= "</tr>";
-        $content .= "<tr>";
-        $content .= "<td>" . __("Service", "resources") . "</td>";
-        $content .= "<td>" . $service . "</td>";
-        $content .= "</tr>";
-        $content .= "<tr>";
+        $secondary_services = [];
         if ($config->useSecondaryService() && $config->useServiceDepartmentAD()) {
-            $content          .= "<td>" . __("Secondaries services", "resources") . "</td><td>";
-            $secondaryService = json_decode($resource->fields['secondary_services']);
-            foreach ($secondaryService as $srvID) {
+            foreach ((array) json_decode((string) $resource->fields['secondary_services']) as $srvID) {
                 $userCat = new UserCategory();
                 $userCat->getFromDB($srvID);
-                $content .= $userCat->getField('name') . "<br />";
+                $secondary_services[] = $userCat->getField('name');
             }
-            $content .= "</td></tr>";
-        }
-        $content .= "<tr>";
-        $content .= "<td>" . __("Arrival date", "resources") . "</td>";
-        $content .= "<td>" . Html::convDate($resource->fields['date_begin']) . "</td>";
-        $content .= "</tr>";
-        $content .= "<tr>";
-        $content .= "<td>" . __("Departure date", "resources") . "</td>";
-        $content .= "<td>" . Html::convDate($resource->fields['date_end']) . "</td>";
-        $content .= "</tr>";
-        $content .= "<tr>";
-        $content .= "<td>" . __("Resource manager", "resources") . "</td>";
-        $content .= "<td>" . getUserName($resource->fields['users_id'], 0, true) . "</td>";
-        $content .= "</tr>";
-        if (!empty($resource->fields['comment'])) {
-            $content .= "<tr>";
-            $content .= "<td>" . __("Description") . "</td>";
-            $content .= "<td>" . $resource->fields['comment'] . "</td>";
-            $content .= "</tr>";
         }
 
-        return $content;
-
+        // Rendered through Twig: every column below is stored raw since GLPI 10 and this
+        // fragment used to be concatenated by hand, so a resource name or comment holding
+        // markup was injected verbatim into whatever page displayed it.
+        return TemplateRenderer::getInstance()->render('@metademands/resource_table.html.twig', [
+            'show_table'         => !($options['hideTable'] ?? false),
+            'title'              => trim($resource->fields['name'] . ' ' . $resource->fields['firstname']),
+            'firstname'          => $resource->fields['firstname'],
+            'name'               => $resource->fields['name'],
+            'contract_type'      => $contractype->getField('name'),
+            'service'            => $service,
+            'secondary_services' => $secondary_services,
+            'date_begin'         => Html::convDate($resource->fields['date_begin']),
+            'date_end'           => Html::convDate($resource->fields['date_end']),
+            'manager_name'       => getUserName($resource->fields['users_id'], 0, true),
+            'comment'            => $resource->fields['comment'],
+        ]);
     }
 
 }

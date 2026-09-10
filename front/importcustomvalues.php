@@ -27,11 +27,20 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 
 Session::checkRight("plugin_metademands", UPDATE);
 
 if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields_id'])) {
+    // The right bit above is global and carries no entity boundary, while this import purges then
+    // rewrites every custom value of the posted field. Bind the control to the parent field: Field
+    // is a CommonDBChild of Metademand, so check() resolves the metademand and applies both the
+    // right and the entity boundary (same contract as front/fieldcustomvalue.form.php).
+    $fields_id = (int) $_POST['plugin_metademands_fields_id'];
+    $field     = new Field();
+    $field->check($fields_id, UPDATE);
+
     $csvMimes = [
         'text/x-comma-separated-values',
         'text/comma-separated-values',
@@ -73,14 +82,14 @@ if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields
             fclose($handle);
 
             $fieldcustom = new FieldCustomvalue();
-            $fieldcustom->deleteByCriteria(['plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id']]);
+            $fieldcustom->deleteByCriteria(['plugin_metademands_fields_id' => $fields_id]);
             $rank = 0;
             foreach ($rows as $data) {
                 $input = [];
                 $input['name'] = $data[0];
                 $input['is_default'] = $data[1] ?? 0;
                 $input['comment'] = $data[2] ?? '';
-                $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
+                $input['plugin_metademands_fields_id'] = $fields_id;
                 $input['rank'] = $rank;
                 $rank++;
                 $fieldcustom->add($input);

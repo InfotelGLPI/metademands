@@ -842,7 +842,9 @@ class Step extends CommonDBChild
             );
             if ($msg) {
                 echo "<div class='alert alert-info center'>";
-                echo $msg;
+                // Same plain-text step message as ajax/getNextMessage.php, rendered here on the
+                // server path: escape it too, otherwise the parallel path stays exploitable.
+                echo htmlspecialchars((string) $msg, ENT_QUOTES, 'UTF-8');
                 echo "</div>";
             }
 
@@ -944,7 +946,6 @@ class Step extends CommonDBChild
     {
         $conf = new Configstep();
         $step = new Step();
-        $group = new \Group();
         $groupUser = new Group_User();
         $user_id = Session::getLoginUserID();
 
@@ -1037,20 +1038,12 @@ class Step extends CommonDBChild
                 'block_id' => $block_id,
             ]);
 
+            // Single source of truth with the sink: nextUser() validates the posted
+            // destination against this very list.
+            $nextGroups = self::getNextGroupsForBlock($meta_id ?? 0, $block_id);
+
             $group_dropdown_html = '';
             if (count($steps) > 0) {
-                foreach ($steps as $s) {
-                    if ($s['groups_id'] > 0) {
-                        $res = $group->getFromDBByCrit(['id' => $s['groups_id']]);
-                        if ($res) {
-                            $nextGroups[$group->fields['id']] = $group->fields['name'];
-                        }
-                    } else {
-                        foreach ($group->find() as $g) {
-                            $nextGroups[$g['id']] = $g['name'];
-                        }
-                    }
-                }
                 ob_start();
                 $rand = \Dropdown::showFromArray(
                     'next_groups_id',
@@ -1126,6 +1119,85 @@ class Step extends CommonDBChild
             $users,
             $options,
         );
+    }
+
+    /**
+     * Groups the "next recipient" modal is allowed to forward a step form to, for a
+     * given meta-demand and block. Shared by the list builder (showModalForm()) and by
+     * the sink (nextUser()) so a posted destination can be checked against exactly what
+     * the interface offered, and never against a looser rule.
+     *
+     * @param int|string $metademands_id
+     * @param int|string $block_id
+     *
+     * @return array<int, string> groups_id => group name
+     */
+    private static function getNextGroupsForBlock($metademands_id, $block_id): array
+    {
+        $self  = new self();
+        $group = new \Group();
+
+        $next_groups = [];
+
+        $steps = $self->find([
+            'plugin_metademands_metademands_id' => (int) $metademands_id,
+            'block_id'                          => (int) $block_id,
+        ]);
+
+        foreach ($steps as $s) {
+            if ($s['groups_id'] > 0) {
+                // Destination explicitly configured on the step: honoured as-is, the
+                // administrator may legitimately have designated a group of another entity.
+                if ($group->getFromDBByCrit(['id' => $s['groups_id']])) {
+                    $next_groups[$group->fields['id']] = $group->fields['name'];
+                }
+            } else {
+                // "Any group" only ever meant any group the caller can see, so restrict on
+                // the active entities: without it the wildcard turns into a cross-entity
+                // destination for anyone replaying the request.
+                $dbu = new DbUtils();
+                foreach ($group->find($dbu->getEntitiesRestrictCriteria(\Group::getTable(), '', '', true)) as $g) {
+                    $next_groups[$g['id']] = $g['name'];
+                }
+            }
+        }
+
+        return $next_groups;
+    }
+
+    /**
+     * Check whether a posted next user is one the modal could actually have offered:
+     * either the caller's own supervisor (supervisor validation branch, which posts no
+     * group at all), or a member of the retained destination group, which is what
+     * ajax/dropdownNextUser.php feeds the dropdown with.
+     *
+     * @param int        $users_id
+     * @param int        $groups_id
+     * @param int|string $metademands_id
+     *
+     * @return bool
+     */
+    private static function isAllowedNextUser(int $users_id, int $groups_id, $metademands_id): bool
+    {
+        $conf = new Configstep();
+        if ($conf->getFromDBByCrit(['plugin_metademands_metademands_id' => (int) $metademands_id])
+            && $conf->fields['supervisor_validation']) {
+            $user = new User();
+
+            return $user->getFromDB((int) Session::getLoginUserID())
+                && (int) $user->fields['users_id_supervisor'] === $users_id;
+        }
+
+        if ($groups_id <= 0) {
+            return false;
+        }
+
+        $group_user = new Group_User();
+
+        return count($group_user->find([
+            'users_id'  => $users_id,
+            'groups_id' => $groups_id,
+        ])) > 0;
     }
 
     /**
@@ -1206,6 +1278,36 @@ class Step extends CommonDBChild
                 throw new AccessDeniedHttpException(
                     'You are not allowed to forward this step form.',
                 );
+            }
+
+            // canActOnStepform() above protects the ROW being advanced, not the destination
+            // VALUES posted alongside it. The modal only ever offers the groups declared on
+            // the current block's steps and, as next user, the members of the retained group
+            // (showModalForm() and ajax/dropdownNextUser.php): replay those very criteria
+            // here so a replayed POST cannot route the next step form - and the business data
+            // it carries - to an arbitrary group or user, possibly outside the entity.
+            $next_groups_id = (int) ($_POST['next_groups_id'] ?? 0);
+            if ($next_groups_id > 0) {
+                $allowed_groups = self::getNextGroupsForBlock(
+                    $_POST['metademands_id'] ?? 0,
+                    $_POST['block_id'] ?? 0,
+                );
+                if (!isset($allowed_groups[$next_groups_id])) {
+                    throw new AccessDeniedHttpException(
+                        'You are not allowed to forward this step form to this group.',
+                    );
+                }
+                $_POST['next_groups_id'] = $next_groups_id;
+            }
+
+            $next_users_id = (int) ($_SESSION['plugin_metademands'][$user_id]['users_id_dest'] ?? 0);
+            if ($next_users_id > 0) {
+                if (!self::isAllowedNextUser($next_users_id, $next_groups_id, $_POST['metademands_id'] ?? 0)) {
+                    throw new AccessDeniedHttpException(
+                        'You are not allowed to forward this step form to this user.',
+                    );
+                }
+                $_SESSION['plugin_metademands'][$user_id]['users_id_dest'] = $next_users_id;
             }
 
             $nblines = 0;

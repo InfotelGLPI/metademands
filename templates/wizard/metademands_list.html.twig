@@ -1,0 +1,96 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if display_cards %}
+    <div id="listmeta">
+        {{ most_used|raw }}
+        <div tabindex="-1" id="mt-fuzzysearch">
+            <div class="modal-content">
+                <div class="modal-body" style="padding: 10px;">
+                    <input type="text" class="mt-home-trigger-fuzzy form-control"
+                           placeholder="{{ __('Find a form', 'metademands') }}">
+                    <input type="hidden" name="meta_type" id="meta_type" value="{{ meta_type }}">
+                    <ul class="results list-group mt-2" style="background: #FFF;"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for entry in entries %}
+                <div class="col-12 col-sm-6 col-md-4 d-flex">
+                    <a class="card mx-1 my-2 flex-grow-1" title="{{ entry.tooltip }}" href="{{ entry.url }}">
+                        <section class="card-body">
+                            <div class="d-flex">
+                                <div class="aspect-ratio-1"
+                                     style="margin-left: 10px;width: 70px;height: 70px;">
+                                    <span class="md-cat-icon-stack fa-2x">
+                                        <i class="ti ti-circle" style="{{ entry.icon_color }};"></i>
+                                        {% if entry.is_fa_icon %}
+                                            <i class="fas {{ entry.icon }} fa-1x"
+                                               style="{{ entry.icon_color }};font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: 1em;"></i>
+                                        {% else %}
+                                            <i class="ti {{ entry.icon }}"
+                                               style="{{ entry.icon_color }};font-size: 1em;"></i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="ms-4">
+                                    <h2 class="card-title mb-2 text-break">{{ entry.name }}</h2>
+                                    <div class="text-secondary remove-last-tinymce-margin"
+                                         style="font-size:0.8rem;">
+                                        {% if entry.comment is not empty %}
+                                            {{ entry.comment|raw }}
+                                        {% else %}
+                                            {{ entry.name }}
+                                        {% endif %}
+                                        {% if entry.drafts_label is not empty %}
+                                            <br><br><span style="{{ entry.icon_color }};">{{ entry.drafts_label }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div id="listmeta" class="bt-row">
+        <div class="bt-feature bt-col-sm-12 bt-col-md-12">
+            {{ dropdown|raw }}
+        </div>
+    </div>
+    <br>
+    <div class="bt-row">
+        <div class="bt-feature bt-col-sm-12 bt-col-md-12 right">
+            <input type="hidden" name="step" value="{{ step_show }}">
+            <input type="hidden" name="meta_type" id="meta_type" value="{{ meta_type }}">
+            {{ submit|raw }}
+        </div>
+    </div>
+{% endif %}

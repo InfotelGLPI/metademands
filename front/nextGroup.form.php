@@ -30,6 +30,11 @@
 use GlpiPlugin\Metademands\Configstep;
 use GlpiPlugin\Metademands\Step;
 
+// This entry point mutates the workflow state of a step form and echoes a confirmation:
+// keep it out of reach of anonymous callers. The step form itself is then bound to the
+// current user by Step::canActOnStepform(), called from Step::nextUser().
+Session::checkLoginUser();
+
 // We manage the display of the drop-down lists of the groups of the next
 // and/or the display of the drop-down lists of the users linked to the group
 global $CFG_GLPI;
@@ -61,7 +66,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     if (isset($_POST['next_users_id'])
         && $_POST['next_users_id'] != 0) {
         $_SESSION ['plugin_metademands'][$user_id]['users_id_dest'] = $_POST['next_users_id'];
-        $userName = getUserName($_POST['next_users_id'], 0, true);
+        // Same treatment as the group name above: user names are stored unescaped and this
+        // legacy echo path is not Twig-autoescaped, so neutralize the value before it is
+        // interpolated into the confirmation alert.
+        $userName = htmlspecialchars((string) getUserName((int) $_POST['next_users_id']), ENT_QUOTES, 'UTF-8');
         $msg = sprintf(
             __('The form has been sent to user %s from group %s, you can close the window', 'metademands'),
             $userName,

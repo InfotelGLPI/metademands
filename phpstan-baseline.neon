@@ -2385,7 +2385,7 @@ parameters:
 		-
 			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Resources\\Resource\.$#'
 			identifier: class.notFound
-			count: 21
+			count: 22
 			path: src/Metademand_Resource.php
 
 		-

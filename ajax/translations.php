@@ -67,6 +67,12 @@ switch ($action) {
     case 'init_language':
         $items_id = (int) ($_POST['items_id'] ?? 0);
         $itemtype = $_POST['itemtype'] ?? '';
+        // The itemtype and the translation class are two independent POST values: refuse any pair
+        // that does not belong together, so a caller cannot act on the rows of one translation
+        // class while passing the rights check on an unrelated itemtype.
+        if (($itemtype_to_tr_class[$itemtype] ?? null) !== $translation_class) {
+            throw new BadRequestHttpException();
+        }
         $item = getItemForItemtype($itemtype);
         if ($item === false || !$item->can($items_id, UPDATE)) {
             throw new ForbiddenHttpException();
@@ -168,6 +174,12 @@ switch ($action) {
     case 'delete_language':
         $items_id = (int) ($_POST['items_id'] ?? 0);
         $itemtype = $_POST['itemtype'] ?? '';
+        // The itemtype and the translation class are two independent POST values: refuse any pair
+        // that does not belong together, so a caller cannot act on the rows of one translation
+        // class while passing the rights check on an unrelated itemtype.
+        if (($itemtype_to_tr_class[$itemtype] ?? null) !== $translation_class) {
+            throw new BadRequestHttpException();
+        }
         $item = getItemForItemtype($itemtype);
         if ($item === false || !$item->can($items_id, UPDATE)) {
             throw new ForbiddenHttpException();

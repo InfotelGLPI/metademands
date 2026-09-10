@@ -39,6 +39,7 @@ use DBConnection;
 use DbUtils;
 use Dropdown;
 use Glpi\DBAL\QueryExpression;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Form\Category;
 use Glpi\Form\ServiceCatalog\ServiceCatalog;
 use Glpi\Form\ServiceCatalog\ServiceCatalogLeafInterface;
@@ -740,6 +741,51 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * Restrict the icon field to a plain icon class token: it is echoed into HTML class
+     * attributes by the wizard and the helpdesk tiles, so a crafted value would break out
+     * of the attribute (stored XSS). Same allow-list as the change_icon massive action and
+     * as FieldCustomvalue. An invalid value is emptied; the 'NULL' sentinel used by the
+     * _blank_picture button is preserved.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    public static function sanitizeIconInput($input)
+    {
+        if (
+            isset($input['icon'])
+            && $input['icon'] !== ''
+            && $input['icon'] !== 'NULL'
+            && !preg_match('/^[a-zA-Z0-9 _-]+$/', (string) $input['icon'])
+        ) {
+            $input['icon'] = '';
+        }
+        return $input;
+    }
+
+    /**
+     * Tell whether an ancestor ticket identifier may be used by the current session.
+     *
+     * The value travels from $_GET to the session and back into the wizard options, so it is
+     * client-controlled all the way down to the Ticket_Ticket link and to the Ticket_Field read
+     * performed by createSonsTickets(). can(READ) applies both the right bit and checkEntity().
+     *
+     * @param mixed $ancestor_tickets_id
+     *
+     * @return bool
+     */
+    public static function isReadableAncestorTicket($ancestor_tickets_id)
+    {
+        $ancestor_tickets_id = (int) $ancestor_tickets_id;
+        if ($ancestor_tickets_id <= 0) {
+            return false;
+        }
+
+        return (new \Ticket())->can($ancestor_tickets_id, READ);
+    }
+
+    /**
      * @param array $input
      *
      * @return array|bool
@@ -748,6 +794,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         global $DB;
         $input = self::sanitizeColorInput($input);
+        $input = self::sanitizeIconInput($input);
         $cat_already_store = false;
         if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
             //retrieve all multiple cats from all metademands
@@ -818,6 +865,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         global $DB;
         $input = self::sanitizeColorInput($input);
+        $input = self::sanitizeIconInput($input);
         $cat_already_store = false;
 
         if (isset($input['itilcategories_id'])) {
@@ -2242,6 +2290,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $ticket_exists_array = [];
         $config = Config::getInstance();
 
+
         unset($values['freetables']);
 
         $itilcategory = 0;
@@ -2427,7 +2476,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     // launched as a child (its ticket must be created in that entity, not
                     // in the active one). NULL means "no override, keep the active entity".
                     $ancestor = $_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'] ?? 0;
-                    if (!empty($ancestor)) {
+                    if (self::isReadableAncestorTicket($ancestor)) {
                         $metatask = new MetademandTask();
                         if ($metatask->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()])
                             && isset($metatask->fields['destination_entities_id'])
@@ -2818,7 +2867,15 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0
                             && !$options['meta_validated']) {
-                            $inputUpdate['id'] = $options['current_ticket_id'];
+                            // The identifier comes from the client (GET/POST, then session): update()
+                            // performs no right nor entity check at all, so bind the write to the
+                            // object here. can() applies both the right bit and checkEntity(); for a
+                            // Ticket it also covers the helpdesk requester through canUpdateItem().
+                            $current_ticket_id = (int) $options['current_ticket_id'];
+                            if (!$object->can($current_ticket_id, UPDATE)) {
+                                throw new AccessDeniedHttpException();
+                            }
+                            $inputUpdate['id'] = $current_ticket_id;
                             $inputUpdate['content'] = $input['content'];
                             $inputUpdate['name'] = $input['name'];
                             $parent_tickets_id = $inputUpdate['id'];
@@ -3083,6 +3140,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             }
                             if (isset($_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'])) {
                                 $options['ancestor_tickets_id'] = $_SESSION['plugin_metademands'][$metademand->getID()]['ancestor_tickets_id'];
+                            }
+                            // Whichever carrier it came from, the ancestor identifier originates from
+                            // the client: drop it unless the caller may actually read that ticket,
+                            // so a crafted value cannot graft this ticket under an unrelated one.
+                            if (!self::isReadableAncestorTicket($options['ancestor_tickets_id'] ?? 0)) {
+                                unset($options['ancestor_tickets_id']);
                             }
 
                             //case of child metademands for link it
@@ -6462,7 +6525,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     echo "<a class='btn flex-column fs-3 $class' href='" . $ticket->getLinkURL() . "'>";
                     echo "<div class='d-flex align-items-center'>";
                     echo "<i class='fas $fa' style='float: right;'></i>";
-                    echo "<span>&nbsp;" . $ticket->getName();
+                    // getName() returns the raw database value: the ticket title is set by any
+                    // requester, so it must be escaped on this echo-built path.
+                    echo "<span>&nbsp;" . htmlspecialchars($ticket->getName(), ENT_QUOTES, 'UTF-8');
                     echo "</span>";
                     echo "</div>";
                     echo "<div class='text-muted'>";
@@ -6541,9 +6606,23 @@ HTML;
                 foreach ($metademands as $id => $values) {
                     $meta = new Metademand();
                     if ($meta->getFromDB($id)) {
+                        // selectMetademands() restricts on the entity but not on the group
+                        // visibility, so replay the check the wizard listing applies
+                        // (Wizard::listMetademands()): a form reserved to groups the caller does
+                        // not belong to must not surface through the search box either.
+                        if (!$meta->canCreate() && !Group::isUserHaveRight($id)) {
+                            continue;
+                        }
                         $icon = "ti-share";
                         if (!empty($meta->fields['icon'])) {
                             $icon = $meta->fields['icon'];
+                        }
+                        // The icon ends up in a class attribute on the client side and the
+                        // column is stored raw since GLPI 10: anything outside the charset a
+                        // class token may contain falls back to the default, so a crafted
+                        // value cannot carry markup or extra attributes to the search box.
+                        if (preg_match('/^[A-Za-z0-9_ -]+$/', $icon) !== 1) {
+                            $icon = "ti-share";
                         }
                         if (str_contains($icon, 'fa-')) {
                             $icon = "fas " . $icon;
@@ -6569,6 +6648,10 @@ HTML;
                             $comment_meta = $comm;
                         }
 
+                        // title and comment stay unescaped on purpose: the search box builds
+                        // its result nodes with the DOM API and assigns them through
+                        // textContent (public/lib/md_fuzzysearch.js), so pre-escaping them
+                        // here would only surface entities to the user.
                         $metas[] = [
                             'title' => $name,
                             'comment' => ($comment_meta != null) ? Html::resume_text(RichText::getTextFromHtml($comment_meta), "50") : "",

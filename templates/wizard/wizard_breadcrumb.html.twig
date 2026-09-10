@@ -1,0 +1,72 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<script>
+    $(document).ready(function () {
+        $('#title_cat').show();
+        $('#categories_title').show();
+        document.getElementById('title_cat').innerHTML = {{ tree_name|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
+        let newScript = document.createElement('script');
+        newScript.type = 'text/javascript';
+        {# tree_script is the JavaScript string literal produced by Category::getTreeCategoryFriendlyName(). #}
+        let scriptContent = document.createTextNode({{ tree_script|raw }});
+        newScript.appendChild(scriptContent);
+        document.body.appendChild(newScript);
+    });
+</script>
+
+<span id="categories_title" style="display: none">
+    <div class="alert alert-secondary {{ alert_class }}" role="alert"
+         {% if alert_style is not empty %}style="{{ alert_style }}"{% endif %}>
+        <span id="title_cat"></span>
+    </div>
+</span>
+
+{% if display_warning is not empty %}
+    <h5>
+        <div class="alert alert-danger" role="alert">
+            <i style="font-size:3em;" class="ti ti-exclamation-circle"></i>
+            &nbsp;{{ display_warning|nl2br }}
+        </div>
+    </h5>
+{% endif %}
+
+{% if faq_url is not empty %}
+    <h5>
+        <div class="alert alert-warning" role="alert">
+            <i class="ti ti-alert-triangle" style="font-size:2em;color:orange"></i>
+            &nbsp;{{ __('Did you know that there is an FAQ article that may be able to help you?', 'servicecatalog') }}
+            &nbsp;
+            <a href="{{ faq_url }}">
+                <button form="" class="submit btn btn-info btn-sm">
+                    <i class="ti ti-link" data-hasqtip="0" aria-hidden="true"></i>
+                    &nbsp;{{ __('Click here for more informations', 'servicecatalog') }}
+                </button>
+            </a>
+        </div>
+    </h5>
+{% endif %}

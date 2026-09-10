@@ -34,6 +34,10 @@ if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
     Html::header_nocache();
 }
 
+// This endpoint is reachable directly, not only through ajax/type_object.php: gate it on its
+// own before any branching, so the category list is never served to a caller without rights.
+Session::checkRight("plugin_metademands", READ);
+
 //$opt = ['entity' => $_POST["entity_restrict"]];
 $condition  = [];
 
@@ -96,14 +100,14 @@ foreach ($cats as $item) {
 //}
 $used = array_unique($used);
 
-$criteria += ['NOT' => [
-    'id' => $used,
-]];
-if (count($used) == 0) {
-    $result = $dbu->getAllDataFromTable(ITILCategory::getTable());
-} else {
-    $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
+// An empty exclusion list is not a reason to drop the criteria: reading the whole table would
+// bypass the entity restriction built above. Only add the NOT IN clause when it has values.
+if (count($used) > 0) {
+    $criteria += ['NOT' => [
+        'id' => $used,
+    ]];
 }
+$result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
 
 $temp   = [];
 foreach ($result as $item) {

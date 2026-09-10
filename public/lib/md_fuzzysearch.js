@@ -183,12 +183,49 @@ $(function() {
 
 
       // append new results
+      // Built with the DOM API instead of a concatenated HTML string: title, comment and
+      // icon all come from meta-demand columns stored raw in database, so handing them to
+      // .append() executed whatever markup they contained (stored XSS).
+      var resultsList = document.querySelector("#mt-fuzzysearch .results");
+      if (resultsList === null) {
+         return;
+      }
+
       results.map(function(el) {
-         //console.log(el);
-          var finaltitle = el.item.title;
-       $("#mt-fuzzysearch .results")
-           .append("<li class='list-group-item'><i class='fa-1x "+el.item.icon+"' style=\"font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';\"></i> <a href='"+ el.item.url+"'>"+finaltitle+"</a><div><i style='color: #666565;'>"+el.item.comment+"</i></div></li></li>");
-   });
+         var listItem = document.createElement('li');
+         listItem.className = 'list-group-item';
+
+         var icon = document.createElement('i');
+         icon.className = 'fa-1x';
+         // The server already restricts the icon to the class token charset; split on
+         // whitespace so a stray value can only ever add classes, never an attribute.
+         String(el.item.icon || '').split(/\s+/).forEach(function(token) {
+            if (token !== '') {
+               icon.classList.add(token);
+            }
+         });
+         icon.style.fontFamily = "'Font Awesome 6 Free', 'Font Awesome 6 Brands'";
+         listItem.appendChild(icon);
+         listItem.appendChild(document.createTextNode(' '));
+
+         var link = document.createElement('a');
+         // The URL is composed server side from the plugin web dir and an integer id:
+         // accept only a same origin relative path so a future change to the payload
+         // cannot yield a javascript: href.
+         var url = String(el.item.url || '');
+         link.setAttribute('href', /^\/[^\/\\]/.test(url) ? url : '#');
+         link.textContent = el.item.title;
+         listItem.appendChild(link);
+
+         var commentWrapper = document.createElement('div');
+         var comment = document.createElement('i');
+         comment.style.color = '#666565';
+         comment.textContent = el.item.comment;
+         commentWrapper.appendChild(comment);
+         listItem.appendChild(commentWrapper);
+
+         resultsList.appendChild(listItem);
+      });
       selectFirst();
    };
 
