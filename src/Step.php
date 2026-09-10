@@ -904,6 +904,32 @@ class Step extends CommonDBChild
     }
 
     /**
+     * Keys of the wizard payload the step flow actually reads back from the session
+     * (see showModalForm() and nextUser()). Anything else posted to ajax/showStep.php
+     * is dropped instead of being stored as-is.
+     *
+     * @var string[]
+     */
+    private const STEP_SESSION_KEYS = [
+        'metademands_id',
+        'form_metademands_id',
+        'plugin_metademands_stepforms_id',
+        'tickets_id',
+        'resources_id',
+        'resources_step',
+        'block_id',
+        'form_name',
+        '_users_id_requester',
+        'create_metademands',
+        'step',
+        'action',
+        'update_stepform',
+        'users_id_dest',
+        'groups_id_dest',
+        'field',
+    ];
+
+    /**
      * display the next group modal
      *
      * @return string
@@ -912,10 +938,14 @@ class Step extends CommonDBChild
     {
         $user_id = Session::getLoginUserID();
 
-        if (isset($_POST['block_id']) && !empty($_POST['block_id'])) {
-            $block_id = $_POST['block_id'];
+        $block_id = (int) ($_POST['block_id'] ?? 0);
+        if ($block_id > 0) {
+            $_SESSION['plugin_metademands'][$user_id] = array_intersect_key(
+                $_POST,
+                array_flip(self::STEP_SESSION_KEYS),
+            );
+            $_SESSION['plugin_metademands'][$user_id]['block_id'] = $block_id;
 
-            $_SESSION['plugin_metademands'][$user_id] = $_POST;
             $url = PLUGIN_METADEMANDS_WEBDIR . '/front/nextGroup.form.php?block_id=' . $block_id;
             $return = Ajax::createIframeModalWindow(
                 'modalgroup',

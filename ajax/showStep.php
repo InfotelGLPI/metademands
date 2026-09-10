@@ -27,11 +27,27 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Step;
 
 header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
+
+// This endpoint writes into the plugin session sandbox, so the caller must first be
+// entitled to the targeted meta-demand — same correlation as ajax/loadform.php.
+$metademands    = new Metademand();
+$metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+if (
+    !$metademands->getFromDB($metademands_id)
+    || !Session::haveAccessToEntity(
+        $metademands->fields['entities_id'],
+        $metademands->fields['is_recursive'],
+    )
+) {
+    throw new AccessDeniedHttpException();
+}
 
 $return = Step::showStep();
 echo json_encode($return);

@@ -1,0 +1,59 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Expected context:
+ #   tooltip_script     : core <script> reloading the tooltip anchor (Ajax::updateItem)
+ #   wrapper_id         : input-group anchor id, empty when the field is not linked to a user field
+ #   widget_html        : User::dropdown() markup
+ #   update_script      : core <script> from Ajax::commonDropdownUpdateItem
+ #   with_tooltip       : whether the tooltip anchor must be rendered
+ #   field_id           : metademands field id, part of the tooltip anchor id
+ #   user_informations  : Wizard::showUserInformations() markup for the selected user
+ #   linked_text_fields : config consumed by public/scripts/dropdownobject_linked_text_fields.js
+-#}
+{{ tooltip_script|raw }}
+{% if wrapper_id %}<div id="{{ wrapper_id }}" class="input-group">{% endif %}
+{{ widget_html|raw }}
+{% if wrapper_id %}</div>{% endif %}
+{{ update_script|raw }}
+
+{% if with_tooltip %}
+    {# Always rendered: this is the anchor utooltipUpdate.php loads into on every change. #}
+    <span id="tooltip_user{{ field_id }}">
+        {% if user_informations %}
+            <br><br>
+            <div class="alert alert-info alert-dismissible fade show informations d-flex align-items-center">
+                <div>{{ user_informations|raw }}</div>
+            </div>
+        {% endif %}
+    </span>
+{% endif %}
+
+{% if linked_text_fields %}
+    <span class="d-none"
+          data-metademands-linked-text-fields="{{ linked_text_fields|json_encode|e('html_attr') }}"></span>
+{% endif %}

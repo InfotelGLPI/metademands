@@ -32,6 +32,7 @@ namespace GlpiPlugin\Metademands\Fields;
 use Ajax;
 use CommonDBTM;
 use DbUtils;
+use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Condition;
@@ -70,22 +71,164 @@ class Dropdownobject extends CommonDBTM
         return __('Glpi Object', 'metademands');
     }
 
+    /**
+     * Descriptors of the fields whose value follows the user selected in this dropdown.
+     * Each entry tells which field to look for, the id prefix of the block to refresh,
+     * the endpoint that renders it and the extra parameters that endpoint expects.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    private static function getLinkedUserDescriptors($data)
+    {
+        return [
+            ['type'     => "dropdown",
+                'item'     => Location::getType(),
+                'prefix'   => "location_user",
+                'endpoint' => "ulocationUpdate.php",
+                'extra'    => ['display_type' => $data['display_type'] ?? 0]],
+            ['type'     => "dropdown",
+                'item'     => UserTitle::getType(),
+                'prefix'   => "title_user",
+                'endpoint' => "utitleUpdate.php",
+                'extra'    => []],
+            ['type'     => "dropdown",
+                'item'     => UserCategory::getType(),
+                'prefix'   => "category_user",
+                'endpoint' => "ucategoryUpdate.php",
+                'extra'    => []],
+            ['type'     => "dropdown_object",
+                'item'     => Group::getType(),
+                'prefix'   => "group_user",
+                'endpoint' => "ugroupUpdate.php",
+                'extra'    => []],
+            ['type'     => "dropdown_object",
+                'item'     => Entity::getType(),
+                'prefix'   => "entity_user",
+                'endpoint' => "uentityUpdate.php",
+                'extra'    => ['readonly' => $data['readonly'] ?? 0]],
+            ['type'     => "dropdown_meta",
+                'item'     => "mydevices",
+                'prefix'   => "mydevices_user",
+                'endpoint' => "umydevicesUpdate.php",
+                'extra'    => []],
+            ['type'     => "dropdown_object",
+                'item'     => User::getType(),
+                'prefix'   => "manager_user",
+                'endpoint' => "umanagerUpdate.php",
+                'extra'    => []],
+        ];
+    }
+
+    /**
+     * Build the "toupdate" entries handed to User::dropdown(): each field linked to this
+     * user field is reloaded from its own endpoint whenever the selection changes.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    private static function getLinkedUserUpdates($data)
+    {
+        $field          = new Field();
+        $fieldparameter = new FieldParameter();
+        $toupdate       = [];
+
+        foreach (self::getLinkedUserDescriptors($data) as $descriptor) {
+            $linked_fields = $field->find([
+                'type'                              => $descriptor['type'],
+                'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
+                'item'                              => $descriptor['item'],
+            ]);
+
+            foreach ($linked_fields as $linked_field) {
+                if (!$fieldparameter->getFromDBByCrit([
+                    'plugin_metademands_fields_id' => $linked_field['id'],
+                    'link_to_user'                 => ['>', 0],
+                ])) {
+                    continue;
+                }
+
+                $linked_id = $fieldparameter->fields['plugin_metademands_fields_id'];
+
+                $toupdate[] = [
+                    'value_fieldname' => 'value',
+                    'id_fielduser'    => $data['id'],
+                    'to_update'       => $descriptor['prefix'] . $data['id'] . $linked_id,
+                    'url'             => PLUGIN_METADEMANDS_WEBDIR . "/ajax/" . $descriptor['endpoint'],
+                    'moreparams'      => array_merge(
+                        ['users_id' => '__VALUE__', 'id_fielduser' => $data['id']],
+                        $descriptor['extra'],
+                        ['metademands_id' => $data['plugin_metademands_metademands_id']],
+                    ),
+                ];
+            }
+        }
+
+        return $toupdate;
+    }
+
+    /**
+     * Map the text fields fed by this user dropdown to the keys returned by
+     * ajax/uTextFieldUpdate.php. Consumed by public/scripts/dropdownobject_linked_text_fields.js.
+     *
+     * @param array  $data
+     * @param string $namefield
+     *
+     * @return array Empty when no text field is actually fed by this dropdown.
+     */
+    private static function getLinkedTextFieldsConfig($data, $namefield)
+    {
+        $field           = new Field();
+        $field_parameter = new FieldParameter();
+        $targets         = [];
+
+        $text_fields = $field->find([
+            'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
+            'type'                              => ['text', 'email', 'tel'],
+        ]);
+
+        foreach ($text_fields as $text_field) {
+            $parameters = $field_parameter->find([
+                'plugin_metademands_fields_id' => $text_field['id'],
+                'link_to_user'                 => $data['id'],
+            ]);
+
+            foreach ($parameters as $parameter) {
+                if (empty($parameter['used_by_ticket'])) {
+                    continue;
+                }
+
+                $targets[] = [
+                    'id_field'     => $namefield . $text_field['id'],
+                    'response_key' => $parameter['used_by_ticket'],
+                ];
+            }
+        }
+
+        if (count($targets) === 0) {
+            return [];
+        }
+
+        return [
+            'url'     => PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php",
+            'targets' => $targets,
+        ];
+    }
+
     public static function showWizardField($data, $namefield, $value, $on_order, $itilcategories_id)
     {
 
         $metademand = new Metademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
-        // Capture the full interleaved output (inline scripts, Ajax::* JS, core
-        // widgets, ajax-file includes, user tooltip) and route it once through the
-        // passthrough template — byte-identical, no raw echo leaves the class.
-        ob_start();
-        $field    = "";
-        $toupdate = [];
+        $field = "";
         switch ($data['item']) {
             case 'User':
-                $userrand = mt_rand();
-                $field    = "";
+                $userrand       = mt_rand();
+                $toupdate       = [];
+                $tooltip_script = "";
 
                 if ($data['display_type'] == 1) {
                     $paramstooltip
@@ -103,300 +246,19 @@ class Dropdownobject extends CommonDBTM
                         'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
                         'moreparams'   => $paramstooltip];
 
-                    echo Ajax::updateItem(
+                    $tooltip_script = Ajax::updateItem(
                         "tooltip_user" . $data['id'],
                         PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
                         $paramstooltip,
                         "dropdown_" . $namefield . "[" . $data['id'] . "]" . $userrand,
+                        false,
                     );
                 }
-                $fieldparameter = new FieldParameter();
-                $fielddropdown = new Field();
-                if ($fields = $fielddropdown->find(['type'         => "dropdown",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => Location::getType()])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            ['plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0]],
-                        )) {
 
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramsloc
-                                = ['users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'display_type' => $data['display_type'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id']];
+                // Every field linked to this user field refreshes itself from its own
+                // endpoint: core renders that JS out of the "toupdate" option below.
+                $toupdate = array_merge($toupdate, self::getLinkedUserUpdates($data));
 
-                            $toupdate[] = ['value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "location_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                                'moreparams' => $paramsloc];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "location_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                                $paramsloc,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
-
-                $fieldparameter = new FieldParameter();
-                $fielddropdown = new Field();
-                if ($fields = $fielddropdown->find(['type'         => "dropdown",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => UserTitle::getType()])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            [
-                                'plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0],
-                            ],
-                        )) {
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramstit
-                                = [
-                                    'users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                ];
-
-                            $toupdate[] = [
-                                'value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "title_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
-                                'moreparams' => $paramstit,
-                            ];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "title_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
-                                $paramstit,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
-                $fieldparameter = new FieldParameter();
-                $fielddropdown = new Field();
-                if ($fields = $fielddropdown->find(['type'         => "dropdown",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => UserCategory::getType()])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            [
-                                'plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0],
-                            ],
-                        )) {
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramscat
-                                = [
-                                    'users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                ];
-
-                            $toupdate[] = [
-                                'value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "category_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
-                                'moreparams' => $paramscat,
-                            ];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "category_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
-                                $paramscat,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
-                $fieldparameter = new FieldParameter();
-                $fieldGroup = new Field();
-                if ($fields = $fieldGroup->find(['type'         => "dropdown_object",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => Group::getType()])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            [
-                                'plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0],
-                            ],
-                        )) {
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramsgroup
-                                = [
-                                    'users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                ];
-
-                            $toupdate[] = [
-                                'value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "group_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                                'moreparams' => $paramsgroup,
-                            ];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "group_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                                $paramsgroup,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
-                $fieldparameter = new FieldParameter();
-                $fieldEntity = new Field();
-                if ($fields = $fieldEntity->find(['type'         => "dropdown_object",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => Entity::getType()])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            [
-                                'plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0],
-                            ],
-                        )) {
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramsentity
-                                = [
-                                    'users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'readonly' => $data['readonly'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                ];
-
-                            $toupdate[] = [
-                                'value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "entity_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/uentityUpdate.php",
-                                'moreparams' => $paramsentity,
-                            ];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "entity_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/uentityUpdate.php",
-                                $paramsentity,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
-
-                $fieldparameter = new FieldParameter();
-                $fielddropdown = new Field();
-                if ($fields = $fielddropdown->find(['type'         => "dropdown_meta",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => "mydevices"])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            [
-                                'plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0],
-                            ],
-                        )) {
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramsdev
-                                = [
-                                    'users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                ];
-
-                            $toupdate[] = [
-                                'value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "mydevices_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                                'moreparams' => $paramsdev,
-                            ];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "mydevices_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                                $paramsdev,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
-
-                $fieldparameter = new FieldParameter();
-                $fielddropdown = new Field();
-                if ($fields = $fielddropdown->find(['type'         => "dropdown_object",
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'item'         => User::getType()])) {
-                    foreach ($fields as $f) {
-                        if ($fieldparameter->getFromDBByCrit(
-                            [
-                                'plugin_metademands_fields_id' => $f['id'],
-                                'link_to_user' => ['>', 0],
-                            ],
-                        )) {
-                            $plugin_metademands_fields_id = $fieldparameter->fields['plugin_metademands_fields_id'];
-                            $paramsman
-                                = [
-                                    'users_id' => '__VALUE__',
-                                    'id_fielduser' => $data['id'],
-                                    'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                ];
-
-                            $toupdate[] = [
-                                'value_fieldname' => 'value',
-                                'id_fielduser' => $data['id'],
-                                'to_update' => "manager_user" . $data['id'] . $plugin_metademands_fields_id,
-                                'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
-                                'moreparams' => $paramsman,
-                            ];
-
-                            echo "<script type='text/javascript'>";
-                            echo "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "manager_user" . $data['id'] . $plugin_metademands_fields_id,
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
-                                $paramsman,
-                                $namefield . "[" . $data['id'] . "]",
-                                false,
-                            );
-                            echo "});</script>";
-                        }
-                    }
-                }
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                 }
@@ -418,9 +280,7 @@ class Dropdownobject extends CommonDBTM
                         foreach ($group_user_data as $groups) {
                             $requester_groups[] = $groups['id'];
                         }
-                        //                        if (count($requester_groups) > 0) {
                         $right = "groups";
-                        //                        }
                     }
                 }
 
@@ -444,9 +304,11 @@ class Dropdownobject extends CommonDBTM
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
 
+                $wrapper_id = "";
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='manager_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
-                    $fieldUser             = new Field();
+                    $wrapper_id = "manager_user" . $data['link_to_user'] . $data['id'];
+
+                    $fieldUser = new Field();
                     $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
                         'type' => "dropdown_object",
                         'item' => User::getType()]);
@@ -468,84 +330,48 @@ class Dropdownobject extends CommonDBTM
                         }
                     }
                 }
-                //                \Toolbox::logInfo($opt);
-                echo User::dropdown($opt);
+
+                $widget_html = User::dropdown($opt);
                 if ($opt['readonly']) {
-                    echo Html::hidden($opt['name'], ['value' => $opt['value']]);
+                    $widget_html .= Html::hidden($opt['name'], ['value' => $opt['value']]);
                 }
 
+                $update_script = "";
                 if ($data['link_to_user'] > 0) {
-                    echo "</div>";
                     $optAjax = $opt;
                     $optAjax['name'] = 'manager_user' . $data['link_to_user'] . $data['id'];
                     $optAjax['rand'] = '';
                     $optAjax['id_fielduser'] = $data['link_to_user'];
                     $optAjax['field'] = $opt['name'];
                     $optAjax['metademands_id'] = $data['plugin_metademands_metademands_id'];
-                    Ajax::commonDropdownUpdateItem($optAjax);
+                    $update_script = Ajax::commonDropdownUpdateItem($optAjax, false);
                 }
-                if ($data['display_type'] == 1) {
-                    $user_id = $opt['value'];
-                    $field_id = $data['id'];
-                    echo "<span id='tooltip_user$field_id'>";
+
+                // The anchor is always rendered when the tooltip is enabled: it is the
+                // target utooltipUpdate.php loads into on every change.
+                $user_informations = "";
+                if ($data['display_type'] == 1 && $opt['value'] > 0) {
                     $user_tooltip = new User();
-                    if ($user_id > 0 && $user_tooltip->getFromDB($user_id)) {
-                        $display = "alert-info";
-                        $color = "#000";
-                        $class = "class='alert $display alert-dismissible fade show informations'";
-                        echo "<br><br><div $class style='display:flex;align-items: center;'>";
-                        echo "<div style='color: $color;'>";
+                    if ($user_tooltip->getFromDB($opt['value'])) {
+                        ob_start();
                         Wizard::showUserInformations($user_tooltip);
-                        echo "</div>";
-                        echo "</div>";
+                        $user_informations = ob_get_clean();
                     }
-                    echo "</span>";
                 }
-                $relatedTextFields = new Field();
-                $relatedTextFields = $relatedTextFields->find([
-                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                    'type' => ['text', 'email', 'tel'],
-                ]);
-                $field_parameter = new FieldParameter();
 
-
-                if (count($relatedTextFields)) {
-                    $updateJs = '';
-
-                    foreach ($relatedTextFields as $textField) {
-                        if ($fields = $field_parameter->find(
-                            ["plugin_metademands_fields_id" => $textField['id'],
-                                'link_to_user' => $data['id']],
-                        )) {
-                            foreach ($fields as $f) {
-                                if (!empty($f['used_by_ticket'])) {
-                                    $idfield = $namefield . $textField['id'];
-                                    $updateJs .= "let field{$textField['id']} = $(\"[id-field='$idfield'] input\");
-                                                    field{$textField['id']}.val(response[{$f['used_by_ticket']}] ?? '');
-                                                    field{$textField['id']}.trigger('input');
-                                                ";
-                                }
-                            }
-                        }
-                    }
-                    $ID = $namefield . $data['id'];
-                    echo "<script type='text/javascript'>
-                        $(function() {
-                            $(\"[id-field='$ID'] select\").on('change', function(e) {
-                                 $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: {
-                                         id : $(this).val()
-                                     },
-                                  success: function(response){
-                                       response = JSON.parse(response);
-                                       $updateJs
-                                    },
-                                });
-                            })
-                        })
-                    </script>";
-                }
+                $field = TemplateRenderer::getInstance()->render(
+                    '@metademands/fields/dropdownobject_user.html.twig',
+                    [
+                        'tooltip_script'     => $tooltip_script,
+                        'wrapper_id'         => $wrapper_id,
+                        'widget_html'        => $widget_html,
+                        'update_script'      => $update_script,
+                        'with_tooltip'       => $data['display_type'] == 1,
+                        'field_id'           => $data['id'],
+                        'user_informations'  => $user_informations,
+                        'linked_text_fields' => self::getLinkedTextFieldsConfig($data, $namefield),
+                    ],
+                );
                 break;
             case 'Group':
                 $field = "";
@@ -563,7 +389,6 @@ class Dropdownobject extends CommonDBTM
                         }
                     }
 
-                    echo "<div id='group_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                     $_POST['groups_id'] = $value;
                     $fieldparameter            = new FieldParameter();
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['link_to_user']])) {
@@ -578,37 +403,23 @@ class Dropdownobject extends CommonDBTM
                     $_POST['fields_id']    = $data['id'];
                     $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
                     $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
+
+                    // The endpoint echoes the dropdown for the selected user: capture it
+                    // and let the template provide the input-group wrapper.
+                    ob_start();
                     include(PLUGIN_METADEMANDS_DIR . "/ajax/ugroupUpdate.php");
-                    echo "</div>";
+                    $group_html = ob_get_clean();
+
+                    $field = TemplateRenderer::getInstance()->render(
+                        '@metademands/fields/dropdownobject_linked_wrapper.html.twig',
+                        [
+                            'wrapper_id'  => "group_user" . $data['link_to_user'] . $data['id'],
+                            'widget_html' => $group_html,
+                        ],
+                    );
                 } else {
                     $name = $namefield . "[" . $data['id'] . "]";
 
-                    //                    if (!empty($data['custom_values'])) {
-                    //                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                    //                            && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-                    //
-                    //                        if ($_POST['value'] > 0) {
-                    //                            $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
-                    //                            $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
-                    //
-                    //                            $requester_groups = [];
-                    //                            foreach ($group_user_data as $groups) {
-                    //                                $requester_groups[] = $groups['id'];
-                    //                            }
-                    //                            $options = FieldParameter::_unserialize($data['custom_values']);
-                    //
-                    //                            foreach ($options as $type_group => $values) {
-                    //                                if ($type_group != 'user_group') {
-                    //                                    $cond[$type_group] = $values;
-                    //                                } else {
-                    //                                    if (count($requester_groups) > 0) {
-                    //                                        $cond["glpi_groups.id"] = $requester_groups;
-                    //                                    }
-                    //                                }
-                    //                            }
-                    //                            unset($cond['user_group']);
-                    //                        }
-                    //                    }
                     $val_group = (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])
                         && !is_array($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) ? $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] : 0;
 
@@ -623,7 +434,6 @@ class Dropdownobject extends CommonDBTM
 
                     $field .= Group::dropdown($opt);
                 }
-
 
                 break;
 
@@ -647,7 +457,6 @@ class Dropdownobject extends CommonDBTM
                     $opt = ['value'     => $value,
                         'entity'    => $_SESSION['glpiactiveentities'],
                         'name'      => $namefield . "[" . $data['id'] . "]",
-                        //                          'readonly'  => true,
                         'displaywith' => ['id'],
                         'condition' => $cond,
                         'display'   => false];
@@ -655,7 +464,6 @@ class Dropdownobject extends CommonDBTM
                     $opt = ['value'     => $value,
                         'entity'    => $_SESSION['glpiactiveentities'],
                         'name'      => $namefield . "[" . $data['id'] . "]",
-                        //                          'readonly'  => true,
                         'condition' => $cond,
                         'display'   => false];
                 }
@@ -669,12 +477,11 @@ class Dropdownobject extends CommonDBTM
                 if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
-                if (!($item = getItemForItemtype($data['item']))) {
+                if (!getItemForItemtype($data['item'])) {
                     break;
                 }
                 if ($data['item'] == "Entity") {
                     if ($data['link_to_user'] > 0) {
-                        echo "<div id='entity_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
                         $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                         $_POST['entities_id'] = $value;
                         $fieldUser             = new Field();
@@ -688,8 +495,20 @@ class Dropdownobject extends CommonDBTM
                         $_POST['fields_id']    = $data['id'];
                         $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
                         $_POST['readonly'] = $data['readonly'];
+
+                        // Same contract as the Group branch: the endpoint echoes the
+                        // dropdown, the template provides the wrapper.
+                        ob_start();
                         include(PLUGIN_METADEMANDS_DIR . "/ajax/uentityUpdate.php");
-                        echo "</div>";
+                        $entity_html = ob_get_clean();
+
+                        $field = TemplateRenderer::getInstance()->render(
+                            '@metademands/fields/dropdownobject_linked_wrapper.html.twig',
+                            [
+                                'wrapper_id'  => "entity_user" . $data['link_to_user'] . $data['id'],
+                                'widget_html' => $entity_html,
+                            ],
+                        );
                     } else {
                         $options['name']    = $namefield . "[" . $data['id'] . "]";
                         $options['display'] = false;
@@ -705,36 +524,14 @@ class Dropdownobject extends CommonDBTM
                         $opt['showHabilitations'] = true;
                     }
 
-                    //                    $container_class = new $data['item']();
-                    //                    $crit = ["entities_id" => $_SESSION['glpiactiveentities']];
-                    //
-                    //                    if ($container_class->maybeDeleted()) {
-                    //                        $crit['is_deleted'] = 0;
-                    //                    }
-                    //                    if ($container_class->maybeTemplate()) {
-                    //                        $crit['is_template'] = 0;
-                    //                    }
-                    //                    $crit['is_helpdesk_visible'] = 0;
-                    //
-                    //                    $objets = $container_class->find($crit);
-                    //                    $used = [];
-                    //                    foreach ($objets as $obj) {
-                    //                        $used[] = $obj['id'];
-                    //                    }
-                    //                    $opt['used'] = $used;
-
-                    $field = "";
-                    $field .= \Dropdown::show($data['item'], $opt);
+                    $field = Dropdown::show($data['item'], $opt);
                 }
                 break;
         }
 
-        echo $field;
-        $widget_html = ob_get_clean();
-
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_widget.html.twig',
-            ['widget_html' => $widget_html],
+            ['widget_html' => $field],
         );
     }
 

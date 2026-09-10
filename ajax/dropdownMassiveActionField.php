@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Metademands\Fields\Time;
 
@@ -65,6 +66,16 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
 
             case "glpi_tickets.items_id":
                 if (isset($_POST['itemtype_used']) && !empty($_POST['itemtype_used'])) {
+                    // Only the itemtypes that can actually be linked to a ticket are offered here:
+                    // the value comes from the browser and would otherwise let any dropdown be listed.
+                    if (!in_array($_POST['itemtype_used'], $CFG_GLPI['ticket_types'], true)) {
+                        throw new BadRequestHttpException();
+                    }
+                    if (!($linked_item = $dbu->getItemForItemtype($_POST['itemtype_used']))) {
+                        throw new BadRequestHttpException();
+                    }
+                    $linked_item->checkGlobal(READ);
+
                     Dropdown::show($_POST['itemtype_used'], ['name' => $search["linkfield"], 'value' => $_POST["value"]]);
                 }
                 break;

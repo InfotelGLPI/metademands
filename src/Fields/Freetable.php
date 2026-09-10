@@ -545,6 +545,20 @@ class Freetable extends CommonDBTM
         return ['header' => array_values($columns), 'rows' => $rows];
     }
 
+    /**
+     * Neutralize a free table cell before it lands in the ticket content. The value comes
+     * straight from the requester through the session and is stored raw, so it goes through
+     * the same chain as the other free input fields (see Email::getFieldValue()).
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private static function getCellValue($value)
+    {
+        return RichText::getTextFromHtml(RichText::getSafeHtml((string) $value));
+    }
+
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
@@ -645,13 +659,13 @@ class Freetable extends CommonDBTM
                         }
 
                         if (($types[$k] ?? null) == MetaFreetablefield::TYPE_SELECT) {
-                            $content .= $fi[$k] ?? '';
+                            $content .= self::getCellValue($fi[$k] ?? '');
                         } elseif (($types[$k] ?? null) == MetaFreetablefield::TYPE_DATE) {
                             $content .= Html::convDate($fi[$k]);
                         } elseif (($types[$k] ?? null) == MetaFreetablefield::TYPE_TIME) {
-                            $content .= $fi[$k] ?? '';
+                            $content .= self::getCellValue($fi[$k] ?? '');
                         } else {
-                            $content .= $fi[$k] ?? '';
+                            $content .= self::getCellValue($fi[$k] ?? '');
                         }
 
                         if ($formatAsTable) {
