@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 11:54+0000\n"
+"POT-Creation-Date: 2026-09-10 12:42+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -41,7 +41,7 @@ msgid "(6 fields maximum)"
 msgstr ""
 
 #: src/MetademandPdf.php:653 src/Fields/Freetable.php:298
-#: src/Fields/Freetable.php:681
+#: src/Fields/Freetable.php:695
 msgid "(if VAT 20%)"
 msgstr ""
 
@@ -950,7 +950,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr "Operador de igualdad"
 
-#: src/Step.php:1394
+#: src/Step.php:1424
 msgid "Error assigning to next group"
 msgstr "Error al asignar al siguiente grupo"
 
@@ -1098,7 +1098,7 @@ msgstr[2] ""
 msgid "Global parameters"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:70
+#: src/Fields/Dropdownobject.php:71
 msgid "Glpi Object"
 msgstr "Objeto Glpi"
 
@@ -1107,13 +1107,13 @@ msgid "Grand total"
 msgstr ""
 
 #: src/MetademandPdf.php:520 src/MetademandPdf.php:653
-#: src/Fields/Freetable.php:298 src/Fields/Freetable.php:681
+#: src/Fields/Freetable.php:298 src/Fields/Freetable.php:695
 #: src/Fields/Basket.php:1810 src/Fields/Basket.php:2306
 msgid "Grand total (HT)"
 msgstr ""
 
 #: src/MetademandPdf.php:645 src/Fields/Freetable.php:297
-#: src/Fields/Freetable.php:680
+#: src/Fields/Freetable.php:694
 msgid "Grand total (TTC)"
 msgstr ""
 
@@ -1304,7 +1304,7 @@ msgstr ""
 msgid "Informations"
 msgstr "Información"
 
-#: src/Fields/Dropdownobject.php:830 src/FieldParameter.php:800
+#: src/Fields/Dropdownobject.php:627 src/FieldParameter.php:800
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:51
 msgid "Informations to display in ticket and PDF"
 msgstr "Información para mostrar en ticket y PDF"
@@ -1384,8 +1384,8 @@ msgstr "Vincular varios grupos a un bloque"
 msgid "Link this to a plugin \"fields\" field"
 msgstr "a un campo \"fields\" del plugin"
 
-#: ajax/viewtypefields.php:56 src/Fields/Dropdownobject.php:770
-#: src/Fields/Dropdownobject.php:858 src/Fields/Dropdownobject.php:863
+#: ajax/viewtypefields.php:56 src/Fields/Dropdownobject.php:567
+#: src/Fields/Dropdownobject.php:655 src/Fields/Dropdownobject.php:660
 #: templates/fields/field_parameter_dropdownmeta.html.twig:45
 #: templates/fields/field_parameter_text.html.twig:34
 #: templates/fields/field_parameter_dropdown.html.twig:41
@@ -1619,7 +1619,7 @@ msgstr "Nuevo seguimiento entre tickets"
 msgid "New model"
 msgstr "Nuevo modelo"
 
-#: src/Fields/Dropdownobject.php:1231 src/Fields/Text.php:340
+#: src/Fields/Dropdownobject.php:1028 src/Fields/Text.php:340
 #: src/Fields/Radio.php:571 src/Fields/Yesno.php:461
 #: src/Fields/Textarea.php:329 src/Fields/Url.php:302
 #: src/Fields/Checkbox.php:571 src/Fields/Dropdown.php:840
@@ -1638,7 +1638,7 @@ msgid "Next group in charge of demand"
 msgstr "Próximo grupo encargado de la demanda"
 
 #: front/nextGroup.form.php:90 front/nextGroup.form.php:97
-#: front/nextGroup.form.php:107 src/Step.php:924
+#: front/nextGroup.form.php:107 src/Step.php:954
 msgid "Next recipient"
 msgstr "Siguiente destinatario"
 
@@ -1739,9 +1739,9 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:994 src/Fields/Dropdownobject.php:997
-#: src/Fields/Dropdownobject.php:1007 src/Fields/Dropdownobject.php:1030
-#: src/Fields/Dropdownobject.php:1046 src/Fields/Dropdownobject.php:1057
+#: src/Fields/Dropdownobject.php:791 src/Fields/Dropdownobject.php:794
+#: src/Fields/Dropdownobject.php:804 src/Fields/Dropdownobject.php:827
+#: src/Fields/Dropdownobject.php:843 src/Fields/Dropdownobject.php:854
 #: src/Fields/Ldapdropdown.php:340 src/Fields/Ldapdropdown.php:376
 #: src/Fields/Radio.php:366 src/Fields/Radio.php:379
 #: src/Fields/Checkbox.php:337 src/Fields/Checkbox.php:350
@@ -1834,7 +1834,7 @@ msgstr ""
 msgid "Only these groups"
 msgstr "Sólo estos grupos"
 
-#: src/Fields/Dropdownobject.php:783 src/Fields/Dropdownobject.php:788
+#: src/Fields/Dropdownobject.php:580 src/Fields/Dropdownobject.php:585
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:39
 msgid "Only users of my groups"
 msgstr "Sólo usuarios de mis grupos"
@@ -1999,7 +1999,7 @@ msgstr ""
 msgid "Ranks problem with fields"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:829
+#: src/Fields/Dropdownobject.php:626
 #: templates/fields/field_parameter_dropdownmeta.html.twig:52
 msgid "Read-Only"
 msgstr "Sólo lectura"
@@ -2147,7 +2147,7 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:1230 src/Fields/Text.php:338
+#: src/Fields/Dropdownobject.php:1027 src/Fields/Text.php:338
 #: src/Fields/Radio.php:569 src/Fields/Yesno.php:459
 #: src/Fields/Textarea.php:327 src/Fields/Url.php:300
 #: src/Fields/Checkbox.php:569 src/Fields/Dropdown.php:839
@@ -2248,7 +2248,7 @@ msgstr ""
 msgid "Select language to translate"
 msgstr ""
 
-#: src/Step.php:1085
+#: src/Step.php:1115
 msgid "Select the next group"
 msgstr "Seleccionar el siguiente grupo"
 
@@ -2256,7 +2256,7 @@ msgstr "Seleccionar el siguiente grupo"
 msgid "Service"
 msgstr "Servicio"
 
-#: src/Fields/Dropdownobject.php:771
+#: src/Fields/Dropdownobject.php:568
 msgid "Show a identity card of user"
 msgstr ""
 
@@ -2560,7 +2560,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr "Hay un problema con la cesta"
 
-#: src/Step.php:934 templates/forms/step_modal_nextgroup.html.twig:53
+#: src/Step.php:964 templates/forms/step_modal_nextgroup.html.twig:53
 #: templates/forms/step_by_block.html.twig:78
 msgid "There is a problem with the setup"
 msgstr "Hay un problema con la configuración"
@@ -2718,7 +2718,7 @@ msgstr ""
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:140 src/Fields/Freetable.php:632
+#: src/Fields/Freetable.php:140 src/Fields/Freetable.php:646
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2830,12 +2830,12 @@ msgstr "Utilizar bloque"
 msgid "Use drafts"
 msgstr "Usar borradores"
 
-#: src/Fields/Dropdownobject.php:802
+#: src/Fields/Dropdownobject.php:599
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:43
 msgid "Use id of requester by default"
 msgstr "Utilizar el id del solicitante predeterminado "
 
-#: src/Fields/Dropdownobject.php:803
+#: src/Fields/Dropdownobject.php:600
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:46
 msgid "Use id of supervisor requester by default"
 msgstr ""
@@ -2849,7 +2849,7 @@ msgstr "Utilizar texto enriquecido"
 msgid "Use this field as object field"
 msgstr "Utilizar este campo como campo objeto"
 
-#: src/Fields/Dropdownobject.php:784 src/Fields/Dropdownobject.php:859
+#: src/Fields/Dropdownobject.php:581 src/Fields/Dropdownobject.php:656
 #: templates/fields/field_parameter_dropdownmeta.html.twig:37
 #: templates/fields/field_parameter_date.html.twig:35
 #: templates/fields/field_parameter_dropdown.html.twig:37
@@ -2878,7 +2878,7 @@ msgstr "Usuario encargado del siguiente paso"
 msgid "User information to get"
 msgstr ""
 
-#: src/Step.php:994
+#: src/Step.php:1024
 msgctxt "button"
 msgid "Validate"
 msgstr "Validar"
@@ -2910,7 +2910,7 @@ msgstr "Validado por %sel%s"
 msgid "Value"
 msgstr ""
 
-#: src/Fields/Dropdownobject.php:938 src/Fields/Ldapdropdown.php:312
+#: src/Fields/Dropdownobject.php:735 src/Fields/Ldapdropdown.php:312
 #: src/Fields/Radio.php:352 src/Fields/Yesno.php:250
 #: src/Fields/Checkbox.php:325 src/Fields/Dropdown.php:586
 #: src/Fields/Dropdownmeta.php:1384 src/Fields/Basket.php:549
