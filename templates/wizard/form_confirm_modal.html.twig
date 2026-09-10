@@ -1,0 +1,50 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Confirmation modal shown before submitting a wizard left empty.
+ #  Wired by plugin_metademands_wizard_nextBtn() through #confirmYes / #confirmNo.
+ #  #modalgroupspan is the anchor Step::showStep() loads its own modal into.
+-#}
+<span id="modalgroupspan"></span>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">{{ __('Confirmation', 'metademands') }}</h5>
+                <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+            </div>
+            <div class="modal-body">
+                {{ __('You have not entered any values. Is this normal?', 'metademands') }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="confirmNo" data-bs-dismiss="modal">{{ __('No') }}</button>
+                <button type="button" class="btn btn-primary" id="confirmYes" data-bs-dismiss="modal">{{ __('Yes') }}</button>
+            </div>
+        </div>
+    </div>
+</div>

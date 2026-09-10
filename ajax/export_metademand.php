@@ -71,9 +71,13 @@ foreach ($export_ids as $id) {
 }
 
 $zip = new ZipArchive();
-$filename = '/metademands/export_' . date('Y-m-d') . '.zip';
+// GLPI_PLUGIN_DOC_DIR is shared by every entity and ZipArchive::CREATE appends to an
+// existing archive instead of replacing it: a date based name let two concurrent
+// exports pick the same file, so an administrator could download the templates of
+// another entity. A per request suffix keeps the archives apart.
+$filename = '/metademands/export_' . date('Y-m-d') . '_' . bin2hex(random_bytes(8)) . '.zip';
 $fullZip = GLPI_PLUGIN_DOC_DIR . $filename;
-if ($zip->open($fullZip, ZipArchive::CREATE)) {
+if ($zip->open($fullZip, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
     foreach ($files as $file) {
         $zip->addFile($file, basename($file));
     }
@@ -83,17 +87,24 @@ if ($zip->open($fullZip, ZipArchive::CREATE)) {
         unlink($file);
     }
 
-    header('Content-Description: File Transfer');
-    header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename=export_' . date('Y-m-d') . '.zip');
-    header('Content-Transfer-Encoding: binary');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-    header('Content-Length: ' . filesize($fullZip));
+    try {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename=export_' . date('Y-m-d') . '.zip');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($fullZip));
 
-    readfile($fullZip);
-    unlink($fullZip);
+        readfile($fullZip);
+    } finally {
+        // The archive holds the exported templates: leaving it behind in the shared
+        // plugin document directory would keep them readable after the download.
+        if (file_exists($fullZip)) {
+            unlink($fullZip);
+        }
+    }
 } else {
     Session::addMessageAfterRedirect(
         __('Error when creating export archive', 'metademands'),

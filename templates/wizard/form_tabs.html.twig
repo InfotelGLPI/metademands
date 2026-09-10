@@ -1,0 +1,51 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Horizontal, scrollable tab bar of the step-by-step wizard.
+ #
+ #  Expected context:
+ #    blocks        : {block rank (int): block title (string)} kept in display order
+ #    hidden_blocks : ranks that a field option hides, rendered but not displayed
+ #    block_id      : rank of the block the step flow asked for, restored by wizard_form.js
+-#}
+<div class="tabs-container" data-metademands-block-id="{{ block_id }}">
+    <button type="button" form="" class="scroll-btn scroll-left"><i class="ti ti-chevron-left"></i></button>
+    <div class="d-flex flex-nowrap scrollable-tabs">
+        <ul class="nav nav-tabs flex-nowrap" style="border-bottom:unset" role="tablist" id="fieldslist">
+            {% for idblock, nameblock in blocks %}
+                <li class="nav-item">
+                    <a class="nav-link tablinks"
+                       style="display:{{ idblock in hidden_blocks ? 'none' : 'block' }}"
+                       id="ablock{{ idblock }}"
+                       href="#block{{ idblock }}"
+                       data-toggle="tab">{{ nameblock }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button type="button" form="" class="scroll-btn scroll-right"><i class="ti ti-chevron-right"></i></button>
+</div>

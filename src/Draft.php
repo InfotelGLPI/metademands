@@ -52,6 +52,36 @@ class Draft extends CommonDBTM
         return "ti ti-copy";
     }
 
+
+    /**
+     * A draft holds the answers its owner typed and the table carries no entities_id,
+     * so checkEntity() is a no-op here: ownership is the only boundary. The list is
+     * already restricted by plugin_metademands_addDefaultWhere(), this closes the
+     * direct access by id.
+     *
+     * @return bool
+     */
+    public function canViewItem(): bool
+    {
+        return (int) $this->fields['users_id'] === Session::getLoginUserID();
+    }
+
+    /**
+     * @return bool
+     */
+    public function canUpdateItem(): bool
+    {
+        return $this->canViewItem();
+    }
+
+    /**
+     * @return bool
+     */
+    public function canDeleteItem(): bool
+    {
+        return $this->canViewItem();
+    }
+
     public static function install(Migration $migration)
     {
         global $DB;

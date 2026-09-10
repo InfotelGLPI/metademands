@@ -88,7 +88,7 @@ function plugin_init_metademands()
     $tiles_manager->registerPluginTileType(new MetademandPageTile());
 
     $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['metademands'] = [Profile::class, 'initProfile'];
-    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'] = ['scripts/metademands.js', 'scripts/metademands_freelines.js', 'scripts/dropdownobject_linked_text_fields.js'];
+    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'] = ['scripts/metademands.js', 'scripts/metademands_freelines.js', 'scripts/dropdownobject_linked_text_fields.js', 'scripts/wizard_form.js'];
     $PLUGIN_HOOKS[Hooks::ADD_CSS]['metademands'] = ['css/metademands.css'];
     //    $PLUGIN_HOOKS['add_css']['metademands'] = ['css/range.scss'];
     // add minidashboard

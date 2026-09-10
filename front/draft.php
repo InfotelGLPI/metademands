@@ -30,6 +30,10 @@
 use GlpiPlugin\Servicecatalog\Main;
 use GlpiPlugin\Metademands\Draft;
 
+// The list itself is scoped by plugin_metademands_addDefaultWhere(), but nothing
+// checked that the requester may read drafts at all before the search ran.
+Session::checkRight(Draft::$rightname, READ);
+
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
 
     Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));

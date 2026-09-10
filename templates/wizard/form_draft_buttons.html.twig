@@ -1,0 +1,59 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Update / delete buttons of the draft being edited.
+ #  The handlers live in public/scripts/wizard_form.js and read their configuration
+ #  from the data attributes below, so the draft name never reaches a JavaScript
+ #  string literal.
+ #
+ #  Expected context:
+ #    draft_id       : edited draft id
+ #    draft_name     : requester supplied draft name
+ #    metademands_id : meta-demand the draft belongs to
+ #    users_id       : current user, posted back to ajax/adddraft.php
+ #    add_url        : ajax/adddraft.php endpoint
+ #    delete_url     : ajax/deletedraft.php endpoint
+ #    draft_form_url : front/draft.form.php endpoint, redirected to after an update
+ #    draft_list_url : front/draft.php endpoint, redirected to after a deletion
+-#}
+<div class="boutons_draft"
+     data-metademands-draft-id="{{ draft_id }}"
+     data-metademands-draft-name="{{ draft_name }}"
+     data-metademands-id="{{ metademands_id }}"
+     data-metademands-users-id="{{ users_id }}"
+     data-metademands-add-url="{{ add_url }}"
+     data-metademands-delete-url="{{ delete_url }}"
+     data-metademands-draft-form-url="{{ draft_form_url }}"
+     data-metademands-draft-list-url="{{ draft_list_url }}"
+     data-metademands-unconfirmed-msg="{{ __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands') }}">
+    <button type="button" form="" id="button_save_mydraft" class="submit btn btn-success update_draft">
+        {{ __('Update the draft', 'metademands') }}
+    </button>
+    <button type="button" form="" class="submit btn btn-danger delete_draft">
+        {{ __('Delete the draft', 'metademands') }}
+    </button>
+</div>

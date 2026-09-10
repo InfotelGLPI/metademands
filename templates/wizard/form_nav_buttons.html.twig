@@ -1,0 +1,72 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#- Navigation footer of the wizard: cancel form, previous/next buttons and the
+ #  step circles of the non-tabbed mode.
+ #
+ #  Expected context:
+ #    use_as_step        : whether the step-by-step mode is active (adds #nextMsg)
+ #    draft_input_html   : Draft::createDraftInput() markup, empty when drafts are off
+ #    cancel_form_html   : Html::showSimpleForm() markup, empty when not applicable
+ #    show_step_circles  : whether the step circles must be rendered
+ #    step_count         : number of steps, drives how many circles are drawn
+-#}
+<div class="form-sc-group">
+    <div class="center">
+        <div style="overflow:auto;margin-top:10px">
+            {% if use_as_step == 1 %}
+                <div id="nextMsg" class="alert alert-info center"></div>
+            {% endif %}
+            {{ draft_input_html|raw }}
+            {% if cancel_form_html %}
+                <span style="color:darkred;font-size: 14px !important;margin-right: 8px">{{ cancel_form_html|raw }}</span>
+            {% endif %}
+            <button type="button" id="prevBtn" style="margin-right: 8px;font-size: 14px !important;" class="btn btn-primary">
+                <i class="ti ti-chevron-left"></i>&nbsp;{{ __('Previous', 'metademands') }}
+            </button>
+            &nbsp;<button type="button" id="nextBtn" style="margin-right: 8px;font-size: 14px !important;" class="btn btn-primary">
+                {{ __('Next', 'metademands') }}&nbsp;<i class="ti ti-chevron-right"></i>
+            </button>
+            &nbsp;<button type="button" id="nextBtn2" style="margin-right: 8px;font-size: 14px !important;display: none" class="btn btn-primary">
+                {{ __('Next', 'metademands') }}&nbsp;<i class="ti ti-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{% if show_step_circles %}
+    {# Circles which indicate the steps of the form #}
+    <div class="step_wizard_div center">
+        {% if step_count > 1 %}
+            {% for i in 1..step_count %}
+                <span class="step_wizard"></span>
+            {% endfor %}
+        {% else %}
+            <span class="step_wizard" style="display: none"></span>
+        {% endif %}
+    </div>
+{% endif %}

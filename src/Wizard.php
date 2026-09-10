@@ -1808,52 +1808,25 @@ class Wizard extends CommonDBTM
         $cpt = 0;
 
         $basketline = new Basketline();
-        if ($basketlinesFind = $basketline->find([
+        $basket_lines = $basketline->find([
             'plugin_metademands_metademands_id' => $metademands_id,
             'users_id' => Session::getLoginUserID(),
-        ]) && !$preview) {
-            echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>" . __('You have items on your basket', 'metademands') . "</b>";
-
-            echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-            echo "</div>";
-            $title = _sx('button', 'See your basket', 'metademands');
-            echo Html::hidden('see_basket_summary', ['value' => 1]);
-            echo Html::submit($title, [
-                'name' => 'next_button',
-                'form' => '',
-                'icon' => 'ti ti-shopping-bag',
-                'id' => 'submitjob',
-                'class' => 'metademand_next_button btn btn-success',
+        ]);
+        if (count($basket_lines) > 0 && !$preview) {
+            // The #submitjob handler moved to public/scripts/wizard_form.js; it reads the endpoint
+            // from the data attribute carried by the alert.
+            TemplateRenderer::getInstance()->display('@metademands/wizard/form_basket_alert.html.twig', [
+                'basket_url'  => PLUGIN_METADEMANDS_WEBDIR . '/ajax/createmetademands.php?metademands_id='
+                    . (int) $metademands->fields['id'] . '&step=2',
+                'hidden_html' => Html::hidden('see_basket_summary', ['value' => 1]),
+                'submit_html' => Html::submit(_sx('button', 'See your basket', 'metademands'), [
+                    'name'  => 'next_button',
+                    'form'  => '',
+                    'icon'  => 'ti ti-shopping-bag',
+                    'id'    => 'submitjob',
+                    'class' => 'metademand_next_button btn btn-success',
+                ]),
             ]);
-            $ID = $metademands->fields['id'];
-            echo "<script>
-                          $('#submitjob').click(function() {
-                             var meta_id = {$ID};
-                             if(typeof tinyMCE !== 'undefined'){
-                                tinyMCE.triggerSave();
-                             }
-                             jQuery('.resume_builder_input').trigger('change');
-                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                             $('#ajax_loader').show();
-                             $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
-                                   type: 'POST',
-                                   datatype: 'html',
-                                   data: $('#wizard_form').serializeArray(),
-                                   success: function (response) {
-                                      $('#ajax_loader').hide();
-                                      $('.md-wizard').replaceWith(response);
-                                   },
-                                   error: function (xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                   }
-                                });
-                          });
-                        </script>";
-            echo "</div>";
         }
 
         if (count($lines)) {
@@ -1861,20 +1834,8 @@ class Wizard extends CommonDBTM
                 echo "<div class='tab-nostep'>";
                 $cpt = 1;
             }
-            // #meta-form to avoid hijacking the whole page
-            // e.preventDefault() to avoid reloading the page and lose filled values
-            echo Html::scriptBlock(
-                '$("#meta-form").keypress(function(e){
-                            if (e.which == 13){
-                                var target = $(e.target);
-                                if(!target.is("textarea")) {
-                                     e.preventDefault();
-                                     $("#submitjob").click();
-                                     $("#nextBtn").click();
-                                }
-                            }
-                });',
-            );
+            // The Enter key handler moved to public/scripts/wizard_form.js, delegated on #meta-form
+            // so that it survives the Ajax reinjection of the wizard.
 
             $metaparams = self::getDefaultParams($metademands, $preview, $seeform, $current_ticket, $meta_validated);
 
@@ -1916,95 +1877,12 @@ class Wizard extends CommonDBTM
                     }
                 }
 
-                echo Html::scriptBlock(
-                    "$(document).ready(function () {
-                        var hash = window.location.hash;
-                        var fieldid = sessionStorage.getItem('loadedblock');
-                        var block_id = $block_id;
+                // The tab bootstrap (hash, sessionStorage and shown.bs.tab) moved to
+                // public/scripts/wizard_form.js. The window.metademandparams block that used to be
+                // emitted here was dead: validateScript() resets that object further down, so every
+                // value assigned at this point was overwritten before any script could read it.
 
-                        window.metademandparams = {};
-
-                        metademandparams.root_doc = '$root_doc';
-                        metademandparams.paramUrl = '$paramUrl';
-                        metademandparams.token = '$token';
-                        metademandparams.id = '$ID';
-                        metademandparams.nameform = '$nameform';
-                        metademandparams.block_id = '$block_id';
-                        metademandparams.edit_model = '$edit_model';
-                        metademandparams.nexttitle = '$nexttitle';
-                        metademandparams.submittitle = '$submittitle';
-                        metademandparams.msg = '$alert';
-                        metademandparams.msg_regex = '$alert_regex';
-
-                        metademandparams.seesummary = '$see_summary';
-
-                        metademandparams.json_all_meta_fields = {$json_all_meta_fields};
-                        metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-
-                        metademandparams.use_condition = '$use_condition';
-                        metademandparams.show_rule = '$show_rule';
-                        metademandparams.show_button = '$show_button';
-                        metademandparams.use_richtext = '$use_richtext';
-                        metademandparams.richtext_ids = {$richtext_id};
-
-                        metademandparams.use_as_step = '$use_as_step';
-                        metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
-                        metademandparams.havenextuser = '$havenextuser';
-                        metademandparams.changestepbystepoption = '$changestepbystepoption';
-                        metademandparams.updatestepform = '$updatestepform';
-                        metademandparams.submitsteptitle = '$submitsteptitle';
-                        metademandparams.nextsteptitle = '$nextsteptitle';
-
-                        if (fieldid && document.getElementById(fieldid)) {
-                            updateActiveTab(fieldid.replace('block', ''));
-                            hash = '#' + fieldid;
-                        } else if (hash.startsWith('#block') && document.getElementById(hash.substring(1))) {
-                            updateActiveTab(hash.replace('#block', ''));
-                        } else {
-                            if (block_id > 0) {
-                            } else {
-                              block_id = 1;
-                            }
-                            updateActiveTab(block_id);
-                            sessionStorage.setItem('loadedblock', 'block' + block_id);
-                            window.location.hash = '#block' + block_id;
-                        }
-
-//                    $('#fieldslist a').click(function (e) {
-//                        e.preventDefault();
-//
-//                         var tabId = $(this).attr('href').replace('#block', '');
-//                         var loadedId = sessionStorage.getItem('loadedblock').replace('block', '');
-//
-//                         var clicbloc = parseInt(tabId.replace('block', ''));
-////                         console.log(clicbloc);
-////                         console.log(parseInt(loadedId));
-//
-//                         if (clicbloc > parseInt(loadedId)) {
-//
-//                                sessionStorage.setItem('loadedblock', clicbloc);
-//                                updateActiveTab(tabId.replace('block', ''));
-//                                window.location.hash = '#block' + tabId;
-//                                plugin_metademands_wizard_nextBtn(1, metademandparams, metademandconditionsparams);
-//
-//                        } else if (clicbloc <= parseInt(loadedId)) {
-//
-//                                sessionStorage.setItem('loadedblock', clicbloc);
-//                                updateActiveTab(tabId.replace('block', ''));
-//                                window.location.hash = '#block' + tabId;
-//                                plugin_metademands_wizard_prevBtn(clicbloc, metademandparams, metademandconditionsparams);
-//                        }
-//
-//                    });
-
-                    $('ul.nav-tabs > li > a').on('shown.bs.tab', function (e) {
-                        var id = $(e.target).attr('href').substr(1);
-                        sessionStorage.setItem('loadedblock', id);
-                        window.location.hash = id;
-                    });
-                });",
-                );
-
+                $blocks = [];
                 foreach ($allfields as $blockid => $blockfields) {
                     $i = 0;
 
@@ -2026,70 +1904,38 @@ class Wizard extends CommonDBTM
                     }
                 }
                 if (count($blocks) > 0) {
-                    echo "<div class='tabs-container'>";
-                    echo "<button form='' class='scroll-btn scroll-left'><i class='ti ti-chevron-left'></i></button>";
-                    echo "<div class='d-flex flex-nowrap scrollable-tabs'>";
-                    echo "<ul class='nav nav-tabs flex-nowrap' style='border-bottom:unset' role='tablist' id='fieldslist'>";
-                    $hiddenblocks = [];
-                    foreach ($blocks as $idblock => $block) {
-                        $nameblock = $block;
-
-                        $display = 'display:block';
-                        if ($idblock == 1) {
-                            $display = 'display:block';
-                        }
-                        $field = new Field();
-
-                        $fieldsmeta = $field->find(["plugin_metademands_metademands_id" => $metademands->getID()]);
-                        foreach ($fieldsmeta as $fieldmeta) {
-                            $fieldopt = new FieldOption();
-                            if ($opts = $fieldopt->find(
-                                [
-                                    "plugin_metademands_fields_id" => $fieldmeta['id'],
-                                    "hidden_block" => $idblock,
-                                ],
-                            )) {
-                                foreach ($opts as $opt) {
-                                    $hiddenblocks[] = $opt['hidden_block'];
-                                }
-                            }
-                        }
-                        if (in_array($idblock, $hiddenblocks)) {
-                            $display = 'display:none';
-                        }
-
-                        echo "<li class='nav-item'>";
-                        // The block name comes from the designer-defined title-block field: escape it
-                        // as element text (stored XSS). The block identifier is a rank, cast it so it
-                        // cannot break out of the id/href attributes either.
-                        $safe_idblock = (int) $idblock;
-                        echo "<a class='nav-link tablinks' style='$display' id='ablock" . $safe_idblock . "' href='#block" . $safe_idblock . "' data-toggle='tab'>"
-                             . htmlspecialchars((string) $nameblock, ENT_QUOTES, 'UTF-8') . "</a>";
-                        echo "</li>";
-                    }
-                    echo "</ul>";
-                    echo "</div>";
-                    echo "<button form='' class='scroll-btn scroll-right'><i class='ti ti-chevron-right'></i></button>";
-                    echo "</div>";
-
-                    echo Html::scriptBlock(
-                        'setTimeout(() => {
-                                    const scrollContainer = document.querySelector(".scrollable-tabs");
-                                    const scrollLeftBtn = document.querySelector(".scroll-left");
-                                    const scrollRightBtn = document.querySelector(".scroll-right");
-
-                                    if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
-                                        scrollLeftBtn.addEventListener("click", function () {
-                                            scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
-                                        });
-
-                                        scrollRightBtn.addEventListener("click", function () {
-                                            scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
-                                        });
-                                    }
-                                }, 500);
-            ',
+                    // A tab is hidden as soon as one field option of this meta-demand hides its
+                    // block. The legacy loop asked the very same question with two queries per
+                    // block, so the answer is resolved once here.
+                    $hidden_tabs = [];
+                    $field = new Field();
+                    $meta_fields_ids = array_column(
+                        $field->find(['plugin_metademands_metademands_id' => $metademands->getID()]),
+                        'id',
                     );
+                    if (count($meta_fields_ids) > 0) {
+                        $fieldopt = new FieldOption();
+                        foreach ($fieldopt->find([
+                            'plugin_metademands_fields_id' => $meta_fields_ids,
+                            'hidden_block' => ['>', 0],
+                        ]) as $opt) {
+                            $hidden_tabs[] = (int) $opt['hidden_block'];
+                        }
+                    }
+
+                    $tab_blocks = [];
+                    foreach ($blocks as $idblock => $nameblock) {
+                        $tab_blocks[(int) $idblock] = $nameblock;
+                    }
+
+                    // The block names come from the designer-defined title-block fields: Twig
+                    // escapes them as element text (stored XSS). The scroll handlers live in
+                    // public/scripts/wizard_form.js.
+                    TemplateRenderer::getInstance()->display('@metademands/wizard/form_tabs.html.twig', [
+                        'blocks'        => $tab_blocks,
+                        'hidden_blocks' => $hidden_tabs,
+                        'block_id'      => (int) $block_id,
+                    ]);
                 }
             }
             $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
@@ -2130,76 +1976,39 @@ class Wizard extends CommonDBTM
                     Session::addMessageAfterRedirect(__("You don't have the right to modify this form or the metademand don't accept form modifications", 'metademands'), false, ERROR);
                     Html::back();
                 }
-                echo "<div class=\"form-sc-group\">";
-                echo "<div class='center'>";
-
-                echo "<div style='overflow:auto;margin-top:10px'>";
-
-                if ($use_as_step == 1) {
-
-                    //                    echo "<br>";
-                    echo "<div id='nextMsg' class='alert alert-info center'>";
-                    echo "</div>";
-                }
-
                 $config = Config::getInstance();
+                $draft_input_html = '';
                 if ($config['use_draft']
                     && $draft_id == 0) {
                     //button create draft
-                    echo Draft::createDraftInput(Draft::DEFAULT_MODE);
+                    $draft_input_html = Draft::createDraftInput(Draft::DEFAULT_MODE);
                 }
 
+                $cancel_form_html = '';
                 if (Session::haveRight("plugin_metademands_cancelform", READ)
                     && isset(
                         $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'],
                     )) {
-                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                    $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID(
-                    )]['plugin_metademands_stepforms_id'];
-                    echo "<span style='color:darkred;font-size: 14px !important;margin-right: 8px'>";
-                    Html::showSimpleForm(
-                        $target,
+                    $cancel_form_html = Html::getSimpleForm(
+                        PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php",
                         'delete_form_from_list',
                         _sx('button', 'Cancel form', 'metademands'),
-                        ['plugin_metademands_stepforms_id' => $plugin_metademands_stepforms_id],
-                        //                        'fa-trash-alt fa-2x'
+                        [
+                            'plugin_metademands_stepforms_id' => $_SESSION['plugin_metademands'][$metademands->getID(
+                            )]['plugin_metademands_stepforms_id'],
+                        ],
                     );
-                    echo "</span>";
                 }
 
-                echo "<button type='button' id='prevBtn' style='margin-right: 8px;font-size: 14px !important;' class='btn btn-primary'>";
-                echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
-
-                echo "&nbsp;<button type='button' id='nextBtn' style='margin-right: 8px;font-size: 14px !important;' class='btn btn-primary'>";
-                echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
-
-                echo "&nbsp;<button type='button' id='nextBtn2' style='margin-right: 8px;font-size: 14px !important;display: none'  class='btn btn-primary'>";
-                echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
-
-
-                //                echo "</span>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-
-                if ($see_summary == 0
-                    && $displayBlocksAsTab == 0) {
-                    //Circles which indicates the steps of the form:
-                    echo "<div class='step_wizard_div center'>";
-
-                    if ($cpt > 1) {
-                        for ($j = 1; $j <= $cpt; $j++) {
-                            echo "<span class='step_wizard'></span>";
-                        }
-                    } else {
-                        echo "<span class='step_wizard' style='display: none'></span>";
-                    }
-
-                    echo "</div>";
-                }
+                TemplateRenderer::getInstance()->display('@metademands/wizard/form_nav_buttons.html.twig', [
+                    'use_as_step'       => $use_as_step,
+                    'draft_input_html'  => $draft_input_html,
+                    'cancel_form_html'  => $cancel_form_html,
+                    'show_step_circles' => $see_summary == 0 && $displayBlocksAsTab == 0,
+                    'step_count'        => $cpt,
+                ]);
 
                 if (!empty($data_form)) {
-                    $modal_html = '';
                     $parent_fields = Metademand::formatFields(
                         $lineForStepByStep,
                         $metademands_id,
@@ -2211,61 +2020,38 @@ class Wizard extends CommonDBTM
                         && $form->getFromDBByCrit(
                             ['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']],
                         )) {
+                        // The dialog markup moved to a template: Twig escapes the requester
+                        // supplied name and public/scripts/wizard_form.js opens the dialog, so
+                        // nothing is concatenated into a JavaScript string literal any more.
                         $previousUser = new User();
+                        $user_label = '';
+                        $user_name = '';
                         if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
-                            $lbl = __('Previous user', 'metademands');
-                            // realname/firstname are stored raw since GLPI 10 and this fragment
-                            // ends up inside a Html::scriptBlock(), which escapes nothing: a name
-                            // holding </script> would break out of the block. Escape at the point
-                            // of concatenation, like src/Wizard.php does for the draft name.
-                            $previous_user_name = htmlspecialchars(
-                                trim(
-                                    $previousUser->fields['realname'] . ' ' . $previousUser->fields['firstname'],
-                                ),
-                                ENT_QUOTES,
-                                'UTF-8',
+                            $user_label = __('Previous user', 'metademands');
+                            $user_name = trim(
+                                $previousUser->fields['realname'] . ' ' . $previousUser->fields['firstname'],
                             );
-                            $modal_html .= "
-                    <table class='tab_cadre_fixe' style='width: 100%;'>
-                        <tr class='even'>
-                            <td class='title'> $lbl : " . $previous_user_name . "</td>
-                        </tr>
-                    </table>";
                         }
 
-                        $modal_html .= RichText::getSafeHtml($parent_fields['content']);
-                        // HEX_TAG|HEX_AMP keeps any surviving </script> out of the JavaScript
-                        // literal. Do not add HEX_QUOT/HEX_APOS: they would break the object
-                        // literal handed to glpi_html_dialog().
-                        $setting_dialog = json_encode(
-                            stripslashes($modal_html),
-                            JSON_HEX_TAG | JSON_HEX_AMP,
-                        );
-                        $title = json_encode(
-                            __('Previous data edited', 'metademands'),
-                            JSON_HEX_TAG | JSON_HEX_AMP,
-                        );
-                        echo Html::scriptBlock(
-                            "$(function() {
-                                                    glpi_html_dialog({
-                                                         title: {$title},
-                                                         body: {$setting_dialog},
-                                                         dialogclass: 'modal-lg',
-                                                    });
-                                                });",
-                        );
+                        TemplateRenderer::getInstance()->display('@metademands/wizard/form_previous_data.html.twig', [
+                            'title' => __('Previous data edited', 'metademands'),
+                            'user_label' => $user_label,
+                            'user_name' => $user_name,
+                            'content' => stripslashes(RichText::getSafeHtml($parent_fields['content'])),
+                        ]);
 
-                        if (isset($_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'])) {
-                            if (is_array($_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'])) {
-                                $hidden_blocks = $_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'];
-                                $script = "";
-                                foreach ($hidden_blocks as $hidden_b) {
-                                    foreach ($hidden_b as $hidden_) {
-                                        $script .= "$('div[bloc-id=\"bloc$hidden_\"]').hide();";
-                                    }
+                        $hidden_blocks = $_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'] ?? [];
+                        if (is_array($hidden_blocks) && count($hidden_blocks) > 0) {
+                            $hidden_ranks = [];
+                            foreach ($hidden_blocks as $hidden_b) {
+                                foreach ($hidden_b as $hidden_) {
+                                    $hidden_ranks[] = (int) $hidden_;
                                 }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                             }
+                            TemplateRenderer::getInstance()->display(
+                                '@metademands/wizard/form_hidden_blocks.html.twig',
+                                ['hidden_blocks' => $hidden_ranks],
+                            );
                         }
                     }
                 }
@@ -2278,132 +2064,26 @@ class Wizard extends CommonDBTM
                     );
                 }
 
-                echo "<span id = 'modalgroupspan'>";
-                echo "</span>";
-                //                Modal Bootstrap confirmation
-                echo "<div class='modal fade' id='confirmationModal' tabindex='-1' role='dialog' aria-labelledby='confirmationModalLabel' aria-hidden='true'>";
-                echo "<div class='modal-dialog modal-dialog-centered' role='document'>";
-                echo "<div class='modal-content'>";
-                echo "<div class='modal-header'>";
-                echo "<h5 class='modal-title' id='confirmationModalLabel'>" . __('Confirmation', 'metademands') . "</h5>";
-                echo "<button type='button' class='close btn-close' data-bs-dismiss='modal' aria-label='" . __('Close') . "'></button>";
-                echo "</div>";
-                echo "<div class='modal-body'>";
-                echo __("You have not entered any values. Is this normal?", 'metademands');
-                echo "</div>";
-                echo "<div class='modal-footer'>";
-                echo "<button type='button' class='btn btn-secondary' id='confirmNo' data-bs-dismiss='modal'>" . __('No') . "</button>";
-                echo "<button type='button' class='btn btn-primary' id='confirmYes' data-bs-dismiss='modal'>" . __('Yes') . "</button>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
+                // #modalgroupspan and the Bootstrap confirmation modal are pure markup: they moved
+                // to a template so Twig escapes their labels.
+                TemplateRenderer::getInstance()->display('@metademands/wizard/form_confirm_modal.html.twig');
                 self::validateScript($metaparams, $metaconditionsparams);
             }
 
             if ($draft_id != 0) {
-                echo "<div class='boutons_draft' >";
-                // The draft name is user supplied: concatenating it between JavaScript quotes breaks
-                // the handler on a plain apostrophe. json_encode() produces a valid string literal and
-                // htmlspecialchars() keeps it inside the double-quoted onclick attribute.
-                $js_draft_name = htmlspecialchars((string) json_encode((string) $draft_name), ENT_QUOTES, 'UTF-8');
-                echo "<button form='' id='button_save_mydraft' class='submit btn btn-success update_draft' onclick=\"updateThisDraft(" . (int) $draft_id . ", " . $js_draft_name . ")\">";
-                echo __('Update the draft', 'metademands');
-                echo "</button>";
-
-                echo "<button form='' class='submit btn btn-danger delete_draft' onclick=\"deleteThisDraft(" . (int) $draft_id . ")\">";
-                echo __('Delete the draft', 'metademands');
-                echo "</button>";
-                echo "</div>";
-
-                $users_id = Session::getLoginUserID();
-                $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
-
-                echo "<script>
-
-                        function updateThisDraft(draft_id, draft_name) {
-                            //Security in case of unconfirmed line
-                            var tr_input = document.querySelectorAll('#freetable_table #tr_input input');
-                            if (tr_input.length > 0) {
-                                var careful = false;
-
-                                for(var j = 0; j < tr_input.length; j++) {
-                                   if(tr_input[j].value != '' && tr_input[j].value != '0'){
-                                        careful = true;
-                                   }
-                                }
-
-                                if(careful){
-                                    if (!confirm('{$trad}')) {
-                                        return;
-                                    }
-                                }
-
-                            }
-
-                            if(typeof tinyMCE !== 'undefined'){
-                                tinyMCE.triggerSave();
-                            }
-
-                            jQuery('.resume_builder_input').trigger('change');
-                            $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                            $('#ajax_loader').show();
-                            arrayDatas = $('#wizard_form.formCustomDraft').serializeArray();
-                            arrayDatas.push({name: \"save_draft\", value: true});
-                            arrayDatas.push({name: \"plugin_metademands_drafts_id\", value: draft_id});
-                            arrayDatas.push({name: \"draft_name\", value: draft_name});
-                            arrayDatas.push({name: \"step\", value: 2});
-                            arrayDatas.push({name: \"fied\", value: ''});
-                            arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
-                            arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
-
-                            $.ajax({
-                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
-                               type: 'POST',
-                               data: arrayDatas,
-                               success: function(response){
-                                   window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
-                                },
-                               error: function(xhr, status, error) {
-                                  console.log(xhr);
-                                  console.log(status);
-                                  console.log(error);
-                                }
-                            });
-                        }
-
-                        function deleteThisDraft(draft_id) {
-                              var self_delete = true;
-                              $('#ajax_loader').show();
-                              $.ajax({
-                                 url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/deletedraft.php',
-                                    type: 'POST',
-                                    data:
-                                      {
-                                        users_id:$users_id,
-                                        plugin_metademands_metademands_id: $metademands_id,
-                                        drafts_id: draft_id,
-                                        self_delete: self_delete
-                                      },
-                                    success: function (response) {
-                                        $('#bodyDraft').html(response);
-                                        $('#ajax_loader').hide();
-                                        window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.php'
-                                     },
-                                    error: function (xhr, status, error) {
-                                       console.log(xhr);
-                                       console.log(status);
-                                       console.log(error);
-                                     }
-                                 })
-                           }
-
-                        var check_free_table = document.querySelector('#freetable_table');
-                        if(check_free_table){
-                            document.querySelector('.boutons_draft #button_save_mydraft').style='display:none';
-                        }
-
-                    </script>";
+                // The update / delete handlers moved to public/scripts/wizard_form.js. Their
+                // configuration, the requester supplied draft name included, now travels as data
+                // attributes instead of being concatenated into a JavaScript string literal.
+                TemplateRenderer::getInstance()->display('@metademands/wizard/form_draft_buttons.html.twig', [
+                    'draft_id'       => (int) $draft_id,
+                    'draft_name'     => (string) $draft_name,
+                    'metademands_id' => (int) $metademands_id,
+                    'users_id'       => (int) Session::getLoginUserID(),
+                    'add_url'        => PLUGIN_METADEMANDS_WEBDIR . '/ajax/adddraft.php',
+                    'delete_url'     => PLUGIN_METADEMANDS_WEBDIR . '/ajax/deletedraft.php',
+                    'draft_form_url' => PLUGIN_METADEMANDS_WEBDIR . '/front/draft.form.php',
+                    'draft_list_url' => PLUGIN_METADEMANDS_WEBDIR . '/front/draft.php',
+                ]);
             }
         } else {
             echo "<div class='center'><b>" . __('No results found') . "</b></div>";
