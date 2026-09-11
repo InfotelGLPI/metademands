@@ -80,7 +80,7 @@ class Basket extends CommonDBTM
         $background_color = "";
         if (isset($metademand->fields['background_color'])
             && $metademand->fields['background_color'] != "") {
-            $background_color = "background-color:" . htmlspecialchars($metademand->fields['background_color'], ENT_QUOTES) . ";";
+            $background_color = "background-color:" . $metademand->fields['background_color'] . ";";
         }
         $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
             $data['custom_values'],
@@ -154,9 +154,9 @@ class Basket extends CommonDBTM
         // total-row script (Ajax::updateItemJsCode), the checkbox input and the
         // sanitized description (getSafeHtml) are captured as raw strings and injected
         // via |raw at their exact positions. Reference / Designation are passed as raw
-        // text so the template auto-escapes them (defense-in-depth). background_color is
-        // already htmlspecialchars'd (style attribute), header labels and placeholders
-        // are trusted translation strings: both emitted raw for byte-identity.
+        // text so the template auto-escapes them (defense-in-depth). background_color,
+        // header labels and placeholders are data as well: they are escaped by the
+        // template instead of being pre-escaped in PHP.
         $headers = [];
         $headers[] = ['label' => __('Reference', 'metademands'), 'style' => $background_color];
         $headers[] = ['label' => __('Designation', 'metademands'), 'style' => $background_color];

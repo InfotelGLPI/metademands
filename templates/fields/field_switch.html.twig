@@ -26,10 +26,10 @@
  #}
 
 {#- Legacy-identical concatenation: the iOS-style toggle label, then the core
- #  Html::hidden output and the Html::scriptBlock, both injected raw. id / name /
- #  checked are safe internal strings kept raw for byte-identity. One physical line
+ #  Html::hidden output and the Html::scriptBlock, both injected raw. id and name are
+ #  data and are escaped; checked is an authored attribute fragment. One physical line
  #  so no inter-element whitespace enters the output. -#}
-<label class='ios-switch-sm'><input type='checkbox' id='{{ id|raw }}' name='{{ name|raw }}' {{ checked|raw }}
+<label class='ios-switch-sm'><input type='checkbox' id='{{ id }}' name='{{ name }}' {{ checked|raw }}
                                     isswitch='isswitch'><span class='slider'><span class='checkmark-on'><i
                 class='ti ti-check'></i></span><span class='checkmark-off'></span><span class='checkmark-empty'></span></span></label>{{ hidden_html|raw }}{{ script_html|raw }}
 {#- -#}

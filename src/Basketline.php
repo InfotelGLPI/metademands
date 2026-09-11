@@ -155,7 +155,10 @@ class Basketline extends CommonDBTM
 
                 //                $title = _sx('button', 'Send order', 'metademands');
                 $title = _sx('button', 'Save & Post', 'metademands');
-                $current_ticket = $post["current_ticket_id"] = $post["tickets_id"];
+                // $post is the wizard's posted payload: the ticket id is normalised before it
+                // reaches the query string that the template interpolates into a JS literal.
+                $current_ticket = (int) ($post["tickets_id"] ?? 0);
+                $post["current_ticket_id"] = $current_ticket;
                 $submit_order_html = Html::submit($title, ['name' => 'send_order',
                     'form' => '',
                     'icon' => 'ti ti-shopping-bag',

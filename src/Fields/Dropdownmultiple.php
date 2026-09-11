@@ -1173,7 +1173,7 @@ class Dropdownmultiple extends CommonDBTM
                                         $custom_values = $data['custom_values'];
                                         foreach ($custom_values as $k => $custom_value) {
                                             if ($k == $idc) {
-                                                $val = Toolbox::addslashes_deep($custom_value['name']);
+                                                $val = $custom_value['name'];
                                                 //Pas compris
                                                 $script .= "if ($(value).attr('title') == '$val') {
                                         tohide[" . $tasks_id . "] = false;

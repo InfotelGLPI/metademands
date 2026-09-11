@@ -32,7 +32,7 @@
     {% if has_supervisor %}
         <div class='alert alert-warning d-flex'>
         <i class='ti ti-circle-check' style='color: orange'></i>
-        &nbsp;{{ __('Your form will be validated by your supervisor', 'metademands') }}&nbsp;{{ supervisor_name|raw }}
+        &nbsp;{{ __('Your form will be validated by your supervisor', 'metademands') }}&nbsp;{{ supervisor_name }}
         {{- next_users_id_hidden|raw }}
         <tr class='tab_bg_1'>
         <td colspan='2'>

@@ -27,18 +27,19 @@
 
 {#- Legacy-identical order: Html::css (echoed first), then the scriptBlock, then the
  #  authored slider HTML — all concatenated with no inter-element whitespace. css_html /
- #  script_html are core widget output injected raw. required / mandatory_attr / name /
- #  value are raw-concatenated attribute values kept raw for byte-identity; min / max /
- #  step / id are integers. Ticks mirror the PHP loop (range with step) or the min/max
- #  fallback. Everything on one physical line so no stray whitespace enters the output. -#}
+ #  script_html are core widget output injected raw. required / mandatory_attr hold
+ #  authored attribute fragments and stay raw; name / value are data and are escaped.
+ #  min / max / step / id are integers. Ticks mirror the PHP loop (range with step) or
+ #  the min/max fallback. Everything on one physical line so no stray whitespace enters
+ #  the output. -#}
 {{- css_html|raw }}{{ script_html|raw }}
 <div class='range'>
     <div class='range-slider'><input type='range' id='{{ field_id }}' {{ required|raw }} {{ mandatory_attr|raw }}
-                                     isnumber='isnumber' name='{{ name|raw }}' value='{{ value|raw }}' min='{{ min }}'
+                                     isnumber='isnumber' name='{{ name }}' value='{{ value }}' min='{{ min }}'
                                      max='{{ max }}' step='{{ step }}'>
         <div class='sliderticks'>{% if show_all_ticks %}{% for i in range(min, max, step) %}
                 <span>{{ i }}</span>{% endfor %}{% else %}<span>{{ min }}</span><span>{{ max }}</span>{% endif %}</div>
     </div>
-    <div class='rangevalue' id='rangevalue_{{ id }}'>{{ value|raw }}</div>
+    <div class='rangevalue' id='rangevalue_{{ id }}'>{{ value }}</div>
 </div>
 {#- -#}

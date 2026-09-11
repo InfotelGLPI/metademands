@@ -62,8 +62,13 @@ class Range extends CommonDBTM
             $comment = $data['comment'];
         }
 
+        // The slider only ever carries a number, but the posted value travels through the
+        // session and the database before being rendered, so it is normalised here rather
+        // than trusted at the attribute and at the JS label that mirrors it.
         if (is_array($value)) {
             $value = 0;
+        } else {
+            $value = (int) $value;
         }
 
         $min               = 0;

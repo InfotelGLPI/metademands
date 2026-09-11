@@ -27,10 +27,10 @@
 
 {%- apply spaceless -%}
 <table class='tab_cadre' width='100%' id='freetable_table{{ rand }}'
-       style='overflow: auto;width:100%;{{ background_color|raw }}'>
+       style='overflow: auto;width:100%;{{ background_color }}'>
     <tr class='tab_bg_1'>
         {%- for col in columns -%}
-            <th style='text-align: left;{{ background_color|raw }}'>{{- col.label -}}
+            <th style='text-align: left;{{ background_color }}'>{{- col.label -}}
                 {%- if col.mandatory %}<span style='color : red'> *</span>{% endif -%}
                 {{- col.tooltip_html|raw -}}
             </th>
@@ -38,7 +38,7 @@
         {%- endapply -%}
         {{- script1_html|raw -}}
         {%- apply spaceless -%}
-        <th style='text-align: right;{{ background_color|raw }}' colspan='4'
+        <th style='text-align: right;{{ background_color }}' colspan='4'
             onclick='addLine(window.metademandfreelinesparams{{ rand }})'><i class='ti ti-plus btn btn-info'></i></th>
     </tr>
     {%- for row in rows -%}
@@ -82,7 +82,7 @@
 {%- if has_orderfollowup -%}
     {{- script2_html|raw -}}
     {%- apply spaceless -%}
-        <table class='tab_cadre' width='100%' style='overflow: auto;width:100%;{{ background_color|raw }}'>
+        <table class='tab_cadre' width='100%' style='overflow: auto;width:100%;{{ background_color }}'>
             <tr class='tab_bg_1'>
                 <td colspan='8' style='text-align:center;'>
                     <button onclick='saveInput_{{ rand }}()' type='button' id='add_freeinputs_{{ rand }}'

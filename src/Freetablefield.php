@@ -354,9 +354,12 @@ class Freetablefield extends CommonDBChild
             $itemMove->getFromDBByCrit($crit);
 
             if (isset($itemMove->fields["id"])) {
-                // Reorganization of all fields
+                // Reorganization of the rows of this free table only: the rank column is
+                // shared by every free table of the instance, so the moved row's parent
+                // field bounds the renumbering, like Field::reorder does on its meta-demand.
                 if ($params['old_order'] < $params['new_order']) {
                     $toUpdateList = $this->find([
+                        'plugin_metademands_fields_id' => $itemMove->fields['plugin_metademands_fields_id'],
                         ['rank' => ['>', $params['old_order']]],
                         ['rank' => ['<=', $params['new_order']]],
                     ]);
@@ -369,6 +372,7 @@ class Freetablefield extends CommonDBChild
                     }
                 } else {
                     $toUpdateList = $this->find([
+                        'plugin_metademands_fields_id' => $itemMove->fields['plugin_metademands_fields_id'],
                         ['rank' => ['<', $params['old_order']]],
                         ['rank' => ['>=', $params['new_order']]],
                     ]);

@@ -32,7 +32,7 @@
         {%- if hidden_zero %}
             <div class='col-form-label metademand-label'>
                 {%- if has_icon %}<i class='ti {{ icon }}'></i>&nbsp;{% endif -%}
-                {{- label }} {{ upload|raw -}}
+                {{- label }} {{ upload -}}
                 {%- if debug %} (ID:{{ id }}){% endif -%}
                 {%- if preview %}{{ config_link|raw }}{% endif -%}
                 {%- if show_comment_tooltip %}&nbsp;{{ comment_tooltip_html|raw }}{% endif -%}

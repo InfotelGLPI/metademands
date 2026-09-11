@@ -27,20 +27,19 @@
 
 {#- Legacy-identical concatenation order: wrapper+canvas, optional existing-signature
  #  preview, buttons, result span, hidden input, then the script/css asset tags and the
- #  inline SignaturePad <script>. ids / name are safe per-field strings kept raw. labels
- #  are trusted translations emitted raw. picture_url and value are raw user-linked values
- #  auto-escaped by {{ }} (byte-identical to the legacy htmlspecialchars(ENT_QUOTES) for
- #  valid UTF-8). script_tag / css_tag / inline_script are core-widget / generated output
- #  injected raw. One physical line so no inter-element whitespace enters the output. -#}
+ #  inline SignaturePad <script>. ids, name, labels and value are data and are escaped.
+ #  script_tag / css_tag / inline_script are core-widget / generated output injected raw.
+ #  Escaping is byte-identical to the legacy htmlspecialchars(ENT_QUOTES) for valid UTF-8.
+ #  One physical line so no inter-element whitespace enters the output. -#}
 <div class='wrapper'>
-    <canvas id='{{ canvas_id|raw }}' class='signature-pad' width=400 height=100></canvas>
+    <canvas id='{{ canvas_id }}' class='signature-pad' width=400 height=100></canvas>
 </div>{% if has_value %}
-<div id='existing-sign-{{ field_id|raw }}'><img src='{{ picture_url }}' style='max-height:100px;border:1px solid #ccc;'>
+<div id='existing-sign-{{ field_id }}'><img src='{{ picture_url }}' style='max-height:100px;border:1px solid #ccc;'>
 </div>{% endif %}<br>
 <div>
-    <button type='button' id='{{ save_id|raw }}' class='btn btn-primary'>{{ label_add|raw }}</button>
-    <button type='button' id='{{ clear_id|raw }}' class='btn btn-primary'>{{ label_clear|raw }}</button>
-</div><br><span class='result' id='{{ result_id|raw }}'></span><input type='hidden' id='{{ hidden_id|raw }}'
-                                                                      name='{{ name|raw }}'
+    <button type='button' id='{{ save_id }}' class='btn btn-primary'>{{ label_add }}</button>
+    <button type='button' id='{{ clear_id }}' class='btn btn-primary'>{{ label_clear }}</button>
+</div><br><span class='result' id='{{ result_id }}'></span><input type='hidden' id='{{ hidden_id }}'
+                                                                      name='{{ name }}'
                                                                       value='{{ value }}'>{{ script_tag|raw }}{{ css_tag|raw }}{{ inline_script|raw }}
 {#- -#}

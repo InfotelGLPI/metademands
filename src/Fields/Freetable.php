@@ -71,8 +71,9 @@ class Freetable extends CommonDBTM
         $background_color = "";
         if (isset($meta->fields['background_color'])
             && $meta->fields['background_color'] != "") {
-            $safe_bg = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
-            $background_color = "background-color:" . $safe_bg . ";";
+            // Escaped by the template rather than here, so the style fragment is not
+            // pre-escaped and then emitted raw.
+            $background_color = "background-color:" . $meta->fields['background_color'] . ";";
         }
         $plugin_metademands_fields_id = $data['id'];
 

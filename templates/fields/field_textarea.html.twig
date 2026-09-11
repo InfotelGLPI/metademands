@@ -30,11 +30,12 @@
  #  Classic: a <textarea> whose exact multi-line formatting is reproduced
  #  verbatim; `value` is auto-escaped by {{ }} (byte-identical to the legacy
  #  htmlspecialchars($value)) and the placeholder `comment` is now auto-escaped
- #  too (a deliberate hardening of the raw legacy attribute). -#}
+ #  too (a deliberate hardening of the raw legacy attribute). name_attr / id_attr
+ #  are data and are escaped as well. -#}
 {%- if is_richtext -%}
 {{ textarea_html|raw }}{{ script_html|raw }}{{ style_html|raw }}
 {%- else -%}
 <textarea {{ required|raw }} class='form-control' rows='{{ rows }}' cols='{{ cols }}'
                placeholder="{{ comment }}"
-               name='{{ name_attr|raw }}' id='{{ id_attr|raw }}'>{{ value }}</textarea>
+               name='{{ name_attr }}' id='{{ id_attr }}'>{{ value }}</textarea>
 {%- endif -%}
