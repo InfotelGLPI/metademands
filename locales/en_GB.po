@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 16:15+0000\n"
+"POT-Creation-Date: 2026-09-11 06:42+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Add language"
 msgstr ""
 
-#: src/Wizard.php:1385 src/Wizard.php:1564
+#: src/Wizard.php:1381 src/Wizard.php:1560
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Add to basket"
@@ -294,7 +294,7 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:1868 src/Field.php:1106 src/Field.php:3098 src/Step.php:423
+#: src/Wizard.php:1865 src/Field.php:1106 src/Field.php:3098 src/Step.php:423
 #: src/Step.php:502 templates/field_search_form.html.twig:34
 #: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
@@ -351,7 +351,7 @@ msgstr ""
 msgid "Cancel / delete a form"
 msgstr ""
 
-#: src/Wizard.php:1962
+#: src/Wizard.php:1963
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
@@ -435,6 +435,7 @@ msgstr ""
 
 #: templates/wizard/form_confirm_modal.html.twig:39
 #: templates/task_form.html.twig:36 templates/ticketfield_form.html.twig:36
+#: templates/forms/stepform_waiting_warning.html.twig:38
 #: templates/item_translations.html.twig:125
 #: templates/item_translation_row.html.twig:97
 #: templates/item_translation_row.html.twig:135
@@ -581,7 +582,7 @@ msgid "Data imported successfully"
 msgstr ""
 
 #: src/Freetablefield.php:225 src/Fields/Date.php:53
-#: templates/forms/stepform_list_from_metademand.html.twig:35
+#: templates/forms/stepform_list_from_metademand.html.twig:46
 #: templates/forms/public_models_list.html.twig:40
 #: templates/forms/user_forms_list.html.twig:35
 #: templates/forms/private_models_list.html.twig:70
@@ -592,12 +593,12 @@ msgid_plural "Dates"
 msgstr[0] "Date"
 msgstr[1] "Date"
 
-#: src/Wizard.php:3100
+#: src/Wizard.php:3096
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3090
+#: src/Wizard.php:3086
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "Date %s cannot be less than today's date"
@@ -677,7 +678,7 @@ msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: src/Stepform.php:703 src/Stepform.php:852 src/Stepform.php:982
+#: src/Stepform.php:704 src/Stepform.php:836 src/Stepform.php:963
 #: templates/forms/private_models_rows.html.twig:45
 #: templates/forms/private_models_list.html.twig:119
 msgctxt "button"
@@ -820,11 +821,11 @@ msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
 
-#: src/Stepform.php:801
+#: templates/forms/stepform_waiting_warning.html.twig:44
 msgid "Do you want to see him ?"
 msgstr ""
 
-#: src/Stepform.php:803
+#: templates/forms/stepform_waiting_warning.html.twig:44
 msgid "Do you want to see them ?"
 msgstr ""
 
@@ -845,7 +846,7 @@ msgstr ""
 msgid "Draft name"
 msgstr ""
 
-#: ajax/adddraft.php:185
+#: ajax/adddraft.php:199
 msgid "Draft name is required"
 msgstr ""
 
@@ -939,7 +940,7 @@ msgstr ""
 msgid "Equality operator"
 msgstr ""
 
-#: src/Step.php:1410
+#: src/Step.php:1399
 msgid "Error assigning to next group"
 msgstr ""
 
@@ -1006,7 +1007,7 @@ msgstr "Father's field"
 msgid "Field"
 msgstr ""
 
-#: src/Wizard.php:3151
+#: src/Wizard.php:3147
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Field do not correspond to the expected format. Please correct: %s"
@@ -1159,7 +1160,7 @@ msgstr ""
 
 #: templates/field_option_options.html.twig:88
 #: templates/condition_list.html.twig:59
-#: templates/forms/stepform_list_from_metademand.html.twig:31
+#: templates/forms/stepform_list_from_metademand.html.twig:42
 #: templates/field_list.html.twig:134 templates/task_list.html.twig:82
 msgid "ID"
 msgstr ""
@@ -1430,11 +1431,11 @@ msgstr ""
 msgid "Maintenance mode"
 msgstr ""
 
-#: src/Wizard.php:897
+#: src/Wizard.php:893
 msgid "Make a change request"
 msgstr ""
 
-#: src/Wizard.php:891
+#: src/Wizard.php:887
 msgid "Make a request"
 msgstr ""
 
@@ -1598,20 +1599,20 @@ msgstr ""
 #: src/Fields/Dropdownmeta.php:1572 src/Fields/Basket.php:821
 #: src/Fields/Tel.php:342 src/Fields/Email.php:336
 #: src/Fields/Dropdownmultiple.php:1119 src/Fields/Dropdownmultiple.php:1292
-#: src/Wizard.php:1122 src/Wizard.php:1380 src/Wizard.php:1521
-#: src/Wizard.php:1530 src/Wizard.php:1570 src/Wizard.php:1576
+#: src/Wizard.php:1118 src/Wizard.php:1376 src/Wizard.php:1517
+#: src/Wizard.php:1526 src/Wizard.php:1566 src/Wizard.php:1572
 #: src/FieldOption.php:2139 templates/wizard/form_nav_buttons.html.twig:52
 #: templates/wizard/form_nav_buttons.html.twig:55
 msgid "Next"
 msgstr ""
 
 #: src/NotificationTargetStepform.php:69
-#: templates/forms/stepform_list_from_metademand.html.twig:33
+#: templates/forms/stepform_list_from_metademand.html.twig:44
 msgid "Next group in charge of demand"
 msgstr ""
 
 #: front/nextGroup.form.php:90 front/nextGroup.form.php:97
-#: front/nextGroup.form.php:107 src/Step.php:940
+#: front/nextGroup.form.php:107 src/Step.php:930
 msgid "Next recipient"
 msgstr ""
 
@@ -1620,7 +1621,7 @@ msgid "Next tickets"
 msgstr "Next tickets"
 
 #: src/NotificationTargetStepform.php:70
-#: templates/forms/stepform_list_from_metademand.html.twig:34
+#: templates/forms/stepform_list_from_metademand.html.twig:45
 msgid "Next user in charge of demand"
 msgstr ""
 
@@ -1653,7 +1654,7 @@ msgstr ""
 msgid "No equipment founded"
 msgstr ""
 
-#: src/Wizard.php:780 templates/wizard/metademand_types.html.twig:50
+#: src/Wizard.php:774 templates/wizard/metademand_types.html.twig:50
 #: templates/forms/private_models_rows.html.twig:53
 msgid "No existing forms founded"
 msgstr ""
@@ -1687,9 +1688,10 @@ msgid "No query could be suggested for this difference."
 msgstr ""
 
 #: templates/list_of_templates.html.twig:96
+#: templates/wizard/no_results.html.twig:32
 #: templates/field_option_options.html.twig:164
 #: templates/ticketfield_list.html.twig:32
-#: templates/forms/stepform_list_from_metademand.html.twig:50
+#: templates/forms/stepform_list_from_metademand.html.twig:69
 #: templates/forms/user_forms_tab.html.twig:83
 #: templates/forms/draft_show.html.twig:47
 #: templates/forms/stepform_waiting_form_readonly.html.twig:91
@@ -1917,11 +1919,11 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: src/Wizard.php:2004
+#: src/Wizard.php:2005
 msgid "Previous data edited"
 msgstr ""
 
-#: src/Wizard.php:1997
+#: src/Wizard.php:1998
 msgid "Previous user"
 msgstr ""
 
@@ -1941,7 +1943,7 @@ msgid "Public models"
 msgstr ""
 
 #: src/NotificationTargetStepform.php:167
-#: templates/forms/stepform_list_from_metademand.html.twig:32
+#: templates/forms/stepform_list_from_metademand.html.twig:43
 msgid "Publisher"
 msgstr ""
 
@@ -2021,11 +2023,11 @@ msgstr ""
 msgid "Remember to activate basket mode on your metademand !"
 msgstr ""
 
-#: src/Wizard.php:895
+#: src/Wizard.php:891
 msgid "Report a problem"
 msgstr ""
 
-#: src/Wizard.php:889
+#: src/Wizard.php:885
 msgid "Report an incident"
 msgstr ""
 
@@ -2125,13 +2127,13 @@ msgstr ""
 #: src/Fields/Dropdownmeta.php:1570 src/Fields/Basket.php:820
 #: src/Fields/Basket.php:1453 src/Fields/Tel.php:340 src/Fields/Email.php:334
 #: src/Fields/Dropdownmultiple.php:1117 src/Fields/Dropdownmultiple.php:1290
-#: src/Wizard.php:1375 src/Wizard.php:1561 src/FieldOption.php:2137
+#: src/Wizard.php:1371 src/Wizard.php:1557 src/FieldOption.php:2137
 #: src/Basketline.php:157
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: src/Wizard.php:1531
+#: src/Wizard.php:1527
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
@@ -2184,7 +2186,7 @@ msgstr ""
 msgid "Secondaries services"
 msgstr ""
 
-#: src/Wizard.php:1390
+#: src/Wizard.php:1386
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
@@ -2202,7 +2204,7 @@ msgstr ""
 msgid "See top metademands"
 msgstr ""
 
-#: src/Wizard.php:1789
+#: src/Wizard.php:1787
 msgctxt "button"
 msgid "See your basket"
 msgstr ""
@@ -2219,7 +2221,7 @@ msgstr ""
 msgid "Select language to translate"
 msgstr ""
 
-#: src/Step.php:1101
+#: src/Step.php:1091
 msgid "Select the next group"
 msgstr ""
 
@@ -2349,7 +2351,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr "Takes the whole row"
 
-#: src/Interticketfollowup.php:557
+#: src/Interticketfollowup.php:578
 msgid "Target followup"
 msgstr ""
 
@@ -2405,7 +2407,7 @@ msgstr "Text"
 msgid "Textarea"
 msgstr "Textarea"
 
-#: src/Wizard.php:1523
+#: src/Wizard.php:1519
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
@@ -2524,7 +2526,7 @@ msgstr ""
 msgid "There is a problem with the basket"
 msgstr ""
 
-#: src/Step.php:950 templates/forms/step_modal_nextgroup.html.twig:53
+#: src/Step.php:940 templates/forms/step_modal_nextgroup.html.twig:53
 #: templates/forms/step_by_block.html.twig:92
 msgid "There is a problem with the setup"
 msgstr ""
@@ -2550,11 +2552,11 @@ msgstr ""
 msgid "There was a problem on upload your signature"
 msgstr ""
 
-#: src/Wizard.php:1736
+#: src/Wizard.php:1732
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 
-#: src/Wizard.php:1524
+#: src/Wizard.php:1520
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
@@ -2590,7 +2592,7 @@ msgstr ""
 msgid "This form is in maintenance mode"
 msgstr ""
 
-#: src/Step.php:883
+#: src/Step.php:873
 msgid "This group is already assigned to this block"
 msgstr ""
 
@@ -2660,7 +2662,7 @@ msgstr ""
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3139
+#: src/Wizard.php:3135
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Too much documents are upload, max %s. Please correct: %s"
@@ -2824,6 +2826,7 @@ msgstr ""
 #: templates/tickettask_form_section.html.twig:85
 #: templates/tickettask_form_section.html.twig:104
 #: templates/tickettask_form_section.html.twig:122
+#: templates/forms/step_next_user.html.twig:36
 #: templates/mailtask_form.html.twig:50
 msgid "User"
 msgstr ""
@@ -2839,7 +2842,7 @@ msgstr ""
 msgid "User information to get"
 msgstr ""
 
-#: src/Step.php:1010
+#: src/Step.php:1000
 msgctxt "button"
 msgid "Validate"
 msgstr ""
@@ -2982,7 +2985,7 @@ msgstr ""
 msgid "You cannot use this parameter if there is more than one category"
 msgstr "You cannot use this parameter if there is more than one category"
 
-#: src/Wizard.php:1676
+#: src/Wizard.php:1672
 msgid "You do not have access to the form"
 msgstr ""
 
@@ -2990,7 +2993,7 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr "You don't have the right to create meta-demand"
 
-#: src/Wizard.php:1943
+#: src/Wizard.php:1944
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -3004,14 +3007,14 @@ msgstr "You don't have the right to update tickets"
 msgid "You don't have the ticket creation right"
 msgstr "You don't have the ticket creation right"
 
-#: src/Wizard.php:1199
+#: src/Wizard.php:1195
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Stepform.php:792
+#: templates/forms/stepform_waiting_warning.html.twig:40
 #, php-format
 msgid "You have %s"
 msgstr ""
@@ -3024,7 +3027,7 @@ msgstr ""
 msgid "You have items on your basket"
 msgstr ""
 
-#: src/Wizard.php:1509 templates/wizard/form_confirm_modal.html.twig:42
+#: src/Wizard.php:1505 templates/wizard/form_confirm_modal.html.twig:42
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
@@ -3036,7 +3039,8 @@ msgstr ""
 msgid "You have to select an item"
 msgstr ""
 
-#: src/Step.php:862 templates/forms/step_modal_supervisor.html.twig:44
+#: templates/wizard/step_supervisor.html.twig:51
+#: templates/forms/step_modal_supervisor.html.twig:44
 msgid "You haven't defined supervisor, you cannot continue this request"
 msgstr ""
 
@@ -3069,7 +3073,8 @@ msgid ""
 "the following information."
 msgstr ""
 
-#: src/Step.php:852 templates/forms/step_modal_supervisor.html.twig:35
+#: templates/wizard/step_supervisor.html.twig:46
+#: templates/forms/step_modal_supervisor.html.twig:35
 msgid "Your form will be validated by your supervisor"
 msgstr ""
 
@@ -3114,13 +3119,14 @@ msgstr "field delete on demand"
 msgid "field update on demand"
 msgstr "field update on demand"
 
-#: front/draftcreation.php:54 src/Stepform.php:793 src/Draft.php:278
+#: front/draftcreation.php:54 src/Draft.php:278
+#: templates/forms/stepform_waiting_warning.html.twig:41
 msgid "form"
 msgid_plural "forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Stepform.php:794
+#: templates/forms/stepform_waiting_warning.html.twig:42
 msgid "to complete"
 msgstr ""
 
