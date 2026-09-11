@@ -338,10 +338,6 @@ class Dropdownmeta extends CommonDBTM
                                     ],
                                 );
                             }
-
-                            //                        echo "<div class='tooltipelt'><div class='tooltipelttext'><span>";
-                            //                        echo __('If your equipment is not listed, thanks to add its name on ticket description', 'metademands');
-                            //                        echo "</span></div>";
                         } else {
                             $rand = mt_rand();
 

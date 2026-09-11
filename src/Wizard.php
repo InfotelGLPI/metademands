@@ -1302,30 +1302,6 @@ class Wizard extends CommonDBTM
                         if ($seeform == 0) {
                             unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
                         }
-
-                        //                        if (isset($metademands->fields['is_order'])
-                        //                            && $metademands->fields['is_order'] == 1) {
-                        //                            if (!$preview
-                        //                                && countElementsInTable(
-                        //                                    "glpi_plugin_metademands_basketlines",
-                        //                                    [
-                        //                                        "plugin_metademands_metademands_id" => $metademands->fields['id'],
-                        //                                        "users_id" => Session::getLoginUserID(),
-                        //                                    ]
-                        //                                )
-                        //                            ) {
-                        //                                echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-                        //                                $title = _sx('button', 'Add to basket', 'metademands');
-                        //                                echo Html::submit($title, [
-                        //                                    'name' => 'add_to_basket',
-                        //                                    'icon' => 'ti ti-plus',
-                        //                                    'id' => 'add_to_basket',
-                        //                                    'class' => 'btn btn-primary',
-                        //                                ]);
-                        //
-                        //                                echo "</div>";
-                        //                            }
-                        //                        }
                         echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
                         echo Html::hidden('is_private', ['value' => 1]);
                     }
@@ -1478,7 +1454,11 @@ class Wizard extends CommonDBTM
                     : $label;
             }
         }
-        $json_all_meta_fields = json_encode($all_meta_fields);
+        // Injected verbatim into an inline <script> object literal below: without
+        // JSON_HEX_TAG|JSON_HEX_AMP a stored label containing </script> closes the
+        // block before the JSON parser ever runs. Never HEX_QUOT/HEX_APOS here, they
+        // would break the literal.
+        $json_all_meta_fields = json_encode($all_meta_fields, JSON_HEX_TAG | JSON_HEX_AMP);
 
         $paramUrl = "";
         if ($current_ticket > 0 && !$meta_validated) {
@@ -1491,7 +1471,9 @@ class Wizard extends CommonDBTM
             && $stepConfig->fields['see_blocks_as_tab'] == 1  && !$preview) {
             $block_id = 0;
             if (isset($_REQUEST['block_id'])) {
-                $block_id = $_REQUEST['block_id'];
+                // Reflected into the inline <script> below, once inside a string literal
+                // and once as a bare call argument: normalise at the source.
+                $block_id = (int) $_REQUEST['block_id'];
             }
         }
 
@@ -1502,10 +1484,18 @@ class Wizard extends CommonDBTM
         $metaparams['use_model'] = $use_model;
         $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
         $metaparams['is_order'] = $metademands->fields['is_order'];
-        $metaparams['confirmmsg'] = addslashes(__("You have not entered any values. Is this normal?", 'metademands'));
-        $metaparams['nameform']
-            = addslashes($metademands->fields['name'])
-         . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+        // addslashes() escapes quotes but neither < nor >, so it cannot protect a JS
+        // string literal: the HTML parser looks for </script> first. json_encode()
+        // emits the surrounding quotes itself, hence the unquoted sinks.
+        $metaparams['confirmmsg'] = json_encode(
+            __("You have not entered any values. Is this normal?", 'metademands'),
+            JSON_HEX_TAG | JSON_HEX_AMP,
+        );
+        $metaparams['nameform'] = json_encode(
+            $metademands->fields['name']
+            . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'],
+            JSON_HEX_TAG | JSON_HEX_AMP,
+        );
         $metaparams['paramUrl'] = $paramUrl;
         if ($metademands->fields['can_update'] == 1 && !$meta_validated) {
             $metaparams['seeform'] = 0;
@@ -1607,7 +1597,7 @@ class Wizard extends CommonDBTM
                 }
             }
         }
-        $metaparams['richtext_id'] = json_encode($richtext_id);
+        $metaparams['richtext_id'] = json_encode($richtext_id, JSON_HEX_TAG | JSON_HEX_AMP);
 
         //End Condition params
         return $metaparams;
@@ -2504,7 +2494,7 @@ class Wizard extends CommonDBTM
 
                     window.metademandparams = {};
                     metademandparams.useconfirm = '$useconfirm';
-                    metademandparams.confirmmsg = '$confirmmsg';
+                    metademandparams.confirmmsg = $confirmmsg;
                     metademandparams.is_order = '$is_order';
                     metademandparams.root_doc = '$root_doc';
                     metademandparams.paramUrl = '$paramUrl';
@@ -2512,7 +2502,7 @@ class Wizard extends CommonDBTM
                     metademandparams.seeform = '$seeform';
                     metademandparams.token = '$token';
                     metademandparams.id = '$ID';
-                    metademandparams.nameform = '$nameform';
+                    metademandparams.nameform = $nameform;
                     metademandparams.block_id = '$block_id';
 
                     metademandparams.nexttitle = '$nexttitle';
@@ -2548,7 +2538,7 @@ class Wizard extends CommonDBTM
                     const nextBtn = document.getElementById('nextBtn');
                     const nextBtn2 = document.getElementById('nextBtn2');
 
-                    firstnumTab = plugin_metademands_wizard_findFirstTab($block_id, metademandparams);
+                    firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams.block_id, metademandparams);
 
                     plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
 

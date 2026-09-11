@@ -1285,6 +1285,24 @@ class Step extends CommonDBChild
                 );
             }
 
+            // The meta-demand comes straight from the POST and drives
+            // constructMetademands(), the session keys and the row finally written.
+            // Bind it to the caller's entity here, at the sink shared by
+            // ajax/nextUser.php and front/nextGroup.form.php: the page guard on those
+            // two entry points gates the profile, not the entities it may reach.
+            $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+            if (
+                !$metademands->getFromDB($metademands_id)
+                || !Session::haveAccessToEntity(
+                    $metademands->fields['entities_id'],
+                    $metademands->fields['is_recursive'],
+                )
+            ) {
+                throw new AccessDeniedHttpException(
+                    'You are not allowed to access this metademand.',
+                );
+            }
+
             // canActOnStepform() above protects the ROW being advanced, not the destination
             // VALUES posted alongside it. The modal only ever offers the groups declared on
             // the current block's steps and, as next user, the members of the retained group
@@ -1406,8 +1424,12 @@ class Step extends CommonDBChild
                     $inputs = [];
                     $inputs['name'] = $_POST['form_name'];
                     $inputs['users_id'] = Session::getLoginUserID();
-                    if (isset($_POST['next_groups_id'])) {
-                        $inputs['groups_id_dest'] = $_POST['next_groups_id'];
+                    // Write the value validated above against getNextGroupsForBlock(),
+                    // not the raw POST: an unchecked 0 slipped through isset() and landed
+                    // in groups_id_dest untouched. Routing 0 to the server-computed group
+                    // is what the absent-key branch below already does.
+                    if ($next_groups_id > 0) {
+                        $inputs['groups_id_dest'] = $next_groups_id;
                     } else {
                         $inputs['groups_id_dest'] = self::getGroupForNextBlock(
                             $_POST['metademands_id'],

@@ -37,6 +37,17 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does.
+// Loading a saved model feeds the wizard session; the ownership test below
+// binds the request to one form, not to a profile.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $metademands = new Metademand();
 $wizard      = new Wizard();
 $form      = new Form();

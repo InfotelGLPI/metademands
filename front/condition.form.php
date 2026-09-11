@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
 
@@ -47,7 +48,17 @@ if (isset($_POST['plugin_metademands_fields_id'])) {
         Session::addMessageAfterRedirect(__('You have to select a field', 'metademands'), false, ERROR);
         Html::back();
     }
-    $field->getFromDB($_POST['plugin_metademands_fields_id']);
+    // The field id and the meta-demand id arrive as two independent POST fields. The
+    // check() calls below gate the meta-demand, nothing gated the field: correlate the
+    // child with the parent read in database instead of trusting the posted pair, as
+    // ajax/loadstepform.php already does.
+    if (
+        !$field->getFromDB((int) $_POST['plugin_metademands_fields_id'])
+        || (int) $field->fields['plugin_metademands_metademands_id']
+            !== (int) $_POST['plugin_metademands_metademands_id']
+    ) {
+        throw new AccessDeniedHttpException();
+    }
     $type = $field->fields['type'];
     $item = $field->fields['item'];
 }

@@ -98,6 +98,12 @@ if (isset($_POST['save_model'])) {
             }
         }
     } else {
+        // Authoritative source for the meta-demand: the model row whose ownership was
+        // verified above. The posted metademands_id drove constructMetademands(), the
+        // session keys and setFormValues(), so a forged value could graft the fields of
+        // another meta-demand onto this model.
+        $metademands_id = (int) $form->fields['plugin_metademands_metademands_id'];
+
         $input = ['name' => $_POST['form_name'],
             'plugin_metademands_metademands_id' => $form->fields['plugin_metademands_metademands_id'],
             'users_id' => $form->fields['users_id'],
@@ -112,7 +118,7 @@ if (isset($_POST['save_model'])) {
         $metademands = new Metademand();
         $forms_values = new Form_Value();
         $forms_values->deleteByCriteria(['plugin_metademands_forms_id' => $_POST['plugin_metademands_forms_id']]);
-        $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
+        $metademands_data = Metademand::constructMetademands($metademands_id);
 
         $nblines = 0;
         $KO = false;
@@ -138,15 +144,15 @@ if (isset($_POST['save_model'])) {
             //                }
             //            }
 
-            if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'])) {
-                $freetables = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['freetables'];
+            if (isset($_SESSION['plugin_metademands'][$metademands_id]['freetables'])) {
+                $freetables = $_SESSION['plugin_metademands'][$metademands_id]['freetables'];
 
                 foreach ($freetables as $field_id => $freetable) {
-                    $_POST['freetables'][$_POST['metademands_id']][$field_id] = $freetable;
+                    $_POST['freetables'][$metademands_id][$field_id] = $freetable;
                 }
             }
 
-            $metademands_data = Metademand::constructMetademands($_POST['metademands_id']);
+            $metademands_data = Metademand::constructMetademands($metademands_id);
 
             if (!isset($post) || !is_array($post)) {
                 $_POST['field'] = [];
@@ -158,12 +164,12 @@ if (isset($_POST['save_model'])) {
                     foreach ($data as $form_metademands_id => $line) {
                         foreach ($line['form'] as $id => $value) {
                             if (!isset($post[$id])) {
-                                if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
+                                if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields'][$id])
                                     && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
-                                    $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
+                                    $_POST['field'][$id] = $_SESSION['plugin_metademands'][$metademands_id]['fields'][$id];
                                 }
                             } else {
-                                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
+                                $_SESSION['plugin_metademands'][$metademands_id]['fields'][$id] = $post[$id];
                             }
 
                             if ($value['type'] == 'radio') {
@@ -196,8 +202,8 @@ if (isset($_POST['save_model'])) {
                                 if (!isset($_POST['field']) || !is_array($_POST['field'])) {
                                     $_POST['field'] = [];
                                 }
-                                if (isset($_POST['freetables'][$_POST['metademands_id']][$id])) {
-                                    $_POST['field'][$id] = $_POST['freetables'][$_POST['metademands_id']][$id];
+                                if (isset($_POST['freetables'][$metademands_id][$id])) {
+                                    $_POST['field'][$id] = $_POST['freetables'][$metademands_id][$id];
                                 }
                             }
                         }
@@ -209,14 +215,14 @@ if (isset($_POST['save_model'])) {
                 foreach ($metademands_data as $form_step => $data) {
                     $docitem = null;
                     foreach ($data as $form_metademands_id => $line) {
-                        Form_Value::setFormValues($_POST['metademands_id'], $line['form'], $_POST['field'], $_POST['plugin_metademands_forms_id']);
+                        Form_Value::setFormValues($metademands_id, $line['form'], $_POST['field'], $_POST['plugin_metademands_forms_id']);
                     }
                 }
             }
-            Form_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
+            Form_Value::loadFormValues($metademands_id, $_POST['plugin_metademands_forms_id']);
 
-            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
-            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id'] = $_POST['plugin_metademands_forms_id'];
+            $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_forms_name'] = $_POST['form_name'];
+            $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_forms_id'] = $_POST['plugin_metademands_forms_id'];
         }
     }
 }

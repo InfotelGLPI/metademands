@@ -97,8 +97,11 @@ class Config extends CommonDBTM
             return true;
         }
 
-        // Full-interface callers who may read users (technicians / admins) are always allowed.
-        if (Session::haveRight(\User::$rightname, READ)) {
+        // Full-interface callers who may read users (technicians / admins), entity
+        // boundary included: can() loads the row and replays the entity check that a bare
+        // haveRight() skips. This is the rule the strictest endpoints of the
+        // u*Update.php family carried inline before they were unified onto this helper.
+        if ((new \User())->can($requested_users_id, READ)) {
             return true;
         }
 

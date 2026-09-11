@@ -41,7 +41,9 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 }
 
 // PII guard: only derive data from another user's groups when the caller may read that
-// user (self or READ right, entity scope included) — prevents enumeration by id.
+// user — prevents enumeration by id. The criterion itself lives in the helper shared by
+// the whole u*Update.php family; the closure only adds the shape checks this endpoint
+// needs, users_id being posted rather than read from a typed parameter.
 $md_can_read_target_user = static function (): bool {
     if (!isset($_POST['users_id']) || is_array($_POST['users_id'])) {
         return false;
@@ -53,7 +55,7 @@ $md_can_read_target_user = static function (): bool {
     if ($uid === (int) Session::getLoginUserID()) {
         return true;
     }
-    return (new User())->can($uid, READ);
+    return Config::canCurrentUserViewRequester($uid);
 };
 
 if (!isset($_POST['fieldname'])) {

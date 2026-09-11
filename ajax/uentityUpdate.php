@@ -76,10 +76,10 @@ if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
     $users_id = (int) $_POST["users_id"];
     $user = new User();
     // Only expose another user's entities when the caller may read that user
-    // (self or READ right, entity scope included) — prevents PII enumeration by id.
+    // — prevents PII enumeration by id. Single rule for the whole u*Update.php family.
     if (
         $user->getFromDB($users_id)
-        && ($users_id === (int) Session::getLoginUserID() || $user->can($users_id, READ))
+        && Config::canCurrentUserViewRequester($users_id)
     ) {
         $val = Profile_User::getUserEntitiesForRight(
             $user->getID(),

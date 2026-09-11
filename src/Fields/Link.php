@@ -60,7 +60,12 @@ class Link extends CommonDBTM
         if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
             $label2 = $data['label2'];
         }
-        $field = "";
+
+        $mode = '';
+        $url = '';
+        $label = '';
+        $input_name = '';
+        $input_value = '';
 
         if (!empty($data['custom_values'])) {
             $custom_values = FieldParameter::_unserialize($data['custom_values']);
@@ -69,31 +74,40 @@ class Link extends CommonDBTM
                     $custom_values[$k] = $ret;
                 }
             }
+
+            // The URL is typed by the form designer and echoed back to every
+            // requester. Normalise the scheme here, exactly as getFieldValue()
+            // does on the read side, so that neither a javascript: nor a data:
+            // payload can ever reach the rendered href.
+            $url = self::normalizeUrl($custom_values[1] ?? '');
+
             switch ($custom_values[0]) {
                 case 'button':
-                    $btnLabel = __('Link');
-                    if (!empty($label2)) {
-                        $btnLabel = $label2;
-                    }
-
-                    $safe_url = htmlspecialchars($custom_values[1], ENT_QUOTES);
-                    $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags(
-                        $btnLabel,
-                    ) . "'
-                     target='_blank' onclick=\"window.open('{$safe_url}','_blank');return false\">";
-
+                    $mode = 'button';
+                    $label = Toolbox::stripTags(!empty($label2) ? $label2 : __('Link'));
                     break;
                 case 'link_a':
-                    $field = Html::link($custom_values[1], $custom_values[1], ['target' => '_blank']);
+                    $mode = 'link_a';
+                    $label = $url;
                     break;
             }
-            $title = $namefield . "[" . $data['id'] . "]";
-            $field .= Html::hidden($title, ['value' => $custom_values[1]]);
+
+            $input_name = $namefield . "[" . $data['id'] . "]";
+            $input_value = $custom_values[1] ?? '';
         }
 
+        // A dedicated template replaces the former onclick="window.open('...')"
+        // handler: the anchor carries the URL in an autoescaped attribute, so
+        // there is no JS string context left for a quote to break out of.
         echo TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_widget.html.twig',
-            ['widget_html' => $field],
+            '@metademands/fields/field_link.html.twig',
+            [
+                'mode' => $mode,
+                'url' => $url,
+                'label' => $label,
+                'input_name' => $input_name,
+                'input_value' => $input_value,
+            ],
         );
     }
 
@@ -161,11 +175,31 @@ class Link extends CommonDBTM
 
     public static function blocksHiddenScript($data) {}
 
+    /**
+     * Force an http(s) scheme on a stored link.
+     *
+     * Prefixing rather than filtering neutralises javascript:, data: and
+     * vbscript: by construction: anything that is not already an explicit
+     * http(s) URL becomes a relative-looking host, never an executable scheme.
+     *
+     * @param mixed $url raw value as stored in custom_values
+     *
+     * @return string
+     */
+    public static function normalizeUrl($url): string
+    {
+        $url = (string) $url;
+
+        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+            $url = "http://" . $url;
+        }
+
+        return $url;
+    }
+
     public static function getFieldValue($field)
     {
-        if (!str_starts_with($field['value'], 'http://') && !str_starts_with($field['value'], 'https://')) {
-            $field['value'] = "http://" . $field['value'];
-        }
+        $field['value'] = self::normalizeUrl($field['value']);
         return $field['value'];
     }
 

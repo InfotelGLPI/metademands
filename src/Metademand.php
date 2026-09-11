@@ -786,6 +786,177 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * Assert that the current session may act on a client-provided ticket identifier.
+     *
+     * tickets_id, current_ticket_id and ancestor_tickets_id all reach this class from $_GET
+     * or $_POST and then travel through $_SESSION, which several ajax endpoints also feed.
+     * The check therefore belongs to the sink, not to the caller: a guard placed on a single
+     * front/ entry point would be bypassed by ajax/loadform.php or ajax/loaddraft.php.
+     * can() applies both the right bit and checkEntity(), and for a Ticket it also covers
+     * the helpdesk requester through canUpdateItem().
+     *
+     * @param mixed $tickets_id
+     * @param int   $right
+     *
+     * @return int the normalised identifier, 0 when none was provided
+     */
+    public static function assertCanActOnTicket($tickets_id, int $right): int
+    {
+        $tickets_id = (int) $tickets_id;
+        if ($tickets_id <= 0) {
+            return 0;
+        }
+
+        if (!(new \Ticket())->can($tickets_id, $right)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        return $tickets_id;
+    }
+
+    /**
+     * Assert that the current session may act on a client-provided meta-demand identifier.
+     *
+     * The plugin_metademands right is global, not split per entity, so a bare
+     * Session::checkRight() on an entry point leaves nothing between an administrator of
+     * one entity and the meta-demands of every other one. Endpoints that bypass
+     * CommonDBChild::can() -- by handing $_POST straight to a model method -- must
+     * therefore re-establish the entity boundary themselves.
+     *
+     * @param mixed $metademands_id
+     *
+     * @return void
+     */
+    public static function assertCanAccessEntity($metademands_id): void
+    {
+        $metademand = new self();
+        if (
+            !$metademand->getFromDB((int) $metademands_id)
+            || !Session::haveAccessToEntity(
+                $metademand->fields['entities_id'],
+                $metademand->fields['is_recursive'],
+            )
+        ) {
+            throw new AccessDeniedHttpException();
+        }
+    }
+
+    /**
+     * Keep only the actor identifiers the current session is actually allowed to designate.
+     *
+     * The used_by_ticket mapping loops rebuild _users_id_requester, _users_id_observer,
+     * _groups_id_* and _validation_targets from posted form values. The dropdown that
+     * produced those values restricts the choices to the active entities on the client
+     * side only ('entity' => $_SESSION['glpiactiveentities']), and
+     * Dropdownobject::checkMandatoryFields() only tests emptiness: nothing ever replays
+     * that criterion server side. The VALUE, not just the field row, therefore has to be
+     * revalidated here, otherwise a replayed submission attributes the ticket to -- or
+     * grants read on it to -- a user of an entity the submitter cannot reach.
+     *
+     * @param mixed  $value    posted identifier, scalar or array
+     * @param string $itemtype User::class or \Group::class
+     *
+     * @return array<int> the accepted identifiers, empty when none survives
+     */
+    private static function filterActorValues($value, string $itemtype): array
+    {
+        $accepted = [];
+
+        foreach (is_array($value) ? $value : [$value] as $actor_id) {
+            $actor_id = (int) $actor_id;
+            if ($actor_id <= 0) {
+                continue;
+            }
+
+            if ($itemtype === \Group::class) {
+                $group = new \Group();
+                if (
+                    !$group->getFromDB($actor_id)
+                    || !Session::haveAccessToEntity(
+                        $group->fields['entities_id'],
+                        $group->fields['is_recursive'],
+                    )
+                ) {
+                    continue;
+                }
+            } else {
+                $user = new User();
+                if (!$user->getFromDB($actor_id)) {
+                    continue;
+                }
+                // A user carries no entities_id of its own: reachability is the
+                // intersection of its profiles' entities with the caller's.
+                $reachable = false;
+                foreach (\Profile_User::getUserEntities($actor_id) as $entities_id) {
+                    if (Session::haveAccessToEntity($entities_id)) {
+                        $reachable = true;
+                        break;
+                    }
+                }
+                if (!$reachable) {
+                    continue;
+                }
+            }
+
+            $accepted[] = $actor_id;
+        }
+
+        return $accepted;
+    }
+
+    /**
+     * Same filter as filterActorValues(), plus the anti-spoofing rule of the sink.
+     *
+     * The requester branch of the mapping loop unsets the value computed by the
+     * anti-spoofing control applied earlier in addObjects() and rebuilds it from the
+     * posted value, which defeats that control. Replay it here: only a central-interface
+     * user allowed to create tickets may declare the demand on behalf of someone else.
+     *
+     * @param mixed $value
+     *
+     * @return array<int>
+     */
+    private static function filterRequesterValues($value): array
+    {
+        $requesters = self::filterActorValues($value, User::class);
+
+        if (Session::getCurrentInterface() === 'central' && Session::haveRight('ticket', CREATE)) {
+            return $requesters;
+        }
+
+        return array_values(array_filter(
+            $requesters,
+            static fn($users_id) => $users_id === (int) Session::getLoginUserID(),
+        ));
+    }
+
+    /**
+     * Append the accepted actor identifiers to a ticket actor field.
+     *
+     * @param array  $fields
+     * @param string $name     the actor key, e.g. _users_id_observer
+     * @param mixed  $value    posted identifier, scalar or array
+     * @param string $itemtype User::class or \Group::class
+     *
+     * @return void
+     */
+    private static function appendActorValues(array &$fields, string $name, $value, string $itemtype): void
+    {
+        $accepted = self::filterActorValues($value, $itemtype);
+        if ($accepted === []) {
+            return;
+        }
+
+        if (isset($fields[$name]) && !is_array($fields[$name])) {
+            $fields[$name] = [$fields[$name]];
+        }
+
+        foreach ($accepted as $actor_id) {
+            $fields[$name][] = $actor_id;
+        }
+    }
+
+    /**
      * @param array $input
      *
      * @return array|bool
@@ -2466,7 +2637,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $parent_fields['type'] = $metademand->fields['type'];
                         // Existing tickets id field
                         if (isset($values['fields']['tickets_id'])) {
-                            $parent_fields['id'] = $values['fields']['tickets_id'];
+                            // Promoted to the target object id below, so the write right is
+                            // required here as well as at each sink it reaches.
+                            $parent_fields['id'] = self::assertCanActOnTicket(
+                                $values['fields']['tickets_id'],
+                                UPDATE,
+                            );
                         }
                     }
                     $entities_id = $_SESSION['glpiactive_entity'];
@@ -2553,7 +2729,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     }
 
                     // Get predefined ticket fields
-                    //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
                     $parent_ticketfields = [];
                     $parent_ticketfields = self::formatTicketFields(
                         $form_metademands_id,
@@ -2590,44 +2765,29 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                                     if ($v[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
                                         $name = "_users_id_requester";
-                                        unset($parent_fields[$name]);
-                                        if (is_array($v[$id])) {
-                                            foreach ($v[$id] as $usr) {
+                                        // This branch rebuilds the requester from the posted value and
+                                        // would otherwise undo the anti-spoofing control applied above:
+                                        // replay it, and leave the computed requester in place when
+                                        // nothing survives rather than clearing the field.
+                                        $requesters = self::filterRequesterValues($v[$id]);
+                                        if ($requesters !== []) {
+                                            unset($parent_fields[$name]);
+                                            foreach ($requesters as $usr) {
                                                 $parent_fields[$name][] = $usr;
                                             }
-                                        } else {
-                                            $parent_fields[$name][] = $v[$id];
                                         }
                                     }
                                     if ($fields_values['used_by_ticket'] == 71) {
                                         $name = "_groups_id_requester";
-                                        if (is_array($v[$id])) {
-                                            foreach ($v[$id] as $usr) {
-                                                $parent_fields[$name][] = $usr;
-                                            }
-                                        } else {
-                                            $parent_fields[$name][] = $v[$id];
-                                        }
+                                        self::appendActorValues($parent_fields, $name, $v[$id], \Group::class);
                                     }
                                     if ($fields_values['used_by_ticket'] == 66) {
                                         $name = "_users_id_observer";
-                                        if (is_array($v[$id])) {
-                                            foreach ($v[$id] as $usr) {
-                                                $parent_fields[$name][] = $usr;
-                                            }
-                                        } else {
-                                            $parent_fields[$name][] = $v[$id];
-                                        }
+                                        self::appendActorValues($parent_fields, $name, $v[$id], User::class);
                                     }
                                     if ($fields_values['used_by_ticket'] == 65) {
                                         $name = "_groups_id_observer";
-                                        if (is_array($v[$id])) {
-                                            foreach ($v[$id] as $usr) {
-                                                $parent_fields[$name][] = $usr;
-                                            }
-                                        } else {
-                                            $parent_fields[$name][] = $v[$id];
-                                        }
+                                        self::appendActorValues($parent_fields, $name, $v[$id], \Group::class);
                                     }
                                     if ($fields_values['used_by_ticket'] != 4
                                         && $fields_values['used_by_ticket'] != 71
@@ -2642,8 +2802,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $parent_ticketfields["_add_validation"] = '0';
                                         $parent_fields["validatortype"] = 'user';
                                         $parent_ticketfields["validatortype"] = 'user';
-                                        $parent_fields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int) $v[$id]];
-                                        $parent_ticketfields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => (int) $v[$id]];
+                                        // A validation target grants the designated user a say on the
+                                        // ticket, so the posted identifier gets the same treatment as
+                                        // the other actors.
+                                        foreach (self::filterActorValues($v[$id], User::class) as $validator_id) {
+                                            $parent_fields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => $validator_id];
+                                            $parent_ticketfields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => $validator_id];
+                                        }
                                     }
                                     if ($fields_values['used_by_ticket'] == 13) {
                                         if ($fields_values['type'] == "dropdown_meta"
@@ -3048,7 +3213,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         // Ticket already exists
                     } else {
                         if ($object_class == 'Ticket') {
-                            $parent_tickets_id = $parent_fields['id'];
+                            // Replayed at the sink: the identifier travels through the session.
+                            $parent_tickets_id = self::assertCanActOnTicket($parent_fields['id'], READ);
                             $object->getFromDB($parent_tickets_id);
                             $parent_fields['content'] = $object->fields['content']
                                 . "<br>" . $parent_fields['content'];
@@ -3516,7 +3682,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     ];
                                 }
 
-                                $object->update(self::mergeFields($parent_fields, $parent_ticketfields));
+                                $update_input = self::mergeFields($parent_fields, $parent_ticketfields);
+                                // Replayed at the write sink, where the identifier is finally used.
+                                self::assertCanActOnTicket($update_input['id'] ?? 0, UPDATE);
+                                $object->update($update_input);
                             }
                         }
                     } else {
@@ -3931,6 +4100,15 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $field = array_merge($field, $params);
 
         $style_title = "class='title'";
+        // $color is the suffix of a "<field id>#<colour>" array key, and the only
+        // code that ever built such a key is commented out above: in practice the
+        // suffix comes from the posted field list, i.e. from the client, and lands
+        // straight inside a style attribute below. Only a hexadecimal code or a
+        // bare CSS colour name gets through -- the shapes the feature produces
+        // (#orange, #green, #red); anything else falls back to the default styling.
+        if ($color != "" && !preg_match('/^(?:#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,20})$/', (string) $color)) {
+            $color = "";
+        }
         if ($color != "") {
             if (Plugin::isPluginActive('orderfollowup')) {
                 $ordermaterialmeta = new OrderMetademand();
@@ -4428,69 +4606,29 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             if (isset($values[$id])) {
                                                 $name = $searchOption[$params['used_by_ticket']]['linkfield'];
 
+                                                // Same mapping as the parent ticket above, so the same
+                                                // revalidation applies: this duplicated block is exactly
+                                                // where a divergence would reopen the hole.
                                                 if ($values[$id] > 0 && $params['used_by_ticket'] == 4) {
                                                     $name = "_users_id_requester";
-                                                    if (is_array($values[$id])) {
-                                                        foreach ($values[$id] as $usr) {
-                                                            $son_ticket_data[$name][] = $usr;
-                                                        }
-                                                    } else {
-                                                        if (!is_array($son_ticket_data[$name])) {
-                                                            $value = $son_ticket_data[$name];
-                                                            $son_ticket_data[$name] = [$value];
-                                                        }
-                                                        if (!empty($values[$id])) {
-                                                            $son_ticket_data[$name][] = $values[$id];
-                                                        }
-                                                    }
+                                                    self::appendActorValues(
+                                                        $son_ticket_data,
+                                                        $name,
+                                                        self::filterRequesterValues($values[$id]),
+                                                        User::class,
+                                                    );
                                                 }
                                                 if ($params['used_by_ticket'] == 71) {
                                                     $name = "_groups_id_requester";
-                                                    if (is_array($values[$id])) {
-                                                        foreach ($values[$id] as $usr) {
-                                                            $son_ticket_data[$name][] = $usr;
-                                                        }
-                                                    } else {
-                                                        if (!is_array($son_ticket_data[$name])) {
-                                                            $value = $son_ticket_data[$name];
-                                                            $son_ticket_data[$name] = [$value];
-                                                        }
-                                                        if (!empty($values[$id])) {
-                                                            $son_ticket_data[$name][] = $values[$id];
-                                                        }
-                                                    }
+                                                    self::appendActorValues($son_ticket_data, $name, $values[$id], \Group::class);
                                                 }
                                                 if ($params['used_by_ticket'] == 66) {
                                                     $name = "_users_id_observer";
-                                                    if (is_array($values[$id])) {
-                                                        foreach ($values[$id] as $usr) {
-                                                            $son_ticket_data[$name][] = $usr;
-                                                        }
-                                                    } else {
-                                                        if (!is_array($son_ticket_data[$name])) {
-                                                            $value = $son_ticket_data[$name];
-                                                            $son_ticket_data[$name] = [$value];
-                                                        }
-                                                        if (!empty($values[$id])) {
-                                                            $son_ticket_data[$name][] = $values[$id];
-                                                        }
-                                                    }
+                                                    self::appendActorValues($son_ticket_data, $name, $values[$id], User::class);
                                                 }
                                                 if ($params['used_by_ticket'] == 65) {
                                                     $name = "_groups_id_observer";
-                                                    if (is_array($values[$id])) {
-                                                        foreach ($values[$id] as $usr) {
-                                                            $son_ticket_data[$name][] = $usr;
-                                                        }
-                                                    } else {
-                                                        if (!is_array($son_ticket_data[$name])) {
-                                                            $value = $son_ticket_data[$name];
-                                                            $son_ticket_data[$name] = [$value];
-                                                        }
-                                                        if (!empty($values[$id])) {
-                                                            $son_ticket_data[$name][] = $values[$id];
-                                                        }
-                                                    }
+                                                    self::appendActorValues($son_ticket_data, $name, $values[$id], \Group::class);
                                                 }
                                                 if ($params['used_by_ticket'] != 4
                                                     && $params['used_by_ticket'] != 71

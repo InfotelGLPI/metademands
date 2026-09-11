@@ -30,6 +30,7 @@
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\Freetablefield;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -45,6 +46,9 @@ switch ($_POST['action']) {
         $type = "";
 
         if ($field->getFromDB($_POST['field_id'])) {
+            // Same global-right gap as ajax/reorder.php: bind the creation to the entity
+            // of the meta-demand the field actually belongs to.
+            Metademand::assertCanAccessEntity($field->fields['plugin_metademands_metademands_id']);
             $type = $field->fields['type'];
             if ($type != "freetable") {
                 FieldCustomvalue::addNewValue(

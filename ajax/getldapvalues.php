@@ -38,4 +38,15 @@ if (!Plugin::isPluginActive('metademands')) {
     throw new NotFoundHttpException();
 }
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does. This dropdown belongs to the wizard form
+// and queries the LDAP directory; the entity check below, inside
+// Ldapdropdown::getDropdownValue(), is per meta-demand, not per profile.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 echo Ldapdropdown::getDropdownValue($_POST);

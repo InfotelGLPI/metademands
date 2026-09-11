@@ -34,6 +34,17 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does.
+// Publishing a saved model as a shared one is a wizard operation; the
+// ownership test below binds the request to one form, not to a profile.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $KO = true;
 $users_id                          = Session::getLoginUserID();
 $form_id                           = (int) $_POST['plugin_metademands_forms_id'];

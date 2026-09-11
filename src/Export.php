@@ -56,6 +56,7 @@ use Glpi\Form\Section;
 use Html;
 use Session;
 use SimpleXMLElement;
+use Symfony\Component\HttpFoundation\Response;
 use Toolbox;
 
 /**
@@ -1300,6 +1301,40 @@ class Export extends CommonDBTM
         fclose($file);
 
         return "_plugins" . $name;
+    }
+
+    /**
+     * Stream an exported definition, then drop it from the shared document directory.
+     *
+     * The three export methods above write their file below GLPI_PLUGIN_DOC_DIR, which is
+     * shared by every entity, and used to leave it there: the exported definitions piled
+     * up and stayed readable to anyone able to guess a name. Toolbox::getFileAsResponse()
+     * answers with a streamed response, so the file is still needed when this method
+     * returns -- the unlink is therefore deferred to shutdown, once the response has been
+     * sent, rather than placed in a finally block that would fire before the first byte.
+     *
+     * @param string $path            absolute path of the generated file
+     * @param string $filename        name proposed to the browser
+     * @param string $mime            mime type of the generated file
+     * @param bool   $expires_headers whether caching headers should be emitted
+     *
+     * @return Response
+     */
+    public static function sendFileAndPurge(
+        string $path,
+        string $filename,
+        string $mime,
+        bool $expires_headers = false
+    ): Response {
+        $response = Toolbox::getFileAsResponse($path, $filename, $mime, $expires_headers);
+
+        register_shutdown_function(static function () use ($path): void {
+            if (file_exists($path)) {
+                @unlink($path);
+            }
+        });
+
+        return $response;
     }
 
     public static function showImportForm()

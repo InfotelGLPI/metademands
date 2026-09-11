@@ -40,13 +40,14 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
 
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
+        $send = null;
 
         if ($splitter[0] == "_plugins") {
             $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
         }
 
         if ($send && file_exists($send)) {
-            return Toolbox::getFileAsResponse($send, $splitter[1], 'xml', $expires_headers);
+            return Export::sendFileAndPurge($send, $splitter[1], 'xml', $expires_headers);
         } else {
             throw new AccessDeniedHttpException();
         }
@@ -56,13 +57,14 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
         $file = Export::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
+        $send = null;
 
         if ($splitter[0] == "_plugins") {
             $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
         }
 
         if ($send && file_exists($send)) {
-            return Toolbox::getFileAsResponse($send, $splitter[1], 'xml', $expires_headers);
+            return Export::sendFileAndPurge($send, $splitter[1], 'xml', $expires_headers);
         } else {
             throw new AccessDeniedHttpException();
         }
@@ -71,13 +73,14 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
         $file = Export::exportAsJSONForGLPIForm($_POST["plugin_metademands_metademands_id"]);
         $splitter = explode("/", $file, 2);
         $expires_headers = false;
+        $send = null;
 
         if ($splitter[0] == "_plugins") {
             $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
         }
 
         if ($send && file_exists($send)) {
-            return Toolbox::getFileAsResponse($send, $splitter[1], 'json', $expires_headers);
+            return Export::sendFileAndPurge($send, $splitter[1], 'json', $expires_headers);
         } else {
             throw new AccessDeniedHttpException();
         }

@@ -38,11 +38,21 @@ if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
     Html::header_nocache();
 }
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does.
+// This tooltip belongs to the wizard form and renders another user's details;
+// the disclosure check below is per-user, not per-profile.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
 
 $fieldUser = new Field();
 
-// Quand users_id est 0 (ex. initialisation select2), calculer la valeur par défaut
-// depuis les paramètres du champ transmis par Dropdownobject::showWizardField()
+// When users_id is 0 (e.g., initialization select2), calculate the default value
+//// from the field parameters passed by Dropdownobject::showWizardField()
 if (empty($_POST['users_id']) || (int) $_POST['users_id'] === 0) {
     if (!empty($_POST['default_use_id_requester']) && (int) $_POST['default_use_id_requester'] === 1) {
         $_POST['users_id'] = Session::getLoginUserID();

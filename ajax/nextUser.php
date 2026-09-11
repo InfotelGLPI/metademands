@@ -31,6 +31,17 @@ use GlpiPlugin\Metademands\Step;
 
 header("Content-Type: application/json; charset=UTF-8");
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does.
+// Step::nextUser() reads the destinee of the next step of a meta-demand the
+// caller supplies, and nothing required a plugin right before it.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $KO = Step::nextUser();
 if ($KO === false) {
     echo 0;

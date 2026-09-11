@@ -27,13 +27,26 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\Freetablefield;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
+
+// reorder() is handed $_POST directly, so CommonDBChild::can() never runs and the only
+// remaining check is a right bit that is global rather than per entity. Derive the parent
+// meta-demand from the field read in database -- not from a posted identifier -- and
+// require access to its entity before renumbering anything.
+$parent_field = new Field();
+if (!$parent_field->getFromDB((int) ($_POST['field_id'] ?? 0))) {
+    throw new AccessDeniedHttpException();
+}
+Metademand::assertCanAccessEntity($parent_field->fields['plugin_metademands_metademands_id']);
 
 if ($_POST['type'] == "freetable") {
     $field = new Freetablefield();

@@ -36,6 +36,11 @@ use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\TicketField;
 use GlpiPlugin\Metademands\Group;
 
+// The only action handled here is a deletion, so the page guard must express that and
+// not the modification bit: plugin_metademands offers both DELETE (trashbin, the items
+// that carry is_deleted) and PURGE (definitive), since Metademand::maybeDeleted() is true.
+Session::checkRightsOr("plugin_metademands", [DELETE, PURGE]);
+
 // Do not forward the client-controllable PHP_SELF/PATH_INFO to Html::header(); the
 // $url param is unused in GLPI 11, pass an empty string (as elsewhere in the plugin).
 Html::header(Metademand::getTypeName(2), '', "plugins", Metademand::class);
@@ -49,7 +54,9 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
                 case "delete":
                     foreach ($_POST["item"] as $key => $val) {
                         if ($val == 1) {
-                            if ($field->can($key, UPDATE)) {
+                            // Field carries is_deleted, so delete() sends it to the trashbin:
+                            // the matching bit is DELETE, not the modification bit.
+                            if ($field->can($key, DELETE)) {
                                 $field->delete(['id' => $key]);
                             }
                         }
@@ -64,7 +71,9 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
                 case "delete":
                     foreach ($_POST["item"] as $key => $val) {
                         if ($val == 1) {
-                            if ($ticketField->can($key, UPDATE)) {
+                            // No is_deleted on this table: delete() removes the row for good,
+                            // so the operation requires PURGE.
+                            if ($ticketField->can($key, PURGE)) {
                                 $ticketField->delete(['id' => $key]);
                             }
                         }
@@ -82,7 +91,8 @@ if (isset($_POST["action"]) && isset($_POST["item"]) && count($_POST["item"]) &&
                 case "delete":
                     foreach ($_POST["item"] as $key => $val) {
                         if ($val == 1) {
-                            if ($group->can($key, UPDATE)) {
+                            // No is_deleted either: definitive removal, hence PURGE.
+                            if ($group->can($key, PURGE)) {
                                 $group->delete(['id' => $key]);
                             }
                         }

@@ -62,11 +62,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     }
     if (isset($_POST['next_groups_id'])) {
         $_SESSION ['plugin_metademands'][$user_id]['groups_id_dest'] = $_POST['next_groups_id'];
-        $res = $group->getFromDBByCrit(['id' => $_POST['next_groups_id']]);
+        $res = $group->getFromDBByCrit(['id' => (int) $_POST['next_groups_id']]);
         // Group names are stored unescaped (GLPI 10+/11); this legacy echo path
         // is not Twig-autoescaped, so neutralize the value before it is embedded
-        // in the confirmation alert to prevent stored XSS.
-        $groupName = htmlspecialchars((string) $group->fields['name'], ENT_QUOTES, 'UTF-8');
+        // in the confirmation alert to prevent stored XSS. A miss leaves the name
+        // empty rather than reading the fields of an unloaded object.
+        if ($res) {
+            $groupName = htmlspecialchars((string) $group->fields['name'], ENT_QUOTES, 'UTF-8');
+        }
     }
     if (isset($_POST['next_users_id'])
         && $_POST['next_users_id'] != 0) {
@@ -86,9 +89,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
             $groupName,
         );
     }
-    $KO = Step::nextUser();
-
-    unset($_SESSION['plugin_metademands']);
+    // The destination posted above is staged in the session because nextUser() reads
+    // it back from there to validate it. Drop that staging whatever happens, so a
+    // destination rejected by nextUser() cannot outlive the request it came with.
+    try {
+        $KO = Step::nextUser();
+    } finally {
+        unset($_SESSION['plugin_metademands']);
+    }
 
     if ($KO === false) {
         $_SESSION['plugin_metademands'][$user_id]['redirect_wizard'] = true;

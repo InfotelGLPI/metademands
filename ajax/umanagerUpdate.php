@@ -42,6 +42,17 @@ if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
     Html::header_nocache();
 }
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does.
+// This dropdown belongs to the wizard form and resolves a supervisor from a
+// posted users_id; the PII check below is per-user, not per-profile.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 if (!isset($_POST['fieldname'])) {
     $_POST['fieldname'] = "field";
 }

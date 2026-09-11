@@ -35,6 +35,17 @@ use GlpiPlugin\Metademands\Form_Value;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the
+// neighbouring ajax/condition.php does.
+// Deleting a saved model is a wizard operation; the ownership test below
+// binds the request to one form, not to a profile.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $users_id                          = Session::getLoginUserID();
 $plugin_metademands_metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
 $form_id                           = (int) $_POST['forms_id'];

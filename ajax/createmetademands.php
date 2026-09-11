@@ -312,6 +312,20 @@ if ($nofreetable == false) {
                         //Drop empty values for launch check_values
                         $post = array_filter($post);
 
+                        // A "<field id>#<colour>" key is only ever built server side, for
+                        // the form-changes rendering: no client posts one. Strip the
+                        // suffix off whatever arrives with it -- keeping the value -- so a
+                        // forged key cannot feed the colour handling of formatFields().
+                        $normalized_post = [];
+                        foreach ($post as $post_key => $post_value) {
+                            $hash_position = strpos((string) $post_key, '#');
+                            if ($hash_position > 0) {
+                                $post_key = substr((string) $post_key, 0, $hash_position);
+                            }
+                            $normalized_post[$post_key] = $post_value;
+                        }
+                        $post = $normalized_post;
+
                         //Clean $post & $data & $_POST
                         $dataOld = $data;
 
