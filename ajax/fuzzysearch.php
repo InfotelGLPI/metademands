@@ -34,7 +34,14 @@ $AJAX_INCLUDE = 1;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
+// Gate on the same rights as the wizard entry point (see front/wizard.form.php), whose
+// catalogue this box searches; Metademand::fuzzySearch() then replays the per-group
+// visibility rule of the listing. It replaces a Session::checkLoginUser() that was dead
+// code on a routed GLPI 11 entry point, authentication being enforced by the framework.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+]);
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $type   = $_POST['type'] ?? $_GET['type'] ?? '';

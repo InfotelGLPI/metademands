@@ -1,0 +1,11 @@
+{#-
+ # Trigger adding one more custom value row to a field configuration form. The
+ # legacy markup self-closed the <i> AND closed it again, which browsers recover
+ # from by nesting the rest of the row inside it.
+ #
+ # Expected context:
+ #  - icon_class: icon and button classes of the trigger
+ #  - onclick:    inline handler, kept from the legacy markup
+ #  - title:      tooltip of the trigger
+-#}
+&nbsp;<i class="{{ icon_class }}" style="cursor:pointer;" onclick="{{ onclick }}" title="{{ title }}"></i>&nbsp;

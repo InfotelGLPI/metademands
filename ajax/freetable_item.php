@@ -39,7 +39,15 @@ Html::header_nocache();
 
 // Mutating the wizard session state must not be reachable anonymously; the right to fill the
 // targeted meta-demand is enforced right below, as ajax/addsignature.php already does.
-Session::checkLoginUser();
+// Gate on the same rights as the wizard entry point (see front/wizard.form.php): this
+// route serves the wizard and the step form, both of which already require one of them.
+// It replaces a Session::checkLoginUser() that was dead code on a routed GLPI 11 entry
+// point, authentication being enforced by the framework.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
 
 $data_by_free = [];
 

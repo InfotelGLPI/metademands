@@ -329,8 +329,9 @@ class Task extends CommonDBChild
             if ($ID > 0) {
                 $valType = $this->fields['type'];
             } else {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td class='center'>" . __('Task type', 'metademands') . "&nbsp;";
+                // Dropdown::showFromArray() and Ajax::updateItemOnSelectEvent() print their
+                // markup: capture it and let the template own the row.
+                ob_start();
 
                 $task_types = self::getTaskTypes($item->getID());
 
@@ -357,12 +358,18 @@ class Task extends CommonDBChild
                     $params,
                 );
 
-                echo "</td>";
-                echo "</tr>";
+                echo TemplateRenderer::getInstance()->render(
+                    '@metademands/forms/task_form_row.html.twig',
+                    [
+                        'label'   => __('Task type', 'metademands'),
+                        'content' => ob_get_clean(),
+                    ],
+                );
             }
-            echo "<tr class='tab_bg_1'>";
-            echo "<td class='center'>";
-            echo "<span id='show_add_task_form'>";
+            // TicketTask::showTicketTaskForm() and MailTask::showMailTaskForm() print the
+            // form: capture it and let the template own the row and the <span> the Ajax
+            // reload targets.
+            ob_start();
             if ($ID > 0) {
                 $type = $this->fields['type'];
 
@@ -433,13 +440,20 @@ class Task extends CommonDBChild
                 if ($type > -1) {
                     TicketTask::showTicketTaskForm($item->getID(), $solved, $type);
                 } else {
-                    echo "<span style='color:red'>" . __("You don't have the ticket creation right", 'metademands') . "</span>";
+                    echo TemplateRenderer::getInstance()->render('@metademands/alert.html.twig', [
+                        'level'   => 'danger',
+                        'message' => __("You don't have the ticket creation right", 'metademands'),
+                    ]);
                 }
             }
 
-            echo "</span>";
-            echo "</td>";
-            echo "</tr>";
+            echo TemplateRenderer::getInstance()->render(
+                '@metademands/forms/task_form_row.html.twig',
+                [
+                    'span_id' => 'show_add_task_form',
+                    'content' => ob_get_clean(),
+                ],
+            );
 
             echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
 

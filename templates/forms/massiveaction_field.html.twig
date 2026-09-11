@@ -1,0 +1,11 @@
+{#-
+ # Widget and submit button of one of the massive actions of the plugin.
+ #
+ # Expected context:
+ #  - field_html:  the widget itself (colour picker, web-icon selector…), if any
+ #  - submit_html: the submit button
+ #  - stacked:     true to put the button on its own line, false to keep it inline
+-#}
+{{ field_html|default('')|raw }}
+{%- if stacked|default(false) %}<br>{% else %}&nbsp;{% endif -%}
+{{ submit_html|raw }}

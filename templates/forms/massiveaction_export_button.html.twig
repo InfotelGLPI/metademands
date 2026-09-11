@@ -1,0 +1,15 @@
+{#-
+ # Download button of the XML / JSON export massive action, together with the
+ # warning about the time the export may take. The button is driven by a script
+ # emitted next to it, which cancels the default event, hence type="button".
+ #
+ # Expected context:
+ #  - label:   caption of the button
+ #  - warning: notice displayed under the button
+-#}
+&nbsp;
+<button type="button" id="export_metademand" class="btn">{{ label }}</button>
+<br>
+<small class="text-danger">
+    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;{{ warning }}
+</small>

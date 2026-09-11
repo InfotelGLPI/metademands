@@ -33,6 +33,7 @@ use CommonDBTM;
 use CommonGLPI;
 use CommonITILObject;
 use DBConnection;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Resources\Resource;
 use Group_User;
@@ -322,7 +323,9 @@ class Ticket_Metademand extends CommonDBTM
         if ($numrows > 0) {
             $rand = mt_rand();
 
-            echo "<table class='tab_cadre_fixe'>";
+            // Ticket::commonListHeader() and Ticket::showShort() print their rows: capture
+            // them and let the template own the table.
+            ob_start();
 
             \Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
 
@@ -340,9 +343,15 @@ class Ticket_Metademand extends CommonDBTM
                     ],
                 );
             }
-            echo "</table>";
+
+            TemplateRenderer::getInstance()->display('@metademands/forms/ticket_metademand_list.html.twig', [
+                'rows_html' => ob_get_clean(),
+            ]);
         } else {
-            echo "<div class='alert alert-info center'>" . __('No results found') . "</div>";
+            TemplateRenderer::getInstance()->display('@metademands/alert.html.twig', [
+                'level'   => 'info',
+                'message' => __('No results found'),
+            ]);
         }
         return true;
     }

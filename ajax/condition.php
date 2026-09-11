@@ -37,7 +37,15 @@ use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 
-Session::checkLoginUser();
+// Gate on the same rights as the wizard entry point (see front/wizard.form.php): this
+// route serves the wizard and the step form, both of which already require one of them.
+// It replaces a Session::checkLoginUser() that was dead code on a routed GLPI 11 entry
+// point, authentication being enforced by the framework.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
 
 $predicate = '';
 

@@ -1,0 +1,11 @@
+{#-
+ # List of the tickets belonging to the same meta-demand, shown on the "Metademand"
+ # tab of a ticket. The rows come from Ticket::commonListHeader() and
+ # Ticket::showShort(), which print their markup, so they are captured and injected.
+ #
+ # Expected context:
+ #  - rows_html: captured header row and ticket rows
+-#}
+<div class="table-responsive">
+    <table class="table card-table">{{ rows_html|raw }}</table>
+</div>

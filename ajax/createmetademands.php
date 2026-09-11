@@ -46,6 +46,16 @@ if (isset($_POST['see_basket_summary'])) {
 
 Html::header_nocache();
 
+// Gate on the same rights as the wizard entry point (see front/wizard.form.php):
+// the per-branch checks below rely on Group::isUserHaveRight(), which returns true
+// by default when no group is configured on the meta-demand, so they cannot stand
+// in for a right check.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $KO = false;
 $step = ($_POST['step'] ?? 0) + 1;
 $metademands = new Metademand();

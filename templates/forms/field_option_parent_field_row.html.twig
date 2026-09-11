@@ -1,0 +1,11 @@
+{#-
+ # The "parent field" row of the condition editor, rendered INSIDE the table of
+ # field_option_options.html.twig, so this template emits a <tr> only.
+ #
+ # Expected context:
+ #  - value_html: captured "value to check" selector
+-#}
+<tr>
+    <td>{{ __('Field') }}</td>
+    <td>{{ value_html|raw }}</td>
+</tr>

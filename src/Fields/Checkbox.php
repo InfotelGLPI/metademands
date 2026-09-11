@@ -211,24 +211,7 @@ class Checkbox extends CommonDBTM
                 \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
                 $default_html = ob_get_clean();
 
-                $icon_selector_id = 'icon_' . mt_rand();
-                ob_start();
-                echo Html::select(
-                    'icon[' . $key . ']',
-                    [$value['icon'] => $value['icon']],
-                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;'],
-                );
-                echo Html::script('js/modules/Form/WebIconSelector.js');
-                echo Html::scriptBlock("$(
-            function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );");
-                echo "&nbsp;<input type='checkbox' name='_blank_picture[{$key}]'>&nbsp;" . __('Clear');
-                $icon_html = ob_get_clean();
+                $icon_html = FieldCustomvalue::showIconSelector($key, (string) $value['icon']);
 
                 ob_start();
                 Html::showSimpleForm(

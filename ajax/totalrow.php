@@ -33,6 +33,14 @@ use GlpiPlugin\Orderfollowup\Metademand;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
+// Gate on the same rights as the wizard entry point (see front/wizard.form.php):
+// every ajax/ route of the plugin carries its own authorization.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 if (($_POST['action'] ?? null) !== 'loadTotalrow'
     || !isset($_POST['quantity'])
     || $_POST['quantity'] <= 0) {

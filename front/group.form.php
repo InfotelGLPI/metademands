@@ -31,8 +31,7 @@ use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\GroupConfig;
 use GlpiPlugin\Metademands\Metademand;
 
-// Longest client-supplied pattern accepted by the group matching below, mirroring the cap
-// ajax/validregex.php already applies to the very same kind of input.
+// Longest client-supplied pattern accepted by the group matching below.
 $regex_value_max_length = 500;
 
 $group = new Group();
@@ -89,8 +88,7 @@ if (isset($_POST["add_groups"])) {
 
         // Tighten the PCRE limits around the loop so a catastrophically backtracking pattern
         // aborts instead of burning the worker's CPU over every group, and treat a false
-        // return as an invalid pattern rather than as a silent non-match. Same mechanics as
-        // ajax/validregex.php.
+        // return as an invalid pattern rather than as a silent non-match.
         $saved_backtrack_limit = ini_set('pcre.backtrack_limit', 10000);
         $saved_recursion_limit = ini_set('pcre.recursion_limit', 1000);
 

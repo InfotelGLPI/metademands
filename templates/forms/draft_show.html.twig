@@ -34,10 +34,15 @@
                 {% if forms is not empty %}
                     <div class="md-wizard">
                         {% for form in forms %}
-                            <form id="wizard_form" method="post" class="formCustomDraft"
+                            {#- The id is kept on the first form only: public/scripts/wizard_form.js
+                                serializes $('#wizard_form.formCustomDraft'), which already picked the
+                                first match, and duplicating an id across iterations is invalid HTML. -#}
+                            <form {% if loop.first %}id="wizard_form" {% endif %}method="post" class="formCustomDraft"
                                   action="{{ form_action }}" enctype="multipart/form-data">
+                                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                                 {{ form.hidden_html|raw }}
                                 {{ form.form_html|raw }}
+                            </form>
                         {% endfor %}
                     </div>
                 {% else %}

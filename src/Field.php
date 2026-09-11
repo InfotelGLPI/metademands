@@ -581,6 +581,48 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     }
 
     /**
+     * Itemtype selector of the field form, wrapped in the <span> the "Type" dropdown
+     * reloads through Ajax. Three branches of showForm() used to inline the same
+     * three `echo`, the last of which opened a `<span id="show_item_title">` that was
+     * never closed and that nothing in the plugin ever targets.
+     *
+     * @param string $type             type of the field driving the available itemtypes
+     * @param array  $dropdown_options options forwarded to dropdownFieldItems()
+     * @param int    $type_rand        rand of the "Type" dropdown driving the reload
+     * @param string $ajax_url
+     * @param array  $params_item
+     *
+     * @return string
+     */
+    private function showItemSelector(
+        string $type,
+        array $dropdown_options,
+        $type_rand,
+        string $ajax_url,
+        array $params_item,
+    ): string {
+        // dropdownFieldItems() prints the selector: capture it and let the template own
+        // the <span> the Ajax reload targets.
+        ob_start();
+        self::dropdownFieldItems($type, $dropdown_options);
+        $dropdown_html = ob_get_clean();
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/forms/field_item_selector.html.twig',
+            [
+                'dropdown_html' => $dropdown_html,
+                'script_html'   => Ajax::updateItemOnSelectEvent(
+                    'dropdown_type' . $type_rand,
+                    'show_item',
+                    $ajax_url,
+                    $params_item,
+                    false,
+                ),
+            ],
+        );
+    }
+
+    /**
      * @param       $ID
      * @param array $options
      *
@@ -779,11 +821,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 . __('Object', 'metademands')
                 . '<span style="color:red">&nbsp;*&nbsp;</span></span>'
                 . '<span id="show_item_label_title" style="display:none"></span>';
-            echo '<span id="show_item">';
-            self::dropdownFieldItems($this->fields["type"] ?? '', ['value' => $this->fields["item"] ?? '']);
-            echo '</span>';
-            Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_item", $ajax_url, $params_item);
-            echo '<span id="show_item_title" style="display:none">';
+            echo $this->showItemSelector(
+                $this->fields["type"] ?? '',
+                ['value' => $this->fields["item"] ?? ''],
+                $type_rand,
+                $ajax_url,
+                $params_item,
+            );
         } else {
             $item_label_html = __('Object', 'metademands');
             if ($this->fields["type"] == "dropdown_meta") {
@@ -798,24 +842,28 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     echo Html::hidden('item', ['value' => $this->fields['item']]);
                 }
             } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
-                echo '<span id="show_item">';
-                self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
-                echo '</span>';
-                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_item", $ajax_url, $params_item);
-                echo '<span id="show_item_title" style="display:none">';
+                echo $this->showItemSelector(
+                    $this->fields["type"],
+                    ['value' => $this->fields["item"]],
+                    $type_rand,
+                    $ajax_url,
+                    $params_item,
+                );
             } elseif ($this->fields["type"] == "dropdown_multiple") {
                 if ($this->fields["item"] == "other") {
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                     echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
                 } else {
-                    echo '<span id="show_item">';
-                    self::dropdownFieldItems($this->fields["type"], [
-                        'value'    => $this->fields["item"],
-                        'criteria' => Dropdownmultiple::$dropdown_multiple_items,
-                    ]);
-                    echo '</span>';
-                    Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_item", $ajax_url, $params_item);
-                    echo '<span id="show_item_title" style="display:none">';
+                    echo $this->showItemSelector(
+                        $this->fields["type"],
+                        [
+                            'value'    => $this->fields["item"],
+                            'criteria' => Dropdownmultiple::$dropdown_multiple_items,
+                        ],
+                        $type_rand,
+                        $ajax_url,
+                        $params_item,
+                    );
                 }
             } else {
                 echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
@@ -2674,13 +2722,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                                 } else {
                                                     switch ($parameters['item']) {
                                                         case 'User':
-                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
                                                             $params['value'] = $value;
                                                             $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
                                                             $value_parent_field .= $class_parent::getFieldValue($params);
                                                             break;
                                                         default:
-                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
                                                             $params['value'] = $value;
                                                             $params['item'] = $parameters['item'];
                                                             $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
@@ -2712,7 +2760,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                                         $checked = isset($checkboxes[$key]) ? 1 : 0;
                                                         if ($checked) {
                                                             $custom_checkbox[] = $label;
-                                                            $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='checkbox'>";
+                                                            $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "][" . htmlescape($key) . "]' value='checkbox'>";
                                                         }
                                                     }
                                                     $value_parent_field .= implode('<br>', $custom_checkbox);
@@ -2736,7 +2784,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                                     }
                                                     foreach ($parameters['custom_values'] as $key => $label) {
                                                         if ($value == $key) {
-                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$key' >";
+                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($key) . "' >";
                                                             $value_parent_field .= $label;
                                                             break;
                                                         }
@@ -2748,17 +2796,17 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                             case 'datetime':
                                             case 'yesno':
                                             case 'date':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
                                                 $params['value'] = $value;
                                                 $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
                                                 $value_parent_field .= $class_parent::getFieldValue($params);
                                                 break;
                                             case 'datetime_interval':
                                             case 'date_interval':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
                                                 if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$data['parent_field_id'] . "-2"])) {
                                                     $value2 = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id . "-2"];
-                                                    $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value2 . "'>";
+                                                    $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . htmlescape($value2) . "'>";
                                                 } else {
                                                     $value2 = 0;
                                                 }
@@ -2772,7 +2820,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
                                                 break;
                                             default:
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
                                                 $params['value'] = $value;
                                                 $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
                                                 $value_parent_field .= $class_parent::getFieldValue($params);
@@ -3170,9 +3218,14 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     {
         switch ($ma->getAction()) {
             case 'change_color':
-                echo Html::showColorField('color', ['display' => false]);
-                echo "<br>"
-                    . Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+                echo TemplateRenderer::getInstance()->render(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'field_html'  => Html::showColorField('color', ['display' => false]),
+                        'submit_html' => Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']),
+                        'stacked'     => true,
+                    ],
+                );
                 return true;
             case 'change_icon':
                 $icon_selector_id = 'icon_' . mt_rand();
@@ -3198,9 +3251,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
          );",
                 );
 
-                echo $return;
-                echo "&nbsp;"
-                    . Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+                echo TemplateRenderer::getInstance()->render(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'field_html'  => $return,
+                        'submit_html' => Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']),
+                    ],
+                );
                 return true;
         }
         return false;

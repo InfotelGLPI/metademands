@@ -1,0 +1,21 @@
+{#-
+ # Notice shown in place of the tasks tree when it cannot be edited, offering to
+ # duplicate the metademand instead.
+ #
+ # Expected context:
+ #  - message:        reason why the tree is read only
+ #  - action:         target of the duplication form
+ #  - metademands_id: metademand to duplicate
+-#}
+<div class="alert alert-warning" role="alert">
+    <i class="ti ti-alert-triangle" style="font-size:2em;color:orange" aria-hidden="true"></i>&nbsp;{{ message }}
+
+    <br><br>
+    <form name="task_form" id="task_form" method="post" action="{{ action }}">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="_method" value="Duplicate">
+        <input type="hidden" name="metademands_id" value="{{ metademands_id }}">
+        <input type="hidden" name="redirect" value="1">
+        <button type="submit" name="execute" class="btn btn-primary">{{ _x('button', 'Duplicate') }}</button>
+    </form>
+</div>

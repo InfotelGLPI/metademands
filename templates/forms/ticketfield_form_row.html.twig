@@ -1,0 +1,21 @@
+{#-
+ # The single row of TicketField::showForm(), rendered INSIDE the legacy
+ # showFormHeader()/showFormButtons() table, so this template emits a <tr> only.
+ #
+ # Expected context:
+ #  - field_name:  translated name of the ticket field being predefined
+ #  - hidden_html: the four Html::hidden() the form needs to be saved
+ #  - script_html: Ajax::updateItem() call that fills the value cell
+-#}
+<tr class="tab_bg_1">
+    <td>{{ __('Name') }}</td>
+    <td>
+        {{ field_name }}
+        {{- hidden_html|raw }}
+    </td>
+    <td>{{ __('Value') }}</td>
+    <td>
+        <span id="show_massiveaction_field">&nbsp;</span>
+        {{- script_html|raw }}
+    </td>
+</tr>

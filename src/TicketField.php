@@ -391,36 +391,36 @@ class TicketField extends CommonDBChild
         ob_start();
         $this->showFormHeader(['colspan' => 2]);
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Name') . "</td>";
-        echo "<td>";
-        echo htmlspecialchars($field_name);
-        echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
-        echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
         // Required by the CommonDBChild rights check done in front/ticketfield.form.php:
         // without the parent foreign key, check(-1, UPDATE, $_POST) cannot resolve the
         // parent metademand and the save is rejected with an access denied error.
-        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $metademands_id]);
-        echo Html::hidden('num', ['value' => $this->fields["num"]]);
-        echo "</td>";
-        echo "<td>" . __('Value') . "</td>";
-        echo "<td>";
-        echo "<span id='show_massiveaction_field'>&nbsp;</span>\n";
-        Ajax::updateItem(
-            "show_massiveaction_field",
-            PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownMassiveActionField.php",
+        $hidden_html = Html::hidden('entities_id', ['value' => $this->fields["entities_id"]])
+            . Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]])
+            . Html::hidden('plugin_metademands_metademands_id', ['value' => $metademands_id])
+            . Html::hidden('num', ['value' => $this->fields["num"]]);
+
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/forms/ticketfield_form_row.html.twig',
             [
-                'id_field'       => $this->fields["num"],
-                'value'          => $this->fields["value"],
-                'name'           => 'value',
-                'itemtype'       => $object,
-                'datatype'       => "text",
-                'itemtype_used'  => $itemtype_used,
-                'relative_dates' => 1,
+                'field_name'  => $field_name,
+                'hidden_html' => $hidden_html,
+                'script_html' => Ajax::updateItem(
+                    "show_massiveaction_field",
+                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownMassiveActionField.php",
+                    [
+                        'id_field'       => $this->fields["num"],
+                        'value'          => $this->fields["value"],
+                        'name'           => 'value',
+                        'itemtype'       => $object,
+                        'datatype'       => "text",
+                        'itemtype_used'  => $itemtype_used,
+                        'relative_dates' => 1,
+                    ],
+                    "",
+                    false,
+                ),
             ],
         );
-        echo "</td>";
-        echo "</tr>";
 
         $this->showFormButtons(['colspan' => 2, 'candel' => $this->fields["is_deletable"]]);
         $form_html = ob_get_clean();

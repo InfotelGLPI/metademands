@@ -1,0 +1,42 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Cascading location selector: the <select> driven by jquery.chained.selects.js, the
+ # script wiring it, and the hidden input carrying the value actually submitted.
+ #
+ # Expected context:
+ #  - script_src:  Html::script() tag of the cascading-dropdowns library
+ #  - script_html: Html::scriptBlock() building the cascade
+ #  - hidden_html: Html::hidden() holding the selected location id
+ #  - name, id:    name and id of the field
+ #  - is_required: whether the field is mandatory
+-#}
+{{ script_src|raw }}
+<select class="chained-select" name="{{ name }}-dropdown" id="{{ id }}-dropdown"{% if is_required %} required{% endif %}></select>
+{{ script_html|raw }}
+{{ hidden_html|raw }}

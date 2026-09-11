@@ -30,10 +30,15 @@
 use GlpiPlugin\Metademands\Configstep;
 use GlpiPlugin\Metademands\Step;
 
-// This entry point mutates the workflow state of a step form and echoes a confirmation:
-// keep it out of reach of anonymous callers. The step form itself is then bound to the
-// current user by Step::canActOnStepform(), called from Step::nextUser().
-Session::checkLoginUser();
+// This entry point mutates the workflow state of a step form and echoes a confirmation,
+// so it carries the same gate as front/stepform.php, the entry point of that surface.
+// The step form itself is then bound to the current user by Step::canActOnStepform(),
+// called from Step::nextUser(). It replaces a Session::checkLoginUser() that was dead
+// code on a routed GLPI 11 entry point, authentication being enforced by the framework.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
 
 // We manage the display of the drop-down lists of the groups of the next
 // and/or the display of the drop-down lists of the users linked to the group

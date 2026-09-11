@@ -306,7 +306,10 @@ class Dropdownmeta extends CommonDBTM
                             $selected_itemtype = "";
 
                             $users_id = $_POST['users_id'];
-                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
+                            // The included endpoint prints the field: capture it and let the
+                            // template own the input-group wrapper, which two distant `echo`
+                            // used to open and close.
+                            ob_start();
 
                             if (isset($value) && !empty($value)) {
                                 $splitter = explode("_", $value);
@@ -319,12 +322,21 @@ class Dropdownmeta extends CommonDBTM
                             $_POST['selected_itemtype'] = $selected_itemtype;
                             $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
                             include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
-                            echo "</div>";
+                            $field .= TemplateRenderer::getInstance()->render(
+                                '@metademands/fields/field_input_group.html.twig',
+                                [
+                                    'id'      => 'mydevices_user' . $data['link_to_user'] . $data['id'],
+                                    'content' => ob_get_clean(),
+                                ],
+                            );
 
                             if ($data['is_mandatory']) {
-                                echo "<div class='alertelt active'><div class='alertelttext'><span>";
-                                echo __('This field is mandatory, please select your equipment', 'metademands');
-                                echo "</span></div></div>";
+                                $field .= TemplateRenderer::getInstance()->render(
+                                    '@metademands/fields/field_alert_elt.html.twig',
+                                    [
+                                        'message' => __('This field is mandatory, please select your equipment', 'metademands'),
+                                    ],
+                                );
                             }
 
                             //                        echo "<div class='tooltipelt'><div class='tooltipelttext'><span>";
@@ -363,7 +375,10 @@ class Dropdownmeta extends CommonDBTM
                         $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                         //                     $users_id = 0;
                         if ($data['link_to_user'] > 0) {
-                            echo "<div id='mydevices_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
+                            // The included endpoint prints the field: capture it and let the
+                            // template own the input-group wrapper, which two distant `echo`
+                            // used to open and close.
+                            ob_start();
                             $fieldUser = new Field();
                             $fieldUser->getFromDBByCrit([
                                 'id' => $data['link_to_user'],
@@ -384,7 +399,13 @@ class Dropdownmeta extends CommonDBTM
                             $_POST['limit'] = json_encode($default_values);
                             $_POST['metademands_id'] = $data['plugin_metademands_metademands_id'];
                             include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
-                            echo "</div>";
+                            $field .= TemplateRenderer::getInstance()->render(
+                                '@metademands/fields/field_input_group.html.twig',
+                                [
+                                    'id'      => 'mydevices_user' . $data['link_to_user'] . $data['id'],
+                                    'content' => ob_get_clean(),
+                                ],
+                            );
                         } else {
                             $rand = mt_rand();
                             $p = [
@@ -406,16 +427,21 @@ class Dropdownmeta extends CommonDBTM
                     }
                 } else {
                     $dbu = new DbUtils();
+                    $itemtype = null;
+                    $items_id = null;
                     $splitter = explode("_", $value);
                     if (count($splitter) == 2) {
                         $itemtype = $splitter[0];
                         $items_id = $splitter[1];
                     }
-                    $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' >";
-                    if (isset($itemtype) && isset($items_id)) {
+                    $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "' >";
+                    // The itemtype half is carved out of a session value the requester controls, so
+                    // it is validated before being resolved into a table name rather than trusted:
+                    // only a real CommonDBTM may be read, and only at a positive row id.
+                    if (is_a($itemtype, CommonDBTM::class, true) && (int) $items_id > 0) {
                         $field .= \Dropdown::getDropdownName(
                             $dbu->getTableForItemType($itemtype),
-                            $items_id,
+                            (int) $items_id,
                         );
                     }
                 }
@@ -1017,22 +1043,7 @@ class Dropdownmeta extends CommonDBTM
                 \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
                 $default_html = ob_get_clean();
 
-                $icon_selector_id = 'icon_' . mt_rand();
-                ob_start();
-                echo Html::select(
-                    'icon[' . $key . ']',
-                    [$value['icon'] => $value['icon']],
-                    ['id' => $icon_selector_id, 'selected' => $value['icon'], 'style' => 'width:175px;'],
-                );
-                echo Html::script('js/modules/Form/WebIconSelector.js');
-                echo Html::scriptBlock("$(function() {
-                    import('/js/modules/Form/WebIconSelector.js').then((m) => {
-                        var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-                        icon_selector.init();
-                    });
-                });");
-                echo "&nbsp;<input type='checkbox' name='_blank_picture[{$key}]'>&nbsp;" . __('Clear');
-                $icon_html = ob_get_clean();
+                $icon_html = FieldCustomvalue::showIconSelector($key, (string) $value['icon']);
 
                 ob_start();
                 Html::showSimpleForm(
@@ -1460,14 +1471,18 @@ class Dropdownmeta extends CommonDBTM
 
         if (count($check_values) > 0) {
             //Si la valeur est en session
+            // The value is encoded at the sink below: it travels POST -> session -> database ->
+            // another user's session, and the `> 0` test degrades to a string comparison as soon
+            // as it is not numeric. It cannot be tightened into an integer cast here, a
+            // dropdown_meta value legitimately being an `<Itemtype>_<id>` pair.
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     if ($values) {
-                        $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                        $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").prop('checked', true).trigger('change');";
                     }
                 } else {
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 }
             }
 
@@ -1956,14 +1971,18 @@ class Dropdownmeta extends CommonDBTM
             }
 
             //Si la valeur est en session
+            // The value is encoded at the sink below: it travels POST -> session -> database ->
+            // another user's session, and the `> 0` test degrades to a string comparison as soon
+            // as it is not numeric. It cannot be tightened into an integer cast here, a
+            // dropdown_meta value legitimately being an `<Itemtype>_<id>` pair.
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
                     if ($values) {
-                        $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                        $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").prop('checked', true).trigger('change');";
                     }
                 } else {
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 }
             }
 

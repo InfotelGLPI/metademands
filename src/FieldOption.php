@@ -808,13 +808,14 @@ class FieldOption extends CommonDBChild
                 $class::getParamsValueToCheck($this, $item, $params);
                 break;
             case 'parent_field':
-                echo "<tr>";
-                echo "<td>";
-                echo __('Field');
-                echo "</td>";
-                echo "<td>";
+                // showValueToCheck() prints the selector: capture it and let the template
+                // own the row.
+                ob_start();
                 self::showValueToCheck($this, $params);
-                echo "</td></tr>";
+                echo TemplateRenderer::getInstance()->render(
+                    '@metademands/forms/field_option_parent_field_row.html.twig',
+                    ['value_html' => ob_get_clean()],
+                );
                 break;
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -1095,10 +1096,10 @@ class FieldOption extends CommonDBChild
 
     public static function showRegexInput($value)
     {
-        echo Html::input('check_value', ['value' => $value]);
-        echo    "<button class=\"btn btn-success\" type=\"button\" name=\"valid_regex\">";
-        echo        "<i class=\"fas fa-check\"></i>";
-        echo    "</button>";
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/forms/field_option_regex_input.html.twig',
+            ['input_html' => Html::input('check_value', ['value' => $value])],
+        );
     }
 
     /**

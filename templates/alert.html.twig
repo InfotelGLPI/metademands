@@ -1,0 +1,13 @@
+{#-
+ # Shared inline alert, used wherever a class used to `echo` a bare
+ # `<div class="alert alert-*">`.
+ #
+ # Expected context:
+ #  - message: text to display
+ #  - level:   bootstrap contextual suffix (success, warning, danger, info…)
+ #  - icon:    optional icon class, rendered before the message
+-#}
+<div class="alert alert-{{ level|default('info') }} d-flex" role="alert">
+    {%- if icon|default('') is not empty %}<i class="{{ icon }}" aria-hidden="true"></i>&nbsp;{% endif -%}
+    {{ message }}
+</div>

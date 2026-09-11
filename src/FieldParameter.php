@@ -384,7 +384,6 @@ class FieldParameter extends CommonDBChild
 
             echo self::showGlobalParameters($params);
 
-            echo "<br>";
             $class = Field::getClassFromType($params['type']);
 
             switch ($params["type"]) {
@@ -433,7 +432,10 @@ class FieldParameter extends CommonDBChild
                         }
                         $plugin_html = ob_get_clean();
                         if (!empty(trim($plugin_html))) {
-                            echo '<div class="mt-2"><table class="tab_cadre w-100"><tbody>' . $plugin_html . '</tbody></table></div>';
+                            echo TemplateRenderer::getInstance()->render(
+                                '@metademands/forms/field_parameter_plugin_values.html.twig',
+                                ['content' => $plugin_html],
+                            );
                         }
                     }
                     break;
@@ -479,7 +481,10 @@ class FieldParameter extends CommonDBChild
                 icon_selector.init();
             });
         });");
-        echo "&nbsp;<input type='checkbox' name='_blank_picture'>&nbsp;" . __('Clear');
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/forms/field_parameter_clear_picture.html.twig',
+            ['label' => __('Clear')],
+        );
         $icon_html = ob_get_clean();
 
         ob_start();

@@ -405,21 +405,20 @@ class MetademandValidation extends CommonDBTM
         $inputVal['date'] = $_SESSION["glpi_currenttime"];
         $this->update($inputVal);
 
+        $message = '';
         if ($inputVal['validate'] == self::TASK_CREATION) {
-            echo "<div class='alert alert-success d-flex'>" . __(
-                'Tasks are created',
-                'metademands',
-            ) . "</div>";
+            $message = __('Tasks are created', 'metademands');
         } elseif ($inputVal['validate'] == self::TICKET_CREATION) {
-            echo "<div class='alert alert-success d-flex'>" . __(
-                'Sub-tickets are created',
-                'metademands',
-            ) . "</div>";
+            $message = __('Sub-tickets are created', 'metademands');
         } elseif ($inputVal['validate'] == self::VALIDATE_WITHOUT_TASK) {
-            echo "<div class='alert alert-success d-flex'>" . __(
-                'The metademand is validated and affected',
-                'metademands',
-            ) . "</div>";
+            $message = __('The metademand is validated and affected', 'metademands');
+        }
+
+        if ($message !== '') {
+            TemplateRenderer::getInstance()->display('@metademands/alert.html.twig', [
+                'level'   => 'success',
+                'message' => $message,
+            ]);
         }
     }
 
@@ -442,8 +441,13 @@ class MetademandValidation extends CommonDBTM
                 $style = "btn-orange";
                 $title = __('Metademand validation', 'metademands');
             }
-            echo "<li><button class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                . "<i class='ti ti-thumb-up' style='margin-left: 10px;'></i>" . $title . "</button></li>";
+            echo TemplateRenderer::getInstance()->render(
+                '@metademands/forms/validation_action_button.html.twig',
+                [
+                    'style' => $style,
+                    'title' => $title,
+                ],
+            );
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',

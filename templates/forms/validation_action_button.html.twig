@@ -1,0 +1,12 @@
+{#-
+ # Entry added by MetademandValidation::showActionsForm() to the ITIL actions menu.
+ #
+ # Expected context:
+ #  - style: contextual class of the button (btn-green / btn-orange)
+ #  - title: label of the button, empty when the validation is already done
+-#}
+<li>
+    <button type="button" class="btn primary answer-action {{ style }}" data-bs-toggle="modal" data-bs-target="#metavalidation">
+        <i class="ti ti-thumb-up" style="margin-left: 10px;" aria-hidden="true"></i>{{ title }}
+    </button>
+</li>

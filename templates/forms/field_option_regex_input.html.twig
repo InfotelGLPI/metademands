@@ -1,0 +1,12 @@
+{#-
+ # Regular expression to check a field value against, followed by the button that
+ # tests it. Html::input() prints nothing, it returns its markup, so the input is
+ # passed in already rendered.
+ #
+ # Expected context:
+ #  - input_html: markup of the text input
+-#}
+{{ input_html|raw }}
+<button class="btn btn-success" type="button" name="valid_regex">
+    <i class="fas fa-check" aria-hidden="true"></i>
+</button>

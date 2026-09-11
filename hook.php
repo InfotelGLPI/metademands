@@ -645,7 +645,9 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
     switch ($table . "." . $field) {
         case "glpi_plugin_metademands_tickets_metademands.status":
             if (is_numeric($val)) {
-                return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
+                // The core wraps this string in a QueryExpression verbatim, so cast at the
+                // sink rather than relying on the is_numeric() test above staying in place.
+                return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = " . (int) $val;
             }
             break;
 
@@ -656,8 +658,9 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                 $AND = "AND glpi_tickets.status IN ( " . implode(",", Ticket::getNotSolvedStatusArray()) . ")";
             }
             if (is_numeric($val)) {
+                // Cast at the sink, as above.
                 return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
-                        AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
+                        AND `glpi_plugin_metademands_metademandvalidations`.`validate` = " . (int) $val . " $AND";
             }
 
             break;

@@ -103,28 +103,22 @@ class Number extends CommonDBTM
             $minimal = $params['custom_values'][3] ?? "";
         }
 
+        // The label and the hint of each cell belong to the shared template; only the
+        // widget is captured, because Dropdown::showNumber() prints its markup.
         ob_start();
-        echo '<label>' . __("Minimal count") . '</label>&nbsp;';
-        $opt = ['value' => $min];
-        \Dropdown::showNumber("custom[0]", $opt);
+        \Dropdown::showNumber("custom[0]", ['value' => $min]);
         $min_cell = ob_get_clean();
 
         ob_start();
-        echo '<label>' . __("Maximal count") . '</label>&nbsp;';
-        $opt = ['value' => $max, 'max' => 9999];
-        \Dropdown::showNumber("custom[1]", $opt);
+        \Dropdown::showNumber("custom[1]", ['value' => $max, 'max' => 9999]);
         $max_cell = ob_get_clean();
 
         ob_start();
-        echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
-        $opt = ['value' => $step, 'min' => 1];
-        \Dropdown::showNumber("custom[2]", $opt);
+        \Dropdown::showNumber("custom[2]", ['value' => $step, 'min' => 1]);
         $step_cell = ob_get_clean();
 
         ob_start();
-        echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
-        $opt = ['value' => $minimal];
-        \Dropdown::showNumber("custom[3]", $opt);
+        \Dropdown::showNumber("custom[3]", ['value' => $minimal]);
         $minimal_cell = ob_get_clean();
 
         ob_start();
@@ -138,10 +132,10 @@ class Number extends CommonDBTM
             '@metademands/fields/field_customvalue_fixed.html.twig',
             [
                 'rows' => [[
-                    ['html' => $min_cell],
-                    ['html' => $max_cell],
-                    ['html' => $step_cell],
-                    ['html' => $minimal_cell],
+                    ['label' => __("Minimal count"), 'html' => $min_cell],
+                    ['label' => __("Maximal count"), 'html' => $max_cell],
+                    ['label' => __("Step for number", "metademands"), 'html' => $step_cell],
+                    ['label' => __("Minimal mandatory", "metademands"), 'html' => $minimal_cell],
                 ]],
                 'submit_html' => $submit_html,
             ],

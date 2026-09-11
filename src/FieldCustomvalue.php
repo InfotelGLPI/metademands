@@ -495,9 +495,15 @@ class FieldCustomvalue extends CommonDBChild
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
         echo Html::hidden('display_icon', ['id' => 'display_icon', 'value' => $display_icon]);
 
-        echo "&nbsp;<i class='ti ti-square-plus btn btn-sm btn-success' style='cursor:pointer;'
-            onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
-            title='" . _sx("button", "Add") . "'/></i>&nbsp;";
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/forms/custom_value_add_button.html.twig',
+            [
+                'icon_class' => 'ti ti-square-plus btn btn-sm btn-success',
+                'onclick'    => $script . ' metademandWizard.metademands_add_custom_values("show_custom_fields", '
+                    . (int) $plugin_metademands_fields_id . ');',
+                'title'      => _x('button', 'Add'),
+            ],
+        );
 
     }
 
@@ -542,6 +548,40 @@ class FieldCustomvalue extends CommonDBChild
     }
 
     /**
+     * Web-icon selector of one custom-value row. Four call sites used to inline the same
+     * <select> + WebIconSelector module + "clear" checkbox, each with its own indentation
+     * and its own HTML literal.
+     *
+     * @param int|string $key  index carried by the icon[] and _blank_picture[] inputs
+     * @param string     $icon currently selected icon, empty on a new row
+     *
+     * @return string
+     */
+    public static function showIconSelector($key, string $icon = ''): string
+    {
+        $icon_selector_id = 'icon_' . mt_rand();
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_customvalue_icon.html.twig',
+            [
+                'key'         => $key,
+                'select_html' => Html::select(
+                    "icon[$key]",
+                    $icon === '' ? ['' => ''] : [$icon => $icon],
+                    ['id' => $icon_selector_id, 'selected' => $icon, 'style' => 'width:175px;'],
+                ),
+                'script_html' => Html::script('js/modules/Form/WebIconSelector.js')
+                    . Html::scriptBlock("$(function() {
+                        import('/js/modules/Form/WebIconSelector.js').then((m) => {
+                            var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
+                            icon_selector.init();
+                        });
+                    });"),
+            ],
+        );
+    }
+
+    /**
      * @param $valueId
      * @param $display_comment
      * @param $display_default
@@ -557,22 +597,7 @@ class FieldCustomvalue extends CommonDBChild
 
         $icon_html = '';
         if ($display_icon) {
-            $icon_selector_id = 'icon_' . mt_rand();
-            ob_start();
-            echo Html::select(
-                "icon[$rank]",
-                ['' => ''],
-                ['id' => $icon_selector_id, 'selected' => '', 'style' => 'width:175px;'],
-            );
-            echo Html::script('js/modules/Form/WebIconSelector.js');
-            echo Html::scriptBlock("$(function() {
-                import('/js/modules/Form/WebIconSelector.js').then((m) => {
-                    var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-                    icon_selector.init();
-                });
-            });");
-            echo "&nbsp;<input type='checkbox' name='_blank_picture[{$rank}]'>&nbsp;" . __('Clear');
-            $icon_html = ob_get_clean();
+            $icon_html = self::showIconSelector($rank);
         }
 
         TemplateRenderer::getInstance()->display(

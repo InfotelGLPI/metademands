@@ -170,31 +170,46 @@ class Dropdown extends CommonDBTM
         return $result;
     }
 
+    /**
+     * Cascading location selector. Returns its markup instead of printing it: the only
+     * caller concatenates the result into the field it is building, so the legacy `echo`
+     * pushed the selector out of that field and ahead of it.
+     *
+     * @param array $opt
+     *
+     * @return string
+     */
     public static function locationDropdown($opt)
     {
-
-        echo Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/cascading-dropdowns/jquery.chained.selects.js");
-
-        $root_items_id = (int) ($opt['root_items_id'] ?? 0);
+        $root_items_id  = (int) ($opt['root_items_id'] ?? 0);
         $location_depth = (int) ($opt['location_depth'] ?? 0);
-        $locations = self::getLocations($_SESSION['glpiactiveentities'], $root_items_id, $location_depth);
-        $locations_json = json_encode($locations);
-        $name = $opt['name'];
-        $id = $opt['fields_id'];
-        $value = $opt['value'];
-        $required = $opt['required'];
+        $locations      = self::getLocations($_SESSION['glpiactiveentities'], $root_items_id, $location_depth);
+        $name           = $opt['name'];
+        $id             = $opt['fields_id'];
 
-        echo "<select class='chained-select' name=\"$name-dropdown\" id=\"$id-dropdown\" $required></select>";
-        echo Html::scriptBlock("function loadSplittedLocations() {
+        // Everything below is interpolated into a <script>: a location name or a stored
+        // value carrying `</script>` would otherwise close the block early. Only HEX_TAG
+        // and HEX_AMP, the quote flags would break the JS literals.
+        $locations_json = json_encode($locations, JSON_HEX_TAG | JSON_HEX_AMP);
+        $value_json     = json_encode((string) $opt['value'], JSON_HEX_TAG | JSON_HEX_AMP);
+        $id_json        = json_encode((string) $id, JSON_HEX_TAG | JSON_HEX_AMP);
 
-                            $(\"#$id-dropdown\").chainedSelects({
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_location_chained.html.twig',
+            [
+                'name'        => $name,
+                'id'          => $id,
+                'is_required' => !empty($opt['required']),
+                'script_src'  => Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/cascading-dropdowns/jquery.chained.selects.js"),
+                'script_html' => Html::scriptBlock("function loadSplittedLocations() {
+                            $('#' + {$id_json} + '-dropdown').chainedSelects({
                                 placeholder: '',
-                                data: $locations_json,
+                                data: {$locations_json},
                                 loggingEnabled: false,
-                                selectedKey: '$value',
+                                selectedKey: {$value_json},
                                 autoSelectSingleOptions: true,
                                 onSelectedCallback: function (id) {
-                                    document.getElementById('$id').value = id;
+                                    document.getElementById({$id_json}).value = id;
                                 },
                             });
                         }
@@ -202,8 +217,10 @@ class Dropdown extends CommonDBTM
                         $(document).ready(function () {
                             loadSplittedLocations();
                         });
-                     ");
-        echo Html::hidden($name, ['id' => $id]);
+                     "),
+                'hidden_html' => Html::hidden($name, ['id' => $id]),
+            ],
+        );
     }
 
 
@@ -231,7 +248,9 @@ class Dropdown extends CommonDBTM
         switch ($data['item']) {
             case "Location" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='location_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
+                    // The included endpoint prints the field: capture it and let the template
+                    // own the input-group wrapper, which two distant `echo` used to open and close.
+                    ob_start();
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['locations_id'] = $value;
                     $fieldUser             = new Field();
@@ -261,7 +280,13 @@ class Dropdown extends CommonDBTM
                         $_POST['is_mandatory'] = 1;
                     }
                     include(PLUGIN_METADEMANDS_DIR . "/ajax/ulocationUpdate.php");
-                    echo "</div>";
+                    $field .= TemplateRenderer::getInstance()->render(
+                        '@metademands/fields/field_input_group.html.twig',
+                        [
+                            'id'      => 'location_user' . $data['link_to_user'] . $data['id'],
+                            'content' => ob_get_clean(),
+                        ],
+                    );
                 } else {
                     $options['name']    = $namefield . "[" . $data['id'] . "]";
                     $options['width']    = "400px";
@@ -324,7 +349,9 @@ class Dropdown extends CommonDBTM
 
             case "UserTitle" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='title_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
+                    // The included endpoint prints the field: capture it and let the template
+                    // own the input-group wrapper, which two distant `echo` used to open and close.
+                    ob_start();
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['fields_id']    = $data['id'];
                     $_POST['usertitles_id'] = $value;
@@ -352,7 +379,13 @@ class Dropdown extends CommonDBTM
                         $_POST['is_mandatory'] = 1;
                     }
                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utitleUpdate.php");
-                    echo "</div>";
+                    $field .= TemplateRenderer::getInstance()->render(
+                        '@metademands/fields/field_input_group.html.twig',
+                        [
+                            'id'      => 'title_user' . $data['link_to_user'] . $data['id'],
+                            'content' => ob_get_clean(),
+                        ],
+                    );
                 } else {
                     $options['name']    = $namefield . "[" . $data['id'] . "]";
                     $options['width']    = "400px";
@@ -367,7 +400,9 @@ class Dropdown extends CommonDBTM
                 break;
             case "UserCategory" :
                 if ($data['link_to_user'] > 0) {
-                    echo "<div id='category_user" . $data['link_to_user'] . $data['id'] . "' class=\"input-group\">";
+                    // The included endpoint prints the field: capture it and let the template
+                    // own the input-group wrapper, which two distant `echo` used to open and close.
+                    ob_start();
                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                     $_POST['usercategories_id'] = $value;
                     $fieldUser             = new Field();
@@ -394,7 +429,13 @@ class Dropdown extends CommonDBTM
                         $_POST['is_mandatory'] = 1;
                     }
                     include(PLUGIN_METADEMANDS_DIR . "/ajax/ucategoryUpdate.php");
-                    echo "</div>";
+                    $field .= TemplateRenderer::getInstance()->render(
+                        '@metademands/fields/field_input_group.html.twig',
+                        [
+                            'id'      => 'category_user' . $data['link_to_user'] . $data['id'],
+                            'content' => ob_get_clean(),
+                        ],
+                    );
                 } else {
                     $options['name']    = $namefield . "[" . $data['id'] . "]";
                     $options['width']    = "400px";
@@ -1159,12 +1200,15 @@ class Dropdown extends CommonDBTM
             }
 
             //Si la valeur est en session
+            // The value is encoded at the sink below: it travels POST -> session -> database ->
+            // another user's session, and the `> 0` test degrades to a string comparison as soon
+            // as it is not numeric, so it cannot keep a payload out of the emitted JS.
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $values = $data['value'];
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").prop('checked', true).trigger('change');";
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").prop('checked', true).trigger('change');";
                 } else {
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 }
             }
 

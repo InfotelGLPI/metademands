@@ -1,0 +1,15 @@
+{#-
+ # The two cells describing one field the requester filled in, as produced by
+ # Basket::retrieveDatasByType(). They are rendered INSIDE a <tr> opened by the
+ # caller, which groups two fields to a row, so this template emits cells only.
+ #
+ # Expected context:
+ #  - label:      name of the field, translated when a translation exists
+ #  - label2:     second label of a "date_interval" field, empty otherwise
+ #  - value_html: markup returned by the matching Fields\*::getFieldValue()
+-#}
+<td>
+   {{ label }}
+   {%- if label2 is not empty %}<br><br><br>{{ label2 }}{% endif %}
+</td>
+<td>{{ value_html|raw }}</td>

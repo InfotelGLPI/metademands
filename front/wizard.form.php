@@ -37,6 +37,21 @@ use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Main;
 
+// Page guard. The menu entry (setup.php) and the helpdesk tile
+// (MetademandPageTile::isAvailable()) gate on the first two rights, and
+// ajax/set_session.php already replays them; the third one covers the other way in,
+// Stepform::showPendingForm() redirecting here to fill a step (src/Stepform.php:875),
+// whose own entry point front/stepform.php accepts plugin_metademands_fillform alone.
+// Without this check the wizard was reachable by direct URL with no plugin right at
+// all: Wizard::showWizard() only replays Group::isUserHaveRight(), which returns true
+// by default when no group is set on the meta-demand, so a profile deliberately
+// created without any right could still list, open and submit meta-demands.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 global $CFG_GLPI;
 
 $wizard = new Wizard();

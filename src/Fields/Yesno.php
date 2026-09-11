@@ -745,9 +745,12 @@ class Yesno extends CommonDBTM
             }
 
             //Si la valeur est en session
+            // The value is encoded at the sink below: it travels POST -> session -> database ->
+            // another user's session, and the `> 0` test degrades to a string comparison as soon
+            // as it is not numeric, so it cannot keep a payload out of the emitted JS.
             if (isset($data['value']) &&  $data['value'] > 0) {
                 if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . $data['value'] . ").trigger('change');";
+                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
                 } else {
                     if ($data['value'] == 2) {
                         $pre_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";

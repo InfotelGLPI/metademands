@@ -1,0 +1,9 @@
+{#-
+ # Width constraint around the date pickers of the condition form.
+ # Html::showDateField() and Html::showDateTimeField() print the picker, so the
+ # caller captures it.
+ #
+ # Expected context:
+ #  - content: captured markup of the picker
+-#}
+<span style="width: 50%!important;display: -webkit-box;">{{ content|raw }}</span>

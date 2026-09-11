@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Servicecatalog\Main;
 use GlpiPlugin\Metademands\Draft;
 
@@ -38,10 +39,10 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
 
     Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
-    echo "<a class='btn btn-sm btn-primary mb-3 fs-4' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/draftcreation.php'>" . __(
-        "New draft",
-        'metademands',
-    ) . "</a>";
+    TemplateRenderer::getInstance()->display('@metademands/forms/draft_new_button.html.twig', [
+        'url'   => PLUGIN_METADEMANDS_WEBDIR . '/front/draftcreation.php',
+        'label' => __('New draft', 'metademands'),
+    ]);
 
     Search::show(Draft::class);
 

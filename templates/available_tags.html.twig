@@ -25,37 +25,51 @@
  # --------------------------------------------------------------------------
  #}
 
-<div class="center">
-    <table class="tab_cadre_fixe">
-        <tr>
-            <th>{{ __('Tag') }}</th>
-            <th>{{ __('Label') }}</th>
-        </tr>
-        <tr>
-            <td>#requester.login#</td>
-            <td>{{ __('Requester login', 'metademands') }}</td>
-        </tr>
-        <tr>
-            <td>#requester.name#</td>
-            <td>{{ __('Requester name', 'metademands') }}</td>
-        </tr>
-        <tr>
-            <td>#requester.firstname#</td>
-            <td>{{ __('Requester firstname', 'metademands') }}</td>
-        </tr>
-        <tr>
-            <td>#requester.email#</td>
-            <td>{{ __('Requester email', 'metademands') }}</td>
-        </tr>
-        <tr>
-            <td>#entity#</td>
-            <td>{{ __('Entity') }}</td>
-        </tr>
-        {% for row in tags %}
+{#-
+ # Tags that can be used in the notification templates of a metademand.
+ #
+ # Expected context:
+ #  - tags:                rows of {tag, label}
+ #  - with_requester_tags: whether the requester and entity tags apply, true by
+ #                         default; the tags of a metademand itself do not use them
+-#}
+<div class="table-responsive">
+    <table class="table card-table">
+        <thead>
             <tr>
-                <td>#{{ row.tag }}#</td>
-                <td>{{ row.label }}</td>
+                <th>{{ __('Tag') }}</th>
+                <th>{{ __('Label') }}</th>
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% if with_requester_tags|default(true) %}
+                <tr>
+                    <td>#requester.login#</td>
+                    <td>{{ __('Requester login', 'metademands') }}</td>
+                </tr>
+                <tr>
+                    <td>#requester.name#</td>
+                    <td>{{ __('Requester name', 'metademands') }}</td>
+                </tr>
+                <tr>
+                    <td>#requester.firstname#</td>
+                    <td>{{ __('Requester firstname', 'metademands') }}</td>
+                </tr>
+                <tr>
+                    <td>#requester.email#</td>
+                    <td>{{ __('Requester email', 'metademands') }}</td>
+                </tr>
+                <tr>
+                    <td>#entity#</td>
+                    <td>{{ __('Entity') }}</td>
+                </tr>
+            {% endif %}
+            {% for row in tags %}
+                <tr>
+                    <td>#{{ row.tag }}#</td>
+                    <td>{{ row.label }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>

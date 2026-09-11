@@ -1,0 +1,11 @@
+{#-
+ # The itemtype selector of a field, wrapped in the <span> the "Type" dropdown
+ # reloads through Ajax. dropdownFieldItems() prints its markup, so the caller
+ # captures it.
+ #
+ # Expected context:
+ #  - dropdown_html: captured selector
+ #  - script_html:   Ajax::updateItemOnSelectEvent() call driving the reload
+-#}
+<span id="show_item">{{ dropdown_html|raw }}</span>
+{{ script_html|raw }}

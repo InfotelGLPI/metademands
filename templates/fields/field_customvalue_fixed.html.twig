@@ -30,16 +30,23 @@
  # parameters (no rank/order, no add/delete rows): Basket, Link, Number, Range,
  # Yesno. Rendered INSIDE the <table> already opened by
  # field_customvalue_values.html.twig, so this template emits table rows only.
- # Each cell's inner HTML (a static __() label plus a framework widget such as
- # Dropdown::show*() or Html::input()) is captured server-side and injected as
- # raw; the template owns the <tr class="tab_bg_1"> / <td> grid and the trailing
- # submit row. `after_html` carries an optional trailing fragment such as the
- # markup produced by Html::closeForm().
+ # The template owns the <tr class="tab_bg_1"> / <td> grid, the label and the
+ # hint of each cell, and the trailing submit row. Only the widget itself is
+ # captured server-side and injected as raw, because it is produced by a
+ # framework call such as Dropdown::show*() or Html::input().
+ #
+ # Cell keys: html (required), label, hint, colspan — all optional but html.
+ # `after_html` carries an optional trailing fragment such as the markup
+ # produced by Html::closeForm().
 -#}
 {% for row in rows %}
    <tr class="tab_bg_1">
       {%- for cell in row %}
-      <td{% if cell.colspan is defined and cell.colspan %} colspan="{{ cell.colspan }}"{% endif %}>{{ cell.html|raw }}</td>
+      <td{% if cell.colspan is defined and cell.colspan %} colspan="{{ cell.colspan }}"{% endif %}>
+         {%- if cell.label is defined and cell.label %}<label>{{ cell.label }}</label>&nbsp;{% endif -%}
+         {{ cell.html|raw }}
+         {%- if cell.hint is defined and cell.hint %}<br><i>{{ cell.hint }}</i>{% endif -%}
+      </td>
       {%- endfor %}
    </tr>
 {% endfor %}

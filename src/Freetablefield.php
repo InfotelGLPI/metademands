@@ -407,9 +407,15 @@ class Freetablefield extends CommonDBChild
         echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
         echo Html::hidden('display_default', ['id' => 'display_default', 'value' => true]);
 
-        echo "&nbsp;<i class='ti ti-plus btn btn-primary' style='cursor:pointer;'
-            onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\", $plugin_metademands_fields_id);'
-            title='" . _sx("button", "Add") . "'/></i>&nbsp;";
+        echo TemplateRenderer::getInstance()->render(
+            '@metademands/forms/custom_value_add_button.html.twig',
+            [
+                'icon_class' => 'ti ti-plus btn btn-primary',
+                'onclick'    => $script . ' metademandWizard.metademands_add_custom_values("show_custom_fields", '
+                    . (int) $plugin_metademands_fields_id . ');',
+                'title'      => _x('button', 'Add'),
+            ],
+        );
     }
 
 

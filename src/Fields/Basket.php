@@ -439,8 +439,8 @@ class Basket extends CommonDBTM
                     }
                 }
                 $checkbox_html = "<input $required class='form-check-input' type='checkbox'
-                check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]'
-                key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$value_check' $checked>";
+                check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . htmlescape($key) . "]'
+                key='" . htmlescape($key) . "' id='" . $namefield . "[" . $data['id'] . "][" . htmlescape($key) . "]' value='" . htmlescape($value_check) . "' $checked>";
 
                 $cells[] = ['h' => $checkbox_html];
 
@@ -1284,135 +1284,125 @@ class Basket extends CommonDBTM
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         }
     }
-
     /**
-     * @param $idline
-     * @param $values
-     * @param $fields
+     * Label and value of one field of a basket, as a pair of table cells. The method
+     * used to print them, which forced its only caller to buffer the output.
+     *
+     * @param int   $id    identifier of the field
+     * @param mixed $value value the requester filled in
+     *
+     * @return string
      */
-    public static function retrieveDatasByType($id, $value)
+    public static function retrieveDatasByType($id, $value): string
     {
-        //        foreach ($fields as $k => $v) {
-
         $field = new Field();
-        if ($field->getFromDB($id)) {
-            //hide blocks
-            //            if ($field->fields['type'] == 'informations' || $field->fields['type'] == 'title-block' || $field->fields['type'] == 'title') {
-            //                continue;
-            //            }
-
-            if (!empty($value) && isset($field->fields['type']) && $field->fields['type'] != "basket") {
-                //            echo "<tr class='tab_bg_1'>";
-
-                echo "<td>";
-
-                if (empty($label = Field::displayField($field->fields['id'], 'name'))) {
-                    $label = $field->fields['name'];
-                }
-
-                // The echo used to sit inside the branch above, so a field whose label
-                // carried a translation was printed with no label at all.
-                echo htmlspecialchars((string) $label);
-
-                if ($field->fields['type'] == "date_interval") {
-                    if (empty($label2 = Field::displayField($field->fields['id'], 'label2'))) {
-                        $label2 = $field->fields['label2'];
-                    }
-                    echo "<br><br><br>" . Toolbox::stripTags($label2);
-                }
-
-                echo "</td>";
-
-                echo "<td>";
-                $lang = $_SESSION['glpilanguage'];
-
-                $values['value'] = $value;
-                $values['item'] = $field->fields['item'];
-
-                //            if ($field->fields['type'] == "date_interval" || $field->fields['type'] == "datetime_interval") {
-                //                if (isset($value['value2'])) {
-                //                    $v['value'] = $value['value2'];
-                //                }
-                //
-                //            }
-                $params = Field::getAllParamsFromField($field);
-                $values = array_merge($values, $params);
-
-                switch ($field->fields['type']) {
-                    case 'dropdown':
-                        echo Dropdown::getFieldValue($values);
-                        break;
-                    case 'dropdown_object':
-                        echo Dropdownobject::getFieldValue($values);
-                        break;
-                    case 'dropdown_ldap' :
-                        echo Ldapdropdown::getFieldValue($values);
-                        break;
-                    case 'dropdown_meta':
-                        echo Dropdownmeta::getFieldValue($values, $lang);
-                        break;
-                    case 'dropdown_multiple':
-                        echo Dropdownmultiple::getFieldValue($values, $lang);
-                        break;
-                    case 'link':
-                        echo Link::getFieldValue($values);
-                        break;
-                    case 'textarea':
-                        echo Textarea::getFieldValue($values);
-                        break;
-                    case 'text':
-                        echo Text::getFieldValue($values);
-                        break;
-                    case 'tel':
-                        echo Tel::getFieldValue($values);
-                        break;
-                    case 'email':
-                        echo Email::getFieldValue($values);
-                        break;
-                    case 'url':
-                        echo Url::getFieldValue($values);
-                        break;
-                    case 'checkbox':
-                        //                        $values['custom_values'] = $fieldmeta->fields['custom'];
-                        //                        $values['id'] = $id;
-                        echo Checkbox::getFieldValue($values, $lang);
-                        break;
-                    case 'radio':
-                        //                        $values['custom_values'] = $fieldmeta->fields['custom'];
-                        //                        $values['id'] = $id;
-                        echo Radio::getFieldValue($values, $label, $lang);
-                        break;
-                    case 'date':
-                        echo Date::getFieldValue($values);
-                        break;
-                    case 'time':
-                        echo Time::getFieldValue($values);
-                        break;
-                    case 'datetime':
-                        echo Datetime::getFieldValue($values);
-                        break;
-                    case 'date_interval':
-                        echo Dateinterval::getFieldValue($values);
-                        break;
-                    case 'datetime_interval':
-                        echo Datetimeinterval::getFieldValue($values);
-                        break;
-                    case 'number':
-                        echo Number::getFieldValue($values);
-                        break;
-                    case 'range':
-                        echo Range::getFieldValue($values);
-                        break;
-                    case 'yesno':
-                        echo Yesno::getFieldValue($values);
-                        break;
-                    default:
-                        echo htmlspecialchars((string) $value);
-                        break;
-                }
-                echo "</td>";
-            }
+        if (!$field->getFromDB($id)) {
+            return '';
         }
+
+        // A basket field, or a field left empty, contributes no cell at all: the caller
+        // relies on the empty string to skip it.
+        if (empty($value) || !isset($field->fields['type']) || $field->fields['type'] == "basket") {
+            return '';
+        }
+
+        if (empty($label = Field::displayField($field->fields['id'], 'name'))) {
+            $label = $field->fields['name'];
+        }
+
+        $label2 = '';
+        if ($field->fields['type'] == "date_interval") {
+            if (empty($label2 = Field::displayField($field->fields['id'], 'label2'))) {
+                $label2 = $field->fields['label2'];
+            }
+            $label2 = Toolbox::stripTags($label2);
+        }
+
+        $lang = $_SESSION['glpilanguage'];
+
+        $values['value'] = $value;
+        $values['item']  = $field->fields['item'];
+
+        $params = Field::getAllParamsFromField($field);
+        $values = array_merge($values, $params);
+
+        switch ($field->fields['type']) {
+            case 'dropdown':
+                $value_html = Dropdown::getFieldValue($values);
+                break;
+            case 'dropdown_object':
+                $value_html = Dropdownobject::getFieldValue($values);
+                break;
+            case 'dropdown_ldap' :
+                $value_html = Ldapdropdown::getFieldValue($values);
+                break;
+            case 'dropdown_meta':
+                $value_html = Dropdownmeta::getFieldValue($values, $lang);
+                break;
+            case 'dropdown_multiple':
+                $value_html = Dropdownmultiple::getFieldValue($values, $lang);
+                break;
+            case 'link':
+                $value_html = Link::getFieldValue($values);
+                break;
+            case 'textarea':
+                $value_html = Textarea::getFieldValue($values);
+                break;
+            case 'text':
+                $value_html = Text::getFieldValue($values);
+                break;
+            case 'tel':
+                $value_html = Tel::getFieldValue($values);
+                break;
+            case 'email':
+                $value_html = Email::getFieldValue($values);
+                break;
+            case 'url':
+                $value_html = Url::getFieldValue($values);
+                break;
+            case 'checkbox':
+                $value_html = Checkbox::getFieldValue($values, $lang);
+                break;
+            case 'radio':
+                $value_html = Radio::getFieldValue($values, $label, $lang);
+                break;
+            case 'date':
+                $value_html = Date::getFieldValue($values);
+                break;
+            case 'time':
+                $value_html = Time::getFieldValue($values);
+                break;
+            case 'datetime':
+                $value_html = Datetime::getFieldValue($values);
+                break;
+            case 'date_interval':
+                $value_html = Dateinterval::getFieldValue($values);
+                break;
+            case 'datetime_interval':
+                $value_html = Datetimeinterval::getFieldValue($values);
+                break;
+            case 'number':
+                $value_html = Number::getFieldValue($values);
+                break;
+            case 'range':
+                $value_html = Range::getFieldValue($values);
+                break;
+            case 'yesno':
+                $value_html = Yesno::getFieldValue($values);
+                break;
+            default:
+                $value_html = htmlspecialchars((string) $value);
+                break;
+        }
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_basket_row_cells.html.twig',
+            [
+                'label'      => (string) $label,
+                'label2'     => (string) $label2,
+                'value_html' => (string) $value_html,
+            ],
+        );
     }
 
     /**
@@ -1495,22 +1485,20 @@ class Basket extends CommonDBTM
 
 
     /**
-     * Capture the label and the value of every field the requester filled in, grouped
+     * Label and value of every field the requester filled in, grouped
      * two fields to a row.
      *
      * @param array $materials
      *
-     * @return array[] rows, each holding up to two captured "<td></td><td></td>" pairs
+     * @return array[] rows, each holding up to two rendered "<td></td><td></td>" pairs
      */
     private static function getFilledFieldRows(array $materials): array
     {
         $cells = [];
         foreach ($materials as $id => $value) {
-            ob_start();
-            self::retrieveDatasByType($id, $value);
-            $html = (string) ob_get_clean();
+            $html = self::retrieveDatasByType($id, $value);
 
-            // A basket field, or a field left empty, prints nothing at all.
+            // A basket field, or a field left empty, renders nothing at all.
             if ($html !== '') {
                 $cells[] = $html;
             }

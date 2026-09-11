@@ -1,0 +1,12 @@
+{#-
+ # Custom values contributed by other plugins through the `metademands` hook.
+ # showPluginCustomvalues() prints its markup, so the caller captures it.
+ #
+ # Expected context:
+ #  - content: captured markup of every contributing plugin
+-#}
+<div class="mt-2">
+    <table class="table card-table">
+        <tbody>{{ content|raw }}</tbody>
+    </table>
+</div>

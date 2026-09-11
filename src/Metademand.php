@@ -1548,22 +1548,17 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      */
     public function showDuplication($metademands_id)
     {
-        echo "<div class='alert alert-warning' role='alert'>";
-        echo "<i class='ti ti-alert-triangle' style='font-size:2em;color:orange'></i>&nbsp;";
-        echo __(
-            'Tasks tree cannot be changed as unresolved related tickets exist or activate maintenance mode',
-            'metademands',
+        TemplateRenderer::getInstance()->display(
+            '@metademands/forms/metademand_duplication.html.twig',
+            [
+                'message'        => __(
+                    'Tasks tree cannot be changed as unresolved related tickets exist or activate maintenance mode',
+                    'metademands',
+                ),
+                'action'         => Toolbox::getItemTypeFormURL(self::class),
+                'metademands_id' => $metademands_id,
+            ],
         );
-
-        echo "<br><br><form name='task_form' id='task_form' method='post'
-               action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-        echo Html::submit(_sx('button', 'Duplicate'), ['name' => 'execute', 'class' => 'btn btn-primary']);
-        echo Html::hidden('_method', ['value' => 'Duplicate']);
-        echo Html::hidden('metademands_id', ['value' => $metademands_id]);
-        echo Html::hidden('redirect', ['value' => 1]);
-
-        Html::closeForm();
-        echo "</div>";
     }
 
     /**
@@ -1961,9 +1956,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $itil_cat = [];
 
+        // Restrict to the entities the caller can see: the names are only displayed for
+        // meta-demands he may already open, but loading the whole table is needless work
+        // on large instances.
         $query_cat = [
             'SELECT' => ["name", "id"],
             'FROM' => "glpi_itilcategories",
+            'WHERE' => getEntitiesRestrictCriteria("glpi_itilcategories", '', '', true),
         ];
 
         $iterator_cat = $DB->request($query_cat);
@@ -5544,8 +5543,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         switch ($ma->getAction()) {
             case 'duplicate':
-                echo "&nbsp;"
-                    . Html::submit(__('Validate'), ['name' => 'massiveaction']);
+                echo TemplateRenderer::getInstance()->render(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    ['submit_html' => Html::submit(__('Validate'), ['name' => 'massiveaction'])],
+                );
                 return true;
             case 'exportXML':
             case 'exportJSON':
@@ -5553,17 +5554,20 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $items = $_POST['items'][__CLASS__];
 
                     $url = PLUGIN_METADEMANDS_WEBDIR . "/ajax/export_metademand.php";
-                    $data = json_encode($items);
+                    // Hardened for the inline <script> below: HEX_TAG and HEX_AMP only, as
+                    // quotes must stay literal inside the JS object literal.
+                    $data = json_encode($items, JSON_HEX_TAG | JSON_HEX_AMP);
                     $action = $ma->getAction();
-                    echo "&nbsp;";
-                    echo "<button id='export_metademand' class='btn'>" . __(
-                        'Start the download',
-                        'metademands',
-                    ) . "</button>";
-                    echo "<br><small class='text-danger'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i> " . __(
-                        'This action may take some time depending on the number of selected metademands',
-                        'metademands',
-                    ) . "</small>";
+                    echo TemplateRenderer::getInstance()->render(
+                        '@metademands/forms/massiveaction_export_button.html.twig',
+                        [
+                            'label'   => __('Start the download', 'metademands'),
+                            'warning' => __(
+                                'This action may take some time depending on the number of selected metademands',
+                                'metademands',
+                            ),
+                        ],
+                    );
                     // download done through ajax & POST request to avoid request length restriction from GET request
                     echo "<script>
                         $(document).ready(function() {
@@ -6139,18 +6143,18 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $self = new self();
         $tags = $self->getTags($id);
 
-        echo "<div class='center'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th>" . __('Tag') . "</th>
-                <th>" . __('Label') . "</th>
-            </tr>";
+        // Render through Twig so the metademand names, stored raw in the database,
+        // are auto-escaped instead of echoed into HTML verbatim (stored XSS defense).
+        $rows = [];
         foreach ($tags as $tag => $values) {
-            echo "<tr>
-                  <td>#" . $tag . "#</td>
-                  <td>" . $values . "</td>
-               </tr>";
+            $rows[] = ['tag' => $tag, 'label' => $values];
         }
-        echo "</table></div>";
+
+        // The requester and entity tags belong to the field tags, not to these ones.
+        TemplateRenderer::getInstance()->display('@metademands/available_tags.html.twig', [
+            'tags'                => $rows,
+            'with_requester_tags' => false,
+        ]);
     }
 
     /** Display Tags available for the metademand $id

@@ -588,7 +588,14 @@ class Condition extends CommonDBChild
                 $item = new $itemType();
                 $item->getFromDB($condition->fields['items_id']);
                 $url = $item->getLinkURL();
-                echo "<a href='$url' style='color:royalblue;'>" . htmlspecialchars((string) $item->fields['name'], ENT_QUOTES, 'UTF-8') . " (" . $item->fields['id'] . ") </a>";
+                echo TemplateRenderer::getInstance()->render(
+                    '@metademands/forms/condition_item_link.html.twig',
+                    [
+                        'url'  => $url,
+                        'name' => $item->fields['name'],
+                        'id'   => $item->fields['id'],
+                    ],
+                );
                 break;
 
             case 'text':
@@ -1097,12 +1104,17 @@ class Condition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-                        echo "<span style='width: 50%!important;display: -webkit-box;'>";
+                        // Html::showDateField() prints the picker: capture it and let the
+                        // template own the width constraint.
+                        ob_start();
                         Html::showDateField(
                             "$name",
                             $option,
                         );
-                        echo "</span>";
+                        echo TemplateRenderer::getInstance()->render(
+                            '@metademands/forms/condition_date_wrapper.html.twig',
+                            ['content' => ob_get_clean()],
+                        );
                         break;
                     case 'datetime':
                         $option = [
@@ -1111,12 +1123,17 @@ class Condition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-                        echo "<span style='width: 50%!important;display: -webkit-box;'>";
+                        // Html::showDateTimeField() prints the picker: capture it and let
+                        // the template own the width constraint.
+                        ob_start();
                         Html::showDateTimeField(
                             "$name",
                             $option,
                         );
-                        echo "</span>";
+                        echo TemplateRenderer::getInstance()->render(
+                            '@metademands/forms/condition_date_wrapper.html.twig',
+                            ['content' => ob_get_clean()],
+                        );
                         break;
 
                     case 'yesno':

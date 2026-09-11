@@ -108,13 +108,9 @@ class Link extends CommonDBTM
             $linkVal = $custom_values[1] ?? "";
         }
 
+        // The label and the hint of each cell belong to the shared template; only the
+        // widget is captured, because Dropdown::showFromArray() prints its markup.
         ob_start();
-        echo '<label>' . __("Link") . '</label>';
-        echo Html::input('custom[1]', ['value' => $linkVal, 'size' => 30]);
-        $link_cell = ob_get_clean();
-
-        ob_start();
-        echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
         \Dropdown::showFromArray(
             "custom[0]",
             [
@@ -123,7 +119,6 @@ class Link extends CommonDBTM
             ],
             ['value' => $linkType],
         );
-        echo "<br /><i>" . __("*use field \"Additional label\" for the button title", "metademands") . "</i>";
         $type_cell = ob_get_clean();
 
         ob_start();
@@ -136,7 +131,17 @@ class Link extends CommonDBTM
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_customvalue_fixed.html.twig',
             [
-                'rows'        => [[['html' => $link_cell], ['html' => $type_cell]]],
+                'rows' => [[
+                    [
+                        'label' => __("Link"),
+                        'html'  => Html::input('custom[1]', ['value' => $linkVal, 'size' => 30]),
+                    ],
+                    [
+                        'label' => __("Button Type", "metademands"),
+                        'html'  => $type_cell,
+                        'hint'  => __('*use field "Additional label" for the button title', 'metademands'),
+                    ],
+                ]],
                 'submit_html' => $submit_html,
             ],
         );

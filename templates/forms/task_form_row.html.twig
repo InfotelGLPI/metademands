@@ -1,0 +1,22 @@
+{#-
+ # One row of Task::showForm(), rendered INSIDE the legacy showFormHeader() /
+ # showFormButtons() table, so this template emits a <tr> only. The content is
+ # captured because it is produced by framework calls and by the TicketTask /
+ # MailTask forms, which print their markup.
+ #
+ # Expected context:
+ #  - content: captured markup of the cell
+ #  - label:   optional label printed before the content
+ #  - span_id: optional identifier of a <span> wrapping the content, used as the
+ #             target of the Ajax reload of the task form
+-#}
+<tr class="tab_bg_1">
+    <td class="center">
+        {%- if label|default('') is not empty %}{{ label }}&nbsp;{% endif -%}
+        {% if span_id|default('') is not empty -%}
+            <span id="{{ span_id }}">{{ content|raw }}</span>
+        {%- else -%}
+            {{ content|raw }}
+        {%- endif %}
+    </td>
+</tr>

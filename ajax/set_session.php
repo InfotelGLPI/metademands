@@ -41,6 +41,7 @@ Html::header_nocache();
 Session::checkSeveralRightsOr([
     'plugin_metademands' => READ,
     'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
 ]);
 
 $KO = false;
