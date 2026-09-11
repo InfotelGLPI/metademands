@@ -27,11 +27,21 @@
  * --------------------------------------------------------------------------
  */
 
-Session::checkRight('entity', UPDATE);
+use Glpi\Exception\Http\BadRequestHttpException;
+
+// The response feeds the value of a form input, never HTML: state it explicitly so the
+// browser cannot be talked into sniffing it as a document.
+header('Content-Type: text/plain; charset=UTF-8');
+
+Session::checkRight('config', UPDATE);
 
 $authldap = new AuthLdap();
-$authldap->getFromDB($_POST['value']);
-$filter = "(" . $authldap->getField("login_field") . "=*)";
+if (!$authldap->getFromDB((int) ($_POST['value'] ?? 0))) {
+    // An unknown id used to build a filter out of empty columns.
+    throw new BadRequestHttpException();
+}
+
+$filter         = "(" . $authldap->getField("login_field") . "=*)";
 $ldap_condition = $authldap->getField('condition');
 
 echo "(& $filter $ldap_condition)";

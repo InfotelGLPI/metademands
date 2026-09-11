@@ -1,0 +1,44 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Preview of a meta-demand wizard, shown in its administration tab.
+ #
+ # Expected context:
+ #  - title:       heading of the card
+ #  - wizard_html: markup still printed by Wizard::showWizard()
+ #}
+
+<div class="card mt-2">
+    <div class="card-header">
+        <h5 class="card-title">{{ title }}</h5>
+    </div>
+
+    <div class="card-body">
+        {{ wizard_html|raw }}
+    </div>
+</div>

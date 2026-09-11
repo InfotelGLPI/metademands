@@ -826,11 +826,11 @@ class Step extends CommonDBChild
                 $_SESSION['plugin_metademands'][$metademand_id]['block_id'],
             );
             if ($msg) {
-                echo "<div class='alert alert-info center'>";
-                // Same plain-text step message as ajax/getNextMessage.php, rendered here on the
-                // server path: escape it too, otherwise the parallel path stays exploitable.
-                echo htmlspecialchars((string) $msg, ENT_QUOTES, 'UTF-8');
-                echo "</div>";
+                // Same plain-text step message as ajax/getNextMessage.php: the template escapes
+                // it, otherwise this parallel path stays exploitable.
+                TemplateRenderer::getInstance()->display('@metademands/wizard/step_supervisor.html.twig', [
+                    'step_message' => (string) $msg,
+                ]);
             }
 
             if (count($stepforms) > 0) {
@@ -845,24 +845,14 @@ class Step extends CommonDBChild
                 $users_id_supervisor = $user->fields['users_id_supervisor'];
             }
 
-            if ($users_id_supervisor) {
-                echo "<div class='alert alert-warning d-flex'>";
-                echo "<i class='ti ti-circle-check' style='color: orange'></i>&nbsp;";
-                echo "&nbsp;" . __(
-                    'Your form will be validated by your supervisor',
-                    'metademands',
-                ) . "&nbsp;";
-                // getUserName() returns the raw realname/firstname columns in GLPI 11.
-                echo htmlescape(getUserName($users_id_supervisor));
-                echo "</div>";
-            } else {
-                echo "<div class='alert alert-danger d-flex'>";
-                echo "<i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;";
-                echo "&nbsp;" . __(
-                    "You haven't defined supervisor, you cannot continue this request",
-                    'metademands',
-                );
-                echo "</div>";
+            // getUserName() returns the raw realname/firstname columns in GLPI 11; the template
+            // escapes them. An empty supervisor is a blocking condition, not a warning.
+            TemplateRenderer::getInstance()->display('@metademands/wizard/step_supervisor.html.twig', [
+                'has_supervisor'  => (bool) $users_id_supervisor,
+                'supervisor_name' => $users_id_supervisor ? getUserName($users_id_supervisor) : '',
+            ]);
+
+            if (!$users_id_supervisor) {
                 return false;
             }
         }
@@ -1123,18 +1113,17 @@ class Step extends CommonDBChild
                 $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id'], 0, true);
             }
         }
-        echo "<label class='control-label center' for='next_users_id'>" . __('User') . "&nbsp;</label>";
-        echo "</br>";
 
-        $options = [
-            'display_emptychoice' => true,
-            'display' => false,
-        ];
-        echo \Dropdown::showFromArray(
-            'next_users_id',
-            $users,
-            $options,
-        );
+        TemplateRenderer::getInstance()->display('@metademands/forms/step_next_user.html.twig', [
+            'dropdown_html' => \Dropdown::showFromArray(
+                'next_users_id',
+                $users,
+                [
+                    'display_emptychoice' => true,
+                    'display' => false,
+                ],
+            ),
+        ]);
     }
 
     /**

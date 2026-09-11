@@ -234,23 +234,23 @@ class Wizard extends CommonDBTM
         }
 
         $wizard = new Wizard();
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th class='tab_bg_1'>" . Wizard::getTypeName() . "</th></tr>";
-        $meta = new Metademand();
-        if ($meta->getFromDB($item->fields['id'])) {
-            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                $background_color = htmlspecialchars($meta->fields['background_color'], ENT_QUOTES);
-            }
-        }
-        echo "<tr><td>";
         $options = [
             'step' => Metademand::STEP_SHOW,
             'metademands_id' => $item->getID(),
             'preview' => true,
         ];
+
+        // showWizard() still prints its markup; the legacy $background_color read here was
+        // dead code, nothing downstream ever used it.
+        ob_start();
         $wizard->showWizard($options);
-        echo "</td></tr>";
-        echo "</table>";
+        $wizard_html = (string) ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/preview.html.twig', [
+            'title'       => Wizard::getTypeName(),
+            'wizard_html' => $wizard_html,
+        ]);
+
         return true;
     }
 
@@ -647,10 +647,8 @@ class Wizard extends CommonDBTM
                 $denied_message = __("You don't have the right to create meta-demand", 'metademands');
             }
             if ($denied_message !== "") {
-                ob_start();
-                self::showMessage($denied_message, true);
                 $template_vars['abort'] = 'message';
-                $template_vars['abort_message'] = (string) ob_get_clean();
+                $template_vars['abort_message'] = self::showMessage($denied_message, true);
                 TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
                 return false;
             }
@@ -754,14 +752,9 @@ class Wizard extends CommonDBTM
         $meta_validated = 1
     ) {
         if ($preview == false) {
-            echo "<div id='ajax_loader' class=\"ajax_loader\">";
-            echo "</div>";
-
-            echo Html::scriptBlock(
-                "$(window).load(function() {
-             $('#ajax_loader').hide();
-          });",
-            );
+            // The spinner is hidden again by public/scripts/wizard_form.js: the inline
+            // $(window).load() that used to do it here relied on an alias jQuery dropped in 3.0.
+            TemplateRenderer::getInstance()->display('@metademands/wizard/ajax_loader.html.twig');
         }
         if ($step === Metademand::STEP_CREATE) {
             $values = $_SESSION['plugin_metademands'][$metademands_id] ?? [];
@@ -777,7 +770,10 @@ class Wizard extends CommonDBTM
                         $_SESSION['plugin_metademands']['type'] = $options['meta_type'];
                         self::listMetademands($options['meta_type']);
                     } else {
-                        echo __('No existing forms founded', 'metademands');
+                        TemplateRenderer::getInstance()->display('@metademands/wizard/alert.html.twig', [
+                            'message' => __('No existing forms founded', 'metademands'),
+                            'level'   => 'info',
+                        ]);
                     }
 
                     unset($_SESSION['plugin_metademands']);
@@ -1732,8 +1728,10 @@ class Wizard extends CommonDBTM
         if (countElementsInTable("glpi_plugin_metademands_configsteps", ['plugin_metademands_metademands_id' => $metademands_id]) > 1) {
             $stepConfig->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id]);
             $stepConfig->add(['plugin_metademands_metademands_id' => $metademands_id]);
-            echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>" . __('There was a problem. The step-by-step mode configuration was reset', 'metademands') . "</b></div>";
+            TemplateRenderer::getInstance()->display('@metademands/wizard/alert.html.twig', [
+                'message' => __('There was a problem. The step-by-step mode configuration was reset', 'metademands'),
+                'level'   => 'warning',
+            ]);
         }
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
 
@@ -1797,8 +1795,8 @@ class Wizard extends CommonDBTM
         }
 
         if (count($lines)) {
+            $tabs_html = '';
             if ($use_as_step == 0) {
-                echo "<div class='tab-nostep'>";
                 $cpt = 1;
             }
             // The Enter key handler moved to public/scripts/wizard_form.js, delegated on #meta-form
@@ -1808,8 +1806,9 @@ class Wizard extends CommonDBTM
 
             $metaconditionsparams = self::getConditionsParams($metademands);
 
+            $hidden_basket_html = '';
             if ($metademands->fields['is_basket'] == 1) {
-                echo Html::hidden('see_basket_summary', ['value' => 1]);
+                $hidden_basket_html = Html::hidden('see_basket_summary', ['value' => 1]);
             }
 
             $displayBlocksAsTab = 0;
@@ -1827,8 +1826,6 @@ class Wizard extends CommonDBTM
                 }
             }
 
-            echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-            echo "</div>";
 
             if ($metademands->fields['step_by_step_mode'] == 1
                 && $displayBlocksAsTab == 1  && !$preview) {
@@ -1898,7 +1895,7 @@ class Wizard extends CommonDBTM
                     // The block names come from the designer-defined title-block fields: Twig
                     // escapes them as element text (stored XSS). The scroll handlers live in
                     // public/scripts/wizard_form.js.
-                    TemplateRenderer::getInstance()->display('@metademands/wizard/form_tabs.html.twig', [
+                    $tabs_html = TemplateRenderer::getInstance()->render('@metademands/wizard/form_tabs.html.twig', [
                         'blocks'        => $tab_blocks,
                         'hidden_blocks' => $hidden_tabs,
                         'block_id'      => (int) $block_id,
@@ -1921,12 +1918,16 @@ class Wizard extends CommonDBTM
                 $blocks_html[] = ['in_step' => $in_step, 'html' => trim((string) ob_get_clean())];
             }
 
+            // The .tab-nostep wrapper, the basket flag, the Ajax loader and the block tab bar
+            // are emitted by the same template as the blocks themselves: they all belong to the
+            // same wrapper, which used to be opened and closed by two `echo` several hundred
+            // lines apart.
             TemplateRenderer::getInstance()->display('@metademands/wizard/form_blocks.html.twig', [
-                'blocks' => $blocks_html,
+                'blocks'              => $blocks_html,
+                'wrap_nostep'         => $use_as_step == 0,
+                'hidden_basket_html'  => $hidden_basket_html,
+                'tabs_html'           => $tabs_html,
             ]);
-            if ($use_as_step == 0) {
-                echo "</div>";
-            }
 
             if (!$preview) {
                 //$metademands->fields['is_order'] == 0
@@ -2053,7 +2054,7 @@ class Wizard extends CommonDBTM
                 ]);
             }
         } else {
-            echo "<div class='center'><b>" . __('No results found') . "</b></div>";
+            TemplateRenderer::getInstance()->display('@metademands/wizard/no_results.html.twig');
         }
     }
 
@@ -2743,20 +2744,15 @@ class Wizard extends CommonDBTM
     /**
      * @param      $message
      * @param bool $error
+     *
+     * @return string
      */
     public static function showMessage($message, $error = false)
     {
-        $class = $error ? "style='color:red'" : "";
-
-        echo "<br><div class='box'>";
-        echo "<div class='box-tleft'><div class='box-tright'><div class='box-tcenter'>";
-        echo "</div></div></div>";
-        echo "<div class='box-mleft'><div class='box-mright'><div class='box-mcenter center'>";
-        echo "<h3 $class>" . $message . "</h3>";
-        echo "</div></div></div>";
-        echo "<div class='box-bleft'><div class='box-bright'><div class='box-bcenter'>";
-        echo "</div></div></div>";
-        echo "</div>";
+        return TemplateRenderer::getInstance()->render('@metademands/wizard/message.html.twig', [
+            'message'  => $message,
+            'is_error' => (bool) $error,
+        ]);
     }
 
     /**

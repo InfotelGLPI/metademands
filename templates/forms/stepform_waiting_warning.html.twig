@@ -1,0 +1,46 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Dismissible banner telling the current user how many step forms await them.
+ # Rendered by Stepform::showWaitingWarning() on the helpdesk home page.
+ #
+ # Expected context:
+ #  - count: number of forms waiting, always greater than zero
+ #  - url:   link to front/stepform.php
+ #}
+
+<div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('Close') }}"></button>
+    <i class="ti ti-alert-triangle" style="font-size: 2em" aria-hidden="true"></i>
+    {{ __('You have %s', 'metademands')|format(count) }}
+    {{ _n('form', 'forms', count, 'metademands') }}
+    {{ __('to complete', 'metademands') }}
+    <a href="{{ url }}">
+        {{ count == 1 ? __('Do you want to see him ?', 'metademands') : __('Do you want to see them ?', 'metademands') }}
+    </a>
+</div>

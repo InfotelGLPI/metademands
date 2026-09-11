@@ -1,0 +1,38 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # "Next user" selector of the step-by-step forward modal, refreshed by
+ # ajax/dropdownNextUser.php whenever the group dropdown changes.
+ #
+ # Expected context:
+ #  - dropdown_html: markup returned by Dropdown::showFromArray('next_users_id', …)
+ #}
+
+<label class="control-label center" for="next_users_id">{{ __('User') }}&nbsp;</label>
+<br>
+{{ dropdown_html|raw }}

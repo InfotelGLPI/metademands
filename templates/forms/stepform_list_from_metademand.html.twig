@@ -25,27 +25,46 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # Step forms waiting on a given meta-demand, shown in the "Forms" tab of Metademand.
+ #
+ # Expected context:
+ #  - rows: list of {id, publisher, group, user_dest, date, delete_html}, delete_html
+ #          being the Html::showSimpleForm() markup of the cancel button, empty when
+ #          the current user lacks the plugin_metademands_cancelform right
+ #}
+
 {% if rows %}
-    <table class="tab_cadre_fixe">
-        <tr>
-            <th>{{ __('ID') }}</th>
-            <th>{{ __('Publisher', 'metademands') }}</th>
-            <th>{{ __('Next group in charge of demand', 'metademands') }}</th>
-            <th>{{ __('Next user in charge of demand', 'metademands') }}</th>
-            <th>{{ __('Date') }}</th>
-            <th></th>
-        </tr>
-        {% for row in rows %}
-            <tr>
-                <td>{{ row.id }}</td>
-                <td>{{ row.publisher }}</td>
-                <td>{{ row.group }}</td>
-                <td>{{ row.user_dest }}</td>
-                <td>{{ row.date }}</td>
-                <td>{{ row.delete_html|raw }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="table-responsive">
+        <table class="table card-table">
+            <thead>
+                <tr>
+                    <th>{{ __('ID') }}</th>
+                    <th>{{ __('Publisher', 'metademands') }}</th>
+                    <th>{{ __('Next group in charge of demand', 'metademands') }}</th>
+                    <th>{{ __('Next user in charge of demand', 'metademands') }}</th>
+                    <th>{{ __('Date') }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.publisher }}</td>
+                        <td>{{ row.group }}</td>
+                        <td>{{ row.user_dest }}</td>
+                        <td>{{ row.date }}</td>
+                        <td>
+                            {% if row.delete_html is not empty %}
+                                <span class="text-danger">{{ row.delete_html|raw }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% else %}
-    <div class="alert alert-info center">{{ __('No results found') }}</div>
+    <div class="alert alert-info text-center" role="alert">{{ __('No results found') }}</div>
 {% endif %}

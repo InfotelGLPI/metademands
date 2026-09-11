@@ -28,7 +28,10 @@
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -43,6 +46,13 @@ if (!isset($_POST['type'])) {
 }
 if (!isset($_POST['parenttype'])) {
     throw new NotFoundHttpException();
+}
+
+// getItemForItemtype() accepts any autoloadable class of the core, of another plugin or
+// of vendor/: check the posted VALUE, not its existence. Field is the only class carrying
+// showExistingForm(), and Metademand the only parent this modal is opened from.
+if ($_POST['type'] !== Field::class || $_POST['parenttype'] !== Metademand::class) {
+    throw new BadRequestHttpException();
 }
 
 if (

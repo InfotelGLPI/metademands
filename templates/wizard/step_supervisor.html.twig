@@ -1,0 +1,54 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Notices shown by Step::checkSupervisorForUser(). The method reaches two independent
+ # points, so the template is rendered twice with a different subset of the context.
+ #
+ # Expected context:
+ #  - step_message:    plain-text message of the current block
+ #  - has_supervisor:  true/false once the supervisor branch is reached, null before
+ #  - supervisor_name: name of the supervisor
+ #}
+
+{% if step_message|default('') is not empty %}
+    <div class="alert alert-info text-center" role="alert">{{ step_message }}</div>
+{% endif %}
+
+{% if has_supervisor|default(null) is not null %}
+    {% if has_supervisor %}
+        <div class="alert alert-warning d-flex" role="alert">
+            <i class="ti ti-circle-check" style="color: orange" aria-hidden="true"></i>&nbsp;
+            &nbsp;{{ __('Your form will be validated by your supervisor', 'metademands') }}&nbsp;{{ supervisor_name|default('') }}
+        </div>
+    {% else %}
+        <div class="alert alert-danger d-flex" role="alert">
+            <i class="ti ti-alert-circle" style="color: darkred" aria-hidden="true"></i>&nbsp;
+            &nbsp;{{ __("You haven't defined supervisor, you cannot continue this request", 'metademands') }}
+        </div>
+    {% endif %}
+{% endif %}

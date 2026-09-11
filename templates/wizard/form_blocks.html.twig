@@ -28,9 +28,13 @@
 {#- Blocks of the wizard form, in the order the designer arranged them.
  #
  #  Expected context:
- #    blocks : list of {in_step, html} built by Wizard::constructForm(); in_step tells
- #             whether the block belongs to the step-by-step flow, which hides it
- #             through .tab-step until its step opens
+ #    wrap_nostep        : true when the form is NOT in step-by-step mode; .tab-nostep is
+ #                         read by plugin_metademands_wizard_* in scripts/metademands.js
+ #    hidden_basket_html : Html::hidden('see_basket_summary'), empty when not a basket
+ #    tabs_html          : block tab bar, empty when the blocks are not shown as tabs
+ #    blocks             : list of {in_step, html} built by Wizard::constructForm(); in_step
+ #                         tells whether the block belongs to the step-by-step flow, which
+ #                         hides it through .tab-step until its step opens
  #
  #  html is still produced by Wizard::displayBlockContent(), which prints its markup.
  #
@@ -38,8 +42,13 @@
  #  in scripts/metademands.js reads .tab-step.firstChild, which has to be the card of
  #  the block and not an indentation text node.
 -#}
+{%- if wrap_nostep %}<div class="tab-nostep">{% endif -%}
+{{- hidden_basket_html|raw -}}
+<div id="ajax_loader" class="ajax_loader hidden"></div>
+{{- tabs_html|raw -}}
 {%- for block in blocks -%}
     {%- if block.in_step %}<div class="tab-step">{% endif -%}
     {{- block.html|raw -}}
     {%- if block.in_step %}</div>{% endif -%}
 {%- endfor -%}
+{%- if wrap_nostep %}</div>{% endif -%}

@@ -461,6 +461,27 @@ class Interticketfollowup extends CommonITILObject
                 if ($items_id != $first_tickets_id) {
                     $list_tickets[] = $first_tickets_id;
                 }
+                // This timeline hook runs on every ticket, helpdesk interface included, and
+                // pushes the followups and the documents of the sibling tickets of the same
+                // meta-demand into the current timeline. Neither is readable by definition:
+                // keep only the tickets the current user may actually read, with the same
+                // per-ticket check as front/interticketfollowup.form.php, and drop them all
+                // when the plugin followup READ right is missing. The criteria matching the
+                // current ticket are left untouched: the core already validated its access.
+                if (!Session::isCron()) {
+                    if (!self::canView()) {
+                        $list_tickets = [];
+                    } else {
+                        $readable = [];
+                        $sibling  = new \Ticket();
+                        foreach ($list_tickets as $sibling_id) {
+                            if ($sibling->can((int) $sibling_id, READ)) {
+                                $readable[] = $sibling_id;
+                            }
+                        }
+                        $list_tickets = $readable;
+                    }
+                }
                 if (empty($list_tickets)) {
                     $list_tickets = 0;
                 }

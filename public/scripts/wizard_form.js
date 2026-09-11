@@ -450,4 +450,19 @@
             }
         }
     });
+
+    // The wizard opens with the spinner visible and used to hide it through an inline
+    // `$(window).load()` — an alias jQuery removed in 3.0, so the spinner stayed up for
+    // good. Plain DOM, and it also covers a load event that already fired.
+    function hideWizardLoader() {
+        document.querySelectorAll('#ajax_loader, .ajax_loader').forEach(function (loader) {
+            loader.style.display = 'none';
+        });
+    }
+
+    if (document.readyState === 'complete') {
+        hideWizardLoader();
+    } else {
+        window.addEventListener('load', hideWizardLoader);
+    }
 })();

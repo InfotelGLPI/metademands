@@ -695,8 +695,9 @@ class Stepform extends CommonDBTM
             $delete_html = '';
             if ($can_cancel) {
                 $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                // showSimpleForm() prints its markup; the red wrapper around it now lives in
+                // the template, next to the cell it belongs to.
                 ob_start();
-                echo "<br><span style='color:darkred'>";
                 Html::showSimpleForm(
                     $target,
                     'delete_form_from_metademands',
@@ -704,7 +705,6 @@ class Stepform extends CommonDBTM
                     ['plugin_metademands_stepforms_id' => $id],
                     'ti-trash',
                 );
-                echo "</span>";
                 $delete_html = ob_get_clean();
             }
             $rows[] = [
@@ -783,27 +783,12 @@ class Stepform extends CommonDBTM
 
     public static function showWaitingWarning()
     {
-
         $stepforms = self::getWaitingForms();
         if (count($stepforms) > 0) {
-            echo "<div class='center alert alert-warning alert-dismissible fade show' role='alert'>";
-            echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close' style='float: right;'>&times;</a>";
-            echo "<i style='font-size:2em;' class='ti ti-alert-triangle'></i>";
-            $warnings = sprintf(__('You have %s', 'metademands'), count($stepforms));
-            $warnings .= " " . _n('form', 'forms', count($stepforms), 'metademands');
-            $warnings .= " " . __('to complete', 'metademands');
-
-            echo $warnings;
-
-            $url = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php";
-            echo "<a href=\"" . $url . "\">";
-            if (count($stepforms) == 1) {
-                echo __('Do you want to see him ?', 'metademands');
-            } else {
-                echo __('Do you want to see them ?', 'metademands');
-            }
-            echo "</a>";
-            echo "</div>";
+            TemplateRenderer::getInstance()->display('@metademands/forms/stepform_waiting_warning.html.twig', [
+                'count' => count($stepforms),
+                'url'   => PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php",
+            ]);
         }
     }
     public function showPendingForm()
@@ -845,7 +830,6 @@ class Stepform extends CommonDBTM
                 if (Session::haveRight("plugin_metademands_cancelform", READ)) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     ob_start();
-                    echo "<span style='color:darkred'>";
                     Html::showSimpleForm(
                         $target,
                         'delete_form_from_list',
@@ -853,7 +837,6 @@ class Stepform extends CommonDBTM
                         ['plugin_metademands_stepforms_id' => $id],
                         'ti-trash',
                     );
-                    echo "</span>";
                     $delete_html = ob_get_clean();
                 }
                 $cards[] = [
@@ -945,7 +928,6 @@ class Stepform extends CommonDBTM
 
     private function showWaitingFormReadOnly()
     {
-        //        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
 
         $stepforms = self::getWaitingFormsByMaker();
 
@@ -975,7 +957,6 @@ class Stepform extends CommonDBTM
                 if (Session::haveRight("plugin_metademands_cancelform", READ)) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     ob_start();
-                    echo "<span style='color:darkred'>";
                     Html::showSimpleForm(
                         $target,
                         'delete_form_from_list',
@@ -983,7 +964,6 @@ class Stepform extends CommonDBTM
                         ['plugin_metademands_stepforms_id' => $id],
                         'ti-trash',
                     );
-                    echo "</span>";
                     $delete_html = ob_get_clean();
                 }
                 $cards[] = [

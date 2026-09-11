@@ -27,8 +27,21 @@
  * --------------------------------------------------------------------------
  */
 
+// Same right as the other field administration screens (ajax/reorderfields.php,
+// ajax/show_conditions.php): this controller writes the search criteria of the field
+// list into the session, it is not reachable from the helpdesk interface.
+Session::checkRight('plugin_metademands', UPDATE);
+
 if (isset($_POST["search"])) {
-    $_SESSION['plugin_metademands_searchresults'][$_POST["plugin_metademands_metademands_id"]] = $_POST;
+    $metademands_id = (int) ($_POST["plugin_metademands_metademands_id"] ?? 0);
+
+    // Only keep the three criteria Field::listFields() actually reads back, instead of
+    // persisting the whole $_POST under a client-controlled key.
+    $_SESSION['plugin_metademands_searchresults'][$metademands_id] = [
+        'block' => $_POST['block'] ?? 0,
+        'type'  => $_POST['type'] ?? 0,
+        'item'  => $_POST['item'] ?? 0,
+    ];
 }
 
 Html::back();

@@ -48,7 +48,7 @@
             {% else %}
                 <i class="ti {{ header_icon }} me-2"></i>
             {% endif %}
-            {{ _n('Your form to complete', 'Your forms to complete', 2, 'metademands') }}
+            {{ _n('Your form to complete', 'Your forms to complete', cnt, 'metademands') }}
         </h5>
         <div class="card-actions">
             <span class="badge bg-outline-secondary">{{ cnt }}</span>
@@ -74,7 +74,7 @@
                                 <div>{{ __('Edit by', 'metademands') }}&nbsp;{{ card.editor }}</div>
                                 <div>{{ card.date }}</div>
                                 <div>{{ __('Step', 'metademands') }}{{ card.block_id }}</div>
-                                {{ card.delete_html|raw }}
+                                <span class="text-danger">{{ card.delete_html|raw }}</span>
                             </div>
                         </div>
                     </div>

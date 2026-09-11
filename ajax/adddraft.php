@@ -31,6 +31,7 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Draft_Value;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -45,6 +46,19 @@ $wizard = new Wizard();
 $fields = new Field();
 
 if (isset($_POST['save_draft'])) {
+    // Saving a draft binds it to the posted meta-demand: enforce the same access check as
+    // ajax/addform.php (prevents cross-entity/rights enumeration and writes by id). The
+    // ownership check further down only guards overwriting an existing draft, not the
+    // choice of the target meta-demand.
+    $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+    if (
+        !$metademands->getFromDB($metademands_id)
+        || !($metademands->canCreate() || Group::isUserHaveRight($metademands_id))
+        || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])
+    ) {
+        throw new AccessDeniedHttpException();
+    }
+
     $nblines = 0;
     $KO = false;
     //Create ticket
