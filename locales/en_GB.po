@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 15:38+0000\n"
+"POT-Creation-Date: 2026-09-10 16:15+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -172,7 +172,7 @@ msgstr "Add to basket"
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:3022 src/Field.php:3107 src/Field.php:4551
+#: src/Field.php:3031 src/Field.php:3116 src/Field.php:4560
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr "Additional label"
@@ -227,7 +227,7 @@ msgstr ""
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
-#: src/Field.php:1332
+#: src/Field.php:1341
 msgid "Are you sure you want to delete this field ?"
 msgstr ""
 
@@ -246,8 +246,8 @@ msgstr ""
 
 #: templates/tickettask_form_section.html.twig:122
 #: templates/tickettask_form_section.html.twig:131
-#: templates/forms/ticket_followup.html.twig:58
-#: templates/forms/ticket_followup.html.twig:117
+#: templates/forms/ticket_followup.html.twig:61
+#: templates/forms/ticket_followup.html.twig:127
 #: templates/forms/ticket_validation.html.twig:49
 #: templates/task_list.html.twig:87
 msgid "Assigned to"
@@ -294,7 +294,7 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:1868 src/Field.php:1097 src/Field.php:3089 src/Step.php:423
+#: src/Wizard.php:1868 src/Field.php:1106 src/Field.php:3098 src/Step.php:423
 #: src/Step.php:502 templates/field_search_form.html.twig:34
 #: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
@@ -339,7 +339,7 @@ msgstr ""
 msgid "Button Type"
 msgstr "Button Type"
 
-#: templates/forms/itilobject_forms_tab.html.twig:37
+#: templates/forms/itilobject_forms_tab.html.twig:49
 msgid "By"
 msgstr ""
 
@@ -368,7 +368,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/Field.php:1972
+#: src/Field.php:1981
 msgid "Category of the metademand"
 msgstr "Category of the metademand"
 
@@ -451,7 +451,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#: templates/forms/ticket_followup.html.twig:141
+#: templates/forms/ticket_followup.html.twig:153
 msgid "Coming"
 msgstr "Coming"
 
@@ -560,7 +560,7 @@ msgid "Created on"
 msgstr "Created on"
 
 #: templates/forms/public_models_tab.html.twig:36
-#: templates/forms/itilobject_forms_tab.html.twig:36
+#: templates/forms/itilobject_forms_tab.html.twig:48
 #: templates/forms/user_forms_tab.html.twig:36
 #: templates/forms/metademand_progression.html.twig:47
 msgid "Creation date"
@@ -752,7 +752,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:681 src/Field.php:3745
+#: src/Fields/Dropdownmeta.php:681 src/Field.php:3754
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -810,7 +810,7 @@ msgstr ""
 msgid "Displayed unless"
 msgstr ""
 
-#: src/Field.php:1163 templates/field_list.html.twig:94
+#: src/Field.php:1172 templates/field_list.html.twig:94
 msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr ""
@@ -862,8 +862,8 @@ msgstr "Dropdown multiple"
 msgid "Dropdown values"
 msgstr ""
 
-#: templates/forms/ticket_followup.html.twig:62
-#: templates/forms/ticket_followup.html.twig:121
+#: templates/forms/ticket_followup.html.twig:65
+#: templates/forms/ticket_followup.html.twig:131
 msgid "Due date"
 msgstr "Due date"
 
@@ -929,7 +929,7 @@ msgstr ""
 #: templates/available_tags.html.twig:52
 #: templates/tickettask_form_section.html.twig:66
 #: templates/forms/metademand_resource_list.html.twig:55
-#: templates/forms/ticket_followup.html.twig:55
+#: templates/forms/ticket_followup.html.twig:58
 #: templates/task_list.html.twig:84
 msgid "Entity"
 msgstr ""
@@ -992,7 +992,7 @@ msgstr ""
 msgid "Failed to check the sanity of the tables!"
 msgstr ""
 
-#: src/Field.php:1570
+#: src/Field.php:1579
 msgid "Father's field"
 msgstr "Father's field"
 
@@ -1412,7 +1412,7 @@ msgstr ""
 #: templates/forms/public_models_tab.html.twig:38
 #: templates/forms/public_models_tab.html.twig:51
 #: templates/forms/public_models_list.html.twig:53
-#: templates/forms/itilobject_forms_tab.html.twig:51
+#: templates/forms/itilobject_forms_tab.html.twig:61
 #: templates/forms/user_forms_tab.html.twig:49
 #: templates/forms/user_forms_list.html.twig:48
 #: templates/forms/private_models_list.html.twig:101
@@ -1457,7 +1457,7 @@ msgstr ""
 msgid "Maximum depth"
 msgstr ""
 
-#: src/Field.php:2299
+#: src/Field.php:2308
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Maximum number of documents : %s "
@@ -1535,11 +1535,11 @@ msgstr ""
 msgid "Missing table"
 msgstr ""
 
-#: src/Field.php:3207
+#: src/Field.php:3216
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3206
+#: src/Field.php:3215
 msgid "Modify icon"
 msgstr ""
 
@@ -1547,7 +1547,7 @@ msgstr ""
 msgid "More informations"
 msgstr ""
 
-#: src/Field.php:1245
+#: src/Field.php:1254
 msgid "Multiples"
 msgstr "Multiples"
 
@@ -1555,7 +1555,7 @@ msgstr "Multiples"
 msgid "My metademands"
 msgstr ""
 
-#: src/Field.php:1970
+#: src/Field.php:1979
 msgid "My values"
 msgstr ""
 
@@ -1564,7 +1564,7 @@ msgstr ""
 #: templates/forms/public_models_tab.html.twig:35
 #: templates/forms/public_models_list.html.twig:39
 #: templates/forms/metademand_resource_list.html.twig:54
-#: templates/forms/itilobject_forms_tab.html.twig:35
+#: templates/forms/itilobject_forms_tab.html.twig:47
 #: templates/forms/user_forms_tab.html.twig:35
 #: templates/forms/user_forms_list.html.twig:34
 #: templates/forms/private_models_list.html.twig:69
@@ -1615,7 +1615,7 @@ msgstr ""
 msgid "Next recipient"
 msgstr ""
 
-#: templates/forms/ticket_followup.html.twig:111
+#: templates/forms/ticket_followup.html.twig:117
 msgid "Next tickets"
 msgstr "Next tickets"
 
@@ -1758,7 +1758,7 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: src/Field.php:779 src/Field.php:788 src/Field.php:3024
+#: src/Field.php:779 src/Field.php:788 src/Field.php:3033
 #: templates/field_search_form.html.twig:42 templates/field_list.html.twig:136
 #: templates/ajax/reload_item.html.twig:36
 msgid "Object"
@@ -1825,8 +1825,8 @@ msgid_plural "Only visible for these groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/forms/ticket_followup.html.twig:56
-#: templates/forms/ticket_followup.html.twig:115
+#: templates/forms/ticket_followup.html.twig:59
+#: templates/forms/ticket_followup.html.twig:125
 msgid "Opening date"
 msgstr ""
 
@@ -1841,7 +1841,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3098
+#: src/Field.php:3107
 msgid "Order"
 msgstr "Order"
 
@@ -2098,8 +2098,8 @@ msgstr ""
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: templates/forms/ticket_followup.html.twig:63
-#: templates/forms/ticket_followup.html.twig:122
+#: templates/forms/ticket_followup.html.twig:66
+#: templates/forms/ticket_followup.html.twig:132
 msgid "SLA"
 msgstr ""
 
@@ -2193,7 +2193,7 @@ msgstr ""
 msgid "See blocks as tab"
 msgstr ""
 
-#: templates/forms/itilobject_forms_tab.html.twig:38
+#: templates/forms/itilobject_forms_tab.html.twig:50
 #: templates/forms/user_forms_tab.html.twig:37
 msgid "See form"
 msgstr ""
@@ -2280,10 +2280,10 @@ msgid "Start the download"
 msgstr ""
 
 #: templates/tickettask_form_section.html.twig:143
-#: templates/forms/ticket_followup.html.twig:60
 #: templates/forms/ticket_followup.html.twig:63
-#: templates/forms/ticket_followup.html.twig:119
-#: templates/forms/ticket_followup.html.twig:122
+#: templates/forms/ticket_followup.html.twig:66
+#: templates/forms/ticket_followup.html.twig:129
+#: templates/forms/ticket_followup.html.twig:132
 msgid "Status"
 msgstr ""
 
@@ -2602,8 +2602,8 @@ msgstr ""
 msgid "This reference already exists"
 msgstr ""
 
-#: templates/forms/ticket_followup.html.twig:54
-#: templates/forms/ticket_followup.html.twig:114
+#: templates/forms/ticket_followup.html.twig:57
+#: templates/forms/ticket_followup.html.twig:124
 msgid "Ticket"
 msgstr ""
 
@@ -2974,7 +2974,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:3231 src/Field.php:3258 src/Field.php:3274 src/Field.php:3297
+#: src/Field.php:3240 src/Field.php:3267 src/Field.php:3283 src/Field.php:3306
 msgid "You cannot do this for this field"
 msgstr ""
 
