@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 09:35+0000\n"
+"POT-Creation-Date: 2026-09-11 10:57+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -42,8 +42,8 @@ msgstr[2] "%d niveaux"
 msgid "(6 fields maximum)"
 msgstr "(6 champs maximum)"
 
-#: src/MetademandPdf.php:653 src/Fields/Freetable.php:298
-#: src/Fields/Freetable.php:695
+#: src/MetademandPdf.php:653 src/Fields/Freetable.php:299
+#: src/Fields/Freetable.php:696
 msgid "(if VAT 20%)"
 msgstr "(si TVA 20%)"
 
@@ -716,7 +716,7 @@ msgstr "Supprimer définitivement"
 msgid "Delete the draft"
 msgstr "Supprimer le brouillon"
 
-#: src/Basketline.php:277
+#: src/Basketline.php:280
 msgctxt "button"
 msgid "Delete this line"
 msgstr "Supprimer cette ligne"
@@ -888,7 +888,7 @@ msgstr "Valeurs de la liste déroulante"
 msgid "Due date"
 msgstr "Date souhaitée"
 
-#: templates/forms/metademand_duplication.html.twig:19
+#: templates/forms/metademand_duplication.html.twig:46
 msgctxt "button"
 msgid "Duplicate"
 msgstr ""
@@ -1029,7 +1029,7 @@ msgstr "Champ père"
 #: templates/tools_diagnostic.html.twig:55
 #: templates/tools_diagnostic.html.twig:90
 #: templates/tools_diagnostic.html.twig:126
-#: templates/forms/field_option_parent_field_row.html.twig:9
+#: templates/forms/field_option_parent_field_row.html.twig:36
 #: templates/condition_for_metademand.html.twig:69
 #: templates/item_translation_row.html.twig:104
 msgid "Field"
@@ -1124,13 +1124,13 @@ msgid "Grand total"
 msgstr "Total général"
 
 #: src/MetademandPdf.php:520 src/MetademandPdf.php:653
-#: src/Fields/Freetable.php:298 src/Fields/Freetable.php:695
+#: src/Fields/Freetable.php:299 src/Fields/Freetable.php:696
 #: src/Fields/Basket.php:1638 src/Fields/Basket.php:2125
 msgid "Grand total (HT)"
 msgstr "Total général (HT)"
 
-#: src/MetademandPdf.php:645 src/Fields/Freetable.php:297
-#: src/Fields/Freetable.php:694
+#: src/MetademandPdf.php:645 src/Fields/Freetable.php:298
+#: src/Fields/Freetable.php:695
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
@@ -1579,7 +1579,7 @@ msgstr "Métademandes à clore"
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: src/Fields/Number.php:138 src/Fields/Range.php:180
+#: src/Fields/Number.php:138 src/Fields/Range.php:185
 msgid "Minimal mandatory"
 msgstr "Minimum obligatoire"
 
@@ -1613,7 +1613,7 @@ msgstr "Valeurs personnalisées"
 
 #: templates/list_of_templates.html.twig:60
 #: templates/ticketfield_list.html.twig:55
-#: templates/forms/ticketfield_form_row.html.twig:11
+#: templates/forms/ticketfield_form_row.html.twig:38
 #: templates/forms/public_models_tab.html.twig:35
 #: templates/forms/public_models_list.html.twig:39
 #: templates/forms/metademand_resource_list.html.twig:54
@@ -1753,7 +1753,7 @@ msgstr "Aucune explication ne peut être fournie pour cette différence."
 msgid "No results found"
 msgstr "Pas de résultats trouvés"
 
-#: src/Freetablefield.php:434
+#: src/Freetablefield.php:438
 msgid "No spaces, no special characters"
 msgstr "Pas d'espaces, pas de caractères spéciaux"
 
@@ -1853,7 +1853,7 @@ msgstr "Sur catalogue"
 msgid "On quotation"
 msgstr "Sur devis"
 
-#: src/Freetablefield.php:483 src/Fields/Freetable.php:366
+#: src/Freetablefield.php:487 src/Fields/Freetable.php:367
 msgid "One value by line, separated by comma"
 msgstr "Une valeur par ligne, séparée par une virgule"
 
@@ -2370,7 +2370,7 @@ msgstr[2] "Étapes d'un formulaire de métademandes"
 msgid "Step by step settings"
 msgstr "Paramètres du mode pas à pas"
 
-#: src/Fields/Number.php:137 src/Fields/Range.php:179
+#: src/Fields/Number.php:137 src/Fields/Range.php:184
 msgid "Step for number"
 msgstr "Pas pour les nombre"
 
@@ -2534,11 +2534,11 @@ msgstr ""
 "Le formulaire a été envoyé à l'utilisateur %s du groupe %s, vous pouvez "
 "fermer la fenêtre"
 
-#: src/Basketline.php:453
+#: src/Basketline.php:456
 msgid "The line has been deleted"
 msgstr "La demande a été supprimée"
 
-#: src/Basketline.php:438
+#: src/Basketline.php:441
 msgid "The line has been updated"
 msgstr "La ligne a été mise à jour"
 
@@ -2776,7 +2776,7 @@ msgstr "Total"
 msgid "Total (HT)"
 msgstr "Total (HT)"
 
-#: src/Fields/Freetable.php:140 src/Fields/Freetable.php:646
+#: src/Fields/Freetable.php:141 src/Fields/Freetable.php:647
 msgid "Total (TTC)"
 msgstr "Total (TTC)"
 
@@ -2953,7 +2953,7 @@ msgstr "Valider une métademande"
 msgid "Validate metademands"
 msgstr "Valider la métademande"
 
-#: src/Fields/Freetable.php:334
+#: src/Fields/Freetable.php:335
 msgid "Validate the basket"
 msgstr "Valider le panier"
 
@@ -2968,7 +2968,7 @@ msgstr "Validé par %s le %s"
 
 #: src/FieldOption.php:1072 src/FieldOption.php:1081
 #: templates/ticketfield_list.html.twig:56
-#: templates/forms/ticketfield_form_row.html.twig:16
+#: templates/forms/ticketfield_form_row.html.twig:43
 #: templates/fields/field_customvalue_add.html.twig:39
 msgid "Value"
 msgstr "Valeur"
@@ -3066,15 +3066,15 @@ msgstr ""
 msgid "You can't add a custom value without name"
 msgstr "Vous ne pouvez pas ajouter de valeur personnalisée sans nom"
 
-#: src/Freetablefield.php:540
+#: src/Freetablefield.php:544
 msgid "You can't add a field without name"
 msgstr "Vous ne pouvez pas ajouter un champ sans nom"
 
-#: src/Freetablefield.php:549
+#: src/Freetablefield.php:553
 msgid "You can't add a field without type"
 msgstr "Vous ne pouvez pas ajouter un champ sans type"
 
-#: src/Fields/Freetable.php:177
+#: src/Fields/Freetable.php:178
 msgid "You can't create a new line when there is an existing one"
 msgstr "Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
 
