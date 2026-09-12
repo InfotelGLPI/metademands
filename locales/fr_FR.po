@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 15:15+0000\n"
+"POT-Creation-Date: 2026-09-12 08:10+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -171,7 +171,7 @@ msgstr "Ajouter une pièce jointe"
 msgid "Add language"
 msgstr "Ajouter une langue"
 
-#: src/Wizard.php:1357 src/Wizard.php:1550
+#: src/Wizard.php:1357 src/Wizard.php:1558
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
@@ -305,7 +305,7 @@ msgstr "Lier à la valeur de cette case à cocher"
 msgid "Blank Template"
 msgstr "Gabarit vide"
 
-#: src/Wizard.php:1855 src/Field.php:1154 src/Field.php:3146 src/Step.php:423
+#: src/Wizard.php:1863 src/Field.php:1154 src/Field.php:3146 src/Step.php:423
 #: src/Step.php:502 templates/field_search_form.html.twig:34
 #: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
@@ -362,7 +362,7 @@ msgstr "Annuler"
 msgid "Cancel / delete a form"
 msgstr "Annuler / supprimer un formulaire"
 
-#: src/Wizard.php:1953
+#: src/Wizard.php:1961
 msgctxt "button"
 msgid "Cancel form"
 msgstr "Annuler le formulaire"
@@ -610,12 +610,12 @@ msgstr[0] "Date"
 msgstr[1] "Dates"
 msgstr[2] "Dates"
 
-#: src/Wizard.php:3086
+#: src/Wizard.php:3097
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr "La date %s ne peut être inférieure à la date initiale"
 
-#: src/Wizard.php:3076
+#: src/Wizard.php:3087
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
@@ -861,7 +861,7 @@ msgstr "Fait le"
 msgid "Double column display"
 msgstr "Affichage en double colonnes"
 
-#: front/draftcreation.php:53 src/Draft.php:520 src/Draft.php:536
+#: front/draftcreation.php:65 src/Draft.php:520 src/Draft.php:536
 #: templates/forms/drafts_list.html.twig:55
 msgid "Draft name"
 msgstr "Nom du brouillon"
@@ -1035,7 +1035,7 @@ msgstr "Champ père"
 msgid "Field"
 msgstr "Champ"
 
-#: src/Wizard.php:3137
+#: src/Wizard.php:3148
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
@@ -1631,7 +1631,7 @@ msgstr "Nom"
 msgid "Need validation to create subticket"
 msgstr "Nécessite la validation pour la création des tickets enfants"
 
-#: front/draft.php:44 front/draftcreation.php:52
+#: front/draft.php:44 front/draftcreation.php:64
 #: templates/forms/drafts_list.html.twig:45
 msgid "New draft"
 msgstr "Nouveau brouillon"
@@ -1651,8 +1651,8 @@ msgstr "Nouveau modèle"
 #: src/Fields/Dropdownmeta.php:1583 src/Fields/Basket.php:821
 #: src/Fields/Tel.php:342 src/Fields/Email.php:336
 #: src/Fields/Dropdownmultiple.php:1119 src/Fields/Dropdownmultiple.php:1292
-#: src/Wizard.php:1118 src/Wizard.php:1352 src/Wizard.php:1507
-#: src/Wizard.php:1516 src/Wizard.php:1556 src/Wizard.php:1562
+#: src/Wizard.php:1118 src/Wizard.php:1352 src/Wizard.php:1515
+#: src/Wizard.php:1524 src/Wizard.php:1564 src/Wizard.php:1570
 #: src/FieldOption.php:2140 templates/wizard/form_nav_buttons.html.twig:52
 #: templates/wizard/form_nav_buttons.html.twig:55
 msgid "Next"
@@ -1979,11 +1979,11 @@ msgstr "Groupement"
 msgid "Previous"
 msgstr "Précédent"
 
-#: src/Wizard.php:1995
+#: src/Wizard.php:2003
 msgid "Previous data edited"
 msgstr "Données précédentes complétées"
 
-#: src/Wizard.php:1988
+#: src/Wizard.php:1996
 msgid "Previous user"
 msgstr "Utilisateur précédent"
 
@@ -2190,13 +2190,13 @@ msgstr "Sauver"
 #: src/Fields/Dropdownmeta.php:1581 src/Fields/Basket.php:820
 #: src/Fields/Basket.php:1443 src/Fields/Tel.php:340 src/Fields/Email.php:334
 #: src/Fields/Dropdownmultiple.php:1117 src/Fields/Dropdownmultiple.php:1290
-#: src/Wizard.php:1347 src/Wizard.php:1547 src/FieldOption.php:2138
+#: src/Wizard.php:1347 src/Wizard.php:1555 src/FieldOption.php:2138
 #: src/Basketline.php:157
 msgctxt "button"
 msgid "Save & Post"
 msgstr "Sauver et envoyer"
 
-#: src/Wizard.php:1517
+#: src/Wizard.php:1525
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Enregistrer et envoyer à un autre utilisateur/groupe"
@@ -2267,7 +2267,7 @@ msgstr "Voir le formulaire"
 msgid "See top metademands"
 msgstr "Voir le top métademandes"
 
-#: src/Wizard.php:1777
+#: src/Wizard.php:1785
 msgctxt "button"
 msgid "See your basket"
 msgstr "Voir votre panier"
@@ -2476,7 +2476,7 @@ msgstr "Texte"
 msgid "Textarea"
 msgstr "Zone de commentaire"
 
-#: src/Wizard.php:1509
+#: src/Wizard.php:1517
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
@@ -2491,7 +2491,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr "La valeur par défaut a été modifiée depuis la dernière traduction"
 
-#: src/Fields/Textarea.php:908
+#: src/Fields/Textarea.php:917
 msgid "The description field is mandatory"
 msgstr "Le champ description est obligatoire"
 
@@ -2640,12 +2640,12 @@ msgstr "Il y a eu un problème à la suppression de votre signature"
 msgid "There was a problem on upload your signature"
 msgstr "Il y a eu un problème au chargement de votre signature"
 
-#: src/Wizard.php:1722
+#: src/Wizard.php:1730
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 "Il y a eu un problème. La configuration du mode Pas à Pas a été réinitialisée"
 
-#: src/Wizard.php:1510
+#: src/Wizard.php:1518
 msgid "These fields don\\'t respect regex"
 msgstr "Ces champs ne respectent pas le format attendu"
 
@@ -2756,7 +2756,7 @@ msgstr "A valider sans tickets enfants"
 msgid "Too many items to export at once"
 msgstr "Trop d'objets à exporter simultanément"
 
-#: src/Wizard.php:3125
+#: src/Wizard.php:3136
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
@@ -3092,7 +3092,7 @@ msgstr "Vous ne pouvez pas faire cela pour ce champ"
 msgid "You cannot use this parameter if there is more than one category"
 msgstr "Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
 
-#: src/Wizard.php:1662
+#: src/Wizard.php:1670
 msgid "You do not have access to the form"
 msgstr "Vous n'avez pas accès au formulaire"
 
@@ -3100,7 +3100,7 @@ msgstr "Vous n'avez pas accès au formulaire"
 msgid "You don't have the right to create meta-demand"
 msgstr "Vous n'êtes pas habilité à créer ce type de demande"
 
-#: src/Wizard.php:1934
+#: src/Wizard.php:1942
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -3137,7 +3137,7 @@ msgstr "Vous avez des rangs en doublon !"
 msgid "You have items on your basket"
 msgstr "Vous avez des objets dans votre panier"
 
-#: src/Wizard.php:1491 templates/wizard/form_confirm_modal.html.twig:42
+#: src/Wizard.php:1495 templates/wizard/form_confirm_modal.html.twig:42
 msgid "You have not entered any values. Is this normal?"
 msgstr "Vous n'avez saisi aucunes valeurs. Est-ce normal ?"
 
@@ -3168,7 +3168,7 @@ msgstr "Tous vos blocs ne sont pas définis"
 msgid "Your created forms"
 msgstr "Vos formulaires créés"
 
-#: front/draft.form.php:37 front/draft.php:40 front/draftcreation.php:50
+#: front/draft.form.php:37 front/draft.php:40 front/draftcreation.php:62
 #: src/Wizard.php:458 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr "Vos brouillons"
@@ -3234,7 +3234,7 @@ msgstr "champ supprimé sur la demande"
 msgid "field update on demand"
 msgstr "champ modifié sur la demande"
 
-#: front/draftcreation.php:54 src/Draft.php:278
+#: front/draftcreation.php:66 src/Draft.php:278
 #: templates/forms/stepform_waiting_warning.html.twig:41
 msgid "form"
 msgid_plural "forms"
