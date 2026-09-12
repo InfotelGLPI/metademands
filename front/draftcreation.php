@@ -31,6 +31,18 @@ use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Servicecatalog\Main;
 
+// Page guard. This controller listed the active meta-demands of the caller's entities
+// -- their names alone often describe internal processes -- to any authenticated
+// helpdesk user, including a profile holding none of the plugin rights. The entity
+// restriction inside listMetademandsForDraft() bounds what is disclosed but gates
+// nothing on the profile. Same three rights as the other self-service entry points,
+// and placed before the servicecatalog test so it applies whatever that plugin's state.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
     $meta = new Metademand();
     $option['empty_value'] = true;

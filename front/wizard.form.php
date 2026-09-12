@@ -293,8 +293,14 @@ if (isset($_POST['update_basket_line'])) {
     if (isset($_GET['see_form']) && $_GET['see_form'] > 0) {
         $options['seeform'] = true;
     }
-    if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
-        $options['current_ticket_id'] = $_GET['current_ticket_id'];
+    // Cast before the comparison, not after: in PHP 8 a non-numeric string compared with
+    // an integer is compared AS A STRING, so a payload starting with a digit is > 0 and
+    // this guard filtered nothing. The value reaches a JavaScript literal through
+    // Wizard::getDefaultParams(). Same normalization as src/Basketline.php:160 and
+    // src/Fields/Basket.php:1457, which build the very same query string.
+    $current_ticket_id = (int) ($_GET['current_ticket_id'] ?? 0);
+    if ($current_ticket_id > 0) {
+        $options['current_ticket_id'] = $current_ticket_id;
     }
     if (isset($_GET['meta_validated'])) {
         if ($_GET['meta_validated'] > 0) {

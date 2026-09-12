@@ -1460,9 +1460,13 @@ class Wizard extends CommonDBTM
         // would break the literal.
         $json_all_meta_fields = json_encode($all_meta_fields, JSON_HEX_TAG | JSON_HEX_AMP);
 
+        // Defence in depth: both callers normalize their input now, but this method is the
+        // sink that builds the query string finally embedded in JavaScript, so it must not
+        // depend on them. The @param int above is declarative only, nothing enforced it.
+        $current_ticket = (int) $current_ticket;
         $paramUrl = "";
         if ($current_ticket > 0 && !$meta_validated) {
-            $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+            $paramUrl = "current_ticket_id=$current_ticket&meta_validated=" . (int) $meta_validated . "&";
         }
 
         $stepConfig = new Configstep();
@@ -1496,7 +1500,11 @@ class Wizard extends CommonDBTM
             . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'],
             JSON_HEX_TAG | JSON_HEX_AMP,
         );
-        $metaparams['paramUrl'] = $paramUrl;
+        // Emitted unquoted in validateScript(), like confirmmsg and nameform above:
+        // json_encode() supplies its own delimiters. public/scripts/metademands.js
+        // concatenates this value into a URL, so it must stay a plain string -- which a
+        // JSON string literal is. Never HEX_QUOT/HEX_APOS, they would break the literal.
+        $metaparams['paramUrl'] = json_encode($paramUrl, JSON_HEX_TAG | JSON_HEX_AMP);
         if ($metademands->fields['can_update'] == 1 && !$meta_validated) {
             $metaparams['seeform'] = 0;
         } else {
@@ -2497,7 +2505,7 @@ class Wizard extends CommonDBTM
                     metademandparams.confirmmsg = $confirmmsg;
                     metademandparams.is_order = '$is_order';
                     metademandparams.root_doc = '$root_doc';
-                    metademandparams.paramUrl = '$paramUrl';
+                    metademandparams.paramUrl = $paramUrl;
                     metademandparams.edit_model = '$edit_model';
                     metademandparams.seeform = '$seeform';
                     metademandparams.token = '$token';
@@ -2580,8 +2588,11 @@ class Wizard extends CommonDBTM
      */
     public static function createMetademands($metademands_id, $values, $options = [])
     {
-        if (isset($values['fields']['current_ticket_id']) && $values['fields']['current_ticket_id'] > 0) {
-            $options['current_ticket_id'] = $values['fields']['current_ticket_id'];
+        // Second entry point into the same paramUrl sink, with the same PHP 8 string
+        // comparison pitfall as front/wizard.form.php:296.
+        $current_ticket_id = (int) ($values['fields']['current_ticket_id'] ?? 0);
+        if ($current_ticket_id > 0) {
+            $options['current_ticket_id'] = $current_ticket_id;
         }
         if (isset($values['fields']['meta_validated'])) {
             $options['meta_validated'] = $values['fields']['meta_validated'];

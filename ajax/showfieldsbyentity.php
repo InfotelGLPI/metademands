@@ -32,9 +32,17 @@ Html::header_nocache();
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
-// This endpoint is reachable by simple requesters, and the 'entity' option below overrides
-// the session entity restriction in the dropdowns. Re-validate the requested entity against
-// the caller's own perimeter to prevent cross-entity user/group enumeration.
+// Page guard. The entity check below existed but no right bit did, so any authenticated
+// user could enumerate the users, groups and ITIL categories of their own entity. The
+// only caller is TicketTask::showTicketTaskForm(), whose entry point
+// ajax/showAddTaskForm.php:42 gates on plugin_metademands READ -- replay that bit, not a
+// stronger one, which would lock out the screen's legitimate readers.
+Session::checkRight('plugin_metademands', READ);
+
+// The 'entity' option below overrides the session entity restriction in the dropdowns.
+// Re-validate the requested entity against the caller's own perimeter to prevent
+// cross-entity user/group enumeration: the guard above gates the profile, this one gates
+// the entities that profile may reach.
 $entities_id = isset($_POST['entities_id']) ? (int) $_POST['entities_id'] : -1;
 if ($entities_id < 0 || !Session::haveAccessToEntity($entities_id)) {
     throw new AccessDeniedHttpException();
@@ -63,10 +71,17 @@ switch ($_POST['action']) {
     case 'users_id_assign':
     case 'users_id_observer':
     case 'users_id_requester':
-        // Restrict the actor-right filter to the values the ticket form legitimately emits
-        // (see Ticket::getDefaultActorRightSearch); never trust a client-supplied right.
-        $allowed_rights = ['all', 'own_ticket', 'id'];
-        $right = in_array($_POST['right'] ?? '', $allowed_rights, true) ? $_POST['right'] : 'id';
+        // Recompute the actor-right filter instead of whitelisting the posted one. This is
+        // what the real caller emits (src/TicketTask.php:289-316) and it replays the
+        // session-dependent part a whitelist cannot: Ticket::getDefaultActorRightSearch()
+        // downgrades ASSIGN to 'id' for a caller lacking Ticket::ASSIGN, whereas the posted
+        // value let anyone ask for 'all'.
+        $actor_types = [
+            'users_id_requester' => \CommonITILActor::REQUESTER,
+            'users_id_observer' => \CommonITILActor::OBSERVER,
+            'users_id_assign' => \CommonITILActor::ASSIGN,
+        ];
+        $right = (new \Ticket())->getDefaultActorRightSearch($actor_types[$_POST['action']]);
         User::dropdown(['name' => $_POST['action'],
             'value' => isset($_POST[$_POST['action']]) ? $_POST[$_POST['action']] : 0,
             'entity' =>  $entities_id,

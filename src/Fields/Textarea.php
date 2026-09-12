@@ -903,8 +903,17 @@ class Textarea extends CommonDBTM
             ]);
         }
 
+        // The sink below is an ES6 template literal, where ${...} is evaluated as
+        // JavaScript: addslashes() escapes the quotes, the backslash and NUL, but neither
+        // the backquote nor ${, so it never protected this site. getSafeHtml() sanitizes
+        // HTML and has no reason to drop those characters, which are not HTML-significant.
+        // Build the whole fragment here and let json_encode() emit its own delimiters,
+        // exactly as src/Wizard.php:1490 already does -- hence the unquoted sink.
         $placeholder = RichText::getSafeHtml($placeholder_comment);
-        $placeholder = addslashes($placeholder);
+        $placeholder_content = json_encode(
+            '<div id="placeholder">' . $placeholder . '</div>',
+            JSON_HEX_TAG | JSON_HEX_AMP,
+        );
         $mandatory_field_msg = json_encode(__('The description field is mandatory', 'servicecatalog'));
         // init tinymce
         $js = <<<JS
@@ -1015,11 +1024,7 @@ class Textarea extends CommonDBTM
                   });
                   editor.on('init', () => {
                      if ($('#$id').val() == '') {
-                     editor.setContent(`
-                              <div id="placeholder">
-                            $placeholder
-                        </div>
-                          `);
+                     editor.setContent($placeholder_content);
                      }
                   });
                   // When the editor is clicked we monitor what is being clicked and

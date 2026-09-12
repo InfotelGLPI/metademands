@@ -33,6 +33,18 @@ use GlpiPlugin\Metademands\Step;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
+// Page guard. The entity check on the requested group existed but no right bit did, so
+// any authenticated user could enumerate group membership. The caller is
+// Step::showModalForm(), reached through ajax/showStep.php:41 and
+// front/nextGroup.form.php:38 -- both accept plugin_metademands_fillform, i.e. a plain
+// requester. Replay that same set: a stronger bit would break the step modal in the
+// simplified interface, which is the plugin's own use case.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $groupUser = new Group_User();
 
 $step = new Step();
