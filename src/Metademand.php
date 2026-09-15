@@ -905,12 +905,20 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
-     * Same filter as filterActorValues(), plus the anti-spoofing rule of the sink.
+     * Filter the identifiers posted through a form field mapped to the ticket requester.
      *
-     * The requester branch of the mapping loop unsets the value computed by the
-     * anti-spoofing control applied earlier in addObjects() and rebuilds it from the
-     * posted value, which defeats that control. Replay it here: only a central-interface
-     * user allowed to create tickets may declare the demand on behalf of someone else.
+     * Unlike the hidden _users_id_requester input of the wizard -- which is never user
+     * editable and is therefore still pinned to the connected user in addObjects() --
+     * a field configured with "used_by_ticket = requester" IS the supported way to
+     * declare a demand on behalf of a third party (staff mobility, account creation,
+     * onboarding...). Restricting it to central-interface users holding ticket CREATE
+     * broke that feature for every self-service submitter: nothing survived the filter,
+     * the caller kept the previously computed value and the ticket fell back to its
+     * author as requester.
+     *
+     * The posted value is still revalidated: filterActorValues() replays server side the
+     * entity criterion the dropdown only enforced on the client, so a replayed submission
+     * cannot attribute the ticket to a user the submitter cannot reach.
      *
      * @param mixed $value
      *
@@ -918,16 +926,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      */
     private static function filterRequesterValues($value): array
     {
-        $requesters = self::filterActorValues($value, User::class);
-
-        if (Session::getCurrentInterface() === 'central' && Session::haveRight('ticket', CREATE)) {
-            return $requesters;
-        }
-
-        return array_values(array_filter(
-            $requesters,
-            static fn($users_id) => $users_id === (int) Session::getLoginUserID(),
-        ));
+        return self::filterActorValues($value, User::class);
     }
 
     /**
