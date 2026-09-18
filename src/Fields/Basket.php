@@ -80,7 +80,7 @@ class Basket extends CommonDBTM
         $background_color = "";
         if (isset($metademand->fields['background_color'])
             && $metademand->fields['background_color'] != "") {
-            $background_color = "background-color:" . $metademand->fields['background_color'] . ";";
+            $background_color = "background-color:" . Metademand::toThemedBackground($metademand->fields['background_color']) . ";";
         }
         $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
             $data['custom_values'],

@@ -146,7 +146,7 @@ Aesthetics
   margin: 0 auto;
   /*height: 8rem;*/
   width: 80%;
-  background: #fff;
+  background: var(--tblr-bg-surface, #fff);
   padding: 0px 10px;
 }
 

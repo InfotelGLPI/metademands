@@ -305,6 +305,7 @@ class Task extends CommonDBChild
             // Create item
             $options['itemtype'] = get_class($item);
             $options['items_id'] = $item->getID();
+            $options['plugin_metademands_metademands_id'] = $item->getID();
             //            $metademand->getFromDB($item->getID());
             // Create item
             $this->check(-1, CREATE, $options);

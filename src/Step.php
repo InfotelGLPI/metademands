@@ -610,6 +610,7 @@ class Step extends CommonDBChild
         } else {
             $options['itemtype'] = get_class($item);
             $options['items_id'] = $item->getID();
+            $options['plugin_metademands_metademands_id'] = $item->getID();
 
             // Create item
             $this->check(-1, CREATE, $options);

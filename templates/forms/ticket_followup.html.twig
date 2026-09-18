@@ -33,7 +33,7 @@
     {% if followup is not null %}
         <br>
         <div class="center alert alert-dismissible fade show informations"
-             style="display:flex;align-items: center;{% if followup.has_status %}background-color: white;border-color:{{ followup.icon_color }}{% endif %}">
+             style="display:flex;align-items: center;{% if followup.has_status %}background-color: var(--tblr-bg-surface, white);border-color:{{ followup.icon_color }}{% endif %}">
             {% if followup.has_status %}
                 <div style="margin-right: 20px;">
                     <i class="{{ followup.icon }}" style="vertical-align: top;font-size:2em;color:{{ followup.icon_color }}"></i>

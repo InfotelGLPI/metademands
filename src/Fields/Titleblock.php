@@ -34,6 +34,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 use Session;
 
 /**
@@ -94,8 +95,8 @@ class Titleblock extends CommonDBTM
 
         echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_titleblock.html.twig', [
             'is_preview_or_debug' => (bool) ($preview || $debug),
-            'bg_color'            => "#FFF",
-            'color'               => $data['color'],
+            'bg_color'            => 'var(--tblr-bg-surface, #FFF)',
+            'color'               => Metademand::toThemedForeground($data['color']),
             'rank'                => $rank,
             'has_icon'            => (bool) $icon,
             'icon'                => $icon,

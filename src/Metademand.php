@@ -741,6 +741,55 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * Blend a colour picked in the configuration with the theme's own surface, in the share
+     * the stylesheet sets for the palette in use: none under a light palette, where the
+     * colour comes out exactly as it was picked, enough under a dark one for it to sit on a
+     * dark background without losing what makes it recognisable.
+     *
+     * Only the hex shapes `sanitizeColorInput()` lets through get wrapped. Anything else
+     * yields an empty string rather than a malformed `color-mix()`, which would take down
+     * the whole declaration it lands in instead of just being ignored.
+     *
+     * @param string|null $color
+     *
+     * @return string
+     */
+    public static function toThemedBackground($color)
+    {
+        $color = trim((string) $color);
+        if (!preg_match('/^#[0-9A-Fa-f]{3,8}$/', $color)) {
+            return '';
+        }
+
+        return 'color-mix(in srgb, ' . $color . ', var(--tblr-bg-surface) var(--md-dark-bg-mix, 0%))';
+    }
+
+    /**
+     * The same idea as `toThemedBackground()`, for a colour picked for text: blended with
+     * the theme's own body colour rather than its surface, so a dark pick — black being the
+     * one people reach for — lifts off a dark background while keeping its hue. Text takes a
+     * larger share than a background, which only has to sit behind something, whereas this
+     * has to clear the contrast it is read at.
+     *
+     * Unlike the background helper, an unrecognised value is handed back untouched instead
+     * of dropped: no `sanitizeColorInput()` guards the per-field colours, so older rows may
+     * hold a plain CSS keyword that still has to render as it does today.
+     *
+     * @param string|null $color
+     *
+     * @return string
+     */
+    public static function toThemedForeground($color)
+    {
+        $color = trim((string) $color);
+        if (!preg_match('/^#[0-9A-Fa-f]{3,8}$/', $color)) {
+            return $color;
+        }
+
+        return 'color-mix(in srgb, ' . $color . ', var(--tblr-body-color) var(--md-dark-fg-mix, 0%))';
+    }
+
+    /**
      * Restrict the icon field to a plain icon class token: it is echoed into HTML class
      * attributes by the wizard and the helpdesk tiles, so a crafted value would break out
      * of the attribute (stored XSS). Same allow-list as the change_icon massive action and

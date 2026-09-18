@@ -33,6 +33,7 @@ use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 use Html;
 
 /**
@@ -103,7 +104,7 @@ class Information extends CommonDBTM
             'has_icon'      => (bool) $icon,
             'icon'          => $icon,
             'icon_is_fa'    => str_contains($icon, 'fa-'),
-            'color'         => $data['color'],
+            'color'         => Metademand::toThemedForeground($data['color']),
             'name'          => $name,
             'comment_html'  => $comment_html,
             'label2_html'   => $label2_html,

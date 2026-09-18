@@ -25,6 +25,28 @@
  * --------------------------------------------------------------------------
  */
 
+/* Share of the theme's own colours blended into the fixed colours of this stylesheet, and
+   the stripes drawn over two of them. Those colours were picked against a white background,
+   so under a light palette nothing is blended in and each one is used exactly as it was
+   picked; under a dark one enough is blended in for it to sit on a dark background without
+   losing what makes it recognisable, and the stripes fade to a hint.
+
+   This is the one place a dark palette is named: `data-glpi-theme-dark` is set on <html> by
+   GLPI itself, so every dark palette is covered, including the ones added later. */
+:root {
+    --md-dark-bg-mix: 0%;
+    --md-dark-fg-mix: 0%;
+    --md-invalid-bg: #ffdddd;
+    --md-stripe: rgba(255, 255, 255, .5);
+}
+
+:root[data-glpi-theme-dark="1"] {
+    --md-dark-bg-mix: 80%;
+    --md-dark-fg-mix: 55%;
+    --md-invalid-bg: color-mix(in srgb, #dc3545, var(--tblr-bg-surface) 72%);
+    --md-stripe: rgba(255, 255, 255, .06);
+}
+
 .metademands_tickettask {
     padding: 5px;
     border: solid 1px #D5D5D5;
@@ -131,15 +153,15 @@ a.metademand_middle_button {
 }
 
 .metademand_metademandtasks {
-    background-color: #aaccf6;
+    background-color: color-mix(in srgb, #aaccf6, var(--tblr-bg-surface) var(--md-dark-bg-mix, 0%));
 }
 
 .metademand_metademandfollowup_grey {
-    background-color: #D5D5D5;
+    background-color: color-mix(in srgb, #D5D5D5, var(--tblr-bg-surface) var(--md-dark-bg-mix, 0%));
 }
 
 .metademand_metademandfollowup_red {
-    background-color: #cf9b9b;
+    background-color: color-mix(in srgb, #cf9b9b, var(--tblr-bg-surface) var(--md-dark-bg-mix, 0%));
 }
 
 .metademands_wizard {
@@ -149,7 +171,7 @@ a.metademand_middle_button {
     text-align: left;
     font-size: 14px;
     width: 900px;
-    background-color: #fff;
+    background-color: var(--tblr-bg-surface, #fff);
 }
 
 .metademands_wizard_form {
@@ -225,7 +247,7 @@ button.clear-basket {
     position: relative;
     /*max-width: 30em;*/
     margin: 5px;
-    background-color: #fff;
+    background-color: var(--tblr-bg-surface, #fff);
     padding: 1.125em 1.5em;
     font-size: 12px;
     border-radius: 1rem;
@@ -270,6 +292,7 @@ button.clear-basket {
 }
 
 .input-draft {
+    background-color: var(--tblr-bg-surface-tertiary, var(--tblr-bg-surface, #f8f9fa));
     position: absolute;
     right: 0;
     display: table;
@@ -282,7 +305,7 @@ button.clear-basket {
     position: relative;
     width: 300px;
     margin: 1%;
-    background-color: #fff;
+    background-color: var(--tblr-bg-surface, #fff);
     padding: 1.125em 1.5em;
     font-size: 12px;
     border-radius: 1rem;
@@ -311,7 +334,7 @@ button.clear-basket {
     position: absolute;
     right: 5px;
     border: 0;
-    background-color: #FFF;
+    background-color: var(--tblr-bg-surface, #FFF);
     font-size: 9px;
     top: 5px;
 }
@@ -333,7 +356,7 @@ button.clear-basket {
     position: absolute;
     right: 5px;
     border: 0;
-    background-color: #FFF;
+    background-color: var(--tblr-bg-surface, #FFF);
     font-size: 9px;
     top: 5px;
 }
@@ -402,7 +425,7 @@ button.clear-basket {
 }
 
 input.invalid {
-    background-color: #ffdddd!important;
+    background-color: var(--md-invalid-bg, #ffdddd)!important;
 }
 
 .invalid + .select2-container,
@@ -461,7 +484,7 @@ textarea.invalid,
     margin: 10px auto 5px auto;
     padding: 4px;
     border: 1px solid #aaaaaa;
-    background-color: #ffffff;
+    background-color: var(--tblr-bg-surface, #ffffff);
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     -o-border-radius: 5px;
@@ -510,14 +533,14 @@ textarea.invalid,
 
 .linkedtooption {
     border: 3px #d1cece dashed;
-    background-color: #efefef;
-    background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+    background-color: color-mix(in srgb, #efefef, var(--tblr-bg-surface) var(--md-dark-bg-mix, 0%));
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, var(--md-stripe, rgba(255,255,255,.5)) 35px, var(--md-stripe, rgba(255,255,255,.5)) 70px);
 }
 
 .metatooption {
     border: 3px #aaccf6 dashed;
-    background-color: #aaccf6;
-    background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+    background-color: color-mix(in srgb, #aaccf6, var(--tblr-bg-surface) var(--md-dark-bg-mix, 0%));
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, var(--md-stripe, rgba(255,255,255,.5)) 35px, var(--md-stripe, rgba(255,255,255,.5)) 70px);
 }
 
 .treegrid-indent {
@@ -670,7 +693,7 @@ textarea.invalid,
 }
 
 .nav-tabs .nav-link.active {
-    background: #ffffff;
+    background: var(--tblr-bg-surface, #ffffff);
     border-bottom: unset !important;
 }
 
@@ -774,7 +797,7 @@ select.chained-select {
 }
 
 .modal-box {
-    background: white; padding: 20px; border-radius: 8px; max-width: 400px;
+    background: var(--tblr-bg-surface, white); padding: 20px; border-radius: 8px; max-width: 400px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-align: center;
 }
 

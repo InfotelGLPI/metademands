@@ -73,7 +73,7 @@ class Freetable extends CommonDBTM
             && $meta->fields['background_color'] != "") {
             // Escaped by the template rather than here, so the style fragment is not
             // pre-escaped and then emitted raw.
-            $background_color = "background-color:" . $meta->fields['background_color'] . ";";
+            $background_color = "background-color:" . Metademand::toThemedBackground($meta->fields['background_color']) . ";";
         }
         $plugin_metademands_fields_id = $data['id'];
 
@@ -290,7 +290,7 @@ class Freetable extends CommonDBTM
         $has_orderfollowup = Plugin::isPluginActive('orderfollowup');
         $script2 = '';
         if ($has_orderfollowup) {
-            $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: #ffffff;\'";
+            $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: var(--tblr-bg-surface, #ffffff);\'";
             $conf = new Config();
             $conf->getFromDB(1);
             $tva = $conf->fields['use_tva'] ?? "20";
@@ -307,13 +307,13 @@ class Freetable extends CommonDBTM
                         });
                         grandtotalht = grandtotal / (1 + tva);
 
-                        $('#freetable_table{$rand} tr[id^=line_{$rand}_]').css('background-color', '#f7f7f7');
+                        $('#freetable_table{$rand} tr[id^=line_{$rand}_]').css('background-color', 'var(--tblr-bg-surface, #f7f7f7)');
                         let tr_grandtotal = document.getElementById('grandtotal_{$rand}');
                         if (tr_grandtotal === null) {
                              $('#freetable_table{$rand} tr[id^=line_{$rand}_]:last').after('<tr id=\"grandtotal_{$rand}\">' +
-                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal_{$rand}\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
+                         '<th colspan=\"6\" style= \'background-color: var(--tblr-bg-surface, #ffffff);\' > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal_{$rand}\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
                           '<tr id=\"grandtotalht_{$rand}\">' +
-                         '<th colspan=\"6\" style= \'background-color: #ffffff;\' > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht_{$rand}\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
+                         '<th colspan=\"6\" style= \'background-color: var(--tblr-bg-surface, #ffffff);\' > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht_{$rand}\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
                         } else {
                            $('#amount_grandtotal_{$rand}').text(grandtotal.toFixed(2) + ' €');
                            $('#amount_grandtotalht_{$rand}').text(grandtotalht.toFixed(2) + ' €');

@@ -34,6 +34,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 use Session;
 
@@ -101,7 +102,7 @@ class Title extends CommonDBTM
 
         echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_title.html.twig', [
             'id'                  => (int) $data['id'],
-            'color'               => $data['color'],
+            'color'               => Metademand::toThemedForeground($data['color']),
             'color_rgba'          => Wizard::hex2rgba($data['color'], "0.03"),
             'has_icon'            => (bool) $icon,
             'icon'                => $icon,

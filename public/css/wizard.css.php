@@ -55,7 +55,7 @@ div[class="btnsc-normal"] {
    transition: all .4s ease;
    user-drag: element;
    border: solid #CCC 1px;
-   background-color: #FFF;
+   background-color: var(--tblr-bg-surface, #FFF);
 }
 
 div[class="readonly-btnsc-normal"] {
@@ -71,7 +71,7 @@ div[class="readonly-btnsc-normal"] {
     overflow: auto;
     user-drag: element;
     border: solid #CCC 1px;
-    background-color: #FFF;
+    background-color: var(--tblr-bg-surface, #FFF);
 }
 
 div[class="btnsc-normal-type"] {
@@ -90,7 +90,7 @@ div[class="btnsc-normal-type"] {
     transition: all .4s ease;
     user-drag: element;
     border: solid #CCC 1px;
-    background-color: #FFF;
+    background-color: var(--tblr-bg-surface, #FFF);
 }
 
 @media (max-width: 768px) {

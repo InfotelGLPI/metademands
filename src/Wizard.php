@@ -292,6 +292,7 @@ class Wizard extends CommonDBTM
         if (!empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
         }
+        $background_color = Metademand::toThemedBackground($background_color);
         $icon_color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
 
         $icon = "";
@@ -2141,7 +2142,7 @@ class Wizard extends CommonDBTM
         TemplateRenderer::getInstance()->display('@metademands/wizard/block_content.html.twig', [
             'block' => (int) $block,
             'preview_color' => $preview_color,
-            'background_color' => $metademands->fields['background_color'] ?? '',
+            'background_color' => Metademand::toThemedBackground($metademands->fields['background_color'] ?? ''),
             'is_preview' => $preview || $debug,
             'show_model_alert' => ($block == 1 && $use_model == 1),
             'title_html' => $title_html,
@@ -2456,7 +2457,7 @@ class Wizard extends CommonDBTM
             }
 
             $title = [
-                'color' => $data['color'] ?? '',
+                'color' => Metademand::toThemedForeground($data['color'] ?? ''),
                 'label' => $label,
                 'id' => $data['id'],
                 'label2_tooltip_html' => $label2_tooltip_html,
@@ -2471,7 +2472,7 @@ class Wizard extends CommonDBTM
             'preview_color' => $is_preview ? Field::setColor($block) : '',
             // The legacy code read this colour from an undefined $meta variable, so the
             // row never got the background the designer had picked.
-            'background_color' => $metademands->fields['background_color'] ?? '',
+            'background_color' => Metademand::toThemedBackground($metademands->fields['background_color'] ?? ''),
             'config_link' => $config_link,
             'title' => $title,
         ]);
