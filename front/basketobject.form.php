@@ -69,6 +69,9 @@ if (isset($_POST["add"])) {
     Html::back();
 
 } else {
+    // See front/condition.form.php: display() is a no-op guard on the creation form.
+    $material->checkGlobal(READ);
+
     Html::header(__('Reference catalog', 'metademands'), '', "management", Basketobject::class);
     $material->display(['id' => $_GET["id"]]);
     Html::footer();

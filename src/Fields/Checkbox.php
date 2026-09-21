@@ -173,6 +173,10 @@ class Checkbox extends CommonDBTM
                     $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
 
                     foreach ($childs_blocks[$key] as $customvalue => $childs) {
+                        // Block numbers are cast here as well as normalized on write:
+                        // the value below sits in expression position, where no amount
+                        // of escaping would make a non numeric value safe.
+                        $childs = (int) $childs;
                         $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
                         $script .= FieldOption::resetMandatoryBlockFields($childs);
                         $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";

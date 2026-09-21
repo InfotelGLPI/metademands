@@ -222,11 +222,6 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
         };
     }
 
-    $.ajax({
-        url: params.root + '/ajax/freetable_item.php',
-        type: 'POST',
-        data: {datas: line}
-    });
     let ko = 0;
 
     $.each(fields, function (index, valuej) {
@@ -240,13 +235,19 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                     elem_parent.find('input[name=' + index + ']').css('border-color', '');
                 }
             } else if (type_fields[index] == params.select) {
-                var select = document.getElementById(index);
-                var text = select.options[select.selectedIndex].text;
-                if (text == empty_value) {
-                    select.style.borderColor = 'red';
-                    ko = 1;
-                } else {
-                    select.style.borderColor = '';
+                // Scoped to the edited row like every other branch here: the column ids are
+                // the raw internal names, so they are duplicated from one row to the next and
+                // from one free table to the next inside the same form. A document wide
+                // lookup validated the first matching select of the page, which is another
+                // table's select as soon as the form holds several free tables.
+                var select = elem_parent.find('select[name=' + index + ']');
+                if (select.length > 0) {
+                    if (select.find('option:selected').text() == empty_value) {
+                        select.css('border-color', 'red');
+                        ko = 1;
+                    } else {
+                        select.css('border-color', '');
+                    }
                 }
             } else if (type_fields[index] == params.number) {
                 if (elem_parent.find('input[name=' + index + ']').val() == 0) {
@@ -278,6 +279,16 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
         total = Math.round((total + Number.EPSILON) * 100) / 100;
     }
     if (ko == 0) {
+        // Persisted only once the mandatory fields of the row have been checked:
+        // the request used to be sent before the loop above, so a line holding an
+        // empty mandatory field was stored anyway while the form only turned the
+        // offending input red.
+        $.ajax({
+            url: params.root + '/ajax/freetable_item.php',
+            type: 'POST',
+            data: {datas: line}
+        });
+
         if ($('[id^=line_' + field_id + '_]').length == 0) {
             tabtr = '<tr name=\"data\" $style id=\"line_' + field_id + '_' + i + '\" disabled>';
 
@@ -321,19 +332,19 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
             elem_parent.find('input[name=name' + field_id + ']').val('');
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == params.text) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val('');
                 } else if (type_fields[index] == params.select) {
-                    $('#' + index + '_' + i).val(elem_parent.find('select[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('select[name=' + index + ']').val());
                     elem_parent.find('select[name=' + index + ']').val('');
                 } else if (type_fields[index] == params.number) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val(0);
                 } else if (type_fields[index] == params.date) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val(0);
                 } else if (type_fields[index] == params.time) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val(0);
                 }
             });
@@ -381,19 +392,19 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
 
             $.each(fields, function (index, valuej) {
                 if (type_fields[index] == params.text) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val('');
                 } else if (type_fields[index] == params.select) {
-                    $('#' + index + '_' + i).val(elem_parent.find('select[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('select[name=' + index + ']').val());
                     elem_parent.find('select[name=' + index + ']').val('');
                 } else if (type_fields[index] == params.number) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val(0);
                 } else if (type_fields[index] == params.date) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val(0);
                 } else if (type_fields[index] == params.time) {
-                    $('#' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
+                    $('#line_' + field_id + '_' + i + ' #' + index + '_' + i).val(elem_parent.find('input[name=' + index + ']').val());
                     elem_parent.find('input[name=' + index + ']').val(0);
                 }
             });

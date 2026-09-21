@@ -771,9 +771,16 @@ class Textarea extends CommonDBTM
 
         $required = $p['required'] ? 'required' : '';
         $display = '';
-        $display .= "<textarea class='form-control' name='" . $p['name'] . "' id='" . $p['editor_id'] . "'
-                             rows='" . $p['rows'] . "' cols='" . $p['cols'] . "' $required>"
-            . $p['value'] . "</textarea>";
+        // Escaped exactly like Html::textarea() in the core. This method is a fork of it,
+        // kept only for the editor height and placeholder that initEditorSystem() below
+        // takes as extra arguments, and the escapes had been dropped along the way. The
+        // value is an answer typed by a user, stored raw since GLPI 10 and replayed to the
+        // other actors of a step form, so the missing escape on it was a stored XSS: a
+        // closing </textarea> in the answer was enough to break out of the element.
+        // Escaping does not harm the rich text, TinyMCE reads the decoded .value.
+        $display .= "<textarea class='form-control' name='" . htmlescape($p['name']) . "' id='" . htmlescape($p['editor_id']) . "'
+                             rows='" . ((int) $p['rows']) . "' cols='" . ((int) $p['cols']) . "' $required>"
+            . htmlescape($p['value']) . "</textarea>";
 
         if ($p['enable_richtext']) {
             $height = $p['rows'] * 24;

@@ -52,7 +52,7 @@
     {%- if close_hidetitle_div %}</div>{% endif %}
 {%- if is_interval %}</div>
 <div id-field='field{{ id }}-2' class="form-group col-md-6 md-bottom">
-    <div for='field[{{ id }}-2]' class='col-form-label metademand-label'>{{ interval_label_html|raw }}
+    <div for='field[{{ id }}-2]' class='col-form-label metademand-label'>{{ interval_label_html }}
         <span {{ interval_required_class|raw }}>{{ interval_required_icon|raw }}</span>
     </div>{{ interval_html|raw }}{% endif %}
 </div>

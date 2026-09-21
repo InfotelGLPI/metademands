@@ -34,9 +34,17 @@ Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-if (isset($_POST['fields_id'])) {
-    $fields_id = $_POST['fields_id'];
-    $field = new Field();
-    $field->getFromDB($fields_id);
-    echo Field::getFieldTypesName($field->fields['type']);
+$fields_id = (int) ($_POST['fields_id'] ?? 0);
+
+// The field dropdowns that drive this endpoint carry an empty choice: posting it
+// is a legitimate no-op, not an access error.
+if ($fields_id <= 0) {
+    return;
 }
+
+$field = new Field();
+// Without the boundary the response told an existence oracle apart from a failure,
+// which enumerates the field identifiers of every entity of the instance.
+$field->check($fields_id, READ);
+
+echo Field::getFieldTypesName($field->fields['type']);

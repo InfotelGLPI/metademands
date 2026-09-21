@@ -28,6 +28,7 @@
  */
 
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -40,8 +41,13 @@ if (($_POST['create_subticket'] ?? null) !== '0') {
     return;
 }
 
+// can() applies both the right on Ticket and checkEntity(): the right checked
+// above is the plugin one, which says nothing about this ticket. The assigned group
+// read below used to be disclosed for any posted identifier, entity boundary included.
 $ticket = new \Ticket();
-$ticket->getFromDB($_POST['tickets_id']);
+if (!$ticket->can((int) ($_POST['tickets_id'] ?? 0), READ)) {
+    throw new AccessDeniedHttpException();
+}
 
 $group = 0;
 foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {

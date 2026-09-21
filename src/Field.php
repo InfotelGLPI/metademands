@@ -2481,7 +2481,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
                 $is_interval = true;
-                // Rendered raw to avoid double-encoding the text extracted from HTML.
+                // Plain text extracted from the stored HTML, escaped by Twig on render:
+                // getTextFromHtml() decodes entities and does not encode its output, so it
+                // must never reach a |raw filter. Escaping it there is not a double
+                // encoding, precisely because the entities have already been decoded here.
                 $interval_label_html = RichText::getTextFromHtml($label2);
                 $value2 = '';
                 if (isset($data['value-2'])) {
@@ -2691,27 +2694,32 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                 $opts = $data['options'];
 
                                 if (isset($opts[0]['parent_field_id'])) {
-                                    $value_parent_field = '';
-                                    $parent_field_id = 0;
-                                    if (isset($opts[0]['parent_field_id'])) {
-                                        $parent_field_id = $opts[0]['parent_field_id'];
-                                        $field_parentmeta = new Field();
-                                        $field_parentmeta->getFromDB($parent_field_id);
-                                        $parameters = Field::getAllParamsFromField($field_parentmeta);
-                                        $meta_parent_id = $field_parentmeta->fields['plugin_metademands_metademands_id'];
-                                    }
+                                    // Rendering data for the Twig template used at the end of this
+                                    // block. This branch used to concatenate HTML: the hidden input
+                                    // attributes were escaped, but the displayed value was not --
+                                    // custom value labels, user names and LDAP attributes are all
+                                    // stored raw in the database since GLPI 10, which made this the
+                                    // last stored XSS sink of the field renderer. Twig now escapes
+                                    // everything, and only the two field types whose getFieldValue()
+                                    // returns markup by contract are flagged as HTML.
+                                    $parent_inputs   = [];
+                                    $parent_values   = [];
+                                    $parent_is_html  = false;
+                                    $parent_field_id = $opts[0]['parent_field_id'];
+
+                                    $field_parentmeta = new Field();
+                                    $field_parentmeta->getFromDB($parent_field_id);
+                                    $parameters     = Field::getAllParamsFromField($field_parentmeta);
+                                    $meta_parent_id = $field_parentmeta->fields['plugin_metademands_metademands_id'];
 
                                     if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id])) {
-                                        if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id])) {
-                                            $value = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id];
-                                        } else {
-                                            $value = 0;
-                                        }
+                                        $value      = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id];
+                                        $input_name = $namefield . "[" . $data['id'] . "]";
 
                                         switch ($field_parentmeta->fields['type']) {
                                             case 'dropdown_multiple':
                                                 if (!empty($parameters['custom_values'])) {
-                                                    $value_parent_field = $parameters['custom_values'][$parent_field_id];
+                                                    $parent_values[] = $parameters['custom_values'][$parent_field_id];
                                                 }
                                                 break;
                                             case 'dropdown':
@@ -2720,23 +2728,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                             case 'dropdown_meta':
                                                 if (!empty($parameters['custom_values'])
                                                     && $parameters['item'] == 'other') {
-                                                    $value_parent_field = $parameters['custom_values'][$parent_field_id];
+                                                    $parent_values[] = $parameters['custom_values'][$parent_field_id];
                                                 } else {
-                                                    switch ($parameters['item']) {
-                                                        case 'User':
-                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
-                                                            $params['value'] = $value;
-                                                            $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
-                                                            $value_parent_field .= $class_parent::getFieldValue($params);
-                                                            break;
-                                                        default:
-                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
-                                                            $params['value'] = $value;
-                                                            $params['item'] = $parameters['item'];
-                                                            $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
-                                                            $value_parent_field .= $class_parent::getFieldValue($params);
-                                                            break;
+                                                    if ($parameters['item'] != 'User') {
+                                                        $params['item'] = $parameters['item'];
                                                     }
+                                                    $parent_inputs[] = ['name' => $input_name, 'value' => $value];
+                                                    $params['value'] = $value;
+                                                    $class_parent    = self::getClassFromType($field_parentmeta->fields['type']);
+                                                    $parent_values[] = $class_parent::getFieldValue($params);
                                                 }
                                                 break;
                                             case 'checkbox':
@@ -2756,16 +2756,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                                     }
                                                     $checkboxes = FieldParameter::_unserialize($value);
 
-                                                    $custom_checkbox = [];
-                                                    $value_parent_field = "";
                                                     foreach ($parameters['custom_values'] as $key => $label) {
-                                                        $checked = isset($checkboxes[$key]) ? 1 : 0;
-                                                        if ($checked) {
-                                                            $custom_checkbox[] = $label;
-                                                            $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "][" . htmlescape($key) . "]' value='checkbox'>";
+                                                        if (isset($checkboxes[$key])) {
+                                                            $parent_values[] = $label;
+                                                            $parent_inputs[] = [
+                                                                'name'  => $namefield . "[" . $data['id'] . "][" . $key . "]",
+                                                                'value' => 'checkbox',
+                                                            ];
                                                         }
                                                     }
-                                                    $value_parent_field .= implode('<br>', $custom_checkbox);
                                                 }
                                                 break;
 
@@ -2786,8 +2785,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                                     }
                                                     foreach ($parameters['custom_values'] as $key => $label) {
                                                         if ($value == $key) {
-                                                            $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($key) . "' >";
-                                                            $value_parent_field .= $label;
+                                                            $parent_inputs[] = ['name' => $input_name, 'value' => $key];
+                                                            $parent_values[] = $label;
                                                             break;
                                                         }
                                                     }
@@ -2798,40 +2797,61 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                             case 'datetime':
                                             case 'yesno':
                                             case 'date':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
+                                                $parent_inputs[] = ['name' => $input_name, 'value' => $value];
                                                 $params['value'] = $value;
-                                                $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
-                                                $value_parent_field .= $class_parent::getFieldValue($params);
+                                                $class_parent    = self::getClassFromType($field_parentmeta->fields['type']);
+                                                $parent_values[] = $class_parent::getFieldValue($params);
                                                 break;
                                             case 'datetime_interval':
                                             case 'date_interval':
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
+                                                $parent_inputs[] = ['name' => $input_name, 'value' => $value];
                                                 if (isset($_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$data['parent_field_id'] . "-2"])) {
-                                                    $value2 = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id . "-2"];
-                                                    $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . htmlescape($value2) . "'>";
+                                                    $value2          = $_SESSION['plugin_metademands'][$meta_parent_id]['fields'][$parent_field_id . "-2"];
+                                                    $parent_inputs[] = [
+                                                        'name'  => $namefield . "[" . $data['id'] . "-2]",
+                                                        'value' => $value2,
+                                                    ];
                                                 } else {
                                                     $value2 = 0;
                                                 }
-                                                $params['value'] = $value;
+                                                $params['value']  = $value;
                                                 $params['value2'] = $value2;
-                                                $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
-                                                $value_parent_field .= $class_parent::getFieldValue($params);
+                                                $class_parent     = self::getClassFromType($field_parentmeta->fields['type']);
+                                                $parent_values[]  = $class_parent::getFieldValue($params);
                                                 break;
 
                                             case 'basket':
 
                                                 break;
                                             default:
-                                                $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "'>";
+                                                $parent_inputs[] = ['name' => $input_name, 'value' => $value];
                                                 $params['value'] = $value;
-                                                $class_parent = self::getClassFromType($field_parentmeta->fields['type']);
-                                                $value_parent_field .= $class_parent::getFieldValue($params);
+                                                $class_parent    = self::getClassFromType($field_parentmeta->fields['type']);
+                                                $parent_values[] = $class_parent::getFieldValue($params);
+                                                // Signature returns an <img> tag and Textarea returns
+                                                // RichText::getSafeHtml() output: both are markup by
+                                                // contract and already sanitised. Every other type
+                                                // returns plain text and must stay escaped.
+                                                $parent_is_html = in_array(
+                                                    $field_parentmeta->fields['type'],
+                                                    ['signature', 'textarea'],
+                                                    true,
+                                                );
                                         }
                                     }
-                                    $field .= $value_parent_field;
+
+                                    if ($parent_inputs !== [] || $parent_values !== []) {
+                                        $field .= TemplateRenderer::getInstance()->render(
+                                            '@metademands/fields/field_parent_value.html.twig',
+                                            [
+                                                'inputs'  => $parent_inputs,
+                                                'values'  => $parent_values,
+                                                'is_html' => $parent_is_html,
+                                            ],
+                                        );
+                                    }
                                     break;
                                 }
-                                //                                }
                             }
                         }
                     }

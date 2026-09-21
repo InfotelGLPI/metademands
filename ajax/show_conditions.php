@@ -34,35 +34,39 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 Session::checkRight("plugin_metademands", UPDATE);
 
-if (isset($_POST['fields_id'])) {
-    $fields_id = $_POST['fields_id'];
+$fields_id = (int) ($_POST['fields_id'] ?? 0);
+$rand = (int) ($_POST['rand'] ?? 0);
+
+// The field dropdowns that drive this endpoint carry an empty choice: posting it
+// is a legitimate no-op, not an access error.
+if ($fields_id <= 0) {
+    return;
 }
-if (isset($_POST['rand'])) {
-    $rand = $_POST['rand'];
-}
+
 $field = new Field();
-if ($field->getFromDB($fields_id)) {
-    $item = $field->fields['item'];
-    $type = $field->fields['type'];
-    $options = [
+// Entity boundary of the parent meta-demand, missing here while the sibling
+// endpoints apply it: the condition tree exposes which fields drive this one and on
+// which values, that is the business logic of someone else's form.
+$field->check($fields_id, READ);
+
+$type = $field->fields['type'];
+
+\Dropdown::showFromArray(
+    'show_condition',
+    Condition::getEnumShowCondition($type),
+    [
         'display_emptychoice' => false,
         'rand' => $rand,
-    ];
+    ],
+);
 
-    \Dropdown::showFromArray(
-        'show_condition',
-        Condition::getEnumShowCondition($type),
-        $options,
-    );
-
-    Ajax::updateItemOnSelectEvent(
-        "dropdown_show_condition$rand",
-        "show_value_to_check_$rand",
-        PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_check_value.php",
-        [
-            'show_condition' => '__VALUE__',
-            'fields_id' => $fields_id,
-            'rand' => $rand,
-        ],
-    );
-}
+Ajax::updateItemOnSelectEvent(
+    "dropdown_show_condition$rand",
+    "show_value_to_check_$rand",
+    PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_check_value.php",
+    [
+        'show_condition' => '__VALUE__',
+        'fields_id' => $fields_id,
+        'rand' => $rand,
+    ],
+);

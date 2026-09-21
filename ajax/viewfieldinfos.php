@@ -35,11 +35,23 @@ Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-$field = new Field();
+$fields_id = (int) ($_POST["fields_id"] ?? 0);
 
-if (!isset($_POST["fields_id"]) || !$field->getFromDB($_POST["fields_id"])) {
+// The field dropdowns that drive this endpoint carry an empty choice: posting it
+// is a legitimate no-op, not an access error.
+if ($fields_id <= 0) {
     return;
 }
+
+$field = new Field();
+
+// Field is a CommonDBChild of Metademand: check() resolves the parent and applies
+// checkEntity() on it. The right bit above is global to the plugin and carries no
+// entity, so without this the whole rendering below -- label, type, default and
+// custom values of the field -- was readable for any posted identifier, including
+// fields belonging to meta-demands of another entity. Same guard as
+// ajax/show_check_value.php.
+$field->check($fields_id, READ);
 
 $params                 = Field::getAllParamsFromField($field);
 $params['is_mandatory'] = 0;

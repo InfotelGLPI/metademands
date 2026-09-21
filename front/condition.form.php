@@ -145,6 +145,11 @@ if (isset($_POST['add'])) {
     $res = $condition->update($input);
     Html::back();
 } else {
+    // CommonGLPI::display() only checks READ when an id is posted: without this guard
+    // the creation form, and the dropdowns it preloads, were rendered to any
+    // authenticated user. Same pattern as front/metademand.form.php.
+    $condition->checkGlobal(READ);
+
     Html::header(__('Condition', 'metademands'), '', "helpdesk", Condition::class);
     $condition->display(['id' => $_GET["id"]]);
     Html::footer();

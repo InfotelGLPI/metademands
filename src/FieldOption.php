@@ -1991,8 +1991,12 @@ class FieldOption extends CommonDBChild
         }
 
 
-        $json_hidden_blocks = json_encode($hidden_blocks);
-        $json_childs_blocks = json_encode($childs);
+        // Object literals inlined in the <script> block built below: without the HEX
+        // flags a value holding "</script>" closes the element early, even though the
+        // JSON itself stays syntactically valid.
+        $json_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+        $json_hidden_blocks = json_encode($hidden_blocks, $json_flags);
+        $json_childs_blocks = json_encode($childs, $json_flags);
 
         $script .= "var hidden_blocks = {$json_hidden_blocks};
                     var child_blocks = {$json_childs_blocks};
@@ -2063,8 +2067,12 @@ class FieldOption extends CommonDBChild
             }
         }
 
-        $json_hidden_blocks = json_encode($hidden_blocks);
-        $json_childs_blocks = json_encode($childs);
+        // Object literals inlined in the <script> block built below: without the HEX
+        // flags a value holding "</script>" closes the element early, even though the
+        // JSON itself stays syntactically valid.
+        $json_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+        $json_hidden_blocks = json_encode($hidden_blocks, $json_flags);
+        $json_childs_blocks = json_encode($childs, $json_flags);
 
         $script .= "var hidden_blocks = {$json_hidden_blocks};
                     var child_blocks = {$json_childs_blocks};
@@ -2170,8 +2178,54 @@ class FieldOption extends CommonDBChild
         return $script;
     }
 
+    /**
+     * Normalize the list of child block numbers.
+     *
+     * The value ends up interpolated into generated JavaScript, so only integers may
+     * reach the database. It arrives either as the array posted by the option form or,
+     * on an import, as the JSON string carried by the archive.
+     *
+     * @param mixed $value
+     *
+     * @return string a JSON array of integers
+     */
+    public static function normalizeChildsBlocks($value): string
+    {
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+        if (!is_array($value)) {
+            return '[]';
+        }
+
+        return json_encode(array_values(array_map('intval', $value)));
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        if (isset($input['childs_blocks'])) {
+            $input['childs_blocks'] = self::normalizeChildsBlocks($input['childs_blocks']);
+        }
+
+        // CommonDBChild resolves the parent and the entity here, and may refuse the input.
+        return parent::prepareInputForAdd($input);
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        if (isset($input['childs_blocks'])) {
+            $input['childs_blocks'] = self::normalizeChildsBlocks($input['childs_blocks']);
+        }
+
+        return parent::prepareInputForUpdate($input);
+    }
+
     public static function resetMandatoryBlockFields($name)
     {
+        // Escaped for a JS string context: most callers pass a field name, the block
+        // callers a block number read back from childs_blocks.
+        $name = jsescape($name);
+
         return "var blocid = sessionStorage.getItem('hiddenbloc$name');
                                      $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
@@ -2196,6 +2250,9 @@ class FieldOption extends CommonDBChild
 
     public static function setEmptyBlockFields($name)
     {
+        // Same JS string context as resetMandatoryBlockFields() above.
+        $name = jsescape($name);
+
         return "var blocid = sessionStorage.getItem('hiddenbloc$name');
                                 $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
                                      switch(this.type) {
