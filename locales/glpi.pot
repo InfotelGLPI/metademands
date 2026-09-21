@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 09:25+0000\n"
+"POT-Creation-Date: 2026-09-21 07:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: src/MetademandTask.php:194 src/Task.php:648
+#: src/MetademandTask.php:290 src/Task.php:648
 msgid "Active entity"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgstr ""
 msgid "Assigned to"
 msgstr ""
 
-#: src/Form.php:384 src/Form.php:528
+#: src/Form.php:431 src/Form.php:577
 msgid "Associated form"
 msgid_plural "Associated forms"
 msgstr[0] ""
@@ -745,7 +745,7 @@ msgstr ""
 msgid "Designation"
 msgstr ""
 
-#: src/MetademandTask.php:216
+#: src/MetademandTask.php:312
 msgid "Destination entity"
 msgstr ""
 
@@ -1289,7 +1289,7 @@ msgstr ""
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
-#: src/Form.php:371 src/Form.php:485
+#: src/Form.php:418 src/Form.php:534
 msgid "Initial form"
 msgid_plural "Initial forms"
 msgstr[0] ""
@@ -1642,7 +1642,7 @@ msgstr ""
 msgid "No default value"
 msgstr ""
 
-#: front/draft.form.php:61 templates/forms/drafts_rows.html.twig:51
+#: front/draft.form.php:77 templates/forms/drafts_rows.html.twig:51
 #: templates/forms/drafts_list.html.twig:112
 msgid "No draft available for this form"
 msgstr ""
@@ -1935,7 +1935,7 @@ msgstr ""
 msgid "Progression of your demand"
 msgstr ""
 
-#: src/Form.php:397
+#: src/Form.php:446
 msgid "Public model form"
 msgid_plural "Public model forms"
 msgstr[0] ""
@@ -2363,7 +2363,7 @@ msgstr ""
 msgid "Target ticket(s)"
 msgstr ""
 
-#: src/TicketTask.php:66 src/Ticket_Metademand.php:70 src/MetademandTask.php:59
+#: src/TicketTask.php:66 src/Ticket_Metademand.php:70 src/MetademandTask.php:60
 #: src/MailTask.php:66 src/Ticket_Task.php:60
 msgid "Task creation"
 msgstr ""
@@ -2504,7 +2504,7 @@ msgstr ""
 msgid "The rules of the escalade plugin will not be taken into account."
 msgstr ""
 
-#: src/Ticket.php:317
+#: src/Ticket.php:314
 msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -3059,7 +3059,7 @@ msgstr ""
 msgid "Your created forms"
 msgstr ""
 
-#: front/draft.form.php:37 front/draft.php:40 front/draftcreation.php:62
+#: front/draft.form.php:69 front/draft.php:40 front/draftcreation.php:62
 #: src/Wizard.php:459 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr ""

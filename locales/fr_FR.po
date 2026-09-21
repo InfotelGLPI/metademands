@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 08:47+0000\n"
+"POT-Creation-Date: 2026-09-21 07:27+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -91,7 +91,7 @@ msgstr "Activer la validation du responsable"
 msgid "Active"
 msgstr "Active"
 
-#: src/MetademandTask.php:194 src/Task.php:648
+#: src/MetademandTask.php:290 src/Task.php:648
 msgid "Active entity"
 msgstr "Entité active"
 
@@ -261,7 +261,7 @@ msgstr "Attribuer le ticket à ces groupes de techniciens"
 msgid "Assigned to"
 msgstr "Assigné à"
 
-#: src/Form.php:384 src/Form.php:528
+#: src/Form.php:431 src/Form.php:577
 msgid "Associated form"
 msgid_plural "Associated forms"
 msgstr[0] "Formulaire associé"
@@ -763,7 +763,7 @@ msgstr "Description"
 msgid "Designation"
 msgstr "Désignation"
 
-#: src/MetademandTask.php:216
+#: src/MetademandTask.php:312
 msgid "Destination entity"
 msgstr "Entité de destination"
 
@@ -1331,7 +1331,7 @@ msgstr "Informations"
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
-#: src/Form.php:371 src/Form.php:485
+#: src/Form.php:418 src/Form.php:534
 msgid "Initial form"
 msgid_plural "Initial forms"
 msgstr[0] "Formulaire initial"
@@ -1689,7 +1689,7 @@ msgstr "Pas de conditions trouvées"
 msgid "No default value"
 msgstr "Pas de valeur par défaut"
 
-#: front/draft.form.php:61 templates/forms/drafts_rows.html.twig:51
+#: front/draft.form.php:77 templates/forms/drafts_rows.html.twig:51
 #: templates/forms/drafts_list.html.twig:112
 msgid "No draft available for this form"
 msgstr "Pas de brouillons disponibles pour ce formulaire"
@@ -1991,7 +1991,7 @@ msgstr "Utilisateur précédent"
 msgid "Progression of your demand"
 msgstr "Progression de votre demande"
 
-#: src/Form.php:397
+#: src/Form.php:446
 msgid "Public model form"
 msgid_plural "Public model forms"
 msgstr[0] "Modèle public de formulaires"
@@ -2426,7 +2426,7 @@ msgstr "Cible du suivi"
 msgid "Target ticket(s)"
 msgstr "Ticket(s) cible(s)"
 
-#: src/TicketTask.php:66 src/Ticket_Metademand.php:70 src/MetademandTask.php:59
+#: src/TicketTask.php:66 src/Ticket_Metademand.php:70 src/MetademandTask.php:60
 #: src/MailTask.php:66 src/Ticket_Task.php:60
 msgid "Task creation"
 msgstr "Création des sous-demandes"
@@ -2584,7 +2584,7 @@ msgstr "L'expression régulière est invalide"
 msgid "The rules of the escalade plugin will not be taken into account."
 msgstr "Les règles du plugin Escalade ne seront pas prises en compte."
 
-#: src/Ticket.php:317
+#: src/Ticket.php:314
 msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -3168,7 +3168,7 @@ msgstr "Tous vos blocs ne sont pas définis"
 msgid "Your created forms"
 msgstr "Vos formulaires créés"
 
-#: front/draft.form.php:37 front/draft.php:40 front/draftcreation.php:62
+#: front/draft.form.php:69 front/draft.php:40 front/draftcreation.php:62
 #: src/Wizard.php:459 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr "Vos brouillons"
