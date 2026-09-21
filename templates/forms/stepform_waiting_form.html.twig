@@ -34,7 +34,7 @@
  #  - cnt          int     number of pending forms
  #  - header_icon  string  icon class, header_is_fa tells which family it belongs to
  #  - header_is_fa bool
- #  - cards        list    [{id, metaID, block_id, icon, is_fa, name_html, editor, date, delete_html}, ...]
+ #  - cards        list    [{id, metaID, block_id, icon, is_fa, name, editor, date, delete_html}, ...]
  #  - script_html  string  inline loadForm<rand>() definition, built from PHP values
  #}
 
@@ -68,7 +68,7 @@
                                 {% else %}
                                     <i class="ti {{ card.icon }}" style="font-size: 4em;"></i>
                                 {% endif %}
-                                <div class="mt-3 fw-bold">{{ card.name_html|raw }}</div>
+                                <div class="mt-3 fw-bold">{{ card.name }}</div>
                             </a>
                             <div class="card-footer small text-muted">
                                 <div>{{ __('Edit by', 'metademands') }}&nbsp;{{ card.editor }}</div>

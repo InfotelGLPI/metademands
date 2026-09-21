@@ -1326,6 +1326,13 @@ class Basket extends CommonDBTM
         $params = Field::getAllParamsFromField($field);
         $values = array_merge($values, $params);
 
+        // Every branch below but one returns plain text read back from the database — a
+        // dropdown label, an LDAP attribute, a custom value, a raw column for number, range
+        // and time — and the cell is rendered with |raw, so the escaping is done here, once,
+        // rather than left to each Fields\*::getFieldValue(). Only the textarea branch is
+        // allowed to carry markup, and it is markup RichText::getSafeHtml() has sanitised.
+        $is_safe_html = false;
+
         switch ($field->fields['type']) {
             case 'dropdown':
                 $value_html = Dropdown::getFieldValue($values);
@@ -1347,6 +1354,7 @@ class Basket extends CommonDBTM
                 break;
             case 'textarea':
                 $value_html = Textarea::getFieldValue($values);
+                $is_safe_html = true;
                 break;
             case 'text':
                 $value_html = Text::getFieldValue($values);
@@ -1391,8 +1399,12 @@ class Basket extends CommonDBTM
                 $value_html = Yesno::getFieldValue($values);
                 break;
             default:
-                $value_html = htmlspecialchars((string) $value);
+                $value_html = (string) $value;
                 break;
+        }
+
+        if (!$is_safe_html) {
+            $value_html = htmlspecialchars((string) $value_html, ENT_QUOTES, 'UTF-8');
         }
 
         return TemplateRenderer::getInstance()->render(

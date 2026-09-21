@@ -821,9 +821,9 @@ class Stepform extends CommonDBTM
                     $card_icon = $meta->fields['icon'];
                 }
                 if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                    $name_html = $meta->getName();
+                    $name = $meta->getName();
                 } else {
-                    $name_html = $n;
+                    $name = $n;
                 }
                 $delete_html = '';
                 //TODO Change to new right
@@ -845,7 +845,7 @@ class Stepform extends CommonDBTM
                     'block_id'    => $block_id,
                     'icon'        => $card_icon,
                     'is_fa'       => str_contains($card_icon, 'fa-'),
-                    'name_html'   => $name_html,
+                    'name'        => $name,
                     'editor'      => User::getFriendlyNameById($name['users_id']),
                     'date'        => Html::convDateTime($name['date']),
                     'delete_html' => $delete_html,
@@ -948,9 +948,9 @@ class Stepform extends CommonDBTM
                     $card_icon = $meta->fields['icon'];
                 }
                 if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
-                    $name_html = $meta->getName();
+                    $name = $meta->getName();
                 } else {
-                    $name_html = $n;
+                    $name = $n;
                 }
                 $delete_html = '';
                 //TODO Change to new right
@@ -969,7 +969,7 @@ class Stepform extends CommonDBTM
                 $cards[] = [
                     'icon'            => $card_icon,
                     'is_fa'           => str_contains($card_icon, 'fa-'),
-                    'name_html'       => $name_html,
+                    'name'            => $name,
                     'created'         => sprintf(__('Created on %s'), Html::convDate($name['date'])),
                     'block_id'        => $block_id,
                     'has_group_dest'  => $name['groups_id_dest'] > 0,

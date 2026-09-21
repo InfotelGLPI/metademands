@@ -36,6 +36,7 @@ use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Condition;
+use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
@@ -331,6 +332,28 @@ class Dropdownobject extends CommonDBTM
                     }
                 }
 
+                // The selected id descends straight from $_POST['field'], carried across
+                // reloads by $_SESSION['plugin_metademands'][...]['fields'], so it may name
+                // any user of the instance. Replay the rule ajax/utooltipUpdate.php carries
+                // -- the caller's own supervisor, or anyone Config::canCurrentUserViewRequester()
+                // allows -- and drop the value outright when it fails: the dropdown label and
+                // the tooltip below both read $opt['value'], and clearing it also keeps the
+                // illegitimate id from surviving down to the ticket creation.
+                if ((int) $opt['value'] > 0) {
+                    $me            = new User();
+                    $my_supervisor = 0;
+                    if ($me->getFromDB(Session::getLoginUserID())) {
+                        $my_supervisor = (int) ($me->fields['users_id_supervisor'] ?? 0);
+                    }
+
+                    if (
+                        (int) $opt['value'] !== $my_supervisor
+                        && !Config::canCurrentUserViewRequester((int) $opt['value'])
+                    ) {
+                        $opt['value'] = 0;
+                    }
+                }
+
                 $widget_html = User::dropdown($opt);
                 if ($opt['readonly']) {
                     $widget_html .= Html::hidden($opt['name'], ['value' => $opt['value']]);
@@ -350,9 +373,11 @@ class Dropdownobject extends CommonDBTM
                 // The anchor is always rendered when the tooltip is enabled: it is the
                 // target utooltipUpdate.php loads into on every change.
                 $user_informations = "";
-                if ($data['display_type'] == 1 && $opt['value'] > 0) {
+                // $opt['value'] has been cleared above when the caller may not see that
+                // user, so the tooltip is only ever built for a target they may view.
+                if ($data['display_type'] == 1 && (int) $opt['value'] > 0) {
                     $user_tooltip = new User();
-                    if ($user_tooltip->getFromDB($opt['value'])) {
+                    if ($user_tooltip->getFromDB((int) $opt['value'])) {
                         ob_start();
                         Wizard::showUserInformations($user_tooltip);
                         $user_informations = ob_get_clean();

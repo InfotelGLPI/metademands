@@ -31,6 +31,7 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Draft_Value;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Fields\Signature;
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
@@ -125,6 +126,20 @@ if (isset($_POST['save_draft'])) {
                     $docitem = null;
                     foreach ($data as $form_metademands_id => $line) {
                         foreach ($line['form'] as $id => $value) {
+                            // The signature path makes a round trip through the browser, so the
+                            // posted value is client controlled and must be filtered before it is
+                            // kept in session or persisted: it ends up concatenated to
+                            // GLPI_PICTURE_DIR and read from disk by MetademandPdf.
+                            if ($value['type'] == 'signature') {
+                                $clean_signature = Signature::sanitizeSubmittedValue($post[$id] ?? '');
+                                if (isset($post[$id])) {
+                                    $post[$id] = $clean_signature;
+                                }
+                                if (isset($_POST['field'][$id])) {
+                                    $_POST['field'][$id] = $clean_signature;
+                                }
+                            }
+
                             if (!isset($post[$id])) {
                                 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                                     && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {

@@ -37,6 +37,15 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+// Page guard, aligned on the sibling endpoints (ajax/loadform.php, deleteform.php,
+// updateform.php, visibility.php): the ownership test below binds the request to one
+// draft, not to a profile, and nothing else gated the route.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $metademands = new Metademand();
 $wizard      = new Wizard();
 $draft      = new Draft();

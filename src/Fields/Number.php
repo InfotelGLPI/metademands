@@ -169,7 +169,10 @@ class Number extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        return $field['value'];
+        // The value reaches this method straight from the field[<id>] entry of the submitted
+        // form, so a forged request can store anything in a column the readers render as a
+        // number. Anything non-numeric is dropped rather than echoed back.
+        return is_numeric($field['value'] ?? null) ? (string) ($field['value'] + 0) : '';
     }
 
     public static function displayFieldItems(

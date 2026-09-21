@@ -146,9 +146,13 @@ class Time extends CommonDBTM
             </a>"
             : "";
 
+        // Same value the readers render: it comes back from the database, which stores it as
+        // posted, so it is escaped before landing in an HTML attribute.
+        $value_attr = htmlspecialchars((string) $p['value'], ENT_QUOTES, 'UTF-8');
+
         $output = <<<HTML
          <div class="input-group flex-grow-1 flatpickr" id="showtime{$p['rand']}">
-            <input type="text" name="{$name}" value="{$p['value']}"
+            <input type="text" name="{$name}" value="{$value_attr}"
                    {$required} {$disabled} data-input class="form-control rounded-start ps-2">
             <a class="input-button" data-toggle>
                <i class="input-group-text far fa-clock fa-lg pointer"></i>
@@ -218,7 +222,11 @@ JS;
 
     public static function getFieldValue($field)
     {
-        return $field['value'];
+        // Same reason as Fields\Number::getFieldValue(): the value is posted as-is. A time is
+        // HH:MM, optionally with seconds; anything else is not one and is dropped.
+        $value = (string) ($field['value'] ?? '');
+
+        return preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $value) === 1 ? $value : '';
     }
 
     public static function displayFieldItems(

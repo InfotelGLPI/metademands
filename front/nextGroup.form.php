@@ -92,10 +92,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     // The destination posted above is staged in the session because nextUser() reads
     // it back from there to validate it. Drop that staging whatever happens, so a
     // destination rejected by nextUser() cannot outlive the request it came with.
+    // Only the three keys staged here are dropped: clearing the whole namespace also
+    // threw away the wizard context of every other meta-demand, which is keyed by
+    // metademands_id in the same array and may be open in another tab.
     try {
         $KO = Step::nextUser();
     } finally {
-        unset($_SESSION['plugin_metademands']);
+        foreach (['update_stepform', 'groups_id_dest', 'users_id_dest'] as $staged_key) {
+            unset($_SESSION['plugin_metademands'][$user_id][$staged_key]);
+        }
     }
 
     if ($KO === false) {

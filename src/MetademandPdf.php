@@ -37,6 +37,7 @@ use Dropdown;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Freetable;
+use GlpiPlugin\Metademands\Fields\Signature;
 use Html;
 use Plugin;
 use Session;
@@ -434,7 +435,9 @@ class MetademandPdf extends \TCPDF
             } elseif ($type == 'textarea') {
                 $this->MultiCell($w, $h, $values, $border, $align, true);
             } elseif ($type == 'signature') {
-                $this->MultiCell($w, $h + 10, $this->Image($values, $x, $y + 8, 33.78), $border, $align, false);
+                // An empty path means the value was rejected upstream; TCPDF would raise on it.
+                $image = $values === '' ? '' : $this->Image($values, $x, $y + 8, 33.78);
+                $this->MultiCell($w, $h + 10, $image, $border, $align, false);
             } else {
                 $width_values = $w;
                 //            if ($width != $this->label_width) {
@@ -1273,7 +1276,13 @@ class MetademandPdf extends \TCPDF
                             break;
 
                         case 'signature' :
-                            $value = GLPI_PICTURE_DIR . '/' . $fields[$elt['id']];
+                            // Defence in depth: the stored path is filtered on submission by
+                            // Signature::sanitizeSubmittedValue(), but this concatenation feeds
+                            // TCPDF::Image(), which reads the file from disk. A legacy row holding
+                            // a crafted path must not be able to pull an image from outside
+                            // GLPI_PICTURE_DIR into the generated PDF.
+                            $signature_path = Signature::sanitizeSubmittedValue($fields[$elt['id']] ?? '');
+                            $value          = $signature_path === '' ? '' : GLPI_PICTURE_DIR . '/' . $signature_path;
                             $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             break;
 

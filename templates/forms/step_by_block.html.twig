@@ -53,7 +53,7 @@
                         <a class='btn flex-column' {{ card.onhover|raw }} href='#'>
                             <div class='d-flex align-items-center'>
                                  <i class='ti ti-align-box-left-middle'></i>
-                                <span>&nbsp;{{ card.block_type_label }}&nbsp;-&nbsp;{{ card.block_label_html|raw }}</span>
+                                <span>&nbsp;{{ card.block_type_label }}&nbsp;-&nbsp;{{ card.block_label }}</span>
                             </div>
                             <div class='text-muted'>
                                 {%- if card.visibility.mode == 'groups' %}

@@ -110,6 +110,47 @@ class Condition extends CommonDBChild
         return "ti ti-sort-descending-2";
     }
 
+    /**
+     * Reject a regex condition whose pattern PCRE cannot compile.
+     *
+     * The pattern is stored as typed by the form designer and later handed straight
+     * to preg_match() on every condition evaluation, that is on every wizard
+     * interaction. A pattern missing its delimiters would emit a PHP warning at each
+     * call and silently make the condition false, so it is caught once, here.
+     *
+     * @param array $input
+     *
+     * @return array|false
+     */
+    private function checkRegexInput(array $input)
+    {
+        if ((int) ($input['show_condition'] ?? 0) !== self::SHOW_CONDITION_REGEX) {
+            return $input;
+        }
+
+        $pattern = (string) ($input['check_value'] ?? '');
+        if ($pattern !== '' && @preg_match($pattern, '') === false) {
+            Session::addMessageAfterRedirect(
+                __('Invalid regular expression', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        return $input;
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        return $this->checkRegexInput($input);
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        return $this->checkRegexInput($input);
+    }
+
 
     public static function install(Migration $migration)
     {
@@ -806,7 +847,10 @@ class Condition extends CommonDBChild
                     break;
 
                 case self::SHOW_CONDITION_REGEX:
-                    if (preg_match($check_value, $value)) {
+                    // Patterns saved before prepareInputForAdd() validated them may still be
+                    // uncompilable: treat those as an unsatisfied condition instead of
+                    // emitting a warning on every evaluation.
+                    if (@preg_match($check_value, $value) === 1) {
                         $return = true;
                     }
                     break;

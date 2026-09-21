@@ -226,7 +226,9 @@ class Range extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        return $field['value'];
+        // Same reason as Fields\Number::getFieldValue(): the range value is posted as-is and
+        // is only ever read back as a number.
+        return is_numeric($field['value'] ?? null) ? (string) ($field['value'] + 0) : '';
     }
 
     public static function displayFieldItems(

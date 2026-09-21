@@ -35,6 +35,15 @@ use GlpiPlugin\Metademands\Draft_Value;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
+// Page guard, aligned on the sibling endpoints (ajax/loadform.php, deleteform.php,
+// updateform.php, visibility.php): the ownership test below binds the request to one
+// draft, not to a profile, and nothing else gated the route.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $users_id                          = Session::getLoginUserID();
 $plugin_metademands_metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
 $draft_id                          = (int) $_POST['drafts_id'];

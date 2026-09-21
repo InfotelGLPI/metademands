@@ -37,6 +37,7 @@ use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\RichText\RichText;
+use GlpiPlugin\Metademands\Fields\Signature;
 use Group_User;
 use Html;
 use Migration;
@@ -503,9 +504,9 @@ class Step extends CommonDBChild
                     }
 
                     if (isset($blocks[$data['block_id']])) {
-                        $block_label_html = $blocks[$data['block_id']];
+                        $block_label = $blocks[$data['block_id']];
                     } else {
-                        $block_label_html = $data['block_id'];
+                        $block_label = $data['block_id'];
                     }
 
                     // Visibility of the block: the groups it is restricted to, its
@@ -561,7 +562,7 @@ class Step extends CommonDBChild
                         'edit_script_html' => $edit_script_html,
                         'onhover'          => $onhover,
                         'block_type_label' => $block_type_label,
-                        'block_label_html' => $block_label_html,
+                        'block_label'       => $block_label,
                         'visibility'       => $visibility,
                         'delete_form_html' => $delete_form_html,
                     ];
@@ -1358,6 +1359,20 @@ class Step extends CommonDBChild
                             $docitem = null;
                             foreach ($data as $form_metademands_id => $line) {
                                 foreach ($line['form'] as $id => $value) {
+                                    // The signature path makes a round trip through the browser, so the
+                                    // posted value is client controlled and must be filtered before it is
+                                    // kept in session or persisted: it ends up concatenated to
+                                    // GLPI_PICTURE_DIR and read from disk by MetademandPdf.
+                                    if ($value['type'] == 'signature') {
+                                        $clean_signature = Signature::sanitizeSubmittedValue($post[$id] ?? '');
+                                        if (isset($post[$id])) {
+                                            $post[$id] = $clean_signature;
+                                        }
+                                        if (isset($_POST['field'][$id])) {
+                                            $_POST['field'][$id] = $clean_signature;
+                                        }
+                                    }
+
                                     if (!isset($post[$id])) {
                                         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                                             && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {

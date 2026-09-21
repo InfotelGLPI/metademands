@@ -27,11 +27,20 @@
  * --------------------------------------------------------------------------
  */
 
-use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Stepform;
 use GlpiPlugin\Servicecatalog\Main;
+
+// Settled before the header is emitted, so a refusal is rendered instead of a half
+// written page: the exception used to be raised once the menu and the page frame of
+// the plugin had already been sent, on a 200 response. The condition is the one of
+// front/nextGroup.form.php, the twin entry point of the same workflow, so a profile
+// allowed to advance a step is not refused the list of those very steps.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
 
 if (Session::getCurrentInterface() == 'central') {
     Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
@@ -43,14 +52,8 @@ if (Session::getCurrentInterface() == 'central') {
     }
 }
 
-$meta = new Metademand();
 $stepform = new Stepform();
-
-if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
-    $stepform->showPendingForm();
-} else {
-    throw new AccessDeniedHttpException();
-}
+$stepform->showPendingForm();
 
 if (Session::getCurrentInterface() != 'central'
     && Plugin::isPluginActive('servicecatalog')) {

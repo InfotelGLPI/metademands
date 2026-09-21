@@ -222,6 +222,51 @@ class Signature extends CommonDBTM
         return true;
     }
 
+    /**
+     * Filter a submitted signature value against the session allow-list.
+     *
+     * ajax/addsignature.php echoes the stored path back to the browser and the
+     * wizard script copies it into a hidden input, so whatever comes back under
+     * field[<id>] is fully client controlled. That value is later concatenated to
+     * GLPI_PICTURE_DIR by MetademandPdf and handed to TCPDF, which reads the file
+     * from disk: an arbitrary path would turn into a directory traversal, and a
+     * path belonging to somebody else into a stolen handwritten signature. Only
+     * the paths addsignature.php produced for the current session are accepted --
+     * the very same allow-list ajax/removesignature.php already consults.
+     *
+     * @param mixed $value Raw value posted for a signature field
+     *
+     * @return string Accepted path, or an empty string
+     */
+    public static function sanitizeSubmittedValue($value): string
+    {
+        if (!is_string($value) || $value === '') {
+            return '';
+        }
+
+        if (isset($_SESSION['plugin_metademands']['signatures'][$value])) {
+            return $value;
+        }
+
+        // The allow-list only knows about uploads made in the current session, while a
+        // saved value is rendered back into the hidden input by field_signature.html.twig
+        // and thus re-posted on every step and on every draft reopened later. Such a value
+        // is accepted only when it still has the exact shape Toolbox::savePicture() emits
+        // -- a two hex digit subdirectory and an image file name, no directory separator
+        // anywhere else -- and when it resolves inside GLPI_PICTURE_DIR.
+        if (!preg_match('~^[0-9a-f]{2}/[A-Za-z0-9._-]+\.[A-Za-z0-9]{1,5}$~', $value)) {
+            return '';
+        }
+
+        $root = realpath(GLPI_PICTURE_DIR);
+        $real = realpath(GLPI_PICTURE_DIR . '/' . $value);
+        if ($root === false || $real === false || !str_starts_with($real, $root . DIRECTORY_SEPARATOR)) {
+            return '';
+        }
+
+        return $value;
+    }
+
     public static function showParamsValueToCheck($params) {}
 
     public static function fieldsMandatoryScript($data) {}
@@ -234,7 +279,14 @@ class Signature extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        $picture_url = Toolbox::getPictureUrl($field['value']);
+        // Toolbox::getPictureUrl() validates nothing, so a legacy row holding a crafted
+        // path would still build a document.send.php URL pointing outside GLPI_PICTURE_DIR.
+        $path = self::sanitizeSubmittedValue($field['value'] ?? '');
+        if ($path === '') {
+            return '';
+        }
+
+        $picture_url = Toolbox::getPictureUrl($path);
         return "<img src='" . htmlspecialchars($picture_url, ENT_QUOTES) . "'>";
     }
 
