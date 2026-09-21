@@ -58,7 +58,14 @@ $form_id = (int) ($_POST['plugin_metademands_forms_id'] ?? 0);
 if (
     !$form->getFromDB($form_id)
     || ((int) $form->fields['users_id'] !== Session::getLoginUserID()
-        && !((int) $form->fields['is_model'] === 1 && (int) $form->fields['is_private'] === 0))
+        && !((int) $form->fields['is_model'] === 1
+            && (int) $form->fields['is_private'] === 0
+            // A public model is shared inside its own entity tree only: replay here the
+            // boundary the public lists apply, so this shortcut cannot cross it.
+            && Session::haveAccessToEntity(
+                $form->fields['entities_id'],
+                $form->fields['is_recursive'],
+            )))
 ) {
     throw new AccessDeniedHttpException();
 }

@@ -297,6 +297,11 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 // explicit action of the owner through ajax/visibility.php.
                 $inputs['is_model'] = (int) ((bool) $_POST['is_model']);
                 $inputs['is_private'] = isset($_POST['is_private']) ? (int) ((bool) $_POST['is_private']) : 1;
+                if (!Form::canPublish()) {
+                    // Same rule as ajax/visibility.php and ajax/updateform.php: without the
+                    // publishing right the model stays private whatever the client posted.
+                    $inputs['is_private'] = 1;
+                }
             }
 
             if (isset($_POST['resources_id']) && $_POST['resources_id'] > 0) {

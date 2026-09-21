@@ -31,10 +31,19 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Servicecatalog\Main;
 
+// Page guard. Same block as the sibling front/draftcreation.php, and for the same
+// reason: this controller rendered a draft to any authenticated helpdesk user, including
+// a profile holding none of the plugin rights. The ownership test below answers a
+// different question, which row is rendered, not which profile may reach this route at
+// all. Placed before the servicecatalog test so it applies whatever that plugin's state.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 if (Plugin::isPluginActive('servicecatalog')
     && Session::getCurrentInterface() != 'central') {
-
-    Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
     $draft_id = 0;
 
@@ -42,17 +51,24 @@ if (Plugin::isPluginActive('servicecatalog')
         $draft_id = (int) $_GET['id'];
     }
 
+    $draft = null;
+
     if ($draft_id > 0) {
 
         // Drafts are personal: mirror the AJAX siblings and require ownership
         // before loading/rendering, so an authenticated requester cannot read
-        // another user's draft by incrementing the id (IDOR).
+        // another user's draft by incrementing the id (IDOR). Settled before the
+        // header is emitted, so a refusal is rendered instead of a half written page.
         $draft = new Draft();
         if (!$draft->getFromDB($draft_id)
             || (int) $draft->fields['users_id'] !== Session::getLoginUserID()) {
             throw new AccessDeniedHttpException();
         }
+    }
 
+    Main::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
+
+    if ($draft !== null) {
         $datas = Draft::loadDatasDraft($draft_id);
         Draft::showDraft($datas);
 

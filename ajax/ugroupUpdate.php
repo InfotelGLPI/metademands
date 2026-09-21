@@ -40,6 +40,17 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
     Html::header_nocache();
 }
 
+// Page guard. Gate on the same rights as the wizard entry point
+// (front/wizard.form.php), the only way in to this route, exactly as the already
+// hardened siblings ulocationUpdate.php, umanagerUpdate.php and utooltipUpdate.php
+// do. The checks further down protect the requester personal data per user; they
+// do not gate the profile allowed to run this route at all.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 // PII guard: only derive data from another user's groups when the caller may read that
 // user — prevents enumeration by id. The criterion itself lives in the helper shared by
 // the whole u*Update.php family; the closure only adds the shape checks this endpoint

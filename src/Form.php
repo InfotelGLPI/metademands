@@ -74,8 +74,11 @@ class Form extends CommonDBTM
                         `is_model`                          tinyint      NOT NULL                   DEFAULT '0',
                         `resources_id`                      int {$default_key_sign} NOT NULL                   DEFAULT '0',
                         `is_private`                        tinyint      NOT NULL                   DEFAULT '0',
+                        `entities_id`                       int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `is_recursive`                      tinyint      NOT NULL                   DEFAULT '0',
                         PRIMARY KEY (`id`),
-                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `entities_id` (`entities_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
@@ -90,6 +93,19 @@ class Form extends CommonDBTM
         if (!isIndex($table, "plugin_metademands_metademands_id")) {
             $migration->addKey($table, "plugin_metademands_metademands_id");
         }
+        //version 3.6.12
+        if (!$DB->fieldExists($table, "entities_id")) {
+            $migration->addField($table, "entities_id", "int {$default_key_sign} NOT NULL DEFAULT '0'");
+            $migration->addField($table, "is_recursive", "tinyint NOT NULL DEFAULT '0'");
+            $migration->addKey($table, "entities_id");
+            $migration->migrationOneTable($table);
+
+            // Existing rows predate the entity boundary and were reachable from everywhere.
+            // Declaring them recursive from the root entity keeps them exactly as visible as
+            // before: the boundary constrains the rows created from now on, and hides none.
+            $DB->update($table, ['is_recursive' => 1], ['1' => '1']);
+        }
+
         //version 3.4.0
         if (!$DB->fieldExists($table, "is_private")) {
             $migration->addField($table, "is_private", "tinyint NOT NULL DEFAULT 0");
@@ -111,6 +127,17 @@ class Form extends CommonDBTM
         global $DB;
 
         $DB->dropTable(self::getTable(), true);
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        // Anchor a new form to the entity it is saved from, so a published model stays
+        // within its own entity tree.
+        if (!isset($input['entities_id'])) {
+            $input['entities_id'] = $_SESSION['glpiactive_entity'] ?? 0;
+        }
+
+        return $input;
     }
 
     public function cleanDBonPurge()
@@ -233,7 +260,7 @@ class Form extends CommonDBTM
         return TemplateRenderer::getInstance()->render('@metademands/forms/private_models_list.html.twig', [
             'entries'           => $entries,
             'rand'              => mt_rand(),
-            'can_public'        => Session::haveRight("plugin_metademands_publicforms", READ),
+            'can_public'        => self::canPublish(),
             'form_id'           => (int) $form_id,
             'users_id'          => (int) $users_id,
             'meta_id'           => (int) $plugin_metademands_metademands_id,
@@ -246,6 +273,20 @@ class Form extends CommonDBTM
 
 
     /**
+     * Can the current profile publish a saved model to every user of the meta-demand?
+     *
+     * The right used to drive nothing but a Twig flag, so the two endpoints writing the
+     * is_private column never evaluated it. This is the single server side answer both of
+     * them now rely on.
+     *
+     * @return bool
+     */
+    public static function canPublish(): bool
+    {
+        return Session::haveRight('plugin_metademands_publicforms', READ);
+    }
+
+    /**
      * @param $plugin_metademands_metademands_id
      *
      * @return string
@@ -253,11 +294,14 @@ class Form extends CommonDBTM
     public static function showPublicFormsForUserMetademand($plugin_metademands_metademands_id)
     {
         $self = new self();
+        // A public model must not cross the entity boundary. Rows created before the
+        // entities_id column existed were declared recursive from the root entity by the
+        // migration, so this restriction hides none of them.
         $condition = [
             'is_model' => 1,
             'is_private' => 0,
             'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
-        ];
+        ] + getEntitiesRestrictCriteria(self::getTable(), '', '', true);
         $forms = $self->find($condition, ['date DESC'], 20);
 
         $entries = [];
@@ -309,11 +353,14 @@ class Form extends CommonDBTM
     public static function showPublicFormsForMetademand($plugin_metademands_metademands_id)
     {
         $self = new self();
+        // A public model must not cross the entity boundary. Rows created before the
+        // entities_id column existed were declared recursive from the root entity by the
+        // migration, so this restriction hides none of them.
         $condition = [
             'is_model' => 1,
             'is_private' => 0,
             'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
-        ];
+        ] + getEntitiesRestrictCriteria(self::getTable(), '', '', true);
         $forms = $self->find($condition, ['date DESC'], 20);
 
         $entries = [];
@@ -391,9 +438,11 @@ class Form extends CommonDBTM
         } elseif ($item->getType() == Metademand::class) {
             if ($this->canView()
                 && !$withtemplate
-                && $total = countElementsInTable("glpi_plugin_metademands_forms", ["plugin_metademands_metademands_id" => $item->fields['id'],
+                && $total = countElementsInTable("glpi_plugin_metademands_forms", [
+                    "plugin_metademands_metademands_id" => $item->fields['id'],
                     "is_model" => 1,
-                    "is_private" => 0])) {
+                    "is_private" => 0,
+                ] + getEntitiesRestrictCriteria(self::getTable(), '', '', true))) {
                 $name = _n('Public model form', 'Public model forms', $total, 'metademands');
 
                 return self::createTabEntry(

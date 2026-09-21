@@ -38,6 +38,16 @@ header("Content-Type: application/json; charset=UTF-8");
 
 Html::header_nocache();
 
+// Page guard. This is the only mutating endpoint of the plugin that relied on the
+// ownership test alone: gate it on the same rights as its siblings ajax/visibility.php
+// and ajax/deleteform.php. The ownership test below answers a different question, which
+// row is written, not which profile may write at all.
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => READ,
+    'plugin_metademands_createmeta' => READ,
+    'plugin_metademands_fillform' => READ,
+]);
+
 $KO = true;
 
 $form = new Form();
@@ -55,8 +65,11 @@ if (isset($_POST['save_model'])) {
             'items_id' => 0,
             'itemtype' => '',
             'date' => date('Y-m-d H:i:s'),
-            'is_model' => $_POST['is_model'],
-            'is_private' => 0];
+            // Both flags come from the client. Normalize the model flag, and publish the
+            // new model only when the profile holds plugin_metademands_publicforms, the
+            // right the plugin defines for exactly that decision.
+            'is_model' => (int) ((bool) ($_POST['is_model'] ?? 0)),
+            'is_private' => Form::canPublish() ? 0 : 1];
 
         if ($newid = $form->add($input)) {
             $KO = false;

@@ -93,17 +93,14 @@ class Ticket extends CommonDBTM
 
             if ($url = Metademand::redirectForm($myticket, 'show')) {
                 //                Html::redirect($url);
-                $dest = $url;
-                $toadd = '';
-                $dest = addslashes($dest);
+                // The destination is emitted inside a <script> element, where addslashes()
+                // is not an escaping function: it leaves a closing </script> sequence intact.
+                // JSON_HEX_TAG is precisely what neutralizes it, and the encoded value already
+                // carries its own quotes, so it is emitted bare.
+                $dest = json_encode($url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES);
 
                 echo "<script type='text/javascript'>
-                            NomNav = navigator.appName;
-                            if (NomNav=='Konqueror') {
-                               window.location='" . $dest . $toadd . "';
-                            } else {
-                               window.location='" . $dest . "';
-                            }
+                            window.location = " . $dest . ";
                          </script>";
                 exit();
             }

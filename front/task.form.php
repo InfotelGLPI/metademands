@@ -28,6 +28,7 @@
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Task;
 use GlpiPlugin\Metademands\TicketTask;
 use GlpiPlugin\Metademands\MetademandTask;
@@ -72,16 +73,25 @@ if (isset($_POST["add"])) {
                 $tickettask->add($_POST);
             } elseif ($_POST['taskType'] == Task::METADEMAND_TYPE) {
                 if ($_POST['link_metademands_id']) {
-                    // The dropdown uses -1 as the "active entity" option; store it as
-                    // NULL (no override). Any real entity id (including the root, 0)
-                    // is stored as-is.
-                    $destination_entity = $_POST['destination_entities_id'] ?? null;
-                    $destination_entity = (is_numeric($destination_entity) && $destination_entity >= 0)
-                        ? (int) $destination_entity
-                        : null;
+                    // Replay at the sink the criteria of the dropdown built by
+                    // MetademandTask::showMetademandTaskForm(): its option list is restricted
+                    // client side only, and the linked metademand drives the ticket created
+                    // for the requester. can(READ) adds the global right and the entity
+                    // perimeter, which the criteria alone do not cover.
+                    $linked         = new Metademand();
+                    $criteria       = MetademandTask::getLinkableMetademandCriteria(
+                        (int) ($_POST['plugin_metademands_metademands_id'] ?? 0),
+                    );
+                    $criteria['id'] = (int) $_POST['link_metademands_id'];
+                    if (!$linked->getFromDBByCrit($criteria)
+                        || !$linked->can($linked->getID(), READ)) {
+                        throw new AccessDeniedHttpException();
+                    }
+
                     $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
-                        'plugin_metademands_metademands_id' => $_POST['link_metademands_id'],
-                        'destination_entities_id'           => $destination_entity]);
+                        'plugin_metademands_metademands_id' => $linked->getID(),
+                        // Normalized and revalidated by MetademandTask::prepareInputForAdd().
+                        'destination_entities_id'           => $_POST['destination_entities_id'] ?? null]);
                 }
             } elseif ($_POST['taskType'] == Task::MAIL_TYPE) {
                 $_POST['plugin_metademands_tasks_id'] = $tasks_id;

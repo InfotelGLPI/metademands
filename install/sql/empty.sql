@@ -619,8 +619,11 @@ CREATE TABLE `glpi_plugin_metademands_forms`
     `is_model`                          tinyint      NOT NULL                   DEFAULT '0',
     `resources_id`                      int unsigned NOT NULL                   DEFAULT '0',
     `is_private`                        tinyint      NOT NULL                   DEFAULT '0',
+    `entities_id`                       int unsigned NOT NULL                   DEFAULT '0',
+    `is_recursive`                      tinyint      NOT NULL                   DEFAULT '0',
     PRIMARY KEY (`id`),
-    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `entities_id` (`entities_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

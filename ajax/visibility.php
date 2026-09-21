@@ -55,10 +55,13 @@ if (!$form->getFromDB($form_id) || (int) $form->fields['users_id'] !== $users_id
 }
 
 if (isset($_POST['save_model'])) {
+    // The publishing right is enforced here, not only in the template that hides the
+    // button: a caller without plugin_metademands_publicforms can save the model, but
+    // only as a private one. The identifier is the row already resolved and owned above.
     $input = [
         'is_model' => 1,
-        'is_private' => $_POST['is_private'],
-        'id' => $_POST['plugin_metademands_forms_id']];
+        'is_private' => Form::canPublish() ? (int) ((bool) ($_POST['is_private'] ?? 1)) : 1,
+        'id' => $form->getID()];
 
     $form->update($input);
     $KO = false;

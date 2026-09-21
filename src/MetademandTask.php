@@ -32,6 +32,7 @@ namespace GlpiPlugin\Metademands;
 use CommonDBChild;
 use DBConnection;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Migration;
 use Session;
 
@@ -163,6 +164,101 @@ class MetademandTask extends CommonDBChild
         $DB->dropTable(self::getTable(), true);
     }
 
+    public function prepareInputForAdd($input)
+    {
+        if (is_array($input)) {
+            $input = $this->checkDestinationEntity($input);
+        }
+
+        return parent::prepareInputForAdd($input);
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        if (is_array($input)) {
+            $input = $this->checkDestinationEntity($input);
+        }
+
+        return parent::prepareInputForUpdate($input);
+    }
+
+    /**
+     * Normalize and revalidate the destination entity carried by the input.
+     *
+     * The value comes from a dropdown whose option list is restricted client side only, and it
+     * becomes the entity of the ticket created by the linked sub-metademand (see
+     * Metademand::addObjects()): it has to be confronted with the perimeter of the session on
+     * every write path, and not only in front/task.form.php.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    private function checkDestinationEntity(array $input): array
+    {
+        if (!array_key_exists('destination_entities_id', $input)) {
+            return $input;
+        }
+
+        $entity = $input['destination_entities_id'];
+
+        // The dropdown uses -1 as the "active entity" option; store it as NULL (no override).
+        // Any real entity id (including the root, 0) is stored as-is.
+        if (!is_numeric($entity) || (int) $entity < 0) {
+            $input['destination_entities_id'] = null;
+
+            return $input;
+        }
+
+        // Same criterion as the option list built by showMetademandTaskForm().
+        if (!in_array((int) $entity, self::getAllowedDestinationEntities(), true)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $input['destination_entities_id'] = (int) $entity;
+
+        return $input;
+    }
+
+    /**
+     * Criteria restricting the metademands that can be linked to a task of the metademand $ID:
+     * neither the metademand itself nor one of its ancestors (that would create an endless chain
+     * of tickets), and only active ticket demands.
+     *
+     * Single source of truth: the dropdown of showMetademandTaskForm() is built from these
+     * criteria, and the write paths replay them on the posted value.
+     *
+     * @param int $ID metademand the task belongs to
+     *
+     * @return array
+     */
+    public static function getLinkableMetademandCriteria($ID): array
+    {
+        $used   = self::getAncestorOfMetademandTask($ID);
+        $used[] = (int) $ID;
+
+        return [
+            'is_deleted'       => 0,
+            'is_active'        => 1,
+            'is_order'         => 0,
+            'object_to_create' => 'Ticket',
+            'NOT'              => ['id' => $used],
+        ];
+    }
+
+    /**
+     * Entities that can be picked as the destination entity of a linked sub-metademand.
+     *
+     * Every entity the current user can reach through their profile (recursively), and not only
+     * the currently active ones: see the comment in showMetademandTaskForm().
+     *
+     * @return int[]
+     */
+    public static function getAllowedDestinationEntities(): array
+    {
+        return array_map('intval', \Profile_User::getUserEntities($_SESSION['glpiID'] ?? 0, true));
+    }
+
     /**
      * @param $ID
      *
@@ -170,16 +266,16 @@ class MetademandTask extends CommonDBChild
      */
     public static function showMetademandTaskForm($ID, $selected_entity = -1)
     {
-        $used   = MetademandTask::getAncestorOfMetademandTask($ID);
-        $used[] = $ID;
+        $criteria  = self::getLinkableMetademandCriteria($ID);
+        $used      = $criteria['NOT']['id'];
+        $condition = $criteria;
+        unset($condition['NOT']);
 
         ob_start();
         \Dropdown::show(Metademand::class, [
             'name'      => 'link_metademands_id',
-            'is_deleted' => 0,
-            'is_active'  => 1,
-            'used'       => $used,
-            'condition'  => ['is_order' => 0, 'object_to_create' => 'Ticket'],
+            'used'      => $used,
+            'condition' => $condition,
         ]);
         $dropdown_html = ob_get_clean();
 
@@ -192,7 +288,7 @@ class MetademandTask extends CommonDBChild
         // which would make it impossible to pick a destination entity outside the
         // one the administrator is currently positioned in.
         $entities = [-1 => __('Active entity', 'metademands')];
-        foreach (\Profile_User::getUserEntities($_SESSION['glpiID'], true) as $entity_id) {
+        foreach (self::getAllowedDestinationEntities() as $entity_id) {
             $entities[$entity_id] = \Dropdown::getDropdownName('glpi_entities', $entity_id);
         }
         ob_start();
