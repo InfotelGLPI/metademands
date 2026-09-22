@@ -40,6 +40,7 @@ use Glpi\RichText\RichText;
 use Group_User;
 use Html;
 use Migration;
+use Plugin;
 use Session;
 use User;
 
@@ -913,6 +914,9 @@ class Step extends CommonDBChild
      */
     public static function showStep()
     {
+        global $CFG_GLPI;
+        $config = new Config();
+
         $user_id = Session::getLoginUserID();
 
         $block_id = (int) ($_POST['block_id'] ?? 0);
@@ -930,12 +934,36 @@ class Step extends CommonDBChild
                 [
                     'title' => __('Next recipient', 'metademands'),
                     'display' => false,
-                    'reloadonclose' => true,
+                    'reloadonclose' => !$config->fields['redirect_to_ticket_list_when_change_user_step_by_step'],
                     'autoopen' => true,
                     'width' => 400,
                     'height' => 400,
                 ],
             );
+
+            if ($config->fields['redirect_to_ticket_list_when_change_user_step_by_step']) {
+                if (Plugin::isPluginActive('servicecatalog')
+                    && Session::haveRight("plugin_servicecatalog", READ)) {
+                    $redirect_url = jsescape(
+                        $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php"
+                    );
+                } else {
+                    $redirect_url = jsescape(
+                        $CFG_GLPI['root_doc'] . '/front/ticket.php'
+                    );
+                }
+
+                $return .= Html::scriptBlock("
+                $(function() {
+                    var modalEl = document.getElementById('modalgroup');
+                    if (modalEl) {
+                        modalEl.addEventListener('hide.bs.modal', function () {
+                            window.location.href = '$redirect_url';
+                        });
+                    }
+                });
+            ");
+            }
         } else {
             $return = "<div class='alert alert-danger d-flex'>";
             $return .= "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";

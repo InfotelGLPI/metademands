@@ -195,6 +195,7 @@ class Config extends CommonDBTM
         'title_servicecatalog',
         'comment_servicecatalog',
         'fa_servicecatalog',
+        'redirect_to_ticket_list_when_change_user_step_by_step',
     ];
 
     /**
@@ -262,6 +263,7 @@ class Config extends CommonDBTM
                         `icon_problem`                      varchar(255)          DEFAULT NULL,
                         `icon_change`                       varchar(255)          DEFAULT NULL,
                         `see_top`                           tinyint      NOT NULL DEFAULT '1',
+                        `redirect_to_ticket_list_when_change_user_step_by_step` tinyint      NOT NULL DEFAULT '0',
                         PRIMARY KEY (`id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
@@ -371,6 +373,11 @@ class Config extends CommonDBTM
         //version 3.5.4
         if ($DB->fieldExists($table, "fa_servicecatalog")) {
             $migration->changeField($table, 'fa_servicecatalog', 'fa_servicecatalog', "varchar(100) NOT NULL DEFAULT 'ti ti-share'");
+            $migration->migrationOneTable($table);
+        }
+
+        if (!$DB->fieldExists($table, "redirect_to_ticket_list_when_change_user_step_by_step")) {
+            $migration->addField($table, "redirect_to_ticket_list_when_change_user_step_by_step", "tinyint NOT NULL DEFAULT '1'");
             $migration->migrationOneTable($table);
         }
 
