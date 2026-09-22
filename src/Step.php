@@ -945,11 +945,11 @@ class Step extends CommonDBChild
                 if (Plugin::isPluginActive('servicecatalog')
                     && Session::haveRight("plugin_servicecatalog", READ)) {
                     $redirect_url = jsescape(
-                        $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php"
+                        $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php",
                     );
                 } else {
                     $redirect_url = jsescape(
-                        $CFG_GLPI['root_doc'] . '/front/ticket.php'
+                        $CFG_GLPI['root_doc'] . '/front/ticket.php',
                     );
                 }
 

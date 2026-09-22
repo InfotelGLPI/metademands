@@ -504,6 +504,7 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `icon_problem`                      varchar(255)          DEFAULT NULL,
     `icon_change`                       varchar(255)          DEFAULT NULL,
     `see_top`                           tinyint      NOT NULL DEFAULT '1',
+    `redirect_to_ticket_list_when_change_user_step_by_step` tinyint      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

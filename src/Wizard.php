@@ -2738,7 +2738,7 @@ class Wizard extends CommonDBTM
             } elseif (Session::haveRight("plugin_metademands", READ)) {
                 if (Plugin::isPluginActive('servicecatalog') && method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
                     global $CFG_GLPI;
-                    Html::redirect( $CFG_GLPI['root_doc'] . "front/ticket.form.php?id=" . $result['id']);
+                    Html::redirect($CFG_GLPI['root_doc'] . "front/ticket.form.php?id=" . $result['id']);
                 } else {
                     Html::redirect($self->getFormURL() . "?step=" . Metademand::STEP_INIT);
                 }
