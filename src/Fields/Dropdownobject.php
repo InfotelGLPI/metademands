@@ -1566,7 +1566,7 @@ class Dropdownobject extends CommonDBTM
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                     }
-                    $result[$field['rank']]['content'] .= $label;
+                    $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "</td>";
                     }
@@ -1582,26 +1582,26 @@ class Dropdownobject extends CommonDBTM
 
                     if ($item->getFromDB($field['value'])) {
                         if (in_array('full_name', $information)) {
-                            $content .= "" . $field["item"]::getFriendlyNameById($field['value']) . " ";
+                            $content .= htmlspecialchars((string) $field["item"]::getFriendlyNameById($field['value']), ENT_QUOTES, 'UTF-8') . " ";
                         }
                         if (in_array('realname', $information)) {
-                            $content .= "" . $item->fields["realname"] . " ";
+                            $content .= htmlspecialchars((string) $item->fields["realname"], ENT_QUOTES, 'UTF-8') . " ";
                         }
                         if (in_array('firstname', $information)) {
-                            $content .= "" . $item->fields["firstname"] . " ";
+                            $content .= htmlspecialchars((string) $item->fields["firstname"], ENT_QUOTES, 'UTF-8') . " ";
                         }
                         if (in_array('name', $information)) {
-                            $content .= "" . $item->fields["name"] . " ";
+                            $content .= htmlspecialchars((string) $item->fields["name"], ENT_QUOTES, 'UTF-8') . " ";
                         }
                         if (in_array('email', $information)) {
-                            $content .= "" . $item->getDefaultEmail() . " ";
+                            $content .= htmlspecialchars((string) $item->getDefaultEmail(), ENT_QUOTES, 'UTF-8') . " ";
                         }
                     }
                     if (empty($content)) {
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                         }
-                        $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                        $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field), ENT_QUOTES, 'UTF-8');
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
                         }
@@ -1620,11 +1620,11 @@ class Dropdownobject extends CommonDBTM
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                     }
-                    $result[$field['rank']]['content'] .= $label;
+                    $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                     }
-                    $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                    $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field), ENT_QUOTES, 'UTF-8');
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "</td>";
                     }

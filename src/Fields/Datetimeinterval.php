@@ -168,7 +168,7 @@ class Datetimeinterval extends CommonDBTM
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
         }
-        $result[$field['rank']]['content'] .= $label;
+        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
         }
@@ -177,7 +177,7 @@ class Datetimeinterval extends CommonDBTM
             $result[$field['rank']]['content'] .= "</td></tr>";
             $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title colspan='$colspan'>";
         }
-        $result[$field['rank']]['content'] .= $label2;
+        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label2, ENT_QUOTES, 'UTF-8');
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
         }

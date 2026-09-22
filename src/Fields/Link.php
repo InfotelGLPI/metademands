@@ -220,7 +220,7 @@ class Link extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= $label;
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }

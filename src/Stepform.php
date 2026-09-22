@@ -689,11 +689,14 @@ class Stepform extends CommonDBTM
 
         $stepforms = $stepform->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
 
-        $can_cancel = Session::haveRight("plugin_metademands_cancelform", READ);
+        // Same predicate as front/stepform.form.php, so the button is never drawn for an
+        // action the controller refuses: either the administrative right, or the dedicated
+        // plugin_metademands_cancelform right on a row the session actually owns.
+        $can_delete_any = Session::haveRight(self::$rightname, DELETE);
         $rows       = [];
         foreach ($stepforms as $id => $form) {
             $delete_html = '';
-            if ($can_cancel) {
+            if ($can_delete_any || self::canCancelForm($id)) {
                 $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                 // showSimpleForm() prints its markup; the red wrapper around it now lives in
                 // the template, next to the cell it belongs to.
@@ -826,8 +829,11 @@ class Stepform extends CommonDBTM
                     $name = $n;
                 }
                 $delete_html = '';
-                //TODO Change to new right
-                if (Session::haveRight("plugin_metademands_cancelform", READ)) {
+                // Same predicate as front/stepform.form.php: the button used to be drawn on
+                // plugin_metademands_cancelform alone while the controller opened on
+                // plugin_metademands => UPDATE, so a profile holding only the dedicated
+                // right saw it and was systematically refused the action.
+                if (Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id)) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     ob_start();
                     Html::showSimpleForm(
@@ -953,8 +959,8 @@ class Stepform extends CommonDBTM
                     $name = $n;
                 }
                 $delete_html = '';
-                //TODO Change to new right
-                if (Session::haveRight("plugin_metademands_cancelform", READ)) {
+                // Same predicate as front/stepform.form.php, see showWaitingForm().
+                if (Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id)) {
                     $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                     ob_start();
                     Html::showSimpleForm(
@@ -987,6 +993,64 @@ class Stepform extends CommonDBTM
             'header_is_fa' => str_contains($icon, 'fa-'),
             'cards'        => $cards,
         ]);
+    }
+
+    /**
+     * Tell whether the current session may cancel a given step form on its own, that is
+     * without holding the administrative plugin_metademands right.
+     *
+     * The criteria replay the ones of the two listings that draw the cancel button:
+     * getWaitingForms() -- the form is addressed to the session, directly or through one
+     * of its groups -- and getWaitingFormsByMaker() -- the session filled it in, or is one
+     * of its actors. The table carries no entities_id, so CommonDBTM::checkEntity()
+     * restricts nothing here and the ownership has to be replayed at the sink.
+     *
+     * @param int $stepforms_id
+     *
+     * @return bool
+     */
+    public static function canCancelForm($stepforms_id)
+    {
+        if (!Session::haveRight('plugin_metademands_cancelform', READ)) {
+            return false;
+        }
+
+        $users_id = (int) Session::getLoginUserID();
+        if ($users_id <= 0) {
+            return false;
+        }
+
+        $stepform = new self();
+        if (!$stepform->getFromDB($stepforms_id)) {
+            return false;
+        }
+
+        if ((int) $stepform->fields['users_id'] === $users_id
+            || (int) $stepform->fields['users_id_dest'] === $users_id) {
+            return true;
+        }
+
+        $stepform_actor = new Stepform_Actor();
+        if (count($stepform_actor->find([
+            'plugin_metademands_stepforms_id' => $stepform->getID(),
+            'users_id' => $users_id,
+        ])) > 0) {
+            return true;
+        }
+
+        // A form addressed to a group is cancellable by its members only while it has not
+        // been handed to a named user, which is the very condition getWaitingForms()
+        // applies when it lists it.
+        if ((int) $stepform->fields['groups_id_dest'] > 0
+            && (int) $stepform->fields['users_id_dest'] === 0) {
+            $group_user = new Group_User();
+            return count($group_user->find([
+                'users_id' => $users_id,
+                'groups_id' => (int) $stepform->fields['groups_id_dest'],
+            ])) > 0;
+        }
+
+        return false;
     }
 
     public function deleteAfterCreate($stepformID, $sendmail = false)

@@ -551,13 +551,20 @@ class Freetable extends CommonDBTM
      * straight from the requester through the session and is stored raw, so it goes through
      * the same chain as the other free input fields (see Email::getFieldValue()).
      *
+     * getTextFromHtml() decodes the entities getSafeHtml() had just posed, so its output is
+     * plain text: the three callers concatenate it into markup, hence the escaping here.
+     *
      * @param mixed $value
      *
      * @return string
      */
     private static function getCellValue($value)
     {
-        return RichText::getTextFromHtml(RichText::getSafeHtml((string) $value));
+        return htmlspecialchars(
+            RichText::getTextFromHtml(RichText::getSafeHtml((string) $value)),
+            ENT_QUOTES,
+            'UTF-8',
+        );
     }
 
     public static function displayFieldItems(
@@ -633,7 +640,7 @@ class Freetable extends CommonDBTM
                     $content .= "<tr>";
                     $content .= "<td $style_title colspan='$colspan_title'>";
                 }
-                $content .= $label;
+                $content .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                 if ($formatAsTable) {
                     $content .= "</td>";
                     $content .= "</tr>";
@@ -641,7 +648,7 @@ class Freetable extends CommonDBTM
                 if ($formatAsTable) {
                     $content .= "<tr>";
                     foreach ($addfields as $k => $addfield) {
-                        $content .= "<th $style_td colspan='$colspan'>" . $addfield . "</th>";
+                        $content .= "<th $style_td colspan='$colspan'>" . htmlspecialchars((string) $addfield, ENT_QUOTES, 'UTF-8') . "</th>";
                     }
                     if (Plugin::isPluginActive('orderfollowup')) {
                         $content .= "<th $style_td>" . __('Total (TTC)', 'orderfollowup') . "</th>";

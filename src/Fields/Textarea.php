@@ -729,7 +729,7 @@ class Textarea extends CommonDBTM
                 }
             }
             if ($field['hide_title'] == 0) {
-                $result[$field['rank']]['content'] .= $label;
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             }
             if ($formatAsTable) {
                 if ($field['hide_title'] == 0) {

@@ -34,6 +34,8 @@ use CommonDBTM;
 use CommonITILActor;
 use DBConnection;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
 use Html;
 use Migration;
 use Plugin;
@@ -56,6 +58,11 @@ class MetademandValidation extends CommonDBTM
     public const TICKET_CREATION = 1; // tickets_created
     public const TO_VALIDATE = 0; // waiting
     public const TO_VALIDATE_WITHOUTTASK = -1; // waiting without ticket
+
+    // Posted create_subticket values, as offered by metademandvalidation_view.html.twig.
+    public const CREATE_SUBTICKETS = 1;
+    public const CREATE_TASKS = 0;
+    public const ASSIGN_ONLY = 2;
 
     /**
      * functions mandatory
@@ -178,12 +185,116 @@ class MetademandValidation extends CommonDBTM
         return true;
     }
 
+    /**
+     * Criteria the assignable group dropdown of the validation form is built with.
+     *
+     * Shared with ajax/displayGroupField.php so that the offered list and the check
+     * replayed in validateMeta() cannot drift apart.
+     *
+     * @return array<string, mixed>
+     */
+    public static function getAssignableGroupCriteria(): array
+    {
+        return ['is_assign' => 1];
+    }
+
+    /**
+     * Replay the dropdown criteria on the posted group identifier.
+     *
+     * Group::dropdown() only offers assignable groups of the active entities, but that
+     * restriction lives in the list builder: nothing replayed it when the value came
+     * back, so any identifier -- a group flagged is_assign = 0, or a group of an entity
+     * the validator cannot reach -- was written on the ticket as an assignee, which also
+     * grants that group read access to it.
+     *
+     * @param mixed $groups_id posted identifier
+     *
+     * @return int the accepted identifier, 0 when the empty choice was posted
+     */
+    private static function checkAssignableGroup($groups_id): int
+    {
+        $groups_id = (int) $groups_id;
+        if ($groups_id === 0) {
+            // The dropdown carries an empty choice: leaving the ticket unassigned is legitimate.
+            return 0;
+        }
+
+        $criteria = self::getAssignableGroupCriteria();
+
+        $group = new \Group();
+        if (
+            !$group->getFromDB($groups_id)
+            || (int) $group->fields['is_assign'] !== (int) $criteria['is_assign']
+            || !Session::haveAccessToEntity($group->fields['entities_id'], $group->fields['is_recursive'])
+        ) {
+            throw new AccessDeniedHttpException();
+        }
+
+        return $groups_id;
+    }
+
+    /**
+     * The create_subticket values the loaded record actually offers.
+     *
+     * viewValidation() decides which radio buttons, or which hidden input, the form
+     * carries, and it is the only place where the state of the record was ever taken
+     * into account. Replaying that decision here makes the transition non replayable:
+     * once validated, the record exposes no value at all.
+     *
+     * @return array<int> empty when the record is not waiting for a validation any more
+     */
+    private function getAllowedCreateSubticketValues(): array
+    {
+        if ((int) $this->fields['users_id'] !== 0) {
+            return [];
+        }
+
+        switch ((int) $this->fields['validate']) {
+            case self::TO_VALIDATE:
+                $metademand = new Metademand();
+                if (
+                    $metademand->getFromDB($this->fields['plugin_metademands_metademands_id'])
+                    && (int) $metademand->fields['force_create_tasks'] === 0
+                ) {
+                    return [self::CREATE_TASKS, self::CREATE_SUBTICKETS];
+                }
+
+                // force_create_tasks hides the sub-ticket radio button.
+                return [self::CREATE_TASKS];
+
+            case self::TO_VALIDATE_WITHOUTTASK:
+                return [self::ASSIGN_ONLY];
+
+            default:
+                return [];
+        }
+    }
+
     public function validateMeta($params)
     {
         $ticket_id = $params["tickets_id"];
         $inputVal = [];
 
-        $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
+        if (!$this->getFromDBByCrit(['tickets_id' => (int) $ticket_id])) {
+            throw new BadRequestHttpException();
+        }
+
+        // State guard. Until now nothing checked that the metademand was still waiting:
+        // the transitions below create tasks, overwrite the assigned group and drop every
+        // assigned technician of the ticket, so replaying the request -- or posting it
+        // without create_subticket, which a loose == 0 turned into the task branch --
+        // duplicated the tasks and silently emptied the ticket of its assignees.
+        $allowed_create_subticket = $this->getAllowedCreateSubticketValues();
+        if (
+            !isset($params["create_subticket"])
+            || !in_array((int) $params["create_subticket"], $allowed_create_subticket, true)
+        ) {
+            throw new BadRequestHttpException();
+        }
+        $create_subticket = (int) $params["create_subticket"];
+
+        $groups_id_assign = self::checkAssignableGroup($params["group_to_assign"] ?? 0);
+
         $meta_tasks = json_decode($this->fields["tickets_to_create"], true);
         if (is_array($meta_tasks)) {
             foreach ($meta_tasks as $key => $val) {
@@ -331,7 +442,7 @@ class MetademandValidation extends CommonDBTM
             }
         }
 
-        if ($params["create_subticket"] == 1) {
+        if ($create_subticket === self::CREATE_SUBTICKETS) {
             if (!Metademand::createSonsTickets(
                 $meta->getID(),
                 $ticket_id,
@@ -345,7 +456,7 @@ class MetademandValidation extends CommonDBTM
                 $KO[] = 1;
             }
             $inputVal['validate'] = self::TICKET_CREATION;
-        } elseif ($params["create_subticket"] == 0) {
+        } elseif ($create_subticket === self::CREATE_TASKS) {
             if (is_array($meta_tasks)) {
                 foreach ($meta_tasks as $meta_task) {
                     if (Ticket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)) {
@@ -362,10 +473,14 @@ class MetademandValidation extends CommonDBTM
             $input = [];
             $input['id'] = $ticket_id;
             $input['_itil_assign']["_type"] = "group";
-            $input['_itil_assign']["groups_id"] = $params["group_to_assign"];
+            $input['_itil_assign']["groups_id"] = $groups_id_assign;
 
             $ticket->update($input);
 
+            // Handing the ticket over from its individual technicians to the group above is
+            // what this transition means, so the purge stays as it is. What made it abusable
+            // was that it could be replayed on an already validated metademand; the state
+            // guard at the top of the method now lets it run exactly once.
             $where_keep = [
                 'tickets_id' => $ticket_id,
                 'type' => CommonITILActor::ASSIGN,
@@ -382,10 +497,14 @@ class MetademandValidation extends CommonDBTM
             $input = [];
             $input['id'] = $ticket_id;
             $input['_itil_assign']["_type"] = "group";
-            $input['_itil_assign']["groups_id"] = $params["group_to_assign"];
+            $input['_itil_assign']["groups_id"] = $groups_id_assign;
 
             $ticket->update($input);
 
+            // Handing the ticket over from its individual technicians to the group above is
+            // what this transition means, so the purge stays as it is. What made it abusable
+            // was that it could be replayed on an already validated metademand; the state
+            // guard at the top of the method now lets it run exactly once.
             $where_keep = [
                 'tickets_id' => $ticket_id,
                 'type' => CommonITILActor::ASSIGN,
@@ -514,14 +633,14 @@ class MetademandValidation extends CommonDBTM
         } elseif ($this->fields["users_id"] == 0
             && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
             $is_to_validate_withouttask = true;
-            $create_subticket_hidden = Html::hidden("create_subticket", ["value" => 2]);
+            $create_subticket_hidden = Html::hidden("create_subticket", ["value" => self::ASSIGN_ONLY]);
             $group = 0;
             foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
                 $group = $d['groups_id'];
             }
             ob_start();
             \Group::dropdown([
-                'condition' => ['is_assign' => 1],
+                'condition' => self::getAssignableGroupCriteria(),
                 'name' => 'group_to_assign',
                 'value' => $group,
             ]);

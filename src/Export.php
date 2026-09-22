@@ -319,13 +319,13 @@ class Export extends CommonDBTM
 
         self::toXml($xml, $fields);
 
-        $safeName = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $metademands->getField('name'));
-        $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
-        $name = "/metademands/" . $safeName . ".xml";
+        $target = self::buildExportTarget($metademands->getField('name'), 'xml');
+        if ($target === [] || $xml->saveXML($target['path']) === false) {
+            Session::addMessageAfterRedirect(__('Unable to create the export file', 'metademands'), false, ERROR);
+            return [];
+        }
 
-        $xml->saveXML(GLPI_PLUGIN_DOC_DIR . $name);
-
-        return "_plugins" . $name;
+        return $target;
     }
 
     public static function transformFieldTypeFromMetademands($type, $item = null)
@@ -533,13 +533,13 @@ class Export extends CommonDBTM
 
         self::toXml($xml, $fields);
 
-        $safeName = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $form->getField('name'));
-        $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
-        $name = "/metademands/" . $safeName . ".xml";
+        $target = self::buildExportTarget($form->getField('name'), 'xml');
+        if ($target === [] || $xml->saveXML($target['path']) === false) {
+            Session::addMessageAfterRedirect(__('Unable to create the export file', 'metademands'), false, ERROR);
+            return [];
+        }
 
-        $xml->saveXML(GLPI_PLUGIN_DOC_DIR . $name);
-
-        return "_plugins" . $name;
+        return $target;
     }
 
     public static function toXml(SimpleXMLElement &$parent, array &$data)
@@ -1286,21 +1286,50 @@ class Export extends CommonDBTM
         $json['forms'][] = $form;
         $jsonOutput = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-        $safeName = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $metademands->getField('name'));
-        $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
-        $name = "/metademands/" . $safeName . ".json";
-
         // die() would abort the request in the middle of the page: report the failure the
         // way the other export paths do and let the caller handle it.
-        $file = fopen(GLPI_PLUGIN_DOC_DIR . $name, 'w+');
-        if ($file === false) {
+        $target = self::buildExportTarget($metademands->getField('name'), 'json');
+        if ($target === [] || file_put_contents($target['path'], $jsonOutput) === false) {
             Session::addMessageAfterRedirect(__('Unable to create the export file', 'metademands'), false, ERROR);
-            return '';
+            return [];
         }
-        fwrite($file, $jsonOutput);
-        fclose($file);
 
-        return "_plugins" . $name;
+        return $target;
+    }
+
+    /**
+     * Build the working path an export is written to, and the name proposed for download.
+     *
+     * The label alone used to name the file, inside GLPI_PLUGIN_DOC_DIR/metademands which is
+     * shared by every entity: two meta-demands carrying the same label, exported at the same
+     * moment from two entities, wrote over each other and the streamed download served the
+     * definition of the other one. The random suffix makes the working copy unique per request
+     * -- what ajax/export_metademand.php already does for the ZIP archive -- while the name
+     * offered to the browser, also used as the entry name inside that archive, stays readable.
+     *
+     * @param string $label     name of the exported meta-demand or form
+     * @param string $extension extension of the generated file, without the dot
+     *
+     * @return array{path: string, filename: string}|array{} empty when the directory is unusable
+     */
+    private static function buildExportTarget(string $label, string $extension): array
+    {
+        $safe_name = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $label);
+        $safe_name = mb_ereg_replace("([\.]{2,})", '', $safe_name);
+        if (!is_string($safe_name) || trim($safe_name) === '') {
+            // A label made only of stripped characters would leave the suffix alone as a name.
+            $safe_name = 'metademand';
+        }
+
+        $directory = GLPI_PLUGIN_DOC_DIR . '/metademands';
+        if (!is_dir($directory) && !@mkdir($directory, 0o775, true) && !is_dir($directory)) {
+            return [];
+        }
+
+        return [
+            'path' => $directory . '/' . $safe_name . '_' . bin2hex(random_bytes(8)) . '.' . $extension,
+            'filename' => $safe_name . '.' . $extension,
+        ];
     }
 
     /**
@@ -1308,7 +1337,7 @@ class Export extends CommonDBTM
      *
      * The three export methods above write their file below GLPI_PLUGIN_DOC_DIR, which is
      * shared by every entity, and used to leave it there: the exported definitions piled
-     * up and stayed readable to anyone able to guess a name. Toolbox::getFileAsResponse()
+     * up and stayed readable to anyone who could reach the directory. Toolbox::getFileAsResponse()
      * answers with a streamed response, so the file is still needed when this method
      * returns -- the unlink is therefore deferred to shutdown, once the response has been
      * sent, rather than placed in a finally block that would fire before the first byte.

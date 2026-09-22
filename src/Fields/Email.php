@@ -689,11 +689,19 @@ class Email extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= $label;
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field);
+            // getFieldValue() returns plain text -- getTextFromHtml() decodes the entities
+            // getSafeHtml() had just posed -- and it is concatenated into markup here, so the
+            // escaping belongs at this sink, as Basket::retrieveDatasByType() already does,
+            // and not in getFieldValue() whose callers render it through Twig.
+            $result[$field['rank']]['content'] .= htmlspecialchars(
+                self::getFieldValue($field),
+                ENT_QUOTES,
+                'UTF-8',
+            );
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }

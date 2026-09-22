@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands;
 
 use Ajax;
 use CommonDBChild;
+use CommonDBTM;
 use CommonGLPI;
 use CommonITILObject;
 use DBConnection;
@@ -626,8 +627,30 @@ class Condition extends CommonDBChild
             case 'dropdown_multiple':
             case 'dropdown':
             case 'dropdown_object':
+                // The itemtype is read back from a column the field designer filled in, and
+                // the same column also carries pseudo types ('other', 'mydevices', 'urgency')
+                // that are not classes at all: validate the value at the instantiation site
+                // rather than trust what was stored.
+                if (
+                    !is_string($itemType)
+                    || !class_exists($itemType)
+                    || !is_a($itemType, CommonDBTM::class, true)
+                ) {
+                    break;
+                }
                 $item = new $itemType();
-                $item->getFromDB($condition->fields['items_id']);
+                if (!$item->getFromDB($condition->fields['items_id'])) {
+                    break;
+                }
+                if (
+                    $item->isEntityAssign()
+                    && !Session::haveAccessToEntity(
+                        $item->fields['entities_id'],
+                        $item->maybeRecursive() && $item->fields['is_recursive'],
+                    )
+                ) {
+                    break;
+                }
                 $url = $item->getLinkURL();
                 echo TemplateRenderer::getInstance()->render(
                     '@metademands/forms/condition_item_link.html.twig',

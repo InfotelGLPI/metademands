@@ -36,54 +36,32 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
 
     if (isset($_POST["exportFormGLPIXML"])) {
 
-        $file = Export::exportAsXMLFromGLPI($_POST["forms_id"]);
+        $export = Export::exportAsXMLFromGLPI($_POST["forms_id"]);
 
-        $splitter = explode("/", $file, 2);
-        $expires_headers = false;
-        $send = null;
-
-        if ($splitter[0] == "_plugins") {
-            $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-        }
-
-        if ($send && file_exists($send)) {
-            return Export::sendFileAndPurge($send, $splitter[1], 'xml', $expires_headers);
-        } else {
+        if ($export === [] || !file_exists($export['path'])) {
             throw new AccessDeniedHttpException();
         }
+
+        return Export::sendFileAndPurge($export['path'], $export['filename'], 'xml', false);
 
     } elseif (isset($_POST["exportMetademandsXML"])) {
 
-        $file = Export::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
-        $splitter = explode("/", $file, 2);
-        $expires_headers = false;
-        $send = null;
+        $export = Export::exportAsXMLForMetademands($_POST["plugin_metademands_metademands_id"]);
 
-        if ($splitter[0] == "_plugins") {
-            $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-        }
-
-        if ($send && file_exists($send)) {
-            return Export::sendFileAndPurge($send, $splitter[1], 'xml', $expires_headers);
-        } else {
+        if ($export === [] || !file_exists($export['path'])) {
             throw new AccessDeniedHttpException();
         }
+
+        return Export::sendFileAndPurge($export['path'], $export['filename'], 'xml', false);
     } elseif (isset($_POST["exportMetademandsJSON"])) {
 
-        $file = Export::exportAsJSONForGLPIForm($_POST["plugin_metademands_metademands_id"]);
-        $splitter = explode("/", $file, 2);
-        $expires_headers = false;
-        $send = null;
+        $export = Export::exportAsJSONForGLPIForm($_POST["plugin_metademands_metademands_id"]);
 
-        if ($splitter[0] == "_plugins") {
-            $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-        }
-
-        if ($send && file_exists($send)) {
-            return Export::sendFileAndPurge($send, $splitter[1], 'json', $expires_headers);
-        } else {
+        if ($export === [] || !file_exists($export['path'])) {
             throw new AccessDeniedHttpException();
         }
+
+        return Export::sendFileAndPurge($export['path'], $export['filename'], 'json', false);
 
     } elseif (isset($_GET["import_form"])) {
 

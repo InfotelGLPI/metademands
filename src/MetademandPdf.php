@@ -1432,7 +1432,9 @@ class MetademandPdf extends \TCPDF
         $doc = new Document();
         //Construction des données
         $input = [];
-        $input["name"] = addslashes($filename);
+        // Document::add() parameterizes its query and stores the value as given: escaping
+        // it here would write the backslashes literally into the document name.
+        $input["name"] = $filename;
         $input["upload_file"] = $filename;
         $input["mime"] = "application/pdf";
         $input["date_mod"] = date("Y-m-d H:i:s");

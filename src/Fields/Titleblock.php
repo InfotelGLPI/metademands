@@ -143,7 +143,7 @@ class Titleblock extends CommonDBTM
             $colspan = $is_order ? 12 : 2;
             $result[$field['rank']]['content'] .= "<th colspan='$colspan'>";
         }
-        $result[$field['rank']]['content'] .= $label;
+        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
         if ($formatAsTable) {
             $result[$field['rank']]['content'] .= "</th>";
         }

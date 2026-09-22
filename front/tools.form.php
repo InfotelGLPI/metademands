@@ -53,6 +53,13 @@ if (isset($_POST["purge_emptyoptions"])) {
         foreach ($notclosedmetademands as $notclosedmetademand) {
             $ticket = new Ticket();
             if ($ticket->getFromDB($notclosedmetademand['parent_tickets_id'])) {
+                // The find() above spans the whole instance and plugin_metademands is a
+                // global right: replay the entity boundary before rewriting the global
+                // status of a meta-demand -- and possibly firing its notifications -- in
+                // an entity the caller cannot even read.
+                if (!Session::haveAccessToEntity($ticket->fields['entities_id'])) {
+                    continue;
+                }
                 if ($ticket->fields['status'] != Ticket::CLOSED) {
                     Ticket_Metademand::changeMetademandGlobalStatus($ticket);
                 }

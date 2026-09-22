@@ -4186,6 +4186,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
         //      $style_title = "style='background-color: #cccccc;'";
 
+        // Plain text, stored unescaped by GLPI 10+. Every displayFieldItems() implementation
+        // concatenates it into markup and escapes it at that sink rather than here, because
+        // Radio::getFieldValue() hands $label straight back to the $return_value callers, which
+        // render it through Twig and would display the entities.
         if (empty($label = Field::displayField($field['id'], 'name', $lang))) {
             $label = $field['name'];
         }
@@ -5324,11 +5328,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             unset($this->fields['id']);
             unset($this->fields['itilcategories_id']);
 
+            // Every value duplicated below is read back from the database, where GLPI 10
+            // stores it unescaped, and handed straight to add(), which parameterizes its
+            // query. Escaping it here wrote the backslashes literally, and cumulatively:
+            // each successive duplication doubled them in front of every quote.
             //TODO To translate ?
-            if ($this->fields['comment'] != null) {
-                $this->fields['comment'] = addslashes($this->fields['comment']);
-            }
-            $this->fields['name'] = addslashes($this->fields['name']);
 
             if ($new_metademands_id = $this->add($this->fields)) {
                 $translationMeta = new MetademandTranslation();
@@ -5362,13 +5366,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $input['is_recursive'] = $values['is_recursive'];
                                         $input['plugin_metademands_metademands_id'] = $new_metademands_id;
                                         if (!empty($values['name'])) {
-                                            $input['name'] = addslashes($values['name']);
+                                            $input['name'] = $values['name'];
                                         }
                                         if (!empty($values['label2'])) {
-                                            $input['label2'] = addslashes($values['label2']);
+                                            $input['label2'] = $values['label2'];
                                         }
                                         if (!empty($values['comment'])) {
-                                            $input['comment'] = addslashes($values['comment']);
+                                            $input['comment'] = $values['comment'];
                                         }
 
                                         $newID = $fields->add($input);
@@ -5411,16 +5415,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $tasks->fields['plugin_metademands_metademands_id'] = $new_metademands_id;
                                     $tasks->fields['sons_cache'] = '';
                                     $tasks->fields['ancestors_cache'] = '';
-                                    if (isset($tasks->fields['name'])) {
-                                        $tasks->fields['name'] = addslashes($tasks->fields['name']);
-                                    }
-                                    if (isset($tasks->fields['completename'])) {
-                                        $tasks->fields['completename'] = addslashes($tasks->fields['completename']);
-                                    }
-                                    if (isset($tasks->fields['comment'])) {
-                                        $tasks->fields['comment'] = addslashes($tasks->fields['comment']);
-                                    }
-
                                     unset($tasks->fields['id']);
 
                                     $new_tasks_id = $tasks->add($tasks->fields);
@@ -5436,7 +5430,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             foreach ($tickettasks_data as $values) {
                                                 unset($values['id']);
                                                 $values['plugin_metademands_tasks_id'] = $new_tasks_id;
-                                                $values['content'] = addslashes($values['content']);
                                                 $tickettasks->add($values);
                                             }
                                         }
@@ -5449,12 +5442,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             foreach ($mailtasks_data as $values) {
                                                 unset($values['id']);
                                                 $values['plugin_metademands_tasks_id'] = $new_tasks_id;
-                                                if (!empty($values['content'])) {
-                                                    $values['content'] = addslashes($values['content']);
-                                                }
-                                                if (!empty($values['email'])) {
-                                                    $values['email'] = addslashes($values['email']);
-                                                }
                                                 $mailtasks->add($values);
                                             }
                                         }

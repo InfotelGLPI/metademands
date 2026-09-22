@@ -28,14 +28,25 @@
  */
 
 use GlpiPlugin\Metademands\Configstep;
+use GlpiPlugin\Metademands\Metademand;
 
 Session::checkRight('plugin_metademands', UPDATE);
 
 $stepConfig = new Configstep();
 
 if (isset($_POST['update_configstep']) && isset($_POST['plugin_metademands_metademands_id'])) {
-    $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+    // plugin_metademands is a global right, not split per entity: without this the
+    // administrator of one entity could post the identifier of a meta-demand of another
+    // one. Configstep disables the automatic entity forwarding, so neither check() nor
+    // checkEntity() replays that boundary here.
+    $metademands_id = (int) $_POST['plugin_metademands_metademands_id'];
+    Metademand::assertCanAccessEntity($metademands_id);
+
+    $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
+    // Configstep::prepareInputForAdd()/prepareInputForUpdate() whitelist and cast the
+    // writable columns, the identifier is pinned to the value checked above.
     $input = $_POST;
+    $input['plugin_metademands_metademands_id'] = $metademands_id;
     if ($res) {
         $input['id'] = $stepConfig->fields['id'];
         $stepConfig->update($input);

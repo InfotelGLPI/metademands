@@ -2008,7 +2008,7 @@ class Basket extends CommonDBTM
                             if ($formatAsTable) {
                                 $result[$field['rank']]['content'] .= "<td $style_td>";
                             }
-                            $result[$field['rank']]['content'] .= $ordermaterial->fields['unit'];
+                            $result[$field['rank']]['content'] .= htmlspecialchars((string) $ordermaterial->fields['unit'], ENT_QUOTES, 'UTF-8');
 
                             if ($formatAsTable) {
                                 $result[$field['rank']]['content'] .= "</td>";
@@ -2021,7 +2021,7 @@ class Basket extends CommonDBTM
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "<td $style_td>";
                     }
-                    $result[$field['rank']]['content'] .= $quantity;
+                    $result[$field['rank']]['content'] .= htmlspecialchars((string) $quantity, ENT_QUOTES, 'UTF-8');
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "</td>";
                     }

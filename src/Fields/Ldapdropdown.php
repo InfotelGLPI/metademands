@@ -119,30 +119,36 @@ class Ldapdropdown extends CommonDBTM
 
         $post['searchText'] ??= '';
 
-        $values = ['ldap_auth' => 0,
-            'ldap_attribute' => 0,
-            'ldap_filter' => ""];
-
-        $param = new FieldParameter();
-        if ($param->getFromDB($post['condition']['plugin_metademands_fieldparameters_id'])) {
-
-            // Only serve LDAP values when the referenced field parameter belongs to a metademand
-            // the caller can actually access (rights + entity scope) — do not trust session alone.
-            $field = new Field();
-            $meta  = new Metademand();
-            if (
-                !$field->getFromDB((int) $param->fields['plugin_metademands_fields_id'])
-                || !$meta->getFromDB((int) $field->fields['plugin_metademands_metademands_id'])
-                || !($meta->canCreate() || \GlpiPlugin\Metademands\Group::isUserHaveRight($meta->getID()))
-                || !\Session::haveAccessToEntity((int) $meta->fields['entities_id'], $meta->fields['is_recursive'])
-            ) {
-                return "";
-            }
-
-            $values = ['ldap_auth' => $param->fields['authldaps_id'],
-                'ldap_attribute' => $param->fields['ldap_attribute'],
-                'ldap_filter' => html_entity_decode($param->fields['ldap_filter'])];
+        $fieldparameters_id = 0;
+        if (isset($post['condition']) && is_array($post['condition'])) {
+            $fieldparameters_id = (int) ($post['condition']['plugin_metademands_fieldparameters_id'] ?? 0);
         }
+
+        // The access control below lives in the only branch that resolved the field parameter, so
+        // an unresolvable condition -- an unknown session key, a missing or forged
+        // plugin_metademands_fieldparameters_id -- used to fall through with the ungated default
+        // values and still run the directory search. Refuse rather than gate a single branch.
+        $param = new FieldParameter();
+        if ($fieldparameters_id <= 0 || !$param->getFromDB($fieldparameters_id)) {
+            return "";
+        }
+
+        // Only serve LDAP values when the referenced field parameter belongs to a metademand
+        // the caller can actually access (rights + entity scope) — do not trust session alone.
+        $field = new Field();
+        $meta  = new Metademand();
+        if (
+            !$field->getFromDB((int) $param->fields['plugin_metademands_fields_id'])
+            || !$meta->getFromDB((int) $field->fields['plugin_metademands_metademands_id'])
+            || !($meta->canCreate() || \GlpiPlugin\Metademands\Group::isUserHaveRight($meta->getID()))
+            || !\Session::haveAccessToEntity((int) $meta->fields['entities_id'], $meta->fields['is_recursive'])
+        ) {
+            return "";
+        }
+
+        $values = ['ldap_auth' => $param->fields['authldaps_id'],
+            'ldap_attribute' => $param->fields['ldap_attribute'],
+            'ldap_filter' => html_entity_decode($param->fields['ldap_filter'])];
 
         $values = json_encode($values);
         // Search values
@@ -923,11 +929,11 @@ class Ldapdropdown extends CommonDBTM
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                     }
-                    $result[$field['rank']]['content'] .= $label;
+                    $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                     }
-                    $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                    $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field), ENT_QUOTES, 'UTF-8');
                     if ($formatAsTable) {
                         $result[$field['rank']]['content'] .= "</td>";
                     }

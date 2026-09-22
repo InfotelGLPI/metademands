@@ -147,6 +147,37 @@ class Form extends CommonDBTM
     }
 
     /**
+     * Resolve the link of the ITIL object a filled-in form ended up creating, when the current
+     * session is allowed to see it.
+     *
+     * The itemtype/items_id couple is written by Metademand::createObjects() and designates a
+     * Ticket, a Problem or a Change of any entity. Resolving it with getFromDB() alone, as the
+     * three listings below used to, handed the object's link -- and therefore its title -- to
+     * every reader of the form list, across entities and whatever its ITIL rights. can()
+     * replays both the right and the entity boundary.
+     *
+     * @param array $form Row of glpi_plugin_metademands_forms
+     *
+     * @return string|null
+     */
+    private static function getLinkedItemUrl(array $form)
+    {
+        $itemtype = $form['itemtype'] ?? '';
+        $items_id = (int) ($form['items_id'] ?? 0);
+
+        if (!is_string($itemtype) || $itemtype === '' || $items_id <= 0) {
+            return null;
+        }
+
+        $item = getItemForItemtype($itemtype);
+        if (!$item instanceof CommonDBTM || !$item->can($items_id, READ)) {
+            return null;
+        }
+
+        return $item->getLink();
+    }
+
+    /**
      * @param $users_id
      * @param $plugin_metademands_metademands_id
      *
@@ -167,14 +198,7 @@ class Form extends CommonDBTM
             $meta = new Metademand();
             $meta->getFromDB($form['plugin_metademands_metademands_id']);
 
-            $url = null;
-            $itemtype = $form['itemtype'];
-            if ($itemtype != null && getItemForItemtype($itemtype)) {
-                $item = new $itemtype();
-                if ($item->getFromDB($form['items_id'])) {
-                    $url = $item->getLink();
-                }
-            }
+            $url = self::getLinkedItemUrl($form);
 
             $entries[] = [
                 'id'        => (int) $form['id'],
@@ -230,14 +254,7 @@ class Form extends CommonDBTM
             $meta = new Metademand();
             $meta->getFromDB($form_private['plugin_metademands_metademands_id']);
 
-            $url = null;
-            $itemtype = $form_private['itemtype'];
-            if ($itemtype != null && getItemForItemtype($itemtype)) {
-                $item = new $itemtype();
-                if ($item->getFromDB($form_private['items_id'])) {
-                    $url = $item->getLink();
-                }
-            }
+            $url = self::getLinkedItemUrl($form_private);
 
             $entries[] = [
                 'id'         => (int) $form_private['id'],
@@ -309,14 +326,7 @@ class Form extends CommonDBTM
             $meta = new Metademand();
             $meta->getFromDB($form['plugin_metademands_metademands_id']);
 
-            $url = null;
-            $itemtype = $form['itemtype'];
-            if ($itemtype != null && getItemForItemtype($itemtype)) {
-                $item = new $itemtype();
-                if ($item->getFromDB($form['items_id'])) {
-                    $url = $item->getLink();
-                }
-            }
+            $url = self::getLinkedItemUrl($form);
 
             $entries[] = [
                 'id'         => (int) $form['id'],

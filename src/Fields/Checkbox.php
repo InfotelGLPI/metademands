@@ -1128,14 +1128,14 @@ class Checkbox extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= $label;
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
@@ -1144,7 +1144,7 @@ class Checkbox extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                 }
-                $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td>";
                 }

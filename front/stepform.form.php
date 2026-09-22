@@ -27,9 +27,20 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Stepform;
 
-Session::checkRight('plugin_metademands', UPDATE);
+// plugin_metademands_cancelform is the right the plugin defines for exactly this action,
+// but the page used to open on plugin_metademands => UPDATE only: a profile holding the
+// dedicated right saw the button drawn by Stepform::showWaitingForm() and was refused
+// here, which pushed administrators to grant the whole plugin right instead. Both bits
+// are accepted now, and each branch below resolves the row: the table carries no
+// entities_id, so CommonDBTM::checkEntity() restricts nothing and the ownership has to
+// be replayed by Stepform::canCancelForm().
+Session::checkSeveralRightsOr([
+    'plugin_metademands' => UPDATE,
+    'plugin_metademands_cancelform' => READ,
+]);
 
 if (!isset($_GET["id"])) {
     $_GET["id"] = "";
@@ -40,16 +51,26 @@ if (!isset($_GET["withtemplate"])) {
 
 if (isset($_POST['delete_form_from_list'])) {
 
+    $stepforms_id = (int) $_POST['plugin_metademands_stepforms_id'];
     $step = new Stepform();
-    $step->check((int) $_POST['plugin_metademands_stepforms_id'], DELETE);
-    $step->deleteAfterCreate((int) $_POST['plugin_metademands_stepforms_id'], true);
+    if (Session::haveRight(Stepform::$rightname, DELETE)) {
+        $step->check($stepforms_id, DELETE);
+    } elseif (!Stepform::canCancelForm($stepforms_id)) {
+        throw new AccessDeniedHttpException();
+    }
+    $step->deleteAfterCreate($stepforms_id, true);
     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php");
 
 } elseif (isset($_POST['delete_form_from_metademands'])) {
 
+    $stepforms_id = (int) $_POST['plugin_metademands_stepforms_id'];
     $step = new Stepform();
-    $step->check((int) $_POST['plugin_metademands_stepforms_id'], DELETE);
-    $step->deleteAfterCreate((int) $_POST['plugin_metademands_stepforms_id'], false);
+    if (Session::haveRight(Stepform::$rightname, DELETE)) {
+        $step->check($stepforms_id, DELETE);
+    } elseif (!Stepform::canCancelForm($stepforms_id)) {
+        throw new AccessDeniedHttpException();
+    }
+    $step->deleteAfterCreate($stepforms_id, false);
 
     Html::back();
 

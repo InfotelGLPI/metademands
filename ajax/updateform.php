@@ -65,11 +65,16 @@ if (isset($_POST['save_model'])) {
             'items_id' => 0,
             'itemtype' => '',
             'date' => date('Y-m-d H:i:s'),
-            // Both flags come from the client. Normalize the model flag, and publish the
-            // new model only when the profile holds plugin_metademands_publicforms, the
-            // right the plugin defines for exactly that decision.
+            // Both flags come from the client. Normalize them and default a new model to
+            // private: plugin_metademands_publicforms is a ceiling, not a forcing -- the
+            // right authorizes publishing, it does not impose it. The wizard posts
+            // is_private=1 (src/Wizard.php) to mean "keep this model for me only", and
+            // ignoring that value used to expose the saved answers to every user of the
+            // entity through Form::showPublicFormsForMetademand() and ajax/loadform.php.
+            // Same contract as ajax/addform.php and ajax/visibility.php; publishing stays
+            // an explicit action of the owner through ajax/visibility.php.
             'is_model' => (int) ((bool) ($_POST['is_model'] ?? 0)),
-            'is_private' => Form::canPublish() ? 0 : 1];
+            'is_private' => Form::canPublish() ? (int) ((bool) ($_POST['is_private'] ?? 1)) : 1];
 
         if ($newid = $form->add($input)) {
             $KO = false;

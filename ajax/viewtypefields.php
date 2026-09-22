@@ -29,6 +29,7 @@
 
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -43,10 +44,17 @@ switch ($_POST['step']) {
     case 'order':
         $fields = new Field();
 
+        // plugin_metademands is a global right: without this the posted identifier would
+        // list back the field labels of a meta-demand of any other entity. The sibling
+        // endpoints handling the same object (ajax/reorderfields.php, ajax/addnewvalue.php)
+        // already replay that boundary.
+        $metademands_id = (int) $_POST["metademands_id"];
+        Metademand::assertCanAccessEntity($metademands_id);
+
         $params['rank'] = $_POST['rank'];
         $params['id'] = $_POST['fields_id'];
         $params['plugin_metademands_fields_id'] = $_POST['previous_fields_id'];
-        $params['plugin_metademands_metademands_id'] = $_POST["metademands_id"];
+        $params['plugin_metademands_metademands_id'] = $metademands_id;
         $fields->showOrderDropdown($params);
         break;
     case 'object':
@@ -85,7 +93,21 @@ switch ($_POST['step']) {
         break;
     case 'listfieldbytype':
         $fields = new Field();
-        $crit = ["type" => $_POST['value']];
+        // Field is a CommonDBChild of Metademand carrying no entities_id of its own, so
+        // checkEntity() restricts nothing here and the dropdown used to list the fields of
+        // every meta-demand of the instance, in a single request and without even having to
+        // guess an identifier. Narrow it to the meta-demands the session may see.
+        $metademand = new Metademand();
+        $visible_metademands = array_keys(
+            $metademand->find(getEntitiesRestrictCriteria(Metademand::getTable(), '', '', true)),
+        );
+        if ($visible_metademands === []) {
+            break;
+        }
+        $crit = [
+            "type" => $_POST['value'],
+            "plugin_metademands_metademands_id" => $visible_metademands,
+        ];
         $rand = Field::dropdown(['name' => "existing_field_id", "condition" => $crit]);
         $params = ['fields_id' => '__VALUE__'];
         Ajax::updateItemOnSelectEvent(

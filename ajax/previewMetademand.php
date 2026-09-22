@@ -50,6 +50,11 @@ if (!$metademand->getFromDB($metademands_id)
     throw new AccessDeniedHttpException();
 }
 
+// Straight out of the query string and forwarded as the $block argument of
+// showMetademands(), which compares it and injects it into its own lookups. Normalized
+// like $metademands_id above.
+$block = (int) ($_REQUEST['block'] ?? 0);
+
 $step = Metademand::STEP_SHOW;
 $current_ticket = 0;
 $meta_validated = 0;
@@ -65,5 +70,5 @@ Wizard::showMetademands(
     $preview,
     $options,
     $seeform,
-    $_REQUEST['block'],
+    $block,
 );

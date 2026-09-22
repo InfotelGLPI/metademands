@@ -2339,11 +2339,11 @@ class Dropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= $label;
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
@@ -2352,11 +2352,11 @@ class Dropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= $label;
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
@@ -2385,7 +2385,7 @@ class Dropdownmultiple extends CommonDBTM
                             if ($formatAsTable) {
                                 $dataItems .= "<td>";
                             }
-                            $dataItems .= $field["item"]::getFriendlyNameById($value);
+                            $dataItems .= htmlspecialchars((string) $field["item"]::getFriendlyNameById($value), ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $dataItems .= "</td>";
                             }
@@ -2394,7 +2394,7 @@ class Dropdownmultiple extends CommonDBTM
                             if ($formatAsTable) {
                                 $dataItems .= "<td>";
                             }
-                            $dataItems .= $item->fields["realname"];
+                            $dataItems .= htmlspecialchars((string) $item->fields["realname"], ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $dataItems .= "</td>";
                             }
@@ -2403,7 +2403,7 @@ class Dropdownmultiple extends CommonDBTM
                             if ($formatAsTable) {
                                 $dataItems .= "<td>";
                             }
-                            $dataItems .= $item->fields["firstname"];
+                            $dataItems .= htmlspecialchars((string) $item->fields["firstname"], ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $dataItems .= "</td>";
                             }
@@ -2412,7 +2412,7 @@ class Dropdownmultiple extends CommonDBTM
                             if ($formatAsTable) {
                                 $dataItems .= "<td>";
                             }
-                            $dataItems .= $item->fields["name"];
+                            $dataItems .= htmlspecialchars((string) $item->fields["name"], ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $dataItems .= "</td>";
                             }
@@ -2421,7 +2421,7 @@ class Dropdownmultiple extends CommonDBTM
                             if ($formatAsTable) {
                                 $dataItems .= "<td>";
                             }
-                            $dataItems .= $item->getDefaultEmail();
+                            $dataItems .= htmlspecialchars((string) $item->getDefaultEmail(), ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $dataItems .= "</td>";
                             }
@@ -2438,7 +2438,7 @@ class Dropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
             }
-            $result[$field['rank']]['content'] .= $label;
+            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
             }

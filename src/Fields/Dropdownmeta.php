@@ -2220,7 +2220,7 @@ class Dropdownmeta extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                 }
-                $result[$field['rank']]['content'] .= $label;
+                $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                 }
@@ -2236,7 +2236,7 @@ class Dropdownmeta extends CommonDBTM
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                         }
-                        $result[$field['rank']]['content'] .= $label;
+                        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                         }
@@ -2245,7 +2245,7 @@ class Dropdownmeta extends CommonDBTM
                         $itemtype = count($splitter) == 2 ? $splitter[0] : null;
                         $items_id = count($splitter) == 2 ? $splitter[1] : null;
                         if ($itemtype && $items_id) {
-                            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+                            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
                         }
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
@@ -2257,12 +2257,12 @@ class Dropdownmeta extends CommonDBTM
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                         }
-                        $result[$field['rank']]['content'] .= $label;
+                        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
                             $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
                         }
-                        $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+                        $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
                         }
@@ -2273,11 +2273,11 @@ class Dropdownmeta extends CommonDBTM
                             if ($formatAsTable) {
                                 $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
                             }
-                            $result[$field['rank']]['content'] .= $label;
+                            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
                             }
-                            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+                            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
                             if ($formatAsTable) {
                                 $result[$field['rank']]['content'] .= "</td>";
                             }

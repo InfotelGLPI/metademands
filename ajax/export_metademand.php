@@ -50,24 +50,20 @@ $old_execution = ini_set("max_execution_time", "120");
 $files = [];
 foreach ($export_ids as $id) {
     if ($_POST["action"] === "exportXML") {
-        $file = Export::exportAsXMLForMetademands($id);
+        $export = Export::exportAsXMLForMetademands($id);
     } else {
-        $file = Export::exportAsJSONForGLPIForm($id);
+        $export = Export::exportAsJSONForGLPIForm($id);
     }
 
-    $splitter = explode("/", $file, 2);
-
-    if ($splitter[0] == "_plugins") {
-        $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
-    }
-
-    if (isset($send) && file_exists($send)) {
-        $files[] = $send;
-    } else {
+    // Checked per iteration: the previous value used to survive a failed export and the
+    // archive picked the file of the item before it up again.
+    if ($export === [] || !file_exists($export['path'])) {
         ini_set("memory_limit", $old_memory);
         ini_set("max_execution_time", $old_execution);
         throw new BadRequestHttpException(__('Unauthorized access to this file'));
     }
+
+    $files[] = $export;
 }
 
 $zip = new ZipArchive();
@@ -78,13 +74,26 @@ $zip = new ZipArchive();
 $filename = '/metademands/export_' . date('Y-m-d') . '_' . bin2hex(random_bytes(8)) . '.zip';
 $fullZip = GLPI_PLUGIN_DOC_DIR . $filename;
 if ($zip->open($fullZip, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
-    foreach ($files as $file) {
-        $zip->addFile($file, basename($file));
+    // The working copies now carry a random suffix so that two exports cannot overwrite each
+    // other on disk; the archive entries keep the readable name instead, disambiguated here
+    // since two meta-demands of two entities may legitimately share the same label.
+    $used_names = [];
+    foreach ($files as $export) {
+        $entry = $export['filename'];
+        if (isset($used_names[$entry])) {
+            $used_names[$entry]++;
+            $entry = pathinfo($entry, PATHINFO_FILENAME)
+                . '_' . $used_names[$entry]
+                . '.' . pathinfo($entry, PATHINFO_EXTENSION);
+        } else {
+            $used_names[$entry] = 1;
+        }
+        $zip->addFile($export['path'], $entry);
     }
     $zip->close();
 
-    foreach ($files as $file) {
-        unlink($file);
+    foreach ($files as $export) {
+        unlink($export['path']);
     }
 
     try {
