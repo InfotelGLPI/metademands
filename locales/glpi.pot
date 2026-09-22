@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-21 12:42+0000\n"
+"POT-Creation-Date: 2026-09-21 14:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,7 +172,7 @@ msgstr ""
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:3081 src/Field.php:3166 src/Field.php:4619
+#: src/Field.php:3101 src/Field.php:3186 src/Field.php:4639
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr ""
@@ -294,7 +294,7 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:1864 src/Field.php:1156 src/Field.php:3148 src/Step.php:424
+#: src/Wizard.php:1864 src/Field.php:1156 src/Field.php:3168 src/Step.php:424
 #: src/Step.php:503 templates/field_search_form.html.twig:34
 #: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
@@ -308,7 +308,7 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: src/Fields/Radio.php:299 src/Fields/Checkbox.php:272
+#: src/Fields/Radio.php:299 src/Fields/Checkbox.php:276
 #: src/Fields/Dropdown.php:567 src/Fields/Dropdownmeta.php:1199
 msgid "Block display"
 msgstr ""
@@ -408,7 +408,7 @@ msgid "Choose a template"
 msgstr ""
 
 #: src/Fields/Radio.php:298 src/Fields/Yesno.php:202
-#: src/Fields/Checkbox.php:271 src/Fields/Dropdown.php:542
+#: src/Fields/Checkbox.php:275 src/Fields/Dropdown.php:542
 #: src/Fields/Dropdown.php:566 src/Fields/Dropdownmeta.php:1151
 #: src/Fields/Dropdownmeta.php:1198 src/Fields/Dropdownmultiple.php:622
 msgid "Classic display"
@@ -473,7 +473,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: front/condition.form.php:148
+#: front/condition.form.php:153
 msgid "Condition"
 msgstr ""
 
@@ -753,7 +753,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:703 src/Field.php:3813
+#: src/Fields/Dropdownmeta.php:703 src/Field.php:3833
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -1544,11 +1544,11 @@ msgstr ""
 msgid "Missing table"
 msgstr ""
 
-#: src/Field.php:3275
+#: src/Field.php:3295
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3274
+#: src/Field.php:3294
 msgid "Modify icon"
 msgstr ""
 
@@ -1604,13 +1604,13 @@ msgstr ""
 #: src/Fields/Dropdownobject.php:1053 src/Fields/Text.php:340
 #: src/Fields/Radio.php:554 src/Fields/Yesno.php:461
 #: src/Fields/Textarea.php:329 src/Fields/Url.php:302
-#: src/Fields/Checkbox.php:554 src/Fields/Dropdown.php:881
+#: src/Fields/Checkbox.php:558 src/Fields/Dropdown.php:881
 #: src/Fields/Dropdownmeta.php:1583 src/Fields/Basket.php:821
 #: src/Fields/Tel.php:342 src/Fields/Email.php:336
 #: src/Fields/Dropdownmultiple.php:1119 src/Fields/Dropdownmultiple.php:1292
 #: src/Wizard.php:1119 src/Wizard.php:1353 src/Wizard.php:1516
 #: src/Wizard.php:1525 src/Wizard.php:1565 src/Wizard.php:1571
-#: src/FieldOption.php:2140 templates/wizard/form_nav_buttons.html.twig:52
+#: src/FieldOption.php:2148 templates/wizard/form_nav_buttons.html.twig:52
 #: templates/wizard/form_nav_buttons.html.twig:55
 msgid "Next"
 msgstr ""
@@ -1732,7 +1732,7 @@ msgstr ""
 #: src/Fields/Dropdownobject.php:868 src/Fields/Dropdownobject.php:879
 #: src/Fields/Ldapdropdown.php:340 src/Fields/Ldapdropdown.php:376
 #: src/Fields/Radio.php:349 src/Fields/Radio.php:362
-#: src/Fields/Checkbox.php:320 src/Fields/Checkbox.php:333
+#: src/Fields/Checkbox.php:324 src/Fields/Checkbox.php:337
 #: src/Fields/Dropdown.php:655 src/Fields/Dropdown.php:692
 #: src/Fields/Dropdownmeta.php:1329 src/Fields/Dropdownmeta.php:1339
 #: src/Fields/Dropdownmeta.php:1360 src/Fields/Basket.php:549
@@ -1769,7 +1769,7 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: src/Field.php:823 src/Field.php:834 src/Field.php:3083
+#: src/Field.php:823 src/Field.php:834 src/Field.php:3103
 #: templates/field_search_form.html.twig:42 templates/field_list.html.twig:136
 #: templates/ajax/reload_item.html.twig:36
 msgid "Object"
@@ -1852,7 +1852,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3157
+#: src/Field.php:3177
 msgid "Order"
 msgstr ""
 
@@ -2005,7 +2005,7 @@ msgstr ""
 msgid "Reference"
 msgstr ""
 
-#: front/basketobject.form.php:72 src/Basketobject.php:123
+#: front/basketobject.form.php:75 src/Basketobject.php:123
 msgid "Reference catalog"
 msgstr ""
 
@@ -2131,11 +2131,11 @@ msgstr ""
 #: src/Fields/Dropdownobject.php:1052 src/Fields/Text.php:338
 #: src/Fields/Radio.php:552 src/Fields/Yesno.php:459
 #: src/Fields/Textarea.php:327 src/Fields/Url.php:300
-#: src/Fields/Checkbox.php:552 src/Fields/Dropdown.php:880
+#: src/Fields/Checkbox.php:556 src/Fields/Dropdown.php:880
 #: src/Fields/Dropdownmeta.php:1581 src/Fields/Basket.php:820
 #: src/Fields/Basket.php:1455 src/Fields/Tel.php:340 src/Fields/Email.php:334
 #: src/Fields/Dropdownmultiple.php:1117 src/Fields/Dropdownmultiple.php:1290
-#: src/Wizard.php:1348 src/Wizard.php:1556 src/FieldOption.php:2138
+#: src/Wizard.php:1348 src/Wizard.php:1556 src/FieldOption.php:2146
 #: src/Basketline.php:157
 msgctxt "button"
 msgid "Save & Post"
@@ -2429,7 +2429,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: src/Fields/Textarea.php:917
+#: src/Fields/Textarea.php:924
 msgid "The description field is mandatory"
 msgstr ""
 
@@ -2883,7 +2883,7 @@ msgstr ""
 
 #: src/Fields/Dropdownobject.php:760 src/Fields/Ldapdropdown.php:312
 #: src/Fields/Radio.php:335 src/Fields/Yesno.php:250
-#: src/Fields/Checkbox.php:308 src/Fields/Dropdown.php:627
+#: src/Fields/Checkbox.php:312 src/Fields/Dropdown.php:627
 #: src/Fields/Dropdownmeta.php:1261 src/Fields/Basket.php:548
 #: src/Fields/Dropdownmultiple.php:719 src/Condition.php:590
 #: templates/field_option_options.html.twig:94
@@ -2984,7 +2984,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:3299 src/Field.php:3326 src/Field.php:3342 src/Field.php:3365
+#: src/Field.php:3319 src/Field.php:3346 src/Field.php:3362 src/Field.php:3385
 msgid "You cannot do this for this field"
 msgstr ""
 
