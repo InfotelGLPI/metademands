@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 13:55+0000\n"
+"POT-Creation-Date: 2026-09-22 13:57+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -91,7 +91,7 @@ msgstr "Activer la validation du responsable"
 msgid "Active"
 msgstr "Active"
 
-#: src/MetademandTask.php:290 src/Task.php:648
+#: src/Task.php:648 src/MetademandTask.php:290
 msgid "Active entity"
 msgstr "Entité active"
 
@@ -103,13 +103,13 @@ msgstr "Acteurs"
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/field_existing_form.html.twig:80
+#: templates/field_existing_form.html.twig:80 templates/group.html.twig:63
+#: templates/field_parameter_form.html.twig:49
+#: templates/interticketfollowup_form.html.twig:89
+#: templates/condition_for_metademand.html.twig:128
+#: templates/tickettask_form.html.twig:64
 #: templates/basketobject_form.html.twig:80 templates/step_form.html.twig:86
 #: templates/field_option_form.html.twig:46
-#: templates/field_parameter_form.html.twig:49
-#: templates/condition_for_metademand.html.twig:128
-#: templates/interticketfollowup_form.html.twig:89
-#: templates/tickettask_form.html.twig:64 templates/group.html.twig:63
 msgctxt "button"
 msgid "Add"
 msgstr "Ajouter"
@@ -239,8 +239,9 @@ msgstr "Etes-vous sur ? Les valeurs personnalisées seront supprimées !"
 msgid "Are you sure you want to delete this field ?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce champ ?"
 
+#: templates/tickettask_form.html.twig:70
 #: templates/basketobject_form.html.twig:88 templates/step_form.html.twig:94
-#: templates/tickettask_form.html.twig:70 templates/field_form.html.twig:145
+#: templates/field_form.html.twig:145
 msgid "Are you sure you want to delete this item?"
 msgstr "Êtes-vous sûr de vouloir supprimer cet objet ?"
 
@@ -252,11 +253,11 @@ msgstr "Date d'arrivée"
 msgid "Assign the ticket to these technicians groups"
 msgstr "Attribuer le ticket à ces groupes de techniciens"
 
-#: templates/tickettask_form_section.html.twig:122
-#: templates/tickettask_form_section.html.twig:131
+#: templates/forms/ticket_validation.html.twig:49
 #: templates/forms/ticket_followup.html.twig:61
 #: templates/forms/ticket_followup.html.twig:127
-#: templates/forms/ticket_validation.html.twig:49
+#: templates/tickettask_form_section.html.twig:122
+#: templates/tickettask_form_section.html.twig:131
 #: templates/task_list.html.twig:87
 msgid "Assigned to"
 msgstr "Assigné à"
@@ -305,22 +306,22 @@ msgstr "Lier à la valeur de cette case à cocher"
 msgid "Blank Template"
 msgstr "Gabarit vide"
 
-#: src/Wizard.php:1869 src/Field.php:1156 src/Field.php:3168 src/Step.php:425
-#: src/Step.php:504 templates/field_search_form.html.twig:34
-#: templates/field_existing_form.html.twig:54 templates/step_form.html.twig:40
+#: src/Field.php:1156 src/Field.php:3168 src/Wizard.php:1869 src/Step.php:425
+#: src/Step.php:504 templates/field_existing_form.html.twig:54
+#: templates/field_search_form.html.twig:34 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
 msgid "Block"
 msgstr "Bloc"
 
-#: src/TicketTask.php:225 src/FieldOption.php:1572 src/MailTask.php:171
-#: src/Step.php:394 src/Step.php:634 src/Step.php:648 src/Task.php:708
-#: src/Task.php:1109
+#: src/Task.php:708 src/Task.php:1109 src/TicketTask.php:225
+#: src/FieldOption.php:1572 src/MailTask.php:171 src/Step.php:394
+#: src/Step.php:634 src/Step.php:648
 #, php-format
 msgid "Block %s"
 msgstr "Bloc %s"
 
-#: src/Fields/Radio.php:299 src/Fields/Checkbox.php:276
-#: src/Fields/Dropdown.php:567 src/Fields/Dropdownmeta.php:1199
+#: src/Fields/Radio.php:299 src/Fields/Dropdownmeta.php:1199
+#: src/Fields/Checkbox.php:276 src/Fields/Dropdown.php:567
 msgid "Block display"
 msgstr "Affichage en bloc"
 
@@ -338,7 +339,7 @@ msgid "Block title"
 msgstr "Titre de bloc"
 
 #: templates/tickettask_form_section.html.twig:43
-#: templates/task_list.html.twig:89 templates/mailtask_form.html.twig:42
+#: templates/mailtask_form.html.twig:42 templates/task_list.html.twig:89
 msgid "Block to use"
 msgstr "Bloc à utiliser"
 
@@ -374,10 +375,11 @@ msgstr ""
 "Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir "
 "continuer ?"
 
-#: templates/tickettask_form_section.html.twig:69
 #: templates/forms/ticket_validation.html.twig:48
-#: templates/metademand.html.twig:164 templates/ajax/type_object.html.twig:46
-#: templates/ajax/type_object.html.twig:48 templates/task_list.html.twig:86
+#: templates/tickettask_form_section.html.twig:69
+#: templates/task_list.html.twig:86 templates/metademand.html.twig:164
+#: templates/ajax/type_object.html.twig:46
+#: templates/ajax/type_object.html.twig:48
 msgid "Category"
 msgstr "Catégorie"
 
@@ -421,21 +423,22 @@ msgstr "Tickets enfants récupèrent les informations du ticket parent"
 msgid "Choose a template"
 msgstr "Choisissez un gabarit"
 
-#: src/Fields/Radio.php:298 src/Fields/Yesno.php:202
-#: src/Fields/Checkbox.php:275 src/Fields/Dropdown.php:542
-#: src/Fields/Dropdown.php:566 src/Fields/Dropdownmeta.php:1151
-#: src/Fields/Dropdownmeta.php:1198 src/Fields/Dropdownmultiple.php:622
+#: src/Fields/Radio.php:298 src/Fields/Dropdownmeta.php:1151
+#: src/Fields/Dropdownmeta.php:1198 src/Fields/Yesno.php:202
+#: src/Fields/Checkbox.php:275 src/Fields/Dropdownmultiple.php:622
+#: src/Fields/Dropdown.php:542 src/Fields/Dropdown.php:566
 msgid "Classic display"
 msgstr "Affichage classique"
 
-#: templates/forms/private_models_list.html.twig:50
 #: templates/forms/drafts_list.html.twig:66
+#: templates/forms/private_models_list.html.twig:50
 msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
 
-#: src/Fields/Signature.php:85 templates/metademand.html.twig:173
+#: src/Fields/Signature.php:85
 #: templates/fields/field_customvalue_icon.html.twig:42
+#: templates/metademand.html.twig:173
 msgid "Clear"
 msgstr "Supprimer"
 
@@ -449,9 +452,9 @@ msgid "Click here for more informations"
 msgstr "Cliquez ici pour plus d'informations"
 
 #: templates/wizard/form_confirm_modal.html.twig:39
-#: templates/task_form.html.twig:36 templates/ticketfield_form.html.twig:36
 #: templates/forms/stepform_waiting_warning.html.twig:38
-#: templates/item_translations.html.twig:125
+#: templates/item_translations.html.twig:125 templates/task_form.html.twig:36
+#: templates/ticketfield_form.html.twig:36
 #: templates/item_translation_row.html.twig:97
 #: templates/item_translation_row.html.twig:135
 #: templates/tickettask_form.html.twig:39
@@ -472,10 +475,10 @@ msgid "Coming"
 msgstr "A venir"
 
 #: templates/forms/freetablefield_add_value.html.twig:58
-#: templates/fields/freetable_fields.html.twig:69
-#: templates/fields/field_customvalue_list.html.twig:55
-#: templates/fields/field_customvalue_add.html.twig:42
 #: templates/interticketfollowup_form.html.twig:46
+#: templates/fields/freetable_fields.html.twig:69
+#: templates/fields/field_customvalue_add.html.twig:42
+#: templates/fields/field_customvalue_list.html.twig:55
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -567,8 +570,8 @@ msgstr "Créer les tâches"
 msgid "Create tasks (not child tickets)"
 msgstr "Créer des tâches (pas des tickets enfants)"
 
-#: templates/forms/public_models_tab.html.twig:37
 #: templates/forms/public_models_list.html.twig:41
+#: templates/forms/public_models_tab.html.twig:37
 msgid "Created by"
 msgstr "Créé par"
 
@@ -576,9 +579,9 @@ msgstr "Créé par"
 msgid "Created on"
 msgstr "Créé le"
 
+#: templates/forms/user_forms_tab.html.twig:36
 #: templates/forms/public_models_tab.html.twig:36
 #: templates/forms/itilobject_forms_tab.html.twig:48
-#: templates/forms/user_forms_tab.html.twig:36
 #: templates/forms/metademand_progression.html.twig:47
 msgid "Creation date"
 msgstr "Date de création"
@@ -599,10 +602,10 @@ msgid "Data imported successfully"
 msgstr "Données importées avec succès"
 
 #: src/Freetablefield.php:225 src/Fields/Date.php:53
-#: templates/forms/stepform_list_from_metademand.html.twig:46
-#: templates/forms/public_models_list.html.twig:40
 #: templates/forms/user_forms_list.html.twig:35
+#: templates/forms/public_models_list.html.twig:40
 #: templates/forms/private_models_list.html.twig:70
+#: templates/forms/stepform_list_from_metademand.html.twig:46
 #: templates/interticketfollowup_form.html.twig:63
 msgid "Date"
 msgid_plural "Dates"
@@ -651,8 +654,8 @@ msgid "Default (%s)"
 msgstr "Defaut (%s)"
 
 #: src/Fields/Yesno.php:167 src/Fields/Dropdownmultiple.php:532
-#: templates/fields/field_customvalue_list.html.twig:64
 #: templates/fields/field_customvalue_add.html.twig:50
+#: templates/fields/field_customvalue_list.html.twig:64
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] "Valeur par défaut"
@@ -690,8 +693,8 @@ msgstr "Définir la date par défaut"
 msgid "Define visibility"
 msgstr "Définir la visibilité"
 
-#: templates/forms/drafts_rows.html.twig:44
 #: templates/forms/drafts_list.html.twig:105
+#: templates/forms/drafts_rows.html.twig:44
 msgctxt "button"
 msgid "Delete draft"
 msgstr "Supprimer le brouillon"
@@ -703,11 +706,12 @@ msgctxt "button"
 msgid "Delete form"
 msgstr "Supprimer le formulaire"
 
-#: templates/list_of_templates.html.twig:87
-#: templates/basketobject_form.html.twig:90 templates/step_form.html.twig:96
 #: templates/interticketfollowup_form.html.twig:103
+#: templates/list_of_templates.html.twig:87
 #: templates/item_translation_row.html.twig:130
-#: templates/tickettask_form.html.twig:72 templates/field_form.html.twig:147
+#: templates/tickettask_form.html.twig:72
+#: templates/basketobject_form.html.twig:90 templates/step_form.html.twig:96
+#: templates/field_form.html.twig:147
 msgctxt "button"
 msgid "Delete permanently"
 msgstr "Supprimer définitivement"
@@ -751,15 +755,16 @@ msgstr "Suivi de la demande"
 msgid "Departure date"
 msgstr "Date de départ"
 
-#: templates/basketobject_form.html.twig:48
 #: templates/tickettask_form_section.html.twig:172
-#: templates/resource_table.html.twig:82 templates/mailtask_form.html.twig:72
+#: templates/mailtask_form.html.twig:72 templates/resource_table.html.twig:82
+#: templates/basketobject_form.html.twig:48
 msgid "Description"
 msgstr "Description"
 
-#: src/Basketobject.php:142 src/Basketobject.php:266 src/Fields/Basket.php:162
-#: src/Fields/Basket.php:1589 src/Fields/Basket.php:1861
-#: src/Fields/Basket.php:2225 templates/basketobject_form.html.twig:39
+#: src/Fields/Basket.php:162 src/Fields/Basket.php:1589
+#: src/Fields/Basket.php:1861 src/Fields/Basket.php:2225
+#: src/Basketobject.php:142 src/Basketobject.php:266
+#: templates/basketobject_form.html.twig:39
 msgid "Designation"
 msgstr "Désignation"
 
@@ -771,7 +776,7 @@ msgstr "Entité de destination"
 msgid "Destructive queries"
 msgstr "Requêtes destructives"
 
-#: src/Fields/Dropdownmeta.php:703 src/Field.php:3833
+#: src/Field.php:3833 src/Fields/Dropdownmeta.php:703
 msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
@@ -785,8 +790,8 @@ msgstr ""
 msgid "Display field after"
 msgstr "Afficher le champ après"
 
-#: templates/field_list.html.twig:140
 #: templates/field_parameter_global.html.twig:54
+#: templates/field_list.html.twig:140
 msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
@@ -812,13 +817,13 @@ msgstr "Afficher ce bloc caché dans le même bloc"
 msgid "Display this hidden field"
 msgstr "Afficher ce champ caché"
 
-#: templates/fields/field_parameter_dropdownmeta.html.twig:41
-#: templates/fields/field_parameter_dropdownmeta.html.twig:60
 #: templates/fields/field_parameter_yesno.html.twig:34
 #: templates/fields/field_parameter_dropdown.html.twig:48
 #: templates/fields/field_parameter_dropdown.html.twig:59
-#: templates/fields/field_parameter_dropdownmultiple.html.twig:34
 #: templates/fields/field_parameter_checkbox_radio.html.twig:34
+#: templates/fields/field_parameter_dropdownmeta.html.twig:41
+#: templates/fields/field_parameter_dropdownmeta.html.twig:60
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:34
 msgid "Display type of the field"
 msgstr "Type d'affichage du champ"
 
@@ -835,7 +840,7 @@ msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr "Voulez-vous les corriger ?"
 
-#: src/Tools.php:403 src/FieldCustomvalue.php:377
+#: src/FieldCustomvalue.php:377 src/Tools.php:403
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -921,8 +926,8 @@ msgstr "Editer la traduction"
 msgid "Email sent"
 msgstr "Email envoyé"
 
-#: ajax/show_check_value.php:43 src/Condition.php:255 src/Condition.php:263
-#: src/Condition.php:274 src/Condition.php:286 src/Condition.php:327
+#: src/Condition.php:255 src/Condition.php:263 src/Condition.php:274
+#: src/Condition.php:286 src/Condition.php:327 ajax/show_check_value.php:43
 msgid "Empty"
 msgstr "Vide"
 
@@ -951,12 +956,11 @@ msgstr "Activer la transformation d'un ticket en méta-demande"
 msgid "Enter translation"
 msgstr "Entrer la traduction"
 
-#: templates/list_of_templates.html.twig:62
-#: templates/available_tags.html.twig:64
-#: templates/tickettask_form_section.html.twig:66
 #: templates/forms/metademand_resource_list.html.twig:55
 #: templates/forms/ticket_followup.html.twig:58
-#: templates/task_list.html.twig:84
+#: templates/list_of_templates.html.twig:62
+#: templates/tickettask_form_section.html.twig:66
+#: templates/task_list.html.twig:84 templates/available_tags.html.twig:64
 msgid "Entity"
 msgstr "Entité"
 
@@ -1025,11 +1029,12 @@ msgid "Father's field"
 msgstr "Champ père"
 
 #: templates/field_existing_form.html.twig:39
-#: templates/condition_list.html.twig:61 templates/condition_form.html.twig:40
+#: templates/condition_list.html.twig:61
+#: templates/forms/field_option_parent_field_row.html.twig:36
 #: templates/tools_diagnostic.html.twig:55
 #: templates/tools_diagnostic.html.twig:90
 #: templates/tools_diagnostic.html.twig:126
-#: templates/forms/field_option_parent_field_row.html.twig:36
+#: templates/condition_form.html.twig:40
 #: templates/condition_for_metademand.html.twig:69
 #: templates/item_translation_row.html.twig:104
 msgid "Field"
@@ -1134,11 +1139,10 @@ msgstr "Total général (HT)"
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
-#: templates/step_form.html.twig:50
-#: templates/tickettask_form_section.html.twig:93
+#: templates/group.html.twig:41 templates/tickettask_form_section.html.twig:93
 #: templates/tickettask_form_section.html.twig:112
 #: templates/tickettask_form_section.html.twig:131
-#: templates/mailtask_form.html.twig:57 templates/group.html.twig:41
+#: templates/mailtask_form.html.twig:57 templates/step_form.html.twig:50
 msgid "Group"
 msgstr "Groupe"
 
@@ -1183,20 +1187,20 @@ msgstr "Cacher le lien dans le menu"
 msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr "Masquer les valeurs \"Non\" et les valeurs vides dans les tickets"
 
-#: templates/metademand.html.twig:198
 #: templates/field_parameter_global.html.twig:40
+#: templates/metademand.html.twig:198
 msgid "Hide title"
 msgstr "Cacher le titre"
 
-#: templates/field_option_options.html.twig:88
 #: templates/condition_list.html.twig:59
 #: templates/forms/stepform_list_from_metademand.html.twig:42
-#: templates/field_list.html.twig:134 templates/task_list.html.twig:82
+#: templates/field_option_options.html.twig:88 templates/task_list.html.twig:82
+#: templates/field_list.html.twig:134
 msgid "ID"
 msgstr "ID"
 
-#: templates/metademand.html.twig:172
 #: templates/field_parameter_global.html.twig:46
+#: templates/metademand.html.twig:172
 msgid "Icon"
 msgstr "Icône"
 
@@ -1232,8 +1236,8 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: src/Fields/Text.php:193 src/Fields/Textarea.php:194 src/Fields/Url.php:154
-#: src/Fields/Tel.php:195 src/Fields/Email.php:188
+#: src/Fields/Tel.php:195 src/Fields/Text.php:193 src/Fields/Textarea.php:194
+#: src/Fields/Email.php:188 src/Fields/Url.php:154
 msgid "If field empty"
 msgstr "Si le champ est vide"
 
@@ -1326,7 +1330,7 @@ msgstr "Information"
 msgid "Informations"
 msgstr "Informations"
 
-#: src/Fields/Dropdownobject.php:652 src/FieldParameter.php:805
+#: src/FieldParameter.php:805 src/Fields/Dropdownobject.php:652
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:51
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
@@ -1363,8 +1367,8 @@ msgstr "Expression régulière invalide"
 msgid "LDAP directory"
 msgstr "Annuair LDAP"
 
-#: templates/available_tags.html.twig:41 templates/field_list.html.twig:135
-#: templates/field_form.html.twig:52
+#: templates/field_list.html.twig:135 templates/field_form.html.twig:52
+#: templates/available_tags.html.twig:41
 msgid "Label"
 msgstr "Label"
 
@@ -1412,9 +1416,9 @@ msgstr "Lier ce champ à un champ du plugin \"fields\""
 
 #: src/Fields/Dropdownobject.php:592 src/Fields/Dropdownobject.php:680
 #: src/Fields/Dropdownobject.php:685
-#: templates/fields/field_parameter_dropdownmeta.html.twig:45
-#: templates/fields/field_parameter_text.html.twig:34
 #: templates/fields/field_parameter_dropdown.html.twig:41
+#: templates/fields/field_parameter_text.html.twig:34
+#: templates/fields/field_parameter_dropdownmeta.html.twig:45
 #: templates/fields/field_parameter_tel.html.twig:34
 #: templates/fields/field_parameter_email.html.twig:34
 #: templates/ajax/link_to_user_field.html.twig:34
@@ -1456,20 +1460,20 @@ msgstr "Liste des tickets / tâches qui vont être créé après la validation"
 msgid "List of visibilities"
 msgstr "Liste des visibilités"
 
-#: templates/forms/drafts_rows.html.twig:36
 #: templates/forms/drafts_list.html.twig:87
+#: templates/forms/drafts_rows.html.twig:36
 msgctxt "button"
 msgid "Load draft"
 msgstr "Charger le brouillon"
 
+#: templates/forms/user_forms_tab.html.twig:49
 #: templates/forms/private_models_rows.html.twig:37
+#: templates/forms/user_forms_list.html.twig:48
+#: templates/forms/public_models_list.html.twig:53
+#: templates/forms/private_models_list.html.twig:101
 #: templates/forms/public_models_tab.html.twig:38
 #: templates/forms/public_models_tab.html.twig:51
-#: templates/forms/public_models_list.html.twig:53
 #: templates/forms/itilobject_forms_tab.html.twig:61
-#: templates/forms/user_forms_tab.html.twig:49
-#: templates/forms/user_forms_list.html.twig:48
-#: templates/forms/private_models_list.html.twig:101
 msgctxt "button"
 msgid "Load form"
 msgstr "Charger le formulaire"
@@ -1498,8 +1502,8 @@ msgid "Make this field mandatory"
 msgstr "Rendre ce champ obligatoire"
 
 #: templates/forms/freetablefield_add_value.html.twig:63
-#: templates/field_list.html.twig:137
 #: templates/fields/freetable_fields.html.twig:92
+#: templates/field_list.html.twig:137
 msgid "Mandatory"
 msgstr "Obligatoire"
 
@@ -1521,8 +1525,8 @@ msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 "Message affiché avant l'envoi au superviseur ou à l'utilisateur suivant"
 
-#: setup.php:288 src/Menu.php:47 src/Metademand.php:126 src/Profile.php:141
-#: src/Config.php:72 templates/tools_diagnostic.html.twig:56
+#: setup.php:288 src/Metademand.php:126 src/Profile.php:141 src/Config.php:72
+#: src/Menu.php:47 templates/tools_diagnostic.html.twig:56
 #: templates/tools_diagnostic.html.twig:91
 #: templates/tools_diagnostic.html.twig:127
 msgid "Meta-Demand"
@@ -1557,8 +1561,8 @@ msgstr "Statut de la métademande"
 
 #: src/Metademand.php:5313 src/MetademandValidation.php:77
 #: src/MetademandValidation.php:561 src/MetademandValidation.php:575
-#: templates/forms/metademandvalidation_view.html.twig:33
 #: templates/forms/ticket_validation.html.twig:33
+#: templates/forms/metademandvalidation_view.html.twig:33
 msgid "Metademand validation"
 msgstr "Validation de la métademande"
 
@@ -1575,11 +1579,11 @@ msgstr "Liste des métademandes"
 msgid "Metademands statuses updated"
 msgstr "Statuts des métademandes mis à jour"
 
-#: hook.php:1028 src/Metademand.php:6328
+#: src/Metademand.php:6328 hook.php:1028
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: hook.php:1045 src/Metademand.php:6410
+#: src/Metademand.php:6410 hook.php:1045
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
@@ -1615,19 +1619,18 @@ msgstr "Mes métademandes"
 msgid "My values"
 msgstr "Valeurs personnalisées"
 
-#: templates/list_of_templates.html.twig:60
-#: templates/ticketfield_list.html.twig:55
 #: templates/forms/ticketfield_form_row.html.twig:38
-#: templates/forms/public_models_tab.html.twig:35
-#: templates/forms/public_models_list.html.twig:39
-#: templates/forms/metademand_resource_list.html.twig:54
-#: templates/forms/itilobject_forms_tab.html.twig:47
-#: templates/forms/user_forms_tab.html.twig:35
-#: templates/forms/user_forms_list.html.twig:34
-#: templates/forms/private_models_list.html.twig:69
 #: templates/forms/ticket_validation.html.twig:46
-#: templates/metademand.html.twig:68 templates/task_list.html.twig:83
-#: templates/group.html.twig:90
+#: templates/forms/user_forms_tab.html.twig:35
+#: templates/forms/metademand_resource_list.html.twig:54
+#: templates/forms/user_forms_list.html.twig:34
+#: templates/forms/public_models_list.html.twig:39
+#: templates/forms/private_models_list.html.twig:69
+#: templates/forms/public_models_tab.html.twig:35
+#: templates/forms/itilobject_forms_tab.html.twig:47
+#: templates/group.html.twig:90 templates/list_of_templates.html.twig:60
+#: templates/task_list.html.twig:83 templates/metademand.html.twig:68
+#: templates/ticketfield_list.html.twig:55
 msgid "Name"
 msgstr "Nom"
 
@@ -1635,7 +1638,7 @@ msgstr "Nom"
 msgid "Need validation to create subticket"
 msgstr "Nécessite la validation pour la création des tickets enfants"
 
-#: front/draft.php:44 front/draftcreation.php:64
+#: front/draftcreation.php:64 front/draft.php:44
 #: templates/forms/drafts_list.html.twig:45
 msgid "New draft"
 msgstr "Nouveau brouillon"
@@ -1648,16 +1651,16 @@ msgstr "Nouveau suivi inter tickets"
 msgid "New model"
 msgstr "Nouveau modèle"
 
-#: src/Fields/Dropdownobject.php:1053 src/Fields/Text.php:340
-#: src/Fields/Radio.php:554 src/Fields/Yesno.php:461
-#: src/Fields/Textarea.php:329 src/Fields/Url.php:302
-#: src/Fields/Checkbox.php:558 src/Fields/Dropdown.php:881
-#: src/Fields/Dropdownmeta.php:1583 src/Fields/Basket.php:821
-#: src/Fields/Tel.php:342 src/Fields/Email.php:336
-#: src/Fields/Dropdownmultiple.php:1119 src/Fields/Dropdownmultiple.php:1292
-#: src/Wizard.php:1124 src/Wizard.php:1358 src/Wizard.php:1521
-#: src/Wizard.php:1530 src/Wizard.php:1570 src/Wizard.php:1576
-#: src/FieldOption.php:2148 templates/wizard/form_nav_buttons.html.twig:52
+#: src/FieldOption.php:2148 src/Wizard.php:1124 src/Wizard.php:1358
+#: src/Wizard.php:1521 src/Wizard.php:1530 src/Wizard.php:1570
+#: src/Wizard.php:1576 src/Fields/Tel.php:342 src/Fields/Text.php:340
+#: src/Fields/Radio.php:554 src/Fields/Textarea.php:329
+#: src/Fields/Dropdownmeta.php:1583 src/Fields/Yesno.php:461
+#: src/Fields/Checkbox.php:558 src/Fields/Dropdownobject.php:1053
+#: src/Fields/Email.php:336 src/Fields/Dropdownmultiple.php:1119
+#: src/Fields/Dropdownmultiple.php:1292 src/Fields/Dropdown.php:881
+#: src/Fields/Basket.php:821 src/Fields/Url.php:302
+#: templates/wizard/form_nav_buttons.html.twig:52
 #: templates/wizard/form_nav_buttons.html.twig:55
 msgid "Next"
 msgstr "Suivant"
@@ -1693,8 +1696,8 @@ msgstr "Pas de conditions trouvées"
 msgid "No default value"
 msgstr "Pas de valeur par défaut"
 
-#: front/draft.form.php:77 templates/forms/drafts_rows.html.twig:51
-#: templates/forms/drafts_list.html.twig:112
+#: front/draft.form.php:77 templates/forms/drafts_list.html.twig:112
+#: templates/forms/drafts_rows.html.twig:51
 msgid "No draft available for this form"
 msgstr "Pas de brouillons disponibles pour ce formulaire"
 
@@ -1743,17 +1746,16 @@ msgstr "Aucun problème avec les rangs trouvé"
 msgid "No query could be suggested for this difference."
 msgstr "Aucune explication ne peut être fournie pour cette différence."
 
-#: templates/list_of_templates.html.twig:96
 #: templates/wizard/no_results.html.twig:32
-#: templates/field_option_options.html.twig:164
-#: templates/ticketfield_list.html.twig:32
-#: templates/forms/stepform_list_from_metademand.html.twig:69
 #: templates/forms/user_forms_tab.html.twig:83
-#: templates/forms/draft_show.html.twig:52
 #: templates/forms/stepform_waiting_form_readonly.html.twig:91
 #: templates/forms/stepform_waiting_form.html.twig:84
-#: templates/field_list.html.twig:117 templates/wizard_metademands.html.twig:61
-#: templates/task_list.html.twig:186
+#: templates/forms/draft_show.html.twig:52
+#: templates/forms/stepform_list_from_metademand.html.twig:69
+#: templates/field_option_options.html.twig:164
+#: templates/list_of_templates.html.twig:96
+#: templates/wizard_metademands.html.twig:61 templates/task_list.html.twig:186
+#: templates/field_list.html.twig:117 templates/ticketfield_list.html.twig:32
 msgid "No results found"
 msgstr "Pas de résultats trouvés"
 
@@ -1769,21 +1771,21 @@ msgstr "Pas de visibilité définie"
 msgid "Not available with Rich text option"
 msgstr "Non disponible avec l'option Texte Riche"
 
-#: ajax/show_check_value.php:46 src/Condition.php:256 src/Condition.php:264
-#: src/Condition.php:275 src/Condition.php:287 src/Condition.php:330
+#: src/Condition.php:256 src/Condition.php:264 src/Condition.php:275
+#: src/Condition.php:287 src/Condition.php:330 ajax/show_check_value.php:46
 msgid "Not empty"
 msgstr "Non vide"
 
-#: src/Fields/Dropdownobject.php:816 src/Fields/Dropdownobject.php:819
-#: src/Fields/Dropdownobject.php:829 src/Fields/Dropdownobject.php:852
-#: src/Fields/Dropdownobject.php:868 src/Fields/Dropdownobject.php:879
-#: src/Fields/Ldapdropdown.php:346 src/Fields/Ldapdropdown.php:382
 #: src/Fields/Radio.php:349 src/Fields/Radio.php:362
-#: src/Fields/Checkbox.php:324 src/Fields/Checkbox.php:337
-#: src/Fields/Dropdown.php:655 src/Fields/Dropdown.php:692
 #: src/Fields/Dropdownmeta.php:1329 src/Fields/Dropdownmeta.php:1339
-#: src/Fields/Dropdownmeta.php:1360 src/Fields/Basket.php:549
-#: src/Fields/Dropdownmultiple.php:828
+#: src/Fields/Dropdownmeta.php:1360 src/Fields/Ldapdropdown.php:346
+#: src/Fields/Ldapdropdown.php:382 src/Fields/Checkbox.php:324
+#: src/Fields/Checkbox.php:337 src/Fields/Dropdownobject.php:816
+#: src/Fields/Dropdownobject.php:819 src/Fields/Dropdownobject.php:829
+#: src/Fields/Dropdownobject.php:852 src/Fields/Dropdownobject.php:868
+#: src/Fields/Dropdownobject.php:879 src/Fields/Dropdownmultiple.php:828
+#: src/Fields/Dropdown.php:655 src/Fields/Dropdown.php:692
+#: src/Fields/Basket.php:549
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
@@ -1944,7 +1946,7 @@ msgstr[2] "Tickets parents"
 msgid "Permit multiple form"
 msgstr "Permettre les formulaires multiples"
 
-#: front/config.form.php:59 front/tools.php:42 front/config.php:46
+#: front/config.php:46 front/config.form.php:59 front/tools.php:42
 msgid "Please activate the plugin"
 msgstr "Merci d'activer le plugin"
 
@@ -2002,8 +2004,8 @@ msgstr[0] "Modèle public de formulaires"
 msgstr[1] "Modèles publics de formulaires"
 msgstr[2] "Modèles publics de formulaires"
 
-#: templates/forms/public_models_tab.html.twig:32
 #: templates/forms/public_models_list.html.twig:33
+#: templates/forms/public_models_tab.html.twig:32
 msgid "Public models"
 msgstr "Modèles publics"
 
@@ -2060,9 +2062,9 @@ msgstr "Destinataires"
 msgid "Redirecte to ticket list when you change user in step by step mode"
 msgstr ""
 
-#: src/Basketobject.php:159 src/Fields/Basket.php:161
-#: src/Fields/Basket.php:1588 src/Fields/Basket.php:1859
-#: src/Fields/Basket.php:2224 templates/basketobject_form.html.twig:57
+#: src/Fields/Basket.php:161 src/Fields/Basket.php:1588
+#: src/Fields/Basket.php:1859 src/Fields/Basket.php:2224
+#: src/Basketobject.php:159 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr "Référence"
 
@@ -2074,8 +2076,8 @@ msgstr "Catalogue de références"
 msgid "Reference is mandatory"
 msgstr "La référence est obligatoire"
 
-#: src/FieldOption.php:1069 src/FieldOption.php:1081 src/Condition.php:262
-#: src/Condition.php:285 src/Condition.php:324
+#: src/Condition.php:262 src/Condition.php:285 src/Condition.php:324
+#: src/FieldOption.php:1069 src/FieldOption.php:1081
 msgid "Regex"
 msgstr "Expression régulière"
 
@@ -2163,11 +2165,11 @@ msgstr "Lieu racine"
 msgid "Rule"
 msgstr "Règle"
 
-#: hook.php:1011 src/Metademand.php:6167
+#: src/Metademand.php:6167 hook.php:1011
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: hook.php:1062 src/Metademand.php:6235
+#: src/Metademand.php:6235 hook.php:1062
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
@@ -2180,26 +2182,24 @@ msgstr "SLA"
 msgid "Save"
 msgstr "SAuver"
 
-#: templates/group_config.html.twig:51 templates/basketobject_form.html.twig:85
-#: templates/step_form.html.twig:91 templates/condition_form.html.twig:99
-#: templates/field_option_form.html.twig:46
-#: templates/field_parameter_form.html.twig:49
+#: templates/field_parameter_form.html.twig:49 templates/profile.html.twig:34
+#: templates/condition_form.html.twig:99
 #: templates/interticketfollowup_form.html.twig:96
-#: templates/profile.html.twig:34 templates/tickettask_form.html.twig:64
-#: templates/field_form.html.twig:141
+#: templates/tickettask_form.html.twig:64 templates/group_config.html.twig:51
+#: templates/basketobject_form.html.twig:85 templates/step_form.html.twig:91
+#: templates/field_form.html.twig:141 templates/field_option_form.html.twig:46
 msgctxt "button"
 msgid "Save"
 msgstr "Sauver"
 
-#: src/Fields/Dropdownobject.php:1052 src/Fields/Text.php:338
-#: src/Fields/Radio.php:552 src/Fields/Yesno.php:459
-#: src/Fields/Textarea.php:327 src/Fields/Url.php:300
-#: src/Fields/Checkbox.php:556 src/Fields/Dropdown.php:880
-#: src/Fields/Dropdownmeta.php:1581 src/Fields/Basket.php:820
-#: src/Fields/Basket.php:1455 src/Fields/Tel.php:340 src/Fields/Email.php:334
-#: src/Fields/Dropdownmultiple.php:1117 src/Fields/Dropdownmultiple.php:1290
-#: src/Wizard.php:1353 src/Wizard.php:1561 src/FieldOption.php:2146
-#: src/Basketline.php:157
+#: src/Basketline.php:157 src/FieldOption.php:2146 src/Wizard.php:1353
+#: src/Wizard.php:1561 src/Fields/Tel.php:340 src/Fields/Text.php:338
+#: src/Fields/Radio.php:552 src/Fields/Textarea.php:327
+#: src/Fields/Dropdownmeta.php:1581 src/Fields/Yesno.php:459
+#: src/Fields/Checkbox.php:556 src/Fields/Dropdownobject.php:1052
+#: src/Fields/Email.php:334 src/Fields/Dropdownmultiple.php:1117
+#: src/Fields/Dropdownmultiple.php:1290 src/Fields/Dropdown.php:880
+#: src/Fields/Basket.php:820 src/Fields/Basket.php:1455 src/Fields/Url.php:300
 msgctxt "button"
 msgid "Save & Post"
 msgstr "Sauver et envoyer"
@@ -2266,8 +2266,8 @@ msgstr "Voir le récapitulatif du panier et Envoyer"
 msgid "See blocks as tab"
 msgstr "Voir les blocs comme des onglets"
 
-#: templates/forms/itilobject_forms_tab.html.twig:50
 #: templates/forms/user_forms_tab.html.twig:37
+#: templates/forms/itilobject_forms_tab.html.twig:50
 msgid "See form"
 msgstr "Voir le formulaire"
 
@@ -2310,9 +2310,9 @@ msgstr ""
 "Afficher la sélection du formulaire lors de la connexion et remplacer le "
 "formulaire de création"
 
+#: templates/task_list.html.twig:50 templates/task_list.html.twig:51
 #: templates/ticketfield_sync.html.twig:46
-#: templates/ticketfield_sync.html.twig:47 templates/task_list.html.twig:50
-#: templates/task_list.html.twig:51
+#: templates/ticketfield_sync.html.twig:47
 msgid "Show list of available tags"
 msgstr "Afficher la liste des tags disponibles"
 
@@ -2328,21 +2328,21 @@ msgstr "Balise du ticket enfant"
 msgid "Specific dropdown"
 msgstr "Liste déroulante spécifique"
 
-#: templates/fields/field_parameter_dropdownmeta.html.twig:30
-#: templates/fields/field_parameter_date.html.twig:30
-#: templates/fields/field_parameter_dropdownobject.html.twig:31
 #: templates/fields/field_parameter_yesno.html.twig:30
-#: templates/fields/field_parameter_ldapdropdown.html.twig:30
-#: templates/fields/field_parameter_text.html.twig:30
-#: templates/fields/field_parameter_dropdown.html.twig:30
-#: templates/fields/field_parameter_dropdownmultiple.html.twig:30
-#: templates/fields/field_parameter_checkbox_radio.html.twig:30
 #: templates/fields/field_parameter_upload.html.twig:30
+#: templates/fields/field_parameter_date.html.twig:30
+#: templates/fields/field_parameter_dropdown.html.twig:30
+#: templates/fields/field_parameter_text.html.twig:30
+#: templates/fields/field_parameter_checkbox_radio.html.twig:30
+#: templates/fields/field_parameter_dropdownmeta.html.twig:30
+#: templates/fields/field_parameter_ldapdropdown.html.twig:30
 #: templates/fields/field_parameter_textarea.html.twig:30
+#: templates/fields/field_parameter_dropdownmultiple.html.twig:30
 #: templates/fields/field_parameter_tel.html.twig:30
 #: templates/fields/field_parameter_email.html.twig:30
 #: templates/fields/field_parameter_interval.html.twig:30
 #: templates/fields/field_parameter_color.html.twig:30
+#: templates/fields/field_parameter_dropdownobject.html.twig:31
 msgid "Specific parameters"
 msgstr "Paramètres spécifiques"
 
@@ -2354,11 +2354,11 @@ msgstr "Affichage divisé"
 msgid "Start the download"
 msgstr "Commencer le téléchargement"
 
-#: templates/tickettask_form_section.html.twig:143
 #: templates/forms/ticket_followup.html.twig:63
 #: templates/forms/ticket_followup.html.twig:66
 #: templates/forms/ticket_followup.html.twig:129
 #: templates/forms/ticket_followup.html.twig:132
+#: templates/tickettask_form_section.html.twig:143
 msgid "Status"
 msgstr "Statut"
 
@@ -2434,8 +2434,8 @@ msgstr "Cible du suivi"
 msgid "Target ticket(s)"
 msgstr "Ticket(s) cible(s)"
 
-#: src/TicketTask.php:66 src/Ticket_Metademand.php:70 src/MetademandTask.php:60
-#: src/MailTask.php:66 src/Ticket_Task.php:60
+#: src/TicketTask.php:66 src/Ticket_Metademand.php:70 src/MailTask.php:66
+#: src/Ticket_Task.php:60 src/MetademandTask.php:60
 msgid "Task creation"
 msgstr "Création des sous-demandes"
 
@@ -2488,8 +2488,8 @@ msgstr "Zone de commentaire"
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: src/TicketTask.php:731 src/Metademand.php:1261 src/Metademand.php:1368
-#: src/Task.php:951
+#: src/Task.php:951 src/Metademand.php:1261 src/Metademand.php:1368
+#: src/TicketTask.php:731
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 "La catégorie est liée à une méta-demande. Merci d'en sélectionner une autre"
@@ -2808,15 +2808,15 @@ msgstr "Traductions à faire"
 msgid "Translations: %s"
 msgstr "Traductions: %s"
 
-#: templates/field_option_options.html.twig:90
 #: templates/condition_list.html.twig:62
-#: templates/forms/field_informations.html.twig:43
-#: templates/forms/freetablefield_add_value.html.twig:40
 #: templates/forms/ticket_validation.html.twig:47
-#: templates/field_list.html.twig:136 templates/metademand.html.twig:121
+#: templates/forms/freetablefield_add_value.html.twig:40
+#: templates/forms/field_informations.html.twig:43
+#: templates/field_option_options.html.twig:90
 #: templates/fields/freetable_fields.html.twig:54
 #: templates/fields/field_parameter_color.html.twig:39
-#: templates/ajax/type_object.html.twig:45 templates/task_list.html.twig:85
+#: templates/task_list.html.twig:85 templates/field_list.html.twig:136
+#: templates/metademand.html.twig:121 templates/ajax/type_object.html.twig:45
 #: templates/field_form.html.twig:83
 msgid "Type"
 msgid_plural "Types"
@@ -2828,8 +2828,8 @@ msgstr[2] "Types"
 msgid "Type of value to check"
 msgstr "Type de valeur à vérifier"
 
-#: templates/forms/public_models_list.html.twig:42
 #: templates/forms/user_forms_list.html.twig:36
+#: templates/forms/public_models_list.html.twig:42
 #: templates/forms/private_models_list.html.twig:71
 #: templates/metademand.html.twig:168
 msgid "URL"
@@ -2889,7 +2889,7 @@ msgid "Use as basket"
 msgstr "Utiliser comme un panier"
 
 #: templates/tickettask_form_section.html.twig:41
-#: templates/task_list.html.twig:90 templates/mailtask_form.html.twig:37
+#: templates/mailtask_form.html.twig:37 templates/task_list.html.twig:90
 msgid "Use block"
 msgstr "Utiliser les blocs"
 
@@ -2913,15 +2913,15 @@ msgstr ""
 msgid "Use richt text"
 msgstr "Utiliser le texte riche"
 
-#: templates/field_list.html.twig:142
 #: templates/field_parameter_global.html.twig:63
+#: templates/field_list.html.twig:142
 msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
 #: src/Fields/Dropdownobject.php:606 src/Fields/Dropdownobject.php:681
-#: templates/fields/field_parameter_dropdownmeta.html.twig:37
 #: templates/fields/field_parameter_date.html.twig:35
 #: templates/fields/field_parameter_dropdown.html.twig:37
+#: templates/fields/field_parameter_dropdownmeta.html.twig:37
 msgid "Use this field for child ticket field"
 msgstr "Utiliser ce champ comme champ des tickets enfants"
 
@@ -2929,10 +2929,10 @@ msgstr "Utiliser ce champ comme champ des tickets enfants"
 msgid "Used blocks are mandatory"
 msgstr "Les blocs à utiliser sont obligatoires"
 
+#: templates/forms/step_next_user.html.twig:36
 #: templates/tickettask_form_section.html.twig:85
 #: templates/tickettask_form_section.html.twig:104
 #: templates/tickettask_form_section.html.twig:122
-#: templates/forms/step_next_user.html.twig:36
 #: templates/mailtask_form.html.twig:50
 msgid "User"
 msgstr "Utilisateur"
@@ -2975,21 +2975,22 @@ msgid "Validated by %s on %s"
 msgstr "Validé par %s le %s"
 
 #: src/FieldOption.php:1072 src/FieldOption.php:1081
-#: templates/ticketfield_list.html.twig:56
 #: templates/forms/ticketfield_form_row.html.twig:43
 #: templates/fields/field_customvalue_add.html.twig:39
+#: templates/ticketfield_list.html.twig:56
 msgid "Value"
 msgstr "Valeur"
 
-#: src/Fields/Dropdownobject.php:760 src/Fields/Ldapdropdown.php:318
-#: src/Fields/Radio.php:335 src/Fields/Yesno.php:250
-#: src/Fields/Checkbox.php:312 src/Fields/Dropdown.php:627
-#: src/Fields/Dropdownmeta.php:1261 src/Fields/Basket.php:548
-#: src/Fields/Dropdownmultiple.php:719 src/Condition.php:591
+#: src/Condition.php:591 src/Fields/Radio.php:335
+#: src/Fields/Dropdownmeta.php:1261 src/Fields/Yesno.php:250
+#: src/Fields/Ldapdropdown.php:318 src/Fields/Checkbox.php:312
+#: src/Fields/Dropdownobject.php:760 src/Fields/Dropdownmultiple.php:719
+#: src/Fields/Dropdown.php:627 src/Fields/Basket.php:548
+#: templates/condition_list.html.twig:64
 #: templates/field_option_options.html.twig:94
-#: templates/condition_list.html.twig:64 templates/condition_form.html.twig:48
-#: templates/field_list.html.twig:138
+#: templates/condition_form.html.twig:48
 #: templates/condition_for_metademand.html.twig:77
+#: templates/field_list.html.twig:138
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
@@ -3176,7 +3177,7 @@ msgstr "Tous vos blocs ne sont pas définis"
 msgid "Your created forms"
 msgstr "Vos formulaires créés"
 
-#: front/draft.form.php:69 front/draft.php:40 front/draftcreation.php:62
+#: front/draftcreation.php:62 front/draft.form.php:69 front/draft.php:40
 #: src/Wizard.php:459 templates/forms/drafts_list.html.twig:77
 msgid "Your drafts"
 msgstr "Vos brouillons"
