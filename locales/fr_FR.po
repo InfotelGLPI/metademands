@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 13:57+0000\n"
+"POT-Creation-Date: 2026-09-22 14:01+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -2059,7 +2059,7 @@ msgid "Recipients"
 msgstr "Destinataires"
 
 #: templates/config.html.twig:92
-msgid "Redirecte to ticket list when you change user in step by step mode"
+msgid "Redirect to ticket list when you change user in step by step mode"
 msgstr ""
 
 #: src/Fields/Basket.php:161 src/Fields/Basket.php:1588
