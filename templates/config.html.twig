@@ -87,6 +87,11 @@
                     __('Icon for changes', 'metademands')) }}
             </div>
 
+            <div class="row">
+                {{ fields.sliderField('redirect_to_ticket_list_when_change_user_step_by_step', config.redirect_to_ticket_list_when_change_user_step_by_step,
+                    __('Redirecte to ticket list when you change user in step by step mode', 'metademands')) }}
+            </div>
+
             {% if config.display_buttonlist_servicecatalog == 1 %}
                 <div class="hr mt-4 mb-2"></div>
                 <div class="row">
