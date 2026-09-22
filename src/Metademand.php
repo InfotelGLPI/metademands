@@ -51,6 +51,7 @@ use GlpiPlugin\Metademands\Fields\Dropdownmeta;
 use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Category as ServicecatalogCategory;
+use Group_Item;
 use Group_Ticket;
 use Group_User;
 use Html;
@@ -814,24 +815,36 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
-     * Tell whether an ancestor ticket identifier may be used by the current session.
+     * Tell whether a client-provided ticket identifier may be read by the current session.
      *
-     * The value travels from $_GET to the session and back into the wizard options, so it is
-     * client-controlled all the way down to the Ticket_Ticket link and to the Ticket_Field read
-     * performed by createSonsTickets(). can(READ) applies both the right bit and checkEntity().
+     * tickets_id and ancestor_tickets_id both travel from $_GET to the session and back into
+     * the wizard options, so they stay client-controlled all the way down to the Ticket_Ticket
+     * link, to the Ticket_Field read performed by createSonsTickets() and to the requester
+     * lookup of Wizard::showWizard(). can(READ) applies both the right bit and checkEntity(),
+     * and on a Ticket it also grants the helpdesk requester his own ticket.
      *
+     * @param mixed $tickets_id
+     *
+     * @return bool
+     */
+    public static function canReadTicket($tickets_id): bool
+    {
+        $tickets_id = (int) $tickets_id;
+        if ($tickets_id <= 0) {
+            return false;
+        }
+
+        return (new \Ticket())->can($tickets_id, READ);
+    }
+
+    /**
      * @param mixed $ancestor_tickets_id
      *
      * @return bool
      */
     public static function isReadableAncestorTicket($ancestor_tickets_id)
     {
-        $ancestor_tickets_id = (int) $ancestor_tickets_id;
-        if ($ancestor_tickets_id <= 0) {
-            return false;
-        }
-
-        return (new \Ticket())->can($ancestor_tickets_id, READ);
+        return self::canReadTicket($ancestor_tickets_id);
     }
 
     /**
@@ -1002,6 +1015,222 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         foreach ($accepted as $actor_id) {
             $fields[$name][] = $actor_id;
         }
+    }
+
+    /**
+     * Revalidate a posted value before it overwrites a column of the ITIL object being created.
+     *
+     * The projection loops below map a field onto the ticket column named by its search option
+     * ("used_by_ticket"), then assign the posted value straight into the input of add(). Most
+     * of those columns are harmless, but FieldParameter::getUsedByTicketValues() explicitly
+     * grants option 80 -- entities_id -- to a dropdown_object built on Entity, whose dropdown
+     * is only entity-restricted on the client. A replayed submission could therefore overwrite
+     * the entity computed from $_SESSION['glpiactive_entity'] and drop the ticket, its content
+     * and its attachments into an entity the submitter has no access to.
+     *
+     * Returning null means "keep the value already computed server side" rather than throwing:
+     * the wizard has no recovery path at this point, and failing the whole submission would
+     * discard a form the user legitimately filled in.
+     *
+     * Both projection loops (parent ticket and son tickets) call this method, so the control
+     * cannot diverge between them.
+     *
+     * @param string $name  Target column of the ITIL object
+     * @param mixed  $value Posted value
+     *
+     * @return mixed|null The value to project, or null when it must be dropped
+     */
+    private static function filterProjectedValue(string $name, $value)
+    {
+        if ($name !== 'entities_id') {
+            return $value;
+        }
+
+        if (!is_scalar($value)) {
+            return null;
+        }
+
+        $entities_id = (int) $value;
+
+        return Session::haveAccessToEntity($entities_id) ? $entities_id : null;
+    }
+
+    /**
+     * Keep a resource identifier only when the current session may actually read that resource.
+     *
+     * resources_id reaches createObjects() through the wizard options, which nine distinct
+     * endpoints feed from $_GET, $_POST or the session. The control therefore belongs to this
+     * sink: CommonITILObject::handleItemsIdInput() adds the Item_Ticket link without checking
+     * anything, so an arbitrary identifier used to attach any resource of any entity to the
+     * created ticket -- and the "tickets of this item" views then disclose it back.
+     *
+     * Metademand_Resource::getTableResource() already refuses to render an out-of-scope
+     * resource; the read side and the write side now apply the same rule.
+     *
+     * @param mixed $resources_id
+     *
+     * @return int The identifier to link, 0 when it must be dropped
+     */
+    private static function filterResourceValue($resources_id): int
+    {
+        if (!is_scalar($resources_id)) {
+            return 0;
+        }
+
+        $resources_id = (int) $resources_id;
+        if ($resources_id <= 0 || !class_exists(Resource::class)) {
+            return 0;
+        }
+
+        $resource = new Resource();
+        if (!$resource->getFromDB($resources_id)) {
+            return 0;
+        }
+
+        return Session::haveAccessToEntity(
+            $resource->fields['entities_id'] ?? 0,
+            $resource->fields['is_recursive'] ?? 0,
+        ) ? $resources_id : 0;
+    }
+
+    /**
+     * Revalidate the itemtype/id couple posted by a "my devices" field before it becomes the
+     * associated item of the created ITIL object.
+     *
+     * The wizard posts this field as the raw "<itemtype>_<items_id>" key of the dropdown built
+     * by Field::dropdownMyDevices(), and the browser is free to rewrite it. Unlike the
+     * neighbouring dropdown_object branch -- which calls Ticket::isPossibleToAssignType() --
+     * nothing used to check it: any itemtype reached glpi_items_tickets, and any identifier of
+     * any entity could be attached to the ticket, revealing the asset through the "tickets of
+     * this item" views and polluting its history.
+     *
+     * The three constraints the list builder applies are replayed here: the itemtype must be
+     * assignable to a ticket, the asset must live in an entity the session can see, and it
+     * must belong to the user whose devices the field lists -- the submitter, or the user the
+     * linked field designates when the submitter may legitimately target him, exactly as
+     * ajax/umydevicesUpdate.php resolves it before rendering.
+     *
+     * @param mixed $posted        Raw "<itemtype>_<items_id>" value
+     * @param array $posted_values Values of the whole step, indexed by field id
+     * @param array $fields_values Definition of the posted field
+     *
+     * @return array|null The items_id input of the ITIL object, or null when the couple is refused
+     */
+    private static function filterMyDeviceValue($posted, array $posted_values, array $fields_values)
+    {
+        if (!is_scalar($posted)) {
+            return null;
+        }
+
+        // Split on the LAST underscore: the dropdown key is "<itemtype>_<id>" and an itemtype
+        // may contain underscores.
+        $posted    = (string) $posted;
+        $separator = strrpos($posted, '_');
+        if ($separator === false) {
+            return null;
+        }
+
+        $itemtype = substr($posted, 0, $separator);
+        $items_id = (int) substr($posted, $separator + 1);
+        if ($itemtype === '' || $items_id <= 0) {
+            return null;
+        }
+
+        if (!\Ticket::isPossibleToAssignType($itemtype)) {
+            return null;
+        }
+
+        $item = getItemForItemtype($itemtype);
+        if (!$item instanceof CommonDBTM || !$item->getFromDB($items_id)) {
+            return null;
+        }
+
+        if (($item->maybeDeleted() && $item->fields['is_deleted'])
+            || ($item->maybeTemplate() && $item->fields['is_template'])) {
+            return null;
+        }
+
+        if (!Session::haveAccessToEntity(
+            (int) ($item->fields['entities_id'] ?? 0),
+            $item->maybeRecursive() && $item->fields['is_recursive'],
+        )) {
+            return null;
+        }
+
+        return self::isDeviceOwnedBy($item, self::resolveMyDevicesOwner($posted_values, $fields_values))
+            ? [$itemtype => [$items_id]]
+            : null;
+    }
+
+    /**
+     * Resolve the user whose devices a "my devices" field lists.
+     *
+     * Mirrors ajax/umydevicesUpdate.php: the field may be linked to another field holding a
+     * user, in which case that user's devices are listed, but only when the submitter may
+     * target him. Anything else falls back to the submitter himself.
+     *
+     * @param array $posted_values Values of the whole step, indexed by field id
+     * @param array $fields_values Definition of the posted field
+     *
+     * @return int
+     */
+    private static function resolveMyDevicesOwner(array $posted_values, array $fields_values): int
+    {
+        $link_to_user = (int) ($fields_values['link_to_user'] ?? 0);
+        if ($link_to_user > 0 && isset($posted_values[$link_to_user]) && is_scalar($posted_values[$link_to_user])) {
+            $linked_users_id = (int) $posted_values[$link_to_user];
+            if ($linked_users_id > 0 && Config::canCurrentUserViewRequester($linked_users_id)) {
+                return $linked_users_id;
+            }
+        }
+
+        return (int) Session::getLoginUserID();
+    }
+
+    /**
+     * Is this asset one of the devices Field::dropdownMyDevices() would list for that user?
+     *
+     * The builder feeds the dropdown from two sources: the assets whose users_id is the user,
+     * and -- when the profile holds show_group_hardware -- the assets linked to one of his
+     * groups or their ancestors. Both are replayed here.
+     *
+     * @param CommonDBTM $item
+     * @param int        $users_id
+     *
+     * @return bool
+     */
+    private static function isDeviceOwnedBy(CommonDBTM $item, int $users_id): bool
+    {
+        global $DB;
+
+        if ($users_id > 0 && (int) ($item->fields['users_id'] ?? 0) === $users_id) {
+            return true;
+        }
+
+        if (!Session::haveRight('show_group_hardware', 1)) {
+            return false;
+        }
+
+        $groups = [];
+        foreach (Group_User::getUserGroups($users_id) as $group) {
+            $groups[(int) $group['id']] = (int) $group['id'];
+            $groups += getAncestorsOf('glpi_groups', (int) $group['id']);
+        }
+
+        if ($groups === []) {
+            return false;
+        }
+
+        return count($DB->request([
+            'COUNT' => 'cpt',
+            'FROM'  => Group_Item::getTable(),
+            'WHERE' => [
+                'itemtype'  => $item->getType(),
+                'items_id'  => $item->getID(),
+                'type'      => Group_Item::GROUP_TYPE_NORMAL,
+                'groups_id' => $groups,
+            ],
+        ])) > 0;
     }
 
     /**
@@ -2725,8 +2954,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $parent_fields['status'] = CommonITILObject::INCOMING;
 
                     // Resources id
-                    if (!empty($options['resources_id'])) {
-                        $parent_fields['items_id'] = [Resource::class => [$options['resources_id']]];
+                    $resources_id = self::filterResourceValue($options['resources_id'] ?? 0);
+                    if ($resources_id > 0) {
+                        $parent_fields['items_id'] = [Resource::class => [$resources_id]];
                     }
 
                     // Requester user field
@@ -2841,8 +3071,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         && $fields_values['used_by_ticket'] != 71
                                         && $fields_values['used_by_ticket'] != 66
                                         && $fields_values['used_by_ticket'] != 65) {
-                                        $parent_fields[$name] = $v[$id];
-                                        $parent_ticketfields[$name] = $v[$id];
+                                        $projected = self::filterProjectedValue($name, $v[$id]);
+                                        if ($projected !== null) {
+                                            $parent_fields[$name] = $projected;
+                                            $parent_ticketfields[$name] = $projected;
+                                        }
                                     }
 
                                     if ($fields_values['used_by_ticket'] == 59) {
@@ -2861,9 +3094,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     if ($fields_values['used_by_ticket'] == 13) {
                                         if ($fields_values['type'] == "dropdown_meta"
                                             && $fields_values["item"] == "mydevices") {
-                                            $item = explode('_', $v[$id]);
-                                            if (isset($item[0]) && isset($item[1])) {
-                                                $parent_fields["items_id"] = [$item[0] => [$item[1]]];
+                                            $device = self::filterMyDeviceValue($v[$id], $v, $fields_values);
+                                            if ($device !== null) {
+                                                $parent_fields["items_id"] = $device;
                                             }
 
                                         }
@@ -4686,7 +4919,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     && $params['used_by_ticket'] != 71
                                                     && $params['used_by_ticket'] != 66
                                                     && $params['used_by_ticket'] != 65) {
-                                                    $son_ticket_data[$name] = $values[$id];
+                                                    $projected = self::filterProjectedValue($name, $values[$id]);
+                                                    if ($projected !== null) {
+                                                        $son_ticket_data[$name] = $projected;
+                                                    }
                                                 }
                                             }
                                         }

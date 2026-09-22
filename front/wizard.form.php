@@ -75,19 +75,24 @@ if (!isset($_GET['meta_type'])) {
     $_GET['meta_type'] = 0;
 }
 
-if (empty($_GET['tickets_id'])) {
+// Both identifiers end up in the session and are replayed by the ajax endpoints, so they are
+// reduced to an integer here; whether the session may read that ticket is decided at the sink
+// by Metademand::canReadTicket().
+if (empty($_GET['tickets_id']) || !is_scalar($_GET['tickets_id'])) {
     $_GET['tickets_id'] = 0;
+} else {
+    $_GET['tickets_id'] = (int) $_GET['tickets_id'];
 }
 
-if (empty($_GET['ancestor_tickets_id'])) {
+if (empty($_GET['ancestor_tickets_id']) || !is_scalar($_GET['ancestor_tickets_id'])) {
     $_GET['ancestor_tickets_id'] = 0;
+} else {
+    $_GET['ancestor_tickets_id'] = (int) $_GET['ancestor_tickets_id'];
 }
 
-if (isset($_GET['ancestor_tickets_id'])) {
-    $ancestor_tickets_id = $_GET['ancestor_tickets_id'];
-}
+$ancestor_tickets_id = $_GET['ancestor_tickets_id'];
 
-if (empty($_GET['resources_id'])) {
+if (empty($_GET['resources_id']) || !is_scalar($_GET['resources_id'])) {
     $_GET['resources_id'] = 0;
     if (isset($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'])
         && !empty($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'])) {
@@ -105,6 +110,7 @@ if (empty($_GET['resources_id'])) {
         }
     }
 } else {
+    $_GET['resources_id'] = (int) $_GET['resources_id'];
     $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'] = $_GET['resources_id'];
 }
 

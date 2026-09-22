@@ -617,10 +617,15 @@ class Wizard extends CommonDBTM
 
             // Display user informations
             $userid = Session::getLoginUserID();
-            // If ticket exists we get its first requester
-            if ($parameters['tickets_id']) {
+            // If ticket exists we get its first requester. tickets_id comes from $_GET and is
+            // replayed from the session by several ajax endpoints, so the ticket is resolved
+            // here rather than at the entry point: Ticket::getUsedActors() reads the actor
+            // tables without any right or entity restriction of its own, so an arbitrary
+            // identifier used to disclose the requester of any ticket and to pre-fill the
+            // wizard with him. An unreadable ticket simply leaves the submitter in place.
+            if (Metademand::canReadTicket($parameters['tickets_id'])) {
                 $users_id_requester = Ticket::getUsedActors(
-                    $parameters['tickets_id'],
+                    (int) $parameters['tickets_id'],
                     CommonITILActor::REQUESTER,
                     'users_id',
                 );
