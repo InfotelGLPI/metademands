@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use DBConnection;
+use GlpiPlugin\Metademands\Fields\Signature;
 use Migration;
 
 /**
@@ -414,6 +415,7 @@ class Draft_Value extends CommonDBTM
         $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);
 
         unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['freetables']);
+        Signature::registerLoadedValues(array_column($drafts_values, 'value', 'plugin_metademands_fields_id'));
         foreach ($drafts_values as $values) {
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);

@@ -28,6 +28,7 @@
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Fields\Signature;
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 
@@ -70,11 +71,11 @@ if (isset($_POST['datasign']) && isset($_POST['metademands_id'])) {
     // upload time). Prevents deleting another user's signature via a forged path.
     // deletePicture() additionally confines removal to GLPI_PICTURE_DIR.
     if (
-        isset($_SESSION['plugin_metademands']['signatures'][$datasign])
+        Signature::isOwnUpload($datasign)
         && !str_contains($datasign, '..')
     ) {
         Toolbox::deletePicture($datasign);
-        unset($_SESSION['plugin_metademands']['signatures'][$datasign]);
+        Signature::forgetUpload($datasign);
         $ok = true;
     }
 }

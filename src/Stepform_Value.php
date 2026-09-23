@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands;
 
 use CommonDBTM;
 use DBConnection;
+use GlpiPlugin\Metademands\Fields\Signature;
 use Migration;
 
 /**
@@ -220,6 +221,7 @@ class Stepform_Value extends CommonDBTM
         $forms_values = $form_value->find(['plugin_metademands_stepforms_id' => $plugin_metademands_forms_id]);
 
         $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_stepforms_id'] = $plugin_metademands_forms_id;
+        Signature::registerLoadedValues(array_column($forms_values, 'value', 'plugin_metademands_fields_id'));
         foreach ($forms_values as $values) {
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);

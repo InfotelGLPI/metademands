@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Metademands\Field;
 use Html;
 use Toolbox;
 
@@ -40,6 +41,19 @@ use Toolbox;
  **/
 class Signature extends CommonDBTM
 {
+    /**
+     * Session allow-list of the signature paths this session may submit, keyed by path.
+     * Kept outside $_SESSION['plugin_metademands'], which the wizard wipes on several
+     * transitions while a reopened draft or form still re-posts its signature.
+     */
+    private const SESSION_KEY = 'plugin_metademands_signatures';
+
+    /** Uploaded by this session through ajax/addsignature.php: usable and deletable. */
+    private const ORIGIN_UPLOAD = 'upload';
+
+    /** Reloaded from a draft / form / step form this session opened: usable only. */
+    private const ORIGIN_LOADED = 'loaded';
+
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -244,17 +258,10 @@ class Signature extends CommonDBTM
             return '';
         }
 
-        if (isset($_SESSION['plugin_metademands']['signatures'][$value])) {
-            return $value;
-        }
-
-        // The allow-list only knows about uploads made in the current session, while a
-        // saved value is rendered back into the hidden input by field_signature.html.twig
-        // and thus re-posted on every step and on every draft reopened later. Such a value
-        // is accepted only when it still has the exact shape Toolbox::savePicture() emits
-        // -- a two hex digit subdirectory and an image file name, no directory separator
-        // anywhere else -- and when it resolves inside GLPI_PICTURE_DIR.
-        if (!preg_match('~^[0-9a-f]{2}/[A-Za-z0-9._-]+\.[A-Za-z0-9]{1,5}$~', $value)) {
+        // Only paths this session uploaded, or reloaded from a draft / form it was allowed
+        // to open (see registerLoadedValues()), are accepted: a well-formed path to a
+        // picture somebody else signed is refused, whatever its shape.
+        if (!isset($_SESSION[self::SESSION_KEY][$value])) {
             return '';
         }
 
@@ -265,6 +272,78 @@ class Signature extends CommonDBTM
         }
 
         return $value;
+    }
+
+    /**
+     * Remember a signature uploaded by the current session.
+     *
+     * @param string $path Path returned by Toolbox::savePicture()
+     *
+     * @return void
+     */
+    public static function registerUpload(string $path): void
+    {
+        $_SESSION[self::SESSION_KEY][$path] = self::ORIGIN_UPLOAD;
+    }
+
+    /**
+     * Whether the current session uploaded this signature itself, and may thus delete it.
+     * A signature reloaded from a stored draft or form belongs to its original signer.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public static function isOwnUpload(string $path): bool
+    {
+        return ($_SESSION[self::SESSION_KEY][$path] ?? null) === self::ORIGIN_UPLOAD;
+    }
+
+    /**
+     * Forget a signature once it has been deleted.
+     *
+     * @param string $path
+     *
+     * @return void
+     */
+    public static function forgetUpload(string $path): void
+    {
+        unset($_SESSION[self::SESSION_KEY][$path]);
+    }
+
+    /**
+     * Allow the signature values reloaded from a stored draft / form / step form, so
+     * that they survive the round trip through the hidden input of the reopened form.
+     * Only values stored under a field of type signature are registered: a text field
+     * of one's own draft must not be able to allow an arbitrary picture path.
+     *
+     * @param array<int|string, mixed> $values Stored values keyed by fields_id
+     *
+     * @return void
+     */
+    public static function registerLoadedValues(array $values): void
+    {
+        // Decode the stored value exactly as the loaders put it in session.
+        $values = array_map(
+            static fn($value) => is_string($value) ? (json_decode($value, true) ?? $value) : $value,
+            $values,
+        );
+        $values = array_filter($values, static fn($value) => is_string($value) && $value !== '');
+        if ($values === []) {
+            return;
+        }
+
+        $field = new Field();
+        $signature_fields = $field->find([
+            'id'   => array_map('intval', array_keys($values)),
+            'type' => 'signature',
+        ]);
+        foreach ($signature_fields as $signature_field) {
+            $path = $values[$signature_field['id']] ?? '';
+            if ($path !== '' && !isset($_SESSION[self::SESSION_KEY][$path])) {
+                $_SESSION[self::SESSION_KEY][$path] = self::ORIGIN_LOADED;
+            }
+        }
     }
 
     public static function showParamsValueToCheck($params) {}

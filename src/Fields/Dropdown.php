@@ -450,9 +450,27 @@ class Dropdown extends CommonDBTM
                 break;
             default:
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
-                    if (getItemForItemtype($data["item"])) {
-                        $classfield = new $data["item"]();
-                        $custom_values = $classfield->find();
+                    $classfield = getItemForItemtype($data["item"]);
+                    if ($classfield instanceof CommonDBTM) {
+                        // Keep the boundary of the standard rendering below ('entity' =>
+                        // active entities): a bare find() would list every row of the
+                        // table, whatever its entity, to anyone filling the form.
+                        $criteria = [];
+                        if ($classfield->isEntityAssign()) {
+                            $criteria += getEntitiesRestrictCriteria(
+                                $classfield->getTable(),
+                                '',
+                                $_SESSION['glpiactiveentities'] ?? [],
+                                $classfield->maybeRecursive(),
+                            );
+                        }
+                        if ($classfield->maybeDeleted()) {
+                            $criteria['is_deleted'] = 0;
+                        }
+                        if ($classfield->maybeTemplate()) {
+                            $criteria['is_template'] = 0;
+                        }
+                        $custom_values = $classfield->find($criteria);
 
                         $field = "";
                         if (!empty($custom_values)) {

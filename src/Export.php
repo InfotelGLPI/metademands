@@ -1209,7 +1209,14 @@ class Export extends CommonDBTM
                 if ($params['type'] === 'link') {
                     if (isset($params['custom_values'][1])) {
                         $decodedUrl = urldecode($params['custom_values'][1]);
-                        $question['description'] = "<a href=\"$decodedUrl\" target=\"_blank\">$decodedUrl</a>";
+                        $safeUrl    = htmlescape($decodedUrl);
+                        // Only web schemes become a link: javascript:/data: URLs are kept as text.
+                        $scheme = strtolower((string) parse_url($decodedUrl, PHP_URL_SCHEME));
+                        if (in_array($scheme, ['http', 'https'], true)) {
+                            $question['description'] = "<a href=\"$safeUrl\" target=\"_blank\" rel=\"noopener noreferrer\">$safeUrl</a>";
+                        } else {
+                            $question['description'] = $safeUrl;
+                        }
                     } else {
                         $question['description'] = __('No link', 'metademands');
                     }

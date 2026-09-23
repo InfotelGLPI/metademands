@@ -29,6 +29,7 @@
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Metademands\Fields\Signature;
 use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 
@@ -98,7 +99,7 @@ if (isset($_POST['datasign']) && !empty($_POST['datasign'])) {
     if ($dest !== false) {
         // Remember signatures created by this user so that only they may delete
         // them later (see removesignature.php) — prevents cross-user deletion.
-        $_SESSION['plugin_metademands']['signatures'][$dest] = true;
+        Signature::registerUpload($dest);
     }
 }
 
