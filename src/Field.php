@@ -836,11 +836,11 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 $metademand_custom = new FieldCustomvalue();
                 if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $this->fields['id']])) {
                     if (count($customs) > 0) {
-                        echo self::getFieldItemsName($this->fields['type'], 'other');
+                        echo htmlescape(self::getFieldItemsName($this->fields['type'], 'other'));
                         echo Html::hidden('item', ['value' => 'other']);
                     }
                 } else {
-                    echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                    echo htmlescape(self::getFieldItemsName($this->fields['type'], $this->fields['item']));
                     echo Html::hidden('item', ['value' => $this->fields['item']]);
                 }
             } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
@@ -853,7 +853,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 );
             } elseif ($this->fields["type"] == "dropdown_multiple") {
                 if ($this->fields["item"] == "other") {
-                    echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                    echo htmlescape(self::getFieldItemsName($this->fields['type'], $this->fields['item']));
                     echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
                 } else {
                     echo $this->showItemSelector(
@@ -868,7 +868,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     );
                 }
             } else {
-                echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                // The label may be a stored name (e.g. Basketobjecttype) and item_value_html is
+                // rendered raw: escape here, not at the source (showFromArray escapes its options).
+                echo htmlescape(self::getFieldItemsName($this->fields['type'], $this->fields['item']));
                 echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
             }
         }
