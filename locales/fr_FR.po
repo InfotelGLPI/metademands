@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 12:31+0000\n"
+"POT-Creation-Date: 2026-09-23 16:08+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -30,7 +30,7 @@ msgstr ""
 msgid "%1$s %2$s successfully created"
 msgstr "%1$s %2$s créés avec succès"
 
-#: src/Fields/Dropdown.php:558
+#: src/Fields/Dropdown.php:576
 #, php-format
 msgid "%d level"
 msgid_plural "%d levels"
@@ -176,7 +176,7 @@ msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
 
-#: src/Fields/Signature.php:84
+#: src/Fields/Signature.php:98
 msgid "Add your signature"
 msgstr "Ajouter votre signature"
 
@@ -321,7 +321,7 @@ msgid "Block %s"
 msgstr "Bloc %s"
 
 #: src/Fields/Radio.php:299 src/Fields/Dropdownmeta.php:1199
-#: src/Fields/Checkbox.php:276 src/Fields/Dropdown.php:567
+#: src/Fields/Checkbox.php:276 src/Fields/Dropdown.php:585
 msgid "Block display"
 msgstr "Affichage en bloc"
 
@@ -426,7 +426,7 @@ msgstr "Choisissez un gabarit"
 #: src/Fields/Radio.php:298 src/Fields/Dropdownmeta.php:1151
 #: src/Fields/Dropdownmeta.php:1198 src/Fields/Yesno.php:202
 #: src/Fields/Checkbox.php:275 src/Fields/Dropdownmultiple.php:622
-#: src/Fields/Dropdown.php:542 src/Fields/Dropdown.php:566
+#: src/Fields/Dropdown.php:560 src/Fields/Dropdown.php:584
 msgid "Classic display"
 msgstr "Affichage classique"
 
@@ -436,7 +436,7 @@ msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
 
-#: src/Fields/Signature.php:85
+#: src/Fields/Signature.php:99
 #: templates/fields/field_customvalue_icon.html.twig:42
 #: templates/metademand.html.twig:173
 msgid "Clear"
@@ -1658,7 +1658,7 @@ msgstr "Nouveau modèle"
 #: src/Fields/Dropdownmeta.php:1583 src/Fields/Yesno.php:461
 #: src/Fields/Checkbox.php:558 src/Fields/Dropdownobject.php:1053
 #: src/Fields/Email.php:336 src/Fields/Dropdownmultiple.php:1119
-#: src/Fields/Dropdownmultiple.php:1292 src/Fields/Dropdown.php:881
+#: src/Fields/Dropdownmultiple.php:1292 src/Fields/Dropdown.php:899
 #: src/Fields/Basket.php:821 src/Fields/Url.php:302
 #: templates/wizard/form_nav_buttons.html.twig:52
 #: templates/wizard/form_nav_buttons.html.twig:55
@@ -1718,7 +1718,7 @@ msgstr "Pas d'équipement trouvé"
 msgid "No existing forms founded"
 msgstr "Pas de formulaires existants trouvé"
 
-#: src/Export.php:1407 src/Export.php:1429
+#: src/Export.php:1414 src/Export.php:1436
 msgid "No file specified"
 msgstr "Pas de fichier fourni"
 
@@ -1726,11 +1726,11 @@ msgstr "Pas de fichier fourni"
 msgid "No items on basket"
 msgstr "Pas d'éléments dans le panier"
 
-#: src/Fields/Dropdown.php:556
+#: src/Fields/Dropdown.php:574
 msgid "No limit"
 msgstr "Sans limite"
 
-#: src/Export.php:1214
+#: src/Export.php:1221
 msgid "No link"
 msgstr "Pas de lien"
 
@@ -1784,7 +1784,7 @@ msgstr "Non vide"
 #: src/Fields/Dropdownobject.php:819 src/Fields/Dropdownobject.php:829
 #: src/Fields/Dropdownobject.php:852 src/Fields/Dropdownobject.php:868
 #: src/Fields/Dropdownobject.php:879 src/Fields/Dropdownmultiple.php:828
-#: src/Fields/Dropdown.php:655 src/Fields/Dropdown.php:692
+#: src/Fields/Dropdown.php:673 src/Fields/Dropdown.php:710
 #: src/Fields/Basket.php:549
 msgid "Not null value"
 msgstr "Valeur non nulle"
@@ -2200,7 +2200,7 @@ msgstr "Sauver"
 #: src/Fields/Dropdownmeta.php:1581 src/Fields/Yesno.php:459
 #: src/Fields/Checkbox.php:556 src/Fields/Dropdownobject.php:1052
 #: src/Fields/Email.php:334 src/Fields/Dropdownmultiple.php:1117
-#: src/Fields/Dropdownmultiple.php:1290 src/Fields/Dropdown.php:880
+#: src/Fields/Dropdownmultiple.php:1290 src/Fields/Dropdown.php:898
 #: src/Fields/Basket.php:820 src/Fields/Basket.php:1455 src/Fields/Url.php:300
 msgctxt "button"
 msgid "Save & Post"
@@ -2318,7 +2318,7 @@ msgstr ""
 msgid "Show list of available tags"
 msgstr "Afficher la liste des tags disponibles"
 
-#: src/Fields/Signature.php:53
+#: src/Fields/Signature.php:67
 msgid "Signature"
 msgstr "Signature"
 
@@ -2348,7 +2348,7 @@ msgstr "Liste déroulante spécifique"
 msgid "Specific parameters"
 msgstr "Paramètres spécifiques"
 
-#: src/Fields/Dropdown.php:543
+#: src/Fields/Dropdown.php:561
 msgid "Splitted display"
 msgstr "Affichage divisé"
 
@@ -2516,7 +2516,7 @@ msgstr ""
 "Les champs ne sont pas ordonnés correctement, vous ne pourrez pas les "
 "ordonner !"
 
-#: src/Export.php:1449 src/Export.php:1476
+#: src/Export.php:1456 src/Export.php:1483
 msgid "The file is not an XML file"
 msgstr "Ce fichier n'est pas un XML"
 
@@ -2642,11 +2642,11 @@ msgstr "Il n'y a pas de demandes dans le panier"
 msgid "There is no line on the mandatory table %s"
 msgstr "Il n'y a pas de lignes dans le tableau obligatoire %s"
 
-#: src/Fields/Signature.php:74
+#: src/Fields/Signature.php:88
 msgid "There was a problem on delete your signature"
 msgstr "Il y a eu un problème à la suppression de votre signature"
 
-#: src/Fields/Signature.php:73
+#: src/Fields/Signature.php:87
 msgid "There was a problem on upload your signature"
 msgstr "Il y a eu un problème au chargement de votre signature"
 
@@ -2683,7 +2683,7 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr "Cette demande est déja utilisée dans"
 
-#: src/Fields/Signature.php:75
+#: src/Fields/Signature.php:89
 msgid "This field is mandatory"
 msgstr "Le champ est obligatoire"
 
@@ -2837,11 +2837,11 @@ msgstr "Type de valeur à vérifier"
 msgid "URL"
 msgstr "URL"
 
-#: src/Export.php:324 src/Export.php:538 src/Export.php:1293
+#: src/Export.php:324 src/Export.php:538 src/Export.php:1300
 msgid "Unable to create the export file"
 msgstr "Impossible de créer le fichier d'exportation"
 
-#: src/Export.php:1433
+#: src/Export.php:1440
 msgid "Unable to upload the file"
 msgstr "Impossible de télécharger le fichier"
 
@@ -2987,7 +2987,7 @@ msgstr "Valeur"
 #: src/Fields/Dropdownmeta.php:1261 src/Fields/Yesno.php:250
 #: src/Fields/Ldapdropdown.php:318 src/Fields/Checkbox.php:312
 #: src/Fields/Dropdownobject.php:760 src/Fields/Dropdownmultiple.php:719
-#: src/Fields/Dropdown.php:627 src/Fields/Basket.php:548
+#: src/Fields/Dropdown.php:645 src/Fields/Basket.php:548
 #: templates/condition_list.html.twig:64
 #: templates/field_option_options.html.twig:94
 #: templates/condition_form.html.twig:48
@@ -3217,11 +3217,11 @@ msgstr "Vos modèles"
 msgid "Your private models"
 msgstr "Vos modèles privés"
 
-#: src/Fields/Signature.php:72
+#: src/Fields/Signature.php:86
 msgid "Your signature has been deleted"
 msgstr "Votre signature a été supprimée"
 
-#: src/Fields/Signature.php:71
+#: src/Fields/Signature.php:85
 msgid "Your signature has been uploaded"
 msgstr "Votre signature a été envoyée"
 
