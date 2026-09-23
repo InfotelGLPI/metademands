@@ -2707,12 +2707,6 @@ parameters:
 			path: src/Step.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(true;\)\: Unexpected token ";", expected TOKEN_HORIZONTAL_WS at offset 124 on line 6$#'
-			identifier: phpDoc.parseError
-			count: 1
-			path: src/Step.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between false and false will always evaluate to true\.$#'
 			identifier: identical.alwaysTrue
 			count: 2

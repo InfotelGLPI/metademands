@@ -333,7 +333,7 @@ class Step extends CommonDBChild
      *
      * @param $item a Dropdown item
      *
-     * @return true;
+     * @return bool
      **/
     public static function showStepByBlock($item)
     {

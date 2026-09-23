@@ -814,11 +814,15 @@ class Stepform extends CommonDBTM
         $cnt = count($stepforms);
 
         $cards = [];
-        foreach ($stepforms as $id => $name) {
+        // $stepform is the row and stays the row: the displayed name lives in its own variable.
+        // Reusing the loop variable for it made every later $stepform['...'] read an offset of a
+        // string, which is a TypeError on PHP 8 and fataled this page for anyone holding a
+        // waiting form.
+        foreach ($stepforms as $id => $stepform) {
             $meta = new Metademand();
-            if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
-                $metaID   = $name['plugin_metademands_metademands_id'];
-                $block_id = $name['block_id'];
+            if ($meta->getFromDB($stepform['plugin_metademands_metademands_id'])) {
+                $metaID   = $stepform['plugin_metademands_metademands_id'];
+                $block_id = $stepform['block_id'];
                 $card_icon = "ti-share";
                 if (!empty($meta->fields['icon'])) {
                     $card_icon = $meta->fields['icon'];
@@ -852,8 +856,8 @@ class Stepform extends CommonDBTM
                     'icon'        => $card_icon,
                     'is_fa'       => str_contains($card_icon, 'fa-'),
                     'name'        => $name,
-                    'editor'      => User::getFriendlyNameById($name['users_id']),
-                    'date'        => Html::convDateTime($name['date']),
+                    'editor'      => User::getFriendlyNameById($stepform['users_id']),
+                    'date'        => Html::convDateTime($stepform['date']),
                     'delete_html' => $delete_html,
                 ];
             }
@@ -945,10 +949,12 @@ class Stepform extends CommonDBTM
         $cnt = count($stepforms);
 
         $cards = [];
-        foreach ($stepforms as $id => $name) {
+        // Same as showWaitingForm(): the row keeps the loop variable, the displayed name gets
+        // its own.
+        foreach ($stepforms as $id => $stepform) {
             $meta = new Metademand();
-            if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
-                $block_id  = $name['block_id'];
+            if ($meta->getFromDB($stepform['plugin_metademands_metademands_id'])) {
+                $block_id  = $stepform['block_id'];
                 $card_icon = "fa-share-alt";
                 if (!empty($meta->fields['icon'])) {
                     $card_icon = $meta->fields['icon'];
@@ -976,12 +982,12 @@ class Stepform extends CommonDBTM
                     'icon'            => $card_icon,
                     'is_fa'           => str_contains($card_icon, 'fa-'),
                     'name'            => $name,
-                    'created'         => sprintf(__('Created on %s'), Html::convDate($name['date'])),
+                    'created'         => sprintf(__('Created on %s'), Html::convDate($stepform['date'])),
                     'block_id'        => $block_id,
-                    'has_group_dest'  => $name['groups_id_dest'] > 0,
-                    'group_dest'      => $name['groups_id_dest'] > 0 ? \Group::getFriendlyNameById($name['groups_id_dest']) : '',
-                    'has_user_dest'   => $name['users_id_dest'] > 0,
-                    'user_dest'       => $name['users_id_dest'] > 0 ? getUserName($name['users_id_dest']) : '',
+                    'has_group_dest'  => $stepform['groups_id_dest'] > 0,
+                    'group_dest'      => $stepform['groups_id_dest'] > 0 ? \Group::getFriendlyNameById($stepform['groups_id_dest']) : '',
+                    'has_user_dest'   => $stepform['users_id_dest'] > 0,
+                    'user_dest'       => $stepform['users_id_dest'] > 0 ? getUserName($stepform['users_id_dest']) : '',
                     'delete_html'     => $delete_html,
                 ];
             }
