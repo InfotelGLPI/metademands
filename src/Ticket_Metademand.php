@@ -155,7 +155,6 @@ class Ticket_Metademand extends CommonDBTM
 
     public static function post_add_ticket($datas)
     {
-        global $DB;
         $fields = new Field();
         $fieldOption = new FieldOption();
         $groupticket = new \Group_Ticket();
@@ -200,16 +199,32 @@ class Ticket_Metademand extends CommonDBTM
         }
 
         if (!empty($reelassigntech)) {
-            foreach ($ticketuser->find(['tickets_id' => $datas->input['parent_tickets_id'], 'type' => \Ticket_User::ASSIGN]) as $id => $value) {
+            $tickets_id = (int) $datas->input['parent_tickets_id'];
+            $existing_groups = $groupticket->find(['tickets_id' => $tickets_id, 'type' => \Group_Ticket::ASSIGN]);
+            $existing_groups_ids = array_column($existing_groups, 'groups_id', 'id');
+
+            // Add the new groups first, through the CommonDBTM API: Group_Ticket::post_addItem()
+            // is what moves a new ticket to the "assigned" status, a raw insert skipped it.
+            foreach (array_keys($reelassigntech) as $groups_id) {
+                if (!in_array($groups_id, $existing_groups_ids)) {
+                    $groupticket->add([
+                        'tickets_id' => $tickets_id,
+                        'type'       => \Group_Ticket::ASSIGN,
+                        'groups_id'  => $groups_id,
+                    ]);
+                }
+            }
+
+            // Then remove the previous assignees: deleting them first would leave the ticket
+            // without any assignee, and the core would reset its status to "new".
+            foreach ($ticketuser->find(['tickets_id' => $tickets_id, 'type' => \Ticket_User::ASSIGN]) as $id => $value) {
                 $ticketuser->delete(['id' => $id]);
             }
 
-            foreach ($groupticket->find(['tickets_id' => $datas->input['parent_tickets_id'], 'type' => \Group_Ticket::ASSIGN]) as $id => $value) {
-                $groupticket->delete(['id' => $id]);
-            }
-
-            foreach ($reelassigntech as $id => $value) {
-                $DB->insert($groupticket->getTable(), ['tickets_id' => $datas->input['parent_tickets_id'], 'type' => \Group_Ticket::ASSIGN, 'groups_id' => $id]);
+            foreach ($existing_groups_ids as $id => $groups_id) {
+                if (!isset($reelassigntech[$groups_id])) {
+                    $groupticket->delete(['id' => $id]);
+                }
             }
         }
     }
