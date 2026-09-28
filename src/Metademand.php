@@ -1827,14 +1827,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $category,
                                 );
                                 if (Plugin::isPluginActive($plug) && $new_drop > 0) {
-                                    $display .= $new_drop . "<br>";
+                                    $display .= htmlescape((string) $new_drop) . "<br>";
                                     $pass = true;
                                 }
                             }
                         }
 
                         if (!$pass) {
-                            $display .= Dropdown::getDropdownName("glpi_itilcategories", $category) . "<br>";
+                            $display .= htmlescape(Dropdown::getDropdownName("glpi_itilcategories", $category)) . "<br>";
                         }
                     }
                 }
@@ -3986,7 +3986,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $message = sprintf(
                         __('Demand "%s" added with success', 'metademands'),
                         "<a href='" . $object_class::getFormURL(
-                        ) . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>",
+                        ) . "?id=" . (int) $parent_tickets_id . "'>" . htmlescape($parent_metademands_name) . "</a>",
                     );
                 } else {
                     $message = sprintf(
