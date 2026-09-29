@@ -142,6 +142,8 @@ if (isset($_POST['add'])) {
         }
     }
     $condition->check((int) $_POST['id'], UPDATE);
+    // The edit form never moves a condition to another metademand.
+    $input['plugin_metademands_metademands_id'] = $condition->fields['plugin_metademands_metademands_id'];
     $res = $condition->update($input);
     Html::back();
 } else {

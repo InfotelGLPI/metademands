@@ -163,19 +163,10 @@ class Freetable extends CommonDBTM
             ];
         }
 
-        $encoded_fields = json_encode($addfields);
-        $mandatory_encoded_fields = json_encode($is_mandatory);
-        $empty_value = \Dropdown::EMPTY_VALUE;
-        $types_encoded_fields = json_encode($types);
-        $dropdown_values_encoded_fields = json_encode($dropdown_values);
-        $root = PLUGIN_METADEMANDS_WEBDIR;
-
         $orderfollowup_is_active = 0;
         if (Plugin::isPluginActive('orderfollowup')) {
             $orderfollowup_is_active = 1;
         }
-
-        $existLine = json_encode(__('You can\'t create a new line when there is an existing one', 'metademands'));
 
         $lastid = 0;
         if (is_array($values) && count($values) > 0) {
@@ -183,40 +174,30 @@ class Freetable extends CommonDBTM
             $lastvalues = end($values);
             $lastid = $lastvalues['id'];
         }
-        $texttype = MetaFreetablefield::TYPE_TEXT;
-        $selecttype = MetaFreetablefield::TYPE_SELECT;
-        $numbertype = MetaFreetablefield::TYPE_NUMBER;
-        $readonlytype = MetaFreetablefield::TYPE_READONLY;
-        $datetype = MetaFreetablefield::TYPE_DATE;
-        $timetype = MetaFreetablefield::TYPE_TIME;
 
-        $script1 = "<script>
-                    $(document).ready(function (){
-                        window.metademandfreelinesparams$rand = {};
-                        metademandfreelinesparams$rand.existLine = $existLine;
-                        metademandfreelinesparams$rand.rand = '$rand';
-                        metademandfreelinesparams$rand.root = '$root';
-                        metademandfreelinesparams$rand.encoded_fields = $encoded_fields;
-                        metademandfreelinesparams$rand.mandatory_encoded_fields = $mandatory_encoded_fields;
-                        metademandfreelinesparams$rand.types_encoded_fields = $types_encoded_fields;
-                        metademandfreelinesparams$rand.dropdown_values_encoded_fields = $dropdown_values_encoded_fields;
-                        metademandfreelinesparams$rand.orderfollowupisactive = $orderfollowup_is_active;
-                        metademandfreelinesparams$rand.size = $size;
-                        metademandfreelinesparams$rand.empty_value = '$empty_value';
-                        metademandfreelinesparams$rand.plugin_metademands_metademands_id = $plugin_metademands_metademands_id;
-                        metademandfreelinesparams$rand.lastid = $lastid;
-                        metademandfreelinesparams$rand.text = $texttype;
-                        metademandfreelinesparams$rand.select = $selecttype;
-                        metademandfreelinesparams$rand.number = $numbertype;
-                        metademandfreelinesparams$rand.readonly = $readonlytype;
-                        metademandfreelinesparams$rand.date = $datetype;
-                        metademandfreelinesparams$rand.time = $timetype;
-                        if ($nb_values === 0) {
-                            addLine(window.metademandfreelinesparams$rand);
-                        }
-                    });
-
-               </script>";
+        // Parameters of public/scripts/metademands_freelines.js, exposed as
+        // window.metademandfreelinesparams<rand> by public/scripts/wizard_form.js
+        // (initFreetable) from the data-md-freetable-params attribute.
+        $freetable_params = [
+            'existLine' => __('You can\'t create a new line when there is an existing one', 'metademands'),
+            'rand' => (string) $rand,
+            'root' => PLUGIN_METADEMANDS_WEBDIR,
+            'encoded_fields' => $addfields,
+            'mandatory_encoded_fields' => $is_mandatory,
+            'types_encoded_fields' => $types,
+            'dropdown_values_encoded_fields' => $dropdown_values,
+            'orderfollowupisactive' => $orderfollowup_is_active,
+            'size' => $size,
+            'empty_value' => \Dropdown::EMPTY_VALUE,
+            'plugin_metademands_metademands_id' => (int) $plugin_metademands_metademands_id,
+            'lastid' => (int) $lastid,
+            'text' => MetaFreetablefield::TYPE_TEXT,
+            'select' => MetaFreetablefield::TYPE_SELECT,
+            'number' => MetaFreetablefield::TYPE_NUMBER,
+            'readonly' => MetaFreetablefield::TYPE_READONLY,
+            'date' => MetaFreetablefield::TYPE_DATE,
+            'time' => MetaFreetablefield::TYPE_TIME,
+        ];
 
         // Build data rows for the Twig template.
         $rows = [];
@@ -288,39 +269,18 @@ class Freetable extends CommonDBTM
         }
 
         $has_orderfollowup = Plugin::isPluginActive('orderfollowup');
-        $script2 = '';
+        // Grand total computed by public/scripts/wizard_form.js when the basket is
+        // validated, from the data-md-freetable-* attributes of the button.
+        $grandtotal = [];
         if ($has_orderfollowup) {
-            $stylereadonly = "style= \'white-space: nowrap;text-align: right;background-color: var(--tblr-bg-surface, #ffffff);\'";
             $conf = new Config();
             $conf->getFromDB(1);
             $tva = $conf->fields['use_tva'] ?? "20";
-            $tva_calc = $tva / 100;
-            $grandtotal = __('Grand total (TTC)', 'orderfollowup');
-            $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
-            $script2 = "<script>
-                    function saveInput_{$rand}() {
-                        var grandtotal = 0;
-                        var grandtotalht = 0;
-                        var tva = $tva_calc;
-                        $('#freetable_table{$rand} tr[id^=line_{$rand}_]').each(function () {
-                             grandtotal += $(this).find('[id^=unit_price_]').val() * $(this).find('[id^=quantity_]').val();
-                        });
-                        grandtotalht = grandtotal / (1 + tva);
-
-                        $('#freetable_table{$rand} tr[id^=line_{$rand}_]').css('background-color', 'var(--tblr-bg-surface, #f7f7f7)');
-                        let tr_grandtotal = document.getElementById('grandtotal_{$rand}');
-                        if (tr_grandtotal === null) {
-                             $('#freetable_table{$rand} tr[id^=line_{$rand}_]:last').after('<tr id=\"grandtotal_{$rand}\">' +
-                         '<th colspan=\"6\" style= \'background-color: var(--tblr-bg-surface, #ffffff);\' > $grandtotal </th><th $stylereadonly id=\"amount_grandtotal_{$rand}\" >' + grandtotal.toFixed(2) + ' €</th></tr>' +
-                          '<tr id=\"grandtotalht_{$rand}\">' +
-                         '<th colspan=\"6\" style= \'background-color: var(--tblr-bg-surface, #ffffff);\' > $grandtotalHT </th><th $stylereadonly id=\"amount_grandtotalht_{$rand}\" >' + grandtotalht.toFixed(2) + ' €</th></tr>');
-                        } else {
-                           $('#amount_grandtotal_{$rand}').text(grandtotal.toFixed(2) + ' €');
-                           $('#amount_grandtotalht_{$rand}').text(grandtotalht.toFixed(2) + ' €');
-                        }
-                        $('#nextBtn').show();
-                    }
-               </script>";
+            $grandtotal = [
+                'tva' => $tva / 100,
+                'label' => __('Grand total (TTC)', 'orderfollowup'),
+                'label_ht' => __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup'),
+            ];
         }
 
         echo $field;
@@ -328,10 +288,11 @@ class Freetable extends CommonDBTM
             'rand'              => $rand,
             'background_color'  => $background_color,
             'columns'           => $columns,
-            'script1_html'      => $script1,
+            'params'            => $freetable_params,
+            'autoadd'           => $nb_values === 0,
             'rows'              => $rows,
             'has_orderfollowup' => $has_orderfollowup,
-            'script2_html'      => $script2,
+            'grandtotal'        => $grandtotal,
             'validate_label'    => __('Validate the basket', 'metademands'),
         ]);
     }

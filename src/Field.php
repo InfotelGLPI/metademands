@@ -3030,7 +3030,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $input["item"] = "radio";
         }
 
-        return $input;
+        // The parent runs checkAttachedItemChangesAllowed(): moving the row to another
+        // parent requires CREATE on the new one and PURGE on the old one.
+        return parent::prepareInputForUpdate($input);
     }
 
     public function cleanDBonPurge()

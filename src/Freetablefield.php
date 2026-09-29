@@ -441,42 +441,14 @@ class Freetablefield extends CommonDBChild
         $internal_name_tooltip = ob_get_clean();
         $internal_name_input   = Html::input("internal_name_values[$rank]", ['size' => 20]);
 
-        // Cell 2: type dropdown + toggle script
+        // Cell 2: type dropdown; public/scripts/wizard_form.js toggles the dropdown
+        // values / comment cells of the rank on change (Html::select() escapes the tag).
         $types = self::getTypeFields(true);
         ob_start();
-        \Dropdown::showFromArray("type_values[$rank]", $types, ['on_change' => 'hideandshow(this.value)']);
+        \Dropdown::showFromArray("type_values[$rank]", $types, [
+            'specific_tags' => ['data-md-freetablefield-type' => $rank],
+        ]);
         $type_dropdown = ob_get_clean();
-
-        $type_script = "<script type='text/javascript'>";
-        $type_script .= "function hideandshow (type) {
-
-        if (type == 1) {
-            var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
-            for (var i = 0; i < span_dropdowns.length; i++) {
-                span_dropdowns[i].style.display = 'none';
-            }
-            var span_text = document.getElementsByClassName('newcomment$rank');
-            for (var j = 0; j < span_text.length; j++) {
-                span_text[j].style.display = 'initial';
-            }
-        } else if (type == 2) {
-            var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
-            for (var h = 0; h < span_dropdowns.length; h++) {
-                span_dropdowns[h].style.display = 'initial';
-            }
-            var span_text = document.getElementsByClassName('newcomment$rank');
-            for (var m = 0; m < span_text.length; m++) {
-                span_text[m].style.display = 'none';
-            }
-        } else if (type == 3) {
-            var span_dropdowns = document.getElementsByClassName('newdropdownvalue$rank');
-            for (var i = 0; i < span_dropdowns.length; i++) {
-                span_dropdowns[i].style.display = 'none';
-            }
-        }
-        ";
-        $type_script .= "};";
-        $type_script .= "</script>";
 
         // Cell 3: display name
         $display_name_input = Html::input("custom_values[$rank]", ['size' => 20]);
@@ -518,7 +490,6 @@ class Freetablefield extends CommonDBChild
             'internal_name_tooltip'    => $internal_name_tooltip,
             'internal_name_input'      => $internal_name_input,
             'type_dropdown'            => $type_dropdown,
-            'type_script'              => $type_script,
             'display_name_input'       => $display_name_input,
             'dropdown_values_tooltip'  => $dropdown_values_tooltip,
             'dropdown_values_textarea' => $dropdown_values_textarea,

@@ -26,13 +26,20 @@
  #}
 
 {#- Legacy-identical concatenation order: wrapper+canvas, optional existing-signature
- #  preview, buttons, result span, hidden input, then the script/css asset tags and the
- #  inline SignaturePad <script>. ids, name, labels and value are data and are escaped.
- #  script_tag / css_tag / inline_script are core-widget / generated output injected raw.
+ #  preview, buttons, result span, hidden input, then the script/css asset tags.
+ #  ids, name, labels, value and the data-md-signature-* attributes are data and are
+ #  escaped; the pad is bound by public/scripts/wizard_form.js (initSignature).
+ #  script_tag / css_tag are core Html::script() / Html::css() output injected raw.
  #  Escaping is byte-identical to the legacy htmlspecialchars(ENT_QUOTES) for valid UTF-8.
  #  One physical line so no inter-element whitespace enters the output. -#}
 <div class='wrapper'>
-    <canvas id='{{ canvas_id }}' class='signature-pad' width=400 height=100></canvas>
+    <canvas id='{{ canvas_id }}' class='signature-pad' width=400 height=100
+            data-md-signature='{{ field_id }}' data-md-signature-metademand='{{ metademands_id }}'
+            data-md-signature-mandatory='{{ is_mandatory }}' data-md-signature-save='{{ save_id }}'
+            data-md-signature-clear='{{ clear_id }}' data-md-signature-result='{{ result_id }}'
+            data-md-signature-hidden='{{ hidden_id }}' data-md-signature-add-url='{{ add_url }}'
+            data-md-signature-remove-url='{{ remove_url }}'
+            data-md-signature-messages='{{ messages|json_encode }}'></canvas>
 </div>{% if has_value %}
 <div id='existing-sign-{{ field_id }}'><img src='{{ picture_url }}' style='max-height:100px;border:1px solid #ccc;'>
 </div>{% endif %}<br>
@@ -41,5 +48,5 @@
     <button type='button' id='{{ clear_id }}' class='btn btn-primary'>{{ label_clear }}</button>
 </div><br><span class='result' id='{{ result_id }}'></span><input type='hidden' id='{{ hidden_id }}'
                                                                       name='{{ name }}'
-                                                                      value='{{ value }}'>{{ script_tag|raw }}{{ css_tag|raw }}{{ inline_script|raw }}
+                                                                      value='{{ value }}'>{{ script_tag|raw }}{{ css_tag|raw }}
 {#- -#}

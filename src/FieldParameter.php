@@ -746,7 +746,9 @@ class FieldParameter extends CommonDBChild
             $input['icon'] = 'NULL';
         }
 
-        return $input;
+        // The parent runs checkAttachedItemChangesAllowed(): moving the row to another
+        // parent requires CREATE on the new one and PURGE on the old one.
+        return parent::prepareInputForUpdate($input);
     }
 
     public function post_addItem()

@@ -27,6 +27,23 @@
 
 var i = 0;
 
+/**
+ * Parameters of the free table field_id. With several free tables in one form,
+ * window.metademandfreelinesparams only holds the last table addLine() ran for:
+ * falling back on it rebuilt an edited line with another table's columns.
+ *
+ * @param {string|number} field_id
+ * @param {Object} [params]
+ *
+ * @return {Object}
+ */
+function freelinesParams(field_id, params)
+{
+    return params
+        || window['metademandfreelinesparams' + field_id]
+        || window.metademandfreelinesparams;
+}
+
 // metademandfreelinesparams.existLine = '$existLine';
 // metademandfreelinesparams.rand = '$rand';
 // metademandfreelinesparams.root = '$root';
@@ -106,11 +123,11 @@ function addLine(metademandfreelinesparams)
 
             });
 
-            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" onclick=\"confirmUpdateLine(this, '+ i +', 1, ' + fields_id + ', window.metademandfreelinesparams' + fields_id + ')\">';
+            var str = '<button class =\"btn btn-success add_item\" type = \"button\" name =\"add_item\" data-md-freetable-confirm=\"' + fields_id + '\" data-md-freetable-line=\"' + i + '\">';
             tabbutton = '<td style=\"text-align: right;\" colspan=\"2\">'
                 + str
                 + '<i class =\"ti ti-check\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine(' + i + ', ' + fields_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button data-md-freetable-remove=\"' + fields_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td>'
                 + '</tr>';
 
@@ -148,14 +165,14 @@ function addLine(metademandfreelinesparams)
                 }
             });
             var btn = '<button class="btn btn-success add_item" type="button" name="add_item" ' +
-                'onclick="confirmUpdateLine(this,' + i + ',1,' + fields_id + ',window.metademandfreelinesparams' + fields_id + ')">' +
+                'data-md-freetable-confirm="' + fields_id + '" data-md-freetable-line="' + i + '">' +
                 '<i class="ti ti-check"></i></button>';
 
             tabbutton = '<td style="text-align:center;" colspan="2">'
                 + btn
                 + '</td>'
                 + '<td style="text-align:center;">'
-                + '<button onclick="removeLine(' + i + ',' + fields_id + ')" class="btn btn-danger" type="button">'
+                + '<button data-md-freetable-remove="' + fields_id + '" data-md-freetable-line="' + i + '" class="btn btn-danger" type="button">'
                 + '<i class="ti ti-trash"></i></button>'
                 + '</td></tr>';
             var joined = [tabtr, tabfields, tabbutton].join(' ');
@@ -172,7 +189,7 @@ function addLine(metademandfreelinesparams)
 function confirmUpdateLine(node, nb, typepost, field_id, newparams)
 {
 
-    const params = newparams || window.metademandfreelinesparams;
+    const params = freelinesParams(field_id, newparams);
 
     var fields = params.encoded_fields;
     var type_fields = params.types_encoded_fields;
@@ -321,9 +338,9 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 }
 
             });
-            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick =\"editLine(' + i +', ' + field_id +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
+            tabbutton = '<td></td><td style=\"text-align: center;\"><button data-md-freetable-edit=\"' + field_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                 + '<i class =\"ti ti-pencil\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ', ' + field_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button data-md-freetable-remove=\"' + field_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td></tr>'
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
@@ -380,9 +397,9 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                 }
 
             });
-            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick=\"editLine(' + i +', ' + field_id +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
+            tabbutton = '<td></td><td style=\"text-align: center;\"><button data-md-freetable-edit=\"' + field_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                 + '<i class =\"ti ti-pencil\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick =\"removeLine( ' + i + ', ' + field_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button data-md-freetable-remove=\"' + field_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td></tr>'
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
@@ -439,9 +456,9 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                     tabfields.push('<td $style><input add=4 id=\"' + index + '_' + i + '\" type=\"time\" name=\"' + index + '\"  disabled ></td>');
                 }
             });
-            tabbutton = '<td></td><td style=\"text-align: center;\"><button onclick=\"editLine(' + i +', ' + field_id +')\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
+            tabbutton = '<td></td><td style=\"text-align: center;\"><button data-md-freetable-edit=\"' + field_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-info\" type = \"button\" name =\"edit_item\">'
                 + '<i class =\"ti ti-pencil\"></i></button></td>'
-                + '<td style=\"text-align: center;\"><button onclick=\"removeLine( ' + i + ', ' + field_id +')\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
+                + '<td style=\"text-align: center;\"><button data-md-freetable-remove=\"' + field_id + '\" data-md-freetable-line=\"' + i + '\" class =\"btn btn-danger\" type = \"button\" name =\"delete_item\">'
                 + '<i class =\"ti ti-trash\"></i></button></td></tr>'
 
             var joined = [tabtr, tabfields, tabbutton].join(' ');
@@ -499,7 +516,7 @@ function showConfirmButton(field_id)
 
 function removeLine(l, field_id, newparams)
 {
-    const params = newparams || window.metademandfreelinesparams;
+    const params = freelinesParams(field_id, newparams);
 
     $('#line_' + field_id + '_' + l).remove();
     var line = {
@@ -528,7 +545,7 @@ function removeLine(l, field_id, newparams)
 
 function editLine(l, field_id, newparams)
 {
-    const params = newparams || window.metademandfreelinesparams;
+    const params = freelinesParams(field_id, newparams);
 
     let line = document.querySelector('#line_' + field_id + '_' + l);
 
@@ -562,7 +579,7 @@ function editLine(l, field_id, newparams)
     button.appendChild(ico);
     button.dataset.id = l;
     button.addEventListener('click', function () {
-        confirmUpdateLine(this, l, 2, field_id, newparams);
+        confirmUpdateLine(this, l, 2, field_id, params);
     });
     td.appendChild(button);
     line.appendChild(td);
@@ -578,7 +595,7 @@ function editLine(l, field_id, newparams)
     button1.appendChild(ico1);
     button1.dataset.id = l;
     button1.addEventListener('click', function () {
-        removeLine(this.dataset.id, field_id, newparams);
+        removeLine(this.dataset.id, field_id, params);
     });
     td1.appendChild(button1);
     line.appendChild(td1);

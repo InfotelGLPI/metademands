@@ -26,12 +26,13 @@
  #}
 
 {#- Cell contract: {t: text} is auto-escaped (Reference/Designation), {h: html} is
- #  injected raw (pre-sanitized getSafeHtml description, captured widget + inline
- #  script, formatted price, checkbox input). Optional {attrs} for the total-display
+ #  injected raw (pre-sanitized getSafeHtml description, core quantity widget,
+ #  formatted price, checkbox input). With several lines, the search inputs are
+ #  bound by public/scripts/wizard_form.js through data-md-basket-search. Optional {attrs} for the total-display
  #  td. background_style / header labels / placeholders carry data (admin colour,
  #  translations) and are escaped. Rendered on one physical line so
  #  no inter-element whitespace enters the output; the harness trims edge whitespace. -#}
-<table class='tab_cadre_fixehov' style='{{ background_style }}'>
+<table class='tab_cadre_fixehov' style='{{ background_style }}'{% if nb > 1 %} data-md-basket-search='{{ search_id }}'{% endif %}>
     <tr class='tab_bg_1'>{% for header in headers %}
             <th style='{{ header.style }}'>{{ header.label }}</th>{% endfor %}</tr>{% if nb > 1 %}
     <tr class='tab_bg_1'>
@@ -48,5 +49,5 @@
         <tr class='tab_bg_1'>{% for cell in row %}{% if cell.t is defined %}
             <td>{{ cell.t }}</td>{% else %}
             <td{{ cell.attrs|raw }}>{{ cell.h|raw }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>
-</table>{{ search_script|raw }}
+</table>
 {#- -#}

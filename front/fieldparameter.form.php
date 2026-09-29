@@ -162,6 +162,8 @@ if (isset($_POST["add"])) {
 
     // With -1 the requested right was never evaluated; bind the control to the posted row.
     $fieldparameter->check((int) $_POST['id'], UPDATE);
+    // The edit form never moves the parameters to another field.
+    $_POST['plugin_metademands_fields_id'] = $fieldparameter->fields['plugin_metademands_fields_id'];
 
     if ($field->fields['type'] == 'yesno') {
         unset($_POST['default_values']);

@@ -30,12 +30,14 @@
  #
  # Expected context:
  #  - css_html     string  wizard stylesheet tag
- #  - rand         int     suffix of the generated loadForm<rand>() function
+ #  - users_id     int     requester posted when a form is opened
+ #  - load_url, wizard_url  string  endpoint restoring a form / wizard it opens in
  #  - cnt          int     number of pending forms
  #  - header_icon  string  icon class, header_is_fa tells which family it belongs to
  #  - header_is_fa bool
  #  - cards        list    [{id, metaID, block_id, icon, is_fa, name, editor, date, delete_html}, ...]
- #  - script_html  string  inline loadForm<rand>() definition, built from PHP values
+ #
+ #  A card opens its form through public/scripts/wizard_form.js (data-md-stepform-*).
  #}
 
 {{ css_html|raw }}
@@ -56,12 +58,14 @@
     </div>
     <div class="card-body">
         {% if cards %}
-            <div id="listmeta" class="row row-cards">
+            <div id="listmeta" class="row row-cards" data-md-stepform-users-id="{{ users_id }}"
+                 data-md-stepform-load-url="{{ load_url }}" data-md-stepform-wizard-url="{{ wizard_url }}">
                 {% for card in cards %}
                     <div class="col-sm-6 col-md-4 col-xl-3 mb-3">
                         <div class="card h-100">
                             <a href="#" class="card-body text-center text-reset text-decoration-none"
-                               onclick="loadForm{{ rand }}('{{ card.id }}', '{{ card.metaID }}', '{{ card.block_id }}'); return false;">
+                               data-md-stepform="{{ card.id }}" data-md-stepform-meta="{{ card.metaID }}"
+                               data-md-stepform-block="{{ card.block_id }}">
                                 {% if card.is_fa %}
                                     <i class="fas {{ card.icon }} fa-4x"
                                        style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
@@ -85,5 +89,3 @@
         {% endif %}
     </div>
 </div>
-
-{{ script_html|raw }}

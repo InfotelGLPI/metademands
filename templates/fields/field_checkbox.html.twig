@@ -25,6 +25,8 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- hide_blocks: block numbers hidden on each click on the option, handled by
+ #  public/scripts/wizard_form.js (data-md-hide-blocks). -#}
 {%- if is_simple -%}
     <input class='form-check-input' type='checkbox' name='{{ namefield }}[{{ id }}]'
            value='checkbox' {{ simple_checked|raw }}>
@@ -51,7 +53,7 @@
                                                                                 name='{{ namefield }}[{{ id }}][{{ opt.key }}]'
                                                                                 key='{{ opt.key }}'
                                                                                 id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                                value='{{ opt.key }}' {{ opt.checked|raw }}>
+                                                                                value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %} {{ opt.checked|raw }}>
                         </div>
                     </div>
                 </label></div>
@@ -61,7 +63,7 @@
                                                                                name='{{ namefield }}[{{ id }}][{{ opt.key }}]'
                                                                                key='{{ opt.key }}'
                                                                                id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                               value='{{ opt.key }}' {{ opt.checked|raw }}><label
+                                                                               value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %} {{ opt.checked|raw }}><label
                     class='form-check-label'
                     for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span
                         style='vertical-align: bottom;'>{{ opt.comment_tooltip_html|raw }}</span>{% endif %}</label>

@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Metademands\Fields;
 
-use Ajax;
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
@@ -150,8 +149,8 @@ class Basket extends CommonDBTM
         $nb = count($materials);
 
         // Capture-and-render: the tabular/conditional logic and the ordermaterial /
-        // orderfollowup integration stay in PHP; the widget (showNumber), the inline
-        // total-row script (Ajax::updateItemJsCode), the checkbox input and the
+        // orderfollowup integration stay in PHP; the widget (showNumber, carrying the
+        // data-md-totalrow-* attributes read by wizard_form.js), the checkbox input and the
         // sanitized description (getSafeHtml) are captured as raw strings and injected
         // via |raw at their exact positions. Reference / Designation are passed as raw
         // text so the template auto-escapes them (defense-in-depth). background_color,
@@ -282,18 +281,12 @@ class Basket extends CommonDBTM
                     }
                 }
 
-                $functiontotal = "plugin_metademands_load_totalrow" . $key;
-
-                $rand = mt_rand();
-                $name_field = "dropdown_quantity[" . $data['id'] . "][" . $key . "]";
-
                 $opt = [
                     'min' => 0,
                     'max' => 1000,
                     'step' => 1,
                     'display' => false,
-                    'rand' => $rand,
-                    'on_change' => $functiontotal . '()',
+                    'specific_tags' => [],
                 ];
 
                 if (isset($value) && is_array($value)) {
@@ -308,15 +301,11 @@ class Basket extends CommonDBTM
                     $opt['specific_tags'] = ['required' => 'required', 'ismultiplenumber' => 'ismultiplenumber'];
                 }
 
-                $qty_html = \Dropdown::showNumber("quantity[" . $data['id'] . "][" . $key . "]", $opt);
-
                 $check_hidden = $namefield . "[" . $data['id'] . "]";
                 $name_hidden = $namefield . "[" . $data['id'] . "][" . $key . "]";
-                $qty_html .= "<script type='text/javascript'>";
-                $qty_html .= "function plugin_metademands_load_totalrow$key(){";
+                // The quantity is added by public/scripts/wizard_form.js on each change.
                 $params = [
                     'action' => 'loadTotalrow',
-                    'quantity' => '__VALUE__',
                     'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
                     'check' => $check_hidden,
                     'name' => $name_hidden,
@@ -345,21 +334,13 @@ class Basket extends CommonDBTM
                     }
                 }
                 $rand_totalrow = mt_rand();
-                $qty_html .= Ajax::updateItemJsCode(
-                    'plugin_metademands_totalrow' . $rand_totalrow,
-                    PLUGIN_METADEMANDS_WEBDIR . '/ajax/totalrow.php',
-                    $params,
-                    $name_field . $rand,
-                    false,
-                );
+                // Line total reloaded by public/scripts/wizard_form.js on each change of
+                // the quantity. Html::select() escapes the attributes.
+                $opt['specific_tags']['data-md-totalrow-target'] = 'plugin_metademands_totalrow' . $rand_totalrow;
+                $opt['specific_tags']['data-md-totalrow-url'] = PLUGIN_METADEMANDS_WEBDIR . '/ajax/totalrow.php';
+                $opt['specific_tags']['data-md-totalrow-params'] = json_encode($params);
 
-                //                $params_total = ['action' => 'loadGrandTotal'];
-                //                $field .= Ajax::updateItemJsCode('plugin_ordermaterial_grandtotal',
-                //                    PLUGIN_ORDERMATERIAL_WEBDIR . '/ajax/totalrow.php',
-                //                    $params_total, $name_field . $rand, false);
-                $qty_html .= "}";
-
-                $qty_html .= "</script>";
+                $qty_html = \Dropdown::showNumber("quantity[" . $data['id'] . "][" . $key . "]", $opt);
 
                 $cells[] = ['h' => $qty_html];
 
@@ -448,17 +429,6 @@ class Basket extends CommonDBTM
             }
         }
 
-        $search_script = "";
-        if ($nb > 1) {
-            // basketSearchInit() lives in metademands.js, loaded in the footer via the
-            // ADD_JAVASCRIPT hook. This inline script runs at parse time, before the footer
-            // script exists, so defer the call until the function is defined.
-            $search_script .= "<script>";
-            $search_script .= "(function(){var run=function(){basketSearchInit($search_id);};";
-            $search_script .= "if(typeof basketSearchInit==='function'){run();}";
-            $search_script .= "else{document.addEventListener('DOMContentLoaded',run);}})();";
-            $search_script .= "</script>";
-        }
 
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_basket.html.twig',
@@ -471,7 +441,6 @@ class Basket extends CommonDBTM
                 'ph_name' => __('Search for names..', 'metademands'),
                 'ph_desc' => __('Search for description..', 'metademands'),
                 'rows' => $rows,
-                'search_script' => $search_script,
             ],
         );
     }

@@ -802,7 +802,6 @@ class Stepform extends CommonDBTM
 
     private function showWaitingForm()
     {
-        $rand = mt_rand();
 
         $stepforms = self::getWaitingForms();
 
@@ -863,45 +862,17 @@ class Stepform extends CommonDBTM
             }
         }
 
-        $users_id = Session::getLoginUserID();
-        $step     = 2;
-        $script_html = "<script>
-                      var step = {$step};
-                      function loadForm$rand(form_id, meta_id, block_id) {
-                         $('#ajax_loader').show();
-
-                         var data_send = {plugin_metademands_stepforms_id: form_id,
-                                         metademands_id: meta_id,
-                                         block_id: block_id,
-                                         _users_id_requester: $users_id,
-                                      };
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadstepform.php',
-                                type: 'POST',
-                                data: data_send,
-                                success: function(response){
-                                    if (response == 0) {
-                                       $('#ajax_loader').hide();
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step  + '&block_id=' + block_id;
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                      console.log(xhr);
-                                      console.log(status);
-                                      console.log(error);
-                                    }
-                             });
-                       };
-                     </script>";
 
         TemplateRenderer::getInstance()->display('@metademands/forms/stepform_waiting_form.html.twig', [
             'css_html'     => Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php"),
-            'rand'         => $rand,
             'cnt'          => $cnt,
             'header_icon'  => $icon,
             'header_is_fa' => str_contains($icon, 'fa-'),
             'cards'        => $cards,
-            'script_html'  => $script_html,
+            // Read by public/scripts/wizard_form.js when a card is clicked.
+            'users_id'     => Session::getLoginUserID(),
+            'load_url'     => PLUGIN_METADEMANDS_WEBDIR . '/ajax/loadstepform.php',
+            'wizard_url'   => PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php',
         ]);
     }
 

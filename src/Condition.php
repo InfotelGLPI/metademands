@@ -142,14 +142,68 @@ class Condition extends CommonDBChild
         return $input;
     }
 
+    /**
+     * Reject a triggering field that does not belong to the metademand of the condition.
+     *
+     * The core connexity check only covers the parent key (the metademand); the
+     * triggering field is a second foreign key, chosen in the form among the fields
+     * of that same metademand.
+     *
+     * @param array $input
+     *
+     * @return array|false
+     */
+    private function checkTriggeringFieldInput(array $input)
+    {
+        if (!isset($input['plugin_metademands_fields_id'])) {
+            return $input;
+        }
+
+        $metademands_id = $input['plugin_metademands_metademands_id']
+            ?? $this->fields['plugin_metademands_metademands_id']
+            ?? 0;
+
+        $field = new Field();
+        if (
+            !$field->getFromDB((int) $input['plugin_metademands_fields_id'])
+            || (int) $field->fields['plugin_metademands_metademands_id'] !== (int) $metademands_id
+        ) {
+            Session::addMessageAfterRedirect(
+                __('You have to select an item', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        return $input;
+    }
+
     public function prepareInputForAdd($input)
     {
-        return $this->checkRegexInput($input);
+        $input = $this->checkRegexInput($input);
+        if ($input === false) {
+            return false;
+        }
+
+        return $this->checkTriggeringFieldInput($input);
     }
 
     public function prepareInputForUpdate($input)
     {
-        return $this->checkRegexInput($input);
+        $input = $this->checkRegexInput($input);
+        if ($input === false) {
+            return false;
+        }
+
+        $input = $this->checkTriggeringFieldInput($input);
+        if ($input === false) {
+            return false;
+        }
+
+        // The parent runs checkAttachedItemChangesAllowed(): moving the row to another
+        // parent requires CREATE on the new one and PURGE on the old one.
+        return parent::prepareInputForUpdate($input);
     }
 
 

@@ -464,7 +464,6 @@ class TicketField extends CommonDBChild
         $ma_bottom_html = '';
         $close_form_html = '';
         $check_all_html = '';
-        $scripts_html = '';
         $rows = [];
 
         if ($has_rows) {
@@ -488,28 +487,18 @@ class TicketField extends CommonDBChild
                 }
                 Session::addToNavigateListItems($this->getType(), $id);
 
-                $edit_function = 'viewEditTicketField' . $id . $rand;
-                $update_js = Ajax::updateItemJsCode(
-                    "viewticketchild" . $meta_id . $rand,
-                    $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                    ['type' => __CLASS__,
-                        'parenttype' => Metademand::class,
-                        Metademand::getForeignKeyField() => $meta_id,
-                        'id' => $id,
-                    ],
-                    "",
-                    false,
-                );
-                $scripts_html .= "<script type='text/javascript'>\n"
-                    . "function " . $edit_function . "() {\n"
-                    . $update_js . ";\n}\n"
-                    . "</script>\n";
 
                 $display_datas = [$searchOption[$value['num']]['field'] => $value['value']];
 
                 $rows[] = [
                     'checkbox_html' => $canedit ? Html::getMassiveActionCheckBox(__CLASS__, $id) : '',
-                    'edit_function' => $edit_function,
+                    // Loaded into the edit pane by public/scripts/wizard_form.js.
+                    'edit_params' => [
+                        'type' => __CLASS__,
+                        'parenttype' => Metademand::class,
+                        Metademand::getForeignKeyField() => $meta_id,
+                        'id' => $id,
+                    ],
                     'label' => $fields[$value['num']],
                     'mandatory_mark' => $tt->getMandatoryMark($fieldnames[$value['num']]),
                     'value_html' => $obj->getValueToDisplay(
@@ -539,7 +528,8 @@ class TicketField extends CommonDBChild
             'ma_bottom_html' => $ma_bottom_html,
             'close_form_html' => $close_form_html,
             'check_all_html' => $check_all_html,
-            'scripts_html' => $scripts_html,
+            'edit_target' => 'viewticketchild' . $meta_id . $rand,
+            'edit_url' => $CFG_GLPI['root_doc'] . '/ajax/viewsubitem.php',
             'rows' => $rows,
         ]);
     }

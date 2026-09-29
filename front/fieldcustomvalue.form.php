@@ -155,8 +155,9 @@ if (isset($_POST["add"])) {
         // The control was made on $_POST with a new id: it authorised nothing and did not even look
         // at the rows being written. Bind it to each identifier of the batch instead.
         foreach ($inputs as $key => $input) {
-            $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
             $fieldcustom->check((int) $input['id'], UPDATE);
+            // The edit form never moves a value to another field.
+            $input['plugin_metademands_fields_id'] = $fieldcustom->fields['plugin_metademands_fields_id'];
             $fieldcustom->update($input);
         }
     }

@@ -81,13 +81,6 @@ class Signature extends CommonDBTM
         $hidden_id = "hiddenId-$field_id";
         $result_id = "result-$field_id";
 
-        // json_encode safely escapes quotes and special chars in translated strings
-        $msg_add        = json_encode("<i class=\"ti ti-circle-check fa-1x\" style=\"color:forestgreen\"></i> " . __('Your signature has been uploaded', 'metademands'));
-        $msg_remove     = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('Your signature has been deleted', 'metademands'));
-        $msg_failadd    = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('There was a problem on upload your signature', 'metademands'));
-        $msg_failremove = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('There was a problem on delete your signature', 'metademands'));
-        $msg_mandatory  = json_encode("<i class=\"ti ti-circle-x fa-1x\" style=\"color:darkred\"></i> " . __('This field is mandatory', 'metademands'));
-
         $has_value = !empty($value);
         // Show existing signature as preview when editing a saved value.
         // picture_url and value are auto-escaped by {{ }} in the template
@@ -100,83 +93,6 @@ class Signature extends CommonDBTM
 
         $script_tag = Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
         $css_tag    = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
-
-        // IIFE to scope all variables — supports multiple Signature fields per page
-        $inline_script = "<script type='text/javascript'>
-        (function () {
-            var signaturePad = new SignaturePad(document.getElementById('$canvas_id'), {
-                backgroundColor: 'rgba(255, 255, 255, 0)',
-                penColor: 'rgb(0, 0, 0)'
-            });
-            var saveButton   = document.getElementById('$save_id');
-            var clearButton  = document.getElementById('$clear_id');
-            var resultEl     = document.getElementById('$result_id');
-            var hiddenInput  = document.getElementById('$hidden_id');
-            var meta_id      = $metademands_id;
-            var is_mandatory = $is_mandatory;
-            var field_id     = $field_id;
-            var msg_add        = $msg_add;
-            var msg_remove     = $msg_remove;
-            var msg_failadd    = $msg_failadd;
-            var msg_failremove = $msg_failremove;
-            var msg_mandatory  = $msg_mandatory;
-            var hasDrawn = false;
-
-            if (is_mandatory) {
-                sessionStorage.setItem('mandatory_sign_' + field_id, field_id);
-            }
-
-            saveButton.addEventListener('click', function () {
-                let datasign = '';
-                if (!signaturePad.isEmpty()) {
-                    datasign = signaturePad.toDataURL('image/png');
-                    hasDrawn = true;
-                }
-                if (!hasDrawn && is_mandatory) {
-                    resultEl.innerHTML = msg_mandatory;
-                    return;
-                }
-                if (hasDrawn) {
-                    $.ajax({
-                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addsignature.php',
-                        type: 'POST',
-                        dataType: 'html',
-                        data: { datasign: datasign, metademands_id: meta_id },
-                        success: function (response) {
-                            resultEl.innerHTML = msg_add;
-                            hiddenInput.value = response;
-                            sessionStorage.removeItem('mandatory_sign_' + field_id);
-                        },
-                        error: function () {
-                            resultEl.innerHTML = msg_failadd;
-                        }
-                    });
-                }
-            });
-
-            clearButton.addEventListener('click', function () {
-                signaturePad.clear();
-                hasDrawn = false;
-                let datasign = hiddenInput.value;
-                $.ajax({
-                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/removesignature.php',
-                    type: 'POST',
-                    dataType: 'html',
-                    data: { metademands_id: meta_id, datasign: datasign },
-                    success: function () {
-                        resultEl.innerHTML = msg_remove;
-                        hiddenInput.value = '';
-                        if (is_mandatory) {
-                            sessionStorage.setItem('mandatory_sign_' + field_id, field_id);
-                        }
-                    },
-                    error: function () {
-                        resultEl.innerHTML = msg_failremove;
-                    }
-                });
-            });
-        })();
-        </script>";
 
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_signature.html.twig',
@@ -195,7 +111,18 @@ class Signature extends CommonDBTM
                 'value'         => $value ?? '',
                 'script_tag'    => $script_tag,
                 'css_tag'       => $css_tag,
-                'inline_script' => $inline_script,
+                // Read by public/scripts/wizard_form.js (initSignature).
+                'metademands_id' => $metademands_id,
+                'is_mandatory'   => $is_mandatory,
+                'add_url'        => PLUGIN_METADEMANDS_WEBDIR . '/ajax/addsignature.php',
+                'remove_url'     => PLUGIN_METADEMANDS_WEBDIR . '/ajax/removesignature.php',
+                'messages'       => [
+                    'add'        => __('Your signature has been uploaded', 'metademands'),
+                    'remove'     => __('Your signature has been deleted', 'metademands'),
+                    'failadd'    => __('There was a problem on upload your signature', 'metademands'),
+                    'failremove' => __('There was a problem on delete your signature', 'metademands'),
+                    'mandatory'  => __('This field is mandatory', 'metademands'),
+                ],
             ],
         );
     }

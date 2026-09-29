@@ -96,9 +96,8 @@ class Checkbox extends CommonDBTM
         }
 
         // Build the option list with raw text (Twig auto-escapes name/icon) and pre-sanitized
-        // rich HTML for comments; per-option toggle scripts are collected and echoed after render.
+        // rich HTML for comments.
         $options = [];
-        $scripts = "";
         if (count($custom_values) > 0) {
             foreach ($custom_values as $key => $label) {
                 $checked = "";
@@ -141,19 +140,6 @@ class Checkbox extends CommonDBTM
                     );
                 }
 
-                $options[] = [
-                    'key'                  => $key,
-                    'name'                 => $name,
-                    'checked'              => $checked,
-                    'required'             => $required,
-                    'has_comment'          => $has_comment,
-                    'comment_html'         => $comment_html,
-                    'comment_tooltip_html' => $comment_tooltip_html,
-                    'has_icon'             => !empty($icon),
-                    'icon'                 => (string) $icon,
-                    'icon_is_fa'           => str_contains((string) $icon, 'fa-'),
-                ];
-
                 $childs_blocks = [];
                 $fieldopt = new FieldOption();
                 if ($opts = $fieldopt->find(
@@ -166,27 +152,27 @@ class Checkbox extends CommonDBTM
                     }
                 }
 
-                if (isset($childs_blocks[$key])) {
-                    $id = $data['id'];
-                    $script = "<script type='text/javascript'>";
-                    $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
-                    $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
-
-                    foreach ($childs_blocks[$key] as $customvalue => $childs) {
-                        // Block numbers are cast here as well as normalized on write:
-                        // the value below sits in expression position, where no amount
-                        // of escaping would make a non numeric value safe.
-                        $childs = (int) $childs;
-                        $script .= "sessionStorage.setItem('hiddenbloc$childs', $childs);";
-                        $script .= FieldOption::resetMandatoryBlockFields($childs);
-                        $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
-                    }
-                    $script .= "}";
-                    $script .= "})";
-                    $script .= "</script>";
-
-                    $scripts .= $script;
+                // Blocks hidden (and their fields made optional) on each click on the
+                // option, by public/scripts/wizard_form.js. The legacy script targeted
+                // the ids of the "field" namespace only, hence the guard.
+                $hide_blocks = [];
+                if ($namefield === 'field' && isset($childs_blocks[$key])) {
+                    $hide_blocks = array_values(array_map('intval', (array) $childs_blocks[$key]));
                 }
+
+                $options[] = [
+                    'key'                  => $key,
+                    'name'                 => $name,
+                    'checked'              => $checked,
+                    'required'             => $required,
+                    'has_comment'          => $has_comment,
+                    'comment_html'         => $comment_html,
+                    'comment_tooltip_html' => $comment_tooltip_html,
+                    'has_icon'             => !empty($icon),
+                    'icon'                 => (string) $icon,
+                    'icon_is_fa'           => str_contains((string) $icon, 'fa-'),
+                    'hide_blocks'          => $hide_blocks,
+                ];
             }
         }
 
@@ -199,7 +185,6 @@ class Checkbox extends CommonDBTM
             'id'             => $data['id'],
             'options'        => $options,
         ]);
-        echo $scripts;
     }
 
     public static function showFieldCustomValues($params)

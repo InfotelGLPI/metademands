@@ -25,9 +25,14 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- The add / edit / remove / validate buttons and the initial empty line are bound by
+ #  public/scripts/wizard_form.js (initFreetable and delegated handlers) from the
+ #  data-md-freetable-* attributes, which Twig escapes. -#}
 {%- apply spaceless -%}
 <table class='tab_cadre' width='100%' id='freetable_table{{ rand }}'
-       style='overflow: auto;width:100%;{{ background_color }}'>
+       style='overflow: auto;width:100%;{{ background_color }}'
+       data-md-freetable='{{ rand }}' data-md-freetable-params='{{ params|json_encode }}'
+       {%- if autoadd %} data-md-freetable-autoadd='1'{% endif %}>
     <tr class='tab_bg_1'>
         {%- for col in columns -%}
             <th style='text-align: left;{{ background_color }}'>{{- col.label -}}
@@ -35,11 +40,8 @@
                 {{- col.tooltip_html|raw -}}
             </th>
         {%- endfor -%}
-        {%- endapply -%}
-        {{- script1_html|raw -}}
-        {%- apply spaceless -%}
         <th style='text-align: right;{{ background_color }}' colspan='4'
-            onclick='addLine(window.metademandfreelinesparams{{ rand }})'><i class='ti ti-plus btn btn-info'></i></th>
+            data-md-freetable-add='{{ rand }}'><i class='ti ti-plus btn btn-info'></i></th>
     </tr>
     {%- for row in rows -%}
         <tr name="data" id="line_{{ rand }}_{{ row.idline }}" disabled>
@@ -68,11 +70,11 @@
                 <td id="linetotal_{{ row.idline }}">{{ row.linetotal }} €</td>
             {%- endif -%}
             <td>
-                <button onclick="editLine({{ row.idline }}, {{ rand }}, window.metademandfreelinesparams{{ rand }})"
+                <button data-md-freetable-edit='{{ rand }}' data-md-freetable-line='{{ row.idline }}'
                         class="btn btn-info" type="button" name="edit_item"><i class="ti ti-pencil"></i></button>
             </td>
             <td>
-                <button onclick="removeLine({{ row.idline }}, {{ rand }}, window.metademandfreelinesparams{{ rand }})"
+                <button data-md-freetable-remove='{{ rand }}' data-md-freetable-line='{{ row.idline }}'
                         class="btn btn-danger" type="button" name="delete_item"><i class="ti ti-trash"></i></button>
             </td>
         </tr>
@@ -80,12 +82,14 @@
 </table>
 {%- endapply -%}
 {%- if has_orderfollowup -%}
-    {{- script2_html|raw -}}
     {%- apply spaceless -%}
         <table class='tab_cadre' width='100%' style='overflow: auto;width:100%;{{ background_color }}'>
             <tr class='tab_bg_1'>
                 <td colspan='8' style='text-align:center;'>
-                    <button onclick='saveInput_{{ rand }}()' type='button' id='add_freeinputs_{{ rand }}'
+                    <button data-md-freetable-validate='{{ rand }}' type='button' id='add_freeinputs_{{ rand }}'
+                            data-md-freetable-tva='{{ grandtotal.tva }}'
+                            data-md-freetable-label='{{ grandtotal.label }}'
+                            data-md-freetable-label-ht='{{ grandtotal.label_ht }}'
                             class='btn btn-primary' style='display: none;'>
                         <span>{{ validate_label }}</span>
                     </button>

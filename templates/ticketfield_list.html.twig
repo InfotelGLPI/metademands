@@ -34,10 +34,6 @@
         </table>
     </div>
 {% else %}
-    {# Emitted before the table: the legacy code placed one <script> per row directly
-       inside <table>, where the parser hoists it out anyway. #}
-    {{ scripts_html|raw }}
-
     <div class="center first-bloc left">
         {% if canedit %}
             {{ open_form_html|raw }}
@@ -62,7 +58,9 @@
                     </td>
                     <td>
                         {% if canedit %}
-                            <a href="javascript:{{ row.edit_function }}();">{{ row.label }}</a>
+                            {# Loaded into edit_target by public/scripts/wizard_form.js. #}
+                            <a href="#" data-md-subitem-target="{{ edit_target }}" data-md-subitem-url="{{ edit_url }}"
+                               data-md-subitem-params="{{ row.edit_params|json_encode }}">{{ row.label }}</a>
                         {% else %}
                             {{ row.label }}
                         {% endif %}

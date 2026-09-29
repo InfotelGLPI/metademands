@@ -190,6 +190,8 @@ if (isset($_POST["add_another"])) {
     // Bind the control to the row actually written: with -1 the right was never evaluated and the
     // parent metademand of the posted id was never confronted with the session.
     $field->check((int) $_POST['id'], UPDATE);
+    // The edit form never moves a field to another metademand.
+    $_POST['plugin_metademands_metademands_id'] = $field->fields['plugin_metademands_metademands_id'];
 
     if ($field->update($_POST)) {
         $field->recalculateOrder($_POST);
