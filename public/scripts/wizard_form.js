@@ -199,6 +199,35 @@
     }
 
     /**
+     * Prefill an Email / Tel / Text / Url field from the user currently selected
+     * in the linked "User" field, once, when the field is rendered. Later changes
+     * of that user are handled by dropdownobject_linked_text_fields.js.
+     *
+     * @param {HTMLInputElement} input the input carrying the data-md-user-* attributes
+     */
+    function initUserPrefill(input) {
+        if (input.dataset.mdUserInit) {
+            return;
+        }
+        input.dataset.mdUserInit = '1';
+
+        const source = document.querySelector('[name="' + CSS.escape(input.dataset.mdUserSource) + '"]');
+        if (source === null) {
+            return;
+        }
+
+        $.ajax({
+            url: input.dataset.mdUserUrl,
+            data: {id: source.value},
+            success: function (response) {
+                const values = typeof response === 'string' ? JSON.parse(response) : response;
+
+                $(input).val(values[input.dataset.mdUserKey] ?? '').trigger('input');
+            },
+        });
+    }
+
+    /**
      * The basket summary replaces the step flow: its own button posts the order.
      *
      * @param {HTMLElement} container the holder emitted by fields/basket_summary.html.twig
@@ -213,11 +242,109 @@
         $('.step_wizard').hide();
     }
 
+    /**
+     * Publish the wizard configuration as the window.metademandparams and
+     * window.metademandconditionsparams globals public/scripts/metademands.js
+     * reads, show the first tab and wire the navigation buttons.
+     *
+     * @param {HTMLElement} container the marker emitted by form_params.html.twig
+     */
+    function initWizardParams(container) {
+        if (container.dataset.metademandsParamsInit) {
+            return;
+        }
+        container.dataset.metademandsParamsInit = '1';
+
+        let params;
+        let conditions;
+
+        try {
+            params = JSON.parse(container.dataset.metademandsWizardParams);
+            conditions = JSON.parse(container.dataset.metademandsWizardConditions);
+        } catch (e) {
+            return;
+        }
+
+        window.metademandparams = params;
+        window.metademandconditionsparams = conditions;
+
+        // plugin_metademands_wizard_findFirstTab() returns nothing: firstnumTab ends up
+        // undefined, exactly as with the legacy inline assignment the functions of
+        // metademands.js were written against.
+        window.firstnumTab = window.plugin_metademands_wizard_findFirstTab(params.block_id, params);
+        window.plugin_metademands_wizard_showTab(window.firstnumTab, params, conditions);
+
+        const prev_btn = document.getElementById('prevBtn');
+        if (prev_btn) {
+            prev_btn.addEventListener('click', function () {
+                window.plugin_metademands_wizard_prevBtn(-1, window.firstnumTab, params, conditions);
+            });
+        }
+
+        [['nextBtn', false], ['nextBtn2', true]].forEach(function ([id, change_step]) {
+            const button = document.getElementById(id);
+
+            if (!button) {
+                return;
+            }
+
+            button.addEventListener('click', async function () {
+                const result = await window.plugin_metademands_wizard_nextBtn(
+                    1,
+                    window.firstnumTab,
+                    params,
+                    conditions,
+                    change_step,
+                );
+
+                if (result !== false) {
+                    window.plugin_metademands_wizard_showTab(window.firstnumTab, params, conditions);
+                }
+            });
+        });
+
+        document.querySelectorAll('a.tablinks').forEach(function (tab_link) {
+            tab_link.addEventListener('click', async function (e) {
+                e.preventDefault();
+                await window.plugin_metademands_wizard_goToTab(
+                    parseInt(this.id.replace('ablock', ''), 10),
+                    window.firstnumTab,
+                    params,
+                    conditions,
+                );
+            });
+        });
+    }
+
+    /**
+     * Once the next recipient of a step is chosen, closing its modal leaves the
+     * form for the ticket list.
+     *
+     * @param {HTMLElement} container the marker emitted by forms/step_modal_redirect.html.twig
+     */
+    function initRedirectOnClose(container) {
+        if (container.dataset.metademandsRedirectInit) {
+            return;
+        }
+        container.dataset.metademandsRedirectInit = '1';
+
+        const modal = document.getElementById(container.dataset.metademandsRedirectOnClose);
+
+        if (modal) {
+            modal.addEventListener('hide.bs.modal', function () {
+                window.location.href = container.dataset.metademandsRedirectUrl;
+            });
+        }
+    }
+
     const WIDGETS = [
+        {selector: '[data-metademands-wizard-params]', init: initWizardParams},
+        {selector: '[data-metademands-redirect-on-close]', init: initRedirectOnClose},
         {selector: '[data-metademands-basket-order]', init: initBasketOrder},
         {selector: '.tabs-container[data-metademands-block-id]', init: initTabs},
         {selector: '[data-metademands-previous-dialog]', init: initPreviousDialog},
         {selector: '[data-metademands-hidden-blocks]', init: initHiddenBlocks},
+        {selector: 'input[data-md-user-source]', init: initUserPrefill},
     ];
 
     /**

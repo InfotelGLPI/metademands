@@ -956,7 +956,7 @@ class Wizard extends CommonDBTM
      */
     public static function listMetademandTypes()
     {
-        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
+        TemplateRenderer::getInstance()->display('@metademands/wizard/wizard_css.html.twig');
 
         $data   = self::countMetademandTypes();
         $config = Config::getInstance();
@@ -1100,7 +1100,7 @@ class Wizard extends CommonDBTM
      */
     public static function listMetademands($type)
     {
-        echo Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php");
+        TemplateRenderer::getInstance()->display('@metademands/wizard/wizard_css.html.twig');
 
         $config = Config::getInstance();
         $meta   = new Metademand();
@@ -1120,10 +1120,6 @@ class Wizard extends CommonDBTM
                 'meta_type'     => $type,
                 'step_show'     => Metademand::STEP_SHOW,
                 'dropdown'      => $dropdown,
-                'submit'        => Html::submit(
-                    __('Next', 'metademands'),
-                    ['name' => 'next', 'class' => 'btn btn-primary'],
-                ),
             ]);
             return;
         }
@@ -1308,8 +1304,12 @@ class Wizard extends CommonDBTM
                         if ($seeform == 0) {
                             unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
                         }
-                        echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
-                        echo Html::hidden('is_private', ['value' => 1]);
+                        TemplateRenderer::getInstance()->display('@metademands/wizard/hidden_inputs.html.twig', [
+                            'inputs' => [
+                                'form_metademands_id' => $form_metademands_id,
+                                'is_private'          => 1,
+                            ],
+                        ]);
                     }
                 }
             }
@@ -1460,11 +1460,6 @@ class Wizard extends CommonDBTM
                     : $label;
             }
         }
-        // Injected verbatim into an inline <script> object literal below: without
-        // JSON_HEX_TAG|JSON_HEX_AMP a stored label containing </script> closes the
-        // block before the JSON parser ever runs. Never HEX_QUOT/HEX_APOS here, they
-        // would break the literal.
-        $json_all_meta_fields = json_encode($all_meta_fields, JSON_HEX_TAG | JSON_HEX_AMP);
 
         // Defence in depth: both callers normalize their input now, but this method is the
         // sink that builds the query string finally embedded in JavaScript, so it must not
@@ -1481,8 +1476,8 @@ class Wizard extends CommonDBTM
             && $stepConfig->fields['see_blocks_as_tab'] == 1  && !$preview) {
             $block_id = 0;
             if (isset($_REQUEST['block_id'])) {
-                // Reflected into the inline <script> below, once inside a string literal
-                // and once as a bare call argument: normalise at the source.
+                // Handed to public/scripts/wizard_form.js as the first tab to show:
+                // normalise at the source.
                 $block_id = (int) $_REQUEST['block_id'];
             }
         }
@@ -1494,23 +1489,13 @@ class Wizard extends CommonDBTM
         $metaparams['use_model'] = $use_model;
         $metaparams['useconfirm'] = $metademands->fields['use_confirm'];
         $metaparams['is_order'] = $metademands->fields['is_order'];
-        // addslashes() escapes quotes but neither < nor >, so it cannot protect a JS
-        // string literal: the HTML parser looks for </script> first. json_encode()
-        // emits the surrounding quotes itself, hence the unquoted sinks.
-        $metaparams['confirmmsg'] = json_encode(
-            __("You have not entered any values. Is this normal?", 'metademands'),
-            JSON_HEX_TAG | JSON_HEX_AMP,
-        );
-        $metaparams['nameform'] = json_encode(
-            $metademands->fields['name']
-            . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'],
-            JSON_HEX_TAG | JSON_HEX_AMP,
-        );
-        // Emitted unquoted in validateScript(), like confirmmsg and nameform above:
-        // json_encode() supplies its own delimiters. public/scripts/metademands.js
-        // concatenates this value into a URL, so it must stay a plain string -- which a
-        // JSON string literal is. Never HEX_QUOT/HEX_APOS, they would break the literal.
-        $metaparams['paramUrl'] = json_encode($paramUrl, JSON_HEX_TAG | JSON_HEX_AMP);
+        // Plain values: validateScript() hands them to wizard/form_params.html.twig,
+        // which JSON-encodes the whole set into an attribute escaped by Twig.
+        $metaparams['confirmmsg'] = __("You have not entered any values. Is this normal?", 'metademands');
+        $metaparams['nameform'] = $metademands->fields['name']
+            . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+        // public/scripts/metademands.js concatenates this value into a URL.
+        $metaparams['paramUrl'] = $paramUrl;
         if ($metademands->fields['can_update'] == 1 && !$meta_validated) {
             $metaparams['seeform'] = 0;
         } else {
@@ -1542,7 +1527,7 @@ class Wizard extends CommonDBTM
         //End Basket parameters
 
         //For alert for validate script
-        $metaparams['json_all_meta_fields'] = $json_all_meta_fields;
+        $metaparams['json_all_meta_fields'] = $all_meta_fields;
 
 
 
@@ -1787,14 +1772,6 @@ class Wizard extends CommonDBTM
             TemplateRenderer::getInstance()->display('@metademands/wizard/form_basket_alert.html.twig', [
                 'basket_url'  => PLUGIN_METADEMANDS_WEBDIR . '/ajax/createmetademands.php?metademands_id='
                     . (int) $metademands->fields['id'] . '&step=2',
-                'hidden_html' => Html::hidden('see_basket_summary', ['value' => 1]),
-                'submit_html' => Html::submit(_sx('button', 'See your basket', 'metademands'), [
-                    'name'  => 'next_button',
-                    'form'  => '',
-                    'icon'  => 'ti ti-shopping-bag',
-                    'id'    => 'submitjob',
-                    'class' => 'metademand_next_button btn btn-success',
-                ]),
             ]);
         }
 
@@ -1810,10 +1787,7 @@ class Wizard extends CommonDBTM
 
             $metaconditionsparams = self::getConditionsParams($metademands);
 
-            $hidden_basket_html = '';
-            if ($metademands->fields['is_basket'] == 1) {
-                $hidden_basket_html = Html::hidden('see_basket_summary', ['value' => 1]);
-            }
+            $is_basket = $metademands->fields['is_basket'] == 1;
 
             $displayBlocksAsTab = 0;
             if ($metademands->fields['step_by_step_mode'] == 1
@@ -1929,7 +1903,7 @@ class Wizard extends CommonDBTM
             TemplateRenderer::getInstance()->display('@metademands/wizard/form_blocks.html.twig', [
                 'blocks'              => $blocks_html,
                 'wrap_nostep'         => $use_as_step == 0,
-                'hidden_basket_html'  => $hidden_basket_html,
+                'is_basket'           => $is_basket,
                 'tabs_html'           => $tabs_html,
             ]);
 
@@ -2030,10 +2004,12 @@ class Wizard extends CommonDBTM
 
 
                 if (isset($_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id'])) {
-                    echo Html::hidden(
-                        'plugin_metademands_stepforms_id',
-                        ['value' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']],
-                    );
+                    TemplateRenderer::getInstance()->display('@metademands/wizard/hidden_inputs.html.twig', [
+                        'inputs' => [
+                            'plugin_metademands_stepforms_id'
+                                => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id'],
+                        ],
+                    ]);
                 }
 
                 // #modalgroupspan and the Bootstrap confirmation modal are pure markup: they moved
@@ -2485,104 +2461,69 @@ class Wizard extends CommonDBTM
 
 
     /**
-     * @param $params
+     * Hand the wizard configuration to public/scripts/wizard_form.js, which publishes it
+     * as window.metademandparams / window.metademandconditionsparams for
+     * public/scripts/metademands.js, shows the first tab and wires the navigation.
+     *
+     * The keys and value types are the ones the legacy inline script produced: the
+     * scalars it quoted stay strings, since metademands.js compares them loosely.
+     *
+     * @param array $metaparams           from getDefaultParams()
+     * @param array $metaconditionsparams from getConditionsParams()
+     *
      * @return void
      */
     public static function validateScript($metaparams, $metaconditionsparams)
     {
+        $params = [
+            'useconfirm'             => (string) $metaparams['useconfirm'],
+            'confirmmsg'             => $metaparams['confirmmsg'],
+            'is_order'               => (string) $metaparams['is_order'],
+            'root_doc'               => $metaparams['root_doc'],
+            'paramUrl'               => $metaparams['paramUrl'],
+            'edit_model'             => (string) $metaparams['edit_model'],
+            'seeform'                => (string) $metaparams['seeform'],
+            'token'                  => $metaparams['token'],
+            'id'                     => (string) $metaparams['ID'],
+            'nameform'               => $metaparams['nameform'],
+            'block_id'               => (string) $metaparams['block_id'],
+            'nexttitle'              => $metaparams['nexttitle'],
+            'submittitle'            => $metaparams['submittitle'],
+            'msg'                    => $metaparams['alert'],
+            // The msgid carries a literal backslash that the legacy JS string literal
+            // swallowed: keep the text the requester used to read.
+            'msg_regex'              => str_replace("\\'", "'", $metaparams['alert_regex']),
+            'seesummary'             => (string) $metaparams['see_summary'],
+            // An object even when empty, like the legacy literal json_encode() produced
+            // for a keyed array.
+            'json_all_meta_fields'   => (object) $metaparams['json_all_meta_fields'],
+            'currentTab'             => 0,
+            'use_as_step'            => (string) $metaparams['use_as_step'],
+            'listStepBlock'          => array_map('intval', array_values($metaparams['listStepBlocks'])),
+            // The legacy code quoted booleans: true became '1' and false ''.
+            'havenextuser'           => $metaparams['havenextuser'] ? '1' : '',
+            'changestepbystepoption' => $metaparams['changestepbystepoption'] ? '1' : '',
+            'updatestepform'         => (string) $metaparams['updatestepform'],
+            'submitsteptitle'        => $metaparams['submitsteptitle'],
+            'nextsteptitle'          => $metaparams['nextsteptitle'],
+        ];
 
-        foreach ($metaparams as $key => $val) {
-            if (isset($metaparams[$key])) {
-                $$key = $metaparams[$key];
-            }
-        }
+        $conditions = [
+            'root_doc'      => $metaconditionsparams['root_doc'],
+            'submittitle'   => $metaconditionsparams['submittitle'],
+            'nextsteptitle' => $metaconditionsparams['nextsteptitle'],
+            'use_condition' => $metaconditionsparams['use_condition'] ? '1' : '',
+            'show_rule'     => (string) $metaconditionsparams['show_rule'],
+            'show_button'   => (string) $metaconditionsparams['show_button'],
+            'use_richtext'  => (string) $metaconditionsparams['use_richtext'],
+            // Still a JSON string: the Fields classes inline it into their own scripts.
+            'richtext_ids'  => json_decode($metaconditionsparams['richtext_id'], true) ?? [],
+        ];
 
-        foreach ($metaconditionsparams as $key => $val) {
-            if (isset($metaconditionsparams[$key])) {
-                $$key = $metaconditionsparams[$key];
-            }
-        }
-
-        echo "<script>
-                  $(document).ready(function (){
-
-                    window.metademandparams = {};
-                    metademandparams.useconfirm = '$useconfirm';
-                    metademandparams.confirmmsg = $confirmmsg;
-                    metademandparams.is_order = '$is_order';
-                    metademandparams.root_doc = '$root_doc';
-                    metademandparams.paramUrl = $paramUrl;
-                    metademandparams.edit_model = '$edit_model';
-                    metademandparams.seeform = '$seeform';
-                    metademandparams.token = '$token';
-                    metademandparams.id = '$ID';
-                    metademandparams.nameform = $nameform;
-                    metademandparams.block_id = '$block_id';
-
-                    metademandparams.nexttitle = '$nexttitle';
-                    metademandparams.submittitle = '$submittitle';
-
-                    metademandparams.msg = '$alert';
-                    metademandparams.msg_regex = '$alert_regex';
-
-                    metademandparams.seesummary = '$see_summary';
-
-                    metademandparams.json_all_meta_fields = {$json_all_meta_fields};
-                    metademandparams.currentTab = 0; // Current tab is set to be the first tab (0)
-
-                    metademandparams.use_as_step = '$use_as_step';
-                    metademandparams.listStepBlock = [" . implode(",", $listStepBlocks) . "];
-                    metademandparams.havenextuser = '$havenextuser';
-                    metademandparams.changestepbystepoption = '$changestepbystepoption';
-                    metademandparams.updatestepform = '$updatestepform';
-                    metademandparams.submitsteptitle = '$submitsteptitle';
-                    metademandparams.nextsteptitle = '$nextsteptitle';
-
-                    window.metademandconditionsparams = {};
-                    metademandconditionsparams.root_doc = '$root_doc';
-                    metademandconditionsparams.submittitle = '$submittitle';
-                    metademandconditionsparams.nextsteptitle = '$nextsteptitle';
-                    metademandconditionsparams.use_condition = '$use_condition';
-                    metademandconditionsparams.show_rule = '$show_rule';
-                    metademandconditionsparams.show_button = '$show_button';
-                    metademandconditionsparams.use_richtext = '$use_richtext';
-                    metademandconditionsparams.richtext_ids = {$richtext_id};
-
-                    const prevBtn = document.getElementById('prevBtn');
-                    const nextBtn = document.getElementById('nextBtn');
-                    const nextBtn2 = document.getElementById('nextBtn2');
-
-                    firstnumTab = plugin_metademands_wizard_findFirstTab(metademandparams.block_id, metademandparams);
-
-                    plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
-
-                    prevBtn.addEventListener('click', () => {
-                      plugin_metademands_wizard_prevBtn(-1, firstnumTab, metademandparams, metademandconditionsparams);
-                    });
-
-                    nextBtn.addEventListener('click', async () => {
-                          const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams, false);
-                          if (result !== false) {
-                            plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
-                          }
-                        });
-
-                    nextBtn2.addEventListener('click', async () => {
-                          const result = await plugin_metademands_wizard_nextBtn(1, firstnumTab, metademandparams, metademandconditionsparams, true);
-                          if (result !== false) {
-                            plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams);
-                          }
-                        });
-
-                    document.querySelectorAll('a.tablinks').forEach(function(tabLink) {
-                        tabLink.addEventListener('click', async function(e) {
-                            e.preventDefault();
-                            const targetBlockId = parseInt(this.id.replace('ablock', ''));
-                            await plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, metademandparams, metademandconditionsparams);
-                        });
-                    });
-                  });
-               </script>";
+        TemplateRenderer::getInstance()->display('@metademands/wizard/form_params.html.twig', [
+            'params'     => $params,
+            'conditions' => $conditions,
+        ]);
     }
 
     /**

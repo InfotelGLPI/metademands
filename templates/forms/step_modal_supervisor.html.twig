@@ -28,15 +28,19 @@
 <form name='nextGroup_form' method='post' action='{{ form_action }}'>
 <table class='tab_cadre_fixe'>
 {% if session_set %}
-    {{- common_hidden_html|raw }}
+    {% for name, value in common_hidden %}
+        <input type='hidden' name='{{ name }}' value='{{ value }}'>
+    {% endfor %}
     {% if has_supervisor %}
         <div class='alert alert-warning d-flex'>
         <i class='ti ti-circle-check' style='color: orange'></i>
         &nbsp;{{ __('Your form will be validated by your supervisor', 'metademands') }}&nbsp;{{ supervisor_name }}
-        {{- next_users_id_hidden|raw }}
+        <input type='hidden' name='next_users_id' value='{{ users_id_supervisor }}'>
         <tr class='tab_bg_1'>
         <td colspan='2'>
-        {{- submit_html|raw }}
+        <button type='submit' name='execute' id='formsubmit' value='{{ _x('button', 'Validate', 'metademands') }}' class='btn btn-primary'>
+            <span>{{ _x('button', 'Validate', 'metademands') }}</span>
+        </button>
         </td>
         </tr>
     {% else %}

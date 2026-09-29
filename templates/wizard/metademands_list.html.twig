@@ -90,7 +90,9 @@
         <div class="bt-feature bt-col-sm-12 bt-col-md-12 right">
             <input type="hidden" name="step" value="{{ step_show }}">
             <input type="hidden" name="meta_type" id="meta_type" value="{{ meta_type }}">
-            {{ submit|raw }}
+            <button type="submit" name="next" value="{{ __('Next', 'metademands') }}" class="btn btn-primary">
+                <span>{{ __('Next', 'metademands') }}</span>
+            </button>
         </div>
     </div>
 {% endif %}

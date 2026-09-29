@@ -25,19 +25,5 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Basket reminder displayed above the wizard when the requester already owns
- #  lines in the basket of the current meta-demand.
- #
- #  Expected context:
- #    basket_url    : ajax/createmetademands.php endpoint, read by public/scripts/wizard_form.js
--#}
-<div class="alert alert-warning d-flex" data-metademands-basket-url="{{ basket_url }}">
-    <b>{{ __('You have items on your basket', 'metademands') }}</b>
-    <div id="ajax_loader" class="ajax_loader hidden"></div>
-    <input type="hidden" name="see_basket_summary" value="1">
-    {#- #submitjob is handled by public/scripts/wizard_form.js; form="" keeps it out of the wizard form #}
-    <button type="submit" name="next_button" form="" id="submitjob" class="metademand_next_button btn btn-success"
-            value="{{ _x('button', 'See your basket', 'metademands') }}">
-        <i class="ti ti-shopping-bag"></i>&nbsp;<span>{{ _x('button', 'See your basket', 'metademands') }}</span>
-    </button>
-</div>
+{#- Stylesheet of the wizard pages, generated from the plugin configuration. #}
+<link rel="stylesheet" type="text/css" href="{{ css_path('/plugins/metademands/css/wizard.css.php') }}">

@@ -27,19 +27,22 @@
 
 <form name='nextGroup_form' method='post' action='{{ form_action }}'>
 <table class='tab_cadre_fixe'>
-{{- common_hidden_html|raw }}
+{% for name, value in common_hidden %}
+    <input type='hidden' name='{{ name }}' value='{{ value }}'>
+{% endfor %}
 {% if has_groups %}
     <tr class='tab_bg_1'>
     <td colspan='2'>
     <label class='control-label center' for='next_groups_id'>{{ group_label }}&nbsp;</label>
     </td>
-    <td colspan='2'>
+    {#- Changing the group reloads show_users_by_group: public/scripts/metademands_reload.js #}
+    <td colspan='2' data-md-reload-event='change' data-md-reload='{{ group_reload|json_encode }}'>
+    {#- raw: Dropdown::showFromArray() output, built and escaped by the core #}
     {{- group_dropdown_html|raw }}
     </td>
     </tr>
 {% endif %}
-{% if rand_set %}
-    {{- group_script_html|raw }}
+{% if has_groups %}
     {% if link_user_block %}
         <tr class='tab_bg_1'>
         <td colspan='2'>
@@ -52,10 +55,12 @@
     <div class='alert alert-danger d-flex'>
     <b>{{ __('There is a problem with the setup', 'metademands') }}</b></div>
 {% endif %}
-{% if rand_set %}
+{% if has_groups %}
     <tr class='tab_bg_1'>
     <td colspan='2'>
-    {{- submit_html|raw }}
+    <button type='submit' name='execute' id='formsubmit' value='{{ _x('button', 'Validate', 'metademands') }}' class='btn btn-primary'>
+        <span>{{ _x('button', 'Validate', 'metademands') }}</span>
+    </button>
     </td>
     </tr>
     </table>

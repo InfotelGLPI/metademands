@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Metademands;
 
-use Ajax;
 use CommonDBChild;
 use CommonITILActor;
 use DBConnection;
@@ -208,6 +207,7 @@ class TicketTask extends CommonDBChild
         $block_parent_ticket_resolution_html = '';
         $parent_tasks_html = '';
         $entity_html = '';
+        $entity_reload = [];
         $category_html = '';
         $category_mark = '';
         $tickettemplates_id = 0;
@@ -261,110 +261,63 @@ class TicketTask extends CommonDBChild
                 $parent_tasks_html = ob_get_clean();
             }
 
-            ob_start();
-            $rand = Entity::dropdown([
-                'name' => 'entities_id',
-                'value' => $values["entities_id"],
-                'on_change' => 'entity_cat()',
+            $entity_html = Entity::dropdown([
+                'name'    => 'entities_id',
+                'value'   => $values["entities_id"],
+                'display' => false,
             ]);
-            echo "<script type='text/javascript'>";
-            echo "function entity_cat(){";
-            $params = [
-                'action' => 'showcategories',
-                'entities_id' => '__VALUE__',
-                'type' => $values['type'],
-                'itilcategories_id' => $values['itilcategories_id'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_category',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            $params = [
-                'action' => 'users_id_requester',
-                'entities_id' => '__VALUE__',
-                'type' => $values['type'],
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
-                'users_id_requester' => $values['users_id_requester'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_users_id_requester',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            $params = [
-                'action' => 'users_id_observer',
-                'entities_id' => '__VALUE__',
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
-                'users_id_observer' => $values['users_id_observer'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_users_id_observer',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            $params = [
-                'action' => 'users_id_assign',
-                'entities_id' => '__VALUE__',
-                'type' => $values['type'],
-                'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
-                'users_id_assign' => $values['users_id_assign'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_users_id_assign',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            $params = [
-                'action' => 'groups_id_requester',
-                'entities_id' => '__VALUE__',
-                'condition' => ['is_requester' => 1],
-                'groups_id_requester' => $values['groups_id_requester'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_groups_id_requester',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            $params = [
-                'action' => 'groups_id_observer',
-                'entities_id' => '__VALUE__',
-                'condition' => ['is_watcher' => 1],
-                'groups_id_observer' => $values['groups_id_observer'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_groups_id_observer',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            $params = [
-                'action' => 'groups_id_assign',
-                'entities_id' => '__VALUE__',
-                'condition' => ['is_assign' => 1],
-                'groups_id_assign' => $values['groups_id_assign'] ?? 0,
-            ];
-            Ajax::updateItemJsCode(
-                'ticket_groups_id_assign',
-                PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php',
-                $params,
-                'dropdown_entities_id' . $rand,
-            );
-            echo ";\n";
-            echo "}";
-            echo "</script>";
-            $entity_html = ob_get_clean();
+
+            // Changing the entity reloads the category and the actor dropdowns scoped to it,
+            // through public/scripts/metademands_reload.js.
+            $entity_url    = PLUGIN_METADEMANDS_WEBDIR . '/ajax/showfieldsbyentity.php';
+            $entity_reload = [];
+            foreach (
+                [
+                    'ticket_category' => [
+                        'action' => 'showcategories',
+                        'type' => $values['type'],
+                        'itilcategories_id' => $values['itilcategories_id'] ?? 0,
+                    ],
+                    'ticket_users_id_requester' => [
+                        'action' => 'users_id_requester',
+                        'type' => $values['type'],
+                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
+                        'users_id_requester' => $values['users_id_requester'] ?? 0,
+                    ],
+                    'ticket_users_id_observer' => [
+                        'action' => 'users_id_observer',
+                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER),
+                        'users_id_observer' => $values['users_id_observer'] ?? 0,
+                    ],
+                    'ticket_users_id_assign' => [
+                        'action' => 'users_id_assign',
+                        'type' => $values['type'],
+                        'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN),
+                        'users_id_assign' => $values['users_id_assign'] ?? 0,
+                    ],
+                    'ticket_groups_id_requester' => [
+                        'action' => 'groups_id_requester',
+                        'condition' => ['is_requester' => 1],
+                        'groups_id_requester' => $values['groups_id_requester'] ?? 0,
+                    ],
+                    'ticket_groups_id_observer' => [
+                        'action' => 'groups_id_observer',
+                        'condition' => ['is_watcher' => 1],
+                        'groups_id_observer' => $values['groups_id_observer'] ?? 0,
+                    ],
+                    'ticket_groups_id_assign' => [
+                        'action' => 'groups_id_assign',
+                        'condition' => ['is_assign' => 1],
+                        'groups_id_assign' => $values['groups_id_assign'] ?? 0,
+                    ],
+                ] as $target => $params
+            ) {
+                $entity_reload[] = [
+                    'target' => $target,
+                    'url'    => $entity_url,
+                    'params' => ['entities_id' => '__VALUE__'] + $params,
+                ];
+            }
 
             $category_mark = $tt->getMandatoryMark('itilcategories_id');
             $condition = ($values['type'] == \Ticket::DEMAND_TYPE) ? ['is_request' => 1] : ['is_incident' => 1];
@@ -527,6 +480,7 @@ class TicketTask extends CommonDBChild
             'block_parent_ticket_resolution_html' => $block_parent_ticket_resolution_html,
             'parent_tasks_html' => $parent_tasks_html,
             'entity_html' => $entity_html,
+            'entity_reload' => $entity_reload,
             'category_mark' => $category_mark,
             'category_html' => $category_html,
             'show_requester_header' => $show_requester_header,

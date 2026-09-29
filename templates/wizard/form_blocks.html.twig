@@ -30,7 +30,7 @@
  #  Expected context:
  #    wrap_nostep        : true when the form is NOT in step-by-step mode; .tab-nostep is
  #                         read by plugin_metademands_wizard_* in scripts/metademands.js
- #    hidden_basket_html : Html::hidden('see_basket_summary'), empty when not a basket
+ #    is_basket          : posts see_basket_summary when the meta-demand is a basket
  #    tabs_html          : block tab bar, empty when the blocks are not shown as tabs
  #    blocks             : list of {in_step, html} built by Wizard::constructForm(); in_step
  #                         tells whether the block belongs to the step-by-step flow, which
@@ -43,7 +43,7 @@
  #  the block and not an indentation text node.
 -#}
 {%- if wrap_nostep %}<div class="tab-nostep">{% endif -%}
-{{- hidden_basket_html|raw -}}
+{%- if is_basket %}<input type="hidden" name="see_basket_summary" value="1">{% endif -%}
 <div id="ajax_loader" class="ajax_loader hidden"></div>
 {{- tabs_html|raw -}}
 {%- for block in blocks -%}

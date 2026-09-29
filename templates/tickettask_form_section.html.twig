@@ -64,7 +64,9 @@
 
     <div class="row mb-3">
         <label class="col-2 col-form-label fw-bold">{{ __('Entity') }}</label>
-        <div class="col-4">{{ entity_html|raw }}</div>
+        {#- raw: Entity::dropdown() output, built and escaped by the core. Changing the entity
+         #  reloads the dropdowns scoped to it: public/scripts/metademands_reload.js #}
+        <div class="col-4" data-md-reload-event="change" data-md-reload="{{ entity_reload|json_encode }}">{{ entity_html|raw }}</div>
         <label class="col-2 col-form-label fw-bold">
             {{ __('Category') }}{{ category_mark|raw }}
         </label>

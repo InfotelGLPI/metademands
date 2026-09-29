@@ -92,17 +92,9 @@ class Ticket extends CommonDBTM
             $myticket->input['itilcategories_id'] = $_REQUEST['itilcategories_id'];
 
             if ($url = Metademand::redirectForm($myticket, 'show')) {
-                //                Html::redirect($url);
-                // The destination is emitted inside a <script> element, where addslashes()
-                // is not an escaping function: it leaves a closing </script> sequence intact.
-                // JSON_HEX_TAG is precisely what neutralizes it, and the encoded value already
-                // carries its own quotes, so it is emitted bare.
-                $dest = json_encode($url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES);
-
-                echo "<script type='text/javascript'>
-                            window.location = " . $dest . ";
-                         </script>";
-                exit();
+                // Throws a RedirectException, turned into a 302 by the kernel: no inline
+                // script, and no exit() cutting the request short.
+                Html::redirect($url);
             }
         }
     }

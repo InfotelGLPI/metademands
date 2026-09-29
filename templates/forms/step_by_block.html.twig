@@ -25,10 +25,17 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- The editor of a visibility is loaded into viewstep_div_id by
+ #  public/scripts/metademands_reload.js, from the data-md-reload attributes.
+ #}
 {% if canedit %}
     <br><div id='{{ viewstep_div_id }}'></div>
-    {{- add_script_html|raw }}
-    <div class='center'><a class='submit btn btn-primary' href='javascript:{{ add_fn_name }}();'>{{ __('Define a new visibility', 'metademands') }}</a></div>
+    <div class='center'>
+        <button type='button' class='submit btn btn-primary'
+                data-md-reload-event='click' data-md-reload='{{ add_reload|json_encode }}'>
+            {{ __('Define a new visibility', 'metademands') }}
+        </button>
+    </div>
 {% endif %}
 
 {% if warning_blocks %}
@@ -38,7 +45,7 @@
     </div>
 {% endif %}
 
-{{ css_html|raw }}
+<link rel='stylesheet' type='text/css' href='{{ css_path('/plugins/metademands/css/_process-chart.css') }}'>
 <div class='row'>
     <div class='col-12 col-lg-12'>
         <ul class='process-chart'>
@@ -49,8 +56,8 @@
             {% if has_blocks %}
                 {% for card in cards %}
                     <li class='step'>
-                        {{- card.edit_script_html|raw }}
-                        <a class='btn flex-column' {{ card.onhover|raw }} href='#'>
+                        <a class='btn flex-column' href='#'
+                           {%- if card.edit_reload is not empty %} style='cursor:pointer' data-md-reload-event='click' data-md-reload='{{ card.edit_reload|json_encode }}'{% endif %}>
                             <div class='d-flex align-items-center'>
                                  <i class='ti ti-align-box-left-middle'></i>
                                 <span>&nbsp;{{ card.block_type_label }}&nbsp;-&nbsp;{{ card.block_label }}</span>
@@ -71,6 +78,7 @@
                                 {%- endif %}
                             </div>
                         </a>
+                        {#- raw: Html::showSimpleForm() output, a core-built link carrying its own escaping and CSRF token #}
                         <div class='btn flex-column' style='color:darkred'>{{ card.delete_form_html|raw }}</div>
                     </li>
                 {% endfor %}

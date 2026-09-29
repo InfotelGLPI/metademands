@@ -2010,133 +2010,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
-     * @param       $ID
-     * @param array $field
-     */
-    public function displaySpecificTypeField($ID, $field = [], array $options = [])
-    {
-        $this->getFromDB($ID);
-
-        switch ($field['name']) {
-            case 'url':
-                echo $this->getURL($this->fields['id']);
-                break;
-            case 'itilcategories_id':
-                echo Html::hidden('type', ['value' => $this->fields['type']]);
-                switch ($this->fields['type']) {
-                    case \Ticket::INCIDENT_TYPE:
-                        $criteria = ['is_incident' => 1];
-                        break;
-                    case \Ticket::DEMAND_TYPE:
-                        $criteria = ['is_request' => 1];
-                        break;
-                    default:
-                        $criteria = [];
-                        break;
-                }
-                $criteria += getEntitiesRestrictCriteria(
-                    ITILCategory::getTable(),
-                    'entities_id',
-                    $_SESSION['glpiactiveentities'],
-                    true,
-                );
-
-                $dbu = new DbUtils();
-
-                $crit["is_deleted"] = 0;
-                $crit["is_template"] = 0;
-                $crit += [
-                    'NOT' => [
-                        'id' => $ID,
-                    ],
-                ];
-                $cats = $dbu->getAllDataFromTable(self::getTable(), $crit);
-
-                $used = [];
-                foreach ($cats as $item) {
-                    $tempcats = json_decode($item['itilcategories_id'], true);
-                    if (is_array($tempcats)) {
-                        foreach ($tempcats as $tempcat) {
-                            $used [] = $tempcat;
-                        }
-                    }
-                }
-
-                $ticketcats = $dbu->getAllDataFromTable(TicketTask::getTable());
-                foreach ($ticketcats as $item) {
-                    if ($item['itilcategories_id'] > 0) {
-                        $used [] = $item['itilcategories_id'];
-                    }
-                }
-                if (count($used) > 0) {
-                    $used = array_unique($used);
-                    $criteria += [
-                        'NOT' => [
-                            'id' => $used,
-                        ],
-                    ];
-                }
-                $dbu = new DbUtils();
-                $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-                $temp = [];
-                foreach ($result as $item) {
-                    $temp[$item['id']] = $item['completename'];
-                }
-                $categories = [];
-                if (isset($this->fields['itilcategories_id'])) {
-                    if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
-                        $categories = $this->fields['itilcategories_id'];
-                    } else {
-                        $array = [$this->fields['itilcategories_id']];
-                        $categories = json_encode($array);
-                    }
-                }
-                $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
-
-                Dropdown::showFromArray(
-                    'itilcategories_id',
-                    $temp,
-                    [
-                        'values' => $values,
-                        'width' => '100%',
-                        'multiple' => true,
-                        'entity' => $_SESSION['glpiactiveentities'],
-                    ],
-                );
-                break;
-            case 'tickettemplates_id':
-                $opt['condition'] = [];
-                $opt['value'] = $this->fields['tickettemplates_id'];
-                $opt['entity'] = $_SESSION['glpiactiveentities'];
-                TicketTemplate::dropdown($opt);
-                break;
-            case 'icon':
-                $icon_selector_id = 'icon_' . mt_rand();
-                echo Html::select(
-                    'icon',
-                    [$this->fields['icon'] => $this->fields['icon']],
-                    [
-                        'id' => $icon_selector_id,
-                        'selected' => $this->fields['icon'],
-                        'style' => 'width:175px;',
-                    ],
-                );
-
-                echo Html::script('js/modules/Form/WebIconSelector.js');
-                echo Html::scriptBlock("$(
-            function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );");
-
-                break;
-        }
-    }
-
-    /**
      * Add Logs
      *
      * @param $input
@@ -5962,11 +5835,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 if (extension_loaded('zip')) {
                     $items = $_POST['items'][__CLASS__];
 
-                    $url = PLUGIN_METADEMANDS_WEBDIR . "/ajax/export_metademand.php";
-                    // Hardened for the inline <script> below: HEX_TAG and HEX_AMP only, as
-                    // quotes must stay literal inside the JS object literal.
-                    $data = json_encode($items, JSON_HEX_TAG | JSON_HEX_AMP);
-                    $action = $ma->getAction();
+                    // The download is driven by public/scripts/metademands_export.js
                     echo TemplateRenderer::getInstance()->render(
                         '@metademands/forms/massiveaction_export_button.html.twig',
                         [
@@ -5975,52 +5844,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 'This action may take some time depending on the number of selected metademands',
                                 'metademands',
                             ),
+                            'url'     => PLUGIN_METADEMANDS_WEBDIR . '/ajax/export_metademand.php',
+                            'action'  => $ma->getAction(),
+                            'items'   => array_values(array_map('intval', array_keys($items))),
                         ],
                     );
-                    // download done through ajax & POST request to avoid request length restriction from GET request
-                    echo "<script>
-                        $(document).ready(function() {
-                            $('#export_metademand').on('click', function(e) {
-                                e.preventDefault();
-                                const buttonExport = document.getElementById('export_metademand');
-                                buttonExport.style.display = 'none';
-                                const spinner = document.createElement('i');
-                                spinner.classList = 'fas fa-3x fa-spinner fa-pulse m-1'
-                                buttonExport.parentElement.prepend(spinner);
-                                $.ajax({
-                                    url: '$url',
-                                    type: 'POST',
-                                    data: { metademands : $data, action : '$action' },
-                                    xhrFields: {
-                                        responseType: 'blob'
-                                    },
-                                    success: function(blob, status, xhr) {
-                                            let url = window.URL.createObjectURL(blob);
-                                            let link = document.createElement('a');
-                                            link.href = url;
-
-                                            const contentDisposition = xhr.getResponseHeader('Content-Disposition');
-                                            let filename = 'export_' + new Date().toISOString().slice(0, 10) + '.zip';
-
-                                            if (contentDisposition) {
-                                                let matches = contentDisposition.match(/filename[^;=\\n]*=((['\"]).*?\\2|[^;\\n]*)/);
-                                                if (matches != null && matches[1]) {
-                                                    filename = matches[1].replace(/['\"]/g, '');
-                                                }
-                                            }
-
-                                            link.download = filename;
-                                            document.body.appendChild(link);
-                                            link.click();
-                                            buttonExport.parentElement.removeChild(spinner);
-                                            buttonExport.removeAttribute('style');
-                                            window.URL.revokeObjectURL(url);
-                                            document.body.removeChild(link);
-                                    }
-                                })
-                            })
-                        })
-                    </script>";
                     return true;
                 }
                 echo __('This action requires PHP extension zip', 'metademands');

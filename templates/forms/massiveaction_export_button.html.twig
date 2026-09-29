@@ -27,15 +27,22 @@
 
 {#-
  # Download button of the XML / JSON export massive action, together with the
- # warning about the time the export may take. The button is driven by a script
- # emitted next to it, which cancels the default event, hence type="button".
+ # warning about the time the export may take. The button is driven by
+ # public/scripts/metademands_export.js, which posts the export and saves the
+ # returned archive, hence type="button".
  #
  # Expected context:
  #  - label:   caption of the button
  #  - warning: notice displayed under the button
+ #  - url:     export endpoint (ajax/export_metademand.php)
+ #  - action:  massive action name (exportXML or exportJSON)
+ #  - items:   ids of the selected meta-demands
 -#}
 &nbsp;
-<button type="button" id="export_metademand" class="btn">{{ label }}</button>
+<button type="button" id="export_metademand" class="btn"
+        data-md-export-url="{{ url }}"
+        data-md-export-action="{{ action }}"
+        data-md-export-items="{{ items|json_encode }}">{{ label }}</button>
 <br>
 <small class="text-danger">
     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;{{ warning }}

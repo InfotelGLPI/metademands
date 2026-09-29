@@ -81,38 +81,17 @@ class Url extends CommonDBTM
         if ($data['is_mandatory'] == 1) {
             $opt['required'] = "required";
         }
-        $updateJs = '';
-        if (!empty($data['used_by_ticket']) && empty($value)) {
-            $idfield = $namefield . $data['id'];
-            $updateJs .= "let field{$data['id']} = $(\"[id-field='$idfield'] input\");
-                        field{$data['id']}.val(response[{$data['used_by_ticket']}] ?? '');
-                        field{$data['id']}.trigger('input');
-                        ";
+        if (!empty($data['used_by_ticket']) && empty($value) && (int) ($data['link_to_user'] ?? 0) > 0) {
+            // Prefilled from the linked "User" field by public/scripts/wizard_form.js
+            // (initUserPrefill). Html::input() escapes the attributes.
+            $opt['data-md-user-source'] = $namefield . "[" . $data['link_to_user'] . "]";
+            $opt['data-md-user-key']    = $data['used_by_ticket'];
+            $opt['data-md-user-url']    = PLUGIN_METADEMANDS_WEBDIR . '/ajax/uTextFieldUpdate.php';
         }
-        $ID = $namefield . "[" . $data['link_to_user'] . "]";
-        $script = "<script type='text/javascript'>
-                        $(function() {
-                            $(\"[name='$ID']\").ready(function() {
-                                 $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
-                                     data: {
-                                         id : $(\"[name='$ID']\").val()
-                                     },
-                                  success: function(response){
-                                       response = JSON.parse(response);
-                                       $updateJs
-                                    },
-                                });
-                            })
-                        })
-                    </script>";
 
-        echo TemplateRenderer::getInstance()->render(
+        TemplateRenderer::getInstance()->display(
             '@metademands/fields/field_input_widget.html.twig',
-            [
-                'script_html' => $script,
-                'input_html'  => Html::input($name, $opt),
-            ],
+            ['input_html' => Html::input($name, $opt)],
         );
     }
 
