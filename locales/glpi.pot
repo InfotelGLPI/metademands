@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 16:33+0000\n"
+"POT-Creation-Date: 2026-09-29 17:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,12 +34,12 @@ msgstr[1] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/MetademandPdf.php:656 src/Fields/Freetable.php:299
-#: src/Fields/Freetable.php:703
+#: src/MetademandPdf.php:656 src/Fields/Freetable.php:282
+#: src/Fields/Freetable.php:664
 msgid "(if VAT 20%)"
 msgstr ""
 
-#: src/Fields/Basket.php:1653
+#: src/Fields/Basket.php:1622
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
@@ -63,11 +63,11 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
-#: src/Condition.php:345
+#: src/Condition.php:399
 msgid "AND"
 msgstr ""
 
-#: src/Fields/Basket.php:524
+#: src/Fields/Basket.php:493
 msgid "Accessory"
 msgstr ""
 
@@ -168,11 +168,11 @@ msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: src/Fields/Signature.php:98
+#: src/Fields/Signature.php:91
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:3103 src/Field.php:3188 src/Field.php:4641
+#: src/Field.php:3105 src/Field.php:3190 src/Field.php:4643
 #: templates/field_form.html.twig:63
 msgid "Additional label"
 msgstr ""
@@ -214,7 +214,7 @@ msgstr ""
 msgid "Altered table"
 msgstr ""
 
-#: src/Condition.php:380 src/Condition.php:398
+#: src/Condition.php:434 src/Condition.php:452
 msgid "Always displayed"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgctxt "button"
 msgid "Apply"
 msgstr ""
 
-#: src/FieldCustomvalue.php:522
+#: src/FieldCustomvalue.php:524
 msgid "Are you sure ? Custom values will be deleted !"
 msgstr ""
 
@@ -273,7 +273,7 @@ msgstr ""
 msgid "Background color"
 msgstr ""
 
-#: src/Fields/Basket.php:71
+#: src/Fields/Basket.php:70
 msgid "Basket"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Field.php:1158 src/Field.php:3170 src/Wizard.php:1843 src/Step.php:416
+#: src/Field.php:1158 src/Field.php:3172 src/Wizard.php:1843 src/Step.php:416
 #: src/Step.php:470 templates/field_existing_form.html.twig:54
 #: templates/field_search_form.html.twig:34 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:93
@@ -310,7 +310,7 @@ msgid "Block %s"
 msgstr ""
 
 #: src/Fields/Radio.php:299 src/Fields/Dropdownmeta.php:1199
-#: src/Fields/Checkbox.php:276 src/Fields/Dropdown.php:585
+#: src/Fields/Checkbox.php:261 src/Fields/Dropdown.php:585
 msgid "Block display"
 msgstr ""
 
@@ -411,7 +411,7 @@ msgstr ""
 
 #: src/Fields/Radio.php:298 src/Fields/Dropdownmeta.php:1151
 #: src/Fields/Dropdownmeta.php:1198 src/Fields/Yesno.php:202
-#: src/Fields/Checkbox.php:275 src/Fields/Dropdownmultiple.php:622
+#: src/Fields/Checkbox.php:260 src/Fields/Dropdownmultiple.php:622
 #: src/Fields/Dropdown.php:560 src/Fields/Dropdown.php:584
 msgid "Classic display"
 msgstr ""
@@ -422,7 +422,7 @@ msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: src/Fields/Signature.php:99
+#: src/Fields/Signature.php:92
 #: templates/fields/field_customvalue_icon.html.twig:42
 #: templates/metademand.html.twig:173
 msgid "Clear"
@@ -460,7 +460,7 @@ msgstr ""
 msgid "Coming"
 msgstr ""
 
-#: templates/forms/freetablefield_add_value.html.twig:58
+#: templates/forms/freetablefield_add_value.html.twig:57
 #: templates/interticketfollowup_form.html.twig:46
 #: templates/fields/freetable_fields.html.twig:69
 #: templates/fields/field_customvalue_add.html.twig:42
@@ -476,7 +476,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: front/condition.form.php:153
+#: front/condition.form.php:155
 msgid "Condition"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: src/Stepform.php:707 src/Stepform.php:846 src/Stepform.php:975
+#: src/Stepform.php:707 src/Stepform.php:845 src/Stepform.php:946
 #: templates/forms/private_models_rows.html.twig:45
 #: templates/forms/private_models_list.html.twig:119
 msgctxt "button"
@@ -743,8 +743,8 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: src/Fields/Basket.php:162 src/Fields/Basket.php:1589
-#: src/Fields/Basket.php:1861 src/Fields/Basket.php:2225
+#: src/Fields/Basket.php:161 src/Fields/Basket.php:1558
+#: src/Fields/Basket.php:1830 src/Fields/Basket.php:2194
 #: src/Basketobject.php:142 src/Basketobject.php:266
 #: templates/basketobject_form.html.twig:39
 msgid "Designation"
@@ -758,7 +758,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Field.php:3835 src/Fields/Dropdownmeta.php:703
+#: src/Field.php:3837 src/Fields/Dropdownmeta.php:703
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -780,7 +780,7 @@ msgstr ""
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: templates/forms/freetablefield_add_value.html.twig:47
+#: templates/forms/freetablefield_add_value.html.twig:46
 #: templates/fields/freetable_fields.html.twig:61
 msgid "Display name"
 msgstr ""
@@ -812,7 +812,7 @@ msgstr ""
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: src/Condition.php:382 src/Condition.php:404
+#: src/Condition.php:436 src/Condition.php:458
 msgid "Displayed unless"
 msgstr ""
 
@@ -821,7 +821,7 @@ msgctxt "button"
 msgid "Do you want to fix them ?"
 msgstr ""
 
-#: src/FieldCustomvalue.php:377 src/Tools.php:403
+#: src/FieldCustomvalue.php:379 src/Tools.php:403
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
@@ -863,7 +863,7 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: templates/forms/freetablefield_add_value.html.twig:52
+#: templates/forms/freetablefield_add_value.html.twig:51
 #: templates/fields/freetable_fields.html.twig:77
 msgid "Dropdown values"
 msgstr ""
@@ -882,7 +882,7 @@ msgstr ""
 msgid "Duplicates fields options"
 msgstr ""
 
-#: templates/forms/stepform_waiting_form.html.twig:74
+#: templates/forms/stepform_waiting_form.html.twig:78
 msgid "Edit by"
 msgstr ""
 
@@ -906,8 +906,8 @@ msgstr ""
 msgid "Email sent"
 msgstr ""
 
-#: src/Condition.php:255 src/Condition.php:263 src/Condition.php:274
-#: src/Condition.php:286 src/Condition.php:327 ajax/show_check_value.php:43
+#: src/Condition.php:309 src/Condition.php:317 src/Condition.php:328
+#: src/Condition.php:340 src/Condition.php:381 ajax/show_check_value.php:43
 msgid "Empty"
 msgstr ""
 
@@ -957,8 +957,8 @@ msgstr ""
 msgid "Error when creating export archive"
 msgstr ""
 
-#: src/Fields/Basket.php:170 src/Fields/Basket.php:1593
-#: src/Fields/Basket.php:1888
+#: src/Fields/Basket.php:169 src/Fields/Basket.php:1562
+#: src/Fields/Basket.php:1857
 msgid "Estimated unit price"
 msgstr ""
 
@@ -1100,18 +1100,18 @@ msgstr ""
 msgid "Glpi Object"
 msgstr ""
 
-#: src/Fields/Basket.php:1649
+#: src/Fields/Basket.php:1618
 msgid "Grand total"
 msgstr ""
 
 #: src/MetademandPdf.php:523 src/MetademandPdf.php:656
-#: src/Fields/Freetable.php:299 src/Fields/Freetable.php:703
-#: src/Fields/Basket.php:1650 src/Fields/Basket.php:2137
+#: src/Fields/Freetable.php:282 src/Fields/Freetable.php:664
+#: src/Fields/Basket.php:1619 src/Fields/Basket.php:2106
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/MetademandPdf.php:648 src/Fields/Freetable.php:298
-#: src/Fields/Freetable.php:702
+#: src/MetademandPdf.php:648 src/Fields/Freetable.php:281
+#: src/Fields/Freetable.php:663
 msgid "Grand total (TTC)"
 msgstr ""
 
@@ -1151,7 +1151,7 @@ msgstr ""
 msgid "Hidden field"
 msgstr ""
 
-#: src/Condition.php:381 src/Condition.php:401
+#: src/Condition.php:435 src/Condition.php:455
 msgid "Hidden unless"
 msgstr ""
 
@@ -1288,7 +1288,7 @@ msgstr ""
 msgid "Informations"
 msgstr ""
 
-#: src/FieldParameter.php:805 src/Fields/Dropdownobject.php:652
+#: src/FieldParameter.php:807 src/Fields/Dropdownobject.php:652
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:51
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -1433,7 +1433,7 @@ msgctxt "button"
 msgid "Load form"
 msgstr ""
 
-#: src/Condition.php:608 templates/condition_list.html.twig:60
+#: src/Condition.php:662 templates/condition_list.html.twig:60
 #: templates/condition_form.html.twig:38
 #: templates/condition_for_metademand.html.twig:67
 msgid "Logical operator"
@@ -1456,7 +1456,7 @@ msgstr ""
 msgid "Make this field mandatory"
 msgstr ""
 
-#: templates/forms/freetablefield_add_value.html.twig:63
+#: templates/forms/freetablefield_add_value.html.twig:62
 #: templates/fields/freetable_fields.html.twig:92
 #: templates/field_list.html.twig:137
 msgid "Mandatory"
@@ -1548,11 +1548,11 @@ msgstr ""
 msgid "Missing table"
 msgstr ""
 
-#: src/Field.php:3297
+#: src/Field.php:3299
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:3296
+#: src/Field.php:3298
 msgid "Modify icon"
 msgstr ""
 
@@ -1583,7 +1583,7 @@ msgstr ""
 #: templates/forms/itilobject_forms_tab.html.twig:47
 #: templates/group.html.twig:90 templates/list_of_templates.html.twig:60
 #: templates/task_list.html.twig:83 templates/metademand.html.twig:68
-#: templates/ticketfield_list.html.twig:55
+#: templates/ticketfield_list.html.twig:51
 msgid "Name"
 msgstr ""
 
@@ -1608,10 +1608,10 @@ msgstr ""
 #: src/Wizard.php:1515 src/Wizard.php:1555 src/Wizard.php:1561
 #: src/Fields/Tel.php:321 src/Fields/Text.php:319 src/Fields/Radio.php:554
 #: src/Fields/Textarea.php:329 src/Fields/Dropdownmeta.php:1583
-#: src/Fields/Yesno.php:461 src/Fields/Checkbox.php:558
+#: src/Fields/Yesno.php:461 src/Fields/Checkbox.php:543
 #: src/Fields/Dropdownobject.php:1053 src/Fields/Email.php:315
 #: src/Fields/Dropdownmultiple.php:1119 src/Fields/Dropdownmultiple.php:1292
-#: src/Fields/Dropdown.php:899 src/Fields/Basket.php:821 src/Fields/Url.php:281
+#: src/Fields/Dropdown.php:899 src/Fields/Basket.php:790 src/Fields/Url.php:281
 #: templates/wizard/metademands_list.html.twig:93
 #: templates/wizard/metademands_list.html.twig:94
 #: templates/wizard/form_nav_buttons.html.twig:52
@@ -1703,7 +1703,7 @@ msgstr ""
 #: templates/wizard/no_results.html.twig:32
 #: templates/forms/user_forms_tab.html.twig:83
 #: templates/forms/stepform_waiting_form_readonly.html.twig:91
-#: templates/forms/stepform_waiting_form.html.twig:84
+#: templates/forms/stepform_waiting_form.html.twig:88
 #: templates/forms/draft_show.html.twig:52
 #: templates/forms/stepform_list_from_metademand.html.twig:69
 #: templates/field_option_options.html.twig:164
@@ -1725,21 +1725,21 @@ msgstr ""
 msgid "Not available with Rich text option"
 msgstr ""
 
-#: src/Condition.php:256 src/Condition.php:264 src/Condition.php:275
-#: src/Condition.php:287 src/Condition.php:330 ajax/show_check_value.php:46
+#: src/Condition.php:310 src/Condition.php:318 src/Condition.php:329
+#: src/Condition.php:341 src/Condition.php:384 ajax/show_check_value.php:46
 msgid "Not empty"
 msgstr ""
 
 #: src/Fields/Radio.php:349 src/Fields/Radio.php:362
 #: src/Fields/Dropdownmeta.php:1329 src/Fields/Dropdownmeta.php:1339
 #: src/Fields/Dropdownmeta.php:1360 src/Fields/Ldapdropdown.php:346
-#: src/Fields/Ldapdropdown.php:382 src/Fields/Checkbox.php:324
-#: src/Fields/Checkbox.php:337 src/Fields/Dropdownobject.php:816
+#: src/Fields/Ldapdropdown.php:382 src/Fields/Checkbox.php:309
+#: src/Fields/Checkbox.php:322 src/Fields/Dropdownobject.php:816
 #: src/Fields/Dropdownobject.php:819 src/Fields/Dropdownobject.php:829
 #: src/Fields/Dropdownobject.php:852 src/Fields/Dropdownobject.php:868
 #: src/Fields/Dropdownobject.php:879 src/Fields/Dropdownmultiple.php:828
 #: src/Fields/Dropdown.php:673 src/Fields/Dropdown.php:710
-#: src/Fields/Basket.php:549
+#: src/Fields/Basket.php:518
 msgid "Not null value"
 msgstr ""
 
@@ -1768,11 +1768,11 @@ msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr ""
 
-#: src/Condition.php:346
+#: src/Condition.php:400
 msgid "OR"
 msgstr ""
 
-#: src/Field.php:823 src/Field.php:834 src/Field.php:3105
+#: src/Field.php:823 src/Field.php:834 src/Field.php:3107
 #: templates/field_search_form.html.twig:42 templates/field_list.html.twig:136
 #: templates/ajax/reload_item.html.twig:36
 msgid "Object"
@@ -1802,17 +1802,17 @@ msgstr ""
 msgid "Obsolete translations"
 msgstr ""
 
-#: src/Fields/Basket.php:1994
+#: src/Fields/Basket.php:1963
 msgid "On catalog"
 msgstr ""
 
-#: src/Fields/Basket.php:242 src/Fields/Basket.php:390
-#: src/Fields/Basket.php:515 src/Fields/Basket.php:1698
-#: src/Fields/Basket.php:1731 src/Fields/Basket.php:1986
+#: src/Fields/Basket.php:241 src/Fields/Basket.php:371
+#: src/Fields/Basket.php:484 src/Fields/Basket.php:1667
+#: src/Fields/Basket.php:1700 src/Fields/Basket.php:1955
 msgid "On quotation"
 msgstr ""
 
-#: src/Freetablefield.php:487 src/Fields/Freetable.php:367
+#: src/Freetablefield.php:459 src/Fields/Freetable.php:328
 msgid "One value by line, separated by comma"
 msgstr ""
 
@@ -1855,7 +1855,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:3179
+#: src/Field.php:3181
 msgid "Order"
 msgstr ""
 
@@ -1864,7 +1864,7 @@ msgstr ""
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: src/Fields/Basket.php:1869
+#: src/Fields/Basket.php:1838
 msgid "Order type"
 msgstr ""
 
@@ -1905,7 +1905,7 @@ msgstr ""
 msgid "Please come back later"
 msgstr ""
 
-#: src/FieldCustomvalue.php:524
+#: src/FieldCustomvalue.php:526
 msgid ""
 "Please respect this format : name; display by default(0|1); comment; - "
 "sorted by display order"
@@ -1919,7 +1919,7 @@ msgstr ""
 msgid "Plugin setup"
 msgstr ""
 
-#: src/Condition.php:599 templates/condition_list.html.twig:65
+#: src/Condition.php:653 templates/condition_list.html.twig:65
 #: templates/condition_form.html.twig:50
 #: templates/condition_for_metademand.html.twig:79
 msgid "Pool"
@@ -1958,9 +1958,9 @@ msgstr ""
 msgid "Publisher"
 msgstr ""
 
-#: src/Fields/Basket.php:188 src/Fields/Basket.php:1601
-#: src/Fields/Basket.php:1882 src/Fields/Basket.php:2227
-#: src/Fields/Basket.php:2267
+#: src/Fields/Basket.php:187 src/Fields/Basket.php:1570
+#: src/Fields/Basket.php:1851 src/Fields/Basket.php:2196
+#: src/Fields/Basket.php:2236
 msgid "Quantity"
 msgstr ""
 
@@ -2006,8 +2006,8 @@ msgstr ""
 msgid "Redirect to ticket list when you change user in step by step mode"
 msgstr ""
 
-#: src/Fields/Basket.php:161 src/Fields/Basket.php:1588
-#: src/Fields/Basket.php:1859 src/Fields/Basket.php:2224
+#: src/Fields/Basket.php:160 src/Fields/Basket.php:1557
+#: src/Fields/Basket.php:1828 src/Fields/Basket.php:2193
 #: src/Basketobject.php:159 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr ""
@@ -2020,7 +2020,7 @@ msgstr ""
 msgid "Reference is mandatory"
 msgstr ""
 
-#: src/Condition.php:262 src/Condition.php:285 src/Condition.php:324
+#: src/Condition.php:316 src/Condition.php:339 src/Condition.php:378
 #: src/FieldOption.php:1069 src/FieldOption.php:1081
 msgid "Regex"
 msgstr ""
@@ -2138,10 +2138,10 @@ msgstr ""
 #: src/Wizard.php:1546 src/Fields/Tel.php:319 src/Fields/Text.php:317
 #: src/Fields/Radio.php:552 src/Fields/Textarea.php:327
 #: src/Fields/Dropdownmeta.php:1581 src/Fields/Yesno.php:459
-#: src/Fields/Checkbox.php:556 src/Fields/Dropdownobject.php:1052
+#: src/Fields/Checkbox.php:541 src/Fields/Dropdownobject.php:1052
 #: src/Fields/Email.php:313 src/Fields/Dropdownmultiple.php:1117
 #: src/Fields/Dropdownmultiple.php:1290 src/Fields/Dropdown.php:898
-#: src/Fields/Basket.php:820 src/Fields/Basket.php:1455 src/Fields/Url.php:279
+#: src/Fields/Basket.php:789 src/Fields/Basket.php:1424 src/Fields/Url.php:279
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
@@ -2183,15 +2183,15 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: src/Fields/Basket.php:472
+#: src/Fields/Basket.php:442
 msgid "Search for description.."
 msgstr ""
 
-#: src/Fields/Basket.php:471
+#: src/Fields/Basket.php:441
 msgid "Search for names.."
 msgstr ""
 
-#: src/Fields/Basket.php:470
+#: src/Fields/Basket.php:440
 msgid "Search.."
 msgstr ""
 
@@ -2223,7 +2223,7 @@ msgctxt "button"
 msgid "See your basket"
 msgstr ""
 
-#: src/Fields/Basket.php:191
+#: src/Fields/Basket.php:190
 msgid "Select"
 msgstr ""
 
@@ -2304,7 +2304,7 @@ msgid "Status"
 msgstr ""
 
 #: templates/forms/stepform_waiting_form_readonly.html.twig:71
-#: templates/forms/stepform_waiting_form.html.twig:76
+#: templates/forms/stepform_waiting_form.html.twig:80
 msgid "Step"
 msgstr ""
 
@@ -2556,11 +2556,11 @@ msgstr ""
 msgid "There is no line on the mandatory table %s"
 msgstr ""
 
-#: src/Fields/Signature.php:88
+#: src/Fields/Signature.php:123
 msgid "There was a problem on delete your signature"
 msgstr ""
 
-#: src/Fields/Signature.php:87
+#: src/Fields/Signature.php:122
 msgid "There was a problem on upload your signature"
 msgstr ""
 
@@ -2592,7 +2592,7 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr ""
 
-#: src/Fields/Signature.php:89
+#: src/Fields/Signature.php:124
 msgid "This field is mandatory"
 msgstr ""
 
@@ -2683,18 +2683,18 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: src/Fields/Basket.php:208 src/Fields/Basket.php:216
-#: src/Fields/Basket.php:1605 src/Fields/Basket.php:2142
-#: src/Fields/Basket.php:2149
+#: src/Fields/Basket.php:207 src/Fields/Basket.php:215
+#: src/Fields/Basket.php:1574 src/Fields/Basket.php:2111
+#: src/Fields/Basket.php:2118
 msgid "Total"
 msgstr ""
 
-#: src/Fields/Basket.php:201 src/Fields/Basket.php:1604
-#: src/Fields/Basket.php:1911 src/Fields/Basket.php:2240
+#: src/Fields/Basket.php:200 src/Fields/Basket.php:1573
+#: src/Fields/Basket.php:1880 src/Fields/Basket.php:2209
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:141 src/Fields/Freetable.php:654
+#: src/Fields/Freetable.php:141 src/Fields/Freetable.php:615
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2751,13 +2751,13 @@ msgstr ""
 msgid "Unable to upload the file"
 msgstr ""
 
-#: src/Fields/Basket.php:179 src/Fields/Basket.php:1596
-#: src/Fields/Basket.php:1878 src/Fields/Basket.php:2233
+#: src/Fields/Basket.php:178 src/Fields/Basket.php:1565
+#: src/Fields/Basket.php:1847 src/Fields/Basket.php:2202
 msgid "Unit"
 msgstr ""
 
-#: src/Fields/Basket.php:182 src/Fields/Basket.php:1598
-#: src/Fields/Basket.php:1900 src/Fields/Basket.php:2236
+#: src/Fields/Basket.php:181 src/Fields/Basket.php:1567
+#: src/Fields/Basket.php:1869 src/Fields/Basket.php:2205
 msgid "Unit price (HT)"
 msgstr ""
 
@@ -2870,7 +2870,7 @@ msgstr ""
 msgid "Validate metademands"
 msgstr ""
 
-#: src/Fields/Freetable.php:335
+#: src/Fields/Freetable.php:296
 msgid "Validate the basket"
 msgstr ""
 
@@ -2886,15 +2886,15 @@ msgstr ""
 #: src/FieldOption.php:1072 src/FieldOption.php:1081
 #: templates/forms/ticketfield_form_row.html.twig:43
 #: templates/fields/field_customvalue_add.html.twig:39
-#: templates/ticketfield_list.html.twig:56
+#: templates/ticketfield_list.html.twig:52
 msgid "Value"
 msgstr ""
 
-#: src/Condition.php:591 src/Fields/Radio.php:335
+#: src/Condition.php:645 src/Fields/Radio.php:335
 #: src/Fields/Dropdownmeta.php:1261 src/Fields/Yesno.php:250
-#: src/Fields/Ldapdropdown.php:318 src/Fields/Checkbox.php:312
+#: src/Fields/Ldapdropdown.php:318 src/Fields/Checkbox.php:297
 #: src/Fields/Dropdownobject.php:760 src/Fields/Dropdownmultiple.php:719
-#: src/Fields/Dropdown.php:645 src/Fields/Basket.php:548
+#: src/Fields/Dropdown.php:645 src/Fields/Basket.php:517
 #: templates/condition_list.html.twig:64
 #: templates/field_option_options.html.twig:94
 #: templates/condition_form.html.twig:48
@@ -2940,7 +2940,7 @@ msgstr ""
 msgid "What you want to do ?"
 msgstr ""
 
-#: src/Fields/Basket.php:490
+#: src/Fields/Basket.php:459
 msgid "With quantity"
 msgstr ""
 
@@ -2948,7 +2948,7 @@ msgstr ""
 msgid "With this option, some assignment rules will not be respected."
 msgstr ""
 
-#: src/Fields/Basket.php:501
+#: src/Fields/Basket.php:470
 msgid "With unit price (HT)"
 msgstr ""
 
@@ -2974,19 +2974,19 @@ msgid ""
 "form fields, making your life easier :)"
 msgstr ""
 
-#: src/FieldCustomvalue.php:677
+#: src/FieldCustomvalue.php:679
 msgid "You can't add a custom value without name"
 msgstr ""
 
-#: src/Freetablefield.php:544
+#: src/Freetablefield.php:515
 msgid "You can't add a field without name"
 msgstr ""
 
-#: src/Freetablefield.php:553
+#: src/Freetablefield.php:524
 msgid "You can't add a field without type"
 msgstr ""
 
-#: src/Fields/Freetable.php:178
+#: src/Fields/Freetable.php:182
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
@@ -2994,7 +2994,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:3321 src/Field.php:3348 src/Field.php:3364 src/Field.php:3387
+#: src/Field.php:3323 src/Field.php:3350 src/Field.php:3366 src/Field.php:3389
 msgid "You cannot do this for this field"
 msgstr ""
 
@@ -3053,6 +3053,7 @@ msgid "You have to select a field"
 msgstr ""
 
 #: front/condition.form.php:80 front/condition.form.php:124
+#: src/Condition.php:172
 msgid "You have to select an item"
 msgstr ""
 
@@ -3078,7 +3079,7 @@ msgstr ""
 msgid "Your drafts"
 msgstr ""
 
-#: templates/forms/stepform_waiting_form.html.twig:51
+#: templates/forms/stepform_waiting_form.html.twig:53
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] ""
@@ -3108,11 +3109,11 @@ msgstr ""
 msgid "Your private models"
 msgstr ""
 
-#: src/Fields/Signature.php:86
+#: src/Fields/Signature.php:121
 msgid "Your signature has been deleted"
 msgstr ""
 
-#: src/Fields/Signature.php:85
+#: src/Fields/Signature.php:120
 msgid "Your signature has been uploaded"
 msgstr ""
 
