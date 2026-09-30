@@ -4253,7 +4253,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
         $field = array_merge($field, $params);
 
-        $style_title = "class='title'";
         // $color is the suffix of a "<field id>#<colour>" array key, and the only
         // code that ever built such a key is commented out above: in practice the
         // suffix comes from the posted field list, i.e. from the client, and lands
@@ -4263,34 +4262,23 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         if ($color != "" && !preg_match('/^(?:#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,20})$/', (string) $color)) {
             $color = "";
         }
+        // Inline CSS of the title cell; the ticket content templates set the class themselves.
+        $styles = [];
         if ($color != "") {
-            if (Plugin::isPluginActive('orderfollowup')) {
-                $ordermaterialmeta = new OrderMetademand();
-                if ($ordermaterialmeta->getFromDBByCrit(
-                    ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']],
-                )) {
-                    $style_title .= " style='color:$color'";
-                } else {
-                    $style_title .= " style='color:$color;width: 40%;'";
-                }
-            } else {
-                $style_title .= " style='color:$color;width: 40%;'";
-            }
-        } else {
-            if (Plugin::isPluginActive('orderfollowup')) {
-                $ordermaterialmeta = new OrderMetademand();
-                if ($ordermaterialmeta->getFromDBByCrit(
-                    ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']],
-                )) {
-                    $style_title .= " ";
-                } else {
-                    $style_title .= " style='width: 40%;'";
-                }
-            } else {
-                $style_title .= " style='width: 40%;'";
-            }
+            $styles[] = "color:$color";
         }
-        //      $style_title = "style='background-color: #cccccc;'";
+        // The order follow-up layout lets the title cell take its natural width
+        $is_order_layout = false;
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $ordermaterialmeta = new OrderMetademand();
+            $is_order_layout = $ordermaterialmeta->getFromDBByCrit(
+                ['plugin_metademands_metademands_id' => $field['plugin_metademands_metademands_id']],
+            );
+        }
+        if (!$is_order_layout) {
+            $styles[] = 'width: 40%';
+        }
+        $title_style = $styles === [] ? '' : implode(';', $styles) . ';';
 
         // Plain text, stored unescaped by GLPI 10+. Every displayFieldItems() implementation
         // concatenates it into markup and escapes it at that sink rather than here, because
@@ -4332,7 +4320,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $class::displayFieldItems(
                         $result,
                         $formatAsTable,
-                        $style_title,
+                        $title_style,
                         $label,
                         $field,
                         $return_value,
@@ -4350,7 +4338,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $class::displayFieldItems(
                                 $result,
                                 $formatAsTable,
-                                $style_title,
+                                $title_style,
                                 $label,
                                 $field,
                                 $return_value,
@@ -4369,7 +4357,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $class::displayFieldItems(
                             $result,
                             $formatAsTable,
-                            $style_title,
+                            $title_style,
                             $label,
                             $field,
                             $return_value,
@@ -4385,7 +4373,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $class::displayFieldItems(
                             $result,
                             $formatAsTable,
-                            $style_title,
+                            $title_style,
                             $label,
                             $field,
                             $return_value,
@@ -4417,7 +4405,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $class::displayFieldItems(
                             $result,
                             $formatAsTable,
-                            $style_title,
+                            $title_style,
                             $label,
                             $field,
                             $return_value,
@@ -4471,10 +4459,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 return $field['value'];
                             } else {
                                 $result[$field['rank']]['display'] = true;
+                                // Third-party field types still receive the legacy attribute fragment
                                 $content = self::displayPluginFieldItems(
                                     $plug,
                                     $formatAsTable,
-                                    $style_title,
+                                    "class='title'" . ($title_style !== '' ? " style='$title_style'" : ''),
                                     $label,
                                     $field,
                                 );

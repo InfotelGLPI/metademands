@@ -8,6 +8,14 @@
          <file>tests/MailTaskTest.php</file>
          <file>tests/ChildTicketBlocksTest.php</file>
          <file>tests/TicketContentCellsTest.php</file>
+         <file>tests/TicketTaskFormTest.php</file>
+         <file>tests/FieldOptionListTest.php</file>
+        <file>tests/TaskListTest.php</file>
+        <file>tests/FieldListTest.php</file>
+        <file>tests/TicketFieldListTest.php</file>
+        <file>tests/FreetableFieldsTest.php</file>
+        <file>tests/BasketlineSummaryTest.php</file>
+        <file>tests/ConditionListTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

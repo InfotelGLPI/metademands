@@ -363,9 +363,7 @@ class Radio extends CommonDBTM
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $elements[$params['check_value']] ?? "",
-        ]);
+        return $elements[$params['check_value']] ?? "";
     }
 
     /**
@@ -1094,7 +1092,7 @@ class Radio extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -1106,7 +1104,7 @@ class Radio extends CommonDBTM
         if (!empty($field['custom_values']) && $field['value'] > 0) {
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'value'   => (string) self::getFieldValue($field, $label, $lang),
@@ -1117,7 +1115,7 @@ class Radio extends CommonDBTM
             if ($field['value']) {
                 $result[$field['rank']]['content'] .= Field::renderContentCells(
                     (bool) $formatAsTable,
-                    (string) $style_title,
+                    (string) $title_style,
                     [[
                         'value'      => (string) $label,
                         'colspan'    => $colspan,

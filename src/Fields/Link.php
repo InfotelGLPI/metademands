@@ -206,7 +206,7 @@ class Link extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -220,7 +220,7 @@ class Link extends CommonDBTM
             // in the href and in the anchor text.
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'value'   => (string) self::getFieldValue($field),

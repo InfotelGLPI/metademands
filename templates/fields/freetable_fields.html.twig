@@ -25,41 +25,68 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in table cells: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
+{#
+ # Trigger adding one more column. The hidden inputs are read by
+ # metademands_add_custom_values() (public/scripts/metademands.js), the click by
+ # public/scripts/wizard_form.js.
+ #}
+{% macro add_column(count, fields_id, root_doc) %}
+    <input type="hidden" id="display_comment" name="display_comment" value="1">
+    <input type="hidden" id="count_custom_values" name="count_custom_values" value="{{ count }}">
+    <input type="hidden" id="display_default" name="display_default" value="1">
+    &nbsp;<button type="button" class="btn btn-primary" title="{{ _x('button', 'Add') }}"
+                  data-md-freetablefield-add="{{ fields_id }}" data-md-freetablefield-root="{{ root_doc }}">
+        <i class="ti ti-plus"></i>
+        <span class="sr-only">{{ _x('button', 'Add') }}</span>
+    </button>&nbsp;
+{% endmacro %}
+
 <tr class="tab_bg_1">
     <td>
         {% if entries|length > 0 %}
             <div id="drag">
                 <form method="post" action="{{ target }}">
+                    {% if has_fields_id %}
+                        <input type="hidden" id="fields_id" name="fields_id" value="{{ fields_id }}">
+                        <input type="hidden" id="type_object" name="type_object" value="{{ type_object }}">
+                    {% endif %}
+                    <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
                     <table class="tab_cadre_fixe">
                         <tbody data-md-sortable data-md-url="{{ reorder_url }}" data-md-params="{{ reorder_params }}">
                             {% for entry in entries %}
                                 <tr class="tab_bg_1" data-md-order="{{ entry.rank }}">
                                     <td class="rowhandler control center">
                                         {{ __('Rank', 'metademands') }} {{ entry.rank }}
-                                        {% if has_fields_id %}
-                                            {{ call('Html::hidden', ['fields_id', {'value': fields_id, 'id': 'fields_id'}])|raw }}
-                                            {{ call('Html::hidden', ['type_object', {'value': type_object, 'id': 'type_object'}])|raw }}
-                                        {% endif %}
                                     </td>
 
                                     <td class="rowhandler control left">
                                         <span id="internal_name_values{{ entry.key }}">
                                             {{ __('Internal name', 'metademands') }}
-                                            {{ entry.internal_name_input|raw }}
+                                            {{ inputs.text('internal_name[' ~ entry.key ~ ']', entry.internal_name, {
+                                                'additional_attributes': {'size': 20}
+                                            }) }}
                                         </span>
                                     </td>
 
                                     <td class="rowhandler control left">
                                         <span id="type_values{{ entry.key }}">
                                             {{ __('Type', 'metademands') }}<br>
-                                            {{ entry.type_dropdown|raw }}
+                                            {{ fields.dropdownArrayField('type[' ~ entry.key ~ ']', entry.type, type_choices, '', bare) }}
                                         </span>
                                     </td>
 
                                     <td class="rowhandler control left">
                                         <span id="custom_values{{ entry.key }}">
                                             {{ __('Display name', 'metademands') }}
-                                            {{ entry.name_input|raw }}
+                                            {{ inputs.text('name[' ~ entry.key ~ ']', entry.name, {
+                                                'additional_attributes': {'size': 20}
+                                            }) }}
                                         </span>
                                     </td>
 
@@ -67,60 +94,72 @@
                                         <td class="rowhandler control left">
                                             <span id="comment_values{{ entry.key }}">
                                                 {{ __('Comment') }}
-                                                {{ entry.comment_input|raw }}
+                                                {{ inputs.text('comment[' ~ entry.key ~ ']', entry.comment, {
+                                                    'additional_attributes': {'size': 20}
+                                                }) }}
                                             </span>
-                                            {{ entry.hidden_dropdown_values|raw }}
                                         </td>
                                     {% elseif entry.type == type_select %}
                                         <td class="rowhandler control left">
                                             <span id="dropdown_values{{ entry.key }}">
                                                 {{ __('Dropdown values', 'metademands') }}
-                                                {{ entry.dropdown_values_tooltip|raw }}
-                                                {{ entry.dropdown_values_textarea|raw }}
+                                                <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      data-bs-title="{{ __('One value by line, separated by comma', 'metademands') }}">?</span>
+                                                {{ inputs.textarea('dropdown_values[' ~ entry.key ~ ']', entry.dropdown_values, {
+                                                    'rows': 3
+                                                }) }}
                                             </span>
-                                            {{ entry.hidden_comment|raw }}
+                                            <input type="hidden" name="comment[{{ entry.key }}]" value="">
                                         </td>
                                     {% elseif entry.type == type_number or entry.type == type_date or entry.type == type_time %}
                                         <td class="rowhandler control left">
-                                            {{ entry.hidden_comment|raw }}
-                                            {{ entry.hidden_dropdown_values|raw }}
+                                            <input type="hidden" name="comment[{{ entry.key }}]" value="">
                                         </td>
                                     {% endif %}
 
                                     <td class="rowhandler control left">
                                         <span id="is_mandatory_values{{ entry.key }}">
                                             {{ __('Mandatory', 'metademands') }}<br>
-                                            {{ entry.is_mandatory_dropdown|raw }}
+                                            {{ fields.dropdownYesNo('is_mandatory[' ~ entry.key ~ ']', entry.is_mandatory, '', bare) }}
                                         </span>
                                     </td>
 
                                     <td class="rowhandler control center">
-                                        <div class="drag row md-sort-handle" style="cursor: move;border-width: 0 !important;border-style: none !important;border-color: initial !important;border-image: initial !important;">
+                                        <div class="drag md-sort-handle" style="cursor: move;border-width: 0 !important;border-style: none !important;border-color: initial !important;border-image: initial !important;">
                                             <i class="ti ti-grip-horizontal grip-rule"></i>
                                         </div>
                                     </td>
 
                                     <td class="rowhandler control center">
-                                        {{ entry.hidden_id|raw }}
-                                        {{ entry.submit|raw }}
+                                        <input type="hidden" name="id[{{ entry.key }}]" value="{{ entry.key }}">
+                                        <button type="submit" name="update" value="1" class="btn btn-primary"
+                                                title="{{ _x('button', 'Save') }}">
+                                            <i class="ti ti-device-floppy"></i>
+                                            <span class="sr-only">{{ _x('button', 'Save') }}</span>
+                                        </button>
                                     </td>
 
                                     <td class="rowhandler control center">
-                                        {{ entry.delete_form|raw }}
+                                        {# The form of the field header wraps this one, nested forms are dropped by
+                                         # the browser: the button carries the column itself, whichever form it posts #}
+                                        <button type="submit" name="delete" value="{{ entry.key }}"
+                                                class="btn btn-primary" title="{{ _x('button', 'Delete permanently') }}">
+                                            <i class="ti ti-circle-x"></i>
+                                            <span class="sr-only">{{ _x('button', 'Delete permanently') }}</span>
+                                        </button>
                                     </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
-                        {{ call('Html::hidden', ['plugin_metademands_fields_id', {'value': fields_id}])|raw }}
                     </table>
-                    {# closeForm() emits the CSRF token and the closing </form> tag #}
-                    {{ call('Html::closeForm', [false])|raw }}
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                </form>
             </div>
 
             {% if show_init %}
                 <tr class="tab_bg_1">
                     <td colspan="4" align="left" id="show_custom_fields">
-                        {{ init_custom_value|raw }}
+                        {{ _self.add_column(max_rank, fields_id, root_doc) }}
                     </td>
                 </tr>
             {% endif %}
@@ -128,9 +167,9 @@
             <tr class="tab_bg_1">
                 <td align="right" id="show_custom_fields">
                     {% if has_fields_id %}
-                        {{ call('Html::hidden', ['fields_id', {'value': fields_id}])|raw }}
+                        <input type="hidden" name="fields_id" value="{{ fields_id }}">
                     {% endif %}
-                    {{ init_custom_value|raw }}
+                    {{ _self.add_column(-1, fields_id, root_doc) }}
                 </td>
             </tr>
         {% endif %}

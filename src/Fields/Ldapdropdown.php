@@ -415,9 +415,7 @@ class Ldapdropdown extends CommonDBTM
                     break;
             }
         }
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $value,
-        ]);
+        return $value;
     }
 
     public static function isCheckValueOK($value, $check_value)
@@ -918,7 +916,7 @@ class Ldapdropdown extends CommonDBTM
         return $field['value'];
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
+    public static function displayFieldItems(&$result, $formatAsTable, $title_style, $label, $field, $return_value, $lang, $is_order = false)
     {
 
         $colspan = $is_order ? 6 : 1;
@@ -928,7 +926,7 @@ class Ldapdropdown extends CommonDBTM
                 default:
                     $result[$field['rank']]['content'] .= Field::renderContentCells(
                         (bool) $formatAsTable,
-                        (string) $style_title,
+                        (string) $title_style,
                         [[
                             'label'   => (string) $label,
                             'value'   => (string) self::getFieldValue($field),

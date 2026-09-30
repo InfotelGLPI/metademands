@@ -215,9 +215,7 @@ class Textarea extends CommonDBTM
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $options[$params['check_value']] ?? "",
-        ]);
+        return $options[$params['check_value']] ?? "";
     }
 
     public static function isCheckValueOK($value, $check_value)
@@ -712,7 +710,7 @@ class Textarea extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -726,7 +724,7 @@ class Textarea extends CommonDBTM
             // exactly as getFieldValue() does for the $return_value callers.
             $result[$field['rank']]['content'] .= Field::renderContentBlock(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 (string) $label,
                 $field['hide_title'] == 0,
                 (string) $field['value'],

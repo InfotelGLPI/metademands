@@ -25,209 +25,257 @@
  # --------------------------------------------------------------------------
  #}
 
-{% if add is not null %}
-    <div class="modal fade" id="{{ add.modal_new_id }}" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ __('Add a new field', 'metademands') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+{#
+ # Field list of a metademand, one tab per block. Its behaviours (add modals, active
+ # tab, block preview, purge confirmation) are read from the data-md-field-* attributes
+ # by public/scripts/field_list.js.
+ #}
+<div data-md-field-list="{{ meta_id }}" data-md-field-list-block="{{ searched_block }}"
+     data-md-field-list-preview-url="{{ preview_url }}">
+    {% if add is not null %}
+        <div class="modal fade" id="{{ add.modal_new_id }}" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Add a new field', 'metademands') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body"></div>
                 </div>
-                <div id="{{ add.modal_new_id }}_body" class="modal-body"></div>
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="{{ add.modal_existing_id }}" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ __('Add an existing field', 'metademands') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal fade" id="{{ add.modal_existing_id }}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Add an existing field', 'metademands') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body"></div>
                 </div>
-                <div id="{{ add.modal_existing_id }}_body" class="modal-body"></div>
             </div>
         </div>
-    </div>
-    {{ add.script_html|raw }}
 
-    <div class="center">
-        <a class="submit btn btn-primary" href="javascript:{{ add.fn_new }}();">
-            {{- __('Add a new field', 'metademands') -}}
-        </a>&nbsp;
-        <a class="submit btn btn-primary" href="javascript:{{ add.fn_existing }}();">
-            {{- __('Add an existing field', 'metademands') -}}
-        </a>
-    </div>
-    <br>
-{% endif %}
-
-{{ block_filter_script_html|raw }}
-{{ search_form_html|raw }}
-{{ tabs_state_script_html|raw }}
-
-{% if tabs|length %}
-    <div class="tabs-container">
-        <button class="scroll-btn scroll-left"><i class="ti ti-chevron-left"></i></button>
-        <div class="d-flex flex-nowrap border-bottom scrollable-tabs">
-            <ul class="nav nav-tabs flex-nowrap" style="border-bottom:unset" role="tablist" id="fieldslist">
-                {% for tab in tabs %}
-                    <li class="nav-item">
-                        <a class="nav-link tablinks" id="ablock{{ tab.id }}" href="#block{{ tab.id }}"
-                           data-toggle="tab">{{ tab.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
+        <div class="center">
+            <button type="button" class="submit btn btn-primary"
+                    data-md-field-add="{{ add.modal_new_id }}" data-md-field-add-new
+                    data-md-field-add-url="{{ add.url_new }}"
+                    data-md-field-add-params="{{ add.params|json_encode }}">
+                {{- __('Add a new field', 'metademands') -}}
+            </button>&nbsp;
+            <button type="button" class="submit btn btn-primary"
+                    data-md-field-add="{{ add.modal_existing_id }}"
+                    data-md-field-add-url="{{ add.url_existing }}"
+                    data-md-field-add-params="{{ add.params|json_encode }}">
+                {{- __('Add an existing field', 'metademands') -}}
+            </button>
         </div>
-        <button class="scroll-btn scroll-right"><i class="ti ti-chevron-right"></i></button>
-    </div>
-    {{ tabs_scroll_script_html|raw }}
-{% endif %}
+        <br>
+    {% endif %}
 
-{% for panel in panels %}
-    <div id="block{{ panel.id }}" class="tabfieldcontent {{ panel.is_default ? 'active' : '' }}">
-        {% if panel.order_warning_html is not empty %}
-            <div class="alert alert-warning flex">
-                <div class="left">
-                    <i class="ti ti-alert-triangle" style="color: font-size:2em;orange;"></i>&nbsp;
-                    {{- __('The fields are not ordered correctly, you will not be able to order them!', 'metademands') }}
-                    <br><br>
-                    {{ _x('button', 'Do you want to fix them ?', 'metademands') }}
+    {% include '@metademands/field_search_form.html.twig' with search_form only %}
+
+    {% if tabs|length %}
+        <div class="tabs-container">
+            <button type="button" class="scroll-btn scroll-left"><i class="ti ti-chevron-left"></i></button>
+            <div class="d-flex flex-nowrap border-bottom scrollable-tabs">
+                <ul class="nav nav-tabs flex-nowrap" style="border-bottom:unset" role="tablist" id="fieldslist">
+                    {% for tab in tabs %}
+                        <li class="nav-item">
+                            <a class="nav-link tablinks" id="ablock{{ tab.id }}" href="#block{{ tab.id }}"
+                               data-toggle="tab">{{ tab.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="button" class="scroll-btn scroll-right"><i class="ti ti-chevron-right"></i></button>
+        </div>
+    {% endif %}
+
+    {% for panel in panels %}
+        <div id="block{{ panel.id }}" class="tabfieldcontent {{ panel.is_default ? 'active' : '' }}">
+            {% if panel.fix_orders %}
+                <div class="alert alert-warning flex">
+                    <div class="left">
+                        <i class="ti ti-alert-triangle" style="color: font-size:2em;orange;"></i>&nbsp;
+                        {{- __('The fields are not ordered correctly, you will not be able to order them!', 'metademands') }}
+                        <br><br>
+                        {{ _x('button', 'Do you want to fix them ?', 'metademands') }}
+                    </div>
+                    <div class="right">
+                        <form method="post" action="{{ form_url }}">
+                            <input type="hidden" name="plugin_metademands_metademands_id" value="{{ meta_id }}">
+                            <input type="hidden" name="rank" value="{{ panel.id }}">
+                            <button type="submit" name="fixorders" value="1" class="btn btn-warning"
+                                    title="{{ _x('button', 'Do you want to fix them ?', 'metademands') }}">
+                                <i class="ti ti-settings"></i>
+                                <span class="sr-only">{{ _x('button', 'Do you want to fix them ?', 'metademands') }}</span>
+                            </button>
+                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                        </form>
+                    </div>
                 </div>
-                <div class="right">
-                    {{ panel.order_warning_html|raw }}
-                </div>
-            </div>
-        {% endif %}
-
-        {% if panel.ko_params %}
-            <div class="alert alert-warning d-flex">
-                <b>{{ __('Warning : there are fields without parameters, please check', 'metademands') }}</b>
-            </div>
-        {% endif %}
-        {% if panel.ko_custom %}
-            <div class="alert alert-warning d-flex">
-                <b>{{ __('Warning : there are fields without custom values, please check', 'metademands') }}</b>
-            </div>
-        {% endif %}
-
-        {% if not panel.rows|length %}
-            <div class="center first-bloc">
-                <table class="tab_cadre_fixe">
-                    <tr class="tab_bg_1">
-                        <td class="center">{{ __('No results found') }}</td>
-                    </tr>
-                </table>
-            </div>
-        {% else %}
-            {% if canedit %}
-                {{ panel.ma_open_html|raw }}
-                {{ panel.ma_top_html|raw }}
             {% endif %}
-            <div id="{{ panel.drag_id }}">
-                <table class="tab_cadre_fixehov">
-                    <thead>
-                        <tr>
-                            {% if canedit %}
-                                <th width="10">{{ panel.check_all_html|raw }}</th>
-                            {% endif %}
-                            <th class="center b"></th>
-                            <th class="center b">{{ __('ID') }}</th>
-                            <th class="center b">{{ __('Label') }}</th>
-                            <th class="center b">{{ __('Type') }} / {{ __('Object', 'metademands') }}</th>
-                            <th class="center b">{{ __('Mandatory', 'metademands') }}</th>
-                            <th class="center b">{{ __('Value to check', 'metademands') }}</th>
-                            {% if is_order %}
-                                <th class="center b">{{ __('Display into the basket', 'metademands') }}</th>
-                            {% endif %}
-                            <th class="center b">{{ __('Use this field as object field', 'metademands') }}</th>
-                            <th class="center b">{{ __('Launch a task with the field', 'metademands') }}</th>
-                            <th class="center b" style="width: 70px;">{{ __('Actions', 'metademands') }}</th>
+
+            {% if panel.ko_params %}
+                <div class="alert alert-warning d-flex">
+                    <b>{{ __('Warning : there are fields without parameters, please check', 'metademands') }}</b>
+                </div>
+            {% endif %}
+            {% if panel.ko_custom %}
+                <div class="alert alert-warning d-flex">
+                    <b>{{ __('Warning : there are fields without custom values, please check', 'metademands') }}</b>
+                </div>
+            {% endif %}
+
+            {% if not panel.rows|length %}
+                <div class="center first-bloc">
+                    <table class="tab_cadre_fixe">
+                        <tr class="tab_bg_1">
+                            <td class="center">{{ __('No results found') }}</td>
                         </tr>
-                    </thead>
-                    <tbody data-md-sortable data-md-url="{{ panel.sortable_url }}"
-                           data-md-params="{{ panel.sortable_params }}">
-                        {% for row in panel.rows %}
-                            <tr class="tab_bg_1" data-md-order="{{ row.order }}">
+                    </table>
+                </div>
+            {% else %}
+                {% if canedit %}
+                    {# raw: massive actions, no core macro (§3.2) #}
+                    {{ call('Html::getOpenMassiveActionsForm', [panel.container])|raw }}
+                    {# raw: massive actions, no core macro (§3.2) #}
+                    {{ call('Html::showMassiveActions', [{
+                        'item': itemtype,
+                        'container': panel.container,
+                        'display': false
+                    }])|raw }}
+                {% endif %}
+                <div id="{{ panel.drag_id }}">
+                    <table class="tab_cadre_fixehov">
+                        <thead>
+                            <tr>
                                 {% if canedit %}
-                                    <td class="rowhandler control center">{{ row.checkbox_html|raw }}</td>
+                                    <th width="10">
+                                        {# raw: massive actions, no core macro (§3.2) #}
+                                        {{ call('Html::getCheckAllAsCheckbox', [panel.container])|raw }}
+                                    </th>
                                 {% endif %}
-                                <td>
-                                    <div class="drag row" style="{{ drag_style }}">
-                                        {%- if row.has_warning -%}
-                                            <i class="ti ti-alert-triangle" style="color: orange;"></i>
-                                        {%- endif -%}
-                                    </div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">{{ row.id }}</div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">
-                                        <a href="{{ row.url }}">{{ row.label }}</a>
-                                    </div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">{{ row.type_label }}</div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">
-                                        {%- if row.mandatory_label is not null -%}
-                                            {% if row.is_mandatory %}
-                                                <span class="red">{{ row.mandatory_label }}</span>
-                                            {% else %}
-                                                {{ row.mandatory_label }}
-                                            {% endif %}
-                                        {%- endif -%}
-                                    </div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">
-                                        {%- if row.value_to_check_label is not null -%}
-                                            {{ row.value_to_check_label }}
-                                        {%- else -%}
-                                            {{ row.value_to_check_html|raw }}
-                                        {%- endif -%}
-                                    </div>
-                                </td>
+                                <th class="center b"></th>
+                                <th class="center b">{{ __('ID') }}</th>
+                                <th class="center b">{{ __('Label') }}</th>
+                                <th class="center b">{{ __('Type') }} / {{ __('Object', 'metademands') }}</th>
+                                <th class="center b">{{ __('Mandatory', 'metademands') }}</th>
+                                <th class="center b">{{ __('Value to check', 'metademands') }}</th>
                                 {% if is_order %}
-                                    <td class="rowhandler control center">
-                                        <div class="drag row" style="{{ drag_style }}">{{ row.basket_label }}</div>
-                                    </td>
+                                    <th class="center b">{{ __('Display into the basket', 'metademands') }}</th>
                                 {% endif %}
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">{{ row.object_field_label }}</div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row" style="{{ drag_style }}">
-                                        {%- if row.task_names|length -%}
-                                            {% for task_name in row.task_names %}{{ task_name }}<br>{% endfor %}
-                                        {%- else -%}
-                                            {{ row.no_task_label }}
-                                        {%- endif -%}
-                                    </div>
-                                </td>
-                                <td class="rowhandler control center">
-                                    <div class="drag row md-sort-handle" style="{{ drag_style }}">
-                                        {%- if row.debug_order is not null %}{{ row.debug_order }}{% endif -%}
-                                        <i class="ti ti-grip-horizontal grip-rule"></i>
-                                    </div>
-                                    &nbsp;{{ row.purge_form_html|raw }}
-                                </td>
+                                <th class="center b">{{ __('Use this field as object field', 'metademands') }}</th>
+                                <th class="center b">{{ __('Launch a task with the field', 'metademands') }}</th>
+                                <th class="center b" style="width: 70px;">{{ __('Actions', 'metademands') }}</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% if canedit %}
-                {{ panel.ma_bottom_html|raw }}
-                {# closes the massive actions <form> above and carries the CSRF token #}
-                {{ panel.close_form_html|raw }}
-            {% endif %}
-        {% endif %}
-    </div>
-{% endfor %}
+                        </thead>
+                        <tbody data-md-sortable data-md-url="{{ panel.sortable_url }}"
+                               data-md-params="{{ panel.sortable_params }}">
+                            {% for row in panel.rows %}
+                                <tr class="tab_bg_1" data-md-order="{{ row.order }}">
+                                    {% if canedit %}
+                                        <td class="rowhandler control center">
+                                            {# raw: massive actions, no core macro (§3.2) #}
+                                            {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
+                                        </td>
+                                    {% endif %}
+                                    <td>
+                                        <div class="drag row" style="{{ drag_style }}">
+                                            {%- if row.has_warning -%}
+                                                <i class="ti ti-alert-triangle" style="color: orange;"></i>
+                                            {%- endif -%}
+                                        </div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">{{ row.id }}</div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">
+                                            <a href="{{ row.url }}">{{ row.label }}</a>
+                                        </div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">{{ row.type_label }}</div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">
+                                            {%- if row.mandatory_label is not null -%}
+                                                {% if row.is_mandatory %}
+                                                    <span class="red">{{ row.mandatory_label }}</span>
+                                                {% else %}
+                                                    {{ row.mandatory_label }}
+                                                {% endif %}
+                                            {%- endif -%}
+                                        </div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">
+                                            {{- row.value_to_check_label -}}
+                                        </div>
+                                    </td>
+                                    {% if is_order %}
+                                        <td class="rowhandler control center">
+                                            <div class="drag row" style="{{ drag_style }}">{{ row.basket_label }}</div>
+                                        </td>
+                                    {% endif %}
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">{{ row.object_field_label }}</div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="drag row" style="{{ drag_style }}">
+                                            {%- if row.task_names|length -%}
+                                                {% for task_name in row.task_names %}{{ task_name }}<br>{% endfor %}
+                                            {%- else -%}
+                                                {{ row.no_task_label }}
+                                            {%- endif -%}
+                                        </div>
+                                    </td>
+                                    <td class="rowhandler control center">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <div class="drag md-sort-handle" style="{{ drag_style }}">
+                                                {%- if row.debug_order is not null %}{{ row.debug_order }}{% endif -%}
+                                                <i class="ti ti-grip-horizontal grip-rule"></i>
+                                            </div>
+                                            {% if canedit %}
+                                                {# Owned by the purge form below: forms cannot nest in the massive actions one #}
+                                                <button type="submit" form="{{ panel.purge_form_id }}" name="id" value="{{ row.id }}"
+                                                        class="btn btn-link p-0" data-md-field-purge
+                                                        data-md-field-purge-confirm="{{ __('Are you sure you want to delete this field ?', 'metademands') }}">
+                                                    <i class="fas fa-times-circle fa-1x"></i>
+                                                    <span class="sr-only">{{ _x('button', 'Delete permanently') }}</span>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if canedit %}
+                    {# raw: massive actions, no core macro (§3.2) #}
+                    {{ call('Html::showMassiveActions', [{
+                        'item': itemtype,
+                        'container': panel.container,
+                        'ontop': false,
+                        'display': false
+                    }])|raw }}
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    </form>
 
-<br>
-<h3>{{ __('Block overview', 'metademands') }}</h3>
-{{ preview_script_html|raw }}
-<span id="see_block_preview"></span>
+                    <form id="{{ panel.purge_form_id }}" method="post" action="{{ form_url }}">
+                        <input type="hidden" name="plugin_metademands_metademands_id" value="{{ meta_id }}">
+                        <input type="hidden" name="purge" value="1">
+                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <br>
+    <h3>{{ __('Block overview', 'metademands') }}</h3>
+    <span id="see_block_preview"></span>
+</div>

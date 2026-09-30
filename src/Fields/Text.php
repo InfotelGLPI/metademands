@@ -223,9 +223,7 @@ class Text extends CommonDBTM
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $options[$params['check_value']] ?? "",
-        ]);
+        return $options[$params['check_value']] ?? "";
     }
 
     public static function fieldsMandatoryScript($data)
@@ -664,7 +662,7 @@ class Text extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -677,7 +675,7 @@ class Text extends CommonDBTM
             // Label and getFieldValue() are plain text: the template escapes both.
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'value'   => (string) self::getFieldValue($field),

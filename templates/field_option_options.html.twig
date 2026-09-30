@@ -37,8 +37,16 @@
 
     {% set colspan = is_parent_field ? 3 : 13 %}
 
+    {#
+     # The add / edit links, and the reload of the option form when its value to check
+     # changes, load the option form into this modal: see fieldoption_valuetocheck.js.
+     #}
     {% if canedit %}
-        <div class="modal fade" id="{{ modal_id }}" tabindex="-1">
+        <div class="modal fade" id="{{ modal_id }}" tabindex="-1"
+             data-md-option-modal
+             data-md-option-url="{{ viewsubitem_url }}"
+             data-md-option-params="{{ load_params|json_encode }}"
+             data-md-option-reload-params="{{ reload_params|json_encode }}">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -49,17 +57,14 @@
                 </div>
             </div>
         </div>
-    {% endif %}
 
-    {% if scripts is not empty %}
-        <script type="text/javascript">{{ scripts|raw }}</script>
-    {% endif %}
-
-    {% if canedit %}
         <div class="center">
-            <a class="submit btn btn-primary" href="javascript:{{ add_fn }}();">
+            <button type="button" class="submit btn btn-primary"
+                    data-md-option-open="{{ modal_id }}"
+                    data-md-option-id="-1"
+                    data-md-option-title="{{ __('Add a new option', 'metademands') }}">
                 {{ __('Add a new option', 'metademands') }}
-            </a>
+            </button>
         </div>
         <br>
     {% endif %}
@@ -67,7 +72,9 @@
     {% if entries|length > 0 %}
         <div class="left">
             {% if canedit %}
+                {# raw: massive actions, no core macro (§3.2) #}
                 {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+                {# raw: massive actions, no core macro (§3.2) #}
                 {{ call('Html::showMassiveActions', [{
                     'item': itemtype,
                     'container': mass_container,
@@ -82,6 +89,7 @@
                 <tr>
                     {% if canedit %}
                         <th width="{{ colspan }}">
+                            {# raw: massive actions, no core macro (§3.2) #}
                             {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
                         </th>
                     {% endif %}
@@ -105,39 +113,44 @@
                 </tr>
 
                 {% for entry in entries %}
-                    {% set cell_attrs %}{% if entry.edit_fn is not empty %}style="cursor:pointer" onclick="{{ entry.edit_fn }}();"{% endif %}{% endset %}
-                    <tr class="tab_bg_1">
+                    {# A click anywhere on the row but the checkbox cell opens the option in the modal #}
+                    <tr class="tab_bg_1{{ canedit ? ' pointer' : '' }}"
                         {% if canedit %}
-                            <td class="center">
+                            data-md-option-open="{{ modal_id }}"
+                            data-md-option-id="{{ entry.id }}"
+                            data-md-option-title="{{ __('Edit option', 'metademands') }}"
+                        {% endif %}>
+                        {% if canedit %}
+                            <td class="center" data-md-option-noopen>
+                                {# raw: massive actions, no core macro (§3.2) #}
                                 {{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}
                             </td>
                         {% endif %}
 
-                        <td {{ cell_attrs|raw }}>{{ entry.id }}</td>
+                        <td>{{ entry.id }}</td>
 
-                        <td {{ cell_attrs|raw }}>{{ entry.type_of_value }}</td>
+                        <td>{{ entry.type_of_value }}</td>
 
-                        {# Fragment assembled by the shared value-to-check templates #}
-                        <td {{ cell_attrs|raw }}>{{ entry.value_to_check|raw }}</td>
+                        <td>{{ entry.value_to_check }}</td>
 
                         {% if not is_parent_field %}
-                            <td {{ cell_attrs|raw }}>{{ entry.task_name }}</td>
+                            <td>{{ entry.task_name }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.assign_tech_groups|join(', ') }}</td>
+                            <td>{{ entry.assign_tech_groups|join(', ') }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.fields_link }}</td>
+                            <td>{{ entry.fields_link }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.hidden_link }}</td>
+                            <td>{{ entry.hidden_link }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.hidden_block }}</td>
+                            <td>{{ entry.hidden_block }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.hidden_block_same_block }}</td>
+                            <td>{{ entry.hidden_block_same_block }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.childs_blocks|join(', ') }}</td>
+                            <td>{{ entry.childs_blocks|join(', ') }}</td>
 
-                            <td {{ cell_attrs|raw }}>{{ entry.users_id_validate }}</td>
+                            <td>{{ entry.users_id_validate }}</td>
 
-                            <td {{ cell_attrs|raw }}>
+                            <td>
                                 {{ entry.checkbox_name }}
                                 {% if entry.checkbox_value is not empty %}
                                     <br>{{ entry.checkbox_value }}
@@ -149,13 +162,15 @@
             </table>
 
             {% if canedit %}
+                {# raw: massive actions, no core macro (§3.2) #}
                 {{ call('Html::showMassiveActions', [{
                     'item': itemtype,
                     'container': mass_container,
                     'ontop': false,
                     'display': false
                 }])|raw }}
-                {{ call('Html::closeForm', [false])|raw }}
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                </form>
             {% endif %}
         </div>
     {% else %}

@@ -271,9 +271,7 @@ class Yesno extends CommonDBTM
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $options[$params['check_value']] ?? "",
-        ]);
+        return $options[$params['check_value']] ?? "";
     }
 
     public static function isCheckValueOK($value, $check_value)
@@ -936,7 +934,7 @@ class Yesno extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -947,7 +945,7 @@ class Yesno extends CommonDBTM
         $result[$field['rank']]['display'] = true;
         $result[$field['rank']]['content'] .= Field::renderContentCells(
             (bool) $formatAsTable,
-            (string) $style_title,
+            (string) $title_style,
             [[
                 'label'   => (string) $label,
                 'value'   => (string) self::getFieldValue($field),

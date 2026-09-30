@@ -1408,9 +1408,7 @@ class Dropdownmeta extends CommonDBTM
                     break;
             }
         }
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $value,
-        ]);
+        return $value;
     }
 
     public static function isCheckValueOK($value, $check_value)
@@ -2199,7 +2197,7 @@ class Dropdownmeta extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -2219,7 +2217,7 @@ class Dropdownmeta extends CommonDBTM
             if (isset($custom_values[$field['value']])) {
                 $result[$field['rank']]['content'] .= Field::renderContentCells(
                     (bool) $formatAsTable,
-                    (string) $style_title,
+                    (string) $title_style,
                     [[
                         'label'   => (string) $label,
                         'value'   => (string) $custom_values[$field['value']],
@@ -2236,7 +2234,7 @@ class Dropdownmeta extends CommonDBTM
                         $items_id = count($splitter) == 2 ? $splitter[1] : null;
                         $result[$field['rank']]['content'] .= Field::renderContentCells(
                             (bool) $formatAsTable,
-                            (string) $style_title,
+                            (string) $title_style,
                             [[
                                 'label'   => (string) $label,
                                 'value'   => $itemtype && $items_id ? (string) self::getFieldValue($field, $lang) : '',
@@ -2249,7 +2247,7 @@ class Dropdownmeta extends CommonDBTM
                     case 'urgency':
                         $result[$field['rank']]['content'] .= Field::renderContentCells(
                             (bool) $formatAsTable,
-                            (string) $style_title,
+                            (string) $title_style,
                             [[
                                 'label'   => (string) $label,
                                 'value'   => (string) self::getFieldValue($field, $lang),
@@ -2262,7 +2260,7 @@ class Dropdownmeta extends CommonDBTM
                         if ($hidden == 0) {
                             $result[$field['rank']]['content'] .= Field::renderContentCells(
                                 (bool) $formatAsTable,
-                                (string) $style_title,
+                                (string) $title_style,
                                 [[
                                     'label'   => (string) $label,
                                     'value'   => (string) self::getFieldValue($field, $lang),

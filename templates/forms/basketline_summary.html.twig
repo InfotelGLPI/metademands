@@ -25,63 +25,50 @@
  # --------------------------------------------------------------------------
  #}
 
-<div class="row">
-    <div class="card mx-1 my-2 flex-grow-1">
-        <div class="col-12 align-self-center">
-            <section class="card-body" style="width: 100%;">
-                <h2 class="card-title mb-2 text-break" style="color: {{ title_color }};">
-                    {{ __('Your basket', 'metademands') }}
-                </h2>
-                <div class="mydraft right" style="position: absolute;top: 0;margin-top: 10px;;right: 0;">
-                    {{ clear_basket_html|raw }}
-                </div>
-                {{ hidden_meta|raw }}
-                {{ hidden_form_meta|raw }}
-            </section>
+{#- Basket of an order meta-demand: one form per line (forms/basketline_line.html.twig),
+ #  then the order button. The summary is loaded by Ajax inside #wizard_form, so the
+ #  clear and previous buttons cannot own a form: public/scripts/wizard_form.js posts
+ #  their data-md-basketline-post fields, and posts the order held by
+ #  data-md-basketline-order.
+ -#}
+<div data-md-basketline-order="{{ order|json_encode }}">
+    <div class="row">
+        <div class="card mx-1 my-2 flex-grow-1">
+            <div class="col-12 align-self-center">
+                <section class="card-body" style="width: 100%;">
+                    <h2 class="card-title mb-2 text-break" style="color: {{ title_color }};">
+                        {{ __('Your basket', 'metademands') }}
+                    </h2>
+                    <div class="mydraft right" style="position: absolute;top: 0;margin-top: 10px;;right: 0;">
+                        <button type="button" class="btn btn-primary"
+                                data-md-basketline-post="{{ {'clear_basket': 1, 'metademands_id': metademands_id, '_glpi_csrf_token': csrf_token()}|json_encode }}">
+                            <i class="ti ti-trash"></i>
+                            <span>{{ _x('button', 'Clear the basket', 'metademands') }}</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="metademands_id" value="{{ metademands_id }}">
+                    <input type="hidden" name="form_metademands_id" value="{{ metademands_id }}">
+                </section>
+            </div>
+        </div>
+    </div>
+
+    {% for line in lines %}
+        {% include '@metademands/forms/basketline_line.html.twig' with line only %}
+    {% endfor %}
+
+    <div class="row">
+        <div class="bt-feature col-md-12 ">
+            <button type="button" class="btn btn-primary"
+                    data-md-basketline-post="{{ {'clean_form': 1, 'metademands_id': metademands_id, 'step': step_show, '_glpi_csrf_token': csrf_token()}|json_encode }}">
+                {{ __('Previous') }}
+            </button>
+            <span style="float:right">
+                <button type="button" name="send_order" class="btn btn-success right" data-md-basketline-submit>
+                    <i class="ti ti-shopping-bag"></i>
+                    <span>{{ _x('button', 'Save & Post', 'metademands') }}</span>
+                </button>
+            </span>
         </div>
     </div>
 </div>
-
-{{ lines_html|raw }}
-
-<div class="row">
-    <div class="bt-feature col-md-12 ">
-        {{ previous_html|raw }}
-        <span style="float:right">
-            {{ submit_order_html|raw }}
-        </span>
-    </div>
-</div>
-
-<script>
-    $('#submitOrder').click(function() {
-        var meta_id = {{ meta_id }};
-        $.ajax({
-            url: '{{ webdir }}/ajax/addform.php',
-            type: 'POST',
-            data: {{ post_json|raw }},
-            success: function (response) {
-                $.ajax({
-                    url: '{{ webdir }}/ajax/createmetademands.php',
-                    type: 'POST',
-                    data: {{ post_json|raw }},
-                    success: function (response) {
-                        window.location.href = '{{ webdir }}/front/wizard.form.php?{{ param_url|raw }}metademands_id=' + meta_id + '&step=create_metademands';
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(xhr);
-                        console.log(status);
-                        console.log(error);
-                    }
-                });
-            },
-            error: function (xhr, status, error) {
-                console.log(xhr);
-                console.log(status);
-                console.log(error);
-            }
-        });
-    });
-    $('#prevBtn').hide();
-    $('.step_wizard').hide();
-</script>

@@ -397,110 +397,19 @@ class Freetablefield extends CommonDBChild
 
 
     /**
-     * @param int $count
-     * @param int $plugin_metademands_fields_id
-     */
-    public static function initCustomValue($count, $plugin_metademands_fields_id = 0)
-    {
-        $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR],
-            JSON_HEX_APOS,
-        ) . ");";
-
-        echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => true]);
-        echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
-        echo Html::hidden('display_default', ['id' => 'display_default', 'value' => true]);
-
-        echo TemplateRenderer::getInstance()->render(
-            '@metademands/forms/custom_value_add_button.html.twig',
-            [
-                'icon_class' => 'ti ti-plus btn btn-primary',
-                'onclick'    => $script . ' metademandWizard.metademands_add_custom_values("show_custom_fields", '
-                    . (int) $plugin_metademands_fields_id . ');',
-                'title'      => _x('button', 'Add'),
-            ],
-        );
-    }
-
-
-    /**
      * @param $valueId
      * @param $display_comment
      * @param $display_default
      */
     public static function addNewValue($rank, $fields_id)
     {
-        $target = self::getFormURL();
-
-        // Cell 1: internal name
-        ob_start();
-        Html::showToolTip(
-            RichText::getSafeHtml(__('No spaces, no special characters', 'metademands')),
-            ['awesome-class' => 'ti ti-info-circle'],
-        );
-        $internal_name_tooltip = ob_get_clean();
-        $internal_name_input   = Html::input("internal_name_values[$rank]", ['size' => 20]);
-
-        // Cell 2: type dropdown; public/scripts/wizard_form.js toggles the dropdown
-        // values / comment cells of the rank on change (Html::select() escapes the tag).
-        $types = self::getTypeFields(true);
-        ob_start();
-        \Dropdown::showFromArray("type_values[$rank]", $types, [
-            'specific_tags' => ['data-md-freetablefield-type' => $rank],
-        ]);
-        $type_dropdown = ob_get_clean();
-
-        // Cell 3: display name
-        $display_name_input = Html::input("custom_values[$rank]", ['size' => 20]);
-
-        // Cell 4: dropdown values textarea
-        ob_start();
-        Html::showToolTip(
-            RichText::getSafeHtml(__('One value by line, separated by comma', 'metademands')),
-            ['awesome-class' => 'ti ti-info-circle'],
-        );
-        $dropdown_values_tooltip = ob_get_clean();
-        ob_start();
-        Html::textarea([
-            'name' => "dropdown_values[$rank]",
-            'rows' => 3,
-            'cols' => 5,
-        ]);
-        $dropdown_values_textarea = ob_get_clean();
-
-        // Cell 5: comment
-        $comment_input = Html::input("comment_values[$rank]", ['size' => 20]);
-
-        // Cell 6: mandatory
-        ob_start();
-        \Dropdown::showYesNo("is_mandatory_values[$rank]", 0);
-        $mandatory_yesno = ob_get_clean();
-
-        $hidden_rank      = Html::hidden('rank', ['value' => $rank]);
-        $hidden_fields_id = Html::hidden('fields_id', ['value' => $fields_id]);
-        $submit_html      = Html::submit("", [
-            'name' => 'add',
-            'class' => 'btn btn-primary',
-            'icon' => 'ti ti-device-floppy',
-        ]);
-
         TemplateRenderer::getInstance()->display('@metademands/forms/freetablefield_add_value.html.twig', [
-            'form_action'              => $target,
-            'rank'                     => $rank,
-            'internal_name_tooltip'    => $internal_name_tooltip,
-            'internal_name_input'      => $internal_name_input,
-            'type_dropdown'            => $type_dropdown,
-            'display_name_input'       => $display_name_input,
-            'dropdown_values_tooltip'  => $dropdown_values_tooltip,
-            'dropdown_values_textarea' => $dropdown_values_textarea,
-            'comment_input'            => $comment_input,
-            'mandatory_yesno'          => $mandatory_yesno,
-            'hidden_rank'              => $hidden_rank,
-            'hidden_fields_id'         => $hidden_fields_id,
-            'submit_html'              => $submit_html,
+            'form_action'  => self::getFormURL(),
+            'rank'         => (int) $rank,
+            'fields_id'    => (int) $fields_id,
+            'type_choices' => self::getTypeFields(true),
         ]);
     }
-
 
     /**
      * @param array $input

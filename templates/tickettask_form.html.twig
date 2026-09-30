@@ -54,7 +54,7 @@
                         {{ inputs.hidden('id', field_id) }}
                     {% endif %}
 
-                    {{ form_content_html|raw }}
+                    {{ include('@metademands/tickettask_form_section.html.twig', section, with_context = false) }}
 
                     <div class="d-flex justify-content-end gap-2 mt-3">
                         {% if canedit %}

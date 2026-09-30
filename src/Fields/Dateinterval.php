@@ -151,7 +151,7 @@ class Dateinterval extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -170,7 +170,7 @@ class Dateinterval extends CommonDBTM
         // Start and end each get a label / value pair, the end one on its own row.
         $result[$field['rank']]['content'] .= Field::renderContentCells(
             (bool) $formatAsTable,
-            (string) $style_title,
+            (string) $title_style,
             [
                 [
                     'label'   => (string) $label,

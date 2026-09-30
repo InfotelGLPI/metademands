@@ -316,90 +316,21 @@ class Freetable extends CommonDBTM
         $maxrank   = 0;
         $entries   = [];
 
-        // Only the input widgets are still built here: they come from framework helpers
-        // (Html::input(), Dropdown::*, Html::getSimpleForm()) which escape their own output.
-        // Every other value is handed to the template atomically and Twig escapes it.
         if (is_array($custom_values) && !empty($custom_values)) {
             foreach ($custom_values as $key => $value) {
-                $dropdown_values_tooltip  = '';
-                $dropdown_values_textarea = '';
-                if ($value['type'] == MetaFreetablefield::TYPE_SELECT) {
-                    $dropdown_values_tooltip = Html::showToolTip(
-                        RichText::getSafeHtml(__('One value by line, separated by comma', 'metademands')),
-                        ['awesome-class' => 'ti ti-info-circle', 'display' => false],
-                    );
-                    $dropdown_values_textarea = Html::textarea([
-                        'name'    => 'dropdown_values[' . $key . ']',
-                        'value'   => $value['dropdown_values'],
-                        'rows'    => 3,
-                        'cols'    => 5,
-                        'display' => false,
-                    ]);
-                }
-
                 $entries[] = [
-                    'key'                      => $key,
-                    'rank'                     => $value['rank'],
-                    'type'                     => $value['type'],
-                    'internal_name_input'      => Html::input(
-                        'internal_name[' . $key . ']',
-                        ['value' => $value['internal_name'], 'size' => 20],
-                    ),
-                    'type_dropdown'            => \Dropdown::showFromArray(
-                        'type[' . $key . ']',
-                        MetaFreetablefield::getTypeFields(),
-                        ['value' => $value['type'], 'size' => 20, 'display' => false],
-                    ),
-                    'name_input'               => Html::input(
-                        'name[' . $key . ']',
-                        ['value' => $value['name'], 'size' => 20],
-                    ),
-                    'comment_input'            => Html::input(
-                        'comment[' . $key . ']',
-                        ['value' => $value['comment'], 'size' => 20],
-                    ),
-                    'dropdown_values_tooltip'  => $dropdown_values_tooltip,
-                    'dropdown_values_textarea' => $dropdown_values_textarea,
-                    'hidden_comment'           => Html::hidden('comment[' . $key . ']', ['value' => ""]),
-                    'hidden_dropdown_values'   => Html::hidden('dropdown_values[' . $key . ']', ['value' => []]),
-                    'is_mandatory_dropdown'    => \Dropdown::showYesNo(
-                        'is_mandatory[' . $key . ']',
-                        $value['is_mandatory'],
-                        -1,
-                        ['display' => false],
-                    ),
-                    'hidden_id'                => Html::hidden('id[' . $key . ']', ['value' => $key]),
-                    'submit'                   => Html::submit("", [
-                        'name'  => 'update',
-                        'class' => 'btn btn-primary',
-                        'icon'  => 'ti ti-device-floppy',
-                    ]),
-                    'delete_form'              => Html::getSimpleForm(
-                        MetaFreetablefield::getFormURL(),
-                        'delete',
-                        _x('button', 'Delete permanently'),
-                        [
-                            'freetablefield_id'            => $key,
-                            'rank'                         => $value['rank'],
-                            'plugin_metademands_fields_id' => $fields_id,
-                        ],
-                        'ti-circle-x',
-                        "class='btn btn-primary'",
-                    ),
+                    'key'             => $key,
+                    'rank'            => $value['rank'],
+                    'type'            => $value['type'],
+                    'internal_name'   => $value['internal_name'],
+                    'name'            => $value['name'],
+                    'comment'         => $value['comment'],
+                    'dropdown_values' => $value['dropdown_values'],
+                    'is_mandatory'    => $value['is_mandatory'],
                 ];
 
                 $maxrank = $value['rank'];
             }
-        }
-
-        $init_custom_value = '';
-        if ($nbfields < 6) {
-            ob_start();
-            MetaFreetablefield::initCustomValue(
-                count($entries) > 0 ? $maxrank : -1,
-                $fields_id,
-            );
-            $init_custom_value = ob_get_clean();
         }
 
         echo TemplateRenderer::getInstance()->render('@metademands/fields/freetable_fields.html.twig', [
@@ -413,7 +344,9 @@ class Freetable extends CommonDBTM
                 'field_id' => $params['plugin_metademands_fields_id'] ?? '',
                 'type'     => $params['type'] ?? 'freetable',
             ]),
-            'init_custom_value' => $init_custom_value,
+            'type_choices'      => MetaFreetablefield::getTypeFields(),
+            'max_rank'          => $maxrank,
+            'root_doc'          => PLUGIN_METADEMANDS_WEBDIR,
             'show_init'         => $nbfields < 6,
             'type_text'         => MetaFreetablefield::TYPE_TEXT,
             'type_select'       => MetaFreetablefield::TYPE_SELECT,
@@ -527,7 +460,7 @@ class Freetable extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -632,7 +565,7 @@ class Freetable extends CommonDBTM
 
         $result[$field['rank']]['content'] .= Field::renderContentRows(
             (bool) $formatAsTable,
-            (string) $style_title,
+            (string) $title_style,
             'border: 1px solid #CCC;',
             $rows,
         );

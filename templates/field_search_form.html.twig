@@ -33,7 +33,7 @@
                 <td class="center">
                     {{ __('Block', 'metademands') }}&nbsp;{{ block_dropdown_html|raw }}
                 </td>
-                <td class="center">
+                <td class="center" data-md-reload-event="change" data-md-reload="{{ type_reload|json_encode }}">
                     {{ __('Field type', 'metademands') }}&nbsp;{{ type_dropdown_html|raw }}
                 </td>
                 <td class="center">
@@ -44,14 +44,11 @@
                     </span>
                 </td>
                 <td>
-                    {{ hidden_html|raw }}
-                    {{ submit_html|raw }}
+                    <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademands_id }}">
+                    <button type="submit" name="search" value="1" class="btn btn-primary">{{ _x('button', 'Search') }}</button>
                 </td>
             </tr>
         </table>
     </div>
-    {# emitted after the table: the legacy code placed it between two <td>, where the
-       parser hoists it out anyway #}
-    {{ reload_script_html|raw }}
-    {# closes the <form> above and carries the CSRF token #}
-    {{ close_form_html|raw }}
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+</form>

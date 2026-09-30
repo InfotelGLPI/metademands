@@ -140,13 +140,13 @@ class Title extends CommonDBTM
     public static function blocksHiddenScript($data) {}
 
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
+    public static function displayFieldItems(&$result, $formatAsTable, $title_style, $label, $field, $return_value, $lang, $is_order = false)
     {
         //to true automatickly if another field on the block is loaded
         $result[$field['rank']]['display'] = false;
         $result[$field['rank']]['content'] .= Field::renderContentCells(
             (bool) $formatAsTable,
-            (string) $style_title,
+            (string) $title_style,
             [[
                 'label'   => (string) $label,
                 'colspan' => $is_order ? 12 : 2,

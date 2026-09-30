@@ -36,8 +36,14 @@
 {% else %}
     <div class="center first-bloc left">
         {% if canedit %}
-            {{ open_form_html|raw }}
-            {{ ma_top_html|raw }}
+            {# raw: massive actions, no core macro (§3.2) #}
+            {{ call('Html::getOpenMassiveActionsForm', [container])|raw }}
+            {# raw: massive actions, no core macro (§3.2) #}
+            {{ call('Html::showMassiveActions', [{
+                'item': itemtype,
+                'container': container,
+                'display': false
+            }])|raw }}
         {% endif %}
 
         <table class="tab_cadre_fixe">
@@ -46,7 +52,10 @@
             </tr>
             <tr class="tab_bg_2">
                 <th width="10">
-                    {%- if canedit %}{{ check_all_html|raw }}{% endif -%}
+                    {% if canedit %}
+                        {# raw: massive actions, no core macro (§3.2) #}
+                        {{ call('Html::getCheckAllAsCheckbox', [container])|raw }}
+                    {% endif %}
                 </th>
                 <th>{{ __('Name') }}</th>
                 <th>{{ __('Value') }}</th>
@@ -54,7 +63,10 @@
             {% for row in rows %}
                 <tr class="tab_bg_1">
                     <td width="10">
-                        {%- if canedit %}{{ row.checkbox_html|raw }}{% endif -%}
+                        {% if canedit %}
+                            {# raw: massive actions, no core macro (§3.2) #}
+                            {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
+                        {% endif %}
                     </td>
                     <td>
                         {% if canedit %}
@@ -64,17 +76,26 @@
                         {% else %}
                             {{ row.label }}
                         {% endif %}
-                        {{ row.mandatory_mark|raw }}
+                        {% if row.is_mandatory %}<span class="required">*</span>{% endif %}
                     </td>
-                    <td>{{ row.value_html|raw }}</td>
+                    {# getValueToDisplay() markup (links, line breaks), sanitized by the core (§3.1) #}
+                    <td>{{ row.value_html|safe_html }}</td>
                 </tr>
             {% endfor %}
         </table>
 
         {% if canedit %}
-            {{ ma_bottom_html|raw }}
-            {# closes the massive actions <form> above and carries the CSRF token #}
-            {{ close_form_html|raw }}
+            {# Rendered after the rows on purpose: when it is not the top one, showMassiveActions()
+             # empties the selection that the row checkboxes read to restore their checked state #}
+            {# raw: massive actions, no core macro (§3.2) #}
+            {{ call('Html::showMassiveActions', [{
+                'item': itemtype,
+                'container': container,
+                'ontop': false,
+                'display': false
+            }])|raw }}
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            </form>
         {% endif %}
     </div>
 {% endif %}

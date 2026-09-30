@@ -402,67 +402,25 @@ class FieldOption extends CommonDBChild
         $modal_title_id  = "modal_title_" . $item->getID() . $rand;
         $viewoption_id   = "viewoption" . $item->getID() . $rand;
         $mass_container  = 'massfieldoption' . $rand;
-        $show_modal_fn   = "showFieldOptionModal" . $item->getID() . $rand;
-        $add_fn          = "addOption" . $item->getID() . $rand;
         $is_parent_field = ($item->fields['type'] == "parent_field");
         $viewsubitem_url = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
 
-        // The JS bodies wrap Ajax::updateItemJsCode(), a framework helper, so they are built
-        // here and merely printed by the template: every value displayed in the table below
-        // is handed over atomically and stays autoescaped by Twig.
-        $scripts = [];
-        $entries = [];
+        // The add / edit links and the reload of the option form are handled by
+        // public/scripts/fieldoption_valuetocheck.js from the data-md-option-* attributes
+        // of the template.
+        $entries       = [];
+        $load_params   = [];
+        $reload_params = [];
 
         if ($allowed && !$link_to_user) {
             if ($canedit) {
-                $scripts[] = "function " . $show_modal_fn . "() {"
-                    . "bootstrap.Modal.getOrCreateInstance(document.getElementById('" . $modal_id . "')).show();"
-                    . "}";
-
-                $scripts[] = "function " . $add_fn . "() {"
-                    . "document.getElementById('" . $modal_title_id . "').textContent = "
-                    . json_encode(__('Add a new option', 'metademands'), JSON_HEX_TAG | JSON_HEX_AMP) . ";"
-                    . $show_modal_fn . "();"
-                    . Ajax::updateItemJsCode(
-                        $viewoption_id,
-                        $viewsubitem_url,
-                        [
-                            'type'                      => self::class,
-                            'parenttype'                => get_class($item),
-                            $item->getForeignKeyField() => $item->getID(),
-                            'id'                        => -1,
-                        ],
-                        "",
-                        false,
-                    )
-                    . ";}";
-
-                // Itemtypes go through json_encode so their namespace separators reach the
-                // browser correctly instead of being hand-escaped in a JS string literal.
-                $reload_params = json_encode([
+                $load_params = [
                     'type'                      => self::class,
-                    'parenttype'                => Field::class,
+                    'parenttype'                => get_class($item),
                     $item->getForeignKeyField() => $item->getID(),
-                ], JSON_HEX_TAG | JSON_HEX_AMP);
-
-                $scripts[] = "function reloadviewOption(value) {"
-                    . $show_modal_fn . "();"
-                    . "$('#" . $viewoption_id . "').load("
-                    . json_encode($viewsubitem_url, JSON_HEX_TAG | JSON_HEX_AMP) . ", "
-                    . "Object.assign(" . $reload_params . ", {"
-                    . "id: value[0],"
-                    . "check_value: value[1],"
-                    . "plugin_metademands_tasks_id: value[2],"
-                    . "fields_link: value[3],"
-                    . "hidden_link: value[4],"
-                    . "hidden_block: value[5],"
-                    . "childs_blocks: value[6],"
-                    . "users_id_validate: value[7],"
-                    . "checkbox_id: value[8],"
-                    . "check_type_value: value[9],"
-                    . "assign_tech_group: value[10]"
-                    . "}));"
-                    . "}";
+                ];
+                // The option form posted back by a "value to check" change is a field option
+                $reload_params = ['parenttype' => Field::class] + $load_params;
             }
 
             $self    = new self();
@@ -500,29 +458,6 @@ class FieldOption extends CommonDBChild
                 }
                 $data['custom_values'] = $custom_values;
 
-                $edit_fn = "";
-                if ($canedit) {
-                    $edit_fn   = "viewEditOption" . $data['id'] . $rand;
-                    $scripts[] = "function " . $edit_fn . "() {"
-                        . "document.getElementById('" . $modal_title_id . "').textContent = "
-                        . json_encode(__('Edit option', 'metademands'), JSON_HEX_TAG | JSON_HEX_AMP) . ";"
-                        . $show_modal_fn . "();"
-                        . Ajax::updateItemJsCode(
-                            $viewoption_id,
-                            $viewsubitem_url,
-                            [
-                                'type'                      => self::class,
-                                'parenttype'                => get_class($item),
-                                $item->getForeignKeyField() => $item->getID(),
-                                'id'                        => $data["id"],
-                            ],
-                            "",
-                            false,
-                        )
-                        . ";}";
-                }
-
-                // Fragment escaped by getValueToCheck(), printed as raw HTML.
                 $value_to_check = self::getValueToCheck($data);
 
                 $task_name = "";
@@ -591,7 +526,6 @@ class FieldOption extends CommonDBChild
 
                 $entries[] = [
                     'id'                      => $data['id'],
-                    'edit_fn'                 => $edit_fn,
                     'type_of_value'           => self::getTypeOValueToCheck($data),
                     'value_to_check'          => $value_to_check,
                     'task_name'               => $task_name,
@@ -617,8 +551,9 @@ class FieldOption extends CommonDBChild
             'modal_id'        => $modal_id,
             'modal_title_id'  => $modal_title_id,
             'viewoption_id'   => $viewoption_id,
-            'add_fn'          => $add_fn,
-            'scripts'         => implode("\n", $scripts),
+            'viewsubitem_url' => $viewsubitem_url,
+            'load_params'     => $load_params,
+            'reload_params'   => $reload_params,
             'is_parent_field' => $is_parent_field,
             'entries'         => $entries,
         ]);
@@ -1001,8 +936,7 @@ class FieldOption extends CommonDBChild
     }
 
     /**
-     * Value to check of a field option, as an HTML fragment. Each branch escapes
-     * what it returns (field_value_to_check.html.twig or htmlescape()).
+     * Value to check of a field option, as plain text: the templates escape it.
      *
      * @param array $params
      *
@@ -1015,7 +949,7 @@ class FieldOption extends CommonDBChild
         $class = Field::getClassFromType($params['type']);
 
         if ($params['check_type_value'] == 2) {
-            return htmlescape((string) $params['check_value_regex']);
+            return (string) $params['check_value_regex'];
         } else {
             switch ($params['type']) {
                 case 'title-block':
@@ -1052,9 +986,9 @@ class FieldOption extends CommonDBChild
                     $field = new Field();
                     if ($field->getFromDB($params['parent_field_id'])) {
                         if (empty(trim($field->fields['name']))) {
-                            return htmlescape("ID - " . $params['parent_field_id']);
+                            return "ID - " . $params['parent_field_id'];
                         }
-                        return htmlescape((string) $field->fields['name']);
+                        return (string) $field->fields['name'];
                     }
                     return '';
                 default:

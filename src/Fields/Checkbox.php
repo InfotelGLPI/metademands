@@ -323,9 +323,7 @@ class Checkbox extends CommonDBTM
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $elements[$params['check_value']] ?? "",
-        ]);
+        return $elements[$params['check_value']] ?? "";
     }
 
     /**
@@ -1094,7 +1092,7 @@ class Checkbox extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -1112,7 +1110,7 @@ class Checkbox extends CommonDBTM
         if (!empty($field['custom_values']) && !empty($field['value'])) {
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'value'   => (string) self::getFieldValue($field, $lang),
@@ -1123,7 +1121,7 @@ class Checkbox extends CommonDBTM
             if ($field['value']) {
                 $result[$field['rank']]['content'] .= Field::renderContentCells(
                     (bool) $formatAsTable,
-                    (string) $style_title,
+                    (string) $title_style,
                     [[
                         'value'      => (string) self::getFieldValue($field, $lang),
                         'colspan'    => $colspan,

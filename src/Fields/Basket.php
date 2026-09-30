@@ -618,9 +618,7 @@ class Basket extends CommonDBTM
 
     public static function showParamsValueToCheck($params): string
     {
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => \Dropdown::getDropdownName('glpi_plugin_metademands_basketobjects', $params['check_value']),
-        ]);
+        return \Dropdown::getDropdownName('glpi_plugin_metademands_basketobjects', $params['check_value']);
     }
 
     public static function fieldsMandatoryScript($data)
@@ -1770,7 +1768,7 @@ class Basket extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -1945,7 +1943,7 @@ class Basket extends CommonDBTM
 
             $result[$field['rank']]['content'] .= Field::renderContentRows(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 'border: 1px solid black;',
                 $rows,
             );

@@ -25,49 +25,79 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{#
+ # Form of a new free table column, appended by the "Add" button of
+ # fields/freetable_fields.html.twig. The type dropdown toggles the dropdown values and
+ # comment cells of its rank (public/scripts/wizard_form.js).
+ #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <form method="post" action="{{ form_action }}">
+    <input type="hidden" name="rank" value="{{ rank }}">
+    <input type="hidden" name="fields_id" value="{{ fields_id }}">
     <table class="tab_cadre_fixe">
         <tr class="tab_bg_1">
-            <td id="show_custom_fields">
+            <td>
                 <span id="internal_name_values{{ rank }}">
                     {{ __('Rank', 'metademands') }} {{ rank }}<br>
-                    {{ __('Internal name', 'metademands') }} {{ internal_name_tooltip|raw }}
-                    {{ internal_name_input|raw }}
+                    {{ __('Internal name', 'metademands') }}
+                    <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                          data-bs-title="{{ __('No spaces, no special characters', 'metademands') }}">?</span>
+                    {{ inputs.text('internal_name_values[' ~ rank ~ ']', '', {
+                        'additional_attributes': {'size': 20}
+                    }) }}
                 </span>
             </td>
-            <td id="show_custom_fields">
+            <td>
                 <span id="type_values{{ rank }}">
                     <br>{{ __('Type', 'metademands') }}<br>
-                    {{ type_dropdown|raw }}
+                    {# showFromArray() ignores specific_tags: the data attribute goes through add_data_attributes #}
+                    {{ fields.dropdownArrayField('type_values[' ~ rank ~ ']', 0, type_choices, '', bare|merge({
+                        'add_data_attributes': {'md-freetablefield-type': rank}
+                    })) }}
                 </span>
             </td>
-            <td id="show_custom_fields">
+            <td>
                 <span id="custom_values{{ rank }}">
-                    <br>{{ __('Display name', 'metademands') }} {{ display_name_input|raw }}
+                    <br>{{ __('Display name', 'metademands') }}
+                    {{ inputs.text('custom_values[' ~ rank ~ ']', '', {
+                        'additional_attributes': {'size': 20}
+                    }) }}
                 </span>
             </td>
-            <td id="show_custom_fields">
+            <td>
                 <span class="newdropdownvalue{{ rank }}" id="dropdown_values{{ rank }}" style="display:none">
-                    <br>{{ __('Dropdown values', 'metademands') }} {{ dropdown_values_tooltip|raw }}
-                    {{ dropdown_values_textarea|raw }}
+                    <br>{{ __('Dropdown values', 'metademands') }}
+                    <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                          data-bs-title="{{ __('One value by line, separated by comma', 'metademands') }}">?</span>
+                    {{ inputs.textarea('dropdown_values[' ~ rank ~ ']', '', {'rows': 3}) }}
                 </span>
             </td>
-            <td id="show_custom_fields">
+            <td>
                 <span class="newcomment{{ rank }}" id="comment_values{{ rank }}" style="display:none">
-                    <br>{{ __('Comment') }} {{ comment_input|raw }}
+                    <br>{{ __('Comment') }}
+                    {{ inputs.text('comment_values[' ~ rank ~ ']', '', {
+                        'additional_attributes': {'size': 20}
+                    }) }}
                 </span>
             </td>
-            <td id="show_custom_fields">
+            <td>
                 <span id="is_mandatory_values{{ rank }}">
                     <br>{{ __('Mandatory', 'metademands') }}<br>
-                    {{ mandatory_yesno|raw }}
+                    {{ fields.dropdownYesNo('is_mandatory_values[' ~ rank ~ ']', 0, '', bare) }}
                 </span>
             </td>
-            {{ hidden_rank|raw }}
-            {{ hidden_fields_id|raw }}
         </tr>
         <tr class="tab_bg_1">
-            <td>{{ submit_html|raw }}</td>
+            <td>
+                <button type="submit" name="add" value="1" class="btn btn-primary" title="{{ _x('button', 'Add') }}">
+                    <i class="ti ti-device-floppy"></i>
+                    <span class="sr-only">{{ _x('button', 'Add') }}</span>
+                </button>
+            </td>
         </tr>
     </table>
     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">

@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Metademands;
 
-use Ajax;
 use CommonDBChild;
 use CommonDBTM;
 use CommonGLPI;
@@ -540,7 +539,6 @@ class Condition extends CommonDBChild
         );
 
         $rows = [];
-        $scripts_html = '';
         foreach ($allConditions as $condition) {
             $cond->getFromDB($condition['id']);
             if (!$field->getFromDB($condition['plugin_metademands_fields_id'])) {
@@ -549,38 +547,14 @@ class Condition extends CommonDBChild
                 continue;
             }
 
-            $edit_function = null;
-            $checkbox_html = '';
-            if ($canedit) {
-                $edit_function = 'viewEditcondition' . $condition['id'] . $rand;
-                $checkbox_html = Html::getMassiveActionCheckBox(__CLASS__, $condition['id']);
-                $scripts_html .= Html::scriptBlock(
-                    'function ' . $edit_function . '() {'
-                    . Ajax::updateItemJsCode(
-                        $view_container_id,
-                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        [
-                            'type' => __CLASS__,
-                            'parenttype' => get_class($item),
-                            $item->getForeignKeyField() => $item->getID(),
-                            'id' => $condition['id'],
-                        ],
-                        "",
-                        false,
-                    )
-                    . '};',
-                );
-            }
-
-            // displayCheckValue() writes to the output buffer instead of returning
-            ob_start();
-            self::displayCheckValue($condition['id']);
-            $check_value_html = ob_get_clean();
-
             $rows[] = [
                 'id' => $condition['id'],
-                'edit_function' => $edit_function,
-                'checkbox_html' => $checkbox_html,
+                'edit_params' => [
+                    'type' => __CLASS__,
+                    'parenttype' => get_class($item),
+                    $item->getForeignKeyField() => $item->getID(),
+                    'id' => $condition['id'],
+                ],
                 'logic' => self::showLogic($condition['show_logic']),
                 'field_label' => \Dropdown::getDropdownName(
                     Field::getTable(),
@@ -589,42 +563,18 @@ class Condition extends CommonDBChild
                 'field_url' => $can_link_field ? $field->getLinkURL() : null,
                 'type_label' => Field::getFieldTypesName($condition['type']),
                 'condition_label' => self::showCondition($condition['show_condition']),
-                'check_value_html' => $check_value_html,
+                'check_value' => self::getCheckValue($condition['id']),
                 'order' => $condition['order'],
             ];
         }
 
-        $ma_open_html = '';
-        $ma_top_html = '';
-        $ma_bottom_html = '';
-        $close_form_html = '';
-        $check_all_html = '';
-        if ($canedit && count($rows)) {
-            $massiveactionparams = ['item' => __CLASS__,
-                'container' => $container,
-                'display' => false,
-            ];
-            $ma_open_html = Html::getOpenMassiveActionsForm($container);
-            $ma_top_html = Html::showMassiveActions($massiveactionparams);
-            $check_all_html = Html::getCheckAllAsCheckbox($container);
-            // Built after the rows on purpose: showMassiveActions() empties
-            // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
-            // row checkboxes read that selection to restore their checked state.
-            $massiveactionparams['ontop'] = false;
-            $ma_bottom_html = Html::showMassiveActions($massiveactionparams);
-            $close_form_html = Html::closeForm(false);
-        }
-
-        echo TemplateRenderer::getInstance()->render('@metademands/condition_list.html.twig', [
+        TemplateRenderer::getInstance()->display('@metademands/condition_list.html.twig', [
             'canedit' => $canedit,
+            'itemtype' => __CLASS__,
+            'container' => $container,
             'view_container_id' => $view_container_id,
+            'edit_url' => $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
             'rows' => $rows,
-            'scripts_html' => $scripts_html,
-            'ma_open_html' => $ma_open_html,
-            'ma_top_html' => $ma_top_html,
-            'ma_bottom_html' => $ma_bottom_html,
-            'close_form_html' => $close_form_html,
-            'check_all_html' => $check_all_html,
         ]);
     }
 
@@ -667,7 +617,15 @@ class Condition extends CommonDBChild
         return $tab;
     }
 
-    public static function displayCheckValue($ID)
+    /**
+     * Value a condition compares against, as shown in the list of conditions.
+     *
+     * @param int $ID condition id
+     *
+     * @return array{label: string, url: ?string} plain text, escaped by the template,
+     *                                             and the link of a dropdown item
+     */
+    public static function getCheckValue($ID): array
     {
         $condition = new self();
         $condition->getFromDB($ID);
@@ -676,6 +634,7 @@ class Condition extends CommonDBChild
         $field = new Field();
         $field->getFromDB($condition->fields['plugin_metademands_fields_id']);
         $params = Field::getAllParamsFromField($field);
+        $check_value = $condition->fields['check_value'];
 
         switch ($type) {
             case 'dropdown_multiple':
@@ -705,16 +664,10 @@ class Condition extends CommonDBChild
                 ) {
                     break;
                 }
-                $url = $item->getLinkURL();
-                echo TemplateRenderer::getInstance()->render(
-                    '@metademands/forms/condition_item_link.html.twig',
-                    [
-                        'url'  => $url,
-                        'name' => $item->fields['name'],
-                        'id'   => $item->fields['id'],
-                    ],
-                );
-                break;
+                return [
+                    'label' => $item->fields['name'] . ' (' . $item->fields['id'] . ')',
+                    'url'   => $item->getLinkURL(),
+                ];
 
             case 'text':
             case 'textarea':
@@ -723,96 +676,57 @@ class Condition extends CommonDBChild
             case 'url':
             case 'number':
             case 'range':
-                if (empty($condition->fields['check_value'])) {
-                    echo "";
-                } else {
-                    // getTextFromHtml() strips tags but decodes entities by default, so an
-                    // entity-encoded payload comes back as live markup: escape the result.
-                    echo htmlspecialchars(
-                        RichText::getTextFromHtml($condition->fields['check_value']),
-                        ENT_QUOTES,
-                        'UTF-8',
-                    );
+                if (!empty($check_value)) {
+                    // getTextFromHtml() decodes entities: the template escapes the result.
+                    return ['label' => RichText::getTextFromHtml($check_value), 'url' => null];
                 }
                 break;
 
             case 'date':
-                $option = [
-                    'value' => $condition->fields['check_value'],
-                    'canedit' => false,
-                    'display' => true,
-                ];
-                Html::showDateField('value_to_check', $option);
-                break;
+                return ['label' => (string) Html::convDate($check_value), 'url' => null];
+
             case 'datetime':
-                $option = [
-                    'value' => $condition->fields['check_value'],
-                    'canedit' => false,
-                    'display' => true,
-                ];
-                Html::showDateTimeField('value_to_check', $option);
-                break;
+                return ['label' => (string) Html::convDateTime($check_value), 'url' => null];
+
             case 'radio':
             case 'checkbox':
-                $choices = [];
-                foreach ($params['custom_values'] as $key => $val) {
-                    $choices[$val['id']] = $val['name'];
-                }
-                // Custom value names are stored raw: escape them as the dropdown branch above does.
-                echo htmlspecialchars(
-                    (string) ($choices[$condition->fields['check_value']] ?? ''),
-                    ENT_QUOTES,
-                    'UTF-8',
-                );
-                break;
+                return ['label' => self::getCustomValueName($params, $check_value), 'url' => null];
 
             case 'yesno':
-                $param = [
-                    'value' => $condition->fields['check_value'],
-                ];
-                echo Yesno::getFieldValue($param);
-                break;
+                return ['label' => Yesno::getFieldValue(['value' => $check_value]), 'url' => null];
 
             case 'dropdown_meta':
-                switch ($field->fields['item']) {
-                    case 'other':
-                        $choices = [];
-                        foreach ($params['custom_values'] as $key => $val) {
-                            $choices[$val['id']] = $val['name'];
-                        }
-                        echo htmlspecialchars(
-                            (string) ($choices[$condition->fields['check_value']] ?? ''),
-                            ENT_QUOTES,
-                            'UTF-8',
-                        );
-                        break;
-                    case 'ITILCategory_Metademands':
-                        echo htmlspecialchars(
-                            (string) ITILCategory::getFriendlyNameById($condition->fields['check_value']),
-                            ENT_QUOTES,
-                            'UTF-8',
-                        );
-                        break;
-                    case 'mydevices':
-                        echo htmlspecialchars(
-                            (string) Field::getDeviceName($condition->fields['check_value']),
-                            ENT_QUOTES,
-                            'UTF-8',
-                        );
-                        break;
-                    case 'urgency':
-                        echo CommonITILObject::getUrgencyName($condition->fields['check_value']);
-                        break;
-                    case 'impact':
-                        echo CommonITILObject::getImpactName($condition->fields['check_value']);
-                        break;
-                    case 'priority':
-                        echo CommonITILObject::getPriorityName($condition->fields['check_value']);
-                        break;
-                }
+                $label = match ($field->fields['item']) {
+                    'other'                    => self::getCustomValueName($params, $check_value),
+                    'ITILCategory_Metademands' => ITILCategory::getFriendlyNameById($check_value),
+                    'mydevices'                => Field::getDeviceName($check_value),
+                    'urgency'                  => CommonITILObject::getUrgencyName($check_value),
+                    'impact'                   => CommonITILObject::getImpactName($check_value),
+                    'priority'                 => CommonITILObject::getPriorityName($check_value),
+                    default                    => '',
+                };
+                return ['label' => (string) $label, 'url' => null];
         }
+
+        return ['label' => '', 'url' => null];
     }
 
+    /**
+     * Name of the custom value (radio, checkbox, dropdown_meta "other") a condition checks.
+     *
+     * @param array $params      field parameters, from Field::getAllParamsFromField()
+     * @param mixed $check_value id of the custom value
+     */
+    private static function getCustomValueName(array $params, $check_value): string
+    {
+        foreach ($params['custom_values'] ?? [] as $val) {
+            if ($val['id'] == $check_value) {
+                return (string) $val['name'];
+            }
+        }
+
+        return '';
+    }
 
     /**
      * @param int $metademands_id

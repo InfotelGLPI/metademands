@@ -454,6 +454,14 @@
         });
     }
 
+    // "Add" button of the free table columns (templates/fields/freetable_fields.html.twig):
+    // append the form of a new column.
+    $(document).on('click', 'button[data-md-freetablefield-add]', function () {
+        $(document)
+            .metademandWizard({root_doc: this.dataset.mdFreetablefieldRoot})
+            .metademands_add_custom_values('show_custom_fields', parseInt(this.dataset.mdFreetablefieldAdd, 10));
+    });
+
     // Type of a new free table column (Freetablefield::addNewValue()): show the
     // dropdown values or the comment cell of that rank.
     $(document).on('change', 'select[data-md-freetablefield-type]', function () {
@@ -513,9 +521,13 @@
         });
     });
 
-    // Edit link of a sub item list (TicketField): load its form into the pane.
-    // jQuery load() runs the scripts of the returned form.
-    $(document).on('click', 'a[data-md-subitem-target]', function (event) {
+    // Edit link or row of a sub item list (TicketField, Task): load its form into the
+    // pane. Cells marked data-md-subitem-noopen (massive action checkbox, links) keep
+    // their own behaviour. jQuery load() runs the scripts of the returned form.
+    $(document).on('click', '[data-md-subitem-target]', function (event) {
+        if ($(event.target).closest('[data-md-subitem-noopen]', this).length > 0) {
+            return;
+        }
         event.preventDefault();
 
         $('#' + CSS.escape(this.dataset.mdSubitemTarget))
@@ -548,6 +560,7 @@
      * The basket summary replaces the step flow: its own button posts the order.
      *
      * @param {HTMLElement} container the holder emitted by fields/basket_summary.html.twig
+     *                                or forms/basketline_summary.html.twig
      */
     function initBasketOrder(container) {
         if (container.dataset.metademandsOrderInit) {
@@ -658,6 +671,7 @@
         {selector: '[data-metademands-wizard-params]', init: initWizardParams},
         {selector: '[data-metademands-redirect-on-close]', init: initRedirectOnClose},
         {selector: '[data-metademands-basket-order]', init: initBasketOrder},
+        {selector: '[data-md-basketline-order]', init: initBasketOrder},
         {selector: '.tabs-container[data-metademands-block-id]', init: initTabs},
         {selector: '[data-metademands-previous-dialog]', init: initPreviousDialog},
         {selector: '[data-metademands-hidden-blocks]', init: initHiddenBlocks},
@@ -885,6 +899,47 @@
         if (holder) {
             sendBasketOrder(JSON.parse(holder.dataset.metademandsBasketOrder));
         }
+    });
+
+    /**
+     * Post the order of a basket (forms/basketline_summary.html.twig): the payload the
+     * wizard posted is saved, then the meta-demand is created.
+     *
+     * The handler used to be an inline <script> interpolating that payload.
+     */
+    $(document).on('click', 'button[data-md-basketline-submit]', function () {
+        const order = JSON.parse(this.closest('[data-md-basketline-order]').dataset.mdBasketlineOrder);
+
+        $.ajax({
+            url: order.add_url,
+            type: 'POST',
+            data: order.post,
+            success: function () {
+                $.ajax({
+                    url: order.create_url,
+                    type: 'POST',
+                    data: order.post,
+                    success: function () {
+                        window.location.href = order.wizard_url;
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    },
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    });
+
+    // The basket summary sits inside #wizard_form, where it cannot open a form of its
+    // own: its clear, previous and line delete buttons post their fields through the
+    // core helper.
+    $(document).on('click', 'button[data-md-basketline-post]', function () {
+        const order = JSON.parse(this.closest('[data-md-basketline-order]').dataset.mdBasketlineOrder);
+
+        submitGetLink(order.wizard_form_url, JSON.parse(this.dataset.mdBasketlinePost));
     });
 
     // A free table drives its own save button, the draft one would bypass it.

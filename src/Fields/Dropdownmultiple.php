@@ -867,9 +867,7 @@ class Dropdownmultiple extends CommonDBTM
                     break;
             }
         }
-        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
-            'value' => $value,
-        ]);
+        return $value;
     }
 
     public static function isCheckValueOK($value, $check_value)
@@ -2352,7 +2350,7 @@ class Dropdownmultiple extends CommonDBTM
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
-        $style_title,
+        $title_style,
         $label,
         $field,
         $return_value,
@@ -2368,7 +2366,7 @@ class Dropdownmultiple extends CommonDBTM
             && $field['item'] != 'Appliance' && $field['value'] > 0) {
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'value'   => (string) self::getFieldValue($field, $lang),
@@ -2379,7 +2377,7 @@ class Dropdownmultiple extends CommonDBTM
             && $field['value'] > 0) {
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'value'   => (string) self::getFieldValue($field, $lang),
@@ -2406,7 +2404,7 @@ class Dropdownmultiple extends CommonDBTM
             }
             $result[$field['rank']]['content'] .= Field::renderContentCells(
                 (bool) $formatAsTable,
-                (string) $style_title,
+                (string) $title_style,
                 [[
                     'label'   => (string) $label,
                     'rows'    => $rows,

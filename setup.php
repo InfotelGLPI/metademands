@@ -114,6 +114,7 @@ function plugin_init_metademands()
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/plugin_metademands_sortable.js";
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/fieldoption_valuetocheck.js";
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/field_list.js";
         }
 
         Plugin::registerClass(Metademand::class, ['addtabon' => 'Ticket']);

@@ -117,74 +117,38 @@ class Basketline extends CommonDBTM
                     }
                 }
 
-                $target = Toolbox::getItemTypeFormURL(Wizard::class);
-
-                $clear_basket_html = Html::getSimpleForm(
-                    $target,
-                    'clear_basket',
-                    _sx('button', 'Clear the basket', 'metademands'),
-                    [
-                        'metademands_id' => $metademands_id,
-                    ],
-                    'ti-trash',
-                    "class='btn btn-primary'",
-                );
-
                 $basketLines = [];
                 foreach ($basketlinesFind as $basketLine) {
                     $basketLines[$basketLine['line']][] = $basketLine;
                 }
 
-                ob_start();
+                $lines = [];
                 foreach ($basketLines as $idline => $fieldlines) {
-                    self::retrieveDatasByType($metademands_id, $idline, $fieldlines, $line);
+                    $lines[] = self::retrieveDatasByType($metademands_id, $idline, $fieldlines, $line);
                 }
-                $lines_html = ob_get_clean();
 
-                $previous_html = Html::getSimpleForm(
-                    $target,
-                    'clean_form',
-                    __('Previous'),
-                    [
-                        'metademands_id' => $metademands_id,
-                        'step' => Metademand::STEP_SHOW,
-                    ],
-                    '',
-                    "class='btn btn-primary'",
-                );
-
-                //                $title = _sx('button', 'Send order', 'metademands');
-                $title = _sx('button', 'Save & Post', 'metademands');
-                // $post is the wizard's posted payload: the ticket id is normalised before it
-                // reaches the query string that the template interpolates into a JS literal.
+                // $post is the wizard's posted payload, sent back as is by the order button:
+                // the ticket id is normalised before it reaches the redirection URL.
                 $current_ticket = (int) ($post["tickets_id"] ?? 0);
                 $post["current_ticket_id"] = $current_ticket;
-                $submit_order_html = Html::submit($title, ['name' => 'send_order',
-                    'form' => '',
-                    'icon' => 'ti ti-shopping-bag',
-                    'id' => 'submitOrder',
-                    'class' => 'btn btn-success right']);
-
-                $paramUrl = "";
-                $meta_validated = false;
-                if ($current_ticket > 0 && !$meta_validated) {
-                    $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
-                }
-                $meta_id = $post['metademands_id'];
-                $post_json = json_encode($post, JSON_HEX_TAG | JSON_HEX_AMP);
+                // meta_validated is deliberately left empty: the legacy code interpolated
+                // a variable that was hardcoded to false.
+                $order = [
+                    'post'       => $post,
+                    'add_url'    => PLUGIN_METADEMANDS_WEBDIR . '/ajax/addform.php',
+                    'create_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/createmetademands.php',
+                    'wizard_url' => PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php?'
+                        . ($current_ticket > 0 ? 'current_ticket_id=' . $current_ticket . '&meta_validated=&' : '')
+                        . 'metademands_id=' . (int) ($post['metademands_id'] ?? 0) . '&step=create_metademands',
+                    'wizard_form_url' => Toolbox::getItemTypeFormURL(Wizard::class),
+                ];
 
                 echo TemplateRenderer::getInstance()->render('@metademands/forms/basketline_summary.html.twig', [
-                    'title_color'       => $title_color,
-                    'clear_basket_html' => $clear_basket_html,
-                    'hidden_meta'       => Html::hidden('metademands_id', ['value' => $metademands_id]),
-                    'hidden_form_meta'  => Html::hidden('form_metademands_id', ['value' => $metademands_id]),
-                    'lines_html'        => $lines_html,
-                    'previous_html'     => $previous_html,
-                    'submit_order_html' => $submit_order_html,
-                    'meta_id'           => $meta_id,
-                    'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
-                    'post_json'         => $post_json,
-                    'param_url'         => $paramUrl,
+                    'title_color'    => $title_color,
+                    'metademands_id' => (int) $metademands_id,
+                    'lines'          => $lines,
+                    'step_show'      => Metademand::STEP_SHOW,
+                    'order'          => $order,
                 ]);
             }
         }
@@ -194,8 +158,10 @@ class Basketline extends CommonDBTM
      * @param $idline
      * @param $values
      * @param $fields
+     *
+     * @return array context of forms/basketline_line.html.twig
      */
-    public static function retrieveDatasByType($metademands_id, $idline, $values, $fields)
+    public static function retrieveDatasByType($metademands_id, $idline, $values, $fields): array
     {
 
         $target = Toolbox::getItemTypeFormURL(Wizard::class);
@@ -274,27 +240,12 @@ class Basketline extends CommonDBTM
             ];
         }
 
-        $delete_html = Html::getSimpleForm(
-            $target,
-            'delete_basket_line',
-            _sx('button', 'Delete this line', 'metademands'),
-            [
-                'metademands_id' => $metademands_id,
-                'delete_basket_line' => $idline,
-            ],
-            'ti-trash',
-            "class='btn btn-danger'",
-        );
-
-        echo TemplateRenderer::getInstance()->render('@metademands/forms/basketline_line.html.twig', [
-            'target'           => $target,
-            'hidden_meta'      => Html::hidden('metademands_id', ['value' => $metademands_id]),
-            'hidden_form_meta' => Html::hidden('form_metademands_id', ['value' => $metademands_id]),
-            'rows'             => $rows,
-            'idline'           => $idline,
-            'delete_html'      => $delete_html,
-            'close_form_html'  => Html::closeForm(false),
-        ]);
+        return [
+            'target'         => $target,
+            'metademands_id' => (int) $metademands_id,
+            'rows'           => $rows,
+            'idline'         => (int) $idline,
+        ];
     }
 
 

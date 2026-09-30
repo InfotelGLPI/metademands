@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Basketline;
 use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
@@ -162,6 +163,28 @@ if (isset($_GET['metademands_id'])) {
             }
         }
     }
+}
+
+// The basket actions below read the fields of the posted meta-demand, key the session with it
+// and put it in the redirection: both identifiers are reduced to an integer, and the entity
+// boundary checked above on the displayed meta-demand is replayed on each of them.
+$basket_actions = ['update_basket_line', 'delete_basket_line', 'delete_basket_file', 'clear_basket', 'clean_form'];
+if (array_intersect_key($_POST, array_flip($basket_actions)) !== []) {
+    foreach (['metademands_id', 'form_metademands_id'] as $key) {
+        if (!isset($_POST[$key])) {
+            continue;
+        }
+        $_POST[$key] = is_scalar($_POST[$key]) ? (int) $_POST[$key] : 0;
+        if ($_POST[$key] === 0) {
+            continue;
+        }
+        $posted_meta = new Metademand();
+        if (!$posted_meta->getFromDB($_POST[$key])
+            || !Session::haveAccessToEntity($posted_meta->fields['entities_id'], $posted_meta->fields['is_recursive'])) {
+            throw new AccessDeniedHttpException();
+        }
+    }
+    $_POST['step'] = isset($_POST['step']) && is_scalar($_POST['step']) ? (int) $_POST['step'] : Metademand::STEP_SHOW;
 }
 
 if (isset($_POST['update_basket_line'])) {

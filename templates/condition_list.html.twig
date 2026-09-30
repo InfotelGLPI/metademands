@@ -25,6 +25,10 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Conditions of a metademand. A row opens its edit form in view_container_id through
+ #  public/scripts/wizard_form.js (data-md-subitem-*); the checkbox cell and the field
+ #  link keep their own behaviour (data-md-subitem-noopen).
+ -#}
 <br><br>
 
 {% if canedit %}
@@ -37,13 +41,15 @@
         {{ __('No conditions founded', 'metademands') }}
     </div>
 {% else %}
-    {# Emitted before the table: the legacy code placed one <script> per row inside a
-       <td>, where the parser hoists it out anyway. #}
-    {{ scripts_html|raw }}
-
     {% if canedit %}
-        {{ ma_open_html|raw }}
-        {{ ma_top_html|raw }}
+        {# raw: massive actions, no core macro (§3.2) #}
+        {{ call('Html::getOpenMassiveActionsForm', [container])|raw }}
+        {# raw: massive actions, no core macro (§3.2) #}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': container,
+            'display': false
+        }])|raw }}
     {% endif %}
 
     <div class="left">
@@ -54,7 +60,10 @@
                 </tr>
                 <tr>
                     {% if canedit %}
-                        <th width="10">{{ check_all_html|raw }}</th>
+                        <th width="10">
+                            {# raw: massive actions, no core macro (§3.2) #}
+                            {{ call('Html::getCheckAllAsCheckbox', [container])|raw }}
+                        </th>
                     {% endif %}
                     <th>{{ __('ID') }}</th>
                     <th>{{ __('Logical operator', 'metademands') }}</th>
@@ -67,43 +76,38 @@
             </thead>
             <tbody>
                 {% for row in rows %}
-                    {% set hover_attrs = row.edit_function ? 'cursor:pointer' : '' %}
-                    <tr class="tab_bg_1">
+                    <tr class="tab_bg_1"
+                        {%- if canedit %}
+                            style="cursor:pointer"
+                            data-md-subitem-target="{{ view_container_id }}"
+                            data-md-subitem-url="{{ edit_url }}"
+                            data-md-subitem-params="{{ row.edit_params|json_encode }}"
+                        {%- endif %}>
                         {% if canedit %}
-                            <td class="center">{{ row.checkbox_html|raw }}</td>
+                            <td class="center" data-md-subitem-noopen>
+                                {# raw: massive actions, no core macro (§3.2) #}
+                                {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
+                            </td>
                         {% endif %}
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
-                            {{- row.id -}}
-                        </td>
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
-                            {{- row.logic -}}
-                        </td>
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.logic }}</td>
+                        <td>
                             {% if row.field_url %}
-                                <a href="{{ row.field_url }}" style="color:royalblue;">{{ row.field_label }}</a>
+                                <a href="{{ row.field_url }}" style="color:royalblue;" data-md-subitem-noopen>{{ row.field_label }}</a>
                             {% else %}
                                 {{ row.field_label }}
                             {% endif %}
                         </td>
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
-                            {{- row.type_label -}}
+                        <td>{{ row.type_label }}</td>
+                        <td>{{ row.condition_label }}</td>
+                        <td>
+                            {% if row.check_value.url %}
+                                <a href="{{ row.check_value.url }}" style="color:royalblue;" data-md-subitem-noopen>{{ row.check_value.label }}</a>
+                            {% else %}
+                                {{ row.check_value.label }}
+                            {% endif %}
                         </td>
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
-                            {{- row.condition_label -}}
-                        </td>
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
-                            {{- row.check_value_html|raw -}}
-                        </td>
-                        <td style="{{ hover_attrs }}"
-                            {%- if row.edit_function %} onclick="{{ row.edit_function }}();"{% endif %}>
-                            {{- row.order -}}
-                        </td>
+                        <td>{{ row.order }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -111,8 +115,16 @@
     </div>
 
     {% if canedit %}
-        {{ ma_bottom_html|raw }}
-        {# closes the massive actions <form> above and carries the CSRF token #}
-        {{ close_form_html|raw }}
+        {# Rendered after the rows on purpose: when it is not the top one, showMassiveActions()
+         # empties the selection that the row checkboxes read to restore their checked state #}
+        {# raw: massive actions, no core macro (§3.2) #}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': container,
+            'ontop': false,
+            'display': false
+        }])|raw }}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        </form>
     {% endif %}
 {% endif %}

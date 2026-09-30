@@ -937,94 +937,25 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         $add = null;
         if ($canedit) {
-            $modal_new_id = "metaFieldNewModal{$rand}";
-            $modal_existing_id = "metaFieldExistingModal{$rand}";
-            $fn_new = "addFieldmeta{$meta_id}{$rand}";
-            $fn_existing = "addExistingFieldmeta{$meta_id}{$rand}";
-            // HEX_TAG/HEX_AMP only: the payload is consumed as a JS object literal, so
-            // escaping quotes would break it (see the plugin inline-JSON convention).
-            $params_json = json_encode([
-                'type' => __CLASS__,
-                'parenttype' => get_class($item),
-                $item->getForeignKeyField() => $meta_id,
-                'id' => -1,
-            ], JSON_HEX_TAG | JSON_HEX_AMP);
-            $url_new = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
-            $url_existing = $webdir . "/ajax/viewexistingsubitem.php";
-
             $add = [
-                'modal_new_id' => $modal_new_id,
-                'modal_existing_id' => $modal_existing_id,
-                'fn_new' => $fn_new,
-                'fn_existing' => $fn_existing,
-                'script_html' => Html::scriptBlock("
-            function {$fn_new}() {
-                $.post('{$url_new}', {$params_json}, function(html) {
-                    $('#{$modal_new_id}_body').html(html);
-                    bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_new_id}')).show();
-                });
-            }
-            function {$fn_existing}() {
-                $.post('{$url_existing}', {$params_json}, function(html) {
-                    $('#{$modal_existing_id}_body').html(html);
-                    bootstrap.Modal.getOrCreateInstance(document.getElementById('{$modal_existing_id}')).show();
-                });
-            }
-            (function () {
-                var p = new URLSearchParams(window.location.search);
-                if (p.get('open_add_field') === '{$meta_id}') {
-                    p.delete('open_add_field');
-                    var qs = p.toString();
-                    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
-                    {$fn_new}();
-                }
-            })();"),
+                'modal_new_id' => "metaFieldNewModal{$rand}",
+                'modal_existing_id' => "metaFieldExistingModal{$rand}",
+                'url_new' => $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                'url_existing' => $webdir . "/ajax/viewexistingsubitem.php",
+                'params' => [
+                    'type' => __CLASS__,
+                    'parenttype' => get_class($item),
+                    $item->getForeignKeyField() => $meta_id,
+                    'id' => -1,
+                ],
             ];
         }
 
         $cond['plugin_metademands_metademands_id'] = $meta_id;
 
-        $searched_block = $_SESSION['plugin_metademands_searchresults'][$meta_id]['block'] ?? 0;
-        $block_filter_script_html = '';
+        $searched_block = (int) ($_SESSION['plugin_metademands_searchresults'][$meta_id]['block'] ?? 0);
         if ($searched_block != 0) {
             $cond['rank'] = $searched_block;
-            $block = (int) $searched_block;
-            $block_filter_script_html = Html::scriptBlock("
-            $(document).ready(function() {
-                        var fieldid = {$block} || sessionStorage.getItem('loadedblock') || '1';
-                        var meta_id = {$meta_id};
-                        var urlmeta = '{$webdir}';
-
-                        sessionStorage.setItem('loadedblock', fieldid);
-                        function updateActiveTab(rank) {
-                            document.querySelectorAll('a[id^=\"ablock\"]').forEach(a => a.classList.remove('active'));
-                            document.querySelectorAll('div[id^=\"block\"]').forEach(div => div.classList.remove('active'));
-
-                            document.getElementById('ablock' + rank)?.classList.add('active');
-                            $('div[id^=\"block\"]').hide();
-                            $('#block' + rank).show();
-                        }
-                         updateActiveTab(fieldid);
-                        function loadPreview(fieldid) {
-                            $.ajax({
-                                url: urlmeta + '/ajax/previewMetademand.php',
-                                type: 'POST',
-                                datatype: 'HTML',
-                                data: { block: fieldid, metademands_id: meta_id },
-                                success: function (response) {
-                                    $('#see_block_preview').html(response);
-                                },
-                                error: function (xhr, status, error) {
-                                    console.log(xhr);
-                                    console.log(status);
-                                    console.log(error);
-                                }
-                            });
-                        }
-
-                        loadPreview(fieldid);
-                        window.location.hash = '#block' + fieldid;
-                });");
         }
         if (isset($_SESSION['plugin_metademands_searchresults'][$meta_id]['type'])
             && $_SESSION['plugin_metademands_searchresults'][$meta_id]['type'] != 0) {
@@ -1035,82 +966,11 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $cond['item'] = $_SESSION['plugin_metademands_searchresults'][$meta_id]['item'];
         }
 
+        // A filtered list misses fields, so its orders cannot be checked for gaps
+        $is_filtered = isset($cond['rank']) || isset($cond['type']) || isset($cond['item']);
+
         $self = new self();
         $data = $self->find($cond, ['rank', 'order']);
-
-        $search_form_html = self::getSearchForm($item, $cond);
-
-        $tabs_state_script_html = '';
-        if ($searched_block == 0) {
-            $tabs_state_script_html = Html::scriptBlock(
-                '$(document).ready(function () {
-                        var hash = window.location.hash;
-                        var fieldid = sessionStorage.getItem("loadedblock") || "1";
-
-                        function updateActiveTab(rank) {
-                            $("a[id^=\"ablock\"]").removeClass("active");
-                            $("div[id^=\"block\"]").removeClass("active").hide();
-                            $("#ablock" + rank).addClass("active");
-                            $("#block" + rank).addClass("active").show();
-                        }
-
-                        if (fieldid && document.getElementById(fieldid)) {
-                            updateActiveTab(fieldid.replace("block", ""));
-                            hash = "#" + fieldid;
-                        } else if (hash.startsWith("#block") && document.getElementById(hash.substring(1))) {
-                            updateActiveTab(hash.replace("#block", ""));
-                            sessionStorage.setItem("loadedblock", hash.substring(1));
-                        } else {
-                            updateActiveTab(1);
-                            sessionStorage.setItem("loadedblock", "block1");
-                            window.location.hash = "#block1";
-                        }
-
-                        $("#fieldslist a").click(function (e) {
-                            e.preventDefault();
-                            var tabId = $(this).attr("href").replace("#", "");
-
-                            if (document.getElementById(tabId)) {
-                                var rank = tabId.replace("block", "");
-                                sessionStorage.setItem("loadedblock", tabId);
-                                updateActiveTab(rank);
-                                window.location.hash = tabId;
-                            }
-                        });
-
-                        // Anchored on the block tab bar: "ul.nav-tabs > li > a" also matches
-                        // the tab bar of the core form this list is rendered in, whose href is
-                        // a whole URL.
-                        $("ul#fieldslist > li > a").on("shown.bs.tab", function (e) {
-                            var href = $(e.target).attr("href") || "";
-
-                            if (href.indexOf("#block") !== 0) {
-                                return;
-                            }
-
-                            var id = href.substr(1);
-                            sessionStorage.setItem("loadedblock", id);
-                            window.location.hash = "#" + id;
-                        });
-
-                        function scrollToActiveTab() {
-                            const activeTab = document.querySelector(".scrollable-tabs .active");
-                            const container = document.querySelector(".scrollable-tabs");
-
-                            if (activeTab && container) {
-                                const offsetLeft = activeTab.offsetLeft;
-                                const containerWidth = container.clientWidth;
-                                const tabWidth = activeTab.offsetWidth;
-
-                                // Center the active tab
-                                const scrollTo = offsetLeft - (containerWidth / 2) + (tabWidth / 2);
-                                container.scrollTo({ left: scrollTo, behavior: "smooth" });
-                            }
-                        }
-                        scrollToActiveTab();
-                    });',
-            );
-        }
 
         $fieldparameter = new FieldParameter();
         $field_custom = new FieldCustomvalue();
@@ -1162,31 +1022,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         $tabs = [];
         $block_fields = [];
-        $tabs_scroll_script_html = '';
         if (count($blocks) > 0) {
             foreach ($blocks as $idblock => $block) {
                 $tabs[] = ['id' => $idblock, 'name' => $block];
             }
-
-            $tabs_scroll_script_html = Html::scriptBlock(
-                '
-                setTimeout(() => {
-                    const scrollContainer = document.querySelector(".scrollable-tabs");
-                    const scrollLeftBtn = document.querySelector(".scroll-left");
-                    const scrollRightBtn = document.querySelector(".scroll-right");
-
-                    if (scrollLeftBtn && scrollRightBtn && scrollContainer) {
-                        scrollLeftBtn.addEventListener("click", function () {
-                            scrollContainer.scrollBy({ left: -150, behavior: "smooth" });
-                        });
-
-                        scrollRightBtn.addEventListener("click", function () {
-                            scrollContainer.scrollBy({ left: 150, behavior: "smooth" });
-                        });
-                    }
-                }, 500);
-            ',
-            );
 
             foreach ($blocks as $idblock => $block) {
                 foreach ($data as $value) {
@@ -1216,20 +1055,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 $orders[] = $value['order'];
             }
 
-            $order_warning_html = '';
-            if ($searched_block == 0 && self::isSequentialFromOne($orders) == false) {
-                $order_warning_html = Html::getSimpleForm(
-                    $form_url,
-                    'fixorders',
-                    _x('button', 'Do you want to fix them ?', 'metademands'),
-                    [
-                        'plugin_metademands_metademands_id' => $meta_id,
-                        'rank' => $idblock,
-                    ],
-                    'ti-settings',
-                    "class='btn btn-warning'",
-                );
-            }
+            $fix_orders = !$is_filtered && self::isSequentialFromOne($orders) == false;
 
             foreach ($blockdata as $value) {
                 $fp_check = FieldParameter::getFromStaticCache((int) $value['id']);
@@ -1299,9 +1125,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         $type_label .= " (" . $itemtypename . ")";
                     }
 
-                    // Value to check: a plain label, or the markup produced by getValueToCheck()
-                    $value_to_check_label = null;
-                    $value_to_check_html = '';
+                    // Value to check, as plain text
+                    $value_to_check_label = '';
                     if (count($fo_cur) > 1) {
                         $value_to_check_label = __('Multiples', 'metademands');
                     } elseif (count($fo_cur) === 0) {
@@ -1323,7 +1148,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                 || in_array($value['item'], $allowed_customvalues_items)) {
                                 $datao['custom_values'] = count($fc_cur) > 0 ? $fc_cur : [];
                             }
-                            $value_to_check_html .= FieldOption::getValueToCheck($datao);
+                            $value_to_check_label .= FieldOption::getValueToCheck($datao);
                         }
                     }
 
@@ -1363,7 +1188,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     $rows[] = [
                         'order' => $value['order'],
                         'id' => $value['id'],
-                        'checkbox_html' => $canedit ? Html::getMassiveActionCheckBox(__CLASS__, $value['id']) : '',
                         'has_warning' => !$fp_cur || ($needs_custom && !$fc_cur),
                         'label' => $label,
                         'url' => Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'],
@@ -1371,122 +1195,43 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         'is_mandatory' => $fp_cur ? $fp_cur['is_mandatory'] == 1 : false,
                         'mandatory_label' => $fp_cur ? \Dropdown::getYesNo($fp_cur['is_mandatory']) : null,
                         'value_to_check_label' => $value_to_check_label,
-                        'value_to_check_html' => $value_to_check_html,
                         'basket_label' => \Dropdown::getYesNo($fp_cur['is_basket'] ?? 0),
                         'object_field_label' => $object_field_label,
                         'task_names' => $task_names,
                         'no_task_label' => \Dropdown::EMPTY_VALUE,
                         'debug_order' => $debug ? $value['order'] : null,
-                        'purge_form_html' => Html::getSimpleForm(
-                            $form_url,
-                            'purge',
-                            "",
-                            [
-                                "id" => $value['id'],
-                                "plugin_metademands_metademands_id" => $value['plugin_metademands_metademands_id'],
-                            ],
-                            "fa-times-circle fa-1x",
-                            "",
-                            __('Are you sure you want to delete this field ?', 'metademands'),
-                        ),
                     ];
                 }
-            }
-
-            $ma_open_html = '';
-            $ma_top_html = '';
-            $ma_bottom_html = '';
-            $close_form_html = '';
-            $check_all_html = '';
-            if ($canedit && count($rows)) {
-                $massiveactionparams = ['item' => __CLASS__,
-                    'container' => $container,
-                    'display' => false,
-                ];
-                $ma_open_html = Html::getOpenMassiveActionsForm($container);
-                $ma_top_html = Html::showMassiveActions($massiveactionparams);
-                $check_all_html = Html::getCheckAllAsCheckbox($container);
-                // Built after the rows on purpose: showMassiveActions() empties
-                // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
-                // row checkboxes read that selection to restore their checked state.
-                $massiveactionparams['ontop'] = false;
-                $ma_bottom_html = Html::showMassiveActions($massiveactionparams);
-                $close_form_html = Html::closeForm(false);
             }
 
             $panels[] = [
                 'id' => $idblock,
                 'is_default' => $idblock == 1,
-                'order_warning_html' => $order_warning_html,
+                'fix_orders' => $fix_orders,
                 'ko_params' => $koparams > 0,
                 'ko_custom' => $kocustom > 0,
+                'container' => $container,
+                'purge_form_id' => 'purgeMetaField' . $blockrand,
                 'drag_id' => 'drag' . $blockrand,
                 'sortable_url' => $webdir . '/ajax/reorderfields.php',
                 'sortable_params' => json_encode([
                     'plugin_metademands_metademands_id' => $meta_id,
                     'rank' => $idblock,
                 ]),
-                'ma_open_html' => $ma_open_html,
-                'ma_top_html' => $ma_top_html,
-                'ma_bottom_html' => $ma_bottom_html,
-                'close_form_html' => $close_form_html,
-                'check_all_html' => $check_all_html,
                 'rows' => $rows,
             ];
         }
 
-        $preview_script_html = '';
-        if ($searched_block == 0) {
-            $preview_script_html = Html::scriptBlock("
-            $(document).ready(function () {
-                var meta_id = {$meta_id};
-                var urlmeta = '{$webdir}';
-                var fieldid = '1';
-
-                function loadPreview(fieldid) {
-                    $.ajax({
-                        url: urlmeta + '/ajax/previewMetademand.php',
-                        type: 'POST',
-                        datatype: 'HTML',
-                        data: { block: fieldid, metademands_id: meta_id },
-                        success: function (response) {
-                            $('#see_block_preview').html(response);
-                        },
-                        error: function (xhr, status, error) {
-                            console.log(xhr);
-                            console.log(status);
-                            console.log(error);
-                        }
-                    });
-                }
-
-                if (fieldid === 1) {
-                    loadPreview(fieldid);
-                }
-                var storefieldid = sessionStorage.getItem('loadedblock');
-                if (storefieldid) {
-                    loadPreview(parseInt(storefieldid.substr(5)));
-                }
-                $('#fieldslist a').click(function (e) {
-                    e.preventDefault();
-                    var tabId = $(this).attr('href').replace('#', '');
-                    if (typeof tabId !== 'undefined' && tabId.length > 0) {
-                        fieldid = parseInt(tabId.substr(5));
-                        loadPreview(fieldid);
-                    }
-                });
-            });");
-        }
-
-        echo TemplateRenderer::getInstance()->render('@metademands/field_list.html.twig', [
+        TemplateRenderer::getInstance()->display('@metademands/field_list.html.twig', [
+            'meta_id' => $meta_id,
+            'searched_block' => $searched_block,
+            'preview_url' => $webdir . '/ajax/previewMetademand.php',
+            'form_url' => $form_url,
+            'itemtype' => __CLASS__,
             'canedit' => $canedit,
             'is_order' => $is_order,
             'add' => $add,
-            'block_filter_script_html' => $block_filter_script_html,
-            'search_form_html' => $search_form_html,
-            'tabs_state_script_html' => $tabs_state_script_html,
-            'tabs_scroll_script_html' => $tabs_scroll_script_html,
-            'preview_script_html' => $preview_script_html,
+            'search_form' => self::getSearchFormContext($item, $cond),
             'tabs' => $tabs,
             'panels' => $panels,
             'drag_style' => 'cursor: move;border-width: 0 !important;border-style: none !important;'
@@ -2100,18 +1845,17 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      * docs/TWIG_MIGRATION.md), to be appended to $result[rank]['content'] by the
      * displayFieldItems() implementations.
      *
-     * $style_title is still the attribute fragment built by
-     * Metademand::getContentWithField() for the classes that concatenate their cells;
-     * only its inline style is kept, the template sets the class itself.
+     * $title_style is the inline CSS of the title cell computed by
+     * Metademand::getContentWithField(); the template sets the class itself.
      *
      * @param array<int, array{label?: string, value?: string, rows?: array<int, array<int, string>>, colspan: int, new_row?: bool, link?: bool, image?: bool, heading?: bool, value_only?: bool}> $cells plain text
      */
-    public static function renderContentCells(bool $formatAsTable, string $style_title, array $cells): string
+    public static function renderContentCells(bool $formatAsTable, string $title_style, array $cells): string
     {
         return TemplateRenderer::getInstance()->render('@metademands/ticket_content/field_cells.html.twig', [
             'cells'           => $cells,
             'format_as_table' => $formatAsTable,
-            'title_style'     => self::getTitleStyle($style_title),
+            'title_style'     => $title_style,
         ]);
     }
 
@@ -2125,7 +1869,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      */
     public static function renderContentBlock(
         bool $formatAsTable,
-        string $style_title,
+        string $title_style,
         string $label,
         bool $show_title,
         string $value,
@@ -2137,7 +1881,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'value'           => $value,
             'colspan'         => $colspan,
             'format_as_table' => $formatAsTable,
-            'title_style'     => self::getTitleStyle($style_title),
+            'title_style'     => $title_style,
         ]);
     }
 
@@ -2149,23 +1893,14 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      * @param array<int, array<int, array{text: string, colspan?: int, heading?: bool, title?: bool, table_only?: bool}>> $rows plain text
      * @param string $cell_style inline CSS of the plain and heading cells
      */
-    public static function renderContentRows(bool $formatAsTable, string $style_title, string $cell_style, array $rows): string
+    public static function renderContentRows(bool $formatAsTable, string $title_style, string $cell_style, array $rows): string
     {
         return TemplateRenderer::getInstance()->render('@metademands/ticket_content/table_rows.html.twig', [
             'rows'            => $rows,
             'format_as_table' => $formatAsTable,
             'cell_style'      => $cell_style,
-            'title_style'     => self::getTitleStyle($style_title),
+            'title_style'     => $title_style,
         ]);
-    }
-
-    /**
-     * Inline style carried by the $style_title attribute fragment built by
-     * Metademand::getContentWithField(); the templates set the class themselves.
-     */
-    private static function getTitleStyle(string $style_title): string
-    {
-        return preg_match("/style='([^']*)'/", $style_title, $matches) === 1 ? $matches[1] : '';
     }
 
     /**
@@ -4510,18 +4245,21 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
     public static function searchForm($item, $cond)
     {
-        echo self::getSearchForm($item, $cond);
+        TemplateRenderer::getInstance()->display(
+            '@metademands/field_search_form.html.twig',
+            self::getSearchFormContext($item, $cond),
+        );
     }
 
     /**
-     * Build the filter form shown above the field list.
+     * Context of the filter form shown above the field list (field_search_form.html.twig).
      *
      * @param       $item the Metademand the tab is displayed for
      * @param array $cond current filter, as stored in the session
      *
-     * @return string
+     * @return array<string, mixed>
      */
-    private static function getSearchForm($item, $cond)
+    private static function getSearchFormContext($item, $cond): array
     {
         global $DB;
 
@@ -4549,10 +4287,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        // The rand has to be generated here: with 'display' => false the dropdown helpers
-        // return their markup instead of the rand, which the AJAX observer below needs.
-        $mrand = mt_rand();
-
         $show_item = in_array($p['type'], self::$field_withobjects);
         $item_dropdown_html = '';
         if ($show_item) {
@@ -4566,8 +4300,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $item_dropdown_html = ob_get_clean() . (is_string($returned) ? $returned : '');
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/field_search_form.html.twig', [
+        return [
             'form_action' => PLUGIN_METADEMANDS_WEBDIR . '/front/field.php',
+            'metademands_id' => $item->getID(),
             'block_dropdown_html' => \Dropdown::showNumber('block', [
                 'value' => $p['rank'],
                 'min' => 1,
@@ -4580,30 +4315,18 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 [
                     'value' => $p['type'],
                     'metademands_id' => $item->getID(),
-                    'on_change' => 'plugin_metademands_reloaditem();',
-                    'rand' => $mrand,
                     'display' => false,
                 ],
             ),
             'show_item' => $show_item,
             'item_dropdown_html' => $item_dropdown_html,
-            'reload_script_html' => Html::scriptBlock(
-                'function plugin_metademands_reloaditem() {'
-                . Ajax::updateItemJsCode(
-                    'plugin_metademands_item',
-                    PLUGIN_METADEMANDS_WEBDIR . '/ajax/reloaditem.php',
-                    ['action' => 'reloaditem', 'type' => '__VALUE__'],
-                    'dropdown_type' . $mrand,
-                    false,
-                )
-                . '};',
-            ),
-            'hidden_html' => Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]),
-            'submit_html' => Html::submit(_sx('button', 'Search'), ['name' => 'search',
-                'class' => 'btn btn-primary',
-            ]),
-            'close_form_html' => Html::closeForm(false),
-        ]);
+            // Read by public/scripts/metademands_reload.js: a new type reloads the object dropdown
+            'type_reload' => [[
+                'target' => 'plugin_metademands_item',
+                'url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reloaditem.php',
+                'params' => ['action' => 'reloaditem', 'type' => '__VALUE__'],
+            ]],
+        ];
     }
 
 

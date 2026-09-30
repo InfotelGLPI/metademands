@@ -145,7 +145,7 @@ class Information extends CommonDBTM
 
     public static function blocksHiddenScript($data) {}
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
+    public static function displayFieldItems(&$result, $formatAsTable, $title_style, $label, $field, $return_value, $lang, $is_order = false)
     {
         $result[$field['rank']]['display'] = false;
         return $result;

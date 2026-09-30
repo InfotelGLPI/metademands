@@ -425,7 +425,7 @@ class TicketContentCellsTest extends DbTestCase
         $field_class::displayFieldItems(
             $result,
             $format_as_table,
-            "class='title' style='color:#red;width: 40%;'",
+            'color:#red;width: 40%;',
             $label,
             $field,
             false,

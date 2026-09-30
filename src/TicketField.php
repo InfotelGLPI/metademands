@@ -451,32 +451,18 @@ class TicketField extends CommonDBChild
 
         $obj = new $object();
 
+        // No comments: their tooltips are inline scripts, which the template's |safe_html drops
         $display_options = [
-            'comments' => true,
+            'comments' => false,
             'html' => true,
         ];
 
         $has_rows = count($ticketfield_data) && count($fields);
         $container = 'mass' . __CLASS__ . $rand;
 
-        $open_form_html = '';
-        $ma_top_html = '';
-        $ma_bottom_html = '';
-        $close_form_html = '';
-        $check_all_html = '';
         $rows = [];
 
         if ($has_rows) {
-            $massiveactionparams = ['item' => __CLASS__,
-                'container' => $container,
-                'display' => false,
-            ];
-            if ($canedit) {
-                $open_form_html = Html::getOpenMassiveActionsForm($container);
-                $ma_top_html = Html::showMassiveActions($massiveactionparams);
-                $check_all_html = Html::getCheckAllAsCheckbox($container);
-            }
-
             Session::initNavigateListItems($this->getType(), self::getTypeName(2));
 
             $fieldnames = $tt->getAllowedFields(true);
@@ -491,7 +477,7 @@ class TicketField extends CommonDBChild
                 $display_datas = [$searchOption[$value['num']]['field'] => $value['value']];
 
                 $rows[] = [
-                    'checkbox_html' => $canedit ? Html::getMassiveActionCheckBox(__CLASS__, $id) : '',
+                    'id' => $id,
                     // Loaded into the edit pane by public/scripts/wizard_form.js.
                     'edit_params' => [
                         'type' => __CLASS__,
@@ -500,7 +486,7 @@ class TicketField extends CommonDBChild
                         'id' => $id,
                     ],
                     'label' => $fields[$value['num']],
-                    'mandatory_mark' => $tt->getMandatoryMark($fieldnames[$value['num']]),
+                    'is_mandatory' => $tt->isMandatoryField($fieldnames[$value['num']]),
                     'value_html' => $obj->getValueToDisplay(
                         $searchOption[$value['num']],
                         $display_datas,
@@ -508,26 +494,14 @@ class TicketField extends CommonDBChild
                     ),
                 ];
             }
-
-            if ($canedit) {
-                // Built after the rows on purpose: showMassiveActions() empties
-                // $_SESSION['glpimassiveactionselected'] when it is not the top one, and the
-                // row checkboxes read that selection to restore their checked state.
-                $massiveactionparams['ontop'] = false;
-                $ma_bottom_html = Html::showMassiveActions($massiveactionparams);
-                $close_form_html = Html::closeForm(false);
-            }
         }
 
-        echo TemplateRenderer::getInstance()->render('@metademands/ticketfield_list.html.twig', [
+        TemplateRenderer::getInstance()->display('@metademands/ticketfield_list.html.twig', [
             'has_rows' => $has_rows,
             'canedit' => $canedit,
             'title' => self::getTypeName(2),
-            'open_form_html' => $open_form_html,
-            'ma_top_html' => $ma_top_html,
-            'ma_bottom_html' => $ma_bottom_html,
-            'close_form_html' => $close_form_html,
-            'check_all_html' => $check_all_html,
+            'itemtype' => __CLASS__,
+            'container' => $container,
             'edit_target' => 'viewticketchild' . $meta_id . $rand,
             'edit_url' => $CFG_GLPI['root_doc'] . '/ajax/viewsubitem.php',
             'rows' => $rows,

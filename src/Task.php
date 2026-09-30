@@ -476,36 +476,37 @@ class Task extends CommonDBChild
 
     public function sortByParentChild($data)
     {
-        // Tableau pour stocker le résultat final
         $sortedData = [];
 
-        // Tableau pour indexer les éléments par ID
+        // Tasks indexed by id
         $indexedData = [];
-
-        // Indexer les éléments par leur ID
         foreach ($data as $item) {
             $indexedData[$item['tasks_id']] = $item;
         }
 
-        // Fonction récursive pour ajouter un parent et ses enfants au tableau trié
-        function addParentAndChildren($item, &$sortedData, $indexedData)
-        {
-            $sortedData[] = $item;
-            foreach ($indexedData as $child) {
-                if ($child['parent_task'] == $item['tasks_id']) {
-                    addParentAndChildren($child, $sortedData, $indexedData);
-                }
-            }
-        }
-
-        // Ajouter les éléments parents et leurs enfants au tableau trié
+        // Each root task, followed by its descendants
         foreach ($indexedData as $item) {
             if ($item['parent_task'] === 0) {
-                addParentAndChildren($item, $sortedData, $indexedData);
+                self::addParentAndChildren($item, $sortedData, $indexedData);
             }
         }
 
         return $sortedData;
+    }
+
+    /**
+     * Append a task, then its children recursively, to the sorted list.
+     * A method rather than a function declared inside sortByParentChild(): that
+     * declaration was fatal ("Cannot redeclare") on the second call of a request.
+     */
+    private static function addParentAndChildren(array $item, array &$sortedData, array $indexedData): void
+    {
+        $sortedData[] = $item;
+        foreach ($indexedData as $child) {
+            if ($child['parent_task'] == $item['tasks_id']) {
+                self::addParentAndChildren($child, $sortedData, $indexedData);
+            }
+        }
     }
 
     /**
@@ -538,35 +539,14 @@ class Task extends CommonDBChild
         $viewchild_id = "viewchild" . $item->getID() . $rand;
         $viewsubitem_url = $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php";
 
-        // Build the JS function bodies once and hand them to the template. We keep
-        // Ajax::updateItemJsCode (framework helper) rather than duplicating its logic.
-        $scripts = [];
-        if ($canedit && $solved) {
-            $scripts[] = "function addchild" . $item->getID() . $rand . "() {"
-                . Ajax::updateItemJsCode(
-                    $viewchild_id,
-                    $viewsubitem_url,
-                    [
-                        'type' => self::class,
-                        'parenttype' => get_class($item),
-                        $item->getForeignKeyField() => $item->getID(),
-                        'id' => -1,
-                        'solved' => $solved,
-                    ],
-                    "",
-                    false,
-                )
-                . "};";
-        }
-
-        $tags_modal = Ajax::createIframeModalWindow(
-            'tags',
-            PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->getID(),
-            [
-                'title' => __('Show list of available tags'),
-                'display' => false,
-            ],
-        );
+        // The add button and the rows of the basic tasks load the task form into
+        // $viewchild_id: data-md-subitem-* attributes, read by public/scripts/wizard_form.js.
+        $subitem_params = [
+            'type' => self::class,
+            'parenttype' => get_class($item),
+            $item->getForeignKeyField() => $item->getID(),
+            'solved' => $solved,
+        ];
 
         $entries = [];
         $tasks = $this->sortByParentChild($tasks);
@@ -604,24 +584,9 @@ class Task extends CommonDBChild
             }
 
             // Clickable (edit) only for basic rows; metademand rows link to their form
-            $edit_fn = "";
+            $edit_params = [];
             if ($canedit && $is_basic) {
-                $edit_fn = "viewEditchild" . $id . $rand;
-                $scripts[] = "function " . $edit_fn . "() {"
-                    . Ajax::updateItemJsCode(
-                        $viewchild_id,
-                        $viewsubitem_url,
-                        [
-                            'type' => self::class,
-                            'parenttype' => get_class($item),
-                            $item->getForeignKeyField() => $item->getID(),
-                            'id' => $id,
-                            'solved' => $solved,
-                        ],
-                        "",
-                        false,
-                    )
-                    . "};";
+                $edit_params = ['id' => $id] + $subitem_params;
             }
 
             // Name: atomic label and, for a metademand row, the URL of its form. The
@@ -721,7 +686,7 @@ class Task extends CommonDBChild
                 'row_class' => $row_class,
                 'row_style' => $row_style,
                 'td_class' => $td_class,
-                'edit_fn' => $edit_fn,
+                'edit_params' => $edit_params,
                 'name' => $name_label,
                 'name_url' => $name_url,
                 'entity' => $entity_name,
@@ -746,9 +711,9 @@ class Task extends CommonDBChild
             'itemtype' => self::class,
             'mass_container' => 'masstasks' . $rand,
             'viewchild_id' => $viewchild_id,
-            'treetable_js' => PLUGIN_METADEMANDS_WEBDIR . "/lib/treetable/treetable.js",
-            'scripts' => implode("\n", $scripts),
-            'tags_modal' => $tags_modal,
+            'viewsubitem_url' => $viewsubitem_url,
+            'add_params' => ['id' => -1] + $subitem_params,
+            'tags_url' => PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->getID(),
             'entries' => $entries,
         ]);
     }

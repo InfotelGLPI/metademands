@@ -148,15 +148,18 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["delete"])) {
-    $input['id'] = $_POST['freetablefield_id'];
-    $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
+    // The delete button carries the column id (templates/fields/freetable_fields.html.twig).
     // Same defect as fieldcustomvalue.form.php: the neighbouring ranks were decremented before any
     // control. Authorise the purge first, on the targeted row itself.
-    $fieldcustom->check((int) $input['id'], PURGE);
+    $fieldcustom->check((int) $_POST['delete'], PURGE);
+    // Rank and parent field come from the row, never from the request
+    $input = [
+        'id'                           => $fieldcustom->getID(),
+        'plugin_metademands_fields_id' => $fieldcustom->fields['plugin_metademands_fields_id'],
+    ];
 
-    //TODO update ranks
-    $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
-    $condition_del['rank'] = ['>', $_POST['rank']];
+    $condition_del = ["plugin_metademands_fields_id" => $input['plugin_metademands_fields_id']];
+    $condition_del['rank'] = ['>', $fieldcustom->fields['rank']];
     $updateRank = $fieldcustom->find($condition_del, "rank");
     if (count($updateRank) > 0) {
         foreach ($updateRank as $update) {

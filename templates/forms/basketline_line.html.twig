@@ -25,10 +25,14 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- One line of an order basket, included by forms/basketline_summary.html.twig. That
+ #  summary sits inside #wizard_form, so the delete button does not rely on this form:
+ #  public/scripts/wizard_form.js posts its data-md-basketline-post fields.
+ -#}
 <form method="post" action="{{ target }}">
+    <input type="hidden" name="metademands_id" value="{{ metademands_id }}">
+    <input type="hidden" name="form_metademands_id" value="{{ metademands_id }}">
     <table class="tab_cadre_fixehov" style="border: 3px #CCC solid;">
-        {{ hidden_meta|raw }}
-        {{ hidden_form_meta|raw }}
         {% for row in rows %}
             <tr class="tab_bg_1" id-field="{{ row.id_field }}">
                 <td>
@@ -40,6 +44,7 @@
                         {%- if row.mandatory %}*{% endif -%}
                     </span>
                 </td>
+                {# raw: wizard widget of any field type, printed by Field::getFieldInput(), whose renderers are not all in Twig yet #}
                 <td>{{ row.input_html|raw }}</td>
             </tr>
         {% endfor %}
@@ -51,8 +56,13 @@
                 </button>
             </td>
             <td class="center">
-                {{ delete_html|raw }}
+                <button type="button" class="btn btn-danger" title="{{ _x('button', 'Delete this line', 'metademands') }}"
+                        data-md-basketline-post="{{ {'delete_basket_line': idline, 'metademands_id': metademands_id, '_glpi_csrf_token': csrf_token()}|json_encode }}">
+                    <i class="ti ti-trash"></i>
+                    <span class="sr-only">{{ _x('button', 'Delete this line', 'metademands') }}</span>
+                </button>
             </td>
         </tr>
     </table>
-    {{ close_form_html|raw }}
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+</form>

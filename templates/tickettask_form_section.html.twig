@@ -26,8 +26,14 @@
  #}
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{% macro mark(required) %}{% if required %}<span class="required">*</span>{% endif %}{% endmacro %}
 
 {% do call('Html::requireJs', ['tinymce']) %}
+
+{# The widgets sit in the column layout below: the core macros render them without label nor column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
 
 {{ inputs.hidden('tickettask_id', tickettask_id) }}
 {% if tickettemplates_id > 0 %}
@@ -36,42 +42,55 @@
 
 {% if is_ticket_type %}
 
-    {# --- Bloc / Format / Entité / Catégorie --- #}
+    {# --- Block / Format / Entity / Category --- #}
     <div class="row mb-3">
         <label class="col-2 col-form-label fw-bold">{{ __('Use block', 'metademands') }}</label>
-        <div class="col-4">{{ use_block_html|raw }}</div>
+        <div class="col-4">{{ fields.dropdownYesNo('useBlock', use_block, '', bare) }}</div>
         <label class="col-2 col-form-label fw-bold">{{ __('Block to use', 'metademands') }}</label>
-        <div class="col-4">{{ block_use_html|raw }}</div>
+        <div class="col-4">
+            {{ fields.dropdownArrayField('block_use', null, blocks, '', bare|merge({
+                'values': block_use,
+                'multiple': true,
+            })) }}
+        </div>
     </div>
 
     <div class="row mb-3">
         <label class="col-2 col-form-label fw-bold">
             {{ __('Format the description of the childs ticket as a table', 'metademands') }}
         </label>
-        <div class="col-4">{{ format_as_table_html|raw }}</div>
+        <div class="col-4">{{ fields.dropdownYesNo('formatastable', format_as_table, '', bare) }}</div>
         <label class="col-2 col-form-label fw-bold">
             {{ __('Block parent ticket resolution', 'metademands') }}
         </label>
-        <div class="col-4">{{ block_parent_ticket_resolution_html|raw }}</div>
+        <div class="col-4">{{ fields.dropdownYesNo('block_parent_ticket_resolution', block_parent_ticket_resolution, '', bare) }}</div>
     </div>
 
     {% if canchangeorder %}
         <div class="row mb-3">
             <label class="col-2 col-form-label fw-bold">{{ __('Create after the task', 'metademands') }}</label>
-            <div class="col-4">{{ parent_tasks_html|raw }}</div>
+            <div class="col-4">
+                {{ fields.dropdownField(task_itemtype, 'parent_tasks_id', parent_tasks_id, '', bare|merge({
+                    'entity': entities_id,
+                    'condition': parent_tasks_condition,
+                })) }}
+            </div>
         </div>
     {% endif %}
 
     <div class="row mb-3">
         <label class="col-2 col-form-label fw-bold">{{ __('Entity') }}</label>
-        {#- raw: Entity::dropdown() output, built and escaped by the core. Changing the entity
-         #  reloads the dropdowns scoped to it: public/scripts/metademands_reload.js #}
-        <div class="col-4" data-md-reload-event="change" data-md-reload="{{ entity_reload|json_encode }}">{{ entity_html|raw }}</div>
+        {#- Changing the entity reloads the dropdowns scoped to it: public/scripts/metademands_reload.js #}
+        <div class="col-4" data-md-reload-event="change" data-md-reload="{{ entity_reload|json_encode }}">
+            {{ fields.dropdownField('Entity', 'entities_id', task_entities_id, '', bare) }}
+        </div>
         <label class="col-2 col-form-label fw-bold">
-            {{ __('Category') }}{{ category_mark|raw }}
+            {{ __('Category') }}{{ _self.mark(category_required) }}
         </label>
         <div class="col-4">
-            <span id="ticket_category">{{ category_html|raw }}</span>
+            <span id="ticket_category">
+                {{ fields.dropdownField('ITILCategory', 'itilcategories_id', itilcategories_id, '', bare|merge(category_options)) }}
+            </span>
         </div>
     </div>
 
@@ -79,23 +98,37 @@
 
 {% endif %}
 
-{# --- Acteurs --- #}
+{# --- Actors --- #}
 
 {% if is_ticket_type and show_requester_header %}
     <div class="row mb-3">
         <label class="col-4 col-form-label fw-bold">
-            {{ __('Requester') }} ({{ __('User') }}){{ requester_user_mark|raw }}
+            {{ __('Requester') }} ({{ __('User') }}){{ _self.mark(requester_user_required) }}
         </label>
         <div class="col-8">
-            <span id="ticket_users_id_requester">{{ users_id_requester_html|raw }}</span>
+            <span id="ticket_users_id_requester">
+                {% if show_requester_user %}
+                    {{ fields.dropdownField('User', 'users_id_requester', users_id_requester, '', bare|merge({
+                        'entity': entities_id,
+                        'right': requester_right,
+                    })) }}
+                {% endif %}
+            </span>
         </div>
     </div>
     <div class="row mb-3">
         <label class="col-4 col-form-label fw-bold">
-            {{ __('Requester') }} ({{ __('Group') }}){{ requester_group_mark|raw }}
+            {{ __('Requester') }} ({{ __('Group') }}){{ _self.mark(requester_group_required) }}
         </label>
         <div class="col-8">
-            <span id="ticket_groups_id_requester">{{ groups_id_requester_html|raw }}</span>
+            <span id="ticket_groups_id_requester">
+                {% if show_requester_group %}
+                    {{ fields.dropdownField('Group', 'groups_id_requester', groups_id_requester, '', bare|merge({
+                        'entity': entities_id,
+                        'condition': {'is_requester': 1},
+                    })) }}
+                {% endif %}
+            </span>
         </div>
     </div>
 {% endif %}
@@ -103,67 +136,92 @@
 {% if is_ticket_type and show_observer_header %}
     <div class="row mb-3">
         <label class="col-4 col-form-label fw-bold">
-            {{ __('Observer') }} ({{ __('User') }}){{ observer_user_mark|raw }}
+            {{ __('Observer') }} ({{ __('User') }}){{ _self.mark(observer_user_required) }}
         </label>
         <div class="col-8">
-            <span id="ticket_users_id_observer">{{ users_id_observer_html|raw }}</span>
+            <span id="ticket_users_id_observer">
+                {% if observer_user_required %}
+                    {{ fields.dropdownField('User', 'users_id_observer', users_id_observer, '', bare|merge({
+                        'entity': entities_id,
+                        'right': observer_right,
+                    })) }}
+                {% endif %}
+            </span>
         </div>
     </div>
     <div class="row mb-3">
         <label class="col-4 col-form-label fw-bold">
-            {{ __('Observer') }} ({{ __('Group') }}){{ observer_group_mark|raw }}
+            {{ __('Observer') }} ({{ __('Group') }}){{ _self.mark(observer_group_required) }}
         </label>
         <div class="col-8">
-            <span id="ticket_groups_id_observer">{{ groups_id_observer_html|raw }}</span>
+            <span id="ticket_groups_id_observer">
+                {% if observer_group_required %}
+                    {{ fields.dropdownField('Group', 'groups_id_observer', groups_id_observer, '', bare|merge({
+                        'entity': entities_id,
+                        'condition': {'is_watcher': 1},
+                    })) }}
+                {% endif %}
+            </span>
         </div>
     </div>
 {% endif %}
 
 <div class="row mb-3">
     <label class="col-4 col-form-label fw-bold">
-        {{ __('Assigned to') }} ({{ __('User') }}){{ assign_user_mark|raw }}
+        {{ __('Assigned to') }} ({{ __('User') }}){{ _self.mark(assign_user_required) }}
     </label>
     <div class="col-8">
-        <span id="ticket_users_id_assign">{{ users_id_assign_html|raw }}</span>
+        <span id="ticket_users_id_assign">
+            {{ fields.dropdownField('User', 'users_id_assign', users_id_assign, '', bare|merge({
+                'entity': entities_id,
+                'right': assign_right,
+            })) }}
+        </span>
     </div>
 </div>
 
 <div class="row mb-3">
     <label class="col-4 col-form-label fw-bold">
-        {{ __('Assigned to') }} ({{ __('Group') }}){{ assign_group_mark|raw }}
+        {{ __('Assigned to') }} ({{ __('Group') }}){{ _self.mark(assign_group_required) }}
     </label>
     <div class="col-8">
-        <span id="ticket_groups_id_assign">{{ groups_id_assign_html|raw }}</span>
+        <span id="ticket_groups_id_assign">
+            {{ fields.dropdownField('Group', 'groups_id_assign', groups_id_assign, '', bare|merge({
+                'entity': entities_id,
+                'condition': {'is_assign': 1},
+            })) }}
+        </span>
     </div>
 </div>
 
 {% if is_ticket_type and (show_status or show_requesttype) %}
     <hr class="my-3">
+    {# Both fields are only shown when the ticket template makes them mandatory #}
     {% if show_status %}
         <div class="row mb-3">
             <label class="col-4 col-form-label fw-bold">
-                {{ __('Status') }}{{ status_mark|raw }}
+                {{ __('Status') }}{{ _self.mark(true) }}
             </label>
-            <div class="col-8">{{ status_html|raw }}</div>
+            <div class="col-8">{% do call('Ticket::dropdownStatus', [{'value': status}]) %}</div>
         </div>
     {% endif %}
     {% if show_requesttype %}
         <div class="row mb-3">
             <label class="col-4 col-form-label fw-bold">
-                {{ __('Request source') }}{{ requesttype_mark|raw }}
+                {{ __('Request source') }}{{ _self.mark(true) }}
             </label>
-            <div class="col-8">{{ requesttype_html|raw }}</div>
+            <div class="col-8">{{ fields.dropdownField('RequestType', 'requesttypes_id', requesttypes_id, '', bare) }}</div>
         </div>
     {% endif %}
 {% endif %}
 
 <hr class="my-3">
 
-{# --- Titre / Description --- #}
+{# --- Title / Description --- #}
 
 <div class="row mb-3">
     <label class="col-4 col-form-label fw-bold">
-        {{ __('Title') }}{{ title_mark|raw }}
+        {{ __('Title') }}{{ _self.mark(title_required) }}
     </label>
     <div class="col-8">
         <input type="text" class="form-control" name="name" value="{{ name }}">
