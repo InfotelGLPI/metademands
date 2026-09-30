@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 16:51+0000\n"
+"POT-Creation-Date: 2026-09-30 17:00+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -404,7 +404,7 @@ msgid "Checkbox"
 msgstr "Case à cocher"
 
 #: src/Metademand.php:3588 src/Metademand.php:4824
-#: src/Ticket_Metademand.php:840
+#: src/Ticket_Metademand.php:841
 msgid "Child Ticket"
 msgstr "Ticket enfant"
 
@@ -474,7 +474,7 @@ msgstr "Cliquez ici pour plus d'informations"
 msgid "Close"
 msgstr "Fermer"
 
-#: src/Ticket_Metademand.php:463
+#: src/Ticket_Metademand.php:464
 msgctxt "status"
 msgid "Closed"
 msgstr "Clos"
@@ -1343,7 +1343,7 @@ msgstr "Impossible de lire le fichier CSV"
 msgid "In progress"
 msgstr "En cours"
 
-#: src/Ticket_Metademand.php:457
+#: src/Ticket_Metademand.php:458
 msgctxt "status"
 msgid "In progress"
 msgstr "En cours"
@@ -1958,7 +1958,7 @@ msgid "Parent ticket tag"
 msgstr "Balise du ticket père"
 
 #: src/Metademand.php:3605 src/Metademand.php:4843
-#: src/Ticket_Metademand.php:852
+#: src/Ticket_Metademand.php:853
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] "Ticket parent"
@@ -2802,7 +2802,7 @@ msgstr "Couleur du titre"
 msgid "Title for Service Catalog widget"
 msgstr "Titre pour le widget Service Catalog"
 
-#: src/Ticket_Metademand.php:460
+#: src/Ticket_Metademand.php:461
 msgctxt "status"
 msgid "To close"
 msgstr "A clore"
