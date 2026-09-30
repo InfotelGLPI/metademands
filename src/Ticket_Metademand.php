@@ -347,7 +347,8 @@ class Ticket_Metademand extends CommonDBTM
             // template calls them inside the table it owns.
             TemplateRenderer::getInstance()->display('@metademands/forms/ticket_metademand_list.html.twig', [
                 'output_type'   => Search::HTML_OUTPUT,
-                'mass_id'       => 'mass' . __CLASS__ . $rand,
+                // No backslash: read back by a jQuery selector (see TicketField::listFields())
+                'mass_id'       => 'mass' . str_replace('\\', '', __CLASS__) . $rand,
                 'massive_type'  => __CLASS__,
                 'tickets_ids'   => $tickets_ids,
             ]);

@@ -415,7 +415,9 @@ class TicketField extends CommonDBChild
         ];
 
         $has_rows = count($ticketfield_data) && count($fields);
-        $container = 'mass' . __CLASS__ . $rand;
+        // No backslash: the massive action bar looks the checkboxes up with a jQuery
+        // selector on this id, where a namespace separator reads as an escape
+        $container = 'mass' . str_replace('\\', '', __CLASS__) . $rand;
 
         $rows = [];
 
