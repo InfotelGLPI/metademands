@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 16:09+0000\n"
+"POT-Creation-Date: 2026-09-30 16:51+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -45,7 +45,7 @@ msgstr ""
 msgid "(if VAT 20%)"
 msgstr ""
 
-#: src/Fields/Basket.php:1568
+#: src/Fields/Basket.php:1566
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgstr ""
 msgid "Add language"
 msgstr ""
 
-#: src/Wizard.php:1370 src/Wizard.php:1556
+#: tests/WizardTemplatesTest.php:253 src/Wizard.php:1556 src/Wizard.php:1565
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Añadir a la cesta"
@@ -315,7 +315,7 @@ msgstr "Vincular al valor de esta casilla"
 msgid "Blank Template"
 msgstr ""
 
-#: src/Field.php:883 src/Field.php:2839 src/Wizard.php:1850 src/Step.php:416
+#: src/Field.php:883 src/Field.php:2839 src/Wizard.php:1869 src/Step.php:416
 #: src/Step.php:470 templates/field_existing_form.html.twig:63
 #: templates/field_search_form.html.twig:44 templates/step_form.html.twig:40
 #: templates/field_form.html.twig:113
@@ -372,8 +372,8 @@ msgstr ""
 msgid "Cancel / delete a form"
 msgstr ""
 
-#: tests/WizardTemplatesTest.php:189
-#: templates/wizard/form_nav_buttons.html.twig:60
+#: tests/WizardTemplatesTest.php:191
+#: templates/wizard/form_nav_buttons.html.twig:62
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
@@ -623,12 +623,12 @@ msgstr[0] "Fecha"
 msgstr[1] "Fecha"
 msgstr[2] "Fecha"
 
-#: src/Wizard.php:3039
+#: src/Wizard.php:3053
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3029
+#: src/Wizard.php:3043
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La fecha%s no puede ser inferior a la fecha de hoy"
@@ -780,8 +780,8 @@ msgstr "Fecha de salida"
 msgid "Description"
 msgstr ""
 
-#: src/Fields/Basket.php:157 src/Fields/Basket.php:1504
-#: src/Fields/Basket.php:1774 src/Fields/Basket.php:1942
+#: src/Fields/Basket.php:157 src/Fields/Basket.php:1502
+#: src/Fields/Basket.php:1768 src/Fields/Basket.php:1936
 #: src/Basketobject.php:142 src/Basketobject.php:260
 #: templates/basketobject_form.html.twig:39
 msgid "Designation"
@@ -997,8 +997,8 @@ msgstr "Error al asignar al siguiente grupo"
 msgid "Error when creating export archive"
 msgstr ""
 
-#: src/Fields/Basket.php:165 src/Fields/Basket.php:1508
-#: src/Fields/Basket.php:1785
+#: src/Fields/Basket.php:165 src/Fields/Basket.php:1506
+#: src/Fields/Basket.php:1779
 msgid "Estimated unit price"
 msgstr ""
 
@@ -1058,7 +1058,7 @@ msgstr "Campo del padre"
 msgid "Field"
 msgstr "Campo"
 
-#: src/Wizard.php:3090
+#: src/Wizard.php:3104
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -1143,13 +1143,13 @@ msgstr ""
 msgid "Glpi Object"
 msgstr "Objeto Glpi"
 
-#: src/Fields/Basket.php:1564
+#: src/Fields/Basket.php:1562
 msgid "Grand total"
 msgstr ""
 
 #: src/MetademandPdf.php:523 src/MetademandPdf.php:656
 #: src/Fields/Freetable.php:275 src/Fields/Freetable.php:554
-#: src/Fields/Basket.php:1565 src/Fields/Basket.php:1875
+#: src/Fields/Basket.php:1563 src/Fields/Basket.php:1869
 msgid "Grand total (HT)"
 msgstr ""
 
@@ -1666,18 +1666,11 @@ msgstr "Nuevo seguimiento entre tickets"
 msgid "New model"
 msgstr "Nuevo modelo"
 
-#: src/FieldOption.php:2109 src/Wizard.php:1365 src/Wizard.php:1513
-#: src/Wizard.php:1522 src/Wizard.php:1562 src/Wizard.php:1568
-#: src/Fields/Tel.php:309 src/Fields/Text.php:307 src/Fields/Radio.php:459
-#: src/Fields/Textarea.php:307 src/Fields/Dropdownmeta.php:1464
-#: src/Fields/Yesno.php:436 src/Fields/Checkbox.php:459
-#: src/Fields/Dropdownobject.php:973 src/Fields/Email.php:305
-#: src/Fields/Dropdownmultiple.php:1014 src/Fields/Dropdownmultiple.php:1187
-#: src/Fields/Dropdown.php:857 src/Fields/Basket.php:739 src/Fields/Url.php:276
+#: tests/WizardTemplatesTest.php:248 src/Wizard.php:1546
 #: templates/wizard/metademands_list.html.twig:103
 #: templates/wizard/metademands_list.html.twig:104
-#: templates/wizard/form_nav_buttons.html.twig:68
 #: templates/wizard/form_nav_buttons.html.twig:71
+#: templates/wizard/form_nav_buttons.html.twig:74
 msgid "Next"
 msgstr "Siguiente"
 
@@ -1866,13 +1859,13 @@ msgstr ""
 msgid "Obsolete translations"
 msgstr ""
 
-#: src/Fields/Basket.php:1833
+#: src/Fields/Basket.php:1827
 msgid "On catalog"
 msgstr ""
 
 #: src/Fields/Basket.php:237 src/Fields/Basket.php:358
-#: src/Fields/Basket.php:452 src/Fields/Basket.php:1613
-#: src/Fields/Basket.php:1646 src/Fields/Basket.php:1833
+#: src/Fields/Basket.php:452 src/Fields/Basket.php:1611
+#: src/Fields/Basket.php:1644 src/Fields/Basket.php:1827
 msgid "On quotation"
 msgstr ""
 
@@ -1931,7 +1924,7 @@ msgstr "Pedido"
 msgid "Order of execution and grouping of conditions"
 msgstr "Orden de ejecución y agrupación de condiciones"
 
-#: src/Fields/Basket.php:1778
+#: src/Fields/Basket.php:1772
 msgid "Order type"
 msgstr ""
 
@@ -2001,7 +1994,7 @@ msgstr "Configuración del plugin"
 msgid "Pool"
 msgstr "Pool"
 
-#: templates/wizard/form_nav_buttons.html.twig:65
+#: templates/wizard/form_nav_buttons.html.twig:67
 #: templates/forms/basketline_summary.html.twig:64
 #: templates/forms/draft_show.html.twig:63
 #: templates/forms/draft_show.html.twig:64
@@ -2010,11 +2003,11 @@ msgstr "Pool"
 msgid "Previous"
 msgstr "Anterior"
 
-#: src/Wizard.php:1981
+#: src/Wizard.php:2001
 msgid "Previous data edited"
 msgstr "Datos anteriores editados"
 
-#: src/Wizard.php:1974
+#: src/Wizard.php:1994
 msgid "Previous user"
 msgstr "Usuario anterior"
 
@@ -2039,9 +2032,9 @@ msgstr ""
 msgid "Publisher"
 msgstr "publicador"
 
-#: src/Fields/Basket.php:183 src/Fields/Basket.php:1516
-#: src/Fields/Basket.php:1783 src/Fields/Basket.php:1944
-#: src/Fields/Basket.php:1984
+#: src/Fields/Basket.php:183 src/Fields/Basket.php:1514
+#: src/Fields/Basket.php:1777 src/Fields/Basket.php:1938
+#: src/Fields/Basket.php:1978
 msgid "Quantity"
 msgstr ""
 
@@ -2087,8 +2080,8 @@ msgstr ""
 msgid "Redirect to ticket list when you change user in step by step mode"
 msgstr ""
 
-#: src/Fields/Basket.php:156 src/Fields/Basket.php:1503
-#: src/Fields/Basket.php:1773 src/Fields/Basket.php:1941
+#: src/Fields/Basket.php:156 src/Fields/Basket.php:1501
+#: src/Fields/Basket.php:1767 src/Fields/Basket.php:1935
 #: src/Basketobject.php:159 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr ""
@@ -2225,13 +2218,7 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/FieldOption.php:2107 src/Wizard.php:1360 src/Wizard.php:1553
-#: src/Fields/Tel.php:307 src/Fields/Text.php:305 src/Fields/Radio.php:457
-#: src/Fields/Textarea.php:305 src/Fields/Dropdownmeta.php:1462
-#: src/Fields/Yesno.php:434 src/Fields/Checkbox.php:457
-#: src/Fields/Dropdownobject.php:972 src/Fields/Email.php:303
-#: src/Fields/Dropdownmultiple.php:1012 src/Fields/Dropdownmultiple.php:1185
-#: src/Fields/Dropdown.php:856 src/Fields/Basket.php:738 src/Fields/Url.php:274
+#: tests/WizardTemplatesTest.php:243 src/Wizard.php:1547
 #: templates/forms/basketline_summary.html.twig:69
 #: templates/fields/basket_summary.html.twig:97
 #: templates/fields/basket_summary.html.twig:98
@@ -2239,7 +2226,7 @@ msgctxt "button"
 msgid "Save & Post"
 msgstr "Guardar y enviar"
 
-#: src/Wizard.php:1523
+#: src/Wizard.php:1575
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Guardar y enviar a otro usuario / grupo"
@@ -2303,7 +2290,7 @@ msgstr ""
 msgid "Secondaries services"
 msgstr "Servicios secundarios"
 
-#: src/Wizard.php:1375
+#: tests/WizardTemplatesTest.php:257 src/Wizard.php:1559
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr "Ver el resumen de la cesta y enviarlo"
@@ -2532,7 +2519,7 @@ msgstr "Texto"
 msgid "Textarea"
 msgstr "Área de texto"
 
-#: src/Wizard.php:1515
+#: src/Wizard.php:1495
 msgid "Thanks to fill mandatory fields"
 msgstr "Gracias por rellenar los campos obligatorios"
 
@@ -2547,7 +2534,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: src/Fields/Textarea.php:893
+#: src/Fields/Textarea.php:884
 msgid "The description field is mandatory"
 msgstr ""
 
@@ -2680,11 +2667,11 @@ msgstr ""
 msgid "There was a problem on upload your signature"
 msgstr ""
 
-#: src/Wizard.php:1728
+#: src/Wizard.php:1747
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 
-#: src/Wizard.php:1516
+#: src/Wizard.php:1496
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
@@ -2791,7 +2778,7 @@ msgstr "Para validar sin niño"
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3078
+#: src/Wizard.php:3092
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Se han cargado demasiados documentos%s. Por favor, corrija:%s"
@@ -2801,13 +2788,13 @@ msgid "Tools"
 msgstr "Herramientas"
 
 #: src/Fields/Basket.php:203 src/Fields/Basket.php:211
-#: src/Fields/Basket.php:1520 src/Fields/Basket.php:1873
-#: src/Fields/Basket.php:1875
+#: src/Fields/Basket.php:1518 src/Fields/Basket.php:1867
+#: src/Fields/Basket.php:1869
 msgid "Total"
 msgstr ""
 
-#: src/Fields/Basket.php:196 src/Fields/Basket.php:1519
-#: src/Fields/Basket.php:1789 src/Fields/Basket.php:1957
+#: src/Fields/Basket.php:196 src/Fields/Basket.php:1517
+#: src/Fields/Basket.php:1783 src/Fields/Basket.php:1951
 msgid "Total (HT)"
 msgstr ""
 
@@ -2870,13 +2857,13 @@ msgstr ""
 msgid "Unable to upload the file"
 msgstr ""
 
-#: src/Fields/Basket.php:174 src/Fields/Basket.php:1511
-#: src/Fields/Basket.php:1781 src/Fields/Basket.php:1950
+#: src/Fields/Basket.php:174 src/Fields/Basket.php:1509
+#: src/Fields/Basket.php:1775 src/Fields/Basket.php:1944
 msgid "Unit"
 msgstr ""
 
-#: src/Fields/Basket.php:177 src/Fields/Basket.php:1513
-#: src/Fields/Basket.php:1788 src/Fields/Basket.php:1953
+#: src/Fields/Basket.php:177 src/Fields/Basket.php:1511
+#: src/Fields/Basket.php:1782 src/Fields/Basket.php:1947
 msgid "Unit price (HT)"
 msgstr ""
 
@@ -3124,7 +3111,7 @@ msgstr ""
 msgid "You cannot use this parameter if there is more than one category"
 msgstr "No puede utilizar este parámetro si hay más de una categoría"
 
-#: src/Wizard.php:1668
+#: src/Wizard.php:1687
 msgid "You do not have access to the form"
 msgstr "No tiene acceso al formulario"
 
@@ -3132,7 +3119,7 @@ msgstr "No tiene acceso al formulario"
 msgid "You don't have the right to create meta-demand"
 msgstr "No tienes derecho a crear meta-demanda"
 
-#: src/Wizard.php:1929
+#: src/Wizard.php:1948
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -3167,7 +3154,7 @@ msgstr ""
 msgid "You have items on your basket"
 msgstr "Tienes artículos en tu cesta"
 
-#: src/Wizard.php:1501 templates/wizard/form_confirm_modal.html.twig:42
+#: src/Wizard.php:1483 templates/wizard/form_confirm_modal.html.twig:42
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
