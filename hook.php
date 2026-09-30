@@ -887,10 +887,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             return $out;
         case 9501:
             if ($data['raw']["ITEM_" . $num] > -1) {
-                $style = "style='background-color: " . MetademandValidation::getStatusColor($data['raw']["ITEM_" . $num]) . ";'";
-                $out   = "<div class='center' $style>";
-                $out   .= MetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
-                $out   .= "</div>";
+                $out = MetademandValidation::getStatusBadge($data['raw']["ITEM_" . $num]);
             } else {
                 $out = "";
             }

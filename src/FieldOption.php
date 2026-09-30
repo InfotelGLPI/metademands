@@ -522,11 +522,8 @@ class FieldOption extends CommonDBChild
                         . ";}";
                 }
 
-                // getValueToCheck() echoes a fragment already assembled (and escaped) by the
-                // shared value-to-check templates, so it is captured and printed as raw HTML.
-                ob_start();
-                self::getValueToCheck($data);
-                $value_to_check = ob_get_clean();
+                // Fragment escaped by getValueToCheck(), printed as raw HTML.
+                $value_to_check = self::getValueToCheck($data);
 
                 $task_name = "";
                 $tasks     = new Task();
@@ -893,11 +890,14 @@ class FieldOption extends CommonDBChild
     }
 
     /**
-     * Load data options saves from plugins
+     * Value to check of a field type provided by another plugin.
      *
      * @param $plug
+     * @param $params
+     *
+     * @return string HTML fragment, already escaped by the plugin
      */
-    public static function showPluginParamsValueToCheck($plug, $params)
+    public static function showPluginParamsValueToCheck($plug, $params): string
     {
         global $PLUGIN_HOOKS;
 
@@ -912,10 +912,11 @@ class FieldOption extends CommonDBChild
                 $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'showParamsValueToCheck'])) {
-                    return $item->showParamsValueToCheck($params);
+                    return (string) $item->showParamsValueToCheck($params);
                 }
             }
         }
+        return '';
     }
 
     /**
@@ -999,14 +1000,22 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    public static function getValueToCheck($params)
+    /**
+     * Value to check of a field option, as an HTML fragment. Each branch escapes
+     * what it returns (field_value_to_check.html.twig or htmlescape()).
+     *
+     * @param array $params
+     *
+     * @return string
+     */
+    public static function getValueToCheck($params): string
     {
         global $PLUGIN_HOOKS;
 
         $class = Field::getClassFromType($params['type']);
 
         if ($params['check_type_value'] == 2) {
-            echo htmlspecialchars((string) $params['check_value_regex'], ENT_QUOTES, 'UTF-8');
+            return htmlescape((string) $params['check_value_regex']);
         } else {
             switch ($params['type']) {
                 case 'title-block':
@@ -1022,7 +1031,7 @@ class FieldOption extends CommonDBChild
                 case 'upload':
                 case 'link':
                 case 'title':
-                    break;
+                    return '';
                 case 'yesno':
                 case 'radio':
                 case 'checkbox':
@@ -1036,28 +1045,26 @@ class FieldOption extends CommonDBChild
                 case 'email':
                 case 'tel':
                 case 'text':
-                    $class::showParamsValueToCheck($params);
-                    break;
+                    return $class::showParamsValueToCheck($params);
                 case 'basket':
-                    Basket::showParamsValueToCheck($params);
-                    break;
+                    return Basket::showParamsValueToCheck($params);
                 case 'parent_field':
                     $field = new Field();
                     if ($field->getFromDB($params['parent_field_id'])) {
                         if (empty(trim($field->fields['name']))) {
-                            echo "ID - " . $params['parent_field_id'];
-                        } else {
-                            echo htmlspecialchars((string) $field->fields['name'], ENT_QUOTES, 'UTF-8');
+                            return htmlescape("ID - " . $params['parent_field_id']);
                         }
+                        return htmlescape((string) $field->fields['name']);
                     }
-                    break;
+                    return '';
                 default:
+                    $value = '';
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                            echo self::showPluginParamsValueToCheck($plug, $params);
+                            $value .= self::showPluginParamsValueToCheck($plug, $params);
                         }
                     }
-                    break;
+                    return $value;
             }
         }
     }

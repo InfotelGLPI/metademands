@@ -375,7 +375,7 @@ class Ldapdropdown extends CommonDBTM
         }
     }
 
-    public static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params): string
     {
         $value = '';
         if ($params['check_value'] == -1) {
@@ -415,7 +415,7 @@ class Ldapdropdown extends CommonDBTM
                     break;
             }
         }
-        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
             'value' => $value,
         ]);
     }
@@ -926,17 +926,15 @@ class Ldapdropdown extends CommonDBTM
         if ($field['value'] != 0) {
             switch ($field['item']) {
                 default:
-                    if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-                    }
-                    $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                    if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-                    }
-                    $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field), ENT_QUOTES, 'UTF-8');
-                    if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "</td>";
-                    }
+                    $result[$field['rank']]['content'] .= Field::renderContentCells(
+                        (bool) $formatAsTable,
+                        (string) $style_title,
+                        [[
+                            'label'   => (string) $label,
+                            'value'   => (string) self::getFieldValue($field),
+                            'colspan' => $colspan,
+                        ]],
+                    );
                     break;
             }
         }

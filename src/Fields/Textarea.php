@@ -211,11 +211,11 @@ class Textarea extends CommonDBTM
         \Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
     }
 
-    public static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params): string
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
             'value' => $options[$params['check_value']] ?? "",
         ]);
     }
@@ -722,25 +722,16 @@ class Textarea extends CommonDBTM
         $colspan = $is_order ? 12 : 2;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<tr>";
-                if ($field['hide_title'] == 0) {
-                    $result[$field['rank']]['content'] .= "<th $style_title colspan='$colspan'>";
-                }
-            }
-            if ($field['hide_title'] == 0) {
-                $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            }
-            if ($formatAsTable) {
-                if ($field['hide_title'] == 0) {
-                    $result[$field['rank']]['content'] .= "</th>";
-                }
-                $result[$field['rank']]['content'] .= "</tr><tr><td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field);
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><tr>";
-            }
+            // The raw value goes to the template, which sanitizes it with |safe_html
+            // exactly as getFieldValue() does for the $return_value callers.
+            $result[$field['rank']]['content'] .= Field::renderContentBlock(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                (string) $label,
+                $field['hide_title'] == 0,
+                (string) $field['value'],
+                $colspan,
+            );
         }
 
         return $result;

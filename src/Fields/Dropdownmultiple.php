@@ -821,7 +821,7 @@ class Dropdownmultiple extends CommonDBTM
         }
     }
 
-    public static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params): string
     {
         $value = '';
         if ($params['check_value'] == -1 || $params['check_value'] == 0) {
@@ -867,7 +867,7 @@ class Dropdownmultiple extends CommonDBTM
                     break;
             }
         }
-        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
             'value' => $value,
         ]);
     }
@@ -2319,6 +2319,36 @@ class Dropdownmultiple extends CommonDBTM
         }
     }
 
+    /**
+     * Informations of a user to show in the ticket content, in display order, as plain text.
+     *
+     * @param User          $item        user loaded from the database
+     * @param array<string> $information keys chosen in the field parameters
+     *
+     * @return array<int, string>
+     */
+    public static function getUserInformations(User $item, array $information): array
+    {
+        $texts = [];
+        if (in_array('full_name', $information)) {
+            $texts[] = (string) User::getFriendlyNameById($item->getID());
+        }
+        if (in_array('realname', $information)) {
+            $texts[] = (string) $item->fields["realname"];
+        }
+        if (in_array('firstname', $information)) {
+            $texts[] = (string) $item->fields["firstname"];
+        }
+        if (in_array('name', $information)) {
+            $texts[] = (string) $item->fields["name"];
+        }
+        if (in_array('email', $information)) {
+            $texts[] = (string) $item->getDefaultEmail();
+        }
+
+        return $texts;
+    }
+
     public static function displayFieldItems(
         &$result,
         $formatAsTable,
@@ -2336,30 +2366,26 @@ class Dropdownmultiple extends CommonDBTM
             && $field['item'] != 'Location'
             && $field['item'] != 'Group'
             && $field['item'] != 'Appliance' && $field['value'] > 0) {
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'value'   => (string) self::getFieldValue($field, $lang),
+                    'colspan' => $colspan,
+                ]],
+            );
         } elseif (($field['item'] == 'Location' || $field['item'] == 'Group' || $field['item'] == 'Appliance')
             && $field['value'] > 0) {
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'value'   => (string) self::getFieldValue($field, $lang),
+                    'colspan' => $colspan,
+                ]],
+            );
         } elseif ($field['item'] == 'User' && ($field['value'] > 0
                 || (is_array($field['value']) && count($field['value']) > 0))) {
             $information = json_decode($field['informations_to_display']);
@@ -2369,83 +2395,24 @@ class Dropdownmultiple extends CommonDBTM
                 $information = ['full_name'];
             }
 
-            $dataItems = "";
-            if ($formatAsTable) {
-                $dataItems = "<table style='border:0;'>";
-            }
+            $rows = [];
             $item = new $field["item"]();
             if (is_array($field['value'])) {
                 foreach ($field['value'] as $value) {
                     if ($item->getFromDB($value)) {
-                        if ($formatAsTable) {
-                            $dataItems .= "<tr>";
-                        }
-
-                        if (in_array('full_name', $information)) {
-                            if ($formatAsTable) {
-                                $dataItems .= "<td>";
-                            }
-                            $dataItems .= htmlspecialchars((string) $field["item"]::getFriendlyNameById($value), ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $dataItems .= "</td>";
-                            }
-                        }
-                        if (in_array('realname', $information)) {
-                            if ($formatAsTable) {
-                                $dataItems .= "<td>";
-                            }
-                            $dataItems .= htmlspecialchars((string) $item->fields["realname"], ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $dataItems .= "</td>";
-                            }
-                        }
-                        if (in_array('firstname', $information)) {
-                            if ($formatAsTable) {
-                                $dataItems .= "<td>";
-                            }
-                            $dataItems .= htmlspecialchars((string) $item->fields["firstname"], ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $dataItems .= "</td>";
-                            }
-                        }
-                        if (in_array('name', $information)) {
-                            if ($formatAsTable) {
-                                $dataItems .= "<td>";
-                            }
-                            $dataItems .= htmlspecialchars((string) $item->fields["name"], ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $dataItems .= "</td>";
-                            }
-                        }
-                        if (in_array('email', $information)) {
-                            if ($formatAsTable) {
-                                $dataItems .= "<td>";
-                            }
-                            $dataItems .= htmlspecialchars((string) $item->getDefaultEmail(), ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $dataItems .= "</td>";
-                            }
-                        }
-                        if ($formatAsTable) {
-                            $dataItems .= "</tr>";
-                        }
+                        $rows[] = self::getUserInformations($item, $information);
                     }
                 }
             }
-            if ($formatAsTable) {
-                $dataItems .= "</table>";
-            }
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= $dataItems;
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'rows'    => $rows,
+                    'colspan' => $colspan,
+                ]],
+            );
         }
 
         return $result;

@@ -26,22 +26,25 @@
  #}
 
 {#-
- # Entry added by MetademandValidation::showActionsForm() to the ITIL actions menu.
+ # Full-width field in the ticket content (§4.8 of docs/TWIG_MIGRATION.md):
+ # a title row, then a row holding a rich-text value. The value row is left
+ # open, Metademand::formatFields() closes it after each field. The output is
+ # stored in the ticket and sent by notifications, so it keeps inline styles
+ # and stays on a single line.
  #
- # Expected context:
- #  - style: contextual class of the button (btn-green / btn-orange)
- #  - title: label of the button, empty when the validation is already done
- #  - modal_url: validation form loaded in the #metavalidation modal
--#}
-<li>
-    <button type="button" class="btn primary answer-action {{ style }}" data-bs-toggle="modal" data-bs-target="#metavalidation">
-        <i class="ti ti-thumb-up" style="margin-left: 10px;" aria-hidden="true"></i>{{ title }}
-    </button>
-</li>
-{# Iframe modal, no core macro: printed directly, as core templates do (§3.2). #}
-{% do call('Ajax::createIframeModalWindow', ['metavalidation', modal_url, {
-    'title': __('Metademand validation', 'metademands'),
-    'width': 200,
-    'height': 400,
-    'reloadonclose': true,
-}]) %}
+ # @param string label           plain text
+ # @param bool   show_title      false when the field hides its title
+ # @param string value           rich text, sanitized here
+ # @param int    colspan
+ # @param bool   format_as_table rows, or title and value only
+ # @param string title_style     inline CSS of the title cell, may be empty
+ #}
+{%- if format_as_table -%}
+    {%- if show_title -%}
+        <tr><th class="title"{% if title_style is not empty %} style="{{ title_style }}"{% endif %} colspan="{{ colspan }}">{{ label }}</th></tr>
+    {%- endif -%}
+    <tr><td colspan="{{ colspan }}">{{ value|safe_html }}</td>
+{%- else -%}
+    {%- if show_title %}{{ label }}{% endif -%}
+    {{ value|safe_html }}
+{%- endif -%}

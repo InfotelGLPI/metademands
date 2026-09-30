@@ -1323,10 +1323,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                                 || in_array($value['item'], $allowed_customvalues_items)) {
                                 $datao['custom_values'] = count($fc_cur) > 0 ? $fc_cur : [];
                             }
-                            // getValueToCheck() writes to the output buffer instead of returning
-                            ob_start();
-                            FieldOption::getValueToCheck($datao);
-                            $value_to_check_html .= ob_get_clean();
+                            $value_to_check_html .= FieldOption::getValueToCheck($datao);
                         }
                     }
 
@@ -2097,6 +2094,79 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
     }
 
+
+    /**
+     * Render the label / value cells of a field for the ticket content (§4.8 of
+     * docs/TWIG_MIGRATION.md), to be appended to $result[rank]['content'] by the
+     * displayFieldItems() implementations.
+     *
+     * $style_title is still the attribute fragment built by
+     * Metademand::getContentWithField() for the classes that concatenate their cells;
+     * only its inline style is kept, the template sets the class itself.
+     *
+     * @param array<int, array{label?: string, value?: string, rows?: array<int, array<int, string>>, colspan: int, new_row?: bool, link?: bool, image?: bool, heading?: bool, value_only?: bool}> $cells plain text
+     */
+    public static function renderContentCells(bool $formatAsTable, string $style_title, array $cells): string
+    {
+        return TemplateRenderer::getInstance()->render('@metademands/ticket_content/field_cells.html.twig', [
+            'cells'           => $cells,
+            'format_as_table' => $formatAsTable,
+            'title_style'     => self::getTitleStyle($style_title),
+        ]);
+    }
+
+    /**
+     * Render a full-width field for the ticket content: a title row, then a row
+     * holding a rich-text value (§4.8 of docs/TWIG_MIGRATION.md). The value row is
+     * left open, Metademand::formatFields() closes it.
+     *
+     * @param string $label plain text
+     * @param string $value rich text, sanitized by the template
+     */
+    public static function renderContentBlock(
+        bool $formatAsTable,
+        string $style_title,
+        string $label,
+        bool $show_title,
+        string $value,
+        int $colspan
+    ): string {
+        return TemplateRenderer::getInstance()->render('@metademands/ticket_content/field_block.html.twig', [
+            'label'           => $label,
+            'show_title'      => $show_title,
+            'value'           => $value,
+            'colspan'         => $colspan,
+            'format_as_table' => $formatAsTable,
+            'title_style'     => self::getTitleStyle($style_title),
+        ]);
+    }
+
+    /**
+     * Render the rows of a field shown as a table in the ticket content, basket or
+     * free table (§4.8 of docs/TWIG_MIGRATION.md), to be appended to
+     * $result[rank]['content'] by the displayFieldItems() implementations.
+     *
+     * @param array<int, array<int, array{text: string, colspan?: int, heading?: bool, title?: bool, table_only?: bool}>> $rows plain text
+     * @param string $cell_style inline CSS of the plain and heading cells
+     */
+    public static function renderContentRows(bool $formatAsTable, string $style_title, string $cell_style, array $rows): string
+    {
+        return TemplateRenderer::getInstance()->render('@metademands/ticket_content/table_rows.html.twig', [
+            'rows'            => $rows,
+            'format_as_table' => $formatAsTable,
+            'cell_style'      => $cell_style,
+            'title_style'     => self::getTitleStyle($style_title),
+        ]);
+    }
+
+    /**
+     * Inline style carried by the $style_title attribute fragment built by
+     * Metademand::getContentWithField(); the templates set the class themselves.
+     */
+    private static function getTitleStyle(string $style_title): string
+    {
+        return preg_match("/style='([^']*)'/", $style_title, $matches) === 1 ? $matches[1] : '';
+    }
 
     /**
      * Return a Field object for the given ID, memoised for the duration of the request.

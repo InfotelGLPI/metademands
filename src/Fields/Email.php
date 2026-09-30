@@ -214,11 +214,11 @@ class Email extends CommonDBTM
         return true;
     }
 
-    public static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params): string
     {
         $options[1] = __('No');
         $options[2] = __('Yes');
-        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
             'value' => $options[$params['check_value']] ?? "",
         ]);
     }
@@ -665,25 +665,16 @@ class Email extends CommonDBTM
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-            }
-            // getFieldValue() returns plain text -- getTextFromHtml() decodes the entities
-            // getSafeHtml() had just posed -- and it is concatenated into markup here, so the
-            // escaping belongs at this sink, as Basket::retrieveDatasByType() already does,
-            // and not in getFieldValue() whose callers render it through Twig.
-            $result[$field['rank']]['content'] .= htmlspecialchars(
-                self::getFieldValue($field),
-                ENT_QUOTES,
-                'UTF-8',
+            // Label and getFieldValue() are plain text: the template escapes both.
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'value'   => (string) self::getFieldValue($field),
+                    'colspan' => $colspan,
+                ]],
             );
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
         }
 
         return $result;

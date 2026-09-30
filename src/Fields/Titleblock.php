@@ -139,14 +139,15 @@ class Titleblock extends CommonDBTM
     {
         //to true automatickly if another field on the block is loaded
         $result[$field['rank']]['display'] = false;
-        if ($formatAsTable) {
-            $colspan = $is_order ? 12 : 2;
-            $result[$field['rank']]['content'] .= "<th colspan='$colspan'>";
-        }
-        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-        if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</th>";
-        }
+        $result[$field['rank']]['content'] .= Field::renderContentCells(
+            (bool) $formatAsTable,
+            (string) $style_title,
+            [[
+                'label'   => (string) $label,
+                'colspan' => $is_order ? 12 : 2,
+                'heading' => true,
+            ]],
+        );
 
         return $result;
     }

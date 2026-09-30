@@ -508,24 +508,20 @@ class Freetable extends CommonDBTM
     }
 
     /**
-     * Neutralize a free table cell before it lands in the ticket content. The value comes
-     * straight from the requester through the session and is stored raw, so it goes through
-     * the same chain as the other free input fields (see Email::getFieldValue()).
-     *
-     * getTextFromHtml() decodes the entities getSafeHtml() had just posed, so its output is
-     * plain text: the three callers concatenate it into markup, hence the escaping here.
+     * Plain text of a free table cell for the ticket content. The value comes straight from
+     * the requester through the session and is stored raw, so it goes through the same chain
+     * as the other free input fields (see Email::getFieldValue()); the template escapes it.
      *
      * @param mixed $value
-     *
-     * @return string
+     * @param mixed $type  MetaFreetablefield::TYPE_* of the column
      */
-    private static function getCellValue($value)
+    private static function getCellText($value, $type): string
     {
-        return htmlspecialchars(
-            RichText::getTextFromHtml(RichText::getSafeHtml((string) $value)),
-            ENT_QUOTES,
-            'UTF-8',
-        );
+        if ($type == MetaFreetablefield::TYPE_DATE) {
+            return (string) Html::convDate((string) $value);
+        }
+
+        return RichText::getTextFromHtml(RichText::getSafeHtml((string) $value));
     }
 
     public static function displayFieldItems(
@@ -541,14 +537,12 @@ class Freetable extends CommonDBTM
         //        if (isset($_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['quantities'])) {
         //            $quantities = $_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['quantities'];
         //        }
-        $style_td = "style = \'border: 1px solid #CCC; \'";
-
         $materials = $field["value"];
 
         //        if (is_object($materials)) {
         //            $materials = json_decode(json_encode($materials), true);
         //        }
-        $content = "";
+        $rows = [];
         $result[$field['rank']]['display'] = true;
         //        $total = 0;
         $addfields = [];
@@ -589,92 +583,59 @@ class Freetable extends CommonDBTM
         if ($nb == 6) {
             $colspan = 2;
         }
-        if (Plugin::isPluginActive('orderfollowup')) {
-            $total = 0;
-        }
+        $total = 0;
 
         if (isset($_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['freetables'][$field['id']])) {
             $freetables = $_SESSION['plugin_metademands'][$field['plugin_metademands_metademands_id']]['freetables'][$field['id']];
 
             if (is_array($freetables) && count($freetables) > 0) {
-                if ($formatAsTable) {
-                    $content .= "<tr>";
-                    $content .= "<td $style_title colspan='$colspan_title'>";
+                $rows[] = [['text' => (string) $label, 'title' => true, 'colspan' => $colspan_title]];
+
+                $header = [];
+                foreach ($addfields as $addfield) {
+                    $header[] = ['text' => (string) $addfield, 'heading' => true, 'colspan' => $colspan, 'table_only' => true];
                 }
-                $content .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                if ($formatAsTable) {
-                    $content .= "</td>";
-                    $content .= "</tr>";
+                if (Plugin::isPluginActive('orderfollowup')) {
+                    $header[] = ['text' => __('Total (TTC)', 'orderfollowup'), 'heading' => true, 'table_only' => true];
                 }
-                if ($formatAsTable) {
-                    $content .= "<tr>";
-                    foreach ($addfields as $k => $addfield) {
-                        $content .= "<th $style_td colspan='$colspan'>" . htmlspecialchars((string) $addfield, ENT_QUOTES, 'UTF-8') . "</th>";
-                    }
-                    if (Plugin::isPluginActive('orderfollowup')) {
-                        $content .= "<th $style_td>" . __('Total (TTC)', 'orderfollowup') . "</th>";
-                    }
-                    $content .= "</tr>";
-                }
+                $rows[] = $header;
 
                 foreach ($freetables as $fi) {
-                    if ($formatAsTable) {
-                        $content .= "<tr>";
-                    }
-
+                    $row = [];
                     foreach ($addfields as $k => $addfield) {
-                        if ($formatAsTable) {
-                            $content .= "<td $style_td colspan='$colspan'>";
-                        }
-
-                        if (($types[$k] ?? null) == MetaFreetablefield::TYPE_SELECT) {
-                            $content .= self::getCellValue($fi[$k] ?? '');
-                        } elseif (($types[$k] ?? null) == MetaFreetablefield::TYPE_DATE) {
-                            $content .= Html::convDate($fi[$k]);
-                        } elseif (($types[$k] ?? null) == MetaFreetablefield::TYPE_TIME) {
-                            $content .= self::getCellValue($fi[$k] ?? '');
-                        } else {
-                            $content .= self::getCellValue($fi[$k] ?? '');
-                        }
-
-                        if ($formatAsTable) {
-                            $content .= "</td>";
-                        }
+                        $row[] = ['text' => self::getCellText($fi[$k] ?? '', $types[$k] ?? null), 'colspan' => $colspan];
                     }
                     if (Plugin::isPluginActive('orderfollowup')) {
-                        if ($formatAsTable) {
-                            $content .= "<td $style_td>";
-                        }
                         $totalrow = floatval($fi['quantity']) * floatval($fi['unit_price']);
-                        $content .= Html::formatNumber($totalrow, false, 2) . " €";
-                        if ($formatAsTable) {
-                            $content .= "</td>";
-                        }
+                        $row[] = ['text' => Html::formatNumber($totalrow, false, 2) . " €"];
                         $total += $totalrow;
                     }
-                    if ($formatAsTable) {
-                        $content .= "</tr>";
-                    }
+                    $rows[] = $row;
                 }
             }
         }
 
         if (Plugin::isPluginActive('orderfollowup')) {
-            $grandtotal = __('Grand total (TTC)', 'orderfollowup');
-            $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
-            $content .= "<tr>";
-            $content .= "<th $style_td colspan='10'>" . $grandtotal . "</th>";
-            $content .= "<td $style_td>" . Html::formatNumber($total, false, 2) . " €</td></tr>";
-            $content .= "<tr>";
-            $content .= "<th $style_td colspan='10'>" . $grandtotalHT . "</th>";
             $conf = new Config();
             $conf->getFromDB(1);
             $tva = $conf->fields['use_tva'] ?? "20";
             $totalHT = $total / (1 + ($tva / 100));
-            $content .= "<td $style_td>" . Html::formatNumber($totalHT, false, 2) . " €</td></tr>";
+            $rows[] = [
+                ['text' => __('Grand total (TTC)', 'orderfollowup'), 'heading' => true, 'colspan' => 10],
+                ['text' => Html::formatNumber($total, false, 2) . " €"],
+            ];
+            $rows[] = [
+                ['text' => __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup'), 'heading' => true, 'colspan' => 10],
+                ['text' => Html::formatNumber($totalHT, false, 2) . " €"],
+            ];
         }
 
-        $result[$field['rank']]['content'] .= $content;
+        $result[$field['rank']]['content'] .= Field::renderContentRows(
+            (bool) $formatAsTable,
+            (string) $style_title,
+            'border: 1px solid #CCC;',
+            $rows,
+        );
 
         return $result;
     }

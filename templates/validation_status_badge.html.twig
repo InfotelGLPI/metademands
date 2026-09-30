@@ -26,22 +26,15 @@
  #}
 
 {#-
- # Entry added by MetademandValidation::showActionsForm() to the ITIL actions menu.
+ # Validation status of a meta-demand, as displayed by the search engine
+ # (MetademandValidation::getSpecificValueToDisplay(), search option 9501).
  #
  # Expected context:
- #  - style: contextual class of the button (btn-green / btn-orange)
- #  - title: label of the button, empty when the validation is already done
- #  - modal_url: validation form loaded in the #metavalidation modal
+ #  - label: status name
+ #  - color: badge color suffix (orange, green), empty for a plain label
 -#}
-<li>
-    <button type="button" class="btn primary answer-action {{ style }}" data-bs-toggle="modal" data-bs-target="#metavalidation">
-        <i class="ti ti-thumb-up" style="margin-left: 10px;" aria-hidden="true"></i>{{ title }}
-    </button>
-</li>
-{# Iframe modal, no core macro: printed directly, as core templates do (§3.2). #}
-{% do call('Ajax::createIframeModalWindow', ['metavalidation', modal_url, {
-    'title': __('Metademand validation', 'metademands'),
-    'width': 200,
-    'height': 400,
-    'reloadonclose': true,
-}]) %}
+{%- if color is not empty -%}
+    <span class="badge bg-{{ color }}-lt">{{ label }}</span>
+{%- else -%}
+    {{ label }}
+{%- endif -%}

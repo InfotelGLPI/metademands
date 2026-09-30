@@ -357,13 +357,13 @@ class Radio extends CommonDBTM
         );
     }
 
-    public static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params): string
     {
         $elements[-1] = __('Not null value', 'metademands');
         foreach ($params['custom_values'] as $key => $val) {
             $elements[$val['id']] = $val['name'];
         }
-        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
             'value' => $elements[$params['check_value']] ?? "",
         ]);
     }
@@ -1104,29 +1104,26 @@ class Radio extends CommonDBTM
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if (!empty($field['custom_values']) && $field['value'] > 0) {
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $label, $lang), ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'value'   => (string) self::getFieldValue($field, $label, $lang),
+                    'colspan' => $colspan,
+                ]],
+            );
         } else {
             if ($field['value']) {
-                if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
-                }
-                $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "</td>";
-                }
+                $result[$field['rank']]['content'] .= Field::renderContentCells(
+                    (bool) $formatAsTable,
+                    (string) $style_title,
+                    [[
+                        'value'      => (string) $label,
+                        'colspan'    => $colspan,
+                        'value_only' => true,
+                    ]],
+                );
             }
         }
 

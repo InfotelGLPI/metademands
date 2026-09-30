@@ -167,26 +167,24 @@ class Dateinterval extends CommonDBTM
         }
 
         $result[$field['rank']]['display'] = true;
-        if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-        }
-        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-        if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-        }
-        $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-        if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</td></tr>";
-            $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title colspan='$colspan'>";
-        }
-        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label2, ENT_QUOTES, 'UTF-8');
-        if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-        }
-        $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
-        if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "</td>";
-        }
+        // Start and end each get a label / value pair, the end one on its own row.
+        $result[$field['rank']]['content'] .= Field::renderContentCells(
+            (bool) $formatAsTable,
+            (string) $style_title,
+            [
+                [
+                    'label'   => (string) $label,
+                    'value'   => (string) Html::convDate($field['value']),
+                    'colspan' => $colspan,
+                ],
+                [
+                    'label'   => (string) $label2,
+                    'value'   => (string) Html::convDate($field['value2']),
+                    'colspan' => $colspan,
+                    'new_row' => true,
+                ],
+            ],
+        );
 
         return $result;
     }

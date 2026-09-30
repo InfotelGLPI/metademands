@@ -1,0 +1,60 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Rows of a field rendered as a table in the ticket content, basket or free
+ # table (§4.8 of docs/TWIG_MIGRATION.md). The output is stored in the ticket
+ # and sent by notifications, so it keeps inline styles and stays on a single
+ # line.
+ #
+ # @param array  rows            list of rows, each a list of {text, colspan,
+ #                               heading, title}, plain text:
+ #                               - heading renders the cell as a <th>;
+ #                               - title renders the cell as the label cell of
+ #                                 the field (title class and style);
+ #                               - table_only drops the cell outside the table
+ #                                 layout (column headers, total label);
+ #                               - colspan is optional.
+ # @param bool   format_as_table rows as <tr>, or the bare texts
+ # @param string cell_style      inline CSS of the plain and heading cells
+ # @param string title_style     inline CSS of the title cells, may be empty
+ #}
+{%- for row in rows -%}
+    {%- if format_as_table %}<tr>{% endif -%}
+    {%- for cell in row -%}
+        {%- if not format_as_table -%}
+            {%- if not cell.table_only|default(false) %}{{ cell.text }}{% endif -%}
+        {%- elseif cell.title|default(false) -%}
+            <td class="title"{% if title_style is not empty %} style="{{ title_style }}"{% endif %}{% if cell.colspan is defined %} colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</td>
+        {%- elseif cell.heading|default(false) -%}
+            <th style="{{ cell_style }}"{% if cell.colspan is defined %} colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</th>
+        {%- else -%}
+            <td style="{{ cell_style }}"{% if cell.colspan is defined %} colspan="{{ cell.colspan }}"{% endif %}>{{ cell.text }}</td>
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if format_as_table %}</tr>{% endif -%}
+{%- endfor -%}

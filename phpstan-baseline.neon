@@ -1500,11 +1500,6 @@ parameters:
 			count: 1
 			path: src/Fields/Freetable.php
 
-		-
-			message: '#^Variable \$total might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
-			path: src/Fields/Freetable.php
 
 		-
 			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'

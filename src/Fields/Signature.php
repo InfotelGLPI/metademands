@@ -273,7 +273,10 @@ class Signature extends CommonDBTM
         }
     }
 
-    public static function showParamsValueToCheck($params) {}
+    public static function showParamsValueToCheck($params): string
+    {
+        return '';
+    }
 
     public static function fieldsMandatoryScript($data) {}
 
@@ -285,6 +288,19 @@ class Signature extends CommonDBTM
 
     public static function getFieldValue($field)
     {
+        $picture_url = self::getPictureUrl($field);
+        if ($picture_url === '') {
+            return '';
+        }
+
+        return "<img src='" . htmlspecialchars($picture_url, ENT_QUOTES) . "'>";
+    }
+
+    /**
+     * URL of the signature picture, or an empty string when the stored path is not valid.
+     */
+    private static function getPictureUrl(array $field): string
+    {
         // Toolbox::getPictureUrl() validates nothing, so a legacy row holding a crafted
         // path would still build a document.send.php URL pointing outside GLPI_PICTURE_DIR.
         $path = self::sanitizeSubmittedValue($field['value'] ?? '');
@@ -292,8 +308,7 @@ class Signature extends CommonDBTM
             return '';
         }
 
-        $picture_url = Toolbox::getPictureUrl($path);
-        return "<img src='" . htmlspecialchars($picture_url, ENT_QUOTES) . "'>";
+        return (string) Toolbox::getPictureUrl($path);
     }
 
     public static function displayFieldItems(
@@ -309,17 +324,16 @@ class Signature extends CommonDBTM
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field);
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td>";
-            }
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'value'   => self::getPictureUrl($field),
+                    'colspan' => $colspan,
+                    'image'   => true,
+                ]],
+            );
         }
 
         return $result;

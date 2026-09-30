@@ -925,8 +925,10 @@ class Step extends CommonDBChild
                 );
             }
         } else {
-            $return = "<div class='alert alert-danger d-flex'>";
-            $return .= "<b>" . __('There is a problem with the setup', 'metademands') . "</b></div>";
+            $return = TemplateRenderer::getInstance()->render('@metademands/alert.html.twig', [
+                'level'   => 'danger',
+                'message' => __('There is a problem with the setup', 'metademands'),
+            ]);
         }
 
         return $return;

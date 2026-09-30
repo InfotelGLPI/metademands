@@ -44,3 +44,10 @@ if (!$DB->tableExists('glpi_plugin_metademands_metademands')) {
     require_once dirname(__DIR__) . '/hook.php';
     plugin_metademands_install();
 }
+
+// The test environment does not activate the plugin, so its Twig namespace is missing:
+// the ticket content (Metademand::formatFields()) renders plugin templates.
+$twig_loader = \Glpi\Application\View\TemplateRenderer::getInstance()->getEnvironment()->getLoader();
+if ($twig_loader instanceof \Twig\Loader\FilesystemLoader && !in_array('metademands', $twig_loader->getNamespaces(), true)) {
+    $twig_loader->addPath(dirname(__DIR__) . '/templates', 'metademands');
+}

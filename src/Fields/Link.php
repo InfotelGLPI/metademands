@@ -216,18 +216,18 @@ class Link extends CommonDBTM
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
-            $safe_url = htmlspecialchars(self::getFieldValue($field), ENT_QUOTES);
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-            }
-            $result[$field['rank']]['content'] .= '<a href="' . $safe_url . '" data-mce-href="' . $safe_url . '">' . $safe_url . '</a>';
-            if ($formatAsTable) {
-                $result[$field['rank']]['content'] .= '</td>';
-            }
+            // normalizeUrl() keeps the scheme filtering; the template escapes the URL
+            // in the href and in the anchor text.
+            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                (bool) $formatAsTable,
+                (string) $style_title,
+                [[
+                    'label'   => (string) $label,
+                    'value'   => (string) self::getFieldValue($field),
+                    'colspan' => $colspan,
+                    'link'    => true,
+                ]],
+            );
         }
 
         return $result;

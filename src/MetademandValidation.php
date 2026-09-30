@@ -551,8 +551,7 @@ class MetademandValidation extends CommonDBTM
             && ($item->fields['status'] != \Ticket::SOLVED
                 && $item->fields['status'] != \Ticket::CLOSED)
             && $item->fields['is_deleted'] != 1
-            && Session::haveRight('plugin_metademands_validatemeta', READ)
-            && Session::getCurrentInterface() == 'central') {
+            && Session::haveRight('plugin_metademands_validatemeta', READ)) {
             $style = "btn-green";
             $title = "";
             if ($metaValidation->fields["validate"] == self::TO_VALIDATE
@@ -560,23 +559,14 @@ class MetademandValidation extends CommonDBTM
                 $style = "btn-orange";
                 $title = __('Metademand validation', 'metademands');
             }
-            echo TemplateRenderer::getInstance()->render(
+            // The core captures the output of the TIMELINE_ACTIONS hook.
+            TemplateRenderer::getInstance()->display(
                 '@metademands/forms/validation_action_button.html.twig',
                 [
                     'style' => $style,
                     'title' => $title,
-                ],
-            );
-
-            echo Ajax::createIframeModalWindow(
-                'metavalidation',
-                PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $item->fields['id'],
-                [
-                    'title' => __('Metademand validation', 'metademands'),
-                    'display' => false,
-                    'width' => 200,
-                    'height' => 400,
-                    'reloadonclose' => true,
+                    'modal_url' => PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id='
+                        . (int) $item->fields['id'],
                 ],
             );
         }
@@ -738,11 +728,7 @@ class MetademandValidation extends CommonDBTM
         }
         switch ($field) {
             case 'validate':
-                $style = "style='background-color: " . self::getStatusColor($values[$field]) . ";'";
-                $out = "<div class='center' $style>";
-                $out .= self::getStatusName($values[$field]);
-                $out .= "</div>";
-                return $out;
+                return self::getStatusBadge($values[$field]);
         }
         return parent::getSpecificValueToDisplay($field, $values, $options);
     }
@@ -802,9 +788,11 @@ class MetademandValidation extends CommonDBTM
     }
 
     /**
+     * Badge color suffix of a validation status (`bg-<color>-lt`).
+     *
      * @param $value
      *
-     * @return string
+     * @return string empty when the status has no color
      */
     public static function getStatusColor($value)
     {
@@ -815,10 +803,24 @@ class MetademandValidation extends CommonDBTM
             case self::VALIDATE_WITHOUT_TASK:
             case self::TASK_CREATION:
             case self::TICKET_CREATION:
-                return "forestgreen";
+                return "green";
             default:
-                // Return $value if not define
                 return "";
         }
+    }
+
+    /**
+     * HTML badge of a validation status, for the search engine.
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    public static function getStatusBadge($value): string
+    {
+        return TemplateRenderer::getInstance()->render('@metademands/validation_status_badge.html.twig', [
+            'label' => self::getStatusName($value),
+            'color' => self::getStatusColor($value),
+        ]);
     }
 }

@@ -1,0 +1,80 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Label / value cells of one field in the ticket content (§4.8 of
+ # docs/TWIG_MIGRATION.md). The output is stored in the ticket and sent by
+ # notifications, so it keeps inline styles and stays on a single line.
+ #
+ # @param array  cells           list of {label, value, colspan, new_row, link,
+ #                               heading}, plain text:
+ #                               - new_row starts the cell on a new row (second
+ #                                 half of an interval field);
+ #                               - link renders the value as an anchor to itself;
+ #                               - image renders the value, a picture URL, as an
+ #                                 image (nothing when empty);
+ #                               - value_only renders the value cell alone, without
+ #                                 the label cell;
+ #                               - rows, a list of lists of strings, replaces the
+ #                                 value by a borderless table of those rows (the
+ #                                 bare strings outside the table layout);
+ #                               - heading renders the label alone, as the <th>
+ #                                 of a title field (no value, no title style).
+ # @param bool   format_as_table cells as <td>, or label and value only
+ # @param string title_style     inline CSS of the label cell, may be empty
+ #}
+{%- for cell in cells -%}
+    {%- if format_as_table -%}
+        {%- if cell.new_row|default(false) %}</tr><tr class="odd">{% endif -%}
+        {%- if cell.heading|default(false) -%}
+            <th colspan="{{ cell.colspan }}">{{ cell.label }}</th>
+        {%- elseif cell.value_only|default(false) -%}
+            <td colspan="{{ cell.colspan }}">{{ _self.value(cell, format_as_table) }}</td>
+        {%- else -%}
+            <td class="title"{% if title_style is not empty %} style="{{ title_style }}"{% endif %} colspan="{{ cell.colspan }}">{{ cell.label }}</td><td colspan="{{ cell.colspan }}">{{ _self.value(cell, format_as_table) }}</td>
+        {%- endif -%}
+    {%- else -%}
+        {%- if not cell.value_only|default(false) %}{{ cell.label }}{% endif -%}
+        {%- if not cell.heading|default(false) %}{{ _self.value(cell, format_as_table) }}{% endif -%}
+    {%- endif -%}
+{%- endfor -%}
+
+{%- macro value(cell, format_as_table) -%}
+    {%- if cell.rows is defined -%}
+        {%- if format_as_table %}<table style="border:0;">{% endif -%}
+        {%- for row in cell.rows -%}
+            {%- if format_as_table %}<tr>{% for text in row %}<td>{{ text }}</td>{% endfor %}</tr>{% else %}{{ row|join }}{% endif -%}
+        {%- endfor -%}
+        {%- if format_as_table %}</table>{% endif -%}
+    {%- elseif cell.link|default(false) -%}
+        <a href="{{ cell.value }}" data-mce-href="{{ cell.value }}">{{ cell.value }}</a>
+    {%- elseif cell.image|default(false) -%}
+        {%- if cell.value is not empty %}<img src="{{ cell.value }}">{% endif -%}
+    {%- else -%}
+        {{ cell.value }}
+    {%- endif -%}
+{%- endmacro -%}

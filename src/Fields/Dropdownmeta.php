@@ -1351,7 +1351,7 @@ class Dropdownmeta extends CommonDBTM
         }
     }
 
-    public static function showParamsValueToCheck($params)
+    public static function showParamsValueToCheck($params): string
     {
         global $PLUGIN_HOOKS;
 
@@ -1408,7 +1408,7 @@ class Dropdownmeta extends CommonDBTM
                     break;
             }
         }
-        echo TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
+        return TemplateRenderer::getInstance()->render('@metademands/fields/field_value_to_check.html.twig', [
             'value' => $value,
         ]);
     }
@@ -2217,70 +2217,58 @@ class Dropdownmeta extends CommonDBTM
                 $custom_values[$val['id']] = $translated !== '' ? $translated : $val['name'];
             }
             if (isset($custom_values[$field['value']])) {
-                if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-                }
-                $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-                }
-                $result[$field['rank']]['content'] .= htmlspecialchars((string) $custom_values[$field['value']], ENT_QUOTES, 'UTF-8');
-                if ($formatAsTable) {
-                    $result[$field['rank']]['content'] .= "</td>";
-                }
+                $result[$field['rank']]['content'] .= Field::renderContentCells(
+                    (bool) $formatAsTable,
+                    (string) $style_title,
+                    [[
+                        'label'   => (string) $label,
+                        'value'   => (string) $custom_values[$field['value']],
+                        'colspan' => $colspan,
+                    ]],
+                );
             }
         } else {
             if ($field['value'] != 0) {
                 switch ($field['item']) {
                     case 'mydevices':
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-                        }
-                        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-                        }
-
                         $splitter = explode("_", $field['value']);
                         $itemtype = count($splitter) == 2 ? $splitter[0] : null;
                         $items_id = count($splitter) == 2 ? $splitter[1] : null;
-                        if ($itemtype && $items_id) {
-                            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
-                        }
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        $result[$field['rank']]['content'] .= Field::renderContentCells(
+                            (bool) $formatAsTable,
+                            (string) $style_title,
+                            [[
+                                'label'   => (string) $label,
+                                'value'   => $itemtype && $items_id ? (string) self::getFieldValue($field, $lang) : '',
+                                'colspan' => $colspan,
+                            ]],
+                        );
                         break;
                     case 'priority':
                     case 'impact':
                     case 'urgency':
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-                        }
-                        $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                            $result[$field['rank']]['content'] .= "<td colspan='$colspan'>";
-                        }
-                        $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        $result[$field['rank']]['content'] .= Field::renderContentCells(
+                            (bool) $formatAsTable,
+                            (string) $style_title,
+                            [[
+                                'label'   => (string) $label,
+                                'value'   => (string) self::getFieldValue($field, $lang),
+                                'colspan' => $colspan,
+                            ]],
+                        );
                         break;
                     default:
                         $hidden = $field['hidden'];
                         if ($hidden == 0) {
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "<td $style_title colspan='$colspan'>";
-                            }
-                            $result[$field['rank']]['content'] .= htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td><td colspan='$colspan'>";
-                            }
-                            $result[$field['rank']]['content'] .= htmlspecialchars((string) self::getFieldValue($field, $lang), ENT_QUOTES, 'UTF-8');
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td>";
-                            }
+                            $result[$field['rank']]['content'] .= Field::renderContentCells(
+                                (bool) $formatAsTable,
+                                (string) $style_title,
+                                [[
+                                    'label'   => (string) $label,
+                                    'value'   => (string) self::getFieldValue($field, $lang),
+                                    'colspan' => $colspan,
+                                ]],
+                            );
                         }
                         break;
                 }
